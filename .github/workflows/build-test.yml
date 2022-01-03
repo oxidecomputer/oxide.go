@@ -1,0 +1,65 @@
+name: build & test
+on:
+  push:
+    branches: main
+    paths:
+      - '**.go'
+      - .github/workflows/build-test.yml
+      - 'go.mod'
+      - 'go.sum'
+  pull_request:
+    paths:
+      - '**.go'
+      - 'go.mod'
+      - 'go.sum'
+      - .github/workflows/build-test.yml
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: '1.x'
+      - name: build
+        shell: bash
+        run: |
+          make build
+      - name: test
+        shell: bash
+        run: |
+          make test
+        env:
+          OXIDE_API_TOKEN: ${{secrets.OXIDE_API_TOKEN}}
+      - name: lint
+        shell: bash
+        run: |
+          go get golang.org/x/lint/golint
+          make lint
+      - name: staticcheck
+        shell: bash
+        run: |
+          go get honnef.co/go/tools/cmd/staticcheck@latest
+          make staticcheck
+      - name: vet
+        shell: bash
+        run: |
+          make vet
+      - name: fmt
+        shell: bash
+        run: |
+          make fmt
+      - name: make test coverage
+        shell: bash
+        run: |
+          make cover
+        env:
+          OXIDE_API_TOKEN: ${{secrets.OXIDE_API_TOKEN}}
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true
+          flags: unittests
+          files: ${{ github.workspace }}/coverage.txt
+          verbose: true
