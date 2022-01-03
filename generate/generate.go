@@ -347,8 +347,13 @@ func writeMethod(f *os.File, method string, path string, o *openapi3.Operation) 
 			fmt.Fprintln(f, "// Encode the request body as json.")
 			fmt.Fprintln(f, "b := new(bytes.Buffer)")
 			fmt.Fprintln(f, "if err := json.NewEncoder(b).Encode(j); err != nil {")
-			fmt.Fprintln(f, `return nil, fmt.Errorf("encoding json body request failed: %v", err)`)
+			if respType != "" {
+				fmt.Fprintln(f, `return nil, fmt.Errorf("encoding json body request failed: %v", err)`)
+			} else {
+				fmt.Fprintln(f, `return fmt.Errorf("encoding json body request failed: %v", err)`)
+			}
 			fmt.Fprintln(f, "}")
+			reqBodyParam = "b"
 			break
 		}
 
@@ -359,7 +364,11 @@ func writeMethod(f *os.File, method string, path string, o *openapi3.Operation) 
 
 	fmt.Fprintf(f, "req, err := http.NewRequest(%q, uri, %s)\n", method, reqBodyParam)
 	fmt.Fprintln(f, "if err != nil {")
-	fmt.Fprintln(f, `return nil, fmt.Errorf("error creating request: %v", err)`)
+	if respType != "" {
+		fmt.Fprintln(f, `return nil, fmt.Errorf("error creating request: %v", err)`)
+	} else {
+		fmt.Fprintln(f, `return fmt.Errorf("error creating request: %v", err)`)
+	}
 	fmt.Fprintln(f, "}")
 
 	// Add the parameters to the url.
@@ -370,7 +379,11 @@ func writeMethod(f *os.File, method string, path string, o *openapi3.Operation) 
 			fmt.Fprintf(f, "	%q: string(%s),\n", strcase.ToLowerCamel(name), strcase.ToLowerCamel(name))
 		}
 		fmt.Fprintln(f, "}); err != nil {")
-		fmt.Fprintln(f, `return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)`)
+		if respType != "" {
+			fmt.Fprintln(f, `return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)`)
+		} else {
+			fmt.Fprintln(f, `return fmt.Errorf("expanding URL with parameters failed: %v", err)`)
+		}
 		fmt.Fprintln(f, "}")
 	}
 
@@ -378,14 +391,22 @@ func writeMethod(f *os.File, method string, path string, o *openapi3.Operation) 
 	fmt.Fprintln(f, "// Send the request.")
 	fmt.Fprintln(f, "resp, err := c.client.Do(req)")
 	fmt.Fprintln(f, "if err != nil {")
-	fmt.Fprintln(f, `return nil, fmt.Errorf("error sending request: %v", err)`)
+	if respType != "" {
+		fmt.Fprintln(f, `return nil, fmt.Errorf("error sending request: %v", err)`)
+	} else {
+		fmt.Fprintln(f, `return fmt.Errorf("error sending request: %v", err)`)
+	}
 	fmt.Fprintln(f, "}")
 	fmt.Fprintln(f, "defer resp.Body.Close()")
 
 	// Check the response if there were any errors.
 	fmt.Fprintln(f, "// Check the response.")
 	fmt.Fprintln(f, "if err := checkResponse(resp); err != nil {")
-	fmt.Fprintln(f, "return nil, err")
+	if respType != "" {
+		fmt.Fprintln(f, "return nil, err")
+	} else {
+		fmt.Fprintln(f, "return err")
+	}
 	fmt.Fprintln(f, "}")
 
 	if respType != "" {
@@ -559,7 +580,18 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema) {
 			}
 		}
 	} else {
-		fmt.Printf("[WARN] TODO: skipping type for %q, since it is a %q\n", name, otype)
+		// In this scenario it is most likely a oneOf, anyOf, or allOf.
+		// Let's check for oneOf since we know we have those.
+		// TODO: we won't need this after https://github.com/oxidecomputer/omicron/issues/573 is resolved.
+		if s.OneOf != nil {
+			// TODO: this sucks since it only uses the first one. But in the future when
+			// the above issue is resolved, we will no longer have any oneOfs.
+			writeSchemaType(f, name, s.OneOf[0].Value)
+		} else if s.AnyOf != nil {
+			fmt.Printf("[WARN] TODO: skipping type for %q, since it is a ANYOF\n", name)
+		} else if s.AllOf != nil {
+			fmt.Printf("[WARN] TODO: skipping type for %q, since it is a ALLOF\n", name)
+		}
 	}
 
 	// Add a newline at the end of the type.

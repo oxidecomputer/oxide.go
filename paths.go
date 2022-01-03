@@ -239,7 +239,7 @@ func (c *Client) OrganizationsPost(j *OrganizationCreate) (*Organization, error)
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 	// Create the request.
-	req, err := http.NewRequest("POST", uri, j)
+	req, err := http.NewRequest("POST", uri, b)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %v", err)
 	}
@@ -323,7 +323,7 @@ func (c *Client) OrganizationsPutOrganization(organizationName Name, j *Organiza
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 	// Create the request.
-	req, err := http.NewRequest("PUT", uri, j)
+	req, err := http.NewRequest("PUT", uri, b)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %v", err)
 	}
@@ -367,23 +367,23 @@ func (c *Client) OrganizationsDeleteOrganization(organizationName Name) error {
 	// Create the request.
 	req, err := http.NewRequest("DELETE", uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
+		return fmt.Errorf("error creating request: %v", err)
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
 		"organizationName": string(organizationName),
 	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
 	resp, err := c.client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
+		return fmt.Errorf("error sending request: %v", err)
 	}
 	defer resp.Body.Close()
 	// Check the response.
 	if err := checkResponse(resp); err != nil {
-		return nil, err
+		return err
 	}
 	// Return.
 	return nil
@@ -449,7 +449,7 @@ func (c *Client) OrganizationProjectsPost(organizationName Name, j *ProjectCreat
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 	// Create the request.
-	req, err := http.NewRequest("POST", uri, j)
+	req, err := http.NewRequest("POST", uri, b)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %v", err)
 	}
@@ -540,7 +540,7 @@ func (c *Client) OrganizationProjectsPutProject(organizationName Name, projectNa
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 	// Create the request.
-	req, err := http.NewRequest("PUT", uri, j)
+	req, err := http.NewRequest("PUT", uri, b)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %v", err)
 	}
@@ -585,24 +585,24 @@ func (c *Client) OrganizationProjectsDeleteProject(organizationName Name, projec
 	// Create the request.
 	req, err := http.NewRequest("DELETE", uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
+		return fmt.Errorf("error creating request: %v", err)
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
 		"organizationName": string(organizationName),
 		"projectName":      string(projectName),
 	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
 	resp, err := c.client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
+		return fmt.Errorf("error sending request: %v", err)
 	}
 	defer resp.Body.Close()
 	// Check the response.
 	if err := checkResponse(resp); err != nil {
-		return nil, err
+		return err
 	}
 	// Return.
 	return nil
@@ -670,14 +670,14 @@ func (c *Client) ProjectDisksPost(organizationName Name, projectName Name, j *Di
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 	// Create the request.
-	req, err := http.NewRequest("POST", uri, j)
+	req, err := http.NewRequest("POST", uri, b)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %v", err)
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"organizationName": string(organizationName),
 		"projectName":      string(projectName),
+		"organizationName": string(organizationName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -759,7 +759,7 @@ func (c *Client) ProjectDisksDeleteDisk(diskName Name, organizationName Name, pr
 	// Create the request.
 	req, err := http.NewRequest("DELETE", uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
+		return fmt.Errorf("error creating request: %v", err)
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
@@ -767,17 +767,17 @@ func (c *Client) ProjectDisksDeleteDisk(diskName Name, organizationName Name, pr
 		"organizationName": string(organizationName),
 		"projectName":      string(projectName),
 	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
 	resp, err := c.client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
+		return fmt.Errorf("error sending request: %v", err)
 	}
 	defer resp.Body.Close()
 	// Check the response.
 	if err := checkResponse(resp); err != nil {
-		return nil, err
+		return err
 	}
 	// Return.
 	return nil
@@ -845,7 +845,7 @@ func (c *Client) ProjectInstancesPost(organizationName Name, projectName Name, j
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 	// Create the request.
-	req, err := http.NewRequest("POST", uri, j)
+	req, err := http.NewRequest("POST", uri, b)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %v", err)
 	}
@@ -894,9 +894,9 @@ func (c *Client) ProjectInstancesGetInstance(instanceName Name, organizationName
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
+		"projectName":      string(projectName),
 		"instanceName":     string(instanceName),
 		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -934,7 +934,7 @@ func (c *Client) ProjectInstancesDeleteInstance(instanceName Name, organizationN
 	// Create the request.
 	req, err := http.NewRequest("DELETE", uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
+		return fmt.Errorf("error creating request: %v", err)
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
@@ -942,17 +942,17 @@ func (c *Client) ProjectInstancesDeleteInstance(instanceName Name, organizationN
 		"instanceName":     string(instanceName),
 		"organizationName": string(organizationName),
 	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
 	resp, err := c.client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
+		return fmt.Errorf("error sending request: %v", err)
 	}
 	defer resp.Body.Close()
 	// Check the response.
 	if err := checkResponse(resp); err != nil {
-		return nil, err
+		return err
 	}
 	// Return.
 	return nil
@@ -974,12 +974,12 @@ func (c *Client) InstanceDisksGet(limit int, pageToken string, sortBy NameSortMo
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"pageToken":        string(pageToken),
-		"sortBy":           string(sortBy),
-		"instanceName":     string(instanceName),
 		"organizationName": string(organizationName),
 		"projectName":      string(projectName),
 		"limit":            string(limit),
+		"pageToken":        string(pageToken),
+		"sortBy":           string(sortBy),
+		"instanceName":     string(instanceName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1018,15 +1018,15 @@ func (c *Client) InstanceDisksAttach(instanceName Name, organizationName Name, p
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 	// Create the request.
-	req, err := http.NewRequest("POST", uri, j)
+	req, err := http.NewRequest("POST", uri, b)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %v", err)
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"projectName":      string(projectName),
 		"instanceName":     string(instanceName),
 		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1065,7 +1065,7 @@ func (c *Client) InstanceDisksDetach(instanceName Name, organizationName Name, p
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 	// Create the request.
-	req, err := http.NewRequest("POST", uri, j)
+	req, err := http.NewRequest("POST", uri, b)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %v", err)
 	}
@@ -1115,9 +1115,9 @@ func (c *Client) ProjectInstancesInstanceReboot(instanceName Name, organizationN
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"instanceName":     string(instanceName),
 		"organizationName": string(organizationName),
 		"projectName":      string(projectName),
+		"instanceName":     string(instanceName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1159,9 +1159,9 @@ func (c *Client) ProjectInstancesInstanceStart(instanceName Name, organizationNa
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"instanceName":     string(instanceName),
 		"organizationName": string(organizationName),
 		"projectName":      string(projectName),
+		"instanceName":     string(instanceName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1247,11 +1247,11 @@ func (c *Client) ProjectVpcsGet(limit int, pageToken string, sortBy NameSortMode
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"pageToken":        string(pageToken),
 		"sortBy":           string(sortBy),
 		"organizationName": string(organizationName),
 		"projectName":      string(projectName),
 		"limit":            string(limit),
+		"pageToken":        string(pageToken),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1292,7 +1292,7 @@ func (c *Client) ProjectVpcsPost(organizationName Name, projectName Name, j *VPC
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 	// Create the request.
-	req, err := http.NewRequest("POST", uri, j)
+	req, err := http.NewRequest("POST", uri, b)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %v", err)
 	}
@@ -1341,9 +1341,9 @@ func (c *Client) ProjectVpcsGetVpc(organizationName Name, projectName Name, vpcN
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"vpcName":          string(vpcName),
 		"organizationName": string(organizationName),
 		"projectName":      string(projectName),
+		"vpcName":          string(vpcName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1381,30 +1381,30 @@ func (c *Client) ProjectVpcsPutVpc(organizationName Name, projectName Name, vpcN
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+		return fmt.Errorf("encoding json body request failed: %v", err)
 	}
 	// Create the request.
-	req, err := http.NewRequest("PUT", uri, j)
+	req, err := http.NewRequest("PUT", uri, b)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
+		return fmt.Errorf("error creating request: %v", err)
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
+		"vpcName":          string(vpcName),
 		"organizationName": string(organizationName),
 		"projectName":      string(projectName),
-		"vpcName":          string(vpcName),
 	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
 	resp, err := c.client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
+		return fmt.Errorf("error sending request: %v", err)
 	}
 	defer resp.Body.Close()
 	// Check the response.
 	if err := checkResponse(resp); err != nil {
-		return nil, err
+		return err
 	}
 	// Return.
 	return nil
@@ -1422,7 +1422,7 @@ func (c *Client) ProjectVpcsDeleteVpc(organizationName Name, projectName Name, v
 	// Create the request.
 	req, err := http.NewRequest("DELETE", uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
+		return fmt.Errorf("error creating request: %v", err)
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
@@ -1430,17 +1430,17 @@ func (c *Client) ProjectVpcsDeleteVpc(organizationName Name, projectName Name, v
 		"projectName":      string(projectName),
 		"vpcName":          string(vpcName),
 	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
 	resp, err := c.client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
+		return fmt.Errorf("error sending request: %v", err)
 	}
 	defer resp.Body.Close()
 	// Check the response.
 	if err := checkResponse(resp); err != nil {
-		return nil, err
+		return err
 	}
 	// Return.
 	return nil
@@ -1462,12 +1462,12 @@ func (c *Client) VpcFirewallRulesGet(limit int, pageToken string, sortBy NameSor
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"projectName":      string(projectName),
 		"vpcName":          string(vpcName),
 		"limit":            string(limit),
 		"pageToken":        string(pageToken),
 		"sortBy":           string(sortBy),
 		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1508,7 +1508,7 @@ func (c *Client) VpcFirewallRulesPut(organizationName Name, projectName Name, vp
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 	// Create the request.
-	req, err := http.NewRequest("PUT", uri, j)
+	req, err := http.NewRequest("PUT", uri, b)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %v", err)
 	}
@@ -1558,12 +1558,12 @@ func (c *Client) VpcRoutersGet(limit int, pageToken string, sortBy NameSortMode,
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
+		"projectName":      string(projectName),
 		"vpcName":          string(vpcName),
 		"limit":            string(limit),
 		"pageToken":        string(pageToken),
 		"sortBy":           string(sortBy),
 		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1604,7 +1604,7 @@ func (c *Client) VpcRoutersPost(organizationName Name, projectName Name, vpcName
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 	// Create the request.
-	req, err := http.NewRequest("POST", uri, j)
+	req, err := http.NewRequest("POST", uri, b)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %v", err)
 	}
@@ -1654,10 +1654,10 @@ func (c *Client) VpcRoutersGetRouter(organizationName Name, projectName Name, ro
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
 		"routerName":       string(routerName),
 		"vpcName":          string(vpcName),
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1695,12 +1695,12 @@ func (c *Client) VpcRoutersPutRouter(organizationName Name, projectName Name, ro
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+		return fmt.Errorf("encoding json body request failed: %v", err)
 	}
 	// Create the request.
-	req, err := http.NewRequest("PUT", uri, j)
+	req, err := http.NewRequest("PUT", uri, b)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
+		return fmt.Errorf("error creating request: %v", err)
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
@@ -1709,17 +1709,17 @@ func (c *Client) VpcRoutersPutRouter(organizationName Name, projectName Name, ro
 		"routerName":       string(routerName),
 		"vpcName":          string(vpcName),
 	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
 	resp, err := c.client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
+		return fmt.Errorf("error sending request: %v", err)
 	}
 	defer resp.Body.Close()
 	// Check the response.
 	if err := checkResponse(resp); err != nil {
-		return nil, err
+		return err
 	}
 	// Return.
 	return nil
@@ -1737,26 +1737,26 @@ func (c *Client) VpcRoutersDeleteRouter(organizationName Name, projectName Name,
 	// Create the request.
 	req, err := http.NewRequest("DELETE", uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
+		return fmt.Errorf("error creating request: %v", err)
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"vpcName":          string(vpcName),
-		"organizationName": string(organizationName),
 		"projectName":      string(projectName),
 		"routerName":       string(routerName),
+		"vpcName":          string(vpcName),
+		"organizationName": string(organizationName),
 	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
 	resp, err := c.client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
+		return fmt.Errorf("error sending request: %v", err)
 	}
 	defer resp.Body.Close()
 	// Check the response.
 	if err := checkResponse(resp); err != nil {
-		return nil, err
+		return err
 	}
 	// Return.
 	return nil
@@ -1825,16 +1825,16 @@ func (c *Client) RoutersRoutesPost(organizationName Name, projectName Name, rout
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 	// Create the request.
-	req, err := http.NewRequest("POST", uri, j)
+	req, err := http.NewRequest("POST", uri, b)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %v", err)
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"organizationName": string(organizationName),
 		"projectName":      string(projectName),
 		"routerName":       string(routerName),
 		"vpcName":          string(vpcName),
+		"organizationName": string(organizationName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1876,11 +1876,11 @@ func (c *Client) RoutersRoutesGetRoute(organizationName Name, projectName Name, 
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
+		"organizationName": string(organizationName),
 		"projectName":      string(projectName),
 		"routeName":        string(routeName),
 		"routerName":       string(routerName),
 		"vpcName":          string(vpcName),
-		"organizationName": string(organizationName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1918,32 +1918,32 @@ func (c *Client) RoutersRoutesPutRoute(organizationName Name, projectName Name, 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+		return fmt.Errorf("encoding json body request failed: %v", err)
 	}
 	// Create the request.
-	req, err := http.NewRequest("PUT", uri, j)
+	req, err := http.NewRequest("PUT", uri, b)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
+		return fmt.Errorf("error creating request: %v", err)
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"routerName":       string(routerName),
-		"vpcName":          string(vpcName),
 		"organizationName": string(organizationName),
 		"projectName":      string(projectName),
 		"routeName":        string(routeName),
+		"routerName":       string(routerName),
+		"vpcName":          string(vpcName),
 	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
 	resp, err := c.client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
+		return fmt.Errorf("error sending request: %v", err)
 	}
 	defer resp.Body.Close()
 	// Check the response.
 	if err := checkResponse(resp); err != nil {
-		return nil, err
+		return err
 	}
 	// Return.
 	return nil
@@ -1961,7 +1961,7 @@ func (c *Client) RoutersRoutesDeleteRoute(organizationName Name, projectName Nam
 	// Create the request.
 	req, err := http.NewRequest("DELETE", uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
+		return fmt.Errorf("error creating request: %v", err)
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
@@ -1971,17 +1971,17 @@ func (c *Client) RoutersRoutesDeleteRoute(organizationName Name, projectName Nam
 		"vpcName":          string(vpcName),
 		"organizationName": string(organizationName),
 	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
 	resp, err := c.client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
+		return fmt.Errorf("error sending request: %v", err)
 	}
 	defer resp.Body.Close()
 	// Check the response.
 	if err := checkResponse(resp); err != nil {
-		return nil, err
+		return err
 	}
 	// Return.
 	return nil
@@ -2003,12 +2003,12 @@ func (c *Client) VpcSubnetsGet(limit int, pageToken string, sortBy NameSortMode,
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
 		"vpcName":          string(vpcName),
 		"limit":            string(limit),
 		"pageToken":        string(pageToken),
 		"sortBy":           string(sortBy),
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -2049,15 +2049,15 @@ func (c *Client) VpcSubnetsPost(organizationName Name, projectName Name, vpcName
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 	// Create the request.
-	req, err := http.NewRequest("POST", uri, j)
+	req, err := http.NewRequest("POST", uri, b)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %v", err)
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
+		"organizationName": string(organizationName),
 		"projectName":      string(projectName),
 		"vpcName":          string(vpcName),
-		"organizationName": string(organizationName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -2099,10 +2099,10 @@ func (c *Client) VpcSubnetsGetSubnet(organizationName Name, projectName Name, su
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
+		"organizationName": string(organizationName),
 		"projectName":      string(projectName),
 		"subnetName":       string(subnetName),
 		"vpcName":          string(vpcName),
-		"organizationName": string(organizationName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -2140,31 +2140,31 @@ func (c *Client) VpcSubnetsPutSubnet(organizationName Name, projectName Name, su
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+		return fmt.Errorf("encoding json body request failed: %v", err)
 	}
 	// Create the request.
-	req, err := http.NewRequest("PUT", uri, j)
+	req, err := http.NewRequest("PUT", uri, b)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
+		return fmt.Errorf("error creating request: %v", err)
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"organizationName": string(organizationName),
 		"projectName":      string(projectName),
 		"subnetName":       string(subnetName),
 		"vpcName":          string(vpcName),
+		"organizationName": string(organizationName),
 	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
 	resp, err := c.client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
+		return fmt.Errorf("error sending request: %v", err)
 	}
 	defer resp.Body.Close()
 	// Check the response.
 	if err := checkResponse(resp); err != nil {
-		return nil, err
+		return err
 	}
 	// Return.
 	return nil
@@ -2182,26 +2182,26 @@ func (c *Client) VpcSubnetsDeleteSubnet(organizationName Name, projectName Name,
 	// Create the request.
 	req, err := http.NewRequest("DELETE", uri, nil)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
+		return fmt.Errorf("error creating request: %v", err)
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"vpcName":          string(vpcName),
-		"organizationName": string(organizationName),
 		"projectName":      string(projectName),
 		"subnetName":       string(subnetName),
+		"vpcName":          string(vpcName),
+		"organizationName": string(organizationName),
 	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
 	resp, err := c.client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
+		return fmt.Errorf("error sending request: %v", err)
 	}
 	defer resp.Body.Close()
 	// Check the response.
 	if err := checkResponse(resp); err != nil {
-		return nil, err
+		return err
 	}
 	// Return.
 	return nil
@@ -2223,13 +2223,13 @@ func (c *Client) SubnetsIpsGet(limit int, pageToken string, sortBy NameSortMode,
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"vpcName":          string(vpcName),
 		"limit":            string(limit),
 		"pageToken":        string(pageToken),
 		"sortBy":           string(sortBy),
 		"organizationName": string(organizationName),
 		"projectName":      string(projectName),
 		"subnetName":       string(subnetName),
+		"vpcName":          string(vpcName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}

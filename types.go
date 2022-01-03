@@ -58,6 +58,23 @@ type DiskResultsPage struct {
 }
 
 // DiskState is state of a Disk (primarily: attached or not)
+// DiskState is disk is being initialized
+type DiskState struct {
+	State DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
+}
+
+// DiskStateState is the type definition for a DiskStateState.
+type DiskStateState string
+
+const (
+	// DiskStateStateCreating represents the DiskStateState `"creating"`.
+	DiskStateStateCreating DiskStateState = "creating"
+)
+
+// DiskStateStates is the collection of all DiskStateState values.
+var DiskStateStates = []DiskStateState{
+	DiskStateStateCreating,
+}
 
 // IdSortMode is supported set of sort modes for scanning by id only.
 //
@@ -343,8 +360,44 @@ type RackResultsPage struct {
 }
 
 // RouteDestination is a subset of [`NetworkTarget`], `RouteDestination` specifies the kind of network traffic that will be matched to be forwarded to the [`RouteTarget`].
+// RouteDestination is the type definition for a RouteDestination.
+type RouteDestination struct {
+	Type  RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value string               `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// RouteDestinationType is the type definition for a RouteDestinationType.
+type RouteDestinationType string
+
+const (
+	// RouteDestinationTypeIp represents the RouteDestinationType `"ip"`.
+	RouteDestinationTypeIp RouteDestinationType = "ip"
+)
+
+// RouteDestinationTypes is the collection of all RouteDestinationType values.
+var RouteDestinationTypes = []RouteDestinationType{
+	RouteDestinationTypeIp,
+}
 
 // RouteTarget is a subset of [`NetworkTarget`], `RouteTarget` specifies all possible targets that a route can forward to.
+// RouteTarget is the type definition for a RouteTarget.
+type RouteTarget struct {
+	Type  RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value string          `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// RouteTargetType is the type definition for a RouteTargetType.
+type RouteTargetType string
+
+const (
+	// RouteTargetTypeIp represents the RouteTargetType `"ip"`.
+	RouteTargetTypeIp RouteTargetType = "ip"
+)
+
+// RouteTargetTypes is the collection of all RouteTargetType values.
+var RouteTargetTypes = []RouteTargetType{
+	RouteTargetTypeIp,
+}
 
 // RouterRoute is a route defines a rule that governs where traffic should be sent based on its destination.
 type RouterRoute struct {
@@ -420,6 +473,24 @@ type Saga struct {
 }
 
 // SagaErrorInfo is the type definition for a SagaErrorInfo.
+// SagaErrorInfo is the type definition for a SagaErrorInfo.
+type SagaErrorInfo struct {
+	Error       SagaErrorInfoError `json:"error,omitempty" yaml:"error,omitempty"`
+	SourceError TODO               `json:"source_error,omitempty" yaml:"source_error,omitempty"`
+}
+
+// SagaErrorInfoError is the type definition for a SagaErrorInfoError.
+type SagaErrorInfoError string
+
+const (
+	// SagaErrorInfoErrorActionFailed represents the SagaErrorInfoError `"actionFailed"`.
+	SagaErrorInfoErrorActionFailed SagaErrorInfoError = "actionFailed"
+)
+
+// SagaErrorInfoErrors is the collection of all SagaErrorInfoError values.
+var SagaErrorInfoErrors = []SagaErrorInfoError{
+	SagaErrorInfoErrorActionFailed,
+}
 
 // SagaResultsPage is a single page of results
 type SagaResultsPage struct {
@@ -430,6 +501,23 @@ type SagaResultsPage struct {
 }
 
 // SagaState is the type definition for a SagaState.
+// SagaState is the type definition for a SagaState.
+type SagaState struct {
+	State SagaStateState `json:"state,omitempty" yaml:"state,omitempty"`
+}
+
+// SagaStateState is the type definition for a SagaStateState.
+type SagaStateState string
+
+const (
+	// SagaStateStateRunning represents the SagaStateState `"running"`.
+	SagaStateStateRunning SagaStateState = "running"
+)
+
+// SagaStateStates is the collection of all SagaStateState values.
+var SagaStateStates = []SagaStateState{
+	SagaStateStateRunning,
+}
 
 // Sled is client view of an [`Sled`]
 type Sled struct {
@@ -566,6 +654,25 @@ type VPCFirewallRuleFilter struct {
 }
 
 // VPCFirewallRuleHostFilter is a subset of [`NetworkTarget`], `VpcFirewallRuleHostFilter` specifies all possible targets that a route can forward to.
+// VPCFirewallRuleHostFilter is the type definition for a VPCFirewallRuleHostFilter.
+type VPCFirewallRuleHostFilter struct {
+	Type VPCFirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// VPCFirewallRuleHostFilterType is the type definition for a VPCFirewallRuleHostFilterType.
+type VPCFirewallRuleHostFilterType string
+
+const (
+	// VPCFirewallRuleHostFilterTypeVpc represents the VPCFirewallRuleHostFilterType `"vpc"`.
+	VPCFirewallRuleHostFilterTypeVpc VPCFirewallRuleHostFilterType = "vpc"
+)
+
+// VPCFirewallRuleHostFilterTypes is the collection of all VPCFirewallRuleHostFilterType values.
+var VPCFirewallRuleHostFilterTypes = []VPCFirewallRuleHostFilterType{
+	VPCFirewallRuleHostFilterTypeVpc,
+}
 
 // VPCFirewallRuleProtocol is the protocols that may be specified in a firewall rule's filter
 type VPCFirewallRuleProtocol string
@@ -611,6 +718,25 @@ var VPCFirewallRuleStatuses = []VPCFirewallRuleStatus{
 }
 
 // VPCFirewallRuleTarget is a subset of [`NetworkTarget`], `VpcFirewallRuleTarget` specifies all possible targets that a firewall rule can be attached to.
+// VPCFirewallRuleTarget is the type definition for a VPCFirewallRuleTarget.
+type VPCFirewallRuleTarget struct {
+	Type VPCFirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// VPCFirewallRuleTargetType is the type definition for a VPCFirewallRuleTargetType.
+type VPCFirewallRuleTargetType string
+
+const (
+	// VPCFirewallRuleTargetTypeVpc represents the VPCFirewallRuleTargetType `"vpc"`.
+	VPCFirewallRuleTargetTypeVpc VPCFirewallRuleTargetType = "vpc"
+)
+
+// VPCFirewallRuleTargetTypes is the collection of all VPCFirewallRuleTargetType values.
+var VPCFirewallRuleTargetTypes = []VPCFirewallRuleTargetType{
+	VPCFirewallRuleTargetTypeVpc,
+}
 
 // VPCFirewallRuleUpdate is a single rule in a VPC firewall
 type VPCFirewallRuleUpdate struct {

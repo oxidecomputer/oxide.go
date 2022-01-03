@@ -1,7 +1,6 @@
 package oxide
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -41,21 +40,9 @@ func checkResponse(res *http.Response) error {
 		return nil
 	}
 
-	slurp, err := ioutil.ReadAll(res.Body)
-	if err == nil {
-		var jerr ErrorMessage
-
-		// Try to decode the body as an ErrorMessage.
-		if err := json.Unmarshal(slurp, &jerr); err == nil {
-			return &HTTPError{
-				URL:        res.Request.URL,
-				StatusCode: res.StatusCode,
-				Message:    jerr.Message,
-				Body:       string(slurp),
-				Header:     res.Header,
-			}
-		}
-	}
+	slurp, _ := ioutil.ReadAll(res.Body)
+	// TODO: We could optionally decode the response body as JSON if there is a
+	// standardized error format.
 
 	return &HTTPError{
 		URL:        res.Request.URL,
