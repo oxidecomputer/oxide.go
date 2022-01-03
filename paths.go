@@ -2,48 +2,56 @@
 
 package oxide
 
+import (
+	"bytes"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"net/http"
+)
+
 // HardwareRacksGet:
 //
 // List racks in the system.
 //
 // Parameters:
-func (c *Client) HardwareRacksGet(limit int, pageToken string, sortBy IdSortMode, ) (*RackResultsPage, error) {
-// Create the url.
-path := "/hardware/racks"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("GET", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"limit": string(limit),
-	"pageToken": string(pageToken),
-	"sortBy": string(sortBy),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body RackResultsPage
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) HardwareRacksGet(limit int, pageToken string, sortBy IdSortMode) (*RackResultsPage, error) {
+	// Create the url.
+	path := "/hardware/racks"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"limit":     string(limit),
+		"pageToken": string(pageToken),
+		"sortBy":    string(sortBy),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body RackResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // HardwareRacksGetRack:
@@ -51,41 +59,41 @@ return &body, nil
 // Fetch information about a particular rack.
 //
 // Parameters:
-func (c *Client) HardwareRacksGetRack(rackId string, ) (*Rack, error) {
-// Create the url.
-path := "/hardware/racks/{{.rack_id}}"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("GET", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"rackId": string(rackId),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body Rack
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) HardwareRacksGetRack(rackId string) (*Rack, error) {
+	// Create the url.
+	path := "/hardware/racks/{{.rack_id}}"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"rackId": string(rackId),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body Rack
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // HardwareSledsGet:
@@ -93,43 +101,43 @@ return &body, nil
 // List sleds in the system.
 //
 // Parameters:
-func (c *Client) HardwareSledsGet(limit int, pageToken string, sortBy IdSortMode, ) (*SledResultsPage, error) {
-// Create the url.
-path := "/hardware/sleds"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("GET", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"limit": string(limit),
-	"pageToken": string(pageToken),
-	"sortBy": string(sortBy),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body SledResultsPage
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) HardwareSledsGet(limit int, pageToken string, sortBy IdSortMode) (*SledResultsPage, error) {
+	// Create the url.
+	path := "/hardware/sleds"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"limit":     string(limit),
+		"pageToken": string(pageToken),
+		"sortBy":    string(sortBy),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body SledResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // HardwareSledsGetSled:
@@ -137,41 +145,41 @@ return &body, nil
 // Fetch information about a sled in the system.
 //
 // Parameters:
-func (c *Client) HardwareSledsGetSled(sledId string, ) (*Sled, error) {
-// Create the url.
-path := "/hardware/sleds/{{.sled_id}}"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("GET", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"sledId": string(sledId),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body Sled
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) HardwareSledsGetSled(sledId string) (*Sled, error) {
+	// Create the url.
+	path := "/hardware/sleds/{{.sled_id}}"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"sledId": string(sledId),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body Sled
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // OrganizationsGet:
@@ -179,82 +187,82 @@ return &body, nil
 // List all organizations.
 //
 // Parameters:
-func (c *Client) OrganizationsGet(limit int, pageToken string, sortBy NameOrIdSortMode, ) (*OrganizationResultsPage, error) {
-// Create the url.
-path := "/organizations"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("GET", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"limit": string(limit),
-	"pageToken": string(pageToken),
-	"sortBy": string(sortBy),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body OrganizationResultsPage
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) OrganizationsGet(limit int, pageToken string, sortBy NameOrIdSortMode) (*OrganizationResultsPage, error) {
+	// Create the url.
+	path := "/organizations"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"pageToken": string(pageToken),
+		"sortBy":    string(sortBy),
+		"limit":     string(limit),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body OrganizationResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // OrganizationsPost:
 //
 // Create a new organization.
 func (c *Client) OrganizationsPost(j *OrganizationCreate) (*Organization, error) {
-// Create the url.
-path := "/organizations"
-uri := resolveRelative(c.server, path)
-// Encode the request body as json.
-b := new(bytes.Buffer)
-if err := json.NewEncoder(b).Encode(j); err != nil {
-return nil, fmt.Errorf("encoding json body request failed: %v", err)
-}
-// Create the request.
-req, err := http.NewRequest("POST", uri, j)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body Organization
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+	// Create the url.
+	path := "/organizations"
+	uri := resolveRelative(c.server, path)
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, j)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body Organization
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // OrganizationsGetOrganization:
@@ -262,89 +270,89 @@ return &body, nil
 // Fetch a specific organization
 //
 // Parameters:
-func (c *Client) OrganizationsGetOrganization(organizationName Name, ) (*Organization, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("GET", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"organizationName": string(organizationName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body Organization
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) OrganizationsGetOrganization(organizationName Name) (*Organization, error) {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"organizationName": string(organizationName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body Organization
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // OrganizationsPutOrganization:
 //
 // Update a specific organization.
- * TODO-correctness: Is it valid for PUT to accept application/json that's a subset of what the resource actually represents?  If not, is that a problem? (HTTP may require that this be idempotent.)  If so, can we get around that having this be a slightly different content-type (e.g., "application/json-patch")?  We should see what other APIs do.
+//  * TODO-correctness: Is it valid for PUT to accept application/json that's a subset of what the resource actually represents?  If not, is that a problem? (HTTP may require that this be idempotent.)  If so, can we get around that having this be a slightly different content-type (e.g., "application/json-patch")?  We should see what other APIs do.
 //
 // Parameters:
 func (c *Client) OrganizationsPutOrganization(organizationName Name, j *OrganizationUpdate) (*Organization, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}"
-uri := resolveRelative(c.server, path)
-// Encode the request body as json.
-b := new(bytes.Buffer)
-if err := json.NewEncoder(b).Encode(j); err != nil {
-return nil, fmt.Errorf("encoding json body request failed: %v", err)
-}
-// Create the request.
-req, err := http.NewRequest("PUT", uri, j)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"organizationName": string(organizationName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body Organization
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+	// Create the url.
+	path := "/organizations/{{.organization_name}}"
+	uri := resolveRelative(c.server, path)
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+	// Create the request.
+	req, err := http.NewRequest("PUT", uri, j)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"organizationName": string(organizationName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body Organization
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // OrganizationsDeleteOrganization:
@@ -352,41 +360,33 @@ return &body, nil
 // Delete a specific organization.
 //
 // Parameters:
-func (c *Client) OrganizationsDeleteOrganization(organizationName Name, ) (*, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("DELETE", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"organizationName": string(organizationName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) OrganizationsDeleteOrganization(organizationName Name) error {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("DELETE", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"organizationName": string(organizationName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Return.
+	return nil
 }
 
 // OrganizationProjectsGet:
@@ -394,44 +394,44 @@ return &body, nil
 // List all projects.
 //
 // Parameters:
-func (c *Client) OrganizationProjectsGet(limit int, pageToken string, sortBy NameOrIdSortMode, organizationName Name, ) (*ProjectResultsPage, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("GET", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"pageToken": string(pageToken),
-	"sortBy": string(sortBy),
-	"organizationName": string(organizationName),
-	"limit": string(limit),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body ProjectResultsPage
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) OrganizationProjectsGet(limit int, pageToken string, sortBy NameOrIdSortMode, organizationName Name) (*ProjectResultsPage, error) {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"limit":            string(limit),
+		"pageToken":        string(pageToken),
+		"sortBy":           string(sortBy),
+		"organizationName": string(organizationName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body ProjectResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // OrganizationProjectsPost:
@@ -440,45 +440,45 @@ return &body, nil
 //
 // Parameters:
 func (c *Client) OrganizationProjectsPost(organizationName Name, j *ProjectCreate) (*Project, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects"
-uri := resolveRelative(c.server, path)
-// Encode the request body as json.
-b := new(bytes.Buffer)
-if err := json.NewEncoder(b).Encode(j); err != nil {
-return nil, fmt.Errorf("encoding json body request failed: %v", err)
-}
-// Create the request.
-req, err := http.NewRequest("POST", uri, j)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"organizationName": string(organizationName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body Project
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects"
+	uri := resolveRelative(c.server, path)
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, j)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"organizationName": string(organizationName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body Project
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // OrganizationProjectsGetProject:
@@ -486,91 +486,91 @@ return &body, nil
 // Fetch a specific project
 //
 // Parameters:
-func (c *Client) OrganizationProjectsGetProject(organizationName Name, projectName Name, ) (*Project, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("GET", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"organizationName": string(organizationName),
-	"projectName": string(projectName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body Project
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) OrganizationProjectsGetProject(organizationName Name, projectName Name) (*Project, error) {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body Project
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // OrganizationProjectsPutProject:
 //
 // Update a specific project.
- * TODO-correctness: Is it valid for PUT to accept application/json that's a subset of what the resource actually represents?  If not, is that a problem? (HTTP may require that this be idempotent.)  If so, can we get around that having this be a slightly different content-type (e.g., "application/json-patch")?  We should see what other APIs do.
+//  * TODO-correctness: Is it valid for PUT to accept application/json that's a subset of what the resource actually represents?  If not, is that a problem? (HTTP may require that this be idempotent.)  If so, can we get around that having this be a slightly different content-type (e.g., "application/json-patch")?  We should see what other APIs do.
 //
 // Parameters:
 func (c *Client) OrganizationProjectsPutProject(organizationName Name, projectName Name, j *ProjectUpdate) (*Project, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}"
-uri := resolveRelative(c.server, path)
-// Encode the request body as json.
-b := new(bytes.Buffer)
-if err := json.NewEncoder(b).Encode(j); err != nil {
-return nil, fmt.Errorf("encoding json body request failed: %v", err)
-}
-// Create the request.
-req, err := http.NewRequest("PUT", uri, j)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"organizationName": string(organizationName),
-	"projectName": string(projectName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body Project
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}"
+	uri := resolveRelative(c.server, path)
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+	// Create the request.
+	req, err := http.NewRequest("PUT", uri, j)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body Project
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // OrganizationProjectsDeleteProject:
@@ -578,42 +578,34 @@ return &body, nil
 // Delete a specific project.
 //
 // Parameters:
-func (c *Client) OrganizationProjectsDeleteProject(organizationName Name, projectName Name, ) (*, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("DELETE", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"organizationName": string(organizationName),
-	"projectName": string(projectName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) OrganizationProjectsDeleteProject(organizationName Name, projectName Name) error {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("DELETE", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Return.
+	return nil
 }
 
 // ProjectDisksGet:
@@ -621,94 +613,94 @@ return &body, nil
 // List disks in a project.
 //
 // Parameters:
-func (c *Client) ProjectDisksGet(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, ) (*DiskResultsPage, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/disks"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("GET", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"projectName": string(projectName),
-	"limit": string(limit),
-	"pageToken": string(pageToken),
-	"sortBy": string(sortBy),
-	"organizationName": string(organizationName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body DiskResultsPage
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) ProjectDisksGet(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name) (*DiskResultsPage, error) {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/disks"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"limit":            string(limit),
+		"pageToken":        string(pageToken),
+		"sortBy":           string(sortBy),
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body DiskResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // ProjectDisksPost:
 //
 // Create a disk in a project.
- * TODO-correctness See note about instance create.  This should be async.
+//  * TODO-correctness See note about instance create.  This should be async.
 //
 // Parameters:
 func (c *Client) ProjectDisksPost(organizationName Name, projectName Name, j *DiskCreate) (*Disk, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/disks"
-uri := resolveRelative(c.server, path)
-// Encode the request body as json.
-b := new(bytes.Buffer)
-if err := json.NewEncoder(b).Encode(j); err != nil {
-return nil, fmt.Errorf("encoding json body request failed: %v", err)
-}
-// Create the request.
-req, err := http.NewRequest("POST", uri, j)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"organizationName": string(organizationName),
-	"projectName": string(projectName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body Disk
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/disks"
+	uri := resolveRelative(c.server, path)
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, j)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body Disk
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // ProjectDisksGetDisk:
@@ -716,43 +708,43 @@ return &body, nil
 // Fetch a single disk in a project.
 //
 // Parameters:
-func (c *Client) ProjectDisksGetDisk(diskName Name, organizationName Name, projectName Name, ) (*Disk, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/disks/{{.disk_name}}"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("GET", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"organizationName": string(organizationName),
-	"projectName": string(projectName),
-	"diskName": string(diskName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body Disk
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) ProjectDisksGetDisk(diskName Name, organizationName Name, projectName Name) (*Disk, error) {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/disks/{{.disk_name}}"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"diskName":         string(diskName),
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body Disk
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // ProjectDisksDeleteDisk:
@@ -760,43 +752,35 @@ return &body, nil
 // Delete a disk from a project.
 //
 // Parameters:
-func (c *Client) ProjectDisksDeleteDisk(diskName Name, organizationName Name, projectName Name, ) (*, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/disks/{{.disk_name}}"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("DELETE", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"projectName": string(projectName),
-	"diskName": string(diskName),
-	"organizationName": string(organizationName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) ProjectDisksDeleteDisk(diskName Name, organizationName Name, projectName Name) error {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/disks/{{.disk_name}}"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("DELETE", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"diskName":         string(diskName),
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Return.
+	return nil
 }
 
 // ProjectInstancesGet:
@@ -804,94 +788,94 @@ return &body, nil
 // List instances in a project.
 //
 // Parameters:
-func (c *Client) ProjectInstancesGet(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, ) (*InstanceResultsPage, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("GET", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"limit": string(limit),
-	"pageToken": string(pageToken),
-	"sortBy": string(sortBy),
-	"organizationName": string(organizationName),
-	"projectName": string(projectName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body InstanceResultsPage
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) ProjectInstancesGet(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name) (*InstanceResultsPage, error) {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"sortBy":           string(sortBy),
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
+		"limit":            string(limit),
+		"pageToken":        string(pageToken),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body InstanceResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // ProjectInstancesPost:
 //
 // Create an instance in a project.
- * TODO-correctness This is supposed to be async.  Is that right?  We can create the instance immediately -- it's just not booted yet.  Maybe the boot operation is what's a separate operation_id.  What about the response code (201 Created vs 202 Accepted)?  Is that orthogonal?  Things can return a useful response, including an operation id, with either response code.  Maybe a "reboot" operation would return a 202 Accepted because there's no actual resource created?
+//  * TODO-correctness This is supposed to be async.  Is that right?  We can create the instance immediately -- it's just not booted yet.  Maybe the boot operation is what's a separate operation_id.  What about the response code (201 Created vs 202 Accepted)?  Is that orthogonal?  Things can return a useful response, including an operation id, with either response code.  Maybe a "reboot" operation would return a 202 Accepted because there's no actual resource created?
 //
 // Parameters:
 func (c *Client) ProjectInstancesPost(organizationName Name, projectName Name, j *InstanceCreate) (*Instance, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances"
-uri := resolveRelative(c.server, path)
-// Encode the request body as json.
-b := new(bytes.Buffer)
-if err := json.NewEncoder(b).Encode(j); err != nil {
-return nil, fmt.Errorf("encoding json body request failed: %v", err)
-}
-// Create the request.
-req, err := http.NewRequest("POST", uri, j)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"organizationName": string(organizationName),
-	"projectName": string(projectName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body Instance
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances"
+	uri := resolveRelative(c.server, path)
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, j)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body Instance
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // ProjectInstancesGetInstance:
@@ -899,43 +883,43 @@ return &body, nil
 // Get an instance in a project.
 //
 // Parameters:
-func (c *Client) ProjectInstancesGetInstance(instanceName Name, organizationName Name, projectName Name, ) (*Instance, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("GET", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"organizationName": string(organizationName),
-	"projectName": string(projectName),
-	"instanceName": string(instanceName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body Instance
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) ProjectInstancesGetInstance(instanceName Name, organizationName Name, projectName Name) (*Instance, error) {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"instanceName":     string(instanceName),
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body Instance
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // ProjectInstancesDeleteInstance:
@@ -943,43 +927,35 @@ return &body, nil
 // Delete an instance from a project.
 //
 // Parameters:
-func (c *Client) ProjectInstancesDeleteInstance(instanceName Name, organizationName Name, projectName Name, ) (*, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("DELETE", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"instanceName": string(instanceName),
-	"organizationName": string(organizationName),
-	"projectName": string(projectName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) ProjectInstancesDeleteInstance(instanceName Name, organizationName Name, projectName Name) error {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("DELETE", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"projectName":      string(projectName),
+		"instanceName":     string(instanceName),
+		"organizationName": string(organizationName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Return.
+	return nil
 }
 
 // InstanceDisksGet:
@@ -987,140 +963,140 @@ return &body, nil
 // List disks attached to this instance.
 //
 // Parameters:
-func (c *Client) InstanceDisksGet(limit int, pageToken string, sortBy NameSortMode, instanceName Name, organizationName Name, projectName Name, ) (*DiskResultsPage, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/disks"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("GET", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"limit": string(limit),
-	"pageToken": string(pageToken),
-	"sortBy": string(sortBy),
-	"instanceName": string(instanceName),
-	"organizationName": string(organizationName),
-	"projectName": string(projectName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body DiskResultsPage
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) InstanceDisksGet(limit int, pageToken string, sortBy NameSortMode, instanceName Name, organizationName Name, projectName Name) (*DiskResultsPage, error) {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/disks"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"pageToken":        string(pageToken),
+		"sortBy":           string(sortBy),
+		"instanceName":     string(instanceName),
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
+		"limit":            string(limit),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body DiskResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // InstanceDisksAttach:
 //
 // Parameters:
 func (c *Client) InstanceDisksAttach(instanceName Name, organizationName Name, projectName Name, j *DiskIdentifier) (*Disk, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/disks/attach"
-uri := resolveRelative(c.server, path)
-// Encode the request body as json.
-b := new(bytes.Buffer)
-if err := json.NewEncoder(b).Encode(j); err != nil {
-return nil, fmt.Errorf("encoding json body request failed: %v", err)
-}
-// Create the request.
-req, err := http.NewRequest("POST", uri, j)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"organizationName": string(organizationName),
-	"projectName": string(projectName),
-	"instanceName": string(instanceName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body Disk
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/disks/attach"
+	uri := resolveRelative(c.server, path)
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, j)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"projectName":      string(projectName),
+		"instanceName":     string(instanceName),
+		"organizationName": string(organizationName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body Disk
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // InstanceDisksDetach:
 //
 // Parameters:
 func (c *Client) InstanceDisksDetach(instanceName Name, organizationName Name, projectName Name, j *DiskIdentifier) (*Disk, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/disks/detach"
-uri := resolveRelative(c.server, path)
-// Encode the request body as json.
-b := new(bytes.Buffer)
-if err := json.NewEncoder(b).Encode(j); err != nil {
-return nil, fmt.Errorf("encoding json body request failed: %v", err)
-}
-// Create the request.
-req, err := http.NewRequest("POST", uri, j)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"organizationName": string(organizationName),
-	"projectName": string(projectName),
-	"instanceName": string(instanceName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body Disk
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/disks/detach"
+	uri := resolveRelative(c.server, path)
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, j)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"instanceName":     string(instanceName),
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body Disk
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // ProjectInstancesInstanceReboot:
@@ -1128,43 +1104,43 @@ return &body, nil
 // Reboot an instance.
 //
 // Parameters:
-func (c *Client) ProjectInstancesInstanceReboot(instanceName Name, organizationName Name, projectName Name, ) (*Instance, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/reboot"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("POST", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"instanceName": string(instanceName),
-	"organizationName": string(organizationName),
-	"projectName": string(projectName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body Instance
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) ProjectInstancesInstanceReboot(instanceName Name, organizationName Name, projectName Name) (*Instance, error) {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/reboot"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"instanceName":     string(instanceName),
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body Instance
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // ProjectInstancesInstanceStart:
@@ -1172,43 +1148,43 @@ return &body, nil
 // Boot an instance.
 //
 // Parameters:
-func (c *Client) ProjectInstancesInstanceStart(instanceName Name, organizationName Name, projectName Name, ) (*Instance, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/start"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("POST", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"instanceName": string(instanceName),
-	"organizationName": string(organizationName),
-	"projectName": string(projectName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body Instance
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) ProjectInstancesInstanceStart(instanceName Name, organizationName Name, projectName Name) (*Instance, error) {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/start"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"instanceName":     string(instanceName),
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body Instance
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // ProjectInstancesInstanceStop:
@@ -1216,43 +1192,43 @@ return &body, nil
 // Halt an instance.
 //
 // Parameters:
-func (c *Client) ProjectInstancesInstanceStop(instanceName Name, organizationName Name, projectName Name, ) (*Instance, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/stop"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("POST", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"instanceName": string(instanceName),
-	"organizationName": string(organizationName),
-	"projectName": string(projectName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body Instance
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) ProjectInstancesInstanceStop(instanceName Name, organizationName Name, projectName Name) (*Instance, error) {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/stop"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"instanceName":     string(instanceName),
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body Instance
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // ProjectVpcsGet:
@@ -1260,45 +1236,45 @@ return &body, nil
 // List VPCs in a project.
 //
 // Parameters:
-func (c *Client) ProjectVpcsGet(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, ) (*VPCResultsPage, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("GET", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"limit": string(limit),
-	"pageToken": string(pageToken),
-	"sortBy": string(sortBy),
-	"organizationName": string(organizationName),
-	"projectName": string(projectName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body VPCResultsPage
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) ProjectVpcsGet(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name) (*VPCResultsPage, error) {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"pageToken":        string(pageToken),
+		"sortBy":           string(sortBy),
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
+		"limit":            string(limit),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body VPCResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // ProjectVpcsPost:
@@ -1307,46 +1283,46 @@ return &body, nil
 //
 // Parameters:
 func (c *Client) ProjectVpcsPost(organizationName Name, projectName Name, j *VPCCreate) (*VPC, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs"
-uri := resolveRelative(c.server, path)
-// Encode the request body as json.
-b := new(bytes.Buffer)
-if err := json.NewEncoder(b).Encode(j); err != nil {
-return nil, fmt.Errorf("encoding json body request failed: %v", err)
-}
-// Create the request.
-req, err := http.NewRequest("POST", uri, j)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"organizationName": string(organizationName),
-	"projectName": string(projectName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body VPC
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs"
+	uri := resolveRelative(c.server, path)
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, j)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body VPC
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // ProjectVpcsGetVpc:
@@ -1354,43 +1330,43 @@ return &body, nil
 // Get a VPC in a project.
 //
 // Parameters:
-func (c *Client) ProjectVpcsGetVpc(organizationName Name, projectName Name, vpcName Name, ) (*VPC, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("GET", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"projectName": string(projectName),
-	"vpcName": string(vpcName),
-	"organizationName": string(organizationName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body VPC
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) ProjectVpcsGetVpc(organizationName Name, projectName Name, vpcName Name) (*VPC, error) {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"vpcName":          string(vpcName),
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body VPC
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // ProjectVpcsPutVpc:
@@ -1398,48 +1374,40 @@ return &body, nil
 // Update a VPC.
 //
 // Parameters:
-func (c *Client) ProjectVpcsPutVpc(organizationName Name, projectName Name, vpcName Name, j *VPCUpdate) (*, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}"
-uri := resolveRelative(c.server, path)
-// Encode the request body as json.
-b := new(bytes.Buffer)
-if err := json.NewEncoder(b).Encode(j); err != nil {
-return nil, fmt.Errorf("encoding json body request failed: %v", err)
-}
-// Create the request.
-req, err := http.NewRequest("PUT", uri, j)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"organizationName": string(organizationName),
-	"projectName": string(projectName),
-	"vpcName": string(vpcName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) ProjectVpcsPutVpc(organizationName Name, projectName Name, vpcName Name, j *VPCUpdate) error {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}"
+	uri := resolveRelative(c.server, path)
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+	// Create the request.
+	req, err := http.NewRequest("PUT", uri, j)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
+		"vpcName":          string(vpcName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Return.
+	return nil
 }
 
 // ProjectVpcsDeleteVpc:
@@ -1447,43 +1415,35 @@ return &body, nil
 // Delete a vpc from a project.
 //
 // Parameters:
-func (c *Client) ProjectVpcsDeleteVpc(organizationName Name, projectName Name, vpcName Name, ) (*, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("DELETE", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"projectName": string(projectName),
-	"vpcName": string(vpcName),
-	"organizationName": string(organizationName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) ProjectVpcsDeleteVpc(organizationName Name, projectName Name, vpcName Name) error {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("DELETE", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
+		"vpcName":          string(vpcName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Return.
+	return nil
 }
 
 // VpcFirewallRulesGet:
@@ -1491,46 +1451,46 @@ return &body, nil
 // List firewall rules for a VPC.
 //
 // Parameters:
-func (c *Client) VpcFirewallRulesGet(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name, ) (*VPCFirewallRuleResultsPage, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/firewall/rules"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("GET", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"organizationName": string(organizationName),
-	"projectName": string(projectName),
-	"vpcName": string(vpcName),
-	"limit": string(limit),
-	"pageToken": string(pageToken),
-	"sortBy": string(sortBy),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body VPCFirewallRuleResultsPage
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) VpcFirewallRulesGet(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*VPCFirewallRuleResultsPage, error) {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/firewall/rules"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"projectName":      string(projectName),
+		"vpcName":          string(vpcName),
+		"limit":            string(limit),
+		"pageToken":        string(pageToken),
+		"sortBy":           string(sortBy),
+		"organizationName": string(organizationName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body VPCFirewallRuleResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // VpcFirewallRulesPut:
@@ -1539,47 +1499,47 @@ return &body, nil
 //
 // Parameters:
 func (c *Client) VpcFirewallRulesPut(organizationName Name, projectName Name, vpcName Name, j *VPCFirewallRuleUpdateParams) (*VPCFirewallRuleUpdateResult, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/firewall/rules"
-uri := resolveRelative(c.server, path)
-// Encode the request body as json.
-b := new(bytes.Buffer)
-if err := json.NewEncoder(b).Encode(j); err != nil {
-return nil, fmt.Errorf("encoding json body request failed: %v", err)
-}
-// Create the request.
-req, err := http.NewRequest("PUT", uri, j)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"organizationName": string(organizationName),
-	"projectName": string(projectName),
-	"vpcName": string(vpcName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body VPCFirewallRuleUpdateResult
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/firewall/rules"
+	uri := resolveRelative(c.server, path)
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+	// Create the request.
+	req, err := http.NewRequest("PUT", uri, j)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
+		"vpcName":          string(vpcName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body VPCFirewallRuleUpdateResult
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // VpcRoutersGet:
@@ -1587,46 +1547,46 @@ return &body, nil
 // List VPC Custom and System Routers
 //
 // Parameters:
-func (c *Client) VpcRoutersGet(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name, ) (*VPCRouterResultsPage, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("GET", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"projectName": string(projectName),
-	"vpcName": string(vpcName),
-	"limit": string(limit),
-	"pageToken": string(pageToken),
-	"sortBy": string(sortBy),
-	"organizationName": string(organizationName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body VPCRouterResultsPage
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) VpcRoutersGet(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*VPCRouterResultsPage, error) {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"vpcName":          string(vpcName),
+		"limit":            string(limit),
+		"pageToken":        string(pageToken),
+		"sortBy":           string(sortBy),
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body VPCRouterResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // VpcRoutersPost:
@@ -1635,47 +1595,47 @@ return &body, nil
 //
 // Parameters:
 func (c *Client) VpcRoutersPost(organizationName Name, projectName Name, vpcName Name, j *VPCRouterCreate) (*VPCRouter, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers"
-uri := resolveRelative(c.server, path)
-// Encode the request body as json.
-b := new(bytes.Buffer)
-if err := json.NewEncoder(b).Encode(j); err != nil {
-return nil, fmt.Errorf("encoding json body request failed: %v", err)
-}
-// Create the request.
-req, err := http.NewRequest("POST", uri, j)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"vpcName": string(vpcName),
-	"organizationName": string(organizationName),
-	"projectName": string(projectName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body VPCRouter
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers"
+	uri := resolveRelative(c.server, path)
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, j)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
+		"vpcName":          string(vpcName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body VPCRouter
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // VpcRoutersGetRouter:
@@ -1683,44 +1643,44 @@ return &body, nil
 // Get a VPC Router
 //
 // Parameters:
-func (c *Client) VpcRoutersGetRouter(organizationName Name, projectName Name, routerName Name, vpcName Name, ) (*VPCRouter, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("GET", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"vpcName": string(vpcName),
-	"organizationName": string(organizationName),
-	"projectName": string(projectName),
-	"routerName": string(routerName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body VPCRouter
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) VpcRoutersGetRouter(organizationName Name, projectName Name, routerName Name, vpcName Name) (*VPCRouter, error) {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
+		"routerName":       string(routerName),
+		"vpcName":          string(vpcName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body VPCRouter
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // VpcRoutersPutRouter:
@@ -1728,49 +1688,41 @@ return &body, nil
 // Update a VPC Router
 //
 // Parameters:
-func (c *Client) VpcRoutersPutRouter(organizationName Name, projectName Name, routerName Name, vpcName Name, j *VPCRouterUpdate) (*, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}"
-uri := resolveRelative(c.server, path)
-// Encode the request body as json.
-b := new(bytes.Buffer)
-if err := json.NewEncoder(b).Encode(j); err != nil {
-return nil, fmt.Errorf("encoding json body request failed: %v", err)
-}
-// Create the request.
-req, err := http.NewRequest("PUT", uri, j)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"projectName": string(projectName),
-	"routerName": string(routerName),
-	"vpcName": string(vpcName),
-	"organizationName": string(organizationName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) VpcRoutersPutRouter(organizationName Name, projectName Name, routerName Name, vpcName Name, j *VPCRouterUpdate) error {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}"
+	uri := resolveRelative(c.server, path)
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+	// Create the request.
+	req, err := http.NewRequest("PUT", uri, j)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
+		"routerName":       string(routerName),
+		"vpcName":          string(vpcName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Return.
+	return nil
 }
 
 // VpcRoutersDeleteRouter:
@@ -1778,44 +1730,36 @@ return &body, nil
 // Delete a router from its VPC
 //
 // Parameters:
-func (c *Client) VpcRoutersDeleteRouter(organizationName Name, projectName Name, routerName Name, vpcName Name, ) (*, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("DELETE", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"organizationName": string(organizationName),
-	"projectName": string(projectName),
-	"routerName": string(routerName),
-	"vpcName": string(vpcName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) VpcRoutersDeleteRouter(organizationName Name, projectName Name, routerName Name, vpcName Name) error {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("DELETE", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"vpcName":          string(vpcName),
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
+		"routerName":       string(routerName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Return.
+	return nil
 }
 
 // RoutersRoutesGet:
@@ -1823,47 +1767,47 @@ return &body, nil
 // List a Router's routes
 //
 // Parameters:
-func (c *Client) RoutersRoutesGet(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, routerName Name, vpcName Name, ) (*RouterRouteResultsPage, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("GET", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"projectName": string(projectName),
-	"routerName": string(routerName),
-	"vpcName": string(vpcName),
-	"limit": string(limit),
-	"pageToken": string(pageToken),
-	"sortBy": string(sortBy),
-	"organizationName": string(organizationName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body RouterRouteResultsPage
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) RoutersRoutesGet(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, routerName Name, vpcName Name) (*RouterRouteResultsPage, error) {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
+		"routerName":       string(routerName),
+		"vpcName":          string(vpcName),
+		"limit":            string(limit),
+		"pageToken":        string(pageToken),
+		"sortBy":           string(sortBy),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body RouterRouteResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // RoutersRoutesPost:
@@ -1872,48 +1816,48 @@ return &body, nil
 //
 // Parameters:
 func (c *Client) RoutersRoutesPost(organizationName Name, projectName Name, routerName Name, vpcName Name, j *RouterRouteCreateParams) (*RouterRoute, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes"
-uri := resolveRelative(c.server, path)
-// Encode the request body as json.
-b := new(bytes.Buffer)
-if err := json.NewEncoder(b).Encode(j); err != nil {
-return nil, fmt.Errorf("encoding json body request failed: %v", err)
-}
-// Create the request.
-req, err := http.NewRequest("POST", uri, j)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"projectName": string(projectName),
-	"routerName": string(routerName),
-	"vpcName": string(vpcName),
-	"organizationName": string(organizationName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body RouterRoute
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes"
+	uri := resolveRelative(c.server, path)
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, j)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
+		"routerName":       string(routerName),
+		"vpcName":          string(vpcName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body RouterRoute
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // RoutersRoutesGetRoute:
@@ -1921,45 +1865,45 @@ return &body, nil
 // Get a VPC Router route
 //
 // Parameters:
-func (c *Client) RoutersRoutesGetRoute(organizationName Name, projectName Name, routeName Name, routerName Name, vpcName Name, ) (*RouterRoute, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes/{{.route_name}}"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("GET", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"vpcName": string(vpcName),
-	"organizationName": string(organizationName),
-	"projectName": string(projectName),
-	"routeName": string(routeName),
-	"routerName": string(routerName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body RouterRoute
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) RoutersRoutesGetRoute(organizationName Name, projectName Name, routeName Name, routerName Name, vpcName Name) (*RouterRoute, error) {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes/{{.route_name}}"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"projectName":      string(projectName),
+		"routeName":        string(routeName),
+		"routerName":       string(routerName),
+		"vpcName":          string(vpcName),
+		"organizationName": string(organizationName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body RouterRoute
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // RoutersRoutesPutRoute:
@@ -1967,50 +1911,42 @@ return &body, nil
 // Update a Router route
 //
 // Parameters:
-func (c *Client) RoutersRoutesPutRoute(organizationName Name, projectName Name, routeName Name, routerName Name, vpcName Name, j *RouterRouteUpdateParams) (*, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes/{{.route_name}}"
-uri := resolveRelative(c.server, path)
-// Encode the request body as json.
-b := new(bytes.Buffer)
-if err := json.NewEncoder(b).Encode(j); err != nil {
-return nil, fmt.Errorf("encoding json body request failed: %v", err)
-}
-// Create the request.
-req, err := http.NewRequest("PUT", uri, j)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"routerName": string(routerName),
-	"vpcName": string(vpcName),
-	"organizationName": string(organizationName),
-	"projectName": string(projectName),
-	"routeName": string(routeName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) RoutersRoutesPutRoute(organizationName Name, projectName Name, routeName Name, routerName Name, vpcName Name, j *RouterRouteUpdateParams) error {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes/{{.route_name}}"
+	uri := resolveRelative(c.server, path)
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+	// Create the request.
+	req, err := http.NewRequest("PUT", uri, j)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"routerName":       string(routerName),
+		"vpcName":          string(vpcName),
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
+		"routeName":        string(routeName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Return.
+	return nil
 }
 
 // RoutersRoutesDeleteRoute:
@@ -2018,45 +1954,37 @@ return &body, nil
 // Delete a route from its router
 //
 // Parameters:
-func (c *Client) RoutersRoutesDeleteRoute(organizationName Name, projectName Name, routeName Name, routerName Name, vpcName Name, ) (*, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes/{{.route_name}}"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("DELETE", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"organizationName": string(organizationName),
-	"projectName": string(projectName),
-	"routeName": string(routeName),
-	"routerName": string(routerName),
-	"vpcName": string(vpcName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) RoutersRoutesDeleteRoute(organizationName Name, projectName Name, routeName Name, routerName Name, vpcName Name) error {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes/{{.route_name}}"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("DELETE", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"projectName":      string(projectName),
+		"routeName":        string(routeName),
+		"routerName":       string(routerName),
+		"vpcName":          string(vpcName),
+		"organizationName": string(organizationName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Return.
+	return nil
 }
 
 // VpcSubnetsGet:
@@ -2064,46 +1992,46 @@ return &body, nil
 // List subnets in a VPC.
 //
 // Parameters:
-func (c *Client) VpcSubnetsGet(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name, ) (*VPCSubnetResultsPage, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("GET", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"projectName": string(projectName),
-	"vpcName": string(vpcName),
-	"limit": string(limit),
-	"pageToken": string(pageToken),
-	"sortBy": string(sortBy),
-	"organizationName": string(organizationName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body VPCSubnetResultsPage
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) VpcSubnetsGet(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*VPCSubnetResultsPage, error) {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
+		"vpcName":          string(vpcName),
+		"limit":            string(limit),
+		"pageToken":        string(pageToken),
+		"sortBy":           string(sortBy),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body VPCSubnetResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // VpcSubnetsPost:
@@ -2112,47 +2040,47 @@ return &body, nil
 //
 // Parameters:
 func (c *Client) VpcSubnetsPost(organizationName Name, projectName Name, vpcName Name, j *VPCSubnetCreate) (*VPCSubnet, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets"
-uri := resolveRelative(c.server, path)
-// Encode the request body as json.
-b := new(bytes.Buffer)
-if err := json.NewEncoder(b).Encode(j); err != nil {
-return nil, fmt.Errorf("encoding json body request failed: %v", err)
-}
-// Create the request.
-req, err := http.NewRequest("POST", uri, j)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"organizationName": string(organizationName),
-	"projectName": string(projectName),
-	"vpcName": string(vpcName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body VPCSubnet
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets"
+	uri := resolveRelative(c.server, path)
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, j)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"projectName":      string(projectName),
+		"vpcName":          string(vpcName),
+		"organizationName": string(organizationName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body VPCSubnet
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // VpcSubnetsGetSubnet:
@@ -2160,44 +2088,44 @@ return &body, nil
 // Get subnet in a VPC.
 //
 // Parameters:
-func (c *Client) VpcSubnetsGetSubnet(organizationName Name, projectName Name, subnetName Name, vpcName Name, ) (*VPCSubnet, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets/{{.subnet_name}}"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("GET", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"organizationName": string(organizationName),
-	"projectName": string(projectName),
-	"subnetName": string(subnetName),
-	"vpcName": string(vpcName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body VPCSubnet
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) VpcSubnetsGetSubnet(organizationName Name, projectName Name, subnetName Name, vpcName Name) (*VPCSubnet, error) {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets/{{.subnet_name}}"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"projectName":      string(projectName),
+		"subnetName":       string(subnetName),
+		"vpcName":          string(vpcName),
+		"organizationName": string(organizationName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body VPCSubnet
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // VpcSubnetsPutSubnet:
@@ -2205,49 +2133,41 @@ return &body, nil
 // Update a VPC Subnet.
 //
 // Parameters:
-func (c *Client) VpcSubnetsPutSubnet(organizationName Name, projectName Name, subnetName Name, vpcName Name, j *VPCSubnetUpdate) (*, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets/{{.subnet_name}}"
-uri := resolveRelative(c.server, path)
-// Encode the request body as json.
-b := new(bytes.Buffer)
-if err := json.NewEncoder(b).Encode(j); err != nil {
-return nil, fmt.Errorf("encoding json body request failed: %v", err)
-}
-// Create the request.
-req, err := http.NewRequest("PUT", uri, j)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"organizationName": string(organizationName),
-	"projectName": string(projectName),
-	"subnetName": string(subnetName),
-	"vpcName": string(vpcName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) VpcSubnetsPutSubnet(organizationName Name, projectName Name, subnetName Name, vpcName Name, j *VPCSubnetUpdate) error {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets/{{.subnet_name}}"
+	uri := resolveRelative(c.server, path)
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+	// Create the request.
+	req, err := http.NewRequest("PUT", uri, j)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
+		"subnetName":       string(subnetName),
+		"vpcName":          string(vpcName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Return.
+	return nil
 }
 
 // VpcSubnetsDeleteSubnet:
@@ -2255,44 +2175,36 @@ return &body, nil
 // Delete a subnet from a VPC.
 //
 // Parameters:
-func (c *Client) VpcSubnetsDeleteSubnet(organizationName Name, projectName Name, subnetName Name, vpcName Name, ) (*, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets/{{.subnet_name}}"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("DELETE", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"organizationName": string(organizationName),
-	"projectName": string(projectName),
-	"subnetName": string(subnetName),
-	"vpcName": string(vpcName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) VpcSubnetsDeleteSubnet(organizationName Name, projectName Name, subnetName Name, vpcName Name) error {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets/{{.subnet_name}}"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("DELETE", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"vpcName":          string(vpcName),
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
+		"subnetName":       string(subnetName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Return.
+	return nil
 }
 
 // SubnetsIpsGet:
@@ -2300,47 +2212,47 @@ return &body, nil
 // List IP addresses on a VPC subnet.
 //
 // Parameters:
-func (c *Client) SubnetsIpsGet(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, subnetName Name, vpcName Name, ) (*NetworkInterfaceResultsPage, error) {
-// Create the url.
-path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets/{{.subnet_name}}/ips"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("GET", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"organizationName": string(organizationName),
-	"projectName": string(projectName),
-	"subnetName": string(subnetName),
-	"vpcName": string(vpcName),
-	"limit": string(limit),
-	"pageToken": string(pageToken),
-	"sortBy": string(sortBy),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body NetworkInterfaceResultsPage
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) SubnetsIpsGet(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, subnetName Name, vpcName Name) (*NetworkInterfaceResultsPage, error) {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets/{{.subnet_name}}/ips"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"vpcName":          string(vpcName),
+		"limit":            string(limit),
+		"pageToken":        string(pageToken),
+		"sortBy":           string(sortBy),
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
+		"subnetName":       string(subnetName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body NetworkInterfaceResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // SagasGet:
@@ -2348,43 +2260,43 @@ return &body, nil
 // List all sagas (for debugging)
 //
 // Parameters:
-func (c *Client) SagasGet(limit int, pageToken string, sortBy IdSortMode, ) (*SagaResultsPage, error) {
-// Create the url.
-path := "/sagas"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("GET", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"limit": string(limit),
-	"pageToken": string(pageToken),
-	"sortBy": string(sortBy),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body SagaResultsPage
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) SagasGet(limit int, pageToken string, sortBy IdSortMode) (*SagaResultsPage, error) {
+	// Create the url.
+	path := "/sagas"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"limit":     string(limit),
+		"pageToken": string(pageToken),
+		"sortBy":    string(sortBy),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body SagaResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // SagasGetSaga:
@@ -2392,41 +2304,41 @@ return &body, nil
 // Fetch information about a single saga (for debugging)
 //
 // Parameters:
-func (c *Client) SagasGetSaga(sagaId string, ) (*Saga, error) {
-// Create the url.
-path := "/sagas/{{.saga_id}}"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("GET", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"sagaId": string(sagaId),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body Saga
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) SagasGetSaga(sagaId string) (*Saga, error) {
+	// Create the url.
+	path := "/sagas/{{.saga_id}}"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"sagaId": string(sagaId),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body Saga
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // UsersGet:
@@ -2434,43 +2346,43 @@ return &body, nil
 // List the built-in system users
 //
 // Parameters:
-func (c *Client) UsersGet(limit int, pageToken string, sortBy NameSortMode, ) (*UserResultsPage, error) {
-// Create the url.
-path := "/users"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("GET", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"limit": string(limit),
-	"pageToken": string(pageToken),
-	"sortBy": string(sortBy),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body UserResultsPage
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+func (c *Client) UsersGet(limit int, pageToken string, sortBy NameSortMode) (*UserResultsPage, error) {
+	// Create the url.
+	path := "/users"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"limit":     string(limit),
+		"pageToken": string(pageToken),
+		"sortBy":    string(sortBy),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body UserResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // UsersGetUser:
@@ -2478,40 +2390,39 @@ return &body, nil
 // Fetch a specific built-in system user
 //
 // Parameters:
-func (c *Client) UsersGetUser(userName Name, ) (*User, error) {
-// Create the url.
-path := "/users/{{.user_name}}"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("GET", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
+func (c *Client) UsersGetUser(userName Name) (*User, error) {
+	// Create the url.
+	path := "/users/{{.user_name}}"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"userName": string(userName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body User
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"userName": string(userName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body User
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
-}
-

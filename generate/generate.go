@@ -305,26 +305,32 @@ func writeMethod(f *os.File, method string, path string, o *openapi3.Operation) 
 	fmt.Fprintf(f, "// %s: %s\n", fnName, o.Summary)
 	if o.Description != "" {
 		fmt.Fprintln(f, "//")
-		fmt.Fprintf(f, "// %s\n", o.Description)
+		fmt.Fprintf(f, "// %s\n", strings.ReplaceAll(o.Description, "\n", "\n// "))
 	}
 	if len(params) > 0 {
 		fmt.Fprintf(f, "//\n// Parameters:\n")
 		for name, t := range params {
 			if t.Description != "" {
-				fmt.Fprintf(f, "//\t`%s`: %s\n", strcase.ToLowerCamel(name), t.Description)
+				fmt.Fprintf(f, "//\t`%s`: %s\n", strcase.ToLowerCamel(name), strings.ReplaceAll(t.Description, "\n", "\n//\t\t"))
 			}
 		}
 	}
 
 	if reqBodyDescription != "" && reqBodyParam != "nil" {
-		fmt.Fprintf(f, "//\t`%s`: %s\n", reqBodyParam, reqBodyDescription)
+		fmt.Fprintf(f, "//\t`%s`: %s\n", reqBodyParam, strings.ReplaceAll(reqBodyDescription, "\n", "\n// "))
 	}
 
 	// Write the method.
-	fmt.Fprintf(f, "func (c *Client) %s(%s) (*%s, error) {\n",
-		fnName,
-		paramsString,
-		respType)
+	if respType != "" {
+		fmt.Fprintf(f, "func (c *Client) %s(%s) (*%s, error) {\n",
+			fnName,
+			paramsString,
+			respType)
+	} else {
+		fmt.Fprintf(f, "func (c *Client) %s(%s) (error) {\n",
+			fnName,
+			paramsString)
+	}
 
 	// Create the url.
 	fmt.Fprintln(f, "// Create the url.")
@@ -382,20 +388,25 @@ func writeMethod(f *os.File, method string, path string, o *openapi3.Operation) 
 	fmt.Fprintln(f, "return nil, err")
 	fmt.Fprintln(f, "}")
 
-	// Decode the body from the response.
-	fmt.Fprintln(f, "// Decode the body from the response.")
-	fmt.Fprintln(f, "if resp.Body == nil {")
-	fmt.Fprintln(f, `return nil, errors.New("request returned an empty body in the response")`)
-	fmt.Fprintln(f, "}")
+	if respType != "" {
+		// Decode the body from the response.
+		fmt.Fprintln(f, "// Decode the body from the response.")
+		fmt.Fprintln(f, "if resp.Body == nil {")
+		fmt.Fprintln(f, `return nil, errors.New("request returned an empty body in the response")`)
+		fmt.Fprintln(f, "}")
 
-	fmt.Fprintf(f, "var body %s\n", respType)
-	fmt.Fprintln(f, "if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {")
-	fmt.Fprintln(f, `return nil, fmt.Errorf("error decoding response body: %v", err)`)
-	fmt.Fprintln(f, "}")
+		fmt.Fprintf(f, "var body %s\n", respType)
+		fmt.Fprintln(f, "if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {")
+		fmt.Fprintln(f, `return nil, fmt.Errorf("error decoding response body: %v", err)`)
+		fmt.Fprintln(f, "}")
 
-	// Return the response.
-	fmt.Fprintln(f, "// Return the response.")
-	fmt.Fprintln(f, "return &body, nil")
+		// Return the response.
+		fmt.Fprintln(f, "// Return the response.")
+		fmt.Fprintln(f, "return &body, nil")
+	} else {
+		fmt.Fprintln(f, "// Return.")
+		fmt.Fprintln(f, "return nil")
+	}
 
 	// Close the method.
 	fmt.Fprintln(f, "}")
