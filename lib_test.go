@@ -1,6 +1,6 @@
 package oxide
 
-import (
+/*import (
 	"testing"
 )
 
@@ -10,4 +10,4 @@ func getClient(t *testing.T) *Client {
 		t.Fatalf("creating the client failed: %v", err)
 	}
 	return client
-}
+}*/

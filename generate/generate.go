@@ -159,6 +159,8 @@ func printProperty(p string) string {
 		c = "IPAddress"
 	} else if c == "UserId" {
 		c = "UserID"
+	} else if c == "IdSortMode" {
+		c = "IDSortMode"
 	} else if strings.HasPrefix(c, "Cpu") {
 		c = strings.Replace(c, "Cpu", "CPU", 1)
 	} else if strings.HasPrefix(c, "Vpc") {
@@ -219,8 +221,8 @@ func printType(property string, r *openapi3.SchemaRef) string {
 		return strcase.ToCamel(property)
 	}
 
-	fmt.Printf("[WARN] TODO: skipping type %q for %q\n", t, property)
-	return "TODO"
+	fmt.Printf("[WARN] TODO: skipping type %q for %q, marking as interface{}\n", t, property)
+	return "interface{}"
 }
 
 // writePath writes the given path as an http request to the given file.
@@ -375,8 +377,15 @@ func writeMethod(f *os.File, method string, path string, o *openapi3.Operation) 
 	if len(params) > 0 {
 		fmt.Fprintln(f, "// Add the parameters to the url.")
 		fmt.Fprintln(f, "if err := expandURL(req.URL, map[string]string{")
-		for name := range params {
-			fmt.Fprintf(f, "	%q: string(%s),\n", strcase.ToLowerCamel(name), strcase.ToLowerCamel(name))
+		for name, p := range params {
+			t := printType(name, p.Schema)
+			if t == "string" {
+				fmt.Fprintf(f, "	%q: %s,\n", strcase.ToLowerCamel(name), strcase.ToLowerCamel(name))
+			} else if t == "int" {
+				fmt.Fprintf(f, "	%q: strconv.Itoa(%s),\n", strcase.ToLowerCamel(name), strcase.ToLowerCamel(name))
+			} else {
+				fmt.Fprintf(f, "	%q: string(%s),\n", strcase.ToLowerCamel(name), strcase.ToLowerCamel(name))
+			}
 		}
 		fmt.Fprintln(f, "}); err != nil {")
 		if respType != "" {

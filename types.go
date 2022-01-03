@@ -76,19 +76,19 @@ var DiskStateStates = []DiskStateState{
 	DiskStateStateCreating,
 }
 
-// IdSortMode is supported set of sort modes for scanning by id only.
+// IDSortMode is supported set of sort modes for scanning by id only.
 //
 // Currently, we only support scanning in ascending order.
-type IdSortMode string
+type IDSortMode string
 
 const (
-	// IdSortModeIdAscending represents the IdSortMode `"id-ascending"`.
-	IdSortModeIdAscending IdSortMode = "id-ascending"
+	// IDSortModeIdAscending represents the IDSortMode `"id-ascending"`.
+	IDSortModeIdAscending IDSortMode = "id-ascending"
 )
 
-// IdSortModes is the collection of all IdSortMode values.
-var IdSortModes = []IdSortMode{
-	IdSortModeIdAscending,
+// IDSortModes is the collection of all IDSortMode values.
+var IDSortModes = []IDSortMode{
+	IDSortModeIdAscending,
 }
 
 // IdentityMetadata is identity-related metadata that's included in nearly all public API objects
@@ -476,7 +476,7 @@ type Saga struct {
 // SagaErrorInfo is the type definition for a SagaErrorInfo.
 type SagaErrorInfo struct {
 	Error       SagaErrorInfoError `json:"error,omitempty" yaml:"error,omitempty"`
-	SourceError TODO               `json:"source_error,omitempty" yaml:"source_error,omitempty"`
+	SourceError interface{}        `json:"source_error,omitempty" yaml:"source_error,omitempty"`
 }
 
 // SagaErrorInfoError is the type definition for a SagaErrorInfoError.
