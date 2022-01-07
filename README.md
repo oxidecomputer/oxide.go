@@ -8,8 +8,8 @@ The Golang API client for Oxide.
 ## Generating
 
 You can trigger a build with the GitHub action to generate the client. This will
-automatically update the client to the latest version based on the spec hosted
-at [api.oxide.computer](https://api.oxide.computer).
+automatically update the client to the latest version based on the spec
+at [spec.json](spec.json).
 
 Alternatively, if you wish to generate the client locally, run:
 
