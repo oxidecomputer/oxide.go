@@ -134,6 +134,10 @@ const (
 	DiskStateStateFaulted DiskStateState = "faulted"
 )
 
+type DiskState struct {
+	Instance string `json:"instance,omitempty" yaml:"instance,omitempty"`
+}
+
 // IDSortMode is supported set of sort modes for scanning by id only.
 //
 // Currently, we only support scanning in ascending order.
@@ -426,6 +430,9 @@ const (
 	RouteDestinationTypeSubnet RouteDestinationType = "subnet"
 )
 
+type RouteDestination struct {
+}
+
 // RouteTarget is a subset of [`NetworkTarget`], `RouteTarget` specifies all possible targets that a route can forward to.
 // RouteTargetIp is the type definition for a RouteTargetIp.
 type RouteTargetIp struct {
@@ -488,6 +495,11 @@ const (
 	// RouteTargetTypeInternetGateway represents the RouteTargetType `"internetGateway"`.
 	RouteTargetTypeInternetGateway RouteTargetType = "internetGateway"
 )
+
+type RouteTarget struct {
+	Value string `json:"value,omitempty" yaml:"value,omitempty"`
+	Value Name   `json:"value,omitempty" yaml:"value,omitempty"`
+}
 
 // RouterRoute is a route defines a rule that governs where traffic should be sent based on its destination.
 type RouterRoute struct {
@@ -612,6 +624,9 @@ const (
 	SagaErrorInfoErrorSubsagaCreateFailed SagaErrorInfoError = "subsagaCreateFailed"
 )
 
+type SagaErrorInfo struct {
+}
+
 // SagaResultsPage is a single page of results
 type SagaResultsPage struct {
 	// Items is list of items on this page of results
@@ -655,6 +670,11 @@ const (
 	// SagaStateStateFailed represents the SagaStateState `"failed"`.
 	SagaStateStateFailed SagaStateState = "failed"
 )
+
+type SagaState struct {
+	ErrorInfo     SagaErrorInfo `json:"error_info,omitempty" yaml:"error_info,omitempty"`
+	ErrorNodeName string        `json:"error_node_name,omitempty" yaml:"error_node_name,omitempty"`
+}
 
 // Sled is client view of an [`Sled`]
 type Sled struct {
@@ -841,6 +861,10 @@ const (
 	VPCFirewallRuleHostFilterTypeInternetGateway VPCFirewallRuleHostFilterType = "internetGateway"
 )
 
+type VPCFirewallRuleHostFilter struct {
+	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
 // VPCFirewallRuleProtocol is the protocols that may be specified in a firewall rule's filter
 type VPCFirewallRuleProtocol string
 
@@ -910,6 +934,9 @@ const (
 	// VPCFirewallRuleTargetTypeInstance represents the VPCFirewallRuleTargetType `"instance"`.
 	VPCFirewallRuleTargetTypeInstance VPCFirewallRuleTargetType = "instance"
 )
+
+type VPCFirewallRuleTarget struct {
+}
 
 // VPCFirewallRuleUpdate is a single rule in a VPC firewall
 type VPCFirewallRuleUpdate struct {
@@ -1029,25 +1056,111 @@ type VPCUpdate struct {
 	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
-// VPCFirewallRuleHostFilterTypes is the collection of all VPCFirewallRuleHostFilterType values.
-var VPCFirewallRuleHostFilterTypes = []VPCFirewallRuleHostFilterType{
-	VPCFirewallRuleHostFilterTypeVpc,
-	VPCFirewallRuleHostFilterTypeSubnet,
-	VPCFirewallRuleHostFilterTypeInstance,
-	VPCFirewallRuleHostFilterTypeIp,
-	VPCFirewallRuleHostFilterTypeInternetGateway,
+// NameOrIdSortModes is the collection of all NameOrIdSortMode values.
+var NameOrIdSortModes = []NameOrIdSortMode{
+	NameOrIdSortModeIdAscending,
+	NameOrIdSortModeNameAscending,
+	NameOrIdSortModeNameDescending,
 }
 
-// VPCFirewallRuleProtocols is the collection of all VPCFirewallRuleProtocol values.
-var VPCFirewallRuleProtocols = []VPCFirewallRuleProtocol{
-	VPCFirewallRuleProtocolTCP,
-	VPCFirewallRuleProtocolUDP,
-	VPCFirewallRuleProtocolICMP,
+// NameSortModes is the collection of all NameSortMode values.
+var NameSortModes = []NameSortMode{
+	NameSortModeNameAscending,
+}
+
+// SagaStateStates is the collection of all SagaStateState values.
+var SagaStateStates = []SagaStateState{
+	SagaStateStateFailed,
+	SagaStateStateRunning,
+	SagaStateStateSucceeded,
+}
+
+// VPCRouterKinds is the collection of all VPCRouterKind values.
+var VPCRouterKinds = []VPCRouterKind{
+	VPCRouterKindCustom,
+	VPCRouterKindSystem,
+}
+
+// VPCFirewallRuleTargetTypes is the collection of all VPCFirewallRuleTargetType values.
+var VPCFirewallRuleTargetTypes = []VPCFirewallRuleTargetType{
+	VPCFirewallRuleTargetTypeInstance,
+	VPCFirewallRuleTargetTypeSubnet,
+	VPCFirewallRuleTargetTypeVpc,
+}
+
+// RouteDestinationTypes is the collection of all RouteDestinationType values.
+var RouteDestinationTypes = []RouteDestinationType{
+	RouteDestinationTypeIp,
+	RouteDestinationTypeSubnet,
+	RouteDestinationTypeVpc,
+}
+
+// RouteTargetTypes is the collection of all RouteTargetType values.
+var RouteTargetTypes = []RouteTargetType{
+	RouteTargetTypeInstance,
+	RouteTargetTypeInternetGateway,
+	RouteTargetTypeIp,
+	RouteTargetTypeSubnet,
+	RouteTargetTypeVpc,
+}
+
+// VPCFirewallRuleHostFilterTypes is the collection of all VPCFirewallRuleHostFilterType values.
+var VPCFirewallRuleHostFilterTypes = []VPCFirewallRuleHostFilterType{
+	VPCFirewallRuleHostFilterTypeInstance,
+	VPCFirewallRuleHostFilterTypeInternetGateway,
+	VPCFirewallRuleHostFilterTypeIp,
+	VPCFirewallRuleHostFilterTypeSubnet,
+	VPCFirewallRuleHostFilterTypeVpc,
+}
+
+// VPCFirewallRuleStatuses is the collection of all VPCFirewallRuleStatus values.
+var VPCFirewallRuleStatuses = []VPCFirewallRuleStatus{
+	VPCFirewallRuleStatusDisabled,
+	VPCFirewallRuleStatusEnabled,
+}
+
+// DiskStateStates is the collection of all DiskStateState values.
+var DiskStateStates = []DiskStateState{
+	DiskStateStateAttached,
+	DiskStateStateAttaching,
+	DiskStateStateCreating,
+	DiskStateStateDestroyed,
+	DiskStateStateDetached,
+	DiskStateStateDetaching,
+	DiskStateStateFaulted,
 }
 
 // IDSortModes is the collection of all IDSortMode values.
 var IDSortModes = []IDSortMode{
 	IDSortModeIdAscending,
+}
+
+// RouterRouteKinds is the collection of all RouterRouteKind values.
+var RouterRouteKinds = []RouterRouteKind{
+	RouterRouteKindCustom,
+	RouterRouteKindDefault,
+	RouterRouteKindVpcPeering,
+	RouterRouteKindVpcSubnet,
+}
+
+// VPCFirewallRuleProtocols is the collection of all VPCFirewallRuleProtocol values.
+var VPCFirewallRuleProtocols = []VPCFirewallRuleProtocol{
+	VPCFirewallRuleProtocolICMP,
+	VPCFirewallRuleProtocolTCP,
+	VPCFirewallRuleProtocolUDP,
+}
+
+// InstanceStates is the collection of all InstanceState values.
+var InstanceStates = []InstanceState{
+	InstanceStateCreating,
+	InstanceStateDestroyed,
+	InstanceStateFailed,
+	InstanceStateRebooting,
+	InstanceStateRepairing,
+	InstanceStateRunning,
+	InstanceStateStarting,
+	InstanceStateStopped,
+	InstanceStateStopping,
 }
 
 // SagaErrorInfoErrors is the collection of all SagaErrorInfoError values.
@@ -1069,90 +1182,4 @@ var VPCFirewallRuleActions = []VPCFirewallRuleAction{
 var VPCFirewallRuleDirections = []VPCFirewallRuleDirection{
 	VPCFirewallRuleDirectionInbound,
 	VPCFirewallRuleDirectionOutbound,
-}
-
-// InstanceStates is the collection of all InstanceState values.
-var InstanceStates = []InstanceState{
-	InstanceStateCreating,
-	InstanceStateStarting,
-	InstanceStateRunning,
-	InstanceStateStopping,
-	InstanceStateStopped,
-	InstanceStateRebooting,
-	InstanceStateRepairing,
-	InstanceStateFailed,
-	InstanceStateDestroyed,
-}
-
-// VPCRouterKinds is the collection of all VPCRouterKind values.
-var VPCRouterKinds = []VPCRouterKind{
-	VPCRouterKindSystem,
-	VPCRouterKindCustom,
-}
-
-// VPCFirewallRuleTargetTypes is the collection of all VPCFirewallRuleTargetType values.
-var VPCFirewallRuleTargetTypes = []VPCFirewallRuleTargetType{
-	VPCFirewallRuleTargetTypeVpc,
-	VPCFirewallRuleTargetTypeSubnet,
-	VPCFirewallRuleTargetTypeInstance,
-}
-
-// DiskStateStates is the collection of all DiskStateState values.
-var DiskStateStates = []DiskStateState{
-	DiskStateStateCreating,
-	DiskStateStateDetached,
-	DiskStateStateAttaching,
-	DiskStateStateAttached,
-	DiskStateStateDetaching,
-	DiskStateStateDestroyed,
-	DiskStateStateFaulted,
-}
-
-// RouterRouteKinds is the collection of all RouterRouteKind values.
-var RouterRouteKinds = []RouterRouteKind{
-	RouterRouteKindDefault,
-	RouterRouteKindVpcSubnet,
-	RouterRouteKindVpcPeering,
-	RouterRouteKindCustom,
-}
-
-// SagaStateStates is the collection of all SagaStateState values.
-var SagaStateStates = []SagaStateState{
-	SagaStateStateRunning,
-	SagaStateStateSucceeded,
-	SagaStateStateFailed,
-}
-
-// VPCFirewallRuleStatuses is the collection of all VPCFirewallRuleStatus values.
-var VPCFirewallRuleStatuses = []VPCFirewallRuleStatus{
-	VPCFirewallRuleStatusDisabled,
-	VPCFirewallRuleStatusEnabled,
-}
-
-// NameOrIdSortModes is the collection of all NameOrIdSortMode values.
-var NameOrIdSortModes = []NameOrIdSortMode{
-	NameOrIdSortModeNameAscending,
-	NameOrIdSortModeNameDescending,
-	NameOrIdSortModeIdAscending,
-}
-
-// NameSortModes is the collection of all NameSortMode values.
-var NameSortModes = []NameSortMode{
-	NameSortModeNameAscending,
-}
-
-// RouteDestinationTypes is the collection of all RouteDestinationType values.
-var RouteDestinationTypes = []RouteDestinationType{
-	RouteDestinationTypeIp,
-	RouteDestinationTypeVpc,
-	RouteDestinationTypeSubnet,
-}
-
-// RouteTargetTypes is the collection of all RouteTargetType values.
-var RouteTargetTypes = []RouteTargetType{
-	RouteTargetTypeIp,
-	RouteTargetTypeVpc,
-	RouteTargetTypeSubnet,
-	RouteTargetTypeInstance,
-	RouteTargetTypeInternetGateway,
 }

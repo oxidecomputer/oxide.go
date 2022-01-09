@@ -85,6 +85,8 @@ func generateTypes(doc *openapi3.T) {
 		// Add a description.
 		fmt.Fprintf(f, "// %s is the collection of all %s values.\n", makePlural(name), makeSingular(name))
 		fmt.Fprintf(f, "var %s = []%s{\n", makePlural(name), makeSingular(name))
+		// We want to keep the values in the same order as the enum.
+		sort.Strings(enums)
 		for _, enum := range enums {
 			// Most likely, the enum values are strings.
 			fmt.Fprintf(f, "\t%s,\n", strcase.ToCamel(fmt.Sprintf("%s_%s", makeSingular(name), enum)))
@@ -606,6 +608,7 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 			// We want to convert these to a different data type to be more idiomatic.
 			// But first, we need to make sure we have a type for each one.
 			var oneOfTypes []string
+			var properties []string
 			for _, v := range s.OneOf {
 				// We want to iterate over the properties of the embedded object
 				// and find the type that is a string.
@@ -624,7 +627,16 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 							break
 						}
 					}
+
+					// We want to collect all the unique properties to create our global oneOf type.
+					propertyName := printType(prop, p)
+
+					propertyString := fmt.Sprintf("\t%s %s `json:\"%s,omitempty\" yaml:\"%s,omitempty\"`\n", printProperty(prop), propertyName, prop, prop)
+					if !contains(properties, propertyString) {
+						properties = append(properties, propertyString)
+					}
 				}
+
 				// Basically all of these will have one type embedded in them that is a
 				// string and the type, since these come from a Rust sum type.
 				oneOfType := fmt.Sprintf("%s%s", name, typeName)
@@ -633,7 +645,15 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 				oneOfTypes = append(oneOfTypes, oneOfType)
 			}
 
-			// Okay so now we have all the oneOf types, we can write the type we will actually use.
+			// Now let's create the global oneOf type.
+			fmt.Fprintf(f, "type %s struct {\n", printProperty(name))
+			// Iterate over the properties and write the types, if we need to.
+			for _, p := range properties {
+				fmt.Fprintf(f, p)
+			}
+			// Close the struct.
+			fmt.Fprintf(f, "}\n")
+
 		} else if s.AnyOf != nil {
 			fmt.Printf("[WARN] TODO: skipping type for %q, since it is a ANYOF\n", name)
 		} else if s.AllOf != nil {
