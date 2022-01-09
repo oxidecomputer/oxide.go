@@ -434,7 +434,6 @@ const (
 type RouteDestination struct {
 	Type  string `json:"type,omitempty" yaml:"type,omitempty"`
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
-	Value Name   `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // RouteTarget is a subset of [`NetworkTarget`], `RouteTarget` specifies all possible targets that a route can forward to.
@@ -503,7 +502,6 @@ const (
 type RouteTarget struct {
 	Type  string `json:"type,omitempty" yaml:"type,omitempty"`
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
-	Value Name   `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // RouterRoute is a route defines a rule that governs where traffic should be sent based on its destination.
@@ -871,9 +869,8 @@ const (
 )
 
 type VPCFirewallRuleHostFilter struct {
-	Value Name   `json:"value,omitempty" yaml:"value,omitempty"`
 	Type  string `json:"type,omitempty" yaml:"type,omitempty"`
-	Value string `json:"value,omitempty" yaml:"value,omitempty"`
+	Value Name   `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // VPCFirewallRuleProtocol is the protocols that may be specified in a firewall rule's filter

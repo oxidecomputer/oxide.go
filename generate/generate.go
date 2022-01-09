@@ -625,7 +625,7 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 					propertyName := printType(prop, p)
 
 					propertyString := fmt.Sprintf("\t%s %s `json:\"%s,omitempty\" yaml:\"%s,omitempty\"`\n", printProperty(prop), propertyName, prop, prop)
-					if !contains(properties, propertyString) {
+					if !containsMatchFirstWord(properties, propertyString) {
 						properties = append(properties, propertyString)
 					}
 
@@ -789,6 +789,23 @@ func writeResponseType(f *os.File, name string, r *openapi3.Response) {
 func contains(s []string, str string) bool {
 	for _, v := range s {
 		if v == str {
+			return true
+		}
+	}
+
+	return false
+}
+
+func trimStringFromSpace(s string) string {
+	if idx := strings.Index(s, " "); idx != -1 {
+		return s[:idx]
+	}
+	return s
+}
+
+func containsMatchFirstWord(s []string, str string) bool {
+	for _, v := range s {
+		if trimStringFromSpace(v) == trimStringFromSpace(str) {
 			return true
 		}
 	}
