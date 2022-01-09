@@ -16,6 +16,8 @@ import (
 	"github.com/iancoleman/strcase"
 )
 
+var EnumStringTypes []string
+
 func main() {
 	// TODO: actually host the spec here.
 	/*uri := "https://api.oxide.computer"
@@ -74,7 +76,7 @@ func generateTypes(doc *openapi3.T) {
 			continue
 		}
 
-		writeSchemaType(f, name, s.Value)
+		writeSchemaType(f, name, s.Value, "")
 	}
 }
 
@@ -480,25 +482,34 @@ func getSuccessResponseType(o *openapi3.Operation) string {
 }
 
 // writeSchemaType writes a type definition for the given schema.
-func writeSchemaType(f *os.File, name string, s *openapi3.Schema) {
+// The additional parameter is only used as a suffix for the type name.
+// This is mostly for oneOf types.
+func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName string) {
 	otype := s.Type
 	fmt.Printf("writing type for schema %q -> %s\n", name, otype)
 
 	name = printProperty(name)
+	typeName := strings.TrimSpace(fmt.Sprintf("%s%s", name, printProperty(additionalName)))
 
 	if len(s.Enum) == 0 {
 		// Write the type description.
-		writeSchemaTypeDescription(name, s, f)
+		writeSchemaTypeDescription(typeName, s, f)
 	}
 
 	if otype == "string" {
 		// If this is an enum, write the enum type.
 		if len(s.Enum) > 0 {
-			// Write the type description.
-			writeSchemaTypeDescription(makeSingular(name), s, f)
+			// Make sure we don't redeclare the enum type.
+			if !contains(EnumStringTypes, makeSingular(typeName)) {
+				// Write the type description.
+				writeSchemaTypeDescription(makeSingular(typeName), s, f)
 
-			// Write the enum type.
-			fmt.Fprintf(f, "type %s string\n", makeSingular(name))
+				// Write the enum type.
+				fmt.Fprintf(f, "type %s string\n", makeSingular(typeName))
+
+				EnumStringTypes = append(EnumStringTypes, makeSingular(typeName))
+			}
+
 			// Define the enum values.
 			fmt.Fprintf(f, "const (\n")
 			for _, v := range s.Enum {
@@ -517,19 +528,22 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema) {
 
 			// Make the enum a collection of the values.
 			// Add a description.
-			fmt.Fprintf(f, "// %s is the collection of all %s values.\n", makePlural(name), makeSingular(name))
-			fmt.Fprintf(f, "var %s = []%s{\n", makePlural(name), makeSingular(name))
-			for _, v := range s.Enum {
-				// Most likely, the enum values are strings.
-				enum, ok := v.(string)
-				if !ok {
-					fmt.Printf("[WARN] TODO: enum value is not a string for %q -> %#v\n", name, v)
-					continue
+			// TODO: Fix this so that we can do this out of band of OneOf types.
+			if !contains(EnumStringTypes, makeSingular(typeName)) {
+				fmt.Fprintf(f, "// %s is the collection of all %s values.\n", makePlural(name), makeSingular(name))
+				fmt.Fprintf(f, "var %s = []%s{\n", makePlural(name), makeSingular(name))
+				for _, v := range s.Enum {
+					// Most likely, the enum values are strings.
+					enum, ok := v.(string)
+					if !ok {
+						fmt.Printf("[WARN] TODO: enum value is not a string for %q -> %#v\n", name, v)
+						continue
+					}
+					fmt.Fprintf(f, "\t%s,\n", strcase.ToCamel(fmt.Sprintf("%s_%s", makeSingular(name), enum)))
 				}
-				fmt.Fprintf(f, "\t%s,\n", strcase.ToCamel(fmt.Sprintf("%s_%s", makeSingular(name), enum)))
+				// Close the enum values.
+				fmt.Fprintf(f, "}\n")
 			}
-			// Close the enum values.
-			fmt.Fprintf(f, "}\n")
 		} else {
 			fmt.Fprintf(f, "type %s string\n", name)
 		}
@@ -543,7 +557,7 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema) {
 		fmt.Fprintf(f, "type %s []%s\n", name, s.Items.Value.Type)
 	} else if otype == "object" {
 		recursive := false
-		fmt.Fprintf(f, "type %s struct {\n", name)
+		fmt.Fprintf(f, "type %s struct {\n", typeName)
 		// We want to ensure we keep the order so the diffs don't look like shit.
 		keys := make([]string, 0)
 		for k := range s.Properties {
@@ -580,22 +594,48 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema) {
 			// Iterate over the properties and write the types, if we need to.
 			for k, v := range s.Properties {
 				if isLocalEnum(v) {
-					writeSchemaType(f, fmt.Sprintf("%s%s", name, printProperty(k)), v.Value)
+					writeSchemaType(f, fmt.Sprintf("%s%s", name, printProperty(k)), v.Value, "")
 				}
 
 				if isLocalObject(v) {
-					writeSchemaType(f, fmt.Sprintf("%s%s", name, printProperty(k)), v.Value)
+					writeSchemaType(f, fmt.Sprintf("%s%s", name, printProperty(k)), v.Value, "")
 				}
 			}
 		}
 	} else {
-		// In this scenario it is most likely a oneOf, anyOf, or allOf.
-		// Let's check for oneOf since we know we have those.
-		// TODO: we won't need this after https://github.com/oxidecomputer/omicron/issues/573 is resolved.
 		if s.OneOf != nil {
-			// TODO: this sucks since it only uses the first one. But in the future when
-			// the above issue is resolved, we will no longer have any oneOfs.
-			writeSchemaType(f, name, s.OneOf[0].Value)
+			// We want to convert these to a different data type to be more idiomatic.
+			// But first, we need to make sure we have a type for each one.
+			var oneOfTypes []string
+			for _, v := range s.OneOf {
+				// We want to iterate over the properties of the embedded object
+				// and find the type that is a string.
+				var typeName string
+				for prop, p := range v.Value.Properties {
+					if p.Value.Type == "string" {
+						fmt.Printf("[WARN] TODO: oneOf for %q -> %q %#v\n", name, prop, p.Value)
+						if p.Value.Enum != nil {
+							// We want to get the enum value.
+							// Make sure there is only one.
+							if len(p.Value.Enum) != 1 {
+								fmt.Printf("[WARN] TODO: oneOf for %q -> %q enum %#v\n", name, prop, p.Value.Enum)
+								continue
+							}
+
+							typeName = printProperty(p.Value.Enum[0].(string))
+							break
+						}
+					}
+				}
+				// Basically all of these will have one type embedded in them that is a
+				// string and the type, since these come from a Rust sum type.
+				oneOfType := fmt.Sprintf("%s%s", name, typeName)
+				writeSchemaType(f, name, v.Value, typeName)
+				// Add it to our array.
+				oneOfTypes = append(oneOfTypes, oneOfType)
+			}
+
+			// Okay so now we have all the oneOf types, we can write the type we will actually use.
 		} else if s.AnyOf != nil {
 			fmt.Printf("[WARN] TODO: skipping type for %q, since it is a ANYOF\n", name)
 		} else if s.AllOf != nil {
@@ -718,6 +758,16 @@ func writeResponseType(f *os.File, name string, r *openapi3.Response) {
 			continue
 		}
 
-		writeSchemaType(f, name, s.Value)
+		writeSchemaType(f, name, s.Value, "")
 	}
+}
+
+func contains(s []string, str string) bool {
+	for _, v := range s {
+		if v == str {
+			return true
+		}
+	}
+
+	return false
 }

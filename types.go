@@ -58,8 +58,8 @@ type DiskResultsPage struct {
 }
 
 // DiskState is state of a Disk (primarily: attached or not)
-// DiskState is disk is being initialized
-type DiskState struct {
+// DiskStateCreating is disk is being initialized
+type DiskStateCreating struct {
 	State DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
 }
 
@@ -71,10 +71,68 @@ const (
 	DiskStateStateCreating DiskStateState = "creating"
 )
 
-// DiskStateStates is the collection of all DiskStateState values.
-var DiskStateStates = []DiskStateState{
-	DiskStateStateCreating,
+// DiskStateDetached is disk is ready but detached from any Instance
+type DiskStateDetached struct {
+	State DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
 }
+
+const (
+	// DiskStateStateDetached represents the DiskStateState `"detached"`.
+	DiskStateStateDetached DiskStateState = "detached"
+)
+
+// DiskStateAttaching is disk is being attached to the given Instance
+type DiskStateAttaching struct {
+	Instance string         `json:"instance,omitempty" yaml:"instance,omitempty"`
+	State    DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
+}
+
+const (
+	// DiskStateStateAttaching represents the DiskStateState `"attaching"`.
+	DiskStateStateAttaching DiskStateState = "attaching"
+)
+
+// DiskStateAttached is disk is attached to the given Instance
+type DiskStateAttached struct {
+	Instance string         `json:"instance,omitempty" yaml:"instance,omitempty"`
+	State    DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
+}
+
+const (
+	// DiskStateStateAttached represents the DiskStateState `"attached"`.
+	DiskStateStateAttached DiskStateState = "attached"
+)
+
+// DiskStateDetaching is disk is being detached from the given Instance
+type DiskStateDetaching struct {
+	Instance string         `json:"instance,omitempty" yaml:"instance,omitempty"`
+	State    DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
+}
+
+const (
+	// DiskStateStateDetaching represents the DiskStateState `"detaching"`.
+	DiskStateStateDetaching DiskStateState = "detaching"
+)
+
+// DiskStateDestroyed is disk has been destroyed
+type DiskStateDestroyed struct {
+	State DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
+}
+
+const (
+	// DiskStateStateDestroyed represents the DiskStateState `"destroyed"`.
+	DiskStateStateDestroyed DiskStateState = "destroyed"
+)
+
+// DiskStateFaulted is disk is unavailable
+type DiskStateFaulted struct {
+	State DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
+}
+
+const (
+	// DiskStateStateFaulted represents the DiskStateState `"faulted"`.
+	DiskStateStateFaulted DiskStateState = "faulted"
+)
 
 // IDSortMode is supported set of sort modes for scanning by id only.
 //
@@ -85,11 +143,6 @@ const (
 	// IDSortModeIdAscending represents the IDSortMode `"id-ascending"`.
 	IDSortModeIdAscending IDSortMode = "id-ascending"
 )
-
-// IDSortModes is the collection of all IDSortMode values.
-var IDSortModes = []IDSortMode{
-	IDSortModeIdAscending,
-}
 
 // IdentityMetadata is identity-related metadata that's included in nearly all public API objects
 type IdentityMetadata struct {
@@ -183,19 +236,6 @@ const (
 	InstanceStateDestroyed InstanceState = "destroyed"
 )
 
-// InstanceStates is the collection of all InstanceState values.
-var InstanceStates = []InstanceState{
-	InstanceStateCreating,
-	InstanceStateStarting,
-	InstanceStateRunning,
-	InstanceStateStopping,
-	InstanceStateStopped,
-	InstanceStateRebooting,
-	InstanceStateRepairing,
-	InstanceStateFailed,
-	InstanceStateDestroyed,
-}
-
 // IPv4Net is an IPv4 subnet, including prefix and subnet mask
 type IPv4Net string
 
@@ -228,13 +268,6 @@ const (
 	NameOrIdSortModeIdAscending NameOrIdSortMode = "id-ascending"
 )
 
-// NameOrIdSortModes is the collection of all NameOrIdSortMode values.
-var NameOrIdSortModes = []NameOrIdSortMode{
-	NameOrIdSortModeNameAscending,
-	NameOrIdSortModeNameDescending,
-	NameOrIdSortModeIdAscending,
-}
-
 // NameSortMode is supported set of sort modes for scanning by name only
 //
 // Currently, we only support scanning in ascending order.
@@ -244,11 +277,6 @@ const (
 	// NameSortModeNameAscending represents the NameSortMode `"name-ascending"`.
 	NameSortModeNameAscending NameSortMode = "name-ascending"
 )
-
-// NameSortModes is the collection of all NameSortMode values.
-var NameSortModes = []NameSortMode{
-	NameSortModeNameAscending,
-}
 
 // NetworkInterface is a `NetworkInterface` represents a virtual network interface device.
 type NetworkInterface struct {
@@ -360,8 +388,8 @@ type RackResultsPage struct {
 }
 
 // RouteDestination is a subset of [`NetworkTarget`], `RouteDestination` specifies the kind of network traffic that will be matched to be forwarded to the [`RouteTarget`].
-// RouteDestination is the type definition for a RouteDestination.
-type RouteDestination struct {
+// RouteDestinationIp is the type definition for a RouteDestinationIp.
+type RouteDestinationIp struct {
 	Type  RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
 	Value string               `json:"value,omitempty" yaml:"value,omitempty"`
 }
@@ -374,14 +402,33 @@ const (
 	RouteDestinationTypeIp RouteDestinationType = "ip"
 )
 
-// RouteDestinationTypes is the collection of all RouteDestinationType values.
-var RouteDestinationTypes = []RouteDestinationType{
-	RouteDestinationTypeIp,
+// RouteDestinationVPC is the type definition for a RouteDestinationVPC.
+type RouteDestinationVPC struct {
+	Type RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
+const (
+	// RouteDestinationTypeVpc represents the RouteDestinationType `"vpc"`.
+	RouteDestinationTypeVpc RouteDestinationType = "vpc"
+)
+
+// RouteDestinationSubnet is the type definition for a RouteDestinationSubnet.
+type RouteDestinationSubnet struct {
+	Type RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+const (
+	// RouteDestinationTypeSubnet represents the RouteDestinationType `"subnet"`.
+	RouteDestinationTypeSubnet RouteDestinationType = "subnet"
+)
+
 // RouteTarget is a subset of [`NetworkTarget`], `RouteTarget` specifies all possible targets that a route can forward to.
-// RouteTarget is the type definition for a RouteTarget.
-type RouteTarget struct {
+// RouteTargetIp is the type definition for a RouteTargetIp.
+type RouteTargetIp struct {
 	Type  RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
 	Value string          `json:"value,omitempty" yaml:"value,omitempty"`
 }
@@ -394,10 +441,53 @@ const (
 	RouteTargetTypeIp RouteTargetType = "ip"
 )
 
-// RouteTargetTypes is the collection of all RouteTargetType values.
-var RouteTargetTypes = []RouteTargetType{
-	RouteTargetTypeIp,
+// RouteTargetVPC is the type definition for a RouteTargetVPC.
+type RouteTargetVPC struct {
+	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
+
+const (
+	// RouteTargetTypeVpc represents the RouteTargetType `"vpc"`.
+	RouteTargetTypeVpc RouteTargetType = "vpc"
+)
+
+// RouteTargetSubnet is the type definition for a RouteTargetSubnet.
+type RouteTargetSubnet struct {
+	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+const (
+	// RouteTargetTypeSubnet represents the RouteTargetType `"subnet"`.
+	RouteTargetTypeSubnet RouteTargetType = "subnet"
+)
+
+// RouteTargetInstance is the type definition for a RouteTargetInstance.
+type RouteTargetInstance struct {
+	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+const (
+	// RouteTargetTypeInstance represents the RouteTargetType `"instance"`.
+	RouteTargetTypeInstance RouteTargetType = "instance"
+)
+
+// RouteTargetInternetGateway is the type definition for a RouteTargetInternetGateway.
+type RouteTargetInternetGateway struct {
+	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+const (
+	// RouteTargetTypeInternetGateway represents the RouteTargetType `"internetGateway"`.
+	RouteTargetTypeInternetGateway RouteTargetType = "internetGateway"
+)
 
 // RouterRoute is a route defines a rule that governs where traffic should be sent based on its destination.
 type RouterRoute struct {
@@ -440,14 +530,6 @@ const (
 	RouterRouteKindCustom RouterRouteKind = "Custom"
 )
 
-// RouterRouteKinds is the collection of all RouterRouteKind values.
-var RouterRouteKinds = []RouterRouteKind{
-	RouterRouteKindDefault,
-	RouterRouteKindVpcSubnet,
-	RouterRouteKindVpcPeering,
-	RouterRouteKindCustom,
-}
-
 // RouterRouteResultsPage is a single page of results
 type RouterRouteResultsPage struct {
 	// Items is list of items on this page of results
@@ -473,8 +555,8 @@ type Saga struct {
 }
 
 // SagaErrorInfo is the type definition for a SagaErrorInfo.
-// SagaErrorInfo is the type definition for a SagaErrorInfo.
-type SagaErrorInfo struct {
+// SagaErrorInfoActionFailed is the type definition for a SagaErrorInfoActionFailed.
+type SagaErrorInfoActionFailed struct {
 	Error       SagaErrorInfoError `json:"error,omitempty" yaml:"error,omitempty"`
 	SourceError interface{}        `json:"source_error,omitempty" yaml:"source_error,omitempty"`
 }
@@ -487,10 +569,48 @@ const (
 	SagaErrorInfoErrorActionFailed SagaErrorInfoError = "actionFailed"
 )
 
-// SagaErrorInfoErrors is the collection of all SagaErrorInfoError values.
-var SagaErrorInfoErrors = []SagaErrorInfoError{
-	SagaErrorInfoErrorActionFailed,
+// SagaErrorInfoDeserializeFailed is the type definition for a SagaErrorInfoDeserializeFailed.
+type SagaErrorInfoDeserializeFailed struct {
+	Error   SagaErrorInfoError `json:"error,omitempty" yaml:"error,omitempty"`
+	Message string             `json:"message,omitempty" yaml:"message,omitempty"`
 }
+
+const (
+	// SagaErrorInfoErrorDeserializeFailed represents the SagaErrorInfoError `"deserializeFailed"`.
+	SagaErrorInfoErrorDeserializeFailed SagaErrorInfoError = "deserializeFailed"
+)
+
+// SagaErrorInfoInjectedError is the type definition for a SagaErrorInfoInjectedError.
+type SagaErrorInfoInjectedError struct {
+	Error SagaErrorInfoError `json:"error,omitempty" yaml:"error,omitempty"`
+}
+
+const (
+	// SagaErrorInfoErrorInjectedError represents the SagaErrorInfoError `"injectedError"`.
+	SagaErrorInfoErrorInjectedError SagaErrorInfoError = "injectedError"
+)
+
+// SagaErrorInfoSerializeFailed is the type definition for a SagaErrorInfoSerializeFailed.
+type SagaErrorInfoSerializeFailed struct {
+	Error   SagaErrorInfoError `json:"error,omitempty" yaml:"error,omitempty"`
+	Message string             `json:"message,omitempty" yaml:"message,omitempty"`
+}
+
+const (
+	// SagaErrorInfoErrorSerializeFailed represents the SagaErrorInfoError `"serializeFailed"`.
+	SagaErrorInfoErrorSerializeFailed SagaErrorInfoError = "serializeFailed"
+)
+
+// SagaErrorInfoSubsagaCreateFailed is the type definition for a SagaErrorInfoSubsagaCreateFailed.
+type SagaErrorInfoSubsagaCreateFailed struct {
+	Error   SagaErrorInfoError `json:"error,omitempty" yaml:"error,omitempty"`
+	Message string             `json:"message,omitempty" yaml:"message,omitempty"`
+}
+
+const (
+	// SagaErrorInfoErrorSubsagaCreateFailed represents the SagaErrorInfoError `"subsagaCreateFailed"`.
+	SagaErrorInfoErrorSubsagaCreateFailed SagaErrorInfoError = "subsagaCreateFailed"
+)
 
 // SagaResultsPage is a single page of results
 type SagaResultsPage struct {
@@ -501,8 +621,8 @@ type SagaResultsPage struct {
 }
 
 // SagaState is the type definition for a SagaState.
-// SagaState is the type definition for a SagaState.
-type SagaState struct {
+// SagaStateRunning is the type definition for a SagaStateRunning.
+type SagaStateRunning struct {
 	State SagaStateState `json:"state,omitempty" yaml:"state,omitempty"`
 }
 
@@ -514,10 +634,27 @@ const (
 	SagaStateStateRunning SagaStateState = "running"
 )
 
-// SagaStateStates is the collection of all SagaStateState values.
-var SagaStateStates = []SagaStateState{
-	SagaStateStateRunning,
+// SagaStateSucceeded is the type definition for a SagaStateSucceeded.
+type SagaStateSucceeded struct {
+	State SagaStateState `json:"state,omitempty" yaml:"state,omitempty"`
 }
+
+const (
+	// SagaStateStateSucceeded represents the SagaStateState `"succeeded"`.
+	SagaStateStateSucceeded SagaStateState = "succeeded"
+)
+
+// SagaStateFailed is the type definition for a SagaStateFailed.
+type SagaStateFailed struct {
+	ErrorInfo     SagaErrorInfo  `json:"error_info,omitempty" yaml:"error_info,omitempty"`
+	ErrorNodeName string         `json:"error_node_name,omitempty" yaml:"error_node_name,omitempty"`
+	State         SagaStateState `json:"state,omitempty" yaml:"state,omitempty"`
+}
+
+const (
+	// SagaStateStateFailed represents the SagaStateState `"failed"`.
+	SagaStateStateFailed SagaStateState = "failed"
+)
 
 // Sled is client view of an [`Sled`]
 type Sled struct {
@@ -621,12 +758,6 @@ const (
 	VPCFirewallRuleActionDeny VPCFirewallRuleAction = "deny"
 )
 
-// VPCFirewallRuleActions is the collection of all VPCFirewallRuleAction values.
-var VPCFirewallRuleActions = []VPCFirewallRuleAction{
-	VPCFirewallRuleActionAllow,
-	VPCFirewallRuleActionDeny,
-}
-
 // VPCFirewallRuleDirection is the type definition for a VPCFirewallRuleDirection.
 type VPCFirewallRuleDirection string
 
@@ -636,12 +767,6 @@ const (
 	// VPCFirewallRuleDirectionOutbound represents the VPCFirewallRuleDirection `"outbound"`.
 	VPCFirewallRuleDirectionOutbound VPCFirewallRuleDirection = "outbound"
 )
-
-// VPCFirewallRuleDirections is the collection of all VPCFirewallRuleDirection values.
-var VPCFirewallRuleDirections = []VPCFirewallRuleDirection{
-	VPCFirewallRuleDirectionInbound,
-	VPCFirewallRuleDirectionOutbound,
-}
 
 // VPCFirewallRuleFilter is filter for a firewall rule. A given packet must match every field that is present for the rule to apply to it. A packet matches a field if any entry in that field matches the packet.
 type VPCFirewallRuleFilter struct {
@@ -654,8 +779,8 @@ type VPCFirewallRuleFilter struct {
 }
 
 // VPCFirewallRuleHostFilter is a subset of [`NetworkTarget`], `VpcFirewallRuleHostFilter` specifies all possible targets that a route can forward to.
-// VPCFirewallRuleHostFilter is the type definition for a VPCFirewallRuleHostFilter.
-type VPCFirewallRuleHostFilter struct {
+// VPCFirewallRuleHostFilterVPC is the type definition for a VPCFirewallRuleHostFilterVPC.
+type VPCFirewallRuleHostFilterVPC struct {
 	Type VPCFirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
@@ -669,10 +794,52 @@ const (
 	VPCFirewallRuleHostFilterTypeVpc VPCFirewallRuleHostFilterType = "vpc"
 )
 
-// VPCFirewallRuleHostFilterTypes is the collection of all VPCFirewallRuleHostFilterType values.
-var VPCFirewallRuleHostFilterTypes = []VPCFirewallRuleHostFilterType{
-	VPCFirewallRuleHostFilterTypeVpc,
+// VPCFirewallRuleHostFilterSubnet is the type definition for a VPCFirewallRuleHostFilterSubnet.
+type VPCFirewallRuleHostFilterSubnet struct {
+	Type VPCFirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
+
+const (
+	// VPCFirewallRuleHostFilterTypeSubnet represents the VPCFirewallRuleHostFilterType `"subnet"`.
+	VPCFirewallRuleHostFilterTypeSubnet VPCFirewallRuleHostFilterType = "subnet"
+)
+
+// VPCFirewallRuleHostFilterInstance is the type definition for a VPCFirewallRuleHostFilterInstance.
+type VPCFirewallRuleHostFilterInstance struct {
+	Type VPCFirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+const (
+	// VPCFirewallRuleHostFilterTypeInstance represents the VPCFirewallRuleHostFilterType `"instance"`.
+	VPCFirewallRuleHostFilterTypeInstance VPCFirewallRuleHostFilterType = "instance"
+)
+
+// VPCFirewallRuleHostFilterIp is the type definition for a VPCFirewallRuleHostFilterIp.
+type VPCFirewallRuleHostFilterIp struct {
+	Type  VPCFirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value string                        `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+const (
+	// VPCFirewallRuleHostFilterTypeIp represents the VPCFirewallRuleHostFilterType `"ip"`.
+	VPCFirewallRuleHostFilterTypeIp VPCFirewallRuleHostFilterType = "ip"
+)
+
+// VPCFirewallRuleHostFilterInternetGateway is the type definition for a VPCFirewallRuleHostFilterInternetGateway.
+type VPCFirewallRuleHostFilterInternetGateway struct {
+	Type VPCFirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+const (
+	// VPCFirewallRuleHostFilterTypeInternetGateway represents the VPCFirewallRuleHostFilterType `"internetGateway"`.
+	VPCFirewallRuleHostFilterTypeInternetGateway VPCFirewallRuleHostFilterType = "internetGateway"
+)
 
 // VPCFirewallRuleProtocol is the protocols that may be specified in a firewall rule's filter
 type VPCFirewallRuleProtocol string
@@ -685,13 +852,6 @@ const (
 	// VPCFirewallRuleProtocolICMP represents the VPCFirewallRuleProtocol `"ICMP"`.
 	VPCFirewallRuleProtocolICMP VPCFirewallRuleProtocol = "ICMP"
 )
-
-// VPCFirewallRuleProtocols is the collection of all VPCFirewallRuleProtocol values.
-var VPCFirewallRuleProtocols = []VPCFirewallRuleProtocol{
-	VPCFirewallRuleProtocolTCP,
-	VPCFirewallRuleProtocolUDP,
-	VPCFirewallRuleProtocolICMP,
-}
 
 // VPCFirewallRuleResultsPage is a single page of results
 type VPCFirewallRuleResultsPage struct {
@@ -711,15 +871,9 @@ const (
 	VPCFirewallRuleStatusEnabled VPCFirewallRuleStatus = "enabled"
 )
 
-// VPCFirewallRuleStatuses is the collection of all VPCFirewallRuleStatus values.
-var VPCFirewallRuleStatuses = []VPCFirewallRuleStatus{
-	VPCFirewallRuleStatusDisabled,
-	VPCFirewallRuleStatusEnabled,
-}
-
 // VPCFirewallRuleTarget is a subset of [`NetworkTarget`], `VpcFirewallRuleTarget` specifies all possible targets that a firewall rule can be attached to.
-// VPCFirewallRuleTarget is the type definition for a VPCFirewallRuleTarget.
-type VPCFirewallRuleTarget struct {
+// VPCFirewallRuleTargetVPC is the type definition for a VPCFirewallRuleTargetVPC.
+type VPCFirewallRuleTargetVPC struct {
 	Type VPCFirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
@@ -733,10 +887,29 @@ const (
 	VPCFirewallRuleTargetTypeVpc VPCFirewallRuleTargetType = "vpc"
 )
 
-// VPCFirewallRuleTargetTypes is the collection of all VPCFirewallRuleTargetType values.
-var VPCFirewallRuleTargetTypes = []VPCFirewallRuleTargetType{
-	VPCFirewallRuleTargetTypeVpc,
+// VPCFirewallRuleTargetSubnet is the type definition for a VPCFirewallRuleTargetSubnet.
+type VPCFirewallRuleTargetSubnet struct {
+	Type VPCFirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
+
+const (
+	// VPCFirewallRuleTargetTypeSubnet represents the VPCFirewallRuleTargetType `"subnet"`.
+	VPCFirewallRuleTargetTypeSubnet VPCFirewallRuleTargetType = "subnet"
+)
+
+// VPCFirewallRuleTargetInstance is the type definition for a VPCFirewallRuleTargetInstance.
+type VPCFirewallRuleTargetInstance struct {
+	Type VPCFirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+const (
+	// VPCFirewallRuleTargetTypeInstance represents the VPCFirewallRuleTargetType `"instance"`.
+	VPCFirewallRuleTargetTypeInstance VPCFirewallRuleTargetType = "instance"
+)
 
 // VPCFirewallRuleUpdate is a single rule in a VPC firewall
 type VPCFirewallRuleUpdate struct {
@@ -797,12 +970,6 @@ const (
 	// VPCRouterKindCustom represents the VPCRouterKind `"custom"`.
 	VPCRouterKindCustom VPCRouterKind = "custom"
 )
-
-// VPCRouterKinds is the collection of all VPCRouterKind values.
-var VPCRouterKinds = []VPCRouterKind{
-	VPCRouterKindSystem,
-	VPCRouterKindCustom,
-}
 
 // VPCRouterResultsPage is a single page of results
 type VPCRouterResultsPage struct {
