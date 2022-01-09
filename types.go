@@ -1028,3 +1028,131 @@ type VPCUpdate struct {
 	DnsName     Name   `json:"dnsName,omitempty" yaml:"dnsName,omitempty"`
 	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
 }
+
+// VPCFirewallRuleHostFilterTypes is the collection of all VPCFirewallRuleHostFilterType values.
+var VPCFirewallRuleHostFilterTypes = []VPCFirewallRuleHostFilterType{
+	VPCFirewallRuleHostFilterTypeVpc,
+	VPCFirewallRuleHostFilterTypeSubnet,
+	VPCFirewallRuleHostFilterTypeInstance,
+	VPCFirewallRuleHostFilterTypeIp,
+	VPCFirewallRuleHostFilterTypeInternetGateway,
+}
+
+// VPCFirewallRuleProtocols is the collection of all VPCFirewallRuleProtocol values.
+var VPCFirewallRuleProtocols = []VPCFirewallRuleProtocol{
+	VPCFirewallRuleProtocolTCP,
+	VPCFirewallRuleProtocolUDP,
+	VPCFirewallRuleProtocolICMP,
+}
+
+// IDSortModes is the collection of all IDSortMode values.
+var IDSortModes = []IDSortMode{
+	IDSortModeIdAscending,
+}
+
+// SagaErrorInfoErrors is the collection of all SagaErrorInfoError values.
+var SagaErrorInfoErrors = []SagaErrorInfoError{
+	SagaErrorInfoErrorActionFailed,
+	SagaErrorInfoErrorDeserializeFailed,
+	SagaErrorInfoErrorInjectedError,
+	SagaErrorInfoErrorSerializeFailed,
+	SagaErrorInfoErrorSubsagaCreateFailed,
+}
+
+// VPCFirewallRuleActions is the collection of all VPCFirewallRuleAction values.
+var VPCFirewallRuleActions = []VPCFirewallRuleAction{
+	VPCFirewallRuleActionAllow,
+	VPCFirewallRuleActionDeny,
+}
+
+// VPCFirewallRuleDirections is the collection of all VPCFirewallRuleDirection values.
+var VPCFirewallRuleDirections = []VPCFirewallRuleDirection{
+	VPCFirewallRuleDirectionInbound,
+	VPCFirewallRuleDirectionOutbound,
+}
+
+// InstanceStates is the collection of all InstanceState values.
+var InstanceStates = []InstanceState{
+	InstanceStateCreating,
+	InstanceStateStarting,
+	InstanceStateRunning,
+	InstanceStateStopping,
+	InstanceStateStopped,
+	InstanceStateRebooting,
+	InstanceStateRepairing,
+	InstanceStateFailed,
+	InstanceStateDestroyed,
+}
+
+// VPCRouterKinds is the collection of all VPCRouterKind values.
+var VPCRouterKinds = []VPCRouterKind{
+	VPCRouterKindSystem,
+	VPCRouterKindCustom,
+}
+
+// VPCFirewallRuleTargetTypes is the collection of all VPCFirewallRuleTargetType values.
+var VPCFirewallRuleTargetTypes = []VPCFirewallRuleTargetType{
+	VPCFirewallRuleTargetTypeVpc,
+	VPCFirewallRuleTargetTypeSubnet,
+	VPCFirewallRuleTargetTypeInstance,
+}
+
+// DiskStateStates is the collection of all DiskStateState values.
+var DiskStateStates = []DiskStateState{
+	DiskStateStateCreating,
+	DiskStateStateDetached,
+	DiskStateStateAttaching,
+	DiskStateStateAttached,
+	DiskStateStateDetaching,
+	DiskStateStateDestroyed,
+	DiskStateStateFaulted,
+}
+
+// RouterRouteKinds is the collection of all RouterRouteKind values.
+var RouterRouteKinds = []RouterRouteKind{
+	RouterRouteKindDefault,
+	RouterRouteKindVpcSubnet,
+	RouterRouteKindVpcPeering,
+	RouterRouteKindCustom,
+}
+
+// SagaStateStates is the collection of all SagaStateState values.
+var SagaStateStates = []SagaStateState{
+	SagaStateStateRunning,
+	SagaStateStateSucceeded,
+	SagaStateStateFailed,
+}
+
+// VPCFirewallRuleStatuses is the collection of all VPCFirewallRuleStatus values.
+var VPCFirewallRuleStatuses = []VPCFirewallRuleStatus{
+	VPCFirewallRuleStatusDisabled,
+	VPCFirewallRuleStatusEnabled,
+}
+
+// NameOrIdSortModes is the collection of all NameOrIdSortMode values.
+var NameOrIdSortModes = []NameOrIdSortMode{
+	NameOrIdSortModeNameAscending,
+	NameOrIdSortModeNameDescending,
+	NameOrIdSortModeIdAscending,
+}
+
+// NameSortModes is the collection of all NameSortMode values.
+var NameSortModes = []NameSortMode{
+	NameSortModeNameAscending,
+}
+
+// RouteDestinationTypes is the collection of all RouteDestinationType values.
+var RouteDestinationTypes = []RouteDestinationType{
+	RouteDestinationTypeIp,
+	RouteDestinationTypeVpc,
+	RouteDestinationTypeSubnet,
+}
+
+// RouteTargetTypes is the collection of all RouteTargetType values.
+var RouteTargetTypes = []RouteTargetType{
+	RouteTargetTypeIp,
+	RouteTargetTypeVpc,
+	RouteTargetTypeSubnet,
+	RouteTargetTypeInstance,
+	RouteTargetTypeInternetGateway,
+}
