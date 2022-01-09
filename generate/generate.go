@@ -80,7 +80,14 @@ func generateTypes(doc *openapi3.T) {
 	}
 
 	// Iterate over all the enum types and add in the slices.
-	for name, enums := range EnumStringTypes {
+	// We want to ensure we keep the order so the diffs don't look like shit.
+	keys = make([]string, 0)
+	for k := range EnumStringTypes {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	for _, name := range keys {
+		enums := EnumStringTypes[name]
 		// Make the enum a collection of the values.
 		// Add a description.
 		fmt.Fprintf(f, "// %s is the collection of all %s values.\n", makePlural(name), makeSingular(name))
@@ -614,6 +621,14 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 				// and find the type that is a string.
 				var typeName string
 				for prop, p := range v.Value.Properties {
+					// We want to collect all the unique properties to create our global oneOf type.
+					propertyName := printType(prop, p)
+
+					propertyString := fmt.Sprintf("\t%s %s `json:\"%s,omitempty\" yaml:\"%s,omitempty\"`\n", printProperty(prop), propertyName, prop, prop)
+					if !contains(properties, propertyString) {
+						properties = append(properties, propertyString)
+					}
+
 					if p.Value.Type == "string" {
 						if p.Value.Enum != nil {
 							// We want to get the enum value.
@@ -624,16 +639,7 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 							}
 
 							typeName = printProperty(p.Value.Enum[0].(string))
-							break
 						}
-					}
-
-					// We want to collect all the unique properties to create our global oneOf type.
-					propertyName := printType(prop, p)
-
-					propertyString := fmt.Sprintf("\t%s %s `json:\"%s,omitempty\" yaml:\"%s,omitempty\"`\n", printProperty(prop), propertyName, prop, prop)
-					if !contains(properties, propertyString) {
-						properties = append(properties, propertyString)
 					}
 				}
 
