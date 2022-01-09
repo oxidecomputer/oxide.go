@@ -514,7 +514,7 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 	name = printProperty(name)
 	typeName := strings.TrimSpace(fmt.Sprintf("%s%s", name, printProperty(additionalName)))
 
-	if len(s.Enum) == 0 {
+	if len(s.Enum) == 0 && s.OneOf == nil {
 		// Write the type description.
 		writeSchemaTypeDescription(typeName, s, f)
 	}
@@ -652,7 +652,9 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 			}
 
 			// Now let's create the global oneOf type.
-			fmt.Fprintf(f, "type %s struct {\n", printProperty(name))
+			// Write the type description.
+			writeSchemaTypeDescription(typeName, s, f)
+			fmt.Fprintf(f, "type %s struct {\n", typeName)
 			// Iterate over the properties and write the types, if we need to.
 			for _, p := range properties {
 				fmt.Fprintf(f, p)

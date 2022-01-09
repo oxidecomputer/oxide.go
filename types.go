@@ -57,7 +57,6 @@ type DiskResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// DiskState is state of a Disk (primarily: attached or not)
 // DiskStateCreating is disk is being initialized
 type DiskStateCreating struct {
 	State DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
@@ -134,6 +133,7 @@ const (
 	DiskStateStateFaulted DiskStateState = "faulted"
 )
 
+// DiskState is state of a Disk (primarily: attached or not)
 type DiskState struct {
 	State    string `json:"state,omitempty" yaml:"state,omitempty"`
 	Instance string `json:"instance,omitempty" yaml:"instance,omitempty"`
@@ -392,7 +392,6 @@ type RackResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// RouteDestination is a subset of [`NetworkTarget`], `RouteDestination` specifies the kind of network traffic that will be matched to be forwarded to the [`RouteTarget`].
 // RouteDestinationIp is the type definition for a RouteDestinationIp.
 type RouteDestinationIp struct {
 	Type  RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
@@ -431,12 +430,12 @@ const (
 	RouteDestinationTypeSubnet RouteDestinationType = "subnet"
 )
 
+// RouteDestination is a subset of [`NetworkTarget`], `RouteDestination` specifies the kind of network traffic that will be matched to be forwarded to the [`RouteTarget`].
 type RouteDestination struct {
 	Type  string `json:"type,omitempty" yaml:"type,omitempty"`
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-// RouteTarget is a subset of [`NetworkTarget`], `RouteTarget` specifies all possible targets that a route can forward to.
 // RouteTargetIp is the type definition for a RouteTargetIp.
 type RouteTargetIp struct {
 	Type  RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
@@ -499,6 +498,7 @@ const (
 	RouteTargetTypeInternetGateway RouteTargetType = "internetGateway"
 )
 
+// RouteTarget is a subset of [`NetworkTarget`], `RouteTarget` specifies all possible targets that a route can forward to.
 type RouteTarget struct {
 	Type  string `json:"type,omitempty" yaml:"type,omitempty"`
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
@@ -569,7 +569,6 @@ type Saga struct {
 	State SagaState `json:"state,omitempty" yaml:"state,omitempty"`
 }
 
-// SagaErrorInfo is the type definition for a SagaErrorInfo.
 // SagaErrorInfoActionFailed is the type definition for a SagaErrorInfoActionFailed.
 type SagaErrorInfoActionFailed struct {
 	Error       SagaErrorInfoError `json:"error,omitempty" yaml:"error,omitempty"`
@@ -627,6 +626,7 @@ const (
 	SagaErrorInfoErrorSubsagaCreateFailed SagaErrorInfoError = "subsagaCreateFailed"
 )
 
+// SagaErrorInfo is the type definition for a SagaErrorInfo.
 type SagaErrorInfo struct {
 	Error       string      `json:"error,omitempty" yaml:"error,omitempty"`
 	SourceError interface{} `json:"source_error,omitempty" yaml:"source_error,omitempty"`
@@ -641,7 +641,6 @@ type SagaResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// SagaState is the type definition for a SagaState.
 // SagaStateRunning is the type definition for a SagaStateRunning.
 type SagaStateRunning struct {
 	State SagaStateState `json:"state,omitempty" yaml:"state,omitempty"`
@@ -677,6 +676,7 @@ const (
 	SagaStateStateFailed SagaStateState = "failed"
 )
 
+// SagaState is the type definition for a SagaState.
 type SagaState struct {
 	State         string        `json:"state,omitempty" yaml:"state,omitempty"`
 	ErrorInfo     SagaErrorInfo `json:"error_info,omitempty" yaml:"error_info,omitempty"`
@@ -805,7 +805,6 @@ type VPCFirewallRuleFilter struct {
 	Protocols []VPCFirewallRuleProtocol `json:"protocols,omitempty" yaml:"protocols,omitempty"`
 }
 
-// VPCFirewallRuleHostFilter is a subset of [`NetworkTarget`], `VpcFirewallRuleHostFilter` specifies all possible targets that a route can forward to.
 // VPCFirewallRuleHostFilterVPC is the type definition for a VPCFirewallRuleHostFilterVPC.
 type VPCFirewallRuleHostFilterVPC struct {
 	Type VPCFirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
@@ -868,6 +867,7 @@ const (
 	VPCFirewallRuleHostFilterTypeInternetGateway VPCFirewallRuleHostFilterType = "internetGateway"
 )
 
+// VPCFirewallRuleHostFilter is a subset of [`NetworkTarget`], `VpcFirewallRuleHostFilter` specifies all possible targets that a route can forward to.
 type VPCFirewallRuleHostFilter struct {
 	Type  string `json:"type,omitempty" yaml:"type,omitempty"`
 	Value Name   `json:"value,omitempty" yaml:"value,omitempty"`
@@ -903,7 +903,6 @@ const (
 	VPCFirewallRuleStatusEnabled VPCFirewallRuleStatus = "enabled"
 )
 
-// VPCFirewallRuleTarget is a subset of [`NetworkTarget`], `VpcFirewallRuleTarget` specifies all possible targets that a firewall rule can be attached to.
 // VPCFirewallRuleTargetVPC is the type definition for a VPCFirewallRuleTargetVPC.
 type VPCFirewallRuleTargetVPC struct {
 	Type VPCFirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
@@ -943,6 +942,7 @@ const (
 	VPCFirewallRuleTargetTypeInstance VPCFirewallRuleTargetType = "instance"
 )
 
+// VPCFirewallRuleTarget is a subset of [`NetworkTarget`], `VpcFirewallRuleTarget` specifies all possible targets that a firewall rule can be attached to.
 type VPCFirewallRuleTarget struct {
 	Type  string `json:"type,omitempty" yaml:"type,omitempty"`
 	Value Name   `json:"value,omitempty" yaml:"value,omitempty"`
