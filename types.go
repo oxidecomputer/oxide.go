@@ -509,8 +509,8 @@ const (
 
 // RouteDestination is a subset of [`NetworkTarget`], `RouteDestination` specifies the kind of network traffic that will be matched to be forwarded to the [`RouteTarget`].
 type RouteDestination struct {
-	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 	Type  string `json:"type,omitempty" yaml:"type,omitempty"`
+	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // RouteTargetIp is the type definition for a RouteTargetIp.
@@ -577,8 +577,8 @@ const (
 
 // RouteTarget is a subset of [`NetworkTarget`], `RouteTarget` specifies all possible targets that a route can forward to.
 type RouteTarget struct {
-	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 	Type  string `json:"type,omitempty" yaml:"type,omitempty"`
+	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // RouterRoute is a route defines a rule that governs where traffic should be sent based on its destination.

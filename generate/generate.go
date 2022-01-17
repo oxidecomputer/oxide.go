@@ -693,7 +693,16 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 				// We want to iterate over the properties of the embedded object
 				// and find the type that is a string.
 				var typeName string
-				for prop, p := range v.Value.Properties {
+
+				// Iterate over all the schema components in the spec and write the types.
+				// We want to ensure we keep the order so the diffs don't look like shit.
+				keys := make([]string, 0)
+				for k := range v.Value.Properties {
+					keys = append(keys, k)
+				}
+				sort.Strings(keys)
+				for _, prop := range keys {
+					p := v.Value.Properties[prop]
 					// We want to collect all the unique properties to create our global oneOf type.
 					propertyName := printType(prop, p)
 
