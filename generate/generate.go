@@ -463,7 +463,15 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 	if len(params) > 0 {
 		fmt.Fprintln(f, "// Add the parameters to the url.")
 		fmt.Fprintln(f, "if err := expandURL(req.URL, map[string]string{")
-		for name, p := range params {
+		// Iterate over all the paths in the spec and write the types.
+		// We want to ensure we keep the order so the diffs don't look like shit.
+		keys := make([]string, 0)
+		for k := range params {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for _, name := range keys {
+			p := params[name]
 			t := printType(name, p.Schema)
 			if t == "string" {
 				fmt.Fprintf(f, "	%q: %s,\n", strcase.ToLowerCamel(name), strcase.ToLowerCamel(name))
