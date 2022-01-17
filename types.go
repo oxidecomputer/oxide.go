@@ -9,6 +9,30 @@ import "time"
 // The maximum supported byte count is [`i64::MAX`].  This makes it somewhat inconvenient to define constructors: a u32 constructor can be infallible, but an i64 constructor can fail (if the value is negative) and a u64 constructor can fail (if the value is larger than i64::MAX).  We provide all of these for consumers' convenience.
 type ByteCount int
 
+// DatumType is the type of an individual datum of a metric.
+type DatumType string
+
+const (
+	// DatumTypeBool represents the DatumType `"Bool"`.
+	DatumTypeBool DatumType = "Bool"
+	// DatumTypeI64 represents the DatumType `"I64"`.
+	DatumTypeI64 DatumType = "I64"
+	// DatumTypeF64 represents the DatumType `"F64"`.
+	DatumTypeF64 DatumType = "F64"
+	// DatumTypeString represents the DatumType `"String"`.
+	DatumTypeString DatumType = "String"
+	// DatumTypeBytes represents the DatumType `"Bytes"`.
+	DatumTypeBytes DatumType = "Bytes"
+	// DatumTypeCumulativeI64 represents the DatumType `"CumulativeI64"`.
+	DatumTypeCumulativeI64 DatumType = "CumulativeI64"
+	// DatumTypeCumulativeF64 represents the DatumType `"CumulativeF64"`.
+	DatumTypeCumulativeF64 DatumType = "CumulativeF64"
+	// DatumTypeHistogramI64 represents the DatumType `"HistogramI64"`.
+	DatumTypeHistogramI64 DatumType = "HistogramI64"
+	// DatumTypeHistogramF64 represents the DatumType `"HistogramF64"`.
+	DatumTypeHistogramF64 DatumType = "HistogramF64"
+)
+
 // Disk is client view of an [`Disk`]
 type Disk struct {
 	// Description is human-readable free-form text about a resource
@@ -138,6 +162,41 @@ type DiskState struct {
 	State    string `json:"state,omitempty" yaml:"state,omitempty"`
 	Instance string `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
+
+// FieldSchema is the name and type information for a field of a timeseries schema.
+type FieldSchema struct {
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
+	// Source is the source from which a field is derived, the target or metric.
+	Source FieldSource `json:"source,omitempty" yaml:"source,omitempty"`
+	// Ty is the `FieldType` identifies the data type of a target or metric field.
+	Ty FieldType `json:"ty,omitempty" yaml:"ty,omitempty"`
+}
+
+// FieldSource is the source from which a field is derived, the target or metric.
+type FieldSource string
+
+const (
+	// FieldSourceTarget represents the FieldSource `"Target"`.
+	FieldSourceTarget FieldSource = "Target"
+	// FieldSourceMetric represents the FieldSource `"Metric"`.
+	FieldSourceMetric FieldSource = "Metric"
+)
+
+// FieldType is the `FieldType` identifies the data type of a target or metric field.
+type FieldType string
+
+const (
+	// FieldTypeString represents the FieldType `"String"`.
+	FieldTypeString FieldType = "String"
+	// FieldTypeI64 represents the FieldType `"I64"`.
+	FieldTypeI64 FieldType = "I64"
+	// FieldTypeIpAddr represents the FieldType `"IpAddr"`.
+	FieldTypeIpAddr FieldType = "IpAddr"
+	// FieldTypeUuid represents the FieldType `"Uuid"`.
+	FieldTypeUuid FieldType = "Uuid"
+	// FieldTypeBool represents the FieldType `"Bool"`.
+	FieldTypeBool FieldType = "Bool"
+)
 
 // IDSortMode is supported set of sort modes for scanning by id only.
 //
@@ -392,6 +451,24 @@ type RackResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+// Role is client view of a [`Role`]
+type Role struct {
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Name is role names consist of two string components separated by dot (".").
+	Name RoleName `json:"name,omitempty" yaml:"name,omitempty"`
+}
+
+// RoleName is role names consist of two string components separated by dot (".").
+type RoleName string
+
+// RoleResultsPage is a single page of results
+type RoleResultsPage struct {
+	// Items is list of items on this page of results
+	Items []Role `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
 // RouteDestinationIp is the type definition for a RouteDestinationIp.
 type RouteDestinationIp struct {
 	Type  RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
@@ -500,8 +577,8 @@ const (
 
 // RouteTarget is a subset of [`NetworkTarget`], `RouteTarget` specifies all possible targets that a route can forward to.
 type RouteTarget struct {
-	Type  string `json:"type,omitempty" yaml:"type,omitempty"`
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
+	Type  string `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // RouterRoute is a route defines a rule that governs where traffic should be sent based on its destination.
@@ -683,6 +760,11 @@ type SagaState struct {
 	ErrorNodeName string        `json:"error_node_name,omitempty" yaml:"error_node_name,omitempty"`
 }
 
+// SessionUser is client view of currently authed user.
+type SessionUser struct {
+	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+}
+
 // Sled is client view of an [`Sled`]
 type Sled struct {
 	// Description is human-readable free-form text about a resource
@@ -702,6 +784,29 @@ type Sled struct {
 type SledResultsPage struct {
 	// Items is list of items on this page of results
 	Items []Sled `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// TimeseriesName is names are constructed by concatenating the target and metric names with ':'. Target and metric names must be lowercase alphanumeric characters with '_' separating words.
+type TimeseriesName string
+
+// TimeseriesSchema is the schema for a timeseries.
+//
+// This includes the name of the timeseries, as well as the datum type of its metric and the schema for each field.
+type TimeseriesSchema struct {
+	Created *time.Time `json:"created,omitempty" yaml:"created,omitempty"`
+	// DatumType is the type of an individual datum of a metric.
+	DatumType   DatumType     `json:"datum_type,omitempty" yaml:"datum_type,omitempty"`
+	FieldSchema []FieldSchema `json:"field_schema,omitempty" yaml:"field_schema,omitempty"`
+	// TimeseriesName is names are constructed by concatenating the target and metric names with ':'. Target and metric names must be lowercase alphanumeric characters with '_' separating words.
+	TimeseriesName TimeseriesName `json:"timeseries_name,omitempty" yaml:"timeseries_name,omitempty"`
+}
+
+// TimeseriesSchemaResultsPage is a single page of results
+type TimeseriesSchemaResultsPage struct {
+	// Items is list of items on this page of results
+	Items []TimeseriesSchema `json:"items,omitempty" yaml:"items,omitempty"`
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
@@ -1066,6 +1171,19 @@ type VPCUpdate struct {
 	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
+// DatumTypes is the collection of all DatumType values.
+var DatumTypes = []DatumType{
+	DatumTypeBool,
+	DatumTypeBytes,
+	DatumTypeCumulativeF64,
+	DatumTypeCumulativeI64,
+	DatumTypeF64,
+	DatumTypeHistogramF64,
+	DatumTypeHistogramI64,
+	DatumTypeI64,
+	DatumTypeString,
+}
+
 // DiskStateStates is the collection of all DiskStateState values.
 var DiskStateStates = []DiskStateState{
 	DiskStateStateAttached,
@@ -1075,6 +1193,21 @@ var DiskStateStates = []DiskStateState{
 	DiskStateStateDetached,
 	DiskStateStateDetaching,
 	DiskStateStateFaulted,
+}
+
+// FieldSources is the collection of all FieldSource values.
+var FieldSources = []FieldSource{
+	FieldSourceMetric,
+	FieldSourceTarget,
+}
+
+// FieldTypes is the collection of all FieldType values.
+var FieldTypes = []FieldType{
+	FieldTypeBool,
+	FieldTypeI64,
+	FieldTypeIpAddr,
+	FieldTypeString,
+	FieldTypeUuid,
 }
 
 // IDSortModes is the collection of all IDSortMode values.

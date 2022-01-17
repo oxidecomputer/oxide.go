@@ -3,7 +3,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -55,6 +57,18 @@ func main() {
 
 	// Generate the paths.go file.
 	generatePaths(doc)
+
+	// Write back out the new spec.
+	out, err := json.MarshalIndent(doc, "", "  ")
+	if err != nil {
+		fmt.Printf("error marshalling openAPI spec: %v\n", err)
+		os.Exit(1)
+	}
+	if err := ioutil.WriteFile(p, out, 0644); err != nil {
+		fmt.Printf("error writing openAPI spec to %s: %v\n", p, err)
+		os.Exit(1)
+	}
+
 }
 
 // Generate the types.go file.
@@ -476,6 +490,10 @@ func cleanPath(path string) string {
 
 func getSuccessResponseType(o *openapi3.Operation) string {
 	for name, response := range o.Responses {
+		if name == "default" {
+			name = "200"
+		}
+
 		statusCode, err := strconv.Atoi(name)
 		if err != nil {
 			fmt.Printf("error converting %q to an integer: %v\n", name, err)

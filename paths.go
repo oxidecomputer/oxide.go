@@ -27,9 +27,9 @@ func (c *Client) HardwareRacksGet(limit int, pageToken string, sortBy IDSortMode
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"sortBy":    string(sortBy),
 		"limit":     strconv.Itoa(limit),
 		"pageToken": pageToken,
+		"sortBy":    string(sortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -113,9 +113,9 @@ func (c *Client) HardwareSledsGet(limit int, pageToken string, sortBy IDSortMode
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
+		"sortBy":    string(sortBy),
 		"limit":     strconv.Itoa(limit),
 		"pageToken": pageToken,
-		"sortBy":    string(sortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -183,6 +183,59 @@ func (c *Client) HardwareSledsGetSled(sledId string) (*Sled, error) {
 	return &body, nil
 }
 
+// SpoofLogin:
+func (c *Client) SpoofLogin(j *LoginParams) error {
+	// Create the url.
+	path := "/login"
+	uri := resolveRelative(c.server, path)
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return fmt.Errorf("encoding json body request failed: %v", err)
+	}
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, b)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+	// Return.
+	return nil
+}
+
+// Logout:
+func (c *Client) Logout() error {
+	// Create the url.
+	path := "/logout"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, nil)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+	// Return.
+	return nil
+}
+
 // OrganizationsGet:
 //
 // List all organizations.
@@ -199,9 +252,9 @@ func (c *Client) OrganizationsGet(limit int, pageToken string, sortBy NameOrIdSo
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"limit":     strconv.Itoa(limit),
 		"pageToken": pageToken,
 		"sortBy":    string(sortBy),
+		"limit":     strconv.Itoa(limit),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -406,10 +459,10 @@ func (c *Client) OrganizationProjectsGet(limit int, pageToken string, sortBy Nam
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"pageToken":        pageToken,
-		"sortBy":           string(sortBy),
 		"organizationName": string(organizationName),
 		"limit":            strconv.Itoa(limit),
+		"pageToken":        pageToken,
+		"sortBy":           string(sortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -625,11 +678,11 @@ func (c *Client) ProjectDisksGet(limit int, pageToken string, sortBy NameSortMod
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"limit":            strconv.Itoa(limit),
 		"pageToken":        pageToken,
 		"sortBy":           string(sortBy),
 		"organizationName": string(organizationName),
 		"projectName":      string(projectName),
+		"limit":            strconv.Itoa(limit),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -895,9 +948,9 @@ func (c *Client) ProjectInstancesGetInstance(instanceName Name, organizationName
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
+		"projectName":      string(projectName),
 		"instanceName":     string(instanceName),
 		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -975,12 +1028,12 @@ func (c *Client) InstanceDisksGet(limit int, pageToken string, sortBy NameSortMo
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
 		"limit":            strconv.Itoa(limit),
 		"pageToken":        pageToken,
 		"sortBy":           string(sortBy),
 		"instanceName":     string(instanceName),
-		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1025,9 +1078,9 @@ func (c *Client) InstanceDisksAttach(instanceName Name, organizationName Name, p
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"organizationName": string(organizationName),
 		"projectName":      string(projectName),
 		"instanceName":     string(instanceName),
+		"organizationName": string(organizationName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1072,9 +1125,9 @@ func (c *Client) InstanceDisksDetach(instanceName Name, organizationName Name, p
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
+		"instanceName":     string(instanceName),
 		"organizationName": string(organizationName),
 		"projectName":      string(projectName),
-		"instanceName":     string(instanceName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1116,9 +1169,9 @@ func (c *Client) ProjectInstancesInstanceReboot(instanceName Name, organizationN
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"projectName":      string(projectName),
 		"instanceName":     string(instanceName),
 		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1160,9 +1213,9 @@ func (c *Client) ProjectInstancesInstanceStart(instanceName Name, organizationNa
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"projectName":      string(projectName),
 		"instanceName":     string(instanceName),
 		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1204,9 +1257,9 @@ func (c *Client) ProjectInstancesInstanceStop(instanceName Name, organizationNam
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
+		"projectName":      string(projectName),
 		"instanceName":     string(instanceName),
 		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1655,10 +1708,10 @@ func (c *Client) VpcRoutersGetRouter(organizationName Name, projectName Name, ro
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
 		"routerName":       string(routerName),
 		"vpcName":          string(vpcName),
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1779,13 +1832,13 @@ func (c *Client) RoutersRoutesGet(limit int, pageToken string, sortBy NameSortMo
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"routerName":       string(routerName),
 		"vpcName":          string(vpcName),
 		"limit":            strconv.Itoa(limit),
 		"pageToken":        pageToken,
 		"sortBy":           string(sortBy),
 		"organizationName": string(organizationName),
 		"projectName":      string(projectName),
+		"routerName":       string(routerName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1832,10 +1885,10 @@ func (c *Client) RoutersRoutesPost(organizationName Name, projectName Name, rout
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"organizationName": string(organizationName),
 		"projectName":      string(projectName),
 		"routerName":       string(routerName),
 		"vpcName":          string(vpcName),
+		"organizationName": string(organizationName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1877,11 +1930,11 @@ func (c *Client) RoutersRoutesGetRoute(organizationName Name, projectName Name, 
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
 		"routeName":        string(routeName),
 		"routerName":       string(routerName),
 		"vpcName":          string(vpcName),
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1928,11 +1981,11 @@ func (c *Client) RoutersRoutesPutRoute(organizationName Name, projectName Name, 
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"projectName":      string(projectName),
-		"routeName":        string(routeName),
 		"routerName":       string(routerName),
 		"vpcName":          string(vpcName),
 		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
+		"routeName":        string(routeName),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1966,11 +2019,11 @@ func (c *Client) RoutersRoutesDeleteRoute(organizationName Name, projectName Nam
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"projectName":      string(projectName),
-		"routeName":        string(routeName),
 		"routerName":       string(routerName),
 		"vpcName":          string(vpcName),
 		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
+		"routeName":        string(routeName),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -2004,12 +2057,12 @@ func (c *Client) VpcSubnetsGet(limit int, pageToken string, sortBy NameSortMode,
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"sortBy":           string(sortBy),
-		"organizationName": string(organizationName),
 		"projectName":      string(projectName),
 		"vpcName":          string(vpcName),
 		"limit":            strconv.Itoa(limit),
 		"pageToken":        pageToken,
+		"sortBy":           string(sortBy),
+		"organizationName": string(organizationName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -2150,10 +2203,10 @@ func (c *Client) VpcSubnetsPutSubnet(organizationName Name, projectName Name, su
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
+		"projectName":      string(projectName),
 		"subnetName":       string(subnetName),
 		"vpcName":          string(vpcName),
 		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -2187,10 +2240,10 @@ func (c *Client) VpcSubnetsDeleteSubnet(organizationName Name, projectName Name,
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"subnetName":       string(subnetName),
-		"vpcName":          string(vpcName),
 		"organizationName": string(organizationName),
 		"projectName":      string(projectName),
+		"subnetName":       string(subnetName),
+		"vpcName":          string(vpcName),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -2224,13 +2277,13 @@ func (c *Client) SubnetsIpsGet(limit int, pageToken string, sortBy NameSortMode,
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"sortBy":           string(sortBy),
-		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
 		"subnetName":       string(subnetName),
 		"vpcName":          string(vpcName),
 		"limit":            strconv.Itoa(limit),
 		"pageToken":        pageToken,
+		"sortBy":           string(sortBy),
+		"organizationName": string(organizationName),
+		"projectName":      string(projectName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -2256,6 +2309,91 @@ func (c *Client) SubnetsIpsGet(limit int, pageToken string, sortBy NameSortMode,
 	return &body, nil
 }
 
+// RolesGet:
+//
+// List the built-in roles
+//
+// Parameters:
+func (c *Client) RolesGet(limit int, pageToken string) (*RoleResultsPage, error) {
+	// Create the url.
+	path := "/roles"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"limit":     strconv.Itoa(limit),
+		"pageToken": pageToken,
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body RoleResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// RolesGetRole:
+//
+// Fetch a specific built-in role
+//
+// Parameters:
+func (c *Client) RolesGetRole(roleName string) (*Role, error) {
+	// Create the url.
+	path := "/roles/{{.role_name}}"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"roleName": roleName,
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body Role
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
 // SagasGet:
 //
 // List all sagas (for debugging)
@@ -2272,9 +2410,9 @@ func (c *Client) SagasGet(limit int, pageToken string, sortBy IDSortMode) (*Saga
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
+		"limit":     strconv.Itoa(limit),
 		"pageToken": pageToken,
 		"sortBy":    string(sortBy),
-		"limit":     strconv.Itoa(limit),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -2335,6 +2473,83 @@ func (c *Client) SagasGetSaga(sagaId string) (*Saga, error) {
 		return nil, errors.New("request returned an empty body in the response")
 	}
 	var body Saga
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// SessionMe:
+//
+// Fetch the user associated with the current session
+func (c *Client) SessionMe() (*SessionUser, error) {
+	// Create the url.
+	path := "/session/me"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body SessionUser
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// TimeseriesSchemaGet:
+//
+// List all timeseries schema
+//
+// Parameters:
+func (c *Client) TimeseriesSchemaGet(limit int, pageToken string) (*TimeseriesSchemaResultsPage, error) {
+	// Create the url.
+	path := "/timeseries/schema"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"limit":     strconv.Itoa(limit),
+		"pageToken": pageToken,
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body TimeseriesSchemaResultsPage
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
