@@ -5,6 +5,7 @@ on:
   pull_request:
     paths:
       - 'Makefile'
+      - 'spec.json'
       - .github/workflows/generate.yml
   workflow_dispatch:
     inputs:
