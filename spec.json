@@ -7,11 +7,18 @@
       "url": "https://oxide.computer",
       "email": "api@oxide.computer"
     },
-    "version": "0.0.1"
+    "version": "0.0.1",
+    "x-rust": {
+      "client": "use oxide_api::Client;\n\nlet client = Client::new(String::from(\"api-key\"));",
+      "install": "[dependencies]\noxide-api = \"0.1.0-rc.7\""
+    }
   },
   "paths": {
     "/hardware/racks": {
       "get": {
+        "tags": [
+          "hardware"
+        ],
         "description": "List racks in the system.",
         "operationId": "hardware_racks_get",
         "parameters": [
@@ -58,11 +65,18 @@
             }
           }
         },
-        "x-dropshot-pagination": true
+        "x-dropshot-pagination": true,
+        "x-rust": {
+          "example": "let vec_crate_types_rack = client.hardware().racks_get(limit, page_token, sort_by).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/hardware/struct.Hardware.html#method.racks_get"
+        }
       }
     },
     "/hardware/racks/{rack_id}": {
       "get": {
+        "tags": [
+          "hardware"
+        ],
         "description": "Fetch information about a particular rack.",
         "operationId": "hardware_racks_get_rack",
         "parameters": [
@@ -89,11 +103,18 @@
               }
             }
           }
+        },
+        "x-rust": {
+          "example": "let rack = client.hardware().racks_get_rack(rack_id).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/hardware/struct.Hardware.html#method.racks_get_rack"
         }
       }
     },
     "/hardware/sleds": {
       "get": {
+        "tags": [
+          "hardware"
+        ],
         "description": "List sleds in the system.",
         "operationId": "hardware_sleds_get",
         "parameters": [
@@ -140,11 +161,18 @@
             }
           }
         },
-        "x-dropshot-pagination": true
+        "x-dropshot-pagination": true,
+        "x-rust": {
+          "example": "let vec_crate_types_sled = client.hardware().sleds_get(limit, page_token, sort_by).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/hardware/struct.Hardware.html#method.sleds_get"
+        }
       }
     },
     "/hardware/sleds/{sled_id}": {
       "get": {
+        "tags": [
+          "hardware"
+        ],
         "description": "Fetch information about a sled in the system.",
         "operationId": "hardware_sleds_get_sled",
         "parameters": [
@@ -171,11 +199,56 @@
               }
             }
           }
+        },
+        "x-rust": {
+          "example": "let sled = client.hardware().sleds_get_sled(sled_id).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/hardware/struct.Hardware.html#method.sleds_get_sled"
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "operationId": "spoof_login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginParams"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "x-rust": {
+          "example": "client.login().spoof(body).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/login/struct.Login.html#method.spoof"
+        }
+      }
+    },
+    "/logout": {
+      "post": {
+        "operationId": "logout",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        },
+        "x-rust": {
+          "example": "client.logout().get().await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/logout/struct.Logout.html#method.get"
         }
       }
     },
     "/organizations": {
       "get": {
+        "tags": [
+          "organizations"
+        ],
         "description": "List all organizations.",
         "operationId": "organizations_get",
         "parameters": [
@@ -222,9 +295,16 @@
             }
           }
         },
-        "x-dropshot-pagination": true
+        "x-dropshot-pagination": true,
+        "x-rust": {
+          "example": "let vec_crate_types_user = client.organizations().get_page(limit, page_token, sort_by).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/organizations/struct.Organizations.html#method.get_page"
+        }
       },
       "post": {
+        "tags": [
+          "organizations"
+        ],
         "description": "Create a new organization.",
         "operationId": "organizations_post",
         "requestBody": {
@@ -248,11 +328,18 @@
               }
             }
           }
+        },
+        "x-rust": {
+          "example": "let user = client.organizations().post(body).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/organizations/struct.Organizations.html#method.post"
         }
       }
     },
     "/organizations/{organization_name}": {
       "get": {
+        "tags": [
+          "organizations"
+        ],
         "description": "Fetch a specific organization",
         "operationId": "organizations_get_organization",
         "parameters": [
@@ -277,9 +364,16 @@
               }
             }
           }
+        },
+        "x-rust": {
+          "example": "let user = client.organizations().get(organization_name).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/organizations/struct.Organizations.html#method.get"
         }
       },
       "put": {
+        "tags": [
+          "organizations"
+        ],
         "description": "Update a specific organization.\n * TODO-correctness: Is it valid for PUT to accept application/json that's a subset of what the resource actually represents?  If not, is that a problem? (HTTP may require that this be idempotent.)  If so, can we get around that having this be a slightly different content-type (e.g., \"application/json-patch\")?  We should see what other APIs do.",
         "operationId": "organizations_put_organization",
         "parameters": [
@@ -314,9 +408,16 @@
               }
             }
           }
+        },
+        "x-rust": {
+          "example": "let user = client.organizations().put(organization_name, body).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/organizations/struct.Organizations.html#method.put"
         }
       },
       "delete": {
+        "tags": [
+          "organizations"
+        ],
         "description": "Delete a specific organization.",
         "operationId": "organizations_delete_organization",
         "parameters": [
@@ -334,11 +435,18 @@
           "204": {
             "description": "successful deletion"
           }
+        },
+        "x-rust": {
+          "example": "client.organizations().delete(organization_name).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/organizations/struct.Organizations.html#method.delete"
         }
       }
     },
     "/organizations/{organization_name}/projects": {
       "get": {
+        "tags": [
+          "projects"
+        ],
         "description": "List all projects.",
         "operationId": "organization_projects_get",
         "parameters": [
@@ -394,9 +502,16 @@
             }
           }
         },
-        "x-dropshot-pagination": true
+        "x-dropshot-pagination": true,
+        "x-rust": {
+          "example": "let vec_crate_types_project = client.projects().get_page(limit, page_token, sort_by, organization_name).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/projects/struct.Projects.html#method.get_page"
+        }
       },
       "post": {
+        "tags": [
+          "projects"
+        ],
         "description": "Create a new project.",
         "operationId": "organization_projects_post",
         "parameters": [
@@ -431,11 +546,18 @@
               }
             }
           }
+        },
+        "x-rust": {
+          "example": "let project = client.projects().post(organization_name, body).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/projects/struct.Projects.html#method.post"
         }
       }
     },
     "/organizations/{organization_name}/projects/{project_name}": {
       "get": {
+        "tags": [
+          "projects"
+        ],
         "description": "Fetch a specific project",
         "operationId": "organization_projects_get_project",
         "parameters": [
@@ -469,9 +591,16 @@
               }
             }
           }
+        },
+        "x-rust": {
+          "example": "let project = client.projects().get(organization_name, project_name).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/projects/struct.Projects.html#method.get"
         }
       },
       "put": {
+        "tags": [
+          "organizations"
+        ],
         "description": "Update a specific project.\n * TODO-correctness: Is it valid for PUT to accept application/json that's a subset of what the resource actually represents?  If not, is that a problem? (HTTP may require that this be idempotent.)  If so, can we get around that having this be a slightly different content-type (e.g., \"application/json-patch\")?  We should see what other APIs do.",
         "operationId": "organization_projects_put_project",
         "parameters": [
@@ -515,9 +644,16 @@
               }
             }
           }
+        },
+        "x-rust": {
+          "example": "let project = client.organizations().projects_put_project(organization_name, project_name, body).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/organizations/struct.Organizations.html#method.projects_put_project"
         }
       },
       "delete": {
+        "tags": [
+          "projects"
+        ],
         "description": "Delete a specific project.",
         "operationId": "organization_projects_delete_project",
         "parameters": [
@@ -544,11 +680,18 @@
           "204": {
             "description": "successful deletion"
           }
+        },
+        "x-rust": {
+          "example": "client.projects().delete(organization_name, project_name).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/projects/struct.Projects.html#method.delete"
         }
       }
     },
     "/organizations/{organization_name}/projects/{project_name}/disks": {
       "get": {
+        "tags": [
+          "projects"
+        ],
         "description": "List disks in a project.",
         "operationId": "project_disks_get",
         "parameters": [
@@ -613,9 +756,16 @@
             }
           }
         },
-        "x-dropshot-pagination": true
+        "x-dropshot-pagination": true,
+        "x-rust": {
+          "example": "let vec_crate_types_disk = client.projects().disks_get(limit, page_token, sort_by, organization_name, project_name).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/projects/struct.Projects.html#method.disks_get"
+        }
       },
       "post": {
+        "tags": [
+          "projects"
+        ],
         "description": "Create a disk in a project.\n * TODO-correctness See note about instance create.  This should be async.",
         "operationId": "project_disks_post",
         "parameters": [
@@ -659,11 +809,18 @@
               }
             }
           }
+        },
+        "x-rust": {
+          "example": "let disk = client.projects().disks_post(organization_name, project_name, body).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/projects/struct.Projects.html#method.disks_post"
         }
       }
     },
     "/organizations/{organization_name}/projects/{project_name}/disks/{disk_name}": {
       "get": {
+        "tags": [
+          "projects"
+        ],
         "description": "Fetch a single disk in a project.",
         "operationId": "project_disks_get_disk",
         "parameters": [
@@ -706,9 +863,16 @@
               }
             }
           }
+        },
+        "x-rust": {
+          "example": "let disk = client.projects().disks_get_disk(disk_name, organization_name, project_name).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/projects/struct.Projects.html#method.disks_get_disk"
         }
       },
       "delete": {
+        "tags": [
+          "projects"
+        ],
         "description": "Delete a disk from a project.",
         "operationId": "project_disks_delete_disk",
         "parameters": [
@@ -744,11 +908,18 @@
           "204": {
             "description": "successful deletion"
           }
+        },
+        "x-rust": {
+          "example": "client.projects().disks_delete_disk(disk_name, organization_name, project_name).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/projects/struct.Projects.html#method.disks_delete_disk"
         }
       }
     },
     "/organizations/{organization_name}/projects/{project_name}/instances": {
       "get": {
+        "tags": [
+          "instances"
+        ],
         "description": "List instances in a project.",
         "operationId": "project_instances_get",
         "parameters": [
@@ -813,9 +984,16 @@
             }
           }
         },
-        "x-dropshot-pagination": true
+        "x-dropshot-pagination": true,
+        "x-rust": {
+          "example": "let vec_crate_types_instance = client.instances().get_page(limit, page_token, sort_by, organization_name, project_name).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/instances/struct.Instances.html#method.get_page"
+        }
       },
       "post": {
+        "tags": [
+          "instances"
+        ],
         "description": "Create an instance in a project.\n * TODO-correctness This is supposed to be async.  Is that right?  We can create the instance immediately -- it's just not booted yet.  Maybe the boot operation is what's a separate operation_id.  What about the response code (201 Created vs 202 Accepted)?  Is that orthogonal?  Things can return a useful response, including an operation id, with either response code.  Maybe a \"reboot\" operation would return a 202 Accepted because there's no actual resource created?",
         "operationId": "project_instances_post",
         "parameters": [
@@ -859,11 +1037,18 @@
               }
             }
           }
+        },
+        "x-rust": {
+          "example": "let instance = client.instances().post(organization_name, project_name, body).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/instances/struct.Instances.html#method.post"
         }
       }
     },
     "/organizations/{organization_name}/projects/{project_name}/instances/{instance_name}": {
       "get": {
+        "tags": [
+          "instances"
+        ],
         "description": "Get an instance in a project.",
         "operationId": "project_instances_get_instance",
         "parameters": [
@@ -906,9 +1091,16 @@
               }
             }
           }
+        },
+        "x-rust": {
+          "example": "let instance = client.instances().get(instance_name, organization_name, project_name).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/instances/struct.Instances.html#method.get"
         }
       },
       "delete": {
+        "tags": [
+          "instances"
+        ],
         "description": "Delete an instance from a project.",
         "operationId": "project_instances_delete_instance",
         "parameters": [
@@ -944,11 +1136,18 @@
           "204": {
             "description": "successful deletion"
           }
+        },
+        "x-rust": {
+          "example": "client.instances().delete(instance_name, organization_name, project_name).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/instances/struct.Instances.html#method.delete"
         }
       }
     },
     "/organizations/{organization_name}/projects/{project_name}/instances/{instance_name}/disks": {
       "get": {
+        "tags": [
+          "instances"
+        ],
         "description": "List disks attached to this instance.",
         "operationId": "instance_disks_get",
         "parameters": [
@@ -1022,11 +1221,18 @@
             }
           }
         },
-        "x-dropshot-pagination": true
+        "x-dropshot-pagination": true,
+        "x-rust": {
+          "example": "let vec_crate_types_disk = client.instances().disks_get(limit, page_token, sort_by, instance_name, organization_name, project_name).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/instances/struct.Instances.html#method.disks_get"
+        }
       }
     },
     "/organizations/{organization_name}/projects/{project_name}/instances/{instance_name}/disks/attach": {
       "post": {
+        "tags": [
+          "instances"
+        ],
         "operationId": "instance_disks_attach",
         "parameters": [
           {
@@ -1078,11 +1284,18 @@
               }
             }
           }
+        },
+        "x-rust": {
+          "example": "let disk = client.instances().disks_attach(instance_name, organization_name, project_name, body).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/instances/struct.Instances.html#method.disks_attach"
         }
       }
     },
     "/organizations/{organization_name}/projects/{project_name}/instances/{instance_name}/disks/detach": {
       "post": {
+        "tags": [
+          "instances"
+        ],
         "operationId": "instance_disks_detach",
         "parameters": [
           {
@@ -1134,11 +1347,18 @@
               }
             }
           }
+        },
+        "x-rust": {
+          "example": "let disk = client.instances().disks_detach(instance_name, organization_name, project_name, body).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/instances/struct.Instances.html#method.disks_detach"
         }
       }
     },
     "/organizations/{organization_name}/projects/{project_name}/instances/{instance_name}/reboot": {
       "post": {
+        "tags": [
+          "instances"
+        ],
         "description": "Reboot an instance.",
         "operationId": "project_instances_instance_reboot",
         "parameters": [
@@ -1181,11 +1401,18 @@
               }
             }
           }
+        },
+        "x-rust": {
+          "example": "let instance = client.instances().reboot(instance_name, organization_name, project_name).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/instances/struct.Instances.html#method.reboot"
         }
       }
     },
     "/organizations/{organization_name}/projects/{project_name}/instances/{instance_name}/start": {
       "post": {
+        "tags": [
+          "instances"
+        ],
         "description": "Boot an instance.",
         "operationId": "project_instances_instance_start",
         "parameters": [
@@ -1228,11 +1455,18 @@
               }
             }
           }
+        },
+        "x-rust": {
+          "example": "let instance = client.instances().start(instance_name, organization_name, project_name).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/instances/struct.Instances.html#method.start"
         }
       }
     },
     "/organizations/{organization_name}/projects/{project_name}/instances/{instance_name}/stop": {
       "post": {
+        "tags": [
+          "instances"
+        ],
         "description": "Halt an instance.",
         "operationId": "project_instances_instance_stop",
         "parameters": [
@@ -1275,11 +1509,18 @@
               }
             }
           }
+        },
+        "x-rust": {
+          "example": "let instance = client.instances().stop(instance_name, organization_name, project_name).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/instances/struct.Instances.html#method.stop"
         }
       }
     },
     "/organizations/{organization_name}/projects/{project_name}/vpcs": {
       "get": {
+        "tags": [
+          "networking"
+        ],
         "description": "List VPCs in a project.",
         "operationId": "project_vpcs_get",
         "parameters": [
@@ -1344,9 +1585,16 @@
             }
           }
         },
-        "x-dropshot-pagination": true
+        "x-dropshot-pagination": true,
+        "x-rust": {
+          "example": "let vec_crate_types_vpc = client.networking().vpcs_get(limit, page_token, sort_by, organization_name, project_name).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.vpcs_get"
+        }
       },
       "post": {
+        "tags": [
+          "networking"
+        ],
         "description": "Create a VPC in a project.",
         "operationId": "project_vpcs_post",
         "parameters": [
@@ -1390,11 +1638,18 @@
               }
             }
           }
+        },
+        "x-rust": {
+          "example": "let vpc = client.networking().vpcs_post(organization_name, project_name, body).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.vpcs_post"
         }
       }
     },
     "/organizations/{organization_name}/projects/{project_name}/vpcs/{vpc_name}": {
       "get": {
+        "tags": [
+          "networking"
+        ],
         "description": "Get a VPC in a project.",
         "operationId": "project_vpcs_get_vpc",
         "parameters": [
@@ -1437,9 +1692,16 @@
               }
             }
           }
+        },
+        "x-rust": {
+          "example": "let vpc = client.networking().vpcs_get_vpc(organization_name, project_name, vpc_name).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.vpcs_get_vpc"
         }
       },
       "put": {
+        "tags": [
+          "networking"
+        ],
         "description": "Update a VPC.",
         "operationId": "project_vpcs_put_vpc",
         "parameters": [
@@ -1485,9 +1747,16 @@
           "204": {
             "description": "resource updated"
           }
+        },
+        "x-rust": {
+          "example": "client.networking().vpcs_put_vpc(organization_name, project_name, vpc_name, body).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.vpcs_put_vpc"
         }
       },
       "delete": {
+        "tags": [
+          "networking"
+        ],
         "description": "Delete a vpc from a project.",
         "operationId": "project_vpcs_delete_vpc",
         "parameters": [
@@ -1523,11 +1792,18 @@
           "204": {
             "description": "successful deletion"
           }
+        },
+        "x-rust": {
+          "example": "client.networking().vpcs_delete_vpc(organization_name, project_name, vpc_name).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.vpcs_delete_vpc"
         }
       }
     },
     "/organizations/{organization_name}/projects/{project_name}/vpcs/{vpc_name}/firewall/rules": {
       "get": {
+        "tags": [
+          "networking"
+        ],
         "description": "List firewall rules for a VPC.",
         "operationId": "vpc_firewall_rules_get",
         "parameters": [
@@ -1601,9 +1877,16 @@
             }
           }
         },
-        "x-dropshot-pagination": true
+        "x-dropshot-pagination": true,
+        "x-rust": {
+          "example": "let vec_crate_types_vpc_firewall_rule = client.networking().vpc_firewall_rules_get(limit, page_token, sort_by, organization_name, project_name, vpc_name).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.vpc_firewall_rules_get"
+        }
       },
       "put": {
+        "tags": [
+          "networking"
+        ],
         "description": "Replace the firewall rules for a VPC",
         "operationId": "vpc_firewall_rules_put",
         "parameters": [
@@ -1656,11 +1939,18 @@
               }
             }
           }
+        },
+        "x-rust": {
+          "example": "let vpc_firewall_rule = client.networking().vpc_firewall_rules_put(organization_name, project_name, vpc_name, body).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.vpc_firewall_rules_put"
         }
       }
     },
     "/organizations/{organization_name}/projects/{project_name}/vpcs/{vpc_name}/routers": {
       "get": {
+        "tags": [
+          "networking"
+        ],
         "description": "List VPC Custom and System Routers",
         "operationId": "vpc_routers_get",
         "parameters": [
@@ -1734,9 +2024,16 @@
             }
           }
         },
-        "x-dropshot-pagination": true
+        "x-dropshot-pagination": true,
+        "x-rust": {
+          "example": "let vec_crate_types_vpc_router = client.networking().vpc_routers_get(limit, page_token, sort_by, organization_name, project_name, vpc_name).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.vpc_routers_get"
+        }
       },
       "post": {
+        "tags": [
+          "networking"
+        ],
         "description": "Create a VPC Router",
         "operationId": "vpc_routers_post",
         "parameters": [
@@ -1789,11 +2086,18 @@
               }
             }
           }
+        },
+        "x-rust": {
+          "example": "let vpc_router = client.networking().vpc_routers_post(organization_name, project_name, vpc_name, body).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.vpc_routers_post"
         }
       }
     },
     "/organizations/{organization_name}/projects/{project_name}/vpcs/{vpc_name}/routers/{router_name}": {
       "get": {
+        "tags": [
+          "networking"
+        ],
         "description": "Get a VPC Router",
         "operationId": "vpc_routers_get_router",
         "parameters": [
@@ -1845,9 +2149,16 @@
               }
             }
           }
+        },
+        "x-rust": {
+          "example": "let vpc_router = client.networking().vpc_routers_get_router(organization_name, project_name, router_name, vpc_name).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.vpc_routers_get_router"
         }
       },
       "put": {
+        "tags": [
+          "networking"
+        ],
         "description": "Update a VPC Router",
         "operationId": "vpc_routers_put_router",
         "parameters": [
@@ -1902,9 +2213,16 @@
           "204": {
             "description": "resource updated"
           }
+        },
+        "x-rust": {
+          "example": "client.networking().vpc_routers_put_router(organization_name, project_name, router_name, vpc_name, body).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.vpc_routers_put_router"
         }
       },
       "delete": {
+        "tags": [
+          "networking"
+        ],
         "description": "Delete a router from its VPC",
         "operationId": "vpc_routers_delete_router",
         "parameters": [
@@ -1949,11 +2267,18 @@
           "204": {
             "description": "successful deletion"
           }
+        },
+        "x-rust": {
+          "example": "client.networking().vpc_routers_delete_router(organization_name, project_name, router_name, vpc_name).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.vpc_routers_delete_router"
         }
       }
     },
     "/organizations/{organization_name}/projects/{project_name}/vpcs/{vpc_name}/routers/{router_name}/routes": {
       "get": {
+        "tags": [
+          "networking"
+        ],
         "description": "List a Router's routes",
         "operationId": "routers_routes_get",
         "parameters": [
@@ -2036,9 +2361,16 @@
             }
           }
         },
-        "x-dropshot-pagination": true
+        "x-dropshot-pagination": true,
+        "x-rust": {
+          "example": "let vec_crate_types_router_route = client.networking().routers_routes_get(limit, page_token, sort_by, organization_name, project_name, router_name, vpc_name).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.routers_routes_get"
+        }
       },
       "post": {
+        "tags": [
+          "networking"
+        ],
         "description": "Create a VPC Router",
         "operationId": "routers_routes_post",
         "parameters": [
@@ -2100,11 +2432,18 @@
               }
             }
           }
+        },
+        "x-rust": {
+          "example": "let router_route = client.networking().routers_routes_post(organization_name, project_name, router_name, vpc_name, body).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.routers_routes_post"
         }
       }
     },
     "/organizations/{organization_name}/projects/{project_name}/vpcs/{vpc_name}/routers/{router_name}/routes/{route_name}": {
       "get": {
+        "tags": [
+          "networking"
+        ],
         "description": "Get a VPC Router route",
         "operationId": "routers_routes_get_route",
         "parameters": [
@@ -2165,9 +2504,16 @@
               }
             }
           }
+        },
+        "x-rust": {
+          "example": "let router_route = client.networking().routers_routes_get_route(organization_name, project_name, route_name, router_name, vpc_name).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.routers_routes_get_route"
         }
       },
       "put": {
+        "tags": [
+          "networking"
+        ],
         "description": "Update a Router route",
         "operationId": "routers_routes_put_route",
         "parameters": [
@@ -2231,9 +2577,16 @@
           "204": {
             "description": "resource updated"
           }
+        },
+        "x-rust": {
+          "example": "client.networking().routers_routes_put_route(organization_name, project_name, route_name, router_name, vpc_name, body).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.routers_routes_put_route"
         }
       },
       "delete": {
+        "tags": [
+          "networking"
+        ],
         "description": "Delete a route from its router",
         "operationId": "routers_routes_delete_route",
         "parameters": [
@@ -2287,11 +2640,18 @@
           "204": {
             "description": "successful deletion"
           }
+        },
+        "x-rust": {
+          "example": "client.networking().routers_routes_delete_route(organization_name, project_name, route_name, router_name, vpc_name).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.routers_routes_delete_route"
         }
       }
     },
     "/organizations/{organization_name}/projects/{project_name}/vpcs/{vpc_name}/subnets": {
       "get": {
+        "tags": [
+          "networking"
+        ],
         "description": "List subnets in a VPC.",
         "operationId": "vpc_subnets_get",
         "parameters": [
@@ -2365,9 +2725,16 @@
             }
           }
         },
-        "x-dropshot-pagination": true
+        "x-dropshot-pagination": true,
+        "x-rust": {
+          "example": "let vec_crate_types_vpc_subnet = client.networking().vpc_subnets_get(limit, page_token, sort_by, organization_name, project_name, vpc_name).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.vpc_subnets_get"
+        }
       },
       "post": {
+        "tags": [
+          "networking"
+        ],
         "description": "Create a subnet in a VPC.",
         "operationId": "vpc_subnets_post",
         "parameters": [
@@ -2420,11 +2787,18 @@
               }
             }
           }
+        },
+        "x-rust": {
+          "example": "let vpc_subnet = client.networking().vpc_subnets_post(organization_name, project_name, vpc_name, body).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.vpc_subnets_post"
         }
       }
     },
     "/organizations/{organization_name}/projects/{project_name}/vpcs/{vpc_name}/subnets/{subnet_name}": {
       "get": {
+        "tags": [
+          "networking"
+        ],
         "description": "Get subnet in a VPC.",
         "operationId": "vpc_subnets_get_subnet",
         "parameters": [
@@ -2476,9 +2850,16 @@
               }
             }
           }
+        },
+        "x-rust": {
+          "example": "let vpc_subnet = client.networking().vpc_subnets_get_subnet(organization_name, project_name, subnet_name, vpc_name).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.vpc_subnets_get_subnet"
         }
       },
       "put": {
+        "tags": [
+          "networking"
+        ],
         "description": "Update a VPC Subnet.",
         "operationId": "vpc_subnets_put_subnet",
         "parameters": [
@@ -2533,9 +2914,16 @@
           "204": {
             "description": "resource updated"
           }
+        },
+        "x-rust": {
+          "example": "client.networking().vpc_subnets_put_subnet(organization_name, project_name, subnet_name, vpc_name, body).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.vpc_subnets_put_subnet"
         }
       },
       "delete": {
+        "tags": [
+          "networking"
+        ],
         "description": "Delete a subnet from a VPC.",
         "operationId": "vpc_subnets_delete_subnet",
         "parameters": [
@@ -2580,11 +2968,18 @@
           "204": {
             "description": "successful deletion"
           }
+        },
+        "x-rust": {
+          "example": "client.networking().vpc_subnets_delete_subnet(organization_name, project_name, subnet_name, vpc_name).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.vpc_subnets_delete_subnet"
         }
       }
     },
     "/organizations/{organization_name}/projects/{project_name}/vpcs/{vpc_name}/subnets/{subnet_name}/ips": {
       "get": {
+        "tags": [
+          "networking"
+        ],
         "description": "List IP addresses on a VPC subnet.",
         "operationId": "subnets_ips_get",
         "parameters": [
@@ -2667,11 +3062,105 @@
             }
           }
         },
-        "x-dropshot-pagination": true
+        "x-dropshot-pagination": true,
+        "x-rust": {
+          "example": "let vec_crate_types_network_interface = client.networking().subnets_ips_get(limit, page_token, sort_by, organization_name, project_name, subnet_name, vpc_name).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.subnets_ips_get"
+        }
+      }
+    },
+    "/roles": {
+      "get": {
+        "tags": [
+          "roles"
+        ],
+        "description": "List the built-in roles",
+        "operationId": "roles_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "nullable": true,
+              "description": "Maximum number of items returned by a single call",
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 1
+            },
+            "style": "form"
+          },
+          {
+            "in": "query",
+            "name": "page_token",
+            "schema": {
+              "nullable": true,
+              "description": "Token returned by previous call to retreive the subsequent page",
+              "type": "string"
+            },
+            "style": "form"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoleResultsPage"
+                }
+              }
+            }
+          }
+        },
+        "x-dropshot-pagination": true,
+        "x-rust": {
+          "example": "let vec_crate_types_role = client.roles().get_page(limit, page_token).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/roles/struct.Roles.html#method.get_page"
+        }
+      }
+    },
+    "/roles/{role_name}": {
+      "get": {
+        "tags": [
+          "roles"
+        ],
+        "description": "Fetch a specific built-in role",
+        "operationId": "roles_get_role",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "role_name",
+            "required": true,
+            "schema": {
+              "description": "The built-in role's unique name.",
+              "type": "string"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Role"
+                }
+              }
+            }
+          }
+        },
+        "x-rust": {
+          "example": "let role = client.roles().get(role_name).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/roles/struct.Roles.html#method.get"
+        }
       }
     },
     "/sagas": {
       "get": {
+        "tags": [
+          "sagas"
+        ],
         "description": "List all sagas (for debugging)",
         "operationId": "sagas_get",
         "parameters": [
@@ -2718,11 +3207,18 @@
             }
           }
         },
-        "x-dropshot-pagination": true
+        "x-dropshot-pagination": true,
+        "x-rust": {
+          "example": "let vec_crate_types_saga = client.sagas().get_page(limit, page_token, sort_by).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/sagas/struct.Sagas.html#method.get_page"
+        }
       }
     },
     "/sagas/{saga_id}": {
       "get": {
+        "tags": [
+          "sagas"
+        ],
         "description": "Fetch information about a single saga (for debugging)",
         "operationId": "sagas_get_saga",
         "parameters": [
@@ -2748,11 +3244,90 @@
               }
             }
           }
+        },
+        "x-rust": {
+          "example": "let saga = client.sagas().get(saga_id).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/sagas/struct.Sagas.html#method.get"
+        }
+      }
+    },
+    "/session/me": {
+      "get": {
+        "description": "Fetch the user associated with the current session",
+        "operationId": "session_me",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionUser"
+                }
+              }
+            }
+          }
+        },
+        "x-rust": {
+          "example": "let session_user = client.session().me().await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/session/struct.Session.html#method.me"
+        }
+      }
+    },
+    "/timeseries/schema": {
+      "get": {
+        "tags": [
+          "metrics"
+        ],
+        "description": "List all timeseries schema",
+        "operationId": "timeseries_schema_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "nullable": true,
+              "description": "Maximum number of items returned by a single call",
+              "type": "integer",
+              "format": "uint32",
+              "minimum": 1
+            },
+            "style": "form"
+          },
+          {
+            "in": "query",
+            "name": "page_token",
+            "schema": {
+              "nullable": true,
+              "description": "Token returned by previous call to retreive the subsequent page",
+              "type": "string"
+            },
+            "style": "form"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TimeseriesSchemaResultsPage"
+                }
+              }
+            }
+          }
+        },
+        "x-dropshot-pagination": true,
+        "x-rust": {
+          "example": "let vec_crate_types_timeseries_schema = client.metrics().timeseries_schema_get(limit, page_token).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/metrics/struct.Metrics.html#method.timeseries_schema_get"
         }
       }
     },
     "/users": {
       "get": {
+        "tags": [
+          "users"
+        ],
         "description": "List the built-in system users",
         "operationId": "users_get",
         "parameters": [
@@ -2799,11 +3374,18 @@
             }
           }
         },
-        "x-dropshot-pagination": true
+        "x-dropshot-pagination": true,
+        "x-rust": {
+          "example": "let vec_crate_types_user = client.users().get_page(limit, page_token, sort_by).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/users/struct.Users.html#method.get_page"
+        }
       }
     },
     "/users/{user_name}": {
       "get": {
+        "tags": [
+          "users"
+        ],
         "description": "Fetch a specific built-in system user",
         "operationId": "users_get_user",
         "parameters": [
@@ -2828,6 +3410,10 @@
               }
             }
           }
+        },
+        "x-rust": {
+          "example": "let user = client.users().get(user_name).await?;",
+          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/users/struct.Users.html#method.get"
         }
       }
     }
@@ -2839,6 +3425,21 @@
         "type": "integer",
         "format": "uint64",
         "minimum": 0
+      },
+      "DatumType": {
+        "description": "The type of an individual datum of a metric.",
+        "type": "string",
+        "enum": [
+          "Bool",
+          "I64",
+          "F64",
+          "String",
+          "Bytes",
+          "CumulativeI64",
+          "CumulativeF64",
+          "HistogramI64",
+          "HistogramF64"
+        ]
       },
       "Disk": {
         "description": "Client view of an [`Disk`]",
@@ -2927,7 +3528,11 @@
             "format": "uuid"
           }
         },
-        "required": ["description", "name", "size"]
+        "required": [
+          "description",
+          "name",
+          "size"
+        ]
       },
       "DiskIdentifier": {
         "description": "Parameters for the [`Disk`] to be attached or detached to an instance",
@@ -2937,7 +3542,9 @@
             "$ref": "#/components/schemas/Name"
           }
         },
-        "required": ["disk"]
+        "required": [
+          "disk"
+        ]
       },
       "DiskResultsPage": {
         "description": "A single page of results",
@@ -2956,7 +3563,9 @@
             "type": "string"
           }
         },
-        "required": ["items"]
+        "required": [
+          "items"
+        ]
       },
       "DiskState": {
         "description": "State of a Disk (primarily: attached or not)",
@@ -2967,10 +3576,14 @@
             "properties": {
               "state": {
                 "type": "string",
-                "enum": ["creating"]
+                "enum": [
+                  "creating"
+                ]
               }
             },
-            "required": ["state"]
+            "required": [
+              "state"
+            ]
           },
           {
             "description": "Disk is ready but detached from any Instance",
@@ -2978,10 +3591,14 @@
             "properties": {
               "state": {
                 "type": "string",
-                "enum": ["detached"]
+                "enum": [
+                  "detached"
+                ]
               }
             },
-            "required": ["state"]
+            "required": [
+              "state"
+            ]
           },
           {
             "description": "Disk is being attached to the given Instance",
@@ -2993,10 +3610,15 @@
               },
               "state": {
                 "type": "string",
-                "enum": ["attaching"]
+                "enum": [
+                  "attaching"
+                ]
               }
             },
-            "required": ["instance", "state"]
+            "required": [
+              "instance",
+              "state"
+            ]
           },
           {
             "description": "Disk is attached to the given Instance",
@@ -3008,10 +3630,15 @@
               },
               "state": {
                 "type": "string",
-                "enum": ["attached"]
+                "enum": [
+                  "attached"
+                ]
               }
             },
-            "required": ["instance", "state"]
+            "required": [
+              "instance",
+              "state"
+            ]
           },
           {
             "description": "Disk is being detached from the given Instance",
@@ -3023,10 +3650,15 @@
               },
               "state": {
                 "type": "string",
-                "enum": ["detaching"]
+                "enum": [
+                  "detaching"
+                ]
               }
             },
-            "required": ["instance", "state"]
+            "required": [
+              "instance",
+              "state"
+            ]
           },
           {
             "description": "Disk has been destroyed",
@@ -3034,10 +3666,14 @@
             "properties": {
               "state": {
                 "type": "string",
-                "enum": ["destroyed"]
+                "enum": [
+                  "destroyed"
+                ]
               }
             },
-            "required": ["state"]
+            "required": [
+              "state"
+            ]
           },
           {
             "description": "Disk is unavailable",
@@ -3045,11 +3681,61 @@
             "properties": {
               "state": {
                 "type": "string",
-                "enum": ["faulted"]
+                "enum": [
+                  "faulted"
+                ]
               }
             },
-            "required": ["state"]
+            "required": [
+              "state"
+            ]
           }
+        ]
+      },
+      "FieldSchema": {
+        "description": "The name and type information for a field of a timeseries schema.",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/components/schemas/FieldSource"
+          },
+          "ty": {
+            "$ref": "#/components/schemas/FieldType"
+          }
+        },
+        "required": [
+          "name",
+          "source",
+          "ty"
+        ]
+      },
+      "FieldSource": {
+        "description": "The source from which a field is derived, the target or metric.",
+        "type": "string",
+        "enum": [
+          "Target",
+          "Metric"
+        ]
+      },
+      "FieldType": {
+        "description": "The `FieldType` identifies the data type of a target or metric field.",
+        "type": "string",
+        "enum": [
+          "String",
+          "I64",
+          "IpAddr",
+          "Uuid",
+          "Bool"
+        ]
+      },
+      "IdSortMode": {
+        "description": "Supported set of sort modes for scanning by id only.\n\nCurrently, we only support scanning in ascending order.",
+        "type": "string",
+        "enum": [
+          "id-ascending"
         ]
       },
       "IdentityMetadata": {
@@ -3084,7 +3770,13 @@
             "format": "date-time"
           }
         },
-        "required": ["description", "id", "name", "timeCreated", "timeModified"]
+        "required": [
+          "description",
+          "id",
+          "name",
+          "timeCreated",
+          "timeModified"
+        ]
       },
       "Instance": {
         "description": "Client view of an [`Instance`]",
@@ -3190,7 +3882,13 @@
             "$ref": "#/components/schemas/InstanceCpuCount"
           }
         },
-        "required": ["description", "hostname", "memory", "name", "ncpus"]
+        "required": [
+          "description",
+          "hostname",
+          "memory",
+          "name",
+          "ncpus"
+        ]
       },
       "InstanceResultsPage": {
         "description": "A single page of results",
@@ -3209,7 +3907,9 @@
             "type": "string"
           }
         },
-        "required": ["items"]
+        "required": [
+          "items"
+        ]
       },
       "InstanceState": {
         "description": "Running state of an Instance (primarily: booted or stopped)\n\nThis typically reflects whether it's starting, running, stopping, or stopped, but also includes states related to the Instance's lifecycle",
@@ -3255,7 +3955,9 @@
             "type": "string"
           }
         },
-        "required": ["username"]
+        "required": [
+          "username"
+        ]
       },
       "MacAddr": {
         "title": "A MAC address",
@@ -3271,6 +3973,22 @@
         "type": "string",
         "pattern": "[a-z](|[a-zA-Z0-9-]*[a-zA-Z0-9])",
         "maxLength": 63
+      },
+      "NameOrIdSortMode": {
+        "description": "Supported set of sort modes for scanning by name or id",
+        "type": "string",
+        "enum": [
+          "name-ascending",
+          "name-descending",
+          "id-ascending"
+        ]
+      },
+      "NameSortMode": {
+        "description": "Supported set of sort modes for scanning by name only\n\nCurrently, we only support scanning in ascending order.",
+        "type": "string",
+        "enum": [
+          "name-ascending"
+        ]
       },
       "NetworkInterface": {
         "description": "A `NetworkInterface` represents a virtual network interface device.",
@@ -3339,7 +4057,9 @@
             "type": "string"
           }
         },
-        "required": ["items"]
+        "required": [
+          "items"
+        ]
       },
       "Organization": {
         "description": "Client view of an [`Organization`]",
@@ -3373,7 +4093,13 @@
             "format": "date-time"
           }
         },
-        "required": ["description", "id", "name", "timeCreated", "timeModified"]
+        "required": [
+          "description",
+          "id",
+          "name",
+          "timeCreated",
+          "timeModified"
+        ]
       },
       "OrganizationCreate": {
         "description": "Create-time parameters for an [`Organization`]",
@@ -3386,7 +4112,10 @@
             "$ref": "#/components/schemas/Name"
           }
         },
-        "required": ["description", "name"]
+        "required": [
+          "description",
+          "name"
+        ]
       },
       "OrganizationResultsPage": {
         "description": "A single page of results",
@@ -3405,7 +4134,9 @@
             "type": "string"
           }
         },
-        "required": ["items"]
+        "required": [
+          "items"
+        ]
       },
       "OrganizationUpdate": {
         "description": "Updateable properties of an [`Organization`]",
@@ -3481,7 +4212,10 @@
             "$ref": "#/components/schemas/Name"
           }
         },
-        "required": ["description", "name"]
+        "required": [
+          "description",
+          "name"
+        ]
       },
       "ProjectResultsPage": {
         "description": "A single page of results",
@@ -3500,7 +4234,9 @@
             "type": "string"
           }
         },
-        "required": ["items"]
+        "required": [
+          "items"
+        ]
       },
       "ProjectUpdate": {
         "description": "Updateable properties of a [`Project`]",
@@ -3528,7 +4264,9 @@
             "$ref": "#/components/schemas/IdentityMetadata"
           }
         },
-        "required": ["identity"]
+        "required": [
+          "identity"
+        ]
       },
       "RackResultsPage": {
         "description": "A single page of results",
@@ -3547,7 +4285,53 @@
             "type": "string"
           }
         },
-        "required": ["items"]
+        "required": [
+          "items"
+        ]
+      },
+      "Role": {
+        "description": "Client view of a [`Role`]",
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "name": {
+            "$ref": "#/components/schemas/RoleName"
+          }
+        },
+        "required": [
+          "description",
+          "name"
+        ]
+      },
+      "RoleName": {
+        "title": "A name for a built-in role",
+        "description": "Role names consist of two string components separated by dot (\".\").",
+        "type": "string",
+        "pattern": "[a-z-]+\\.[a-z-]+",
+        "maxLength": 63
+      },
+      "RoleResultsPage": {
+        "description": "A single page of results",
+        "type": "object",
+        "properties": {
+          "items": {
+            "description": "list of items on this page of results",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Role"
+            }
+          },
+          "next_page": {
+            "nullable": true,
+            "description": "token used to fetch the next page of results (if any)",
+            "type": "string"
+          }
+        },
+        "required": [
+          "items"
+        ]
       },
       "RouteDestination": {
         "description": "A subset of [`NetworkTarget`], `RouteDestination` specifies the kind of network traffic that will be matched to be forwarded to the [`RouteTarget`].",
@@ -3557,40 +4341,55 @@
             "properties": {
               "type": {
                 "type": "string",
-                "enum": ["ip"]
+                "enum": [
+                  "ip"
+                ]
               },
               "value": {
                 "type": "string",
                 "format": "ip"
               }
             },
-            "required": ["type", "value"]
+            "required": [
+              "type",
+              "value"
+            ]
           },
           {
             "type": "object",
             "properties": {
               "type": {
                 "type": "string",
-                "enum": ["vpc"]
+                "enum": [
+                  "vpc"
+                ]
               },
               "value": {
                 "$ref": "#/components/schemas/Name"
               }
             },
-            "required": ["type", "value"]
+            "required": [
+              "type",
+              "value"
+            ]
           },
           {
             "type": "object",
             "properties": {
               "type": {
                 "type": "string",
-                "enum": ["subnet"]
+                "enum": [
+                  "subnet"
+                ]
               },
               "value": {
                 "$ref": "#/components/schemas/Name"
               }
             },
-            "required": ["type", "value"]
+            "required": [
+              "type",
+              "value"
+            ]
           }
         ]
       },
@@ -3602,66 +4401,91 @@
             "properties": {
               "type": {
                 "type": "string",
-                "enum": ["ip"]
+                "enum": [
+                  "ip"
+                ]
               },
               "value": {
                 "type": "string",
                 "format": "ip"
               }
             },
-            "required": ["type", "value"]
+            "required": [
+              "type",
+              "value"
+            ]
           },
           {
             "type": "object",
             "properties": {
               "type": {
                 "type": "string",
-                "enum": ["vpc"]
+                "enum": [
+                  "vpc"
+                ]
               },
               "value": {
                 "$ref": "#/components/schemas/Name"
               }
             },
-            "required": ["type", "value"]
+            "required": [
+              "type",
+              "value"
+            ]
           },
           {
             "type": "object",
             "properties": {
               "type": {
                 "type": "string",
-                "enum": ["subnet"]
+                "enum": [
+                  "subnet"
+                ]
               },
               "value": {
                 "$ref": "#/components/schemas/Name"
               }
             },
-            "required": ["type", "value"]
+            "required": [
+              "type",
+              "value"
+            ]
           },
           {
             "type": "object",
             "properties": {
               "type": {
                 "type": "string",
-                "enum": ["instance"]
+                "enum": [
+                  "instance"
+                ]
               },
               "value": {
                 "$ref": "#/components/schemas/Name"
               }
             },
-            "required": ["type", "value"]
+            "required": [
+              "type",
+              "value"
+            ]
           },
           {
             "type": "object",
             "properties": {
               "type": {
                 "type": "string",
-                "enum": ["internetGateway"]
+                "enum": [
+                  "internetGateway"
+                ]
               },
               "value": {
                 "$ref": "#/components/schemas/Name"
               }
             },
-            "required": ["type", "value"]
+            "required": [
+              "type",
+              "value"
+            ]
           }
         ]
       },
@@ -3697,7 +4521,13 @@
             "$ref": "#/components/schemas/RouteTarget"
           }
         },
-        "required": ["destination", "identity", "kind", "router_id", "target"]
+        "required": [
+          "destination",
+          "identity",
+          "kind",
+          "router_id",
+          "target"
+        ]
       },
       "RouterRouteCreateParams": {
         "description": "Create-time parameters for a [`RouterRoute`]",
@@ -3716,12 +4546,22 @@
             "$ref": "#/components/schemas/RouteTarget"
           }
         },
-        "required": ["description", "destination", "name", "target"]
+        "required": [
+          "description",
+          "destination",
+          "name",
+          "target"
+        ]
       },
       "RouterRouteKind": {
         "description": "The classification of a [`RouterRoute`] as defined by the system. The kind determines certain attributes such as if the route is modifiable and describes how or where the route was created.\n\nSee [RFD-21](https://rfd.shared.oxide.computer/rfd/0021#concept-router) for more context",
         "type": "string",
-        "enum": ["Default", "VpcSubnet", "VpcPeering", "Custom"]
+        "enum": [
+          "Default",
+          "VpcSubnet",
+          "VpcPeering",
+          "Custom"
+        ]
       },
       "RouterRouteResultsPage": {
         "description": "A single page of results",
@@ -3740,7 +4580,9 @@
             "type": "string"
           }
         },
-        "required": ["items"]
+        "required": [
+          "items"
+        ]
       },
       "RouterRouteUpdateParams": {
         "description": "Updateable properties of a [`RouterRoute`]",
@@ -3765,7 +4607,10 @@
             "$ref": "#/components/schemas/RouteTarget"
           }
         },
-        "required": ["destination", "target"]
+        "required": [
+          "destination",
+          "target"
+        ]
       },
       "Saga": {
         "type": "object",
@@ -3778,7 +4623,10 @@
             "$ref": "#/components/schemas/SagaState"
           }
         },
-        "required": ["id", "state"]
+        "required": [
+          "id",
+          "state"
+        ]
       },
       "SagaErrorInfo": {
         "oneOf": [
@@ -3787,60 +4635,84 @@
             "properties": {
               "error": {
                 "type": "string",
-                "enum": ["actionFailed"]
+                "enum": [
+                  "actionFailed"
+                ]
               },
               "source_error": {}
             },
-            "required": ["error", "source_error"]
+            "required": [
+              "error",
+              "source_error"
+            ]
           },
           {
             "type": "object",
             "properties": {
               "error": {
                 "type": "string",
-                "enum": ["deserializeFailed"]
+                "enum": [
+                  "deserializeFailed"
+                ]
               },
               "message": {
                 "type": "string"
               }
             },
-            "required": ["error", "message"]
+            "required": [
+              "error",
+              "message"
+            ]
           },
           {
             "type": "object",
             "properties": {
               "error": {
                 "type": "string",
-                "enum": ["injectedError"]
+                "enum": [
+                  "injectedError"
+                ]
               }
             },
-            "required": ["error"]
+            "required": [
+              "error"
+            ]
           },
           {
             "type": "object",
             "properties": {
               "error": {
                 "type": "string",
-                "enum": ["serializeFailed"]
+                "enum": [
+                  "serializeFailed"
+                ]
               },
               "message": {
                 "type": "string"
               }
             },
-            "required": ["error", "message"]
+            "required": [
+              "error",
+              "message"
+            ]
           },
           {
             "type": "object",
             "properties": {
               "error": {
                 "type": "string",
-                "enum": ["subsagaCreateFailed"]
+                "enum": [
+                  "subsagaCreateFailed"
+                ]
               },
               "message": {
                 "type": "string"
               }
             },
-            "required": ["error", "message"]
+            "required": [
+              "error",
+              "message"
+            ]
           }
         ]
       },
@@ -3861,7 +4733,9 @@
             "type": "string"
           }
         },
-        "required": ["items"]
+        "required": [
+          "items"
+        ]
       },
       "SagaState": {
         "oneOf": [
@@ -3870,20 +4744,28 @@
             "properties": {
               "state": {
                 "type": "string",
-                "enum": ["running"]
+                "enum": [
+                  "running"
+                ]
               }
             },
-            "required": ["state"]
+            "required": [
+              "state"
+            ]
           },
           {
             "type": "object",
             "properties": {
               "state": {
                 "type": "string",
-                "enum": ["succeeded"]
+                "enum": [
+                  "succeeded"
+                ]
               }
             },
-            "required": ["state"]
+            "required": [
+              "state"
+            ]
           },
           {
             "type": "object",
@@ -3896,11 +4778,30 @@
               },
               "state": {
                 "type": "string",
-                "enum": ["failed"]
+                "enum": [
+                  "failed"
+                ]
               }
             },
-            "required": ["error_info", "error_node_name", "state"]
+            "required": [
+              "error_info",
+              "error_node_name",
+              "state"
+            ]
           }
+        ]
+      },
+      "SessionUser": {
+        "description": "Client view of currently authed user.",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "id"
         ]
       },
       "Sled": {
@@ -3964,7 +4865,64 @@
             "type": "string"
           }
         },
-        "required": ["items"]
+        "required": [
+          "items"
+        ]
+      },
+      "TimeseriesName": {
+        "title": "The name of a timeseries",
+        "description": "Names are constructed by concatenating the target and metric names with ':'. Target and metric names must be lowercase alphanumeric characters with '_' separating words.",
+        "type": "string",
+        "pattern": "(([a-z]+[a-z0-9]*)(_([a-z0-9]+))*):(([a-z]+[a-z0-9]*)(_([a-z0-9]+))*)"
+      },
+      "TimeseriesSchema": {
+        "description": "The schema for a timeseries.\n\nThis includes the name of the timeseries, as well as the datum type of its metric and the schema for each field.",
+        "type": "object",
+        "properties": {
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "datum_type": {
+            "$ref": "#/components/schemas/DatumType"
+          },
+          "field_schema": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FieldSchema"
+            }
+          },
+          "timeseries_name": {
+            "$ref": "#/components/schemas/TimeseriesName"
+          }
+        },
+        "required": [
+          "created",
+          "datum_type",
+          "field_schema",
+          "timeseries_name"
+        ]
+      },
+      "TimeseriesSchemaResultsPage": {
+        "description": "A single page of results",
+        "type": "object",
+        "properties": {
+          "items": {
+            "description": "list of items on this page of results",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TimeseriesSchema"
+            }
+          },
+          "next_page": {
+            "nullable": true,
+            "description": "token used to fetch the next page of results (if any)",
+            "type": "string"
+          }
+        },
+        "required": [
+          "items"
+        ]
       },
       "User": {
         "description": "Client view of a [`User`]",
@@ -3998,7 +4956,13 @@
             "format": "date-time"
           }
         },
-        "required": ["description", "id", "name", "timeCreated", "timeModified"]
+        "required": [
+          "description",
+          "id",
+          "name",
+          "timeCreated",
+          "timeModified"
+        ]
       },
       "UserResultsPage": {
         "description": "A single page of results",
@@ -4017,7 +4981,9 @@
             "type": "string"
           }
         },
-        "required": ["items"]
+        "required": [
+          "items"
+        ]
       },
       "Vpc": {
         "description": "Client view of a [`Vpc`]",
@@ -4094,7 +5060,11 @@
             "$ref": "#/components/schemas/Name"
           }
         },
-        "required": ["description", "dnsName", "name"]
+        "required": [
+          "description",
+          "dnsName",
+          "name"
+        ]
       },
       "VpcFirewallRule": {
         "description": "A single rule in a VPC firewall",
@@ -4166,11 +5136,17 @@
       },
       "VpcFirewallRuleAction": {
         "type": "string",
-        "enum": ["allow", "deny"]
+        "enum": [
+          "allow",
+          "deny"
+        ]
       },
       "VpcFirewallRuleDirection": {
         "type": "string",
-        "enum": ["inbound", "outbound"]
+        "enum": [
+          "inbound",
+          "outbound"
+        ]
       },
       "VpcFirewallRuleFilter": {
         "description": "Filter for a firewall rule. A given packet must match every field that is present for the rule to apply to it. A packet matches a field if any entry in that field matches the packet.",
@@ -4210,73 +5186,102 @@
             "properties": {
               "type": {
                 "type": "string",
-                "enum": ["vpc"]
+                "enum": [
+                  "vpc"
+                ]
               },
               "value": {
                 "$ref": "#/components/schemas/Name"
               }
             },
-            "required": ["type", "value"]
+            "required": [
+              "type",
+              "value"
+            ]
           },
           {
             "type": "object",
             "properties": {
               "type": {
                 "type": "string",
-                "enum": ["subnet"]
+                "enum": [
+                  "subnet"
+                ]
               },
               "value": {
                 "$ref": "#/components/schemas/Name"
               }
             },
-            "required": ["type", "value"]
+            "required": [
+              "type",
+              "value"
+            ]
           },
           {
             "type": "object",
             "properties": {
               "type": {
                 "type": "string",
-                "enum": ["instance"]
+                "enum": [
+                  "instance"
+                ]
               },
               "value": {
                 "$ref": "#/components/schemas/Name"
               }
             },
-            "required": ["type", "value"]
+            "required": [
+              "type",
+              "value"
+            ]
           },
           {
             "type": "object",
             "properties": {
               "type": {
                 "type": "string",
-                "enum": ["ip"]
+                "enum": [
+                  "ip"
+                ]
               },
               "value": {
                 "type": "string",
                 "format": "ip"
               }
             },
-            "required": ["type", "value"]
+            "required": [
+              "type",
+              "value"
+            ]
           },
           {
             "type": "object",
             "properties": {
               "type": {
                 "type": "string",
-                "enum": ["internetGateway"]
+                "enum": [
+                  "internetGateway"
+                ]
               },
               "value": {
                 "$ref": "#/components/schemas/Name"
               }
             },
-            "required": ["type", "value"]
+            "required": [
+              "type",
+              "value"
+            ]
           }
         ]
       },
       "VpcFirewallRuleProtocol": {
         "description": "The protocols that may be specified in a firewall rule's filter",
         "type": "string",
-        "enum": ["TCP", "UDP", "ICMP"]
+        "enum": [
+          "TCP",
+          "UDP",
+          "ICMP"
+        ]
       },
       "VpcFirewallRuleResultsPage": {
         "description": "A single page of results",
@@ -4295,11 +5300,16 @@
             "type": "string"
           }
         },
-        "required": ["items"]
+        "required": [
+          "items"
+        ]
       },
       "VpcFirewallRuleStatus": {
         "type": "string",
-        "enum": ["disabled", "enabled"]
+        "enum": [
+          "disabled",
+          "enabled"
+        ]
       },
       "VpcFirewallRuleTarget": {
         "description": "A subset of [`NetworkTarget`], `VpcFirewallRuleTarget` specifies all possible targets that a firewall rule can be attached to.",
@@ -4309,39 +5319,54 @@
             "properties": {
               "type": {
                 "type": "string",
-                "enum": ["vpc"]
+                "enum": [
+                  "vpc"
+                ]
               },
               "value": {
                 "$ref": "#/components/schemas/Name"
               }
             },
-            "required": ["type", "value"]
+            "required": [
+              "type",
+              "value"
+            ]
           },
           {
             "type": "object",
             "properties": {
               "type": {
                 "type": "string",
-                "enum": ["subnet"]
+                "enum": [
+                  "subnet"
+                ]
               },
               "value": {
                 "$ref": "#/components/schemas/Name"
               }
             },
-            "required": ["type", "value"]
+            "required": [
+              "type",
+              "value"
+            ]
           },
           {
             "type": "object",
             "properties": {
               "type": {
                 "type": "string",
-                "enum": ["instance"]
+                "enum": [
+                  "instance"
+                ]
               },
               "value": {
                 "$ref": "#/components/schemas/Name"
               }
             },
-            "required": ["type", "value"]
+            "required": [
+              "type",
+              "value"
+            ]
           }
         ]
       },
@@ -4440,7 +5465,9 @@
             "type": "string"
           }
         },
-        "required": ["items"]
+        "required": [
+          "items"
+        ]
       },
       "VpcRouter": {
         "description": "A VPC router defines a series of rules that indicate where traffic should be sent depending on its destination.",
@@ -4463,7 +5490,11 @@
             "format": "uuid"
           }
         },
-        "required": ["identity", "kind", "vpc_id"]
+        "required": [
+          "identity",
+          "kind",
+          "vpc_id"
+        ]
       },
       "VpcRouterCreate": {
         "description": "Create-time parameters for a [`VpcRouter`]",
@@ -4476,11 +5507,17 @@
             "$ref": "#/components/schemas/Name"
           }
         },
-        "required": ["description", "name"]
+        "required": [
+          "description",
+          "name"
+        ]
       },
       "VpcRouterKind": {
         "type": "string",
-        "enum": ["system", "custom"]
+        "enum": [
+          "system",
+          "custom"
+        ]
       },
       "VpcRouterResultsPage": {
         "description": "A single page of results",
@@ -4499,7 +5536,9 @@
             "type": "string"
           }
         },
-        "required": ["items"]
+        "required": [
+          "items"
+        ]
       },
       "VpcRouterUpdate": {
         "description": "Updateable properties of a [`VpcRouter`]",
@@ -4555,7 +5594,10 @@
             "format": "uuid"
           }
         },
-        "required": ["identity", "vpc_id"]
+        "required": [
+          "identity",
+          "vpc_id"
+        ]
       },
       "VpcSubnetCreate": {
         "description": "Create-time parameters for a [`VpcSubnet`]",
@@ -4584,7 +5626,10 @@
             "$ref": "#/components/schemas/Name"
           }
         },
-        "required": ["description", "name"]
+        "required": [
+          "description",
+          "name"
+        ]
       },
       "VpcSubnetResultsPage": {
         "description": "A single page of results",
@@ -4603,7 +5648,9 @@
             "type": "string"
           }
         },
-        "required": ["items"]
+        "required": [
+          "items"
+        ]
       },
       "VpcSubnetUpdate": {
         "description": "Updateable properties of a [`VpcSubnet`]",
@@ -4664,22 +5711,36 @@
             ]
           }
         }
-      },
-      "IdSortMode": {
-        "description": "Supported set of sort modes for scanning by id only.\n\nCurrently, we only support scanning in ascending order.",
-        "type": "string",
-        "enum": ["id-ascending"]
-      },
-      "NameOrIdSortMode": {
-        "description": "Supported set of sort modes for scanning by name or id",
-        "type": "string",
-        "enum": ["name-ascending", "name-descending", "id-ascending"]
-      },
-      "NameSortMode": {
-        "description": "Supported set of sort modes for scanning by name only\n\nCurrently, we only support scanning in ascending order.",
-        "type": "string",
-        "enum": ["name-ascending"]
       }
     }
-  }
+  },
+  "tags": [
+    {
+      "name": "hardware"
+    },
+    {
+      "name": "organizations"
+    },
+    {
+      "name": "projects"
+    },
+    {
+      "name": "users"
+    },
+    {
+      "name": "roles"
+    },
+    {
+      "name": "instances"
+    },
+    {
+      "name": "sagas"
+    },
+    {
+      "name": "metrics"
+    },
+    {
+      "name": "networking"
+    }
+  ]
 }
