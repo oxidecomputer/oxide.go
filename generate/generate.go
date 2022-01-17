@@ -59,11 +59,11 @@ func main() {
 	generatePaths(doc)
 
 	clientInfo := `// Create a client with your token.
-client, err := oxide.NewClient("TOKEN", "your apps user agent")
+client, err := oxide.NewClient("$TOKEN", "your apps user agent")
 if err != nil {
   panic(err)
 }
-if err := client.WithBaseURL("BASE_URL"); err != nil {
+if err := client.WithBaseURL("$BASE_URL"); err != nil {
   panic(err)
 }`
 
