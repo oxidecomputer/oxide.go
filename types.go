@@ -577,8 +577,8 @@ const (
 
 // RouteTarget is a subset of [`NetworkTarget`], `RouteTarget` specifies all possible targets that a route can forward to.
 type RouteTarget struct {
-	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 	Type  string `json:"type,omitempty" yaml:"type,omitempty"`
+	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // RouterRoute is a route defines a rule that governs where traffic should be sent based on its destination.
@@ -705,8 +705,8 @@ const (
 
 // SagaErrorInfo is the type definition for a SagaErrorInfo.
 type SagaErrorInfo struct {
-	Error       string      `json:"error,omitempty" yaml:"error,omitempty"`
 	SourceError interface{} `json:"source_error,omitempty" yaml:"source_error,omitempty"`
+	Error       string      `json:"error,omitempty" yaml:"error,omitempty"`
 	Message     string      `json:"message,omitempty" yaml:"message,omitempty"`
 }
 

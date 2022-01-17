@@ -58,6 +58,20 @@ func main() {
 	// Generate the paths.go file.
 	generatePaths(doc)
 
+	clientInfo := `// Create a client with your token.
+client, err := oxide.NewClient("TOKEN", "your apps user agent")
+if err != nil {
+  panic(err)
+}
+if err := client.WithBaseURL("BASE_URL"); err != nil {
+  panic(err)
+}`
+
+	doc.Info.Extensions["x-go"] = map[string]string{
+		"install": "go get github.com/oxidecomputer/oxide.go",
+		"client":  clientInfo,
+	}
+
 	// Write back out the new spec.
 	out, err := json.MarshalIndent(doc, "", "  ")
 	if err != nil {
@@ -159,7 +173,7 @@ func generatePaths(doc *openapi3.T) {
 			continue
 		}
 
-		writePath(f, path, p)
+		writePath(doc, f, path, p)
 	}
 }
 
@@ -265,44 +279,45 @@ func printType(property string, r *openapi3.SchemaRef) string {
 }
 
 // writePath writes the given path as an http request to the given file.
-func writePath(f *os.File, path string, p *openapi3.PathItem) {
+func writePath(doc *openapi3.T, f *os.File, path string, p *openapi3.PathItem) {
 	if p.Get != nil {
-		writeMethod(f, http.MethodGet, path, p.Get)
+		writeMethod(doc, f, http.MethodGet, path, p.Get)
 	}
 
 	if p.Post != nil {
-		writeMethod(f, http.MethodPost, path, p.Post)
+		writeMethod(doc, f, http.MethodPost, path, p.Post)
 	}
 
 	if p.Put != nil {
-		writeMethod(f, http.MethodPut, path, p.Put)
+		writeMethod(doc, f, http.MethodPut, path, p.Put)
 	}
 
 	if p.Delete != nil {
-		writeMethod(f, http.MethodDelete, path, p.Delete)
+		writeMethod(doc, f, http.MethodDelete, path, p.Delete)
 	}
 
 	if p.Patch != nil {
-		writeMethod(f, http.MethodPatch, path, p.Patch)
+		writeMethod(doc, f, http.MethodPatch, path, p.Patch)
 	}
 
 	if p.Head != nil {
-		writeMethod(f, http.MethodHead, path, p.Head)
+		writeMethod(doc, f, http.MethodHead, path, p.Head)
 	}
 
 	if p.Options != nil {
-		writeMethod(f, http.MethodOptions, path, p.Options)
+		writeMethod(doc, f, http.MethodOptions, path, p.Options)
 	}
 }
 
-func writeMethod(f *os.File, method string, path string, o *openapi3.Operation) {
+func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *openapi3.Operation) {
 	respType := getSuccessResponseType(o)
 	fnName := strcase.ToCamel(o.OperationID)
 
 	// Parse the parameters.
 	params := map[string]*openapi3.Parameter{}
 	paramsString := ""
-	for _, p := range o.Parameters {
+	docParamsString := ""
+	for index, p := range o.Parameters {
 		if p.Ref != "" {
 			fmt.Printf("[WARN] TODO: skipping parameter for %q, since it is a reference\n", p.Value.Name)
 			continue
@@ -310,6 +325,11 @@ func writeMethod(f *os.File, method string, path string, o *openapi3.Operation) 
 
 		params[p.Value.Name] = p.Value
 		paramsString += fmt.Sprintf("%s %s, ", strcase.ToLowerCamel(p.Value.Name), printType(p.Value.Name, p.Value.Schema))
+		if index == len(o.Parameters)-1 {
+			docParamsString += fmt.Sprintf("%s", strcase.ToLowerCamel(p.Value.Name))
+		} else {
+			docParamsString += fmt.Sprintf("%s, ", strcase.ToLowerCamel(p.Value.Name))
+		}
 	}
 
 	// Parse the request body.
@@ -334,6 +354,12 @@ func writeMethod(f *os.File, method string, path string, o *openapi3.Operation) 
 			}
 
 			paramsString += "j *" + printType("", r.Schema)
+
+			if len(docParamsString) > 0 {
+				docParamsString += ", "
+			}
+			docParamsString += "body"
+
 			reqBodyParam = "j"
 			break
 		}
@@ -361,16 +387,37 @@ func writeMethod(f *os.File, method string, path string, o *openapi3.Operation) 
 		fmt.Fprintf(f, "//\t`%s`: %s\n", reqBodyParam, strings.ReplaceAll(reqBodyDescription, "\n", "\n// "))
 	}
 
+	docInfo := map[string]string{
+		"example":     "",
+		"libDocsLink": fmt.Sprintf("https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.%s", fnName),
+	}
+
 	// Write the method.
 	if respType != "" {
 		fmt.Fprintf(f, "func (c *Client) %s(%s) (*%s, error) {\n",
 			fnName,
 			paramsString,
 			respType)
+		docInfo["example"] = fmt.Sprintf("%s, err := client.%s(%s)", strcase.ToLowerCamel(respType), fnName, docParamsString)
 	} else {
 		fmt.Fprintf(f, "func (c *Client) %s(%s) (error) {\n",
 			fnName,
 			paramsString)
+		docInfo["example"] = fmt.Sprintf(`if err := client.%s(%s); err != nil {
+	panic(err)
+}`, fnName, docParamsString)
+	}
+
+	if method == http.MethodGet {
+		doc.Paths[path].Get.Extensions["x-go"] = docInfo
+	} else if method == http.MethodPost {
+		doc.Paths[path].Post.Extensions["x-go"] = docInfo
+	} else if method == http.MethodPut {
+		doc.Paths[path].Put.Extensions["x-go"] = docInfo
+	} else if method == http.MethodDelete {
+		doc.Paths[path].Delete.Extensions["x-go"] = docInfo
+	} else if method == http.MethodPatch {
+		doc.Paths[path].Patch.Extensions["x-go"] = docInfo
 	}
 
 	// Create the url.
