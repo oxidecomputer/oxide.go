@@ -295,6 +295,8 @@ func printProperty(p string) string {
 		c = strings.Replace(c, "Ipv4", "IPv4", 1)
 	} else if strings.HasPrefix(c, "Ipv6") {
 		c = strings.Replace(c, "Ipv6", "IPv6", 1)
+	} else if strings.HasSuffix(c, "Id") {
+		c = strings.TrimSuffix(c, "Id") + "ID"
 	}
 	return c
 }

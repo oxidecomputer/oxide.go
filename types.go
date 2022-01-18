@@ -42,12 +42,12 @@ type Disk struct {
 	ID string `json:"id,omitempty" yaml:"id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name      Name   `json:"name,omitempty" yaml:"name,omitempty"`
-	ProjectId string `json:"projectId,omitempty" yaml:"projectId,omitempty"`
+	ProjectID string `json:"projectId,omitempty" yaml:"projectId,omitempty"`
 	// Size is a count of bytes, typically used either for memory or storage capacity
 	//
 	// The maximum supported byte count is [`i64::MAX`].  This makes it somewhat inconvenient to define constructors: a u32 constructor can be infallible, but an i64 constructor can fail (if the value is negative) and a u64 constructor can fail (if the value is larger than i64::MAX).  We provide all of these for consumers' convenience.
 	Size       ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
-	SnapshotId string    `json:"snapshotId,omitempty" yaml:"snapshotId,omitempty"`
+	SnapshotID string    `json:"snapshotId,omitempty" yaml:"snapshotId,omitempty"`
 	// State is state of a Disk (primarily: attached or not)
 	State DiskState `json:"state,omitempty" yaml:"state,omitempty"`
 	// TimeCreated is timestamp when this resource was created
@@ -63,8 +63,8 @@ type DiskCreate struct {
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// Size is size of the Disk
 	Size ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
-	// SnapshotId is id for snapshot from which the Disk should be created, if any
-	SnapshotId string `json:"snapshotId,omitempty" yaml:"snapshotId,omitempty"`
+	// SnapshotID is id for snapshot from which the Disk should be created, if any
+	SnapshotID string `json:"snapshotId,omitempty" yaml:"snapshotId,omitempty"`
 }
 
 // DiskIdentifier is parameters for the [`Disk`] to be attached or detached to an instance
@@ -236,8 +236,8 @@ type Instance struct {
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// Ncpus is number of CPUs allocated for this Instance
 	Ncpus InstanceCpuCount `json:"ncpus,omitempty" yaml:"ncpus,omitempty"`
-	// ProjectId is id for the project containing this Instance
-	ProjectId string `json:"projectId,omitempty" yaml:"projectId,omitempty"`
+	// ProjectID is id for the project containing this Instance
+	ProjectID string `json:"projectId,omitempty" yaml:"projectId,omitempty"`
 	// RunState is running state of an Instance (primarily: booted or stopped)
 	//
 	// This typically reflects whether it's starting, running, stopping, or stopped, but also includes states related to the Instance's lifecycle
@@ -346,14 +346,14 @@ const (
 type NetworkInterface struct {
 	// Identity is common identifying metadata
 	Identity IdentityMetadata `json:"identity,omitempty" yaml:"identity,omitempty"`
-	// InstanceId is the Instance to which the interface belongs.
-	InstanceId string `json:"instance_id,omitempty" yaml:"instance_id,omitempty"`
+	// InstanceID is the Instance to which the interface belongs.
+	InstanceID string `json:"instance_id,omitempty" yaml:"instance_id,omitempty"`
 	// Ip is the IP address assigned to this interface.
 	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
 	// Mac is the MAC address assigned to this interface.
 	Mac MacAddr `json:"mac,omitempty" yaml:"mac,omitempty"`
-	// SubnetId is the subnet to which the interface belongs.
-	SubnetId string `json:"subnet_id,omitempty" yaml:"subnet_id,omitempty"`
+	// SubnetID is the subnet to which the interface belongs.
+	SubnetID string `json:"subnet_id,omitempty" yaml:"subnet_id,omitempty"`
 	// VPCId is the VPC to which the interface belongs.
 	VPCId string `json:"vpc_id,omitempty" yaml:"vpc_id,omitempty"`
 }
@@ -409,7 +409,7 @@ type Project struct {
 	ID string `json:"id,omitempty" yaml:"id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name           Name   `json:"name,omitempty" yaml:"name,omitempty"`
-	OrganizationId string `json:"organizationId,omitempty" yaml:"organizationId,omitempty"`
+	OrganizationID string `json:"organizationId,omitempty" yaml:"organizationId,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"timeCreated,omitempty" yaml:"timeCreated,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
@@ -589,8 +589,8 @@ type RouterRoute struct {
 	Identity IdentityMetadata `json:"identity,omitempty" yaml:"identity,omitempty"`
 	// Kind is describes the kind of router. Set at creation. `read-only`
 	Kind RouterRouteKind `json:"kind,omitempty" yaml:"kind,omitempty"`
-	// RouterId is the VPC Router to which the route belongs.
-	RouterId string `json:"router_id,omitempty" yaml:"router_id,omitempty"`
+	// RouterID is the VPC Router to which the route belongs.
+	RouterID string `json:"router_id,omitempty" yaml:"router_id,omitempty"`
 	// Target is a subset of [`NetworkTarget`], `RouteTarget` specifies all possible targets that a route can forward to.
 	Target RouteTarget `json:"target,omitempty" yaml:"target,omitempty"`
 }
@@ -843,10 +843,10 @@ type VPC struct {
 	ID string `json:"id,omitempty" yaml:"id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
-	// ProjectId is id for the project containing this VPC
-	ProjectId string `json:"projectId,omitempty" yaml:"projectId,omitempty"`
-	// SystemRouterId is id for the system router where subnet default routes are registered
-	SystemRouterId string `json:"systemRouterId,omitempty" yaml:"systemRouterId,omitempty"`
+	// ProjectID is id for the project containing this VPC
+	ProjectID string `json:"projectId,omitempty" yaml:"projectId,omitempty"`
+	// SystemRouterID is id for the system router where subnet default routes are registered
+	SystemRouterID string `json:"systemRouterId,omitempty" yaml:"systemRouterId,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"timeCreated,omitempty" yaml:"timeCreated,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
