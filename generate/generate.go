@@ -58,12 +58,17 @@ func main() {
 	// Generate the paths.go file.
 	generatePaths(doc)
 
-	clientInfo := `// Create a client with your token.
-client, err := oxide.NewClient("$TOKEN", "your apps user agent")
+	clientInfo := `// Create a client with your token and host.
+client, err := oxide.NewClient("$OXIDE_TOKEN", "your apps user agent", "$OXIDE_HOST")
 if err != nil {
   panic(err)
 }
-if err := client.WithBaseURL("$BASE_URL"); err != nil {
+
+// - OR -
+// Create a new client with your token and host parsed from the environment
+// variables: OXIDE_TOKEN, OXIDE_HOST.
+client, err := oxide.NewClientFromEnv("your apps user agent")
+if err != nil {
   panic(err)
 }`
 

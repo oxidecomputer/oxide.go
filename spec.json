@@ -2304,7 +2304,7 @@
     "title": "Oxide Region API",
     "version": "0.0.1",
     "x-go": {
-      "client": "// Create a client with your token.\nclient, err := oxide.NewClient(\"$TOKEN\", \"your apps user agent\")\nif err != nil {\n  panic(err)\n}\nif err := client.WithBaseURL(\"$BASE_URL\"); err != nil {\n  panic(err)\n}",
+      "client": "// Create a client with your token and host.\nclient, err := oxide.NewClient(\"$OXIDE_TOKEN\", \"your apps user agent\", \"$OXIDE_HOST\")\nif err != nil {\n  panic(err)\n}\n\n// - OR -\n// Create a new client with your token and host parsed from the environment\n// variables: OXIDE_TOKEN, OXIDE_HOST.\nclient, err := oxide.NewClientFromEnv(\"your apps user agent\")\nif err != nil {\n  panic(err)\n}",
       "install": "go get github.com/oxidecomputer/oxide.go"
     },
     "x-rust": {

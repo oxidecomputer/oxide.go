@@ -25,13 +25,18 @@ type Client struct {
 
 // NewClient creates a new client for the Oxide API.
 // You need to pass in your API token to create the client.
-func NewClient(token, userAgent string) (*Client, error) {
+func NewClient(token, userAgent, host string) (*Client, error) {
 	if token == "" {
 		return nil, fmt.Errorf("you need to pass in an API token to create the client")
 	}
 
+	baseURL, err := parseBaseURL(host)
+	if err != nil {
+		return nil, err
+	}
+
 	client := &Client{
-		server: DefaultServerURL,
+		server: baseURL,
 		token:  token,
 	}
 
@@ -56,31 +61,42 @@ func NewClient(token, userAgent string) (*Client, error) {
 }
 
 // NewClientFromEnv creates a new client for the Oxide API, using the token
-// stored in the environment variable `OXIDE_API_TOKEN`.
+// stored in the environment variable `OXIDE_TOKEN` and the host stored in the
+// environment variable `OXIDE_HOST`.
 func NewClientFromEnv(userAgent string) (*Client, error) {
 	token := os.Getenv(TokenEnvVar)
 	if token == "" {
 		return nil, fmt.Errorf("the environment variable %s must be set with your API token", TokenEnvVar)
 	}
 
-	return NewClient(token, userAgent)
+	host := os.Getenv(HostEnvVar)
+	if host == "" {
+		return nil, fmt.Errorf("the environment variable %s must be set with the host of the Oxide API", HostEnvVar)
+	}
+
+	return NewClient(token, userAgent, host)
 }
 
-// WithBaseURL overrides the baseURL.
-func (c *Client) WithBaseURL(baseURL string) error {
+// parseBaseURL parses the base URL from the server URL.
+func parseBaseURL(baseURL string) (string, error) {
+	if !strings.HasPrefix(baseURL, "http://") && !strings.HasPrefix(baseURL, "https://") {
+		// Assume https.
+		baseURL = "https://" + baseURL
+	}
+
 	newBaseURL, err := url.Parse(baseURL)
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	c.server = newBaseURL.String()
+	b := newBaseURL.String()
 
 	// Ensure the server URL always has a trailing slash.
-	if !strings.HasSuffix(c.server, "/") {
-		c.server += "/"
+	if !strings.HasSuffix(b, "/") {
+		b += "/"
 	}
 
-	return nil
+	return b, nil
 }
 
 // WithToken overrides the token used for authentication.
