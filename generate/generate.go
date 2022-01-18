@@ -69,6 +69,7 @@ if err != nil {
 }
 
 // - OR -
+
 // Create a new client with your token and host parsed from the environment
 // variables: OXIDE_TOKEN, OXIDE_HOST.
 client, err := oxide.NewClientFromEnv("your apps user agent")
@@ -536,7 +537,7 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 			fnName,
 			paramsString,
 			respType)
-		docInfo["example"] += fmt.Sprintf("%s, err := client.%s.%s(%s)", tag, strcase.ToLowerCamel(respType), fnName, docParamsString)
+		docInfo["example"] += fmt.Sprintf("%s, err := client.%s.%s(%s)", strcase.ToLowerCamel(respType), tag, fnName, docParamsString)
 	} else {
 		fmt.Fprintf(f, "func (s *%sService) %s(%s) (error) {\n",
 			tag,
