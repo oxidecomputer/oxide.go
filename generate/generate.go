@@ -491,7 +491,13 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 	}
 	if len(params) > 0 {
 		fmt.Fprintf(&description, "//\n// Parameters:\n")
-		for name, t := range params {
+		keys := make([]string, 0)
+		for k := range params {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for _, name := range keys {
+			t := params[name]
 			if t.Description != "" {
 				fmt.Fprintf(&description, "//\t- `%s`: %s\n", strcase.ToLowerCamel(name), strings.ReplaceAll(t.Description, "\n", "\n//\t\t"))
 			} else {
