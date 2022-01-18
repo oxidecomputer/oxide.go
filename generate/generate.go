@@ -279,6 +279,8 @@ func printProperty(p string) string {
 	c := strcase.ToCamel(p)
 	if c == "Id" {
 		c = "ID"
+	} else if c == "Ncpus" {
+		c = "NCPUs"
 	} else if c == "IpAddress" {
 		c = "IPAddress"
 	} else if c == "UserId" {
@@ -297,6 +299,8 @@ func printProperty(p string) string {
 		c = strings.Replace(c, "Ipv6", "IPv6", 1)
 	} else if strings.HasSuffix(c, "Id") {
 		c = strings.TrimSuffix(c, "Id") + "ID"
+	} else if strings.Contains(c, "Cpu") {
+		c = strings.ReplaceAll(c, "Cpu", "CPU")
 	}
 	return c
 }

@@ -234,8 +234,8 @@ type Instance struct {
 	Memory ByteCount `json:"memory,omitempty" yaml:"memory,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
-	// Ncpus is number of CPUs allocated for this Instance
-	Ncpus InstanceCpuCount `json:"ncpus,omitempty" yaml:"ncpus,omitempty"`
+	// NCPUs is number of CPUs allocated for this Instance
+	NCPUs InstanceCPUCount `json:"ncpus,omitempty" yaml:"ncpus,omitempty"`
 	// ProjectID is id for the project containing this Instance
 	ProjectID string `json:"projectId,omitempty" yaml:"projectId,omitempty"`
 	// RunState is running state of an Instance (primarily: booted or stopped)
@@ -249,8 +249,8 @@ type Instance struct {
 	TimeRunStateUpdated *time.Time `json:"timeRunStateUpdated,omitempty" yaml:"timeRunStateUpdated,omitempty"`
 }
 
-// InstanceCpuCount is the number of CPUs in an Instance
-type InstanceCpuCount int
+// InstanceCPUCount is the number of CPUs in an Instance
+type InstanceCPUCount int
 
 // InstanceCreate is create-time parameters for an [`Instance`]
 type InstanceCreate struct {
@@ -262,8 +262,8 @@ type InstanceCreate struct {
 	Memory ByteCount `json:"memory,omitempty" yaml:"memory,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
-	// Ncpus is the number of CPUs in an Instance
-	Ncpus InstanceCpuCount `json:"ncpus,omitempty" yaml:"ncpus,omitempty"`
+	// NCPUs is the number of CPUs in an Instance
+	NCPUs InstanceCPUCount `json:"ncpus,omitempty" yaml:"ncpus,omitempty"`
 }
 
 // InstanceResultsPage is a single page of results
