@@ -50,6 +50,9 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Generate the client.go file.
+	generateClient(doc)
+
 	// Generate the types.go file.
 	generateTypes(doc)
 
@@ -160,6 +163,42 @@ func generateResponses(doc *openapi3.T) {
 	}
 }
 
+// Generate the client.go file.
+func generateClient(doc *openapi3.T) {
+	f := openGeneratedFile("client.go")
+	defer f.Close()
+
+	fmt.Fprintf(f, `// Client which conforms to the OpenAPI3 specification for this service.
+type Client struct {
+	// The endpoint of the server conforming to this interface, with scheme,
+	// https://api.oxide.computer for example.
+	server string
+
+	// Client is the *http.Client for performing requests.
+	client *http.Client
+
+	// token is the API token used for authentication.
+	token string
+`)
+
+	for _, tag := range doc.Tags {
+		if tag.Description != "" {
+			fmt.Fprintf(f, "// %s: %s\n", strcase.ToCamel(tag.Name), tag.Description)
+		}
+		fmt.Fprintf(f, "%s\t*%sService\n", strcase.ToCamel(tag.Name), strcase.ToCamel(tag.Name))
+	}
+
+	// Close the struct.
+	fmt.Fprintf(f, "}\n\n")
+
+	for _, tag := range doc.Tags {
+		if tag.Description != "" {
+			fmt.Fprintf(f, "// %sService: %s\n", strcase.ToCamel(tag.Name), tag.Description)
+		}
+		fmt.Fprintf(f, "type %sService service\n\n", strcase.ToCamel(tag.Name))
+	}
+}
+
 // Generate the paths.go file.
 func generatePaths(doc *openapi3.T) {
 	f := openGeneratedFile("paths.go")
@@ -207,6 +246,32 @@ func openGeneratedFile(filename string) *os.File {
 	fmt.Fprintln(f, "")
 
 	return f
+}
+
+func cleanFnName(name string, tag string, path string) string {
+	name = printProperty(name)
+
+	name = strings.ReplaceAll(name, strcase.ToCamel(tag), "")
+
+	if strings.HasSuffix(tag, "s") {
+		tag = strings.TrimSuffix(tag, "s")
+		name = strings.ReplaceAll(name, strcase.ToCamel(tag), "")
+	}
+
+	name = strings.TrimPrefix(name, "Organization")
+	name = strings.TrimPrefix(name, "Project")
+
+	name = strings.ReplaceAll(name, "Vpc", "VPC")
+
+	if strings.HasSuffix(name, "Get") && !strings.HasSuffix(path, "}") {
+		name = fmt.Sprintf("%sList", strings.TrimSuffix(name, "Get"))
+	}
+
+	if strings.HasSuffix(name, "Post") {
+		name = fmt.Sprintf("%sCreate", strings.TrimSuffix(name, "Post"))
+	}
+
+	return name
 }
 
 // printProperty converts an object's property name to a valid Go identifier.
@@ -317,7 +382,14 @@ func writePath(doc *openapi3.T, f *os.File, path string, p *openapi3.PathItem) {
 
 func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *openapi3.Operation, isGetAllPages bool) {
 	respType, pagedRespType := getSuccessResponseType(o, isGetAllPages)
-	fnName := strcase.ToCamel(o.OperationID)
+
+	if len(o.Tags) == 0 {
+		fmt.Printf("[WARN] TODO: skipping operation %q, since it has no tag\n", o.OperationID)
+		return
+	}
+	tag := strcase.ToCamel(o.Tags[0])
+
+	fnName := cleanFnName(o.OperationID, tag, path)
 
 	pageResult := false
 
@@ -437,27 +509,30 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 
 	docInfo := map[string]string{
 		"example":     fmt.Sprintf("%s\n", description.String()),
-		"libDocsLink": fmt.Sprintf("https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.%s", fnName),
+		"libDocsLink": fmt.Sprintf("https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#%sService.%s", tag, fnName),
 	}
 	if isGetAllPages {
 		og := doc.Paths[path].Get.Extensions["x-go"].(map[string]string)
 		docInfo["example"] = fmt.Sprintf("%s\n\n// - OR -\n\n%s", og["example"], docInfo["example"])
+		docInfo["libDocsLink"] = fmt.Sprintf("https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#%sService.%s", tag, ogFnName)
 	}
 
 	// Write the method.
 	if respType != "" {
-		fmt.Fprintf(f, "func (c *Client) %s(%s) (*%s, error) {\n",
+		fmt.Fprintf(f, "func (s *%sService) %s(%s) (*%s, error) {\n",
+			tag,
 			fnName,
 			paramsString,
 			respType)
-		docInfo["example"] += fmt.Sprintf("%s, err := client.%s(%s)", strcase.ToLowerCamel(respType), fnName, docParamsString)
+		docInfo["example"] += fmt.Sprintf("%s, err := client.%s.%s(%s)", tag, strcase.ToLowerCamel(respType), fnName, docParamsString)
 	} else {
-		fmt.Fprintf(f, "func (c *Client) %s(%s) (error) {\n",
+		fmt.Fprintf(f, "func (s *%sService) %s(%s) (error) {\n",
+			tag,
 			fnName,
 			paramsString)
-		docInfo["example"] += fmt.Sprintf(`if err := client.%s(%s); err != nil {
+		docInfo["example"] += fmt.Sprintf(`if err := client.%s.%s(%s); err != nil {
 	panic(err)
-}`, fnName, docParamsString)
+}`, tag, fnName, docParamsString)
 	}
 
 	if method == http.MethodGet {
@@ -479,7 +554,7 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 			pageToken := ""
 			limit := 100
 			for {
-				page, err := c.%s(%s)
+				page, err := s.%s(%s)
 				if err != nil {
 					return nil, err
 				}
@@ -500,7 +575,7 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 	// Create the url.
 	fmt.Fprintln(f, "// Create the url.")
 	fmt.Fprintf(f, "path := %q\n", cleanPath(path))
-	fmt.Fprintln(f, "uri := resolveRelative(c.server, path)")
+	fmt.Fprintln(f, "uri := resolveRelative(s.client.server, path)")
 
 	if o.RequestBody != nil {
 		for mt := range o.RequestBody.Value.Content {
@@ -569,7 +644,7 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 
 	// Send the request.
 	fmt.Fprintln(f, "// Send the request.")
-	fmt.Fprintln(f, "resp, err := c.client.Do(req)")
+	fmt.Fprintln(f, "resp, err := s.client.client.Do(req)")
 	fmt.Fprintln(f, "if err != nil {")
 	if respType != "" {
 		fmt.Fprintln(f, `return nil, fmt.Errorf("error sending request: %v", err)`)

@@ -11,20 +11,20 @@ import (
 	"strconv"
 )
 
-// HardwareRacksGet
+// RacksList
 //
 // List racks in the system.
 //
-// To iterate over all pages, use the `HardwareRacksGetAllPages` method, instead.
+// To iterate over all pages, use the `RacksListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`
 //	- `pageToken`
 //	- `sortBy`
-func (c *Client) HardwareRacksGet(limit int, pageToken string, sortBy IDSortMode) (*RackResultsPage, error) {
+func (s *HardwareService) RacksList(limit int, pageToken string, sortBy IDSortMode) (*RackResultsPage, error) {
 	// Create the url.
 	path := "/hardware/racks"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -39,7 +39,7 @@ func (c *Client) HardwareRacksGet(limit int, pageToken string, sortBy IDSortMode
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -60,22 +60,22 @@ func (c *Client) HardwareRacksGet(limit int, pageToken string, sortBy IDSortMode
 	return &body, nil
 }
 
-// HardwareRacksGetAllPages
+// RacksListAllPages
 //
 // List racks in the system.
 //
-// This method is a wrapper around the `HardwareRacksGet` method.
+// This method is a wrapper around the `RacksList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
 //	- `sortBy`
-func (c *Client) HardwareRacksGetAllPages(sortBy IDSortMode) (*[]Rack, error) {
+func (s *HardwareService) RacksListAllPages(sortBy IDSortMode) (*[]Rack, error) {
 
 	var allPages []Rack
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := c.HardwareRacksGet(limit, pageToken, sortBy)
+		page, err := s.RacksList(limit, pageToken, sortBy)
 		if err != nil {
 			return nil, err
 		}
@@ -87,16 +87,16 @@ func (c *Client) HardwareRacksGetAllPages(sortBy IDSortMode) (*[]Rack, error) {
 	}
 
 	return &allPages, nil
-} // HardwareRacksGetRack
+} // RacksGetRack
 //
 // Fetch information about a particular rack.
 //
 // Parameters:
 //	- `rackId`
-func (c *Client) HardwareRacksGetRack(rackId string) (*Rack, error) {
+func (s *HardwareService) RacksGetRack(rackId string) (*Rack, error) {
 	// Create the url.
 	path := "/hardware/racks/{{.rack_id}}"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -109,7 +109,7 @@ func (c *Client) HardwareRacksGetRack(rackId string) (*Rack, error) {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -130,20 +130,20 @@ func (c *Client) HardwareRacksGetRack(rackId string) (*Rack, error) {
 	return &body, nil
 }
 
-// HardwareSledsGet
+// SledsList
 //
 // List sleds in the system.
 //
-// To iterate over all pages, use the `HardwareSledsGetAllPages` method, instead.
+// To iterate over all pages, use the `SledsListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`
 //	- `pageToken`
 //	- `sortBy`
-func (c *Client) HardwareSledsGet(limit int, pageToken string, sortBy IDSortMode) (*SledResultsPage, error) {
+func (s *HardwareService) SledsList(limit int, pageToken string, sortBy IDSortMode) (*SledResultsPage, error) {
 	// Create the url.
 	path := "/hardware/sleds"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -158,7 +158,7 @@ func (c *Client) HardwareSledsGet(limit int, pageToken string, sortBy IDSortMode
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -179,22 +179,22 @@ func (c *Client) HardwareSledsGet(limit int, pageToken string, sortBy IDSortMode
 	return &body, nil
 }
 
-// HardwareSledsGetAllPages
+// SledsListAllPages
 //
 // List sleds in the system.
 //
-// This method is a wrapper around the `HardwareSledsGet` method.
+// This method is a wrapper around the `SledsList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
 //	- `sortBy`
-func (c *Client) HardwareSledsGetAllPages(sortBy IDSortMode) (*[]Sled, error) {
+func (s *HardwareService) SledsListAllPages(sortBy IDSortMode) (*[]Sled, error) {
 
 	var allPages []Sled
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := c.HardwareSledsGet(limit, pageToken, sortBy)
+		page, err := s.SledsList(limit, pageToken, sortBy)
 		if err != nil {
 			return nil, err
 		}
@@ -206,16 +206,16 @@ func (c *Client) HardwareSledsGetAllPages(sortBy IDSortMode) (*[]Sled, error) {
 	}
 
 	return &allPages, nil
-} // HardwareSledsGetSled
+} // SledsGetSled
 //
 // Fetch information about a sled in the system.
 //
 // Parameters:
 //	- `sledId`
-func (c *Client) HardwareSledsGetSled(sledId string) (*Sled, error) {
+func (s *HardwareService) SledsGetSled(sledId string) (*Sled, error) {
 	// Create the url.
 	path := "/hardware/sleds/{{.sled_id}}"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -228,7 +228,7 @@ func (c *Client) HardwareSledsGetSled(sledId string) (*Sled, error) {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -249,73 +249,20 @@ func (c *Client) HardwareSledsGetSled(sledId string) (*Sled, error) {
 	return &body, nil
 }
 
-// SpoofLogin
-func (c *Client) SpoofLogin(j *LoginParams) error {
-	// Create the url.
-	path := "/login"
-	uri := resolveRelative(c.server, path)
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
-		return fmt.Errorf("encoding json body request failed: %v", err)
-	}
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
-	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return err
-	}
-	// Return.
-	return nil
-}
-
-// Logout
-func (c *Client) Logout() error {
-	// Create the url.
-	path := "/logout"
-	uri := resolveRelative(c.server, path)
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, nil)
-	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return err
-	}
-	// Return.
-	return nil
-}
-
-// OrganizationsGet
+// List
 //
 // List all organizations.
 //
-// To iterate over all pages, use the `OrganizationsGetAllPages` method, instead.
+// To iterate over all pages, use the `ListAllPages` method, instead.
 //
 // Parameters:
+//	- `limit`
 //	- `pageToken`
 //	- `sortBy`
-//	- `limit`
-func (c *Client) OrganizationsGet(limit int, pageToken string, sortBy NameOrIdSortMode) (*OrganizationResultsPage, error) {
+func (s *OrganizationsService) List(limit int, pageToken string, sortBy NameOrIdSortMode) (*OrganizationResultsPage, error) {
 	// Create the url.
 	path := "/organizations"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -330,7 +277,7 @@ func (c *Client) OrganizationsGet(limit int, pageToken string, sortBy NameOrIdSo
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -351,22 +298,22 @@ func (c *Client) OrganizationsGet(limit int, pageToken string, sortBy NameOrIdSo
 	return &body, nil
 }
 
-// OrganizationsGetAllPages
+// ListAllPages
 //
 // List all organizations.
 //
-// This method is a wrapper around the `OrganizationsGet` method.
+// This method is a wrapper around the `List` method.
 // This method returns all the pages at once.
 //
 // Parameters:
 //	- `sortBy`
-func (c *Client) OrganizationsGetAllPages(sortBy NameOrIdSortMode) (*[]Organization, error) {
+func (s *OrganizationsService) ListAllPages(sortBy NameOrIdSortMode) (*[]Organization, error) {
 
 	var allPages []Organization
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := c.OrganizationsGet(limit, pageToken, sortBy)
+		page, err := s.List(limit, pageToken, sortBy)
 		if err != nil {
 			return nil, err
 		}
@@ -378,13 +325,13 @@ func (c *Client) OrganizationsGetAllPages(sortBy NameOrIdSortMode) (*[]Organizat
 	}
 
 	return &allPages, nil
-} // OrganizationsPost
+} // Create
 //
 // Create a new organization.
-func (c *Client) OrganizationsPost(j *OrganizationCreate) (*Organization, error) {
+func (s *OrganizationsService) Create(j *OrganizationCreate) (*Organization, error) {
 	// Create the url.
 	path := "/organizations"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -396,7 +343,7 @@ func (c *Client) OrganizationsPost(j *OrganizationCreate) (*Organization, error)
 		return nil, fmt.Errorf("error creating request: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -417,16 +364,16 @@ func (c *Client) OrganizationsPost(j *OrganizationCreate) (*Organization, error)
 	return &body, nil
 }
 
-// OrganizationsGetOrganization
+// Get
 //
 // Fetch a specific organization
 //
 // Parameters:
 //	- `organizationName`
-func (c *Client) OrganizationsGetOrganization(organizationName Name) (*Organization, error) {
+func (s *OrganizationsService) Get(organizationName Name) (*Organization, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -439,7 +386,7 @@ func (c *Client) OrganizationsGetOrganization(organizationName Name) (*Organizat
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -460,17 +407,17 @@ func (c *Client) OrganizationsGetOrganization(organizationName Name) (*Organizat
 	return &body, nil
 }
 
-// OrganizationsPutOrganization
+// Put
 //
 // Update a specific organization.
 //  * TODO-correctness: Is it valid for PUT to accept application/json that's a subset of what the resource actually represents?  If not, is that a problem? (HTTP may require that this be idempotent.)  If so, can we get around that having this be a slightly different content-type (e.g., "application/json-patch")?  We should see what other APIs do.
 //
 // Parameters:
 //	- `organizationName`
-func (c *Client) OrganizationsPutOrganization(organizationName Name, j *OrganizationUpdate) (*Organization, error) {
+func (s *OrganizationsService) Put(organizationName Name, j *OrganizationUpdate) (*Organization, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -488,7 +435,7 @@ func (c *Client) OrganizationsPutOrganization(organizationName Name, j *Organiza
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -509,16 +456,16 @@ func (c *Client) OrganizationsPutOrganization(organizationName Name, j *Organiza
 	return &body, nil
 }
 
-// OrganizationsDeleteOrganization
+// Delete
 //
 // Delete a specific organization.
 //
 // Parameters:
 //	- `organizationName`
-func (c *Client) OrganizationsDeleteOrganization(organizationName Name) error {
+func (s *OrganizationsService) Delete(organizationName Name) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("DELETE", uri, nil)
 	if err != nil {
@@ -531,7 +478,7 @@ func (c *Client) OrganizationsDeleteOrganization(organizationName Name) error {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return fmt.Errorf("error sending request: %v", err)
 	}
@@ -544,21 +491,21 @@ func (c *Client) OrganizationsDeleteOrganization(organizationName Name) error {
 	return nil
 }
 
-// OrganizationProjectsGet
+// List
 //
 // List all projects.
 //
-// To iterate over all pages, use the `OrganizationProjectsGetAllPages` method, instead.
+// To iterate over all pages, use the `ListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`
 //	- `pageToken`
 //	- `sortBy`
 //	- `organizationName`
-func (c *Client) OrganizationProjectsGet(limit int, pageToken string, sortBy NameOrIdSortMode, organizationName Name) (*ProjectResultsPage, error) {
+func (s *ProjectsService) List(limit int, pageToken string, sortBy NameOrIdSortMode, organizationName Name) (*ProjectResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -574,7 +521,7 @@ func (c *Client) OrganizationProjectsGet(limit int, pageToken string, sortBy Nam
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -595,23 +542,23 @@ func (c *Client) OrganizationProjectsGet(limit int, pageToken string, sortBy Nam
 	return &body, nil
 }
 
-// OrganizationProjectsGetAllPages
+// ListAllPages
 //
 // List all projects.
 //
-// This method is a wrapper around the `OrganizationProjectsGet` method.
+// This method is a wrapper around the `List` method.
 // This method returns all the pages at once.
 //
 // Parameters:
 //	- `sortBy`
 //	- `organizationName`
-func (c *Client) OrganizationProjectsGetAllPages(sortBy NameOrIdSortMode, organizationName Name) (*[]Project, error) {
+func (s *ProjectsService) ListAllPages(sortBy NameOrIdSortMode, organizationName Name) (*[]Project, error) {
 
 	var allPages []Project
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := c.OrganizationProjectsGet(limit, pageToken, sortBy, organizationName)
+		page, err := s.List(limit, pageToken, sortBy, organizationName)
 		if err != nil {
 			return nil, err
 		}
@@ -623,16 +570,16 @@ func (c *Client) OrganizationProjectsGetAllPages(sortBy NameOrIdSortMode, organi
 	}
 
 	return &allPages, nil
-} // OrganizationProjectsPost
+} // Create
 //
 // Create a new project.
 //
 // Parameters:
 //	- `organizationName`
-func (c *Client) OrganizationProjectsPost(organizationName Name, j *ProjectCreate) (*Project, error) {
+func (s *ProjectsService) Create(organizationName Name, j *ProjectCreate) (*Project, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -650,7 +597,7 @@ func (c *Client) OrganizationProjectsPost(organizationName Name, j *ProjectCreat
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -671,17 +618,17 @@ func (c *Client) OrganizationProjectsPost(organizationName Name, j *ProjectCreat
 	return &body, nil
 }
 
-// OrganizationProjectsGetProject
+// Get
 //
 // Fetch a specific project
 //
 // Parameters:
 //	- `organizationName`
 //	- `projectName`
-func (c *Client) OrganizationProjectsGetProject(organizationName Name, projectName Name) (*Project, error) {
+func (s *ProjectsService) Get(organizationName Name, projectName Name) (*Project, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -695,7 +642,7 @@ func (c *Client) OrganizationProjectsGetProject(organizationName Name, projectNa
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -716,7 +663,7 @@ func (c *Client) OrganizationProjectsGetProject(organizationName Name, projectNa
 	return &body, nil
 }
 
-// OrganizationProjectsPutProject
+// sPutProject
 //
 // Update a specific project.
 //  * TODO-correctness: Is it valid for PUT to accept application/json that's a subset of what the resource actually represents?  If not, is that a problem? (HTTP may require that this be idempotent.)  If so, can we get around that having this be a slightly different content-type (e.g., "application/json-patch")?  We should see what other APIs do.
@@ -724,10 +671,10 @@ func (c *Client) OrganizationProjectsGetProject(organizationName Name, projectNa
 // Parameters:
 //	- `organizationName`
 //	- `projectName`
-func (c *Client) OrganizationProjectsPutProject(organizationName Name, projectName Name, j *ProjectUpdate) (*Project, error) {
+func (s *OrganizationsService) sPutProject(organizationName Name, projectName Name, j *ProjectUpdate) (*Project, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -746,7 +693,7 @@ func (c *Client) OrganizationProjectsPutProject(organizationName Name, projectNa
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -767,17 +714,17 @@ func (c *Client) OrganizationProjectsPutProject(organizationName Name, projectNa
 	return &body, nil
 }
 
-// OrganizationProjectsDeleteProject
+// Delete
 //
 // Delete a specific project.
 //
 // Parameters:
 //	- `organizationName`
 //	- `projectName`
-func (c *Client) OrganizationProjectsDeleteProject(organizationName Name, projectName Name) error {
+func (s *ProjectsService) Delete(organizationName Name, projectName Name) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("DELETE", uri, nil)
 	if err != nil {
@@ -791,7 +738,7 @@ func (c *Client) OrganizationProjectsDeleteProject(organizationName Name, projec
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return fmt.Errorf("error sending request: %v", err)
 	}
@@ -804,22 +751,22 @@ func (c *Client) OrganizationProjectsDeleteProject(organizationName Name, projec
 	return nil
 }
 
-// ProjectDisksGet
+// DisksList
 //
 // List disks in a project.
 //
-// To iterate over all pages, use the `ProjectDisksGetAllPages` method, instead.
+// To iterate over all pages, use the `DisksListAllPages` method, instead.
 //
 // Parameters:
+//	- `organizationName`
 //	- `projectName`
 //	- `limit`
 //	- `pageToken`
 //	- `sortBy`
-//	- `organizationName`
-func (c *Client) ProjectDisksGet(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name) (*DiskResultsPage, error) {
+func (s *ProjectsService) DisksList(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name) (*DiskResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/disks"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -836,7 +783,7 @@ func (c *Client) ProjectDisksGet(limit int, pageToken string, sortBy NameSortMod
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -857,24 +804,24 @@ func (c *Client) ProjectDisksGet(limit int, pageToken string, sortBy NameSortMod
 	return &body, nil
 }
 
-// ProjectDisksGetAllPages
+// DisksListAllPages
 //
 // List disks in a project.
 //
-// This method is a wrapper around the `ProjectDisksGet` method.
+// This method is a wrapper around the `DisksList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
 //	- `sortBy`
 //	- `organizationName`
 //	- `projectName`
-func (c *Client) ProjectDisksGetAllPages(sortBy NameSortMode, organizationName Name, projectName Name) (*[]Disk, error) {
+func (s *ProjectsService) DisksListAllPages(sortBy NameSortMode, organizationName Name, projectName Name) (*[]Disk, error) {
 
 	var allPages []Disk
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := c.ProjectDisksGet(limit, pageToken, sortBy, organizationName, projectName)
+		page, err := s.DisksList(limit, pageToken, sortBy, organizationName, projectName)
 		if err != nil {
 			return nil, err
 		}
@@ -886,7 +833,7 @@ func (c *Client) ProjectDisksGetAllPages(sortBy NameSortMode, organizationName N
 	}
 
 	return &allPages, nil
-} // ProjectDisksPost
+} // DisksCreate
 //
 // Create a disk in a project.
 //  * TODO-correctness See note about instance create.  This should be async.
@@ -894,10 +841,10 @@ func (c *Client) ProjectDisksGetAllPages(sortBy NameSortMode, organizationName N
 // Parameters:
 //	- `organizationName`
 //	- `projectName`
-func (c *Client) ProjectDisksPost(organizationName Name, projectName Name, j *DiskCreate) (*Disk, error) {
+func (s *ProjectsService) DisksCreate(organizationName Name, projectName Name, j *DiskCreate) (*Disk, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/disks"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -916,7 +863,7 @@ func (c *Client) ProjectDisksPost(organizationName Name, projectName Name, j *Di
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -937,18 +884,18 @@ func (c *Client) ProjectDisksPost(organizationName Name, projectName Name, j *Di
 	return &body, nil
 }
 
-// ProjectDisksGetDisk
+// DisksGetDisk
 //
 // Fetch a single disk in a project.
 //
 // Parameters:
-//	- `projectName`
 //	- `diskName`
 //	- `organizationName`
-func (c *Client) ProjectDisksGetDisk(diskName Name, organizationName Name, projectName Name) (*Disk, error) {
+//	- `projectName`
+func (s *ProjectsService) DisksGetDisk(diskName Name, organizationName Name, projectName Name) (*Disk, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/disks/{{.disk_name}}"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -963,7 +910,7 @@ func (c *Client) ProjectDisksGetDisk(diskName Name, organizationName Name, proje
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -984,18 +931,18 @@ func (c *Client) ProjectDisksGetDisk(diskName Name, organizationName Name, proje
 	return &body, nil
 }
 
-// ProjectDisksDeleteDisk
+// DisksDeleteDisk
 //
 // Delete a disk from a project.
 //
 // Parameters:
-//	- `projectName`
 //	- `diskName`
 //	- `organizationName`
-func (c *Client) ProjectDisksDeleteDisk(diskName Name, organizationName Name, projectName Name) error {
+//	- `projectName`
+func (s *ProjectsService) DisksDeleteDisk(diskName Name, organizationName Name, projectName Name) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/disks/{{.disk_name}}"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("DELETE", uri, nil)
 	if err != nil {
@@ -1010,7 +957,7 @@ func (c *Client) ProjectDisksDeleteDisk(diskName Name, organizationName Name, pr
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return fmt.Errorf("error sending request: %v", err)
 	}
@@ -1023,11 +970,11 @@ func (c *Client) ProjectDisksDeleteDisk(diskName Name, organizationName Name, pr
 	return nil
 }
 
-// ProjectInstancesGet
+// List
 //
 // List instances in a project.
 //
-// To iterate over all pages, use the `ProjectInstancesGetAllPages` method, instead.
+// To iterate over all pages, use the `ListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`
@@ -1035,10 +982,10 @@ func (c *Client) ProjectDisksDeleteDisk(diskName Name, organizationName Name, pr
 //	- `sortBy`
 //	- `organizationName`
 //	- `projectName`
-func (c *Client) ProjectInstancesGet(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name) (*InstanceResultsPage, error) {
+func (s *InstancesService) List(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name) (*InstanceResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -1055,7 +1002,7 @@ func (c *Client) ProjectInstancesGet(limit int, pageToken string, sortBy NameSor
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -1076,24 +1023,24 @@ func (c *Client) ProjectInstancesGet(limit int, pageToken string, sortBy NameSor
 	return &body, nil
 }
 
-// ProjectInstancesGetAllPages
+// ListAllPages
 //
 // List instances in a project.
 //
-// This method is a wrapper around the `ProjectInstancesGet` method.
+// This method is a wrapper around the `List` method.
 // This method returns all the pages at once.
 //
 // Parameters:
 //	- `sortBy`
 //	- `organizationName`
 //	- `projectName`
-func (c *Client) ProjectInstancesGetAllPages(sortBy NameSortMode, organizationName Name, projectName Name) (*[]Instance, error) {
+func (s *InstancesService) ListAllPages(sortBy NameSortMode, organizationName Name, projectName Name) (*[]Instance, error) {
 
 	var allPages []Instance
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := c.ProjectInstancesGet(limit, pageToken, sortBy, organizationName, projectName)
+		page, err := s.List(limit, pageToken, sortBy, organizationName, projectName)
 		if err != nil {
 			return nil, err
 		}
@@ -1105,7 +1052,7 @@ func (c *Client) ProjectInstancesGetAllPages(sortBy NameSortMode, organizationNa
 	}
 
 	return &allPages, nil
-} // ProjectInstancesPost
+} // Create
 //
 // Create an instance in a project.
 //  * TODO-correctness This is supposed to be async.  Is that right?  We can create the instance immediately -- it's just not booted yet.  Maybe the boot operation is what's a separate operation_id.  What about the response code (201 Created vs 202 Accepted)?  Is that orthogonal?  Things can return a useful response, including an operation id, with either response code.  Maybe a "reboot" operation would return a 202 Accepted because there's no actual resource created?
@@ -1113,10 +1060,10 @@ func (c *Client) ProjectInstancesGetAllPages(sortBy NameSortMode, organizationNa
 // Parameters:
 //	- `organizationName`
 //	- `projectName`
-func (c *Client) ProjectInstancesPost(organizationName Name, projectName Name, j *InstanceCreate) (*Instance, error) {
+func (s *InstancesService) Create(organizationName Name, projectName Name, j *InstanceCreate) (*Instance, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -1135,7 +1082,7 @@ func (c *Client) ProjectInstancesPost(organizationName Name, projectName Name, j
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -1156,18 +1103,18 @@ func (c *Client) ProjectInstancesPost(organizationName Name, projectName Name, j
 	return &body, nil
 }
 
-// ProjectInstancesGetInstance
+// Get
 //
 // Get an instance in a project.
 //
 // Parameters:
-//	- `projectName`
 //	- `instanceName`
 //	- `organizationName`
-func (c *Client) ProjectInstancesGetInstance(instanceName Name, organizationName Name, projectName Name) (*Instance, error) {
+//	- `projectName`
+func (s *InstancesService) Get(instanceName Name, organizationName Name, projectName Name) (*Instance, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -1182,7 +1129,7 @@ func (c *Client) ProjectInstancesGetInstance(instanceName Name, organizationName
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -1203,7 +1150,7 @@ func (c *Client) ProjectInstancesGetInstance(instanceName Name, organizationName
 	return &body, nil
 }
 
-// ProjectInstancesDeleteInstance
+// Delete
 //
 // Delete an instance from a project.
 //
@@ -1211,10 +1158,10 @@ func (c *Client) ProjectInstancesGetInstance(instanceName Name, organizationName
 //	- `instanceName`
 //	- `organizationName`
 //	- `projectName`
-func (c *Client) ProjectInstancesDeleteInstance(instanceName Name, organizationName Name, projectName Name) error {
+func (s *InstancesService) Delete(instanceName Name, organizationName Name, projectName Name) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("DELETE", uri, nil)
 	if err != nil {
@@ -1229,7 +1176,7 @@ func (c *Client) ProjectInstancesDeleteInstance(instanceName Name, organizationN
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return fmt.Errorf("error sending request: %v", err)
 	}
@@ -1242,23 +1189,23 @@ func (c *Client) ProjectInstancesDeleteInstance(instanceName Name, organizationN
 	return nil
 }
 
-// InstanceDisksGet
+// DisksList
 //
 // List disks attached to this instance.
 //
-// To iterate over all pages, use the `InstanceDisksGetAllPages` method, instead.
+// To iterate over all pages, use the `DisksListAllPages` method, instead.
 //
 // Parameters:
-//	- `organizationName`
-//	- `projectName`
 //	- `limit`
 //	- `pageToken`
 //	- `sortBy`
 //	- `instanceName`
-func (c *Client) InstanceDisksGet(limit int, pageToken string, sortBy NameSortMode, instanceName Name, organizationName Name, projectName Name) (*DiskResultsPage, error) {
+//	- `organizationName`
+//	- `projectName`
+func (s *InstancesService) DisksList(limit int, pageToken string, sortBy NameSortMode, instanceName Name, organizationName Name, projectName Name) (*DiskResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/disks"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -1276,7 +1223,7 @@ func (c *Client) InstanceDisksGet(limit int, pageToken string, sortBy NameSortMo
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -1297,11 +1244,11 @@ func (c *Client) InstanceDisksGet(limit int, pageToken string, sortBy NameSortMo
 	return &body, nil
 }
 
-// InstanceDisksGetAllPages
+// DisksListAllPages
 //
 // List disks attached to this instance.
 //
-// This method is a wrapper around the `InstanceDisksGet` method.
+// This method is a wrapper around the `DisksList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
@@ -1309,13 +1256,13 @@ func (c *Client) InstanceDisksGet(limit int, pageToken string, sortBy NameSortMo
 //	- `instanceName`
 //	- `organizationName`
 //	- `projectName`
-func (c *Client) InstanceDisksGetAllPages(sortBy NameSortMode, instanceName Name, organizationName Name, projectName Name) (*[]Disk, error) {
+func (s *InstancesService) DisksListAllPages(sortBy NameSortMode, instanceName Name, organizationName Name, projectName Name) (*[]Disk, error) {
 
 	var allPages []Disk
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := c.InstanceDisksGet(limit, pageToken, sortBy, instanceName, organizationName, projectName)
+		page, err := s.DisksList(limit, pageToken, sortBy, instanceName, organizationName, projectName)
 		if err != nil {
 			return nil, err
 		}
@@ -1327,16 +1274,16 @@ func (c *Client) InstanceDisksGetAllPages(sortBy NameSortMode, instanceName Name
 	}
 
 	return &allPages, nil
-} // InstanceDisksAttach
+} // DisksAttach
 //
 // Parameters:
 //	- `instanceName`
 //	- `organizationName`
 //	- `projectName`
-func (c *Client) InstanceDisksAttach(instanceName Name, organizationName Name, projectName Name, j *DiskIdentifier) (*Disk, error) {
+func (s *InstancesService) DisksAttach(instanceName Name, organizationName Name, projectName Name, j *DiskIdentifier) (*Disk, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/disks/attach"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -1356,7 +1303,7 @@ func (c *Client) InstanceDisksAttach(instanceName Name, organizationName Name, p
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -1377,16 +1324,16 @@ func (c *Client) InstanceDisksAttach(instanceName Name, organizationName Name, p
 	return &body, nil
 }
 
-// InstanceDisksDetach
+// DisksDetach
 //
 // Parameters:
 //	- `instanceName`
 //	- `organizationName`
 //	- `projectName`
-func (c *Client) InstanceDisksDetach(instanceName Name, organizationName Name, projectName Name, j *DiskIdentifier) (*Disk, error) {
+func (s *InstancesService) DisksDetach(instanceName Name, organizationName Name, projectName Name, j *DiskIdentifier) (*Disk, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/disks/detach"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -1406,7 +1353,7 @@ func (c *Client) InstanceDisksDetach(instanceName Name, organizationName Name, p
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -1427,7 +1374,7 @@ func (c *Client) InstanceDisksDetach(instanceName Name, organizationName Name, p
 	return &body, nil
 }
 
-// ProjectInstancesInstanceReboot
+// Reboot
 //
 // Reboot an instance.
 //
@@ -1435,10 +1382,10 @@ func (c *Client) InstanceDisksDetach(instanceName Name, organizationName Name, p
 //	- `instanceName`
 //	- `organizationName`
 //	- `projectName`
-func (c *Client) ProjectInstancesInstanceReboot(instanceName Name, organizationName Name, projectName Name) (*Instance, error) {
+func (s *InstancesService) Reboot(instanceName Name, organizationName Name, projectName Name) (*Instance, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/reboot"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("POST", uri, nil)
 	if err != nil {
@@ -1453,7 +1400,7 @@ func (c *Client) ProjectInstancesInstanceReboot(instanceName Name, organizationN
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -1474,7 +1421,7 @@ func (c *Client) ProjectInstancesInstanceReboot(instanceName Name, organizationN
 	return &body, nil
 }
 
-// ProjectInstancesInstanceStart
+// Start
 //
 // Boot an instance.
 //
@@ -1482,10 +1429,10 @@ func (c *Client) ProjectInstancesInstanceReboot(instanceName Name, organizationN
 //	- `instanceName`
 //	- `organizationName`
 //	- `projectName`
-func (c *Client) ProjectInstancesInstanceStart(instanceName Name, organizationName Name, projectName Name) (*Instance, error) {
+func (s *InstancesService) Start(instanceName Name, organizationName Name, projectName Name) (*Instance, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/start"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("POST", uri, nil)
 	if err != nil {
@@ -1500,7 +1447,7 @@ func (c *Client) ProjectInstancesInstanceStart(instanceName Name, organizationNa
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -1521,7 +1468,7 @@ func (c *Client) ProjectInstancesInstanceStart(instanceName Name, organizationNa
 	return &body, nil
 }
 
-// ProjectInstancesInstanceStop
+// Stop
 //
 // Halt an instance.
 //
@@ -1529,10 +1476,10 @@ func (c *Client) ProjectInstancesInstanceStart(instanceName Name, organizationNa
 //	- `instanceName`
 //	- `organizationName`
 //	- `projectName`
-func (c *Client) ProjectInstancesInstanceStop(instanceName Name, organizationName Name, projectName Name) (*Instance, error) {
+func (s *InstancesService) Stop(instanceName Name, organizationName Name, projectName Name) (*Instance, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/stop"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("POST", uri, nil)
 	if err != nil {
@@ -1547,7 +1494,7 @@ func (c *Client) ProjectInstancesInstanceStop(instanceName Name, organizationNam
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -1568,22 +1515,22 @@ func (c *Client) ProjectInstancesInstanceStop(instanceName Name, organizationNam
 	return &body, nil
 }
 
-// ProjectVpcsGet
+// VPCsList
 //
 // List VPCs in a project.
 //
-// To iterate over all pages, use the `ProjectVpcsGetAllPages` method, instead.
+// To iterate over all pages, use the `VPCsListAllPages` method, instead.
 //
 // Parameters:
-//	- `organizationName`
 //	- `projectName`
 //	- `limit`
 //	- `pageToken`
 //	- `sortBy`
-func (c *Client) ProjectVpcsGet(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name) (*VPCResultsPage, error) {
+//	- `organizationName`
+func (s *NetworkingService) VPCsList(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name) (*VPCResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -1600,7 +1547,7 @@ func (c *Client) ProjectVpcsGet(limit int, pageToken string, sortBy NameSortMode
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -1621,24 +1568,24 @@ func (c *Client) ProjectVpcsGet(limit int, pageToken string, sortBy NameSortMode
 	return &body, nil
 }
 
-// ProjectVpcsGetAllPages
+// VPCsListAllPages
 //
 // List VPCs in a project.
 //
-// This method is a wrapper around the `ProjectVpcsGet` method.
+// This method is a wrapper around the `VPCsList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
 //	- `sortBy`
 //	- `organizationName`
 //	- `projectName`
-func (c *Client) ProjectVpcsGetAllPages(sortBy NameSortMode, organizationName Name, projectName Name) (*[]VPC, error) {
+func (s *NetworkingService) VPCsListAllPages(sortBy NameSortMode, organizationName Name, projectName Name) (*[]VPC, error) {
 
 	var allPages []VPC
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := c.ProjectVpcsGet(limit, pageToken, sortBy, organizationName, projectName)
+		page, err := s.VPCsList(limit, pageToken, sortBy, organizationName, projectName)
 		if err != nil {
 			return nil, err
 		}
@@ -1650,17 +1597,17 @@ func (c *Client) ProjectVpcsGetAllPages(sortBy NameSortMode, organizationName Na
 	}
 
 	return &allPages, nil
-} // ProjectVpcsPost
+} // VPCsCreate
 //
 // Create a VPC in a project.
 //
 // Parameters:
 //	- `organizationName`
 //	- `projectName`
-func (c *Client) ProjectVpcsPost(organizationName Name, projectName Name, j *VPCCreate) (*VPC, error) {
+func (s *NetworkingService) VPCsCreate(organizationName Name, projectName Name, j *VPCCreate) (*VPC, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -1679,7 +1626,7 @@ func (c *Client) ProjectVpcsPost(organizationName Name, projectName Name, j *VPC
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -1700,18 +1647,18 @@ func (c *Client) ProjectVpcsPost(organizationName Name, projectName Name, j *VPC
 	return &body, nil
 }
 
-// ProjectVpcsGetVpc
+// VPCsGetVPC
 //
 // Get a VPC in a project.
 //
 // Parameters:
-//	- `vpcName`
 //	- `organizationName`
 //	- `projectName`
-func (c *Client) ProjectVpcsGetVpc(organizationName Name, projectName Name, vpcName Name) (*VPC, error) {
+//	- `vpcName`
+func (s *NetworkingService) VPCsGetVPC(organizationName Name, projectName Name, vpcName Name) (*VPC, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -1726,7 +1673,7 @@ func (c *Client) ProjectVpcsGetVpc(organizationName Name, projectName Name, vpcN
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -1747,7 +1694,7 @@ func (c *Client) ProjectVpcsGetVpc(organizationName Name, projectName Name, vpcN
 	return &body, nil
 }
 
-// ProjectVpcsPutVpc
+// VPCsPutVPC
 //
 // Update a VPC.
 //
@@ -1755,10 +1702,10 @@ func (c *Client) ProjectVpcsGetVpc(organizationName Name, projectName Name, vpcN
 //	- `organizationName`
 //	- `projectName`
 //	- `vpcName`
-func (c *Client) ProjectVpcsPutVpc(organizationName Name, projectName Name, vpcName Name, j *VPCUpdate) error {
+func (s *NetworkingService) VPCsPutVPC(organizationName Name, projectName Name, vpcName Name, j *VPCUpdate) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -1778,7 +1725,7 @@ func (c *Client) ProjectVpcsPutVpc(organizationName Name, projectName Name, vpcN
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return fmt.Errorf("error sending request: %v", err)
 	}
@@ -1791,18 +1738,18 @@ func (c *Client) ProjectVpcsPutVpc(organizationName Name, projectName Name, vpcN
 	return nil
 }
 
-// ProjectVpcsDeleteVpc
+// VPCsDeleteVPC
 //
 // Delete a vpc from a project.
 //
 // Parameters:
+//	- `organizationName`
 //	- `projectName`
 //	- `vpcName`
-//	- `organizationName`
-func (c *Client) ProjectVpcsDeleteVpc(organizationName Name, projectName Name, vpcName Name) error {
+func (s *NetworkingService) VPCsDeleteVPC(organizationName Name, projectName Name, vpcName Name) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("DELETE", uri, nil)
 	if err != nil {
@@ -1817,7 +1764,7 @@ func (c *Client) ProjectVpcsDeleteVpc(organizationName Name, projectName Name, v
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return fmt.Errorf("error sending request: %v", err)
 	}
@@ -1830,11 +1777,11 @@ func (c *Client) ProjectVpcsDeleteVpc(organizationName Name, projectName Name, v
 	return nil
 }
 
-// VpcFirewallRulesGet
+// VPCFirewallRulesList
 //
 // List firewall rules for a VPC.
 //
-// To iterate over all pages, use the `VpcFirewallRulesGetAllPages` method, instead.
+// To iterate over all pages, use the `VPCFirewallRulesListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`
@@ -1843,10 +1790,10 @@ func (c *Client) ProjectVpcsDeleteVpc(organizationName Name, projectName Name, v
 //	- `organizationName`
 //	- `projectName`
 //	- `vpcName`
-func (c *Client) VpcFirewallRulesGet(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*VPCFirewallRuleResultsPage, error) {
+func (s *NetworkingService) VPCFirewallRulesList(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*VPCFirewallRuleResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/firewall/rules"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -1864,7 +1811,7 @@ func (c *Client) VpcFirewallRulesGet(limit int, pageToken string, sortBy NameSor
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -1885,11 +1832,11 @@ func (c *Client) VpcFirewallRulesGet(limit int, pageToken string, sortBy NameSor
 	return &body, nil
 }
 
-// VpcFirewallRulesGetAllPages
+// VPCFirewallRulesListAllPages
 //
 // List firewall rules for a VPC.
 //
-// This method is a wrapper around the `VpcFirewallRulesGet` method.
+// This method is a wrapper around the `VPCFirewallRulesList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
@@ -1897,13 +1844,13 @@ func (c *Client) VpcFirewallRulesGet(limit int, pageToken string, sortBy NameSor
 //	- `organizationName`
 //	- `projectName`
 //	- `vpcName`
-func (c *Client) VpcFirewallRulesGetAllPages(sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*[]VPCFirewallRule, error) {
+func (s *NetworkingService) VPCFirewallRulesListAllPages(sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*[]VPCFirewallRule, error) {
 
 	var allPages []VPCFirewallRule
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := c.VpcFirewallRulesGet(limit, pageToken, sortBy, organizationName, projectName, vpcName)
+		page, err := s.VPCFirewallRulesList(limit, pageToken, sortBy, organizationName, projectName, vpcName)
 		if err != nil {
 			return nil, err
 		}
@@ -1915,7 +1862,7 @@ func (c *Client) VpcFirewallRulesGetAllPages(sortBy NameSortMode, organizationNa
 	}
 
 	return &allPages, nil
-} // VpcFirewallRulesPut
+} // VPCFirewallRulesPut
 //
 // Replace the firewall rules for a VPC
 //
@@ -1923,10 +1870,10 @@ func (c *Client) VpcFirewallRulesGetAllPages(sortBy NameSortMode, organizationNa
 //	- `organizationName`
 //	- `projectName`
 //	- `vpcName`
-func (c *Client) VpcFirewallRulesPut(organizationName Name, projectName Name, vpcName Name, j *VPCFirewallRuleUpdateParams) (*VPCFirewallRuleUpdateResult, error) {
+func (s *NetworkingService) VPCFirewallRulesPut(organizationName Name, projectName Name, vpcName Name, j *VPCFirewallRuleUpdateParams) (*VPCFirewallRuleUpdateResult, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/firewall/rules"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -1946,7 +1893,7 @@ func (c *Client) VpcFirewallRulesPut(organizationName Name, projectName Name, vp
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -1967,23 +1914,23 @@ func (c *Client) VpcFirewallRulesPut(organizationName Name, projectName Name, vp
 	return &body, nil
 }
 
-// VpcRoutersGet
+// VPCRoutersList
 //
 // List VPC Custom and System Routers
 //
-// To iterate over all pages, use the `VpcRoutersGetAllPages` method, instead.
+// To iterate over all pages, use the `VPCRoutersListAllPages` method, instead.
 //
 // Parameters:
-//	- `vpcName`
-//	- `limit`
 //	- `pageToken`
 //	- `sortBy`
 //	- `organizationName`
 //	- `projectName`
-func (c *Client) VpcRoutersGet(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*VPCRouterResultsPage, error) {
+//	- `vpcName`
+//	- `limit`
+func (s *NetworkingService) VPCRoutersList(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*VPCRouterResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -2001,7 +1948,7 @@ func (c *Client) VpcRoutersGet(limit int, pageToken string, sortBy NameSortMode,
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -2022,11 +1969,11 @@ func (c *Client) VpcRoutersGet(limit int, pageToken string, sortBy NameSortMode,
 	return &body, nil
 }
 
-// VpcRoutersGetAllPages
+// VPCRoutersListAllPages
 //
 // List VPC Custom and System Routers
 //
-// This method is a wrapper around the `VpcRoutersGet` method.
+// This method is a wrapper around the `VPCRoutersList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
@@ -2034,13 +1981,13 @@ func (c *Client) VpcRoutersGet(limit int, pageToken string, sortBy NameSortMode,
 //	- `organizationName`
 //	- `projectName`
 //	- `vpcName`
-func (c *Client) VpcRoutersGetAllPages(sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*[]VPCRouter, error) {
+func (s *NetworkingService) VPCRoutersListAllPages(sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*[]VPCRouter, error) {
 
 	var allPages []VPCRouter
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := c.VpcRoutersGet(limit, pageToken, sortBy, organizationName, projectName, vpcName)
+		page, err := s.VPCRoutersList(limit, pageToken, sortBy, organizationName, projectName, vpcName)
 		if err != nil {
 			return nil, err
 		}
@@ -2052,7 +1999,7 @@ func (c *Client) VpcRoutersGetAllPages(sortBy NameSortMode, organizationName Nam
 	}
 
 	return &allPages, nil
-} // VpcRoutersPost
+} // VPCRoutersCreate
 //
 // Create a VPC Router
 //
@@ -2060,10 +2007,10 @@ func (c *Client) VpcRoutersGetAllPages(sortBy NameSortMode, organizationName Nam
 //	- `organizationName`
 //	- `projectName`
 //	- `vpcName`
-func (c *Client) VpcRoutersPost(organizationName Name, projectName Name, vpcName Name, j *VPCRouterCreate) (*VPCRouter, error) {
+func (s *NetworkingService) VPCRoutersCreate(organizationName Name, projectName Name, vpcName Name, j *VPCRouterCreate) (*VPCRouter, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -2083,7 +2030,7 @@ func (c *Client) VpcRoutersPost(organizationName Name, projectName Name, vpcName
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -2104,7 +2051,7 @@ func (c *Client) VpcRoutersPost(organizationName Name, projectName Name, vpcName
 	return &body, nil
 }
 
-// VpcRoutersGetRouter
+// VPCRoutersGetRouter
 //
 // Get a VPC Router
 //
@@ -2113,10 +2060,10 @@ func (c *Client) VpcRoutersPost(organizationName Name, projectName Name, vpcName
 //	- `projectName`
 //	- `routerName`
 //	- `vpcName`
-func (c *Client) VpcRoutersGetRouter(organizationName Name, projectName Name, routerName Name, vpcName Name) (*VPCRouter, error) {
+func (s *NetworkingService) VPCRoutersGetRouter(organizationName Name, projectName Name, routerName Name, vpcName Name) (*VPCRouter, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -2132,7 +2079,7 @@ func (c *Client) VpcRoutersGetRouter(organizationName Name, projectName Name, ro
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -2153,19 +2100,19 @@ func (c *Client) VpcRoutersGetRouter(organizationName Name, projectName Name, ro
 	return &body, nil
 }
 
-// VpcRoutersPutRouter
+// VPCRoutersPutRouter
 //
 // Update a VPC Router
 //
 // Parameters:
+//	- `vpcName`
 //	- `organizationName`
 //	- `projectName`
 //	- `routerName`
-//	- `vpcName`
-func (c *Client) VpcRoutersPutRouter(organizationName Name, projectName Name, routerName Name, vpcName Name, j *VPCRouterUpdate) error {
+func (s *NetworkingService) VPCRoutersPutRouter(organizationName Name, projectName Name, routerName Name, vpcName Name, j *VPCRouterUpdate) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -2186,7 +2133,7 @@ func (c *Client) VpcRoutersPutRouter(organizationName Name, projectName Name, ro
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return fmt.Errorf("error sending request: %v", err)
 	}
@@ -2199,19 +2146,19 @@ func (c *Client) VpcRoutersPutRouter(organizationName Name, projectName Name, ro
 	return nil
 }
 
-// VpcRoutersDeleteRouter
+// VPCRoutersDeleteRouter
 //
 // Delete a router from its VPC
 //
 // Parameters:
+//	- `vpcName`
 //	- `organizationName`
 //	- `projectName`
 //	- `routerName`
-//	- `vpcName`
-func (c *Client) VpcRoutersDeleteRouter(organizationName Name, projectName Name, routerName Name, vpcName Name) error {
+func (s *NetworkingService) VPCRoutersDeleteRouter(organizationName Name, projectName Name, routerName Name, vpcName Name) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("DELETE", uri, nil)
 	if err != nil {
@@ -2227,7 +2174,7 @@ func (c *Client) VpcRoutersDeleteRouter(organizationName Name, projectName Name,
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return fmt.Errorf("error sending request: %v", err)
 	}
@@ -2240,24 +2187,24 @@ func (c *Client) VpcRoutersDeleteRouter(organizationName Name, projectName Name,
 	return nil
 }
 
-// RoutersRoutesGet
+// RoutersRoutesList
 //
 // List a Router's routes
 //
-// To iterate over all pages, use the `RoutersRoutesGetAllPages` method, instead.
+// To iterate over all pages, use the `RoutersRoutesListAllPages` method, instead.
 //
 // Parameters:
-//	- `routerName`
-//	- `vpcName`
 //	- `limit`
 //	- `pageToken`
 //	- `sortBy`
 //	- `organizationName`
 //	- `projectName`
-func (c *Client) RoutersRoutesGet(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, routerName Name, vpcName Name) (*RouterRouteResultsPage, error) {
+//	- `routerName`
+//	- `vpcName`
+func (s *NetworkingService) RoutersRoutesList(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, routerName Name, vpcName Name) (*RouterRouteResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -2276,7 +2223,7 @@ func (c *Client) RoutersRoutesGet(limit int, pageToken string, sortBy NameSortMo
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -2297,26 +2244,26 @@ func (c *Client) RoutersRoutesGet(limit int, pageToken string, sortBy NameSortMo
 	return &body, nil
 }
 
-// RoutersRoutesGetAllPages
+// RoutersRoutesListAllPages
 //
 // List a Router's routes
 //
-// This method is a wrapper around the `RoutersRoutesGet` method.
+// This method is a wrapper around the `RoutersRoutesList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
+//	- `routerName`
+//	- `vpcName`
 //	- `sortBy`
 //	- `organizationName`
 //	- `projectName`
-//	- `routerName`
-//	- `vpcName`
-func (c *Client) RoutersRoutesGetAllPages(sortBy NameSortMode, organizationName Name, projectName Name, routerName Name, vpcName Name) (*[]RouterRoute, error) {
+func (s *NetworkingService) RoutersRoutesListAllPages(sortBy NameSortMode, organizationName Name, projectName Name, routerName Name, vpcName Name) (*[]RouterRoute, error) {
 
 	var allPages []RouterRoute
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := c.RoutersRoutesGet(limit, pageToken, sortBy, organizationName, projectName, routerName, vpcName)
+		page, err := s.RoutersRoutesList(limit, pageToken, sortBy, organizationName, projectName, routerName, vpcName)
 		if err != nil {
 			return nil, err
 		}
@@ -2328,7 +2275,7 @@ func (c *Client) RoutersRoutesGetAllPages(sortBy NameSortMode, organizationName 
 	}
 
 	return &allPages, nil
-} // RoutersRoutesPost
+} // RoutersRoutesCreate
 //
 // Create a VPC Router
 //
@@ -2337,10 +2284,10 @@ func (c *Client) RoutersRoutesGetAllPages(sortBy NameSortMode, organizationName 
 //	- `routerName`
 //	- `vpcName`
 //	- `organizationName`
-func (c *Client) RoutersRoutesPost(organizationName Name, projectName Name, routerName Name, vpcName Name, j *RouterRouteCreateParams) (*RouterRoute, error) {
+func (s *NetworkingService) RoutersRoutesCreate(organizationName Name, projectName Name, routerName Name, vpcName Name, j *RouterRouteCreateParams) (*RouterRoute, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -2361,7 +2308,7 @@ func (c *Client) RoutersRoutesPost(organizationName Name, projectName Name, rout
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -2387,15 +2334,15 @@ func (c *Client) RoutersRoutesPost(organizationName Name, projectName Name, rout
 // Get a VPC Router route
 //
 // Parameters:
+//	- `organizationName`
 //	- `projectName`
 //	- `routeName`
 //	- `routerName`
 //	- `vpcName`
-//	- `organizationName`
-func (c *Client) RoutersRoutesGetRoute(organizationName Name, projectName Name, routeName Name, routerName Name, vpcName Name) (*RouterRoute, error) {
+func (s *NetworkingService) RoutersRoutesGetRoute(organizationName Name, projectName Name, routeName Name, routerName Name, vpcName Name) (*RouterRoute, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes/{{.route_name}}"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -2412,7 +2359,7 @@ func (c *Client) RoutersRoutesGetRoute(organizationName Name, projectName Name, 
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -2438,15 +2385,15 @@ func (c *Client) RoutersRoutesGetRoute(organizationName Name, projectName Name, 
 // Update a Router route
 //
 // Parameters:
+//	- `organizationName`
 //	- `projectName`
 //	- `routeName`
 //	- `routerName`
 //	- `vpcName`
-//	- `organizationName`
-func (c *Client) RoutersRoutesPutRoute(organizationName Name, projectName Name, routeName Name, routerName Name, vpcName Name, j *RouterRouteUpdateParams) error {
+func (s *NetworkingService) RoutersRoutesPutRoute(organizationName Name, projectName Name, routeName Name, routerName Name, vpcName Name, j *RouterRouteUpdateParams) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes/{{.route_name}}"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -2468,7 +2415,7 @@ func (c *Client) RoutersRoutesPutRoute(organizationName Name, projectName Name, 
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return fmt.Errorf("error sending request: %v", err)
 	}
@@ -2486,15 +2433,15 @@ func (c *Client) RoutersRoutesPutRoute(organizationName Name, projectName Name, 
 // Delete a route from its router
 //
 // Parameters:
+//	- `routerName`
 //	- `vpcName`
 //	- `organizationName`
 //	- `projectName`
 //	- `routeName`
-//	- `routerName`
-func (c *Client) RoutersRoutesDeleteRoute(organizationName Name, projectName Name, routeName Name, routerName Name, vpcName Name) error {
+func (s *NetworkingService) RoutersRoutesDeleteRoute(organizationName Name, projectName Name, routeName Name, routerName Name, vpcName Name) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes/{{.route_name}}"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("DELETE", uri, nil)
 	if err != nil {
@@ -2511,7 +2458,7 @@ func (c *Client) RoutersRoutesDeleteRoute(organizationName Name, projectName Nam
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return fmt.Errorf("error sending request: %v", err)
 	}
@@ -2524,23 +2471,23 @@ func (c *Client) RoutersRoutesDeleteRoute(organizationName Name, projectName Nam
 	return nil
 }
 
-// VpcSubnetsGet
+// VPCSubnetsList
 //
 // List subnets in a VPC.
 //
-// To iterate over all pages, use the `VpcSubnetsGetAllPages` method, instead.
+// To iterate over all pages, use the `VPCSubnetsListAllPages` method, instead.
 //
 // Parameters:
+//	- `projectName`
+//	- `vpcName`
 //	- `limit`
 //	- `pageToken`
 //	- `sortBy`
 //	- `organizationName`
-//	- `projectName`
-//	- `vpcName`
-func (c *Client) VpcSubnetsGet(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*VPCSubnetResultsPage, error) {
+func (s *NetworkingService) VPCSubnetsList(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*VPCSubnetResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -2558,7 +2505,7 @@ func (c *Client) VpcSubnetsGet(limit int, pageToken string, sortBy NameSortMode,
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -2579,11 +2526,11 @@ func (c *Client) VpcSubnetsGet(limit int, pageToken string, sortBy NameSortMode,
 	return &body, nil
 }
 
-// VpcSubnetsGetAllPages
+// VPCSubnetsListAllPages
 //
 // List subnets in a VPC.
 //
-// This method is a wrapper around the `VpcSubnetsGet` method.
+// This method is a wrapper around the `VPCSubnetsList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
@@ -2591,13 +2538,13 @@ func (c *Client) VpcSubnetsGet(limit int, pageToken string, sortBy NameSortMode,
 //	- `organizationName`
 //	- `projectName`
 //	- `vpcName`
-func (c *Client) VpcSubnetsGetAllPages(sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*[]VPCSubnet, error) {
+func (s *NetworkingService) VPCSubnetsListAllPages(sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*[]VPCSubnet, error) {
 
 	var allPages []VPCSubnet
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := c.VpcSubnetsGet(limit, pageToken, sortBy, organizationName, projectName, vpcName)
+		page, err := s.VPCSubnetsList(limit, pageToken, sortBy, organizationName, projectName, vpcName)
 		if err != nil {
 			return nil, err
 		}
@@ -2609,18 +2556,18 @@ func (c *Client) VpcSubnetsGetAllPages(sortBy NameSortMode, organizationName Nam
 	}
 
 	return &allPages, nil
-} // VpcSubnetsPost
+} // VPCSubnetsCreate
 //
 // Create a subnet in a VPC.
 //
 // Parameters:
-//	- `vpcName`
 //	- `organizationName`
 //	- `projectName`
-func (c *Client) VpcSubnetsPost(organizationName Name, projectName Name, vpcName Name, j *VPCSubnetCreate) (*VPCSubnet, error) {
+//	- `vpcName`
+func (s *NetworkingService) VPCSubnetsCreate(organizationName Name, projectName Name, vpcName Name, j *VPCSubnetCreate) (*VPCSubnet, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -2640,7 +2587,7 @@ func (c *Client) VpcSubnetsPost(organizationName Name, projectName Name, vpcName
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -2661,19 +2608,19 @@ func (c *Client) VpcSubnetsPost(organizationName Name, projectName Name, vpcName
 	return &body, nil
 }
 
-// VpcSubnetsGetSubnet
+// VPCSubnetsGetSubnet
 //
 // Get subnet in a VPC.
 //
 // Parameters:
-//	- `subnetName`
-//	- `vpcName`
 //	- `organizationName`
 //	- `projectName`
-func (c *Client) VpcSubnetsGetSubnet(organizationName Name, projectName Name, subnetName Name, vpcName Name) (*VPCSubnet, error) {
+//	- `subnetName`
+//	- `vpcName`
+func (s *NetworkingService) VPCSubnetsGetSubnet(organizationName Name, projectName Name, subnetName Name, vpcName Name) (*VPCSubnet, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets/{{.subnet_name}}"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -2689,7 +2636,7 @@ func (c *Client) VpcSubnetsGetSubnet(organizationName Name, projectName Name, su
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -2710,7 +2657,7 @@ func (c *Client) VpcSubnetsGetSubnet(organizationName Name, projectName Name, su
 	return &body, nil
 }
 
-// VpcSubnetsPutSubnet
+// VPCSubnetsPutSubnet
 //
 // Update a VPC Subnet.
 //
@@ -2719,10 +2666,10 @@ func (c *Client) VpcSubnetsGetSubnet(organizationName Name, projectName Name, su
 //	- `projectName`
 //	- `subnetName`
 //	- `vpcName`
-func (c *Client) VpcSubnetsPutSubnet(organizationName Name, projectName Name, subnetName Name, vpcName Name, j *VPCSubnetUpdate) error {
+func (s *NetworkingService) VPCSubnetsPutSubnet(organizationName Name, projectName Name, subnetName Name, vpcName Name, j *VPCSubnetUpdate) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets/{{.subnet_name}}"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -2743,7 +2690,7 @@ func (c *Client) VpcSubnetsPutSubnet(organizationName Name, projectName Name, su
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return fmt.Errorf("error sending request: %v", err)
 	}
@@ -2756,19 +2703,19 @@ func (c *Client) VpcSubnetsPutSubnet(organizationName Name, projectName Name, su
 	return nil
 }
 
-// VpcSubnetsDeleteSubnet
+// VPCSubnetsDeleteSubnet
 //
 // Delete a subnet from a VPC.
 //
 // Parameters:
-//	- `subnetName`
-//	- `vpcName`
 //	- `organizationName`
 //	- `projectName`
-func (c *Client) VpcSubnetsDeleteSubnet(organizationName Name, projectName Name, subnetName Name, vpcName Name) error {
+//	- `subnetName`
+//	- `vpcName`
+func (s *NetworkingService) VPCSubnetsDeleteSubnet(organizationName Name, projectName Name, subnetName Name, vpcName Name) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets/{{.subnet_name}}"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("DELETE", uri, nil)
 	if err != nil {
@@ -2784,7 +2731,7 @@ func (c *Client) VpcSubnetsDeleteSubnet(organizationName Name, projectName Name,
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return fmt.Errorf("error sending request: %v", err)
 	}
@@ -2797,24 +2744,24 @@ func (c *Client) VpcSubnetsDeleteSubnet(organizationName Name, projectName Name,
 	return nil
 }
 
-// SubnetsIpsGet
+// SubnetsIpsList
 //
 // List IP addresses on a VPC subnet.
 //
-// To iterate over all pages, use the `SubnetsIpsGetAllPages` method, instead.
+// To iterate over all pages, use the `SubnetsIpsListAllPages` method, instead.
 //
 // Parameters:
-//	- `subnetName`
-//	- `vpcName`
 //	- `limit`
 //	- `pageToken`
 //	- `sortBy`
 //	- `organizationName`
 //	- `projectName`
-func (c *Client) SubnetsIpsGet(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, subnetName Name, vpcName Name) (*NetworkInterfaceResultsPage, error) {
+//	- `subnetName`
+//	- `vpcName`
+func (s *NetworkingService) SubnetsIpsList(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, subnetName Name, vpcName Name) (*NetworkInterfaceResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets/{{.subnet_name}}/ips"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -2833,7 +2780,7 @@ func (c *Client) SubnetsIpsGet(limit int, pageToken string, sortBy NameSortMode,
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -2854,11 +2801,11 @@ func (c *Client) SubnetsIpsGet(limit int, pageToken string, sortBy NameSortMode,
 	return &body, nil
 }
 
-// SubnetsIpsGetAllPages
+// SubnetsIpsListAllPages
 //
 // List IP addresses on a VPC subnet.
 //
-// This method is a wrapper around the `SubnetsIpsGet` method.
+// This method is a wrapper around the `SubnetsIpsList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
@@ -2867,13 +2814,13 @@ func (c *Client) SubnetsIpsGet(limit int, pageToken string, sortBy NameSortMode,
 //	- `projectName`
 //	- `subnetName`
 //	- `vpcName`
-func (c *Client) SubnetsIpsGetAllPages(sortBy NameSortMode, organizationName Name, projectName Name, subnetName Name, vpcName Name) (*[]NetworkInterface, error) {
+func (s *NetworkingService) SubnetsIpsListAllPages(sortBy NameSortMode, organizationName Name, projectName Name, subnetName Name, vpcName Name) (*[]NetworkInterface, error) {
 
 	var allPages []NetworkInterface
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := c.SubnetsIpsGet(limit, pageToken, sortBy, organizationName, projectName, subnetName, vpcName)
+		page, err := s.SubnetsIpsList(limit, pageToken, sortBy, organizationName, projectName, subnetName, vpcName)
 		if err != nil {
 			return nil, err
 		}
@@ -2885,19 +2832,19 @@ func (c *Client) SubnetsIpsGetAllPages(sortBy NameSortMode, organizationName Nam
 	}
 
 	return &allPages, nil
-} // RolesGet
+} // List
 //
 // List the built-in roles
 //
-// To iterate over all pages, use the `RolesGetAllPages` method, instead.
+// To iterate over all pages, use the `ListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`
 //	- `pageToken`
-func (c *Client) RolesGet(limit int, pageToken string) (*RoleResultsPage, error) {
+func (s *RolesService) List(limit int, pageToken string) (*RoleResultsPage, error) {
 	// Create the url.
 	path := "/roles"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -2911,7 +2858,7 @@ func (c *Client) RolesGet(limit int, pageToken string) (*RoleResultsPage, error)
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -2932,19 +2879,19 @@ func (c *Client) RolesGet(limit int, pageToken string) (*RoleResultsPage, error)
 	return &body, nil
 }
 
-// RolesGetAllPages
+// ListAllPages
 //
 // List the built-in roles
 //
-// This method is a wrapper around the `RolesGet` method.
+// This method is a wrapper around the `List` method.
 // This method returns all the pages at once.
-func (c *Client) RolesGetAllPages() (*[]Role, error) {
+func (s *RolesService) ListAllPages() (*[]Role, error) {
 
 	var allPages []Role
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := c.RolesGet(limit, pageToken)
+		page, err := s.List(limit, pageToken)
 		if err != nil {
 			return nil, err
 		}
@@ -2956,16 +2903,16 @@ func (c *Client) RolesGetAllPages() (*[]Role, error) {
 	}
 
 	return &allPages, nil
-} // RolesGetRole
+} // Get
 //
 // Fetch a specific built-in role
 //
 // Parameters:
 //	- `roleName`
-func (c *Client) RolesGetRole(roleName string) (*Role, error) {
+func (s *RolesService) Get(roleName string) (*Role, error) {
 	// Create the url.
 	path := "/roles/{{.role_name}}"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -2978,7 +2925,7 @@ func (c *Client) RolesGetRole(roleName string) (*Role, error) {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -2999,20 +2946,20 @@ func (c *Client) RolesGetRole(roleName string) (*Role, error) {
 	return &body, nil
 }
 
-// SagasGet
+// List
 //
 // List all sagas (for debugging)
 //
-// To iterate over all pages, use the `SagasGetAllPages` method, instead.
+// To iterate over all pages, use the `ListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`
 //	- `pageToken`
 //	- `sortBy`
-func (c *Client) SagasGet(limit int, pageToken string, sortBy IDSortMode) (*SagaResultsPage, error) {
+func (s *SagasService) List(limit int, pageToken string, sortBy IDSortMode) (*SagaResultsPage, error) {
 	// Create the url.
 	path := "/sagas"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -3027,7 +2974,7 @@ func (c *Client) SagasGet(limit int, pageToken string, sortBy IDSortMode) (*Saga
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -3048,22 +2995,22 @@ func (c *Client) SagasGet(limit int, pageToken string, sortBy IDSortMode) (*Saga
 	return &body, nil
 }
 
-// SagasGetAllPages
+// ListAllPages
 //
 // List all sagas (for debugging)
 //
-// This method is a wrapper around the `SagasGet` method.
+// This method is a wrapper around the `List` method.
 // This method returns all the pages at once.
 //
 // Parameters:
 //	- `sortBy`
-func (c *Client) SagasGetAllPages(sortBy IDSortMode) (*[]Saga, error) {
+func (s *SagasService) ListAllPages(sortBy IDSortMode) (*[]Saga, error) {
 
 	var allPages []Saga
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := c.SagasGet(limit, pageToken, sortBy)
+		page, err := s.List(limit, pageToken, sortBy)
 		if err != nil {
 			return nil, err
 		}
@@ -3075,16 +3022,16 @@ func (c *Client) SagasGetAllPages(sortBy IDSortMode) (*[]Saga, error) {
 	}
 
 	return &allPages, nil
-} // SagasGetSaga
+} // Get
 //
 // Fetch information about a single saga (for debugging)
 //
 // Parameters:
 //	- `sagaId`
-func (c *Client) SagasGetSaga(sagaId string) (*Saga, error) {
+func (s *SagasService) Get(sagaId string) (*Saga, error) {
 	// Create the url.
 	path := "/sagas/{{.saga_id}}"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -3097,7 +3044,7 @@ func (c *Client) SagasGetSaga(sagaId string) (*Saga, error) {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -3118,53 +3065,19 @@ func (c *Client) SagasGetSaga(sagaId string) (*Saga, error) {
 	return &body, nil
 }
 
-// SessionMe
-//
-// Fetch the user associated with the current session
-func (c *Client) SessionMe() (*SessionUser, error) {
-	// Create the url.
-	path := "/session/me"
-	uri := resolveRelative(c.server, path)
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-	var body SessionUser
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-	// Return the response.
-	return &body, nil
-}
-
-// TimeseriesSchemaGet
+// TimeseriesSchemaList
 //
 // List all timeseries schema
 //
-// To iterate over all pages, use the `TimeseriesSchemaGetAllPages` method, instead.
+// To iterate over all pages, use the `TimeseriesSchemaListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`
 //	- `pageToken`
-func (c *Client) TimeseriesSchemaGet(limit int, pageToken string) (*TimeseriesSchemaResultsPage, error) {
+func (s *MetricsService) TimeseriesSchemaList(limit int, pageToken string) (*TimeseriesSchemaResultsPage, error) {
 	// Create the url.
 	path := "/timeseries/schema"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -3178,7 +3091,7 @@ func (c *Client) TimeseriesSchemaGet(limit int, pageToken string) (*TimeseriesSc
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -3199,19 +3112,19 @@ func (c *Client) TimeseriesSchemaGet(limit int, pageToken string) (*TimeseriesSc
 	return &body, nil
 }
 
-// TimeseriesSchemaGetAllPages
+// TimeseriesSchemaListAllPages
 //
 // List all timeseries schema
 //
-// This method is a wrapper around the `TimeseriesSchemaGet` method.
+// This method is a wrapper around the `TimeseriesSchemaList` method.
 // This method returns all the pages at once.
-func (c *Client) TimeseriesSchemaGetAllPages() (*[]TimeseriesSchema, error) {
+func (s *MetricsService) TimeseriesSchemaListAllPages() (*[]TimeseriesSchema, error) {
 
 	var allPages []TimeseriesSchema
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := c.TimeseriesSchemaGet(limit, pageToken)
+		page, err := s.TimeseriesSchemaList(limit, pageToken)
 		if err != nil {
 			return nil, err
 		}
@@ -3223,20 +3136,20 @@ func (c *Client) TimeseriesSchemaGetAllPages() (*[]TimeseriesSchema, error) {
 	}
 
 	return &allPages, nil
-} // UsersGet
+} // List
 //
 // List the built-in system users
 //
-// To iterate over all pages, use the `UsersGetAllPages` method, instead.
+// To iterate over all pages, use the `ListAllPages` method, instead.
 //
 // Parameters:
+//	- `sortBy`
 //	- `limit`
 //	- `pageToken`
-//	- `sortBy`
-func (c *Client) UsersGet(limit int, pageToken string, sortBy NameSortMode) (*UserResultsPage, error) {
+func (s *UsersService) List(limit int, pageToken string, sortBy NameSortMode) (*UserResultsPage, error) {
 	// Create the url.
 	path := "/users"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -3251,7 +3164,7 @@ func (c *Client) UsersGet(limit int, pageToken string, sortBy NameSortMode) (*Us
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -3272,22 +3185,22 @@ func (c *Client) UsersGet(limit int, pageToken string, sortBy NameSortMode) (*Us
 	return &body, nil
 }
 
-// UsersGetAllPages
+// ListAllPages
 //
 // List the built-in system users
 //
-// This method is a wrapper around the `UsersGet` method.
+// This method is a wrapper around the `List` method.
 // This method returns all the pages at once.
 //
 // Parameters:
 //	- `sortBy`
-func (c *Client) UsersGetAllPages(sortBy NameSortMode) (*[]User, error) {
+func (s *UsersService) ListAllPages(sortBy NameSortMode) (*[]User, error) {
 
 	var allPages []User
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := c.UsersGet(limit, pageToken, sortBy)
+		page, err := s.List(limit, pageToken, sortBy)
 		if err != nil {
 			return nil, err
 		}
@@ -3299,16 +3212,16 @@ func (c *Client) UsersGetAllPages(sortBy NameSortMode) (*[]User, error) {
 	}
 
 	return &allPages, nil
-} // UsersGetUser
+} // Get
 //
 // Fetch a specific built-in system user
 //
 // Parameters:
 //	- `userName`
-func (c *Client) UsersGetUser(userName Name) (*User, error) {
+func (s *UsersService) Get(userName Name) (*User, error) {
 	// Create the url.
 	path := "/users/{{.user_name}}"
-	uri := resolveRelative(c.server, path)
+	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -3321,7 +3234,7 @@ func (c *Client) UsersGetUser(userName Name) (*User, error) {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := c.client.Do(req)
+	resp, err := s.client.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
