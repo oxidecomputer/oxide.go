@@ -11,6 +11,8 @@ type expandTest struct {
 	want       string
 }
 
+const DefaultServerURL = "https://example.com"
+
 var expandTests = []expandTest{
 	// no expansions
 	{

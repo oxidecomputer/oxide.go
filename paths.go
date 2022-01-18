@@ -11,11 +11,16 @@ import (
 	"strconv"
 )
 
-// HardwareRacksGet:
+// HardwareRacksGet
 //
 // List racks in the system.
 //
+// To iterate over all pages, use the `HardwareRacksGetAllPages` method, instead.
+//
 // Parameters:
+//	- `limit`
+//	- `pageToken`
+//	- `sortBy`
 func (c *Client) HardwareRacksGet(limit int, pageToken string, sortBy IDSortMode) (*RackResultsPage, error) {
 	// Create the url.
 	path := "/hardware/racks"
@@ -55,11 +60,39 @@ func (c *Client) HardwareRacksGet(limit int, pageToken string, sortBy IDSortMode
 	return &body, nil
 }
 
-// HardwareRacksGetRack:
+// HardwareRacksGetAllPages
+//
+// List racks in the system.
+//
+// This method is a wrapper around the `HardwareRacksGet` method.
+// This method returns all the pages at once.
+//
+// Parameters:
+//	- `sortBy`
+func (c *Client) HardwareRacksGetAllPages(sortBy IDSortMode) (*[]Rack, error) {
+
+	var allPages []Rack
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.HardwareRacksGet(limit, pageToken, sortBy)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+} // HardwareRacksGetRack
 //
 // Fetch information about a particular rack.
 //
 // Parameters:
+//	- `rackId`
 func (c *Client) HardwareRacksGetRack(rackId string) (*Rack, error) {
 	// Create the url.
 	path := "/hardware/racks/{{.rack_id}}"
@@ -97,11 +130,16 @@ func (c *Client) HardwareRacksGetRack(rackId string) (*Rack, error) {
 	return &body, nil
 }
 
-// HardwareSledsGet:
+// HardwareSledsGet
 //
 // List sleds in the system.
 //
+// To iterate over all pages, use the `HardwareSledsGetAllPages` method, instead.
+//
 // Parameters:
+//	- `limit`
+//	- `pageToken`
+//	- `sortBy`
 func (c *Client) HardwareSledsGet(limit int, pageToken string, sortBy IDSortMode) (*SledResultsPage, error) {
 	// Create the url.
 	path := "/hardware/sleds"
@@ -141,11 +179,39 @@ func (c *Client) HardwareSledsGet(limit int, pageToken string, sortBy IDSortMode
 	return &body, nil
 }
 
-// HardwareSledsGetSled:
+// HardwareSledsGetAllPages
+//
+// List sleds in the system.
+//
+// This method is a wrapper around the `HardwareSledsGet` method.
+// This method returns all the pages at once.
+//
+// Parameters:
+//	- `sortBy`
+func (c *Client) HardwareSledsGetAllPages(sortBy IDSortMode) (*[]Sled, error) {
+
+	var allPages []Sled
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.HardwareSledsGet(limit, pageToken, sortBy)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+} // HardwareSledsGetSled
 //
 // Fetch information about a sled in the system.
 //
 // Parameters:
+//	- `sledId`
 func (c *Client) HardwareSledsGetSled(sledId string) (*Sled, error) {
 	// Create the url.
 	path := "/hardware/sleds/{{.sled_id}}"
@@ -183,7 +249,7 @@ func (c *Client) HardwareSledsGetSled(sledId string) (*Sled, error) {
 	return &body, nil
 }
 
-// SpoofLogin:
+// SpoofLogin
 func (c *Client) SpoofLogin(j *LoginParams) error {
 	// Create the url.
 	path := "/login"
@@ -212,7 +278,7 @@ func (c *Client) SpoofLogin(j *LoginParams) error {
 	return nil
 }
 
-// Logout:
+// Logout
 func (c *Client) Logout() error {
 	// Create the url.
 	path := "/logout"
@@ -236,11 +302,16 @@ func (c *Client) Logout() error {
 	return nil
 }
 
-// OrganizationsGet:
+// OrganizationsGet
 //
 // List all organizations.
 //
+// To iterate over all pages, use the `OrganizationsGetAllPages` method, instead.
+//
 // Parameters:
+//	- `pageToken`
+//	- `sortBy`
+//	- `limit`
 func (c *Client) OrganizationsGet(limit int, pageToken string, sortBy NameOrIdSortMode) (*OrganizationResultsPage, error) {
 	// Create the url.
 	path := "/organizations"
@@ -280,7 +351,34 @@ func (c *Client) OrganizationsGet(limit int, pageToken string, sortBy NameOrIdSo
 	return &body, nil
 }
 
-// OrganizationsPost:
+// OrganizationsGetAllPages
+//
+// List all organizations.
+//
+// This method is a wrapper around the `OrganizationsGet` method.
+// This method returns all the pages at once.
+//
+// Parameters:
+//	- `sortBy`
+func (c *Client) OrganizationsGetAllPages(sortBy NameOrIdSortMode) (*[]Organization, error) {
+
+	var allPages []Organization
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.OrganizationsGet(limit, pageToken, sortBy)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+} // OrganizationsPost
 //
 // Create a new organization.
 func (c *Client) OrganizationsPost(j *OrganizationCreate) (*Organization, error) {
@@ -319,11 +417,12 @@ func (c *Client) OrganizationsPost(j *OrganizationCreate) (*Organization, error)
 	return &body, nil
 }
 
-// OrganizationsGetOrganization:
+// OrganizationsGetOrganization
 //
 // Fetch a specific organization
 //
 // Parameters:
+//	- `organizationName`
 func (c *Client) OrganizationsGetOrganization(organizationName Name) (*Organization, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}"
@@ -361,12 +460,13 @@ func (c *Client) OrganizationsGetOrganization(organizationName Name) (*Organizat
 	return &body, nil
 }
 
-// OrganizationsPutOrganization:
+// OrganizationsPutOrganization
 //
 // Update a specific organization.
 //  * TODO-correctness: Is it valid for PUT to accept application/json that's a subset of what the resource actually represents?  If not, is that a problem? (HTTP may require that this be idempotent.)  If so, can we get around that having this be a slightly different content-type (e.g., "application/json-patch")?  We should see what other APIs do.
 //
 // Parameters:
+//	- `organizationName`
 func (c *Client) OrganizationsPutOrganization(organizationName Name, j *OrganizationUpdate) (*Organization, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}"
@@ -409,11 +509,12 @@ func (c *Client) OrganizationsPutOrganization(organizationName Name, j *Organiza
 	return &body, nil
 }
 
-// OrganizationsDeleteOrganization:
+// OrganizationsDeleteOrganization
 //
 // Delete a specific organization.
 //
 // Parameters:
+//	- `organizationName`
 func (c *Client) OrganizationsDeleteOrganization(organizationName Name) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}"
@@ -443,11 +544,17 @@ func (c *Client) OrganizationsDeleteOrganization(organizationName Name) error {
 	return nil
 }
 
-// OrganizationProjectsGet:
+// OrganizationProjectsGet
 //
 // List all projects.
 //
+// To iterate over all pages, use the `OrganizationProjectsGetAllPages` method, instead.
+//
 // Parameters:
+//	- `limit`
+//	- `pageToken`
+//	- `sortBy`
+//	- `organizationName`
 func (c *Client) OrganizationProjectsGet(limit int, pageToken string, sortBy NameOrIdSortMode, organizationName Name) (*ProjectResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects"
@@ -488,11 +595,40 @@ func (c *Client) OrganizationProjectsGet(limit int, pageToken string, sortBy Nam
 	return &body, nil
 }
 
-// OrganizationProjectsPost:
+// OrganizationProjectsGetAllPages
+//
+// List all projects.
+//
+// This method is a wrapper around the `OrganizationProjectsGet` method.
+// This method returns all the pages at once.
+//
+// Parameters:
+//	- `sortBy`
+//	- `organizationName`
+func (c *Client) OrganizationProjectsGetAllPages(sortBy NameOrIdSortMode, organizationName Name) (*[]Project, error) {
+
+	var allPages []Project
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.OrganizationProjectsGet(limit, pageToken, sortBy, organizationName)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+} // OrganizationProjectsPost
 //
 // Create a new project.
 //
 // Parameters:
+//	- `organizationName`
 func (c *Client) OrganizationProjectsPost(organizationName Name, j *ProjectCreate) (*Project, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects"
@@ -535,11 +671,13 @@ func (c *Client) OrganizationProjectsPost(organizationName Name, j *ProjectCreat
 	return &body, nil
 }
 
-// OrganizationProjectsGetProject:
+// OrganizationProjectsGetProject
 //
 // Fetch a specific project
 //
 // Parameters:
+//	- `organizationName`
+//	- `projectName`
 func (c *Client) OrganizationProjectsGetProject(organizationName Name, projectName Name) (*Project, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}"
@@ -578,12 +716,14 @@ func (c *Client) OrganizationProjectsGetProject(organizationName Name, projectNa
 	return &body, nil
 }
 
-// OrganizationProjectsPutProject:
+// OrganizationProjectsPutProject
 //
 // Update a specific project.
 //  * TODO-correctness: Is it valid for PUT to accept application/json that's a subset of what the resource actually represents?  If not, is that a problem? (HTTP may require that this be idempotent.)  If so, can we get around that having this be a slightly different content-type (e.g., "application/json-patch")?  We should see what other APIs do.
 //
 // Parameters:
+//	- `organizationName`
+//	- `projectName`
 func (c *Client) OrganizationProjectsPutProject(organizationName Name, projectName Name, j *ProjectUpdate) (*Project, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}"
@@ -627,11 +767,13 @@ func (c *Client) OrganizationProjectsPutProject(organizationName Name, projectNa
 	return &body, nil
 }
 
-// OrganizationProjectsDeleteProject:
+// OrganizationProjectsDeleteProject
 //
 // Delete a specific project.
 //
 // Parameters:
+//	- `organizationName`
+//	- `projectName`
 func (c *Client) OrganizationProjectsDeleteProject(organizationName Name, projectName Name) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}"
@@ -662,11 +804,18 @@ func (c *Client) OrganizationProjectsDeleteProject(organizationName Name, projec
 	return nil
 }
 
-// ProjectDisksGet:
+// ProjectDisksGet
 //
 // List disks in a project.
 //
+// To iterate over all pages, use the `ProjectDisksGetAllPages` method, instead.
+//
 // Parameters:
+//	- `projectName`
+//	- `limit`
+//	- `pageToken`
+//	- `sortBy`
+//	- `organizationName`
 func (c *Client) ProjectDisksGet(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name) (*DiskResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/disks"
@@ -708,12 +857,43 @@ func (c *Client) ProjectDisksGet(limit int, pageToken string, sortBy NameSortMod
 	return &body, nil
 }
 
-// ProjectDisksPost:
+// ProjectDisksGetAllPages
+//
+// List disks in a project.
+//
+// This method is a wrapper around the `ProjectDisksGet` method.
+// This method returns all the pages at once.
+//
+// Parameters:
+//	- `sortBy`
+//	- `organizationName`
+//	- `projectName`
+func (c *Client) ProjectDisksGetAllPages(sortBy NameSortMode, organizationName Name, projectName Name) (*[]Disk, error) {
+
+	var allPages []Disk
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.ProjectDisksGet(limit, pageToken, sortBy, organizationName, projectName)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+} // ProjectDisksPost
 //
 // Create a disk in a project.
 //  * TODO-correctness See note about instance create.  This should be async.
 //
 // Parameters:
+//	- `organizationName`
+//	- `projectName`
 func (c *Client) ProjectDisksPost(organizationName Name, projectName Name, j *DiskCreate) (*Disk, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/disks"
@@ -757,11 +937,14 @@ func (c *Client) ProjectDisksPost(organizationName Name, projectName Name, j *Di
 	return &body, nil
 }
 
-// ProjectDisksGetDisk:
+// ProjectDisksGetDisk
 //
 // Fetch a single disk in a project.
 //
 // Parameters:
+//	- `projectName`
+//	- `diskName`
+//	- `organizationName`
 func (c *Client) ProjectDisksGetDisk(diskName Name, organizationName Name, projectName Name) (*Disk, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/disks/{{.disk_name}}"
@@ -801,11 +984,14 @@ func (c *Client) ProjectDisksGetDisk(diskName Name, organizationName Name, proje
 	return &body, nil
 }
 
-// ProjectDisksDeleteDisk:
+// ProjectDisksDeleteDisk
 //
 // Delete a disk from a project.
 //
 // Parameters:
+//	- `projectName`
+//	- `diskName`
+//	- `organizationName`
 func (c *Client) ProjectDisksDeleteDisk(diskName Name, organizationName Name, projectName Name) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/disks/{{.disk_name}}"
@@ -837,11 +1023,18 @@ func (c *Client) ProjectDisksDeleteDisk(diskName Name, organizationName Name, pr
 	return nil
 }
 
-// ProjectInstancesGet:
+// ProjectInstancesGet
 //
 // List instances in a project.
 //
+// To iterate over all pages, use the `ProjectInstancesGetAllPages` method, instead.
+//
 // Parameters:
+//	- `limit`
+//	- `pageToken`
+//	- `sortBy`
+//	- `organizationName`
+//	- `projectName`
 func (c *Client) ProjectInstancesGet(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name) (*InstanceResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances"
@@ -883,12 +1076,43 @@ func (c *Client) ProjectInstancesGet(limit int, pageToken string, sortBy NameSor
 	return &body, nil
 }
 
-// ProjectInstancesPost:
+// ProjectInstancesGetAllPages
+//
+// List instances in a project.
+//
+// This method is a wrapper around the `ProjectInstancesGet` method.
+// This method returns all the pages at once.
+//
+// Parameters:
+//	- `sortBy`
+//	- `organizationName`
+//	- `projectName`
+func (c *Client) ProjectInstancesGetAllPages(sortBy NameSortMode, organizationName Name, projectName Name) (*[]Instance, error) {
+
+	var allPages []Instance
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.ProjectInstancesGet(limit, pageToken, sortBy, organizationName, projectName)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+} // ProjectInstancesPost
 //
 // Create an instance in a project.
 //  * TODO-correctness This is supposed to be async.  Is that right?  We can create the instance immediately -- it's just not booted yet.  Maybe the boot operation is what's a separate operation_id.  What about the response code (201 Created vs 202 Accepted)?  Is that orthogonal?  Things can return a useful response, including an operation id, with either response code.  Maybe a "reboot" operation would return a 202 Accepted because there's no actual resource created?
 //
 // Parameters:
+//	- `organizationName`
+//	- `projectName`
 func (c *Client) ProjectInstancesPost(organizationName Name, projectName Name, j *InstanceCreate) (*Instance, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances"
@@ -932,11 +1156,14 @@ func (c *Client) ProjectInstancesPost(organizationName Name, projectName Name, j
 	return &body, nil
 }
 
-// ProjectInstancesGetInstance:
+// ProjectInstancesGetInstance
 //
 // Get an instance in a project.
 //
 // Parameters:
+//	- `projectName`
+//	- `instanceName`
+//	- `organizationName`
 func (c *Client) ProjectInstancesGetInstance(instanceName Name, organizationName Name, projectName Name) (*Instance, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}"
@@ -976,11 +1203,14 @@ func (c *Client) ProjectInstancesGetInstance(instanceName Name, organizationName
 	return &body, nil
 }
 
-// ProjectInstancesDeleteInstance:
+// ProjectInstancesDeleteInstance
 //
 // Delete an instance from a project.
 //
 // Parameters:
+//	- `instanceName`
+//	- `organizationName`
+//	- `projectName`
 func (c *Client) ProjectInstancesDeleteInstance(instanceName Name, organizationName Name, projectName Name) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}"
@@ -1012,11 +1242,19 @@ func (c *Client) ProjectInstancesDeleteInstance(instanceName Name, organizationN
 	return nil
 }
 
-// InstanceDisksGet:
+// InstanceDisksGet
 //
 // List disks attached to this instance.
 //
+// To iterate over all pages, use the `InstanceDisksGetAllPages` method, instead.
+//
 // Parameters:
+//	- `organizationName`
+//	- `projectName`
+//	- `limit`
+//	- `pageToken`
+//	- `sortBy`
+//	- `instanceName`
 func (c *Client) InstanceDisksGet(limit int, pageToken string, sortBy NameSortMode, instanceName Name, organizationName Name, projectName Name) (*DiskResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/disks"
@@ -1059,9 +1297,42 @@ func (c *Client) InstanceDisksGet(limit int, pageToken string, sortBy NameSortMo
 	return &body, nil
 }
 
-// InstanceDisksAttach:
+// InstanceDisksGetAllPages
+//
+// List disks attached to this instance.
+//
+// This method is a wrapper around the `InstanceDisksGet` method.
+// This method returns all the pages at once.
 //
 // Parameters:
+//	- `sortBy`
+//	- `instanceName`
+//	- `organizationName`
+//	- `projectName`
+func (c *Client) InstanceDisksGetAllPages(sortBy NameSortMode, instanceName Name, organizationName Name, projectName Name) (*[]Disk, error) {
+
+	var allPages []Disk
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.InstanceDisksGet(limit, pageToken, sortBy, instanceName, organizationName, projectName)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+} // InstanceDisksAttach
+//
+// Parameters:
+//	- `instanceName`
+//	- `organizationName`
+//	- `projectName`
 func (c *Client) InstanceDisksAttach(instanceName Name, organizationName Name, projectName Name, j *DiskIdentifier) (*Disk, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/disks/attach"
@@ -1106,9 +1377,12 @@ func (c *Client) InstanceDisksAttach(instanceName Name, organizationName Name, p
 	return &body, nil
 }
 
-// InstanceDisksDetach:
+// InstanceDisksDetach
 //
 // Parameters:
+//	- `instanceName`
+//	- `organizationName`
+//	- `projectName`
 func (c *Client) InstanceDisksDetach(instanceName Name, organizationName Name, projectName Name, j *DiskIdentifier) (*Disk, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/disks/detach"
@@ -1153,11 +1427,14 @@ func (c *Client) InstanceDisksDetach(instanceName Name, organizationName Name, p
 	return &body, nil
 }
 
-// ProjectInstancesInstanceReboot:
+// ProjectInstancesInstanceReboot
 //
 // Reboot an instance.
 //
 // Parameters:
+//	- `instanceName`
+//	- `organizationName`
+//	- `projectName`
 func (c *Client) ProjectInstancesInstanceReboot(instanceName Name, organizationName Name, projectName Name) (*Instance, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/reboot"
@@ -1197,11 +1474,14 @@ func (c *Client) ProjectInstancesInstanceReboot(instanceName Name, organizationN
 	return &body, nil
 }
 
-// ProjectInstancesInstanceStart:
+// ProjectInstancesInstanceStart
 //
 // Boot an instance.
 //
 // Parameters:
+//	- `instanceName`
+//	- `organizationName`
+//	- `projectName`
 func (c *Client) ProjectInstancesInstanceStart(instanceName Name, organizationName Name, projectName Name) (*Instance, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/start"
@@ -1241,11 +1521,14 @@ func (c *Client) ProjectInstancesInstanceStart(instanceName Name, organizationNa
 	return &body, nil
 }
 
-// ProjectInstancesInstanceStop:
+// ProjectInstancesInstanceStop
 //
 // Halt an instance.
 //
 // Parameters:
+//	- `instanceName`
+//	- `organizationName`
+//	- `projectName`
 func (c *Client) ProjectInstancesInstanceStop(instanceName Name, organizationName Name, projectName Name) (*Instance, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/stop"
@@ -1285,11 +1568,18 @@ func (c *Client) ProjectInstancesInstanceStop(instanceName Name, organizationNam
 	return &body, nil
 }
 
-// ProjectVpcsGet:
+// ProjectVpcsGet
 //
 // List VPCs in a project.
 //
+// To iterate over all pages, use the `ProjectVpcsGetAllPages` method, instead.
+//
 // Parameters:
+//	- `organizationName`
+//	- `projectName`
+//	- `limit`
+//	- `pageToken`
+//	- `sortBy`
 func (c *Client) ProjectVpcsGet(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name) (*VPCResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs"
@@ -1331,11 +1621,42 @@ func (c *Client) ProjectVpcsGet(limit int, pageToken string, sortBy NameSortMode
 	return &body, nil
 }
 
-// ProjectVpcsPost:
+// ProjectVpcsGetAllPages
+//
+// List VPCs in a project.
+//
+// This method is a wrapper around the `ProjectVpcsGet` method.
+// This method returns all the pages at once.
+//
+// Parameters:
+//	- `sortBy`
+//	- `organizationName`
+//	- `projectName`
+func (c *Client) ProjectVpcsGetAllPages(sortBy NameSortMode, organizationName Name, projectName Name) (*[]VPC, error) {
+
+	var allPages []VPC
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.ProjectVpcsGet(limit, pageToken, sortBy, organizationName, projectName)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+} // ProjectVpcsPost
 //
 // Create a VPC in a project.
 //
 // Parameters:
+//	- `organizationName`
+//	- `projectName`
 func (c *Client) ProjectVpcsPost(organizationName Name, projectName Name, j *VPCCreate) (*VPC, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs"
@@ -1379,11 +1700,14 @@ func (c *Client) ProjectVpcsPost(organizationName Name, projectName Name, j *VPC
 	return &body, nil
 }
 
-// ProjectVpcsGetVpc:
+// ProjectVpcsGetVpc
 //
 // Get a VPC in a project.
 //
 // Parameters:
+//	- `vpcName`
+//	- `organizationName`
+//	- `projectName`
 func (c *Client) ProjectVpcsGetVpc(organizationName Name, projectName Name, vpcName Name) (*VPC, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}"
@@ -1423,11 +1747,14 @@ func (c *Client) ProjectVpcsGetVpc(organizationName Name, projectName Name, vpcN
 	return &body, nil
 }
 
-// ProjectVpcsPutVpc:
+// ProjectVpcsPutVpc
 //
 // Update a VPC.
 //
 // Parameters:
+//	- `organizationName`
+//	- `projectName`
+//	- `vpcName`
 func (c *Client) ProjectVpcsPutVpc(organizationName Name, projectName Name, vpcName Name, j *VPCUpdate) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}"
@@ -1464,11 +1791,14 @@ func (c *Client) ProjectVpcsPutVpc(organizationName Name, projectName Name, vpcN
 	return nil
 }
 
-// ProjectVpcsDeleteVpc:
+// ProjectVpcsDeleteVpc
 //
 // Delete a vpc from a project.
 //
 // Parameters:
+//	- `projectName`
+//	- `vpcName`
+//	- `organizationName`
 func (c *Client) ProjectVpcsDeleteVpc(organizationName Name, projectName Name, vpcName Name) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}"
@@ -1500,11 +1830,19 @@ func (c *Client) ProjectVpcsDeleteVpc(organizationName Name, projectName Name, v
 	return nil
 }
 
-// VpcFirewallRulesGet:
+// VpcFirewallRulesGet
 //
 // List firewall rules for a VPC.
 //
+// To iterate over all pages, use the `VpcFirewallRulesGetAllPages` method, instead.
+//
 // Parameters:
+//	- `limit`
+//	- `pageToken`
+//	- `sortBy`
+//	- `organizationName`
+//	- `projectName`
+//	- `vpcName`
 func (c *Client) VpcFirewallRulesGet(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*VPCFirewallRuleResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/firewall/rules"
@@ -1547,11 +1885,44 @@ func (c *Client) VpcFirewallRulesGet(limit int, pageToken string, sortBy NameSor
 	return &body, nil
 }
 
-// VpcFirewallRulesPut:
+// VpcFirewallRulesGetAllPages
+//
+// List firewall rules for a VPC.
+//
+// This method is a wrapper around the `VpcFirewallRulesGet` method.
+// This method returns all the pages at once.
+//
+// Parameters:
+//	- `sortBy`
+//	- `organizationName`
+//	- `projectName`
+//	- `vpcName`
+func (c *Client) VpcFirewallRulesGetAllPages(sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*[]VPCFirewallRule, error) {
+
+	var allPages []VPCFirewallRule
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.VpcFirewallRulesGet(limit, pageToken, sortBy, organizationName, projectName, vpcName)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+} // VpcFirewallRulesPut
 //
 // Replace the firewall rules for a VPC
 //
 // Parameters:
+//	- `organizationName`
+//	- `projectName`
+//	- `vpcName`
 func (c *Client) VpcFirewallRulesPut(organizationName Name, projectName Name, vpcName Name, j *VPCFirewallRuleUpdateParams) (*VPCFirewallRuleUpdateResult, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/firewall/rules"
@@ -1596,11 +1967,19 @@ func (c *Client) VpcFirewallRulesPut(organizationName Name, projectName Name, vp
 	return &body, nil
 }
 
-// VpcRoutersGet:
+// VpcRoutersGet
 //
 // List VPC Custom and System Routers
 //
+// To iterate over all pages, use the `VpcRoutersGetAllPages` method, instead.
+//
 // Parameters:
+//	- `vpcName`
+//	- `limit`
+//	- `pageToken`
+//	- `sortBy`
+//	- `organizationName`
+//	- `projectName`
 func (c *Client) VpcRoutersGet(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*VPCRouterResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers"
@@ -1643,11 +2022,44 @@ func (c *Client) VpcRoutersGet(limit int, pageToken string, sortBy NameSortMode,
 	return &body, nil
 }
 
-// VpcRoutersPost:
+// VpcRoutersGetAllPages
+//
+// List VPC Custom and System Routers
+//
+// This method is a wrapper around the `VpcRoutersGet` method.
+// This method returns all the pages at once.
+//
+// Parameters:
+//	- `sortBy`
+//	- `organizationName`
+//	- `projectName`
+//	- `vpcName`
+func (c *Client) VpcRoutersGetAllPages(sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*[]VPCRouter, error) {
+
+	var allPages []VPCRouter
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.VpcRoutersGet(limit, pageToken, sortBy, organizationName, projectName, vpcName)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+} // VpcRoutersPost
 //
 // Create a VPC Router
 //
 // Parameters:
+//	- `organizationName`
+//	- `projectName`
+//	- `vpcName`
 func (c *Client) VpcRoutersPost(organizationName Name, projectName Name, vpcName Name, j *VPCRouterCreate) (*VPCRouter, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers"
@@ -1692,11 +2104,15 @@ func (c *Client) VpcRoutersPost(organizationName Name, projectName Name, vpcName
 	return &body, nil
 }
 
-// VpcRoutersGetRouter:
+// VpcRoutersGetRouter
 //
 // Get a VPC Router
 //
 // Parameters:
+//	- `organizationName`
+//	- `projectName`
+//	- `routerName`
+//	- `vpcName`
 func (c *Client) VpcRoutersGetRouter(organizationName Name, projectName Name, routerName Name, vpcName Name) (*VPCRouter, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}"
@@ -1737,11 +2153,15 @@ func (c *Client) VpcRoutersGetRouter(organizationName Name, projectName Name, ro
 	return &body, nil
 }
 
-// VpcRoutersPutRouter:
+// VpcRoutersPutRouter
 //
 // Update a VPC Router
 //
 // Parameters:
+//	- `organizationName`
+//	- `projectName`
+//	- `routerName`
+//	- `vpcName`
 func (c *Client) VpcRoutersPutRouter(organizationName Name, projectName Name, routerName Name, vpcName Name, j *VPCRouterUpdate) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}"
@@ -1779,11 +2199,15 @@ func (c *Client) VpcRoutersPutRouter(organizationName Name, projectName Name, ro
 	return nil
 }
 
-// VpcRoutersDeleteRouter:
+// VpcRoutersDeleteRouter
 //
 // Delete a router from its VPC
 //
 // Parameters:
+//	- `organizationName`
+//	- `projectName`
+//	- `routerName`
+//	- `vpcName`
 func (c *Client) VpcRoutersDeleteRouter(organizationName Name, projectName Name, routerName Name, vpcName Name) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}"
@@ -1816,11 +2240,20 @@ func (c *Client) VpcRoutersDeleteRouter(organizationName Name, projectName Name,
 	return nil
 }
 
-// RoutersRoutesGet:
+// RoutersRoutesGet
 //
 // List a Router's routes
 //
+// To iterate over all pages, use the `RoutersRoutesGetAllPages` method, instead.
+//
 // Parameters:
+//	- `routerName`
+//	- `vpcName`
+//	- `limit`
+//	- `pageToken`
+//	- `sortBy`
+//	- `organizationName`
+//	- `projectName`
 func (c *Client) RoutersRoutesGet(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, routerName Name, vpcName Name) (*RouterRouteResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes"
@@ -1864,11 +2297,46 @@ func (c *Client) RoutersRoutesGet(limit int, pageToken string, sortBy NameSortMo
 	return &body, nil
 }
 
-// RoutersRoutesPost:
+// RoutersRoutesGetAllPages
+//
+// List a Router's routes
+//
+// This method is a wrapper around the `RoutersRoutesGet` method.
+// This method returns all the pages at once.
+//
+// Parameters:
+//	- `sortBy`
+//	- `organizationName`
+//	- `projectName`
+//	- `routerName`
+//	- `vpcName`
+func (c *Client) RoutersRoutesGetAllPages(sortBy NameSortMode, organizationName Name, projectName Name, routerName Name, vpcName Name) (*[]RouterRoute, error) {
+
+	var allPages []RouterRoute
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.RoutersRoutesGet(limit, pageToken, sortBy, organizationName, projectName, routerName, vpcName)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+} // RoutersRoutesPost
 //
 // Create a VPC Router
 //
 // Parameters:
+//	- `projectName`
+//	- `routerName`
+//	- `vpcName`
+//	- `organizationName`
 func (c *Client) RoutersRoutesPost(organizationName Name, projectName Name, routerName Name, vpcName Name, j *RouterRouteCreateParams) (*RouterRoute, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes"
@@ -1914,11 +2382,16 @@ func (c *Client) RoutersRoutesPost(organizationName Name, projectName Name, rout
 	return &body, nil
 }
 
-// RoutersRoutesGetRoute:
+// RoutersRoutesGetRoute
 //
 // Get a VPC Router route
 //
 // Parameters:
+//	- `projectName`
+//	- `routeName`
+//	- `routerName`
+//	- `vpcName`
+//	- `organizationName`
 func (c *Client) RoutersRoutesGetRoute(organizationName Name, projectName Name, routeName Name, routerName Name, vpcName Name) (*RouterRoute, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes/{{.route_name}}"
@@ -1960,11 +2433,16 @@ func (c *Client) RoutersRoutesGetRoute(organizationName Name, projectName Name, 
 	return &body, nil
 }
 
-// RoutersRoutesPutRoute:
+// RoutersRoutesPutRoute
 //
 // Update a Router route
 //
 // Parameters:
+//	- `projectName`
+//	- `routeName`
+//	- `routerName`
+//	- `vpcName`
+//	- `organizationName`
 func (c *Client) RoutersRoutesPutRoute(organizationName Name, projectName Name, routeName Name, routerName Name, vpcName Name, j *RouterRouteUpdateParams) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes/{{.route_name}}"
@@ -2003,11 +2481,16 @@ func (c *Client) RoutersRoutesPutRoute(organizationName Name, projectName Name, 
 	return nil
 }
 
-// RoutersRoutesDeleteRoute:
+// RoutersRoutesDeleteRoute
 //
 // Delete a route from its router
 //
 // Parameters:
+//	- `vpcName`
+//	- `organizationName`
+//	- `projectName`
+//	- `routeName`
+//	- `routerName`
 func (c *Client) RoutersRoutesDeleteRoute(organizationName Name, projectName Name, routeName Name, routerName Name, vpcName Name) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes/{{.route_name}}"
@@ -2041,11 +2524,19 @@ func (c *Client) RoutersRoutesDeleteRoute(organizationName Name, projectName Nam
 	return nil
 }
 
-// VpcSubnetsGet:
+// VpcSubnetsGet
 //
 // List subnets in a VPC.
 //
+// To iterate over all pages, use the `VpcSubnetsGetAllPages` method, instead.
+//
 // Parameters:
+//	- `limit`
+//	- `pageToken`
+//	- `sortBy`
+//	- `organizationName`
+//	- `projectName`
+//	- `vpcName`
 func (c *Client) VpcSubnetsGet(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*VPCSubnetResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets"
@@ -2088,11 +2579,44 @@ func (c *Client) VpcSubnetsGet(limit int, pageToken string, sortBy NameSortMode,
 	return &body, nil
 }
 
-// VpcSubnetsPost:
+// VpcSubnetsGetAllPages
+//
+// List subnets in a VPC.
+//
+// This method is a wrapper around the `VpcSubnetsGet` method.
+// This method returns all the pages at once.
+//
+// Parameters:
+//	- `sortBy`
+//	- `organizationName`
+//	- `projectName`
+//	- `vpcName`
+func (c *Client) VpcSubnetsGetAllPages(sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*[]VPCSubnet, error) {
+
+	var allPages []VPCSubnet
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.VpcSubnetsGet(limit, pageToken, sortBy, organizationName, projectName, vpcName)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+} // VpcSubnetsPost
 //
 // Create a subnet in a VPC.
 //
 // Parameters:
+//	- `vpcName`
+//	- `organizationName`
+//	- `projectName`
 func (c *Client) VpcSubnetsPost(organizationName Name, projectName Name, vpcName Name, j *VPCSubnetCreate) (*VPCSubnet, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets"
@@ -2137,11 +2661,15 @@ func (c *Client) VpcSubnetsPost(organizationName Name, projectName Name, vpcName
 	return &body, nil
 }
 
-// VpcSubnetsGetSubnet:
+// VpcSubnetsGetSubnet
 //
 // Get subnet in a VPC.
 //
 // Parameters:
+//	- `subnetName`
+//	- `vpcName`
+//	- `organizationName`
+//	- `projectName`
 func (c *Client) VpcSubnetsGetSubnet(organizationName Name, projectName Name, subnetName Name, vpcName Name) (*VPCSubnet, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets/{{.subnet_name}}"
@@ -2182,11 +2710,15 @@ func (c *Client) VpcSubnetsGetSubnet(organizationName Name, projectName Name, su
 	return &body, nil
 }
 
-// VpcSubnetsPutSubnet:
+// VpcSubnetsPutSubnet
 //
 // Update a VPC Subnet.
 //
 // Parameters:
+//	- `organizationName`
+//	- `projectName`
+//	- `subnetName`
+//	- `vpcName`
 func (c *Client) VpcSubnetsPutSubnet(organizationName Name, projectName Name, subnetName Name, vpcName Name, j *VPCSubnetUpdate) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets/{{.subnet_name}}"
@@ -2224,11 +2756,15 @@ func (c *Client) VpcSubnetsPutSubnet(organizationName Name, projectName Name, su
 	return nil
 }
 
-// VpcSubnetsDeleteSubnet:
+// VpcSubnetsDeleteSubnet
 //
 // Delete a subnet from a VPC.
 //
 // Parameters:
+//	- `subnetName`
+//	- `vpcName`
+//	- `organizationName`
+//	- `projectName`
 func (c *Client) VpcSubnetsDeleteSubnet(organizationName Name, projectName Name, subnetName Name, vpcName Name) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets/{{.subnet_name}}"
@@ -2261,11 +2797,20 @@ func (c *Client) VpcSubnetsDeleteSubnet(organizationName Name, projectName Name,
 	return nil
 }
 
-// SubnetsIpsGet:
+// SubnetsIpsGet
 //
 // List IP addresses on a VPC subnet.
 //
+// To iterate over all pages, use the `SubnetsIpsGetAllPages` method, instead.
+//
 // Parameters:
+//	- `subnetName`
+//	- `vpcName`
+//	- `limit`
+//	- `pageToken`
+//	- `sortBy`
+//	- `organizationName`
+//	- `projectName`
 func (c *Client) SubnetsIpsGet(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, subnetName Name, vpcName Name) (*NetworkInterfaceResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets/{{.subnet_name}}/ips"
@@ -2309,11 +2854,46 @@ func (c *Client) SubnetsIpsGet(limit int, pageToken string, sortBy NameSortMode,
 	return &body, nil
 }
 
-// RolesGet:
+// SubnetsIpsGetAllPages
+//
+// List IP addresses on a VPC subnet.
+//
+// This method is a wrapper around the `SubnetsIpsGet` method.
+// This method returns all the pages at once.
+//
+// Parameters:
+//	- `sortBy`
+//	- `organizationName`
+//	- `projectName`
+//	- `subnetName`
+//	- `vpcName`
+func (c *Client) SubnetsIpsGetAllPages(sortBy NameSortMode, organizationName Name, projectName Name, subnetName Name, vpcName Name) (*[]NetworkInterface, error) {
+
+	var allPages []NetworkInterface
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.SubnetsIpsGet(limit, pageToken, sortBy, organizationName, projectName, subnetName, vpcName)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+} // RolesGet
 //
 // List the built-in roles
 //
+// To iterate over all pages, use the `RolesGetAllPages` method, instead.
+//
 // Parameters:
+//	- `limit`
+//	- `pageToken`
 func (c *Client) RolesGet(limit int, pageToken string) (*RoleResultsPage, error) {
 	// Create the url.
 	path := "/roles"
@@ -2352,11 +2932,36 @@ func (c *Client) RolesGet(limit int, pageToken string) (*RoleResultsPage, error)
 	return &body, nil
 }
 
-// RolesGetRole:
+// RolesGetAllPages
+//
+// List the built-in roles
+//
+// This method is a wrapper around the `RolesGet` method.
+// This method returns all the pages at once.
+func (c *Client) RolesGetAllPages() (*[]Role, error) {
+
+	var allPages []Role
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.RolesGet(limit, pageToken)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+} // RolesGetRole
 //
 // Fetch a specific built-in role
 //
 // Parameters:
+//	- `roleName`
 func (c *Client) RolesGetRole(roleName string) (*Role, error) {
 	// Create the url.
 	path := "/roles/{{.role_name}}"
@@ -2394,11 +2999,16 @@ func (c *Client) RolesGetRole(roleName string) (*Role, error) {
 	return &body, nil
 }
 
-// SagasGet:
+// SagasGet
 //
 // List all sagas (for debugging)
 //
+// To iterate over all pages, use the `SagasGetAllPages` method, instead.
+//
 // Parameters:
+//	- `limit`
+//	- `pageToken`
+//	- `sortBy`
 func (c *Client) SagasGet(limit int, pageToken string, sortBy IDSortMode) (*SagaResultsPage, error) {
 	// Create the url.
 	path := "/sagas"
@@ -2438,11 +3048,39 @@ func (c *Client) SagasGet(limit int, pageToken string, sortBy IDSortMode) (*Saga
 	return &body, nil
 }
 
-// SagasGetSaga:
+// SagasGetAllPages
+//
+// List all sagas (for debugging)
+//
+// This method is a wrapper around the `SagasGet` method.
+// This method returns all the pages at once.
+//
+// Parameters:
+//	- `sortBy`
+func (c *Client) SagasGetAllPages(sortBy IDSortMode) (*[]Saga, error) {
+
+	var allPages []Saga
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.SagasGet(limit, pageToken, sortBy)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+} // SagasGetSaga
 //
 // Fetch information about a single saga (for debugging)
 //
 // Parameters:
+//	- `sagaId`
 func (c *Client) SagasGetSaga(sagaId string) (*Saga, error) {
 	// Create the url.
 	path := "/sagas/{{.saga_id}}"
@@ -2480,7 +3118,7 @@ func (c *Client) SagasGetSaga(sagaId string) (*Saga, error) {
 	return &body, nil
 }
 
-// SessionMe:
+// SessionMe
 //
 // Fetch the user associated with the current session
 func (c *Client) SessionMe() (*SessionUser, error) {
@@ -2514,11 +3152,15 @@ func (c *Client) SessionMe() (*SessionUser, error) {
 	return &body, nil
 }
 
-// TimeseriesSchemaGet:
+// TimeseriesSchemaGet
 //
 // List all timeseries schema
 //
+// To iterate over all pages, use the `TimeseriesSchemaGetAllPages` method, instead.
+//
 // Parameters:
+//	- `limit`
+//	- `pageToken`
 func (c *Client) TimeseriesSchemaGet(limit int, pageToken string) (*TimeseriesSchemaResultsPage, error) {
 	// Create the url.
 	path := "/timeseries/schema"
@@ -2557,11 +3199,40 @@ func (c *Client) TimeseriesSchemaGet(limit int, pageToken string) (*TimeseriesSc
 	return &body, nil
 }
 
-// UsersGet:
+// TimeseriesSchemaGetAllPages
+//
+// List all timeseries schema
+//
+// This method is a wrapper around the `TimeseriesSchemaGet` method.
+// This method returns all the pages at once.
+func (c *Client) TimeseriesSchemaGetAllPages() (*[]TimeseriesSchema, error) {
+
+	var allPages []TimeseriesSchema
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.TimeseriesSchemaGet(limit, pageToken)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+} // UsersGet
 //
 // List the built-in system users
 //
+// To iterate over all pages, use the `UsersGetAllPages` method, instead.
+//
 // Parameters:
+//	- `limit`
+//	- `pageToken`
+//	- `sortBy`
 func (c *Client) UsersGet(limit int, pageToken string, sortBy NameSortMode) (*UserResultsPage, error) {
 	// Create the url.
 	path := "/users"
@@ -2601,11 +3272,39 @@ func (c *Client) UsersGet(limit int, pageToken string, sortBy NameSortMode) (*Us
 	return &body, nil
 }
 
-// UsersGetUser:
+// UsersGetAllPages
+//
+// List the built-in system users
+//
+// This method is a wrapper around the `UsersGet` method.
+// This method returns all the pages at once.
+//
+// Parameters:
+//	- `sortBy`
+func (c *Client) UsersGetAllPages(sortBy NameSortMode) (*[]User, error) {
+
+	var allPages []User
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.UsersGet(limit, pageToken, sortBy)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+} // UsersGetUser
 //
 // Fetch a specific built-in system user
 //
 // Parameters:
+//	- `userName`
 func (c *Client) UsersGetUser(userName Name) (*User, error) {
 	// Create the url.
 	path := "/users/{{.user_name}}"

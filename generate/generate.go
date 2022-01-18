@@ -3,6 +3,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -286,37 +287,39 @@ func printType(property string, r *openapi3.SchemaRef) string {
 // writePath writes the given path as an http request to the given file.
 func writePath(doc *openapi3.T, f *os.File, path string, p *openapi3.PathItem) {
 	if p.Get != nil {
-		writeMethod(doc, f, http.MethodGet, path, p.Get)
+		writeMethod(doc, f, http.MethodGet, path, p.Get, false)
 	}
 
 	if p.Post != nil {
-		writeMethod(doc, f, http.MethodPost, path, p.Post)
+		writeMethod(doc, f, http.MethodPost, path, p.Post, false)
 	}
 
 	if p.Put != nil {
-		writeMethod(doc, f, http.MethodPut, path, p.Put)
+		writeMethod(doc, f, http.MethodPut, path, p.Put, false)
 	}
 
 	if p.Delete != nil {
-		writeMethod(doc, f, http.MethodDelete, path, p.Delete)
+		writeMethod(doc, f, http.MethodDelete, path, p.Delete, false)
 	}
 
 	if p.Patch != nil {
-		writeMethod(doc, f, http.MethodPatch, path, p.Patch)
+		writeMethod(doc, f, http.MethodPatch, path, p.Patch, false)
 	}
 
 	if p.Head != nil {
-		writeMethod(doc, f, http.MethodHead, path, p.Head)
+		writeMethod(doc, f, http.MethodHead, path, p.Head, false)
 	}
 
 	if p.Options != nil {
-		writeMethod(doc, f, http.MethodOptions, path, p.Options)
+		writeMethod(doc, f, http.MethodOptions, path, p.Options, false)
 	}
 }
 
-func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *openapi3.Operation) {
-	respType := getSuccessResponseType(o)
+func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *openapi3.Operation, isGetAllPages bool) {
+	respType, pagedRespType := getSuccessResponseType(o, isGetAllPages)
 	fnName := strcase.ToCamel(o.OperationID)
+
+	pageResult := false
 
 	// Parse the parameters.
 	params := map[string]*openapi3.Parameter{}
@@ -328,13 +331,24 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 			continue
 		}
 
-		params[p.Value.Name] = p.Value
-		paramsString += fmt.Sprintf("%s %s, ", strcase.ToLowerCamel(p.Value.Name), printType(p.Value.Name, p.Value.Schema))
-		if index == len(o.Parameters)-1 {
-			docParamsString += fmt.Sprintf("%s", strcase.ToLowerCamel(p.Value.Name))
-		} else {
-			docParamsString += fmt.Sprintf("%s, ", strcase.ToLowerCamel(p.Value.Name))
+		paramName := strcase.ToLowerCamel(p.Value.Name)
+
+		// Check if we have a page result.
+		if isPageParam(paramName) && method == http.MethodGet {
+			pageResult = true
 		}
+
+		params[p.Value.Name] = p.Value
+		paramsString += fmt.Sprintf("%s %s, ", paramName, printType(p.Value.Name, p.Value.Schema))
+		if index == len(o.Parameters)-1 {
+			docParamsString += fmt.Sprintf("%s", paramName)
+		} else {
+			docParamsString += fmt.Sprintf("%s, ", paramName)
+		}
+	}
+
+	if pageResult && isGetAllPages && len(pagedRespType) > 0 {
+		respType = pagedRespType
 	}
 
 	// Parse the request body.
@@ -358,7 +372,9 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 				break
 			}
 
-			paramsString += "j *" + printType("", r.Schema)
+			typeName := printType("", r.Schema)
+
+			paramsString += "j *" + typeName
 
 			if len(docParamsString) > 0 {
 				docParamsString += ", "
@@ -371,30 +387,61 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 
 	}
 
-	fmt.Printf("writing method %q for path %q\n", method, path)
+	ogFnName := fnName
+	ogDocParamsString := docParamsString
+	if len(pagedRespType) > 0 {
+		fnName += "AllPages"
+		docParamsString = strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(docParamsString, "pageToken", ""), "limit", ""), ", ,", "")
+		paramsString = strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(paramsString, "pageToken string", ""), "limit int", ""), ", ,", "")
+		delete(params, "page_token")
+		delete(params, "limit")
+	}
 
+	fmt.Printf("writing method %q for path %q -> %q\n", method, path, fnName)
+
+	var description bytes.Buffer
 	// Write the description for the method.
-	fmt.Fprintf(f, "// %s: %s\n", fnName, o.Summary)
+	if o.Summary != "" {
+		fmt.Fprintf(&description, "// %s: %s\n", fnName, o.Summary)
+	} else {
+		fmt.Fprintf(&description, "// %s\n", fnName)
+	}
 	if o.Description != "" {
-		fmt.Fprintln(f, "//")
-		fmt.Fprintf(f, "// %s\n", strings.ReplaceAll(o.Description, "\n", "\n// "))
+		fmt.Fprintln(&description, "//")
+		fmt.Fprintf(&description, "// %s\n", strings.ReplaceAll(o.Description, "\n", "\n// "))
+	}
+	if pageResult && !isGetAllPages {
+		fmt.Fprintf(&description, "//\n// To iterate over all pages, use the `%sAllPages` method, instead.\n", fnName)
+	}
+	if len(pagedRespType) > 0 {
+		fmt.Fprintf(&description, "//\n// This method is a wrapper around the `%s` method.\n", ogFnName)
+		fmt.Fprintf(&description, "// This method returns all the pages at once.\n")
 	}
 	if len(params) > 0 {
-		fmt.Fprintf(f, "//\n// Parameters:\n")
+		fmt.Fprintf(&description, "//\n// Parameters:\n")
 		for name, t := range params {
 			if t.Description != "" {
-				fmt.Fprintf(f, "//\t`%s`: %s\n", strcase.ToLowerCamel(name), strings.ReplaceAll(t.Description, "\n", "\n//\t\t"))
+				fmt.Fprintf(&description, "//\t- `%s`: %s\n", strcase.ToLowerCamel(name), strings.ReplaceAll(t.Description, "\n", "\n//\t\t"))
+			} else {
+				fmt.Fprintf(&description, "//\t- `%s`\n", strcase.ToLowerCamel(name))
 			}
 		}
 	}
 
 	if reqBodyDescription != "" && reqBodyParam != "nil" {
-		fmt.Fprintf(f, "//\t`%s`: %s\n", reqBodyParam, strings.ReplaceAll(reqBodyDescription, "\n", "\n// "))
+		fmt.Fprintf(&description, "//\t`%s`: %s\n", reqBodyParam, strings.ReplaceAll(reqBodyDescription, "\n", "\n// "))
 	}
 
+	// Write the description to the file.
+	fmt.Fprintf(f, description.String())
+
 	docInfo := map[string]string{
-		"example":     "",
+		"example":     fmt.Sprintf("%s\n", description.String()),
 		"libDocsLink": fmt.Sprintf("https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.%s", fnName),
+	}
+	if isGetAllPages {
+		og := doc.Paths[path].Get.Extensions["x-go"].(map[string]string)
+		docInfo["example"] = fmt.Sprintf("%s\n\n// - OR -\n\n%s", og["example"], docInfo["example"])
 	}
 
 	// Write the method.
@@ -403,12 +450,12 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 			fnName,
 			paramsString,
 			respType)
-		docInfo["example"] = fmt.Sprintf("%s, err := client.%s(%s)", strcase.ToLowerCamel(respType), fnName, docParamsString)
+		docInfo["example"] += fmt.Sprintf("%s, err := client.%s(%s)", strcase.ToLowerCamel(respType), fnName, docParamsString)
 	} else {
 		fmt.Fprintf(f, "func (c *Client) %s(%s) (error) {\n",
 			fnName,
 			paramsString)
-		docInfo["example"] = fmt.Sprintf(`if err := client.%s(%s); err != nil {
+		docInfo["example"] += fmt.Sprintf(`if err := client.%s(%s); err != nil {
 	panic(err)
 }`, fnName, docParamsString)
 	}
@@ -423,6 +470,31 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 		doc.Paths[path].Delete.Extensions["x-go"] = docInfo
 	} else if method == http.MethodPatch {
 		doc.Paths[path].Patch.Extensions["x-go"] = docInfo
+	}
+
+	if len(pagedRespType) > 0 {
+		// We want to just recursively call the method for each page.
+		fmt.Fprintf(f, `
+			var allPages %s
+			pageToken := ""
+			limit := 100
+			for {
+				page, err := c.%s(%s)
+				if err != nil {
+					return nil, err
+				}
+				allPages = append(allPages, page.Items...)
+				if  page.NextPage == "" {
+					break
+				}
+				pageToken = page.NextPage
+			}
+
+			return &allPages, nil
+		}`, pagedRespType, ogFnName, ogDocParamsString)
+
+		// Return early.
+		return
 	}
 
 	// Create the url.
@@ -540,6 +612,11 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 	// Close the method.
 	fmt.Fprintln(f, "}")
 	fmt.Fprintln(f, "")
+
+	if pageResult && !isGetAllPages {
+		// Run the method again with get all pages.
+		writeMethod(doc, f, method, path, o, true)
+	}
 }
 
 // cleanPath returns the path as a function we can use for a go template.
@@ -548,7 +625,7 @@ func cleanPath(path string) string {
 	return strings.Replace(path, "}", "}}", -1)
 }
 
-func getSuccessResponseType(o *openapi3.Operation) string {
+func getSuccessResponseType(o *openapi3.Operation, isGetAllPages bool) (string, string) {
 	for name, response := range o.Responses {
 		if name == "default" {
 			name = "200"
@@ -571,15 +648,24 @@ func getSuccessResponseType(o *openapi3.Operation) string {
 		}
 
 		for _, content := range response.Value.Content {
+			getAllPagesType := ""
+			if isGetAllPages {
+
+				if items, ok := content.Schema.Value.Properties["items"]; ok {
+					getAllPagesType = printType("", items)
+				} else {
+					fmt.Printf("[WARN] TODO: skipping response for %q, since it is a get all pages response and has no `items` property:\n%#v\n", o.OperationID, content.Schema.Value.Properties)
+				}
+			}
 			if content.Schema.Ref != "" {
-				return getReferenceSchema(content.Schema)
+				return getReferenceSchema(content.Schema), getAllPagesType
 			}
 
-			return fmt.Sprintf("%sResponse", strcase.ToCamel(o.OperationID))
+			return fmt.Sprintf("%sResponse", strcase.ToCamel(o.OperationID)), getAllPagesType
 		}
 	}
 
-	return ""
+	return "", ""
 }
 
 // writeSchemaType writes a type definition for the given schema.
@@ -900,4 +986,8 @@ func containsMatchFirstWord(s []string, str string) bool {
 	}
 
 	return false
+}
+
+func isPageParam(s string) bool {
+	return s == "nextPage" || s == "pageToken" || s == "limit"
 }

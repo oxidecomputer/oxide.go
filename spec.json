@@ -2367,8 +2367,8 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "rackResultsPage, err := client.HardwareRacksGet(limit, pageToken, sortBy)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.HardwareRacksGet"
+          "example": "// HardwareRacksGet\n//\n// List racks in the system.\n//\n// To iterate over all pages, use the `HardwareRacksGetAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\n\nrackResultsPage, err := client.HardwareRacksGet(limit, pageToken, sortBy)\n\n// - OR -\n\n// HardwareRacksGetAllPages\n//\n// List racks in the system.\n//\n// This method is a wrapper around the `HardwareRacksGet` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\n\nRack, err := client.HardwareRacksGetAllPages( sortBy)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.HardwareRacksGetAllPages"
         },
         "x-rust": {
           "example": "let vec_crate_types_rack = client.hardware().racks_get(limit, page_token, sort_by).await?;",
@@ -2409,7 +2409,7 @@
           "hardware"
         ],
         "x-go": {
-          "example": "rack, err := client.HardwareRacksGetRack(rackId)",
+          "example": "// HardwareRacksGetRack\n//\n// Fetch information about a particular rack.\n//\n// Parameters:\n//\t- `rackId`\n\nrack, err := client.HardwareRacksGetRack(rackId)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.HardwareRacksGetRack"
         },
         "x-rust": {
@@ -2471,8 +2471,8 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "sledResultsPage, err := client.HardwareSledsGet(limit, pageToken, sortBy)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.HardwareSledsGet"
+          "example": "// HardwareSledsGet\n//\n// List sleds in the system.\n//\n// To iterate over all pages, use the `HardwareSledsGetAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\n\nsledResultsPage, err := client.HardwareSledsGet(limit, pageToken, sortBy)\n\n// - OR -\n\n// HardwareSledsGetAllPages\n//\n// List sleds in the system.\n//\n// This method is a wrapper around the `HardwareSledsGet` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\n\nSled, err := client.HardwareSledsGetAllPages( sortBy)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.HardwareSledsGetAllPages"
         },
         "x-rust": {
           "example": "let vec_crate_types_sled = client.hardware().sleds_get(limit, page_token, sort_by).await?;",
@@ -2513,7 +2513,7 @@
           "hardware"
         ],
         "x-go": {
-          "example": "sled, err := client.HardwareSledsGetSled(sledId)",
+          "example": "// HardwareSledsGetSled\n//\n// Fetch information about a sled in the system.\n//\n// Parameters:\n//\t- `sledId`\n\nsled, err := client.HardwareSledsGetSled(sledId)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.HardwareSledsGetSled"
         },
         "x-rust": {
@@ -2541,7 +2541,7 @@
           }
         },
         "x-go": {
-          "example": "if err := client.SpoofLogin(body); err != nil {\n\tpanic(err)\n}",
+          "example": "// SpoofLogin\n\nif err := client.SpoofLogin(body); err != nil {\n\tpanic(err)\n}",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.SpoofLogin"
         },
         "x-rust": {
@@ -2559,7 +2559,7 @@
           }
         },
         "x-go": {
-          "example": "if err := client.Logout(); err != nil {\n\tpanic(err)\n}",
+          "example": "// Logout\n\nif err := client.Logout(); err != nil {\n\tpanic(err)\n}",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.Logout"
         },
         "x-rust": {
@@ -2621,8 +2621,8 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "organizationResultsPage, err := client.OrganizationsGet(limit, pageToken, sortBy)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.OrganizationsGet"
+          "example": "// OrganizationsGet\n//\n// List all organizations.\n//\n// To iterate over all pages, use the `OrganizationsGetAllPages` method, instead.\n//\n// Parameters:\n//\t- `pageToken`\n//\t- `sortBy`\n//\t- `limit`\n\norganizationResultsPage, err := client.OrganizationsGet(limit, pageToken, sortBy)\n\n// - OR -\n\n// OrganizationsGetAllPages\n//\n// List all organizations.\n//\n// This method is a wrapper around the `OrganizationsGet` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\n\nOrganization, err := client.OrganizationsGetAllPages( sortBy)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.OrganizationsGetAllPages"
         },
         "x-rust": {
           "example": "let vec_crate_types_user = client.organizations().get_page(limit, page_token, sort_by).await?;",
@@ -2658,7 +2658,7 @@
           "organizations"
         ],
         "x-go": {
-          "example": "organization, err := client.OrganizationsPost(body)",
+          "example": "// OrganizationsPost\n//\n// Create a new organization.\n\norganization, err := client.OrganizationsPost(body)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.OrganizationsPost"
         },
         "x-rust": {
@@ -2691,7 +2691,7 @@
           "organizations"
         ],
         "x-go": {
-          "example": "if err := client.OrganizationsDeleteOrganization(organizationName); err != nil {\n\tpanic(err)\n}",
+          "example": "// OrganizationsDeleteOrganization\n//\n// Delete a specific organization.\n//\n// Parameters:\n//\t- `organizationName`\n\nif err := client.OrganizationsDeleteOrganization(organizationName); err != nil {\n\tpanic(err)\n}",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.OrganizationsDeleteOrganization"
         },
         "x-rust": {
@@ -2729,7 +2729,7 @@
           "organizations"
         ],
         "x-go": {
-          "example": "organization, err := client.OrganizationsGetOrganization(organizationName)",
+          "example": "// OrganizationsGetOrganization\n//\n// Fetch a specific organization\n//\n// Parameters:\n//\t- `organizationName`\n\norganization, err := client.OrganizationsGetOrganization(organizationName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.OrganizationsGetOrganization"
         },
         "x-rust": {
@@ -2777,7 +2777,7 @@
           "organizations"
         ],
         "x-go": {
-          "example": "organization, err := client.OrganizationsPutOrganization(organizationName, body)",
+          "example": "// OrganizationsPutOrganization\n//\n// Update a specific organization.\n//  * TODO-correctness: Is it valid for PUT to accept application/json that's a subset of what the resource actually represents?  If not, is that a problem? (HTTP may require that this be idempotent.)  If so, can we get around that having this be a slightly different content-type (e.g., \"application/json-patch\")?  We should see what other APIs do.\n//\n// Parameters:\n//\t- `organizationName`\n\norganization, err := client.OrganizationsPutOrganization(organizationName, body)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.OrganizationsPutOrganization"
         },
         "x-rust": {
@@ -2848,8 +2848,8 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "projectResultsPage, err := client.OrganizationProjectsGet(limit, pageToken, sortBy, organizationName)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.OrganizationProjectsGet"
+          "example": "// OrganizationProjectsGet\n//\n// List all projects.\n//\n// To iterate over all pages, use the `OrganizationProjectsGetAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\n//\t- `organizationName`\n\nprojectResultsPage, err := client.OrganizationProjectsGet(limit, pageToken, sortBy, organizationName)\n\n// - OR -\n\n// OrganizationProjectsGetAllPages\n//\n// List all projects.\n//\n// This method is a wrapper around the `OrganizationProjectsGet` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\n//\t- `organizationName`\n\nProject, err := client.OrganizationProjectsGetAllPages( sortBy, organizationName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.OrganizationProjectsGetAllPages"
         },
         "x-rust": {
           "example": "let vec_crate_types_project = client.projects().get_page(limit, page_token, sort_by, organization_name).await?;",
@@ -2896,7 +2896,7 @@
           "projects"
         ],
         "x-go": {
-          "example": "project, err := client.OrganizationProjectsPost(organizationName, body)",
+          "example": "// OrganizationProjectsPost\n//\n// Create a new project.\n//\n// Parameters:\n//\t- `organizationName`\n\nproject, err := client.OrganizationProjectsPost(organizationName, body)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.OrganizationProjectsPost"
         },
         "x-rust": {
@@ -2938,7 +2938,7 @@
           "projects"
         ],
         "x-go": {
-          "example": "if err := client.OrganizationProjectsDeleteProject(organizationName, projectName); err != nil {\n\tpanic(err)\n}",
+          "example": "// OrganizationProjectsDeleteProject\n//\n// Delete a specific project.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n\nif err := client.OrganizationProjectsDeleteProject(organizationName, projectName); err != nil {\n\tpanic(err)\n}",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.OrganizationProjectsDeleteProject"
         },
         "x-rust": {
@@ -2985,7 +2985,7 @@
           "projects"
         ],
         "x-go": {
-          "example": "project, err := client.OrganizationProjectsGetProject(organizationName, projectName)",
+          "example": "// OrganizationProjectsGetProject\n//\n// Fetch a specific project\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n\nproject, err := client.OrganizationProjectsGetProject(organizationName, projectName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.OrganizationProjectsGetProject"
         },
         "x-rust": {
@@ -3042,7 +3042,7 @@
           "organizations"
         ],
         "x-go": {
-          "example": "project, err := client.OrganizationProjectsPutProject(organizationName, projectName, body)",
+          "example": "// OrganizationProjectsPutProject\n//\n// Update a specific project.\n//  * TODO-correctness: Is it valid for PUT to accept application/json that's a subset of what the resource actually represents?  If not, is that a problem? (HTTP may require that this be idempotent.)  If so, can we get around that having this be a slightly different content-type (e.g., \"application/json-patch\")?  We should see what other APIs do.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n\nproject, err := client.OrganizationProjectsPutProject(organizationName, projectName, body)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.OrganizationProjectsPutProject"
         },
         "x-rust": {
@@ -3122,8 +3122,8 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "diskResultsPage, err := client.ProjectDisksGet(limit, pageToken, sortBy, organizationName, projectName)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.ProjectDisksGet"
+          "example": "// ProjectDisksGet\n//\n// List disks in a project.\n//\n// To iterate over all pages, use the `ProjectDisksGetAllPages` method, instead.\n//\n// Parameters:\n//\t- `projectName`\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\n//\t- `organizationName`\n\ndiskResultsPage, err := client.ProjectDisksGet(limit, pageToken, sortBy, organizationName, projectName)\n\n// - OR -\n\n// ProjectDisksGetAllPages\n//\n// List disks in a project.\n//\n// This method is a wrapper around the `ProjectDisksGet` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\n//\t- `organizationName`\n//\t- `projectName`\n\nDisk, err := client.ProjectDisksGetAllPages( sortBy, organizationName, projectName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.ProjectDisksGetAllPages"
         },
         "x-rust": {
           "example": "let vec_crate_types_disk = client.projects().disks_get(limit, page_token, sort_by, organization_name, project_name).await?;",
@@ -3179,7 +3179,7 @@
           "projects"
         ],
         "x-go": {
-          "example": "disk, err := client.ProjectDisksPost(organizationName, projectName, body)",
+          "example": "// ProjectDisksPost\n//\n// Create a disk in a project.\n//  * TODO-correctness See note about instance create.  This should be async.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n\ndisk, err := client.ProjectDisksPost(organizationName, projectName, body)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.ProjectDisksPost"
         },
         "x-rust": {
@@ -3230,7 +3230,7 @@
           "projects"
         ],
         "x-go": {
-          "example": "if err := client.ProjectDisksDeleteDisk(diskName, organizationName, projectName); err != nil {\n\tpanic(err)\n}",
+          "example": "// ProjectDisksDeleteDisk\n//\n// Delete a disk from a project.\n//\n// Parameters:\n//\t- `projectName`\n//\t- `diskName`\n//\t- `organizationName`\n\nif err := client.ProjectDisksDeleteDisk(diskName, organizationName, projectName); err != nil {\n\tpanic(err)\n}",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.ProjectDisksDeleteDisk"
         },
         "x-rust": {
@@ -3286,7 +3286,7 @@
           "projects"
         ],
         "x-go": {
-          "example": "disk, err := client.ProjectDisksGetDisk(diskName, organizationName, projectName)",
+          "example": "// ProjectDisksGetDisk\n//\n// Fetch a single disk in a project.\n//\n// Parameters:\n//\t- `projectName`\n//\t- `diskName`\n//\t- `organizationName`\n\ndisk, err := client.ProjectDisksGetDisk(diskName, organizationName, projectName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.ProjectDisksGetDisk"
         },
         "x-rust": {
@@ -3366,8 +3366,8 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "instanceResultsPage, err := client.ProjectInstancesGet(limit, pageToken, sortBy, organizationName, projectName)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.ProjectInstancesGet"
+          "example": "// ProjectInstancesGet\n//\n// List instances in a project.\n//\n// To iterate over all pages, use the `ProjectInstancesGetAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\n//\t- `organizationName`\n//\t- `projectName`\n\ninstanceResultsPage, err := client.ProjectInstancesGet(limit, pageToken, sortBy, organizationName, projectName)\n\n// - OR -\n\n// ProjectInstancesGetAllPages\n//\n// List instances in a project.\n//\n// This method is a wrapper around the `ProjectInstancesGet` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\n//\t- `organizationName`\n//\t- `projectName`\n\nInstance, err := client.ProjectInstancesGetAllPages( sortBy, organizationName, projectName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.ProjectInstancesGetAllPages"
         },
         "x-rust": {
           "example": "let vec_crate_types_instance = client.instances().get_page(limit, page_token, sort_by, organization_name, project_name).await?;",
@@ -3423,7 +3423,7 @@
           "instances"
         ],
         "x-go": {
-          "example": "instance, err := client.ProjectInstancesPost(organizationName, projectName, body)",
+          "example": "// ProjectInstancesPost\n//\n// Create an instance in a project.\n//  * TODO-correctness This is supposed to be async.  Is that right?  We can create the instance immediately -- it's just not booted yet.  Maybe the boot operation is what's a separate operation_id.  What about the response code (201 Created vs 202 Accepted)?  Is that orthogonal?  Things can return a useful response, including an operation id, with either response code.  Maybe a \"reboot\" operation would return a 202 Accepted because there's no actual resource created?\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n\ninstance, err := client.ProjectInstancesPost(organizationName, projectName, body)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.ProjectInstancesPost"
         },
         "x-rust": {
@@ -3474,7 +3474,7 @@
           "instances"
         ],
         "x-go": {
-          "example": "if err := client.ProjectInstancesDeleteInstance(instanceName, organizationName, projectName); err != nil {\n\tpanic(err)\n}",
+          "example": "// ProjectInstancesDeleteInstance\n//\n// Delete an instance from a project.\n//\n// Parameters:\n//\t- `instanceName`\n//\t- `organizationName`\n//\t- `projectName`\n\nif err := client.ProjectInstancesDeleteInstance(instanceName, organizationName, projectName); err != nil {\n\tpanic(err)\n}",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.ProjectInstancesDeleteInstance"
         },
         "x-rust": {
@@ -3530,7 +3530,7 @@
           "instances"
         ],
         "x-go": {
-          "example": "instance, err := client.ProjectInstancesGetInstance(instanceName, organizationName, projectName)",
+          "example": "// ProjectInstancesGetInstance\n//\n// Get an instance in a project.\n//\n// Parameters:\n//\t- `projectName`\n//\t- `instanceName`\n//\t- `organizationName`\n\ninstance, err := client.ProjectInstancesGetInstance(instanceName, organizationName, projectName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.ProjectInstancesGetInstance"
         },
         "x-rust": {
@@ -3619,8 +3619,8 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "diskResultsPage, err := client.InstanceDisksGet(limit, pageToken, sortBy, instanceName, organizationName, projectName)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.InstanceDisksGet"
+          "example": "// InstanceDisksGet\n//\n// List disks attached to this instance.\n//\n// To iterate over all pages, use the `InstanceDisksGetAllPages` method, instead.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\n//\t- `instanceName`\n\ndiskResultsPage, err := client.InstanceDisksGet(limit, pageToken, sortBy, instanceName, organizationName, projectName)\n\n// - OR -\n\n// InstanceDisksGetAllPages\n//\n// List disks attached to this instance.\n//\n// This method is a wrapper around the `InstanceDisksGet` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\n//\t- `instanceName`\n//\t- `organizationName`\n//\t- `projectName`\n\nDisk, err := client.InstanceDisksGetAllPages( sortBy, instanceName, organizationName, projectName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.InstanceDisksGetAllPages"
         },
         "x-rust": {
           "example": "let vec_crate_types_disk = client.instances().disks_get(limit, page_token, sort_by, instance_name, organization_name, project_name).await?;",
@@ -3686,7 +3686,7 @@
           "instances"
         ],
         "x-go": {
-          "example": "disk, err := client.InstanceDisksAttach(instanceName, organizationName, projectName, body)",
+          "example": "// InstanceDisksAttach\n//\n// Parameters:\n//\t- `instanceName`\n//\t- `organizationName`\n//\t- `projectName`\n\ndisk, err := client.InstanceDisksAttach(instanceName, organizationName, projectName, body)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.InstanceDisksAttach"
         },
         "x-rust": {
@@ -3753,7 +3753,7 @@
           "instances"
         ],
         "x-go": {
-          "example": "disk, err := client.InstanceDisksDetach(instanceName, organizationName, projectName, body)",
+          "example": "// InstanceDisksDetach\n//\n// Parameters:\n//\t- `instanceName`\n//\t- `organizationName`\n//\t- `projectName`\n\ndisk, err := client.InstanceDisksDetach(instanceName, organizationName, projectName, body)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.InstanceDisksDetach"
         },
         "x-rust": {
@@ -3811,7 +3811,7 @@
           "instances"
         ],
         "x-go": {
-          "example": "instance, err := client.ProjectInstancesInstanceReboot(instanceName, organizationName, projectName)",
+          "example": "// ProjectInstancesInstanceReboot\n//\n// Reboot an instance.\n//\n// Parameters:\n//\t- `instanceName`\n//\t- `organizationName`\n//\t- `projectName`\n\ninstance, err := client.ProjectInstancesInstanceReboot(instanceName, organizationName, projectName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.ProjectInstancesInstanceReboot"
         },
         "x-rust": {
@@ -3869,7 +3869,7 @@
           "instances"
         ],
         "x-go": {
-          "example": "instance, err := client.ProjectInstancesInstanceStart(instanceName, organizationName, projectName)",
+          "example": "// ProjectInstancesInstanceStart\n//\n// Boot an instance.\n//\n// Parameters:\n//\t- `instanceName`\n//\t- `organizationName`\n//\t- `projectName`\n\ninstance, err := client.ProjectInstancesInstanceStart(instanceName, organizationName, projectName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.ProjectInstancesInstanceStart"
         },
         "x-rust": {
@@ -3927,7 +3927,7 @@
           "instances"
         ],
         "x-go": {
-          "example": "instance, err := client.ProjectInstancesInstanceStop(instanceName, organizationName, projectName)",
+          "example": "// ProjectInstancesInstanceStop\n//\n// Halt an instance.\n//\n// Parameters:\n//\t- `instanceName`\n//\t- `organizationName`\n//\t- `projectName`\n\ninstance, err := client.ProjectInstancesInstanceStop(instanceName, organizationName, projectName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.ProjectInstancesInstanceStop"
         },
         "x-rust": {
@@ -4007,8 +4007,8 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "vPCResultsPage, err := client.ProjectVpcsGet(limit, pageToken, sortBy, organizationName, projectName)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.ProjectVpcsGet"
+          "example": "// ProjectVpcsGet\n//\n// List VPCs in a project.\n//\n// To iterate over all pages, use the `ProjectVpcsGetAllPages` method, instead.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\n\nvPCResultsPage, err := client.ProjectVpcsGet(limit, pageToken, sortBy, organizationName, projectName)\n\n// - OR -\n\n// ProjectVpcsGetAllPages\n//\n// List VPCs in a project.\n//\n// This method is a wrapper around the `ProjectVpcsGet` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\n//\t- `organizationName`\n//\t- `projectName`\n\nVPC, err := client.ProjectVpcsGetAllPages( sortBy, organizationName, projectName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.ProjectVpcsGetAllPages"
         },
         "x-rust": {
           "example": "let vec_crate_types_vpc = client.networking().vpcs_get(limit, page_token, sort_by, organization_name, project_name).await?;",
@@ -4064,7 +4064,7 @@
           "networking"
         ],
         "x-go": {
-          "example": "vPC, err := client.ProjectVpcsPost(organizationName, projectName, body)",
+          "example": "// ProjectVpcsPost\n//\n// Create a VPC in a project.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n\nvPC, err := client.ProjectVpcsPost(organizationName, projectName, body)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.ProjectVpcsPost"
         },
         "x-rust": {
@@ -4115,7 +4115,7 @@
           "networking"
         ],
         "x-go": {
-          "example": "if err := client.ProjectVpcsDeleteVpc(organizationName, projectName, vpcName); err != nil {\n\tpanic(err)\n}",
+          "example": "// ProjectVpcsDeleteVpc\n//\n// Delete a vpc from a project.\n//\n// Parameters:\n//\t- `projectName`\n//\t- `vpcName`\n//\t- `organizationName`\n\nif err := client.ProjectVpcsDeleteVpc(organizationName, projectName, vpcName); err != nil {\n\tpanic(err)\n}",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.ProjectVpcsDeleteVpc"
         },
         "x-rust": {
@@ -4171,7 +4171,7 @@
           "networking"
         ],
         "x-go": {
-          "example": "vPC, err := client.ProjectVpcsGetVpc(organizationName, projectName, vpcName)",
+          "example": "// ProjectVpcsGetVpc\n//\n// Get a VPC in a project.\n//\n// Parameters:\n//\t- `vpcName`\n//\t- `organizationName`\n//\t- `projectName`\n\nvPC, err := client.ProjectVpcsGetVpc(organizationName, projectName, vpcName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.ProjectVpcsGetVpc"
         },
         "x-rust": {
@@ -4230,7 +4230,7 @@
           "networking"
         ],
         "x-go": {
-          "example": "if err := client.ProjectVpcsPutVpc(organizationName, projectName, vpcName, body); err != nil {\n\tpanic(err)\n}",
+          "example": "// ProjectVpcsPutVpc\n//\n// Update a VPC.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\n\nif err := client.ProjectVpcsPutVpc(organizationName, projectName, vpcName, body); err != nil {\n\tpanic(err)\n}",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.ProjectVpcsPutVpc"
         },
         "x-rust": {
@@ -4319,8 +4319,8 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "vPCFirewallRuleResultsPage, err := client.VpcFirewallRulesGet(limit, pageToken, sortBy, organizationName, projectName, vpcName)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.VpcFirewallRulesGet"
+          "example": "// VpcFirewallRulesGet\n//\n// List firewall rules for a VPC.\n//\n// To iterate over all pages, use the `VpcFirewallRulesGetAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\n\nvPCFirewallRuleResultsPage, err := client.VpcFirewallRulesGet(limit, pageToken, sortBy, organizationName, projectName, vpcName)\n\n// - OR -\n\n// VpcFirewallRulesGetAllPages\n//\n// List firewall rules for a VPC.\n//\n// This method is a wrapper around the `VpcFirewallRulesGet` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\n\nVPCFirewallRule, err := client.VpcFirewallRulesGetAllPages( sortBy, organizationName, projectName, vpcName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.VpcFirewallRulesGetAllPages"
         },
         "x-rust": {
           "example": "let vec_crate_types_vpc_firewall_rule = client.networking().vpc_firewall_rules_get(limit, page_token, sort_by, organization_name, project_name, vpc_name).await?;",
@@ -4385,7 +4385,7 @@
           "networking"
         ],
         "x-go": {
-          "example": "vPCFirewallRuleUpdateResult, err := client.VpcFirewallRulesPut(organizationName, projectName, vpcName, body)",
+          "example": "// VpcFirewallRulesPut\n//\n// Replace the firewall rules for a VPC\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\n\nvPCFirewallRuleUpdateResult, err := client.VpcFirewallRulesPut(organizationName, projectName, vpcName, body)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.VpcFirewallRulesPut"
         },
         "x-rust": {
@@ -4474,8 +4474,8 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "vPCRouterResultsPage, err := client.VpcRoutersGet(limit, pageToken, sortBy, organizationName, projectName, vpcName)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.VpcRoutersGet"
+          "example": "// VpcRoutersGet\n//\n// List VPC Custom and System Routers\n//\n// To iterate over all pages, use the `VpcRoutersGetAllPages` method, instead.\n//\n// Parameters:\n//\t- `vpcName`\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\n//\t- `organizationName`\n//\t- `projectName`\n\nvPCRouterResultsPage, err := client.VpcRoutersGet(limit, pageToken, sortBy, organizationName, projectName, vpcName)\n\n// - OR -\n\n// VpcRoutersGetAllPages\n//\n// List VPC Custom and System Routers\n//\n// This method is a wrapper around the `VpcRoutersGet` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\n\nVPCRouter, err := client.VpcRoutersGetAllPages( sortBy, organizationName, projectName, vpcName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.VpcRoutersGetAllPages"
         },
         "x-rust": {
           "example": "let vec_crate_types_vpc_router = client.networking().vpc_routers_get(limit, page_token, sort_by, organization_name, project_name, vpc_name).await?;",
@@ -4540,7 +4540,7 @@
           "networking"
         ],
         "x-go": {
-          "example": "vPCRouter, err := client.VpcRoutersPost(organizationName, projectName, vpcName, body)",
+          "example": "// VpcRoutersPost\n//\n// Create a VPC Router\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\n\nvPCRouter, err := client.VpcRoutersPost(organizationName, projectName, vpcName, body)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.VpcRoutersPost"
         },
         "x-rust": {
@@ -4600,7 +4600,7 @@
           "networking"
         ],
         "x-go": {
-          "example": "if err := client.VpcRoutersDeleteRouter(organizationName, projectName, routerName, vpcName); err != nil {\n\tpanic(err)\n}",
+          "example": "// VpcRoutersDeleteRouter\n//\n// Delete a router from its VPC\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `vpcName`\n\nif err := client.VpcRoutersDeleteRouter(organizationName, projectName, routerName, vpcName); err != nil {\n\tpanic(err)\n}",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.VpcRoutersDeleteRouter"
         },
         "x-rust": {
@@ -4665,7 +4665,7 @@
           "networking"
         ],
         "x-go": {
-          "example": "vPCRouter, err := client.VpcRoutersGetRouter(organizationName, projectName, routerName, vpcName)",
+          "example": "// VpcRoutersGetRouter\n//\n// Get a VPC Router\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `vpcName`\n\nvPCRouter, err := client.VpcRoutersGetRouter(organizationName, projectName, routerName, vpcName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.VpcRoutersGetRouter"
         },
         "x-rust": {
@@ -4733,7 +4733,7 @@
           "networking"
         ],
         "x-go": {
-          "example": "if err := client.VpcRoutersPutRouter(organizationName, projectName, routerName, vpcName, body); err != nil {\n\tpanic(err)\n}",
+          "example": "// VpcRoutersPutRouter\n//\n// Update a VPC Router\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `vpcName`\n\nif err := client.VpcRoutersPutRouter(organizationName, projectName, routerName, vpcName, body); err != nil {\n\tpanic(err)\n}",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.VpcRoutersPutRouter"
         },
         "x-rust": {
@@ -4831,8 +4831,8 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "routerRouteResultsPage, err := client.RoutersRoutesGet(limit, pageToken, sortBy, organizationName, projectName, routerName, vpcName)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.RoutersRoutesGet"
+          "example": "// RoutersRoutesGet\n//\n// List a Router's routes\n//\n// To iterate over all pages, use the `RoutersRoutesGetAllPages` method, instead.\n//\n// Parameters:\n//\t- `routerName`\n//\t- `vpcName`\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\n//\t- `organizationName`\n//\t- `projectName`\n\nrouterRouteResultsPage, err := client.RoutersRoutesGet(limit, pageToken, sortBy, organizationName, projectName, routerName, vpcName)\n\n// - OR -\n\n// RoutersRoutesGetAllPages\n//\n// List a Router's routes\n//\n// This method is a wrapper around the `RoutersRoutesGet` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `vpcName`\n\nRouterRoute, err := client.RoutersRoutesGetAllPages( sortBy, organizationName, projectName, routerName, vpcName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.RoutersRoutesGetAllPages"
         },
         "x-rust": {
           "example": "let vec_crate_types_router_route = client.networking().routers_routes_get(limit, page_token, sort_by, organization_name, project_name, router_name, vpc_name).await?;",
@@ -4906,7 +4906,7 @@
           "networking"
         ],
         "x-go": {
-          "example": "routerRoute, err := client.RoutersRoutesPost(organizationName, projectName, routerName, vpcName, body)",
+          "example": "// RoutersRoutesPost\n//\n// Create a VPC Router\n//\n// Parameters:\n//\t- `projectName`\n//\t- `routerName`\n//\t- `vpcName`\n//\t- `organizationName`\n\nrouterRoute, err := client.RoutersRoutesPost(organizationName, projectName, routerName, vpcName, body)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.RoutersRoutesPost"
         },
         "x-rust": {
@@ -4975,7 +4975,7 @@
           "networking"
         ],
         "x-go": {
-          "example": "if err := client.RoutersRoutesDeleteRoute(organizationName, projectName, routeName, routerName, vpcName); err != nil {\n\tpanic(err)\n}",
+          "example": "// RoutersRoutesDeleteRoute\n//\n// Delete a route from its router\n//\n// Parameters:\n//\t- `vpcName`\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routeName`\n//\t- `routerName`\n\nif err := client.RoutersRoutesDeleteRoute(organizationName, projectName, routeName, routerName, vpcName); err != nil {\n\tpanic(err)\n}",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.RoutersRoutesDeleteRoute"
         },
         "x-rust": {
@@ -5049,7 +5049,7 @@
           "networking"
         ],
         "x-go": {
-          "example": "routerRoute, err := client.RoutersRoutesGetRoute(organizationName, projectName, routeName, routerName, vpcName)",
+          "example": "// RoutersRoutesGetRoute\n//\n// Get a VPC Router route\n//\n// Parameters:\n//\t- `projectName`\n//\t- `routeName`\n//\t- `routerName`\n//\t- `vpcName`\n//\t- `organizationName`\n\nrouterRoute, err := client.RoutersRoutesGetRoute(organizationName, projectName, routeName, routerName, vpcName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.RoutersRoutesGetRoute"
         },
         "x-rust": {
@@ -5126,7 +5126,7 @@
           "networking"
         ],
         "x-go": {
-          "example": "if err := client.RoutersRoutesPutRoute(organizationName, projectName, routeName, routerName, vpcName, body); err != nil {\n\tpanic(err)\n}",
+          "example": "// RoutersRoutesPutRoute\n//\n// Update a Router route\n//\n// Parameters:\n//\t- `projectName`\n//\t- `routeName`\n//\t- `routerName`\n//\t- `vpcName`\n//\t- `organizationName`\n\nif err := client.RoutersRoutesPutRoute(organizationName, projectName, routeName, routerName, vpcName, body); err != nil {\n\tpanic(err)\n}",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.RoutersRoutesPutRoute"
         },
         "x-rust": {
@@ -5215,8 +5215,8 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "vPCSubnetResultsPage, err := client.VpcSubnetsGet(limit, pageToken, sortBy, organizationName, projectName, vpcName)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.VpcSubnetsGet"
+          "example": "// VpcSubnetsGet\n//\n// List subnets in a VPC.\n//\n// To iterate over all pages, use the `VpcSubnetsGetAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\n\nvPCSubnetResultsPage, err := client.VpcSubnetsGet(limit, pageToken, sortBy, organizationName, projectName, vpcName)\n\n// - OR -\n\n// VpcSubnetsGetAllPages\n//\n// List subnets in a VPC.\n//\n// This method is a wrapper around the `VpcSubnetsGet` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\n\nVPCSubnet, err := client.VpcSubnetsGetAllPages( sortBy, organizationName, projectName, vpcName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.VpcSubnetsGetAllPages"
         },
         "x-rust": {
           "example": "let vec_crate_types_vpc_subnet = client.networking().vpc_subnets_get(limit, page_token, sort_by, organization_name, project_name, vpc_name).await?;",
@@ -5281,7 +5281,7 @@
           "networking"
         ],
         "x-go": {
-          "example": "vPCSubnet, err := client.VpcSubnetsPost(organizationName, projectName, vpcName, body)",
+          "example": "// VpcSubnetsPost\n//\n// Create a subnet in a VPC.\n//\n// Parameters:\n//\t- `vpcName`\n//\t- `organizationName`\n//\t- `projectName`\n\nvPCSubnet, err := client.VpcSubnetsPost(organizationName, projectName, vpcName, body)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.VpcSubnetsPost"
         },
         "x-rust": {
@@ -5341,7 +5341,7 @@
           "networking"
         ],
         "x-go": {
-          "example": "if err := client.VpcSubnetsDeleteSubnet(organizationName, projectName, subnetName, vpcName); err != nil {\n\tpanic(err)\n}",
+          "example": "// VpcSubnetsDeleteSubnet\n//\n// Delete a subnet from a VPC.\n//\n// Parameters:\n//\t- `subnetName`\n//\t- `vpcName`\n//\t- `organizationName`\n//\t- `projectName`\n\nif err := client.VpcSubnetsDeleteSubnet(organizationName, projectName, subnetName, vpcName); err != nil {\n\tpanic(err)\n}",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.VpcSubnetsDeleteSubnet"
         },
         "x-rust": {
@@ -5406,7 +5406,7 @@
           "networking"
         ],
         "x-go": {
-          "example": "vPCSubnet, err := client.VpcSubnetsGetSubnet(organizationName, projectName, subnetName, vpcName)",
+          "example": "// VpcSubnetsGetSubnet\n//\n// Get subnet in a VPC.\n//\n// Parameters:\n//\t- `subnetName`\n//\t- `vpcName`\n//\t- `organizationName`\n//\t- `projectName`\n\nvPCSubnet, err := client.VpcSubnetsGetSubnet(organizationName, projectName, subnetName, vpcName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.VpcSubnetsGetSubnet"
         },
         "x-rust": {
@@ -5474,7 +5474,7 @@
           "networking"
         ],
         "x-go": {
-          "example": "if err := client.VpcSubnetsPutSubnet(organizationName, projectName, subnetName, vpcName, body); err != nil {\n\tpanic(err)\n}",
+          "example": "// VpcSubnetsPutSubnet\n//\n// Update a VPC Subnet.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `subnetName`\n//\t- `vpcName`\n\nif err := client.VpcSubnetsPutSubnet(organizationName, projectName, subnetName, vpcName, body); err != nil {\n\tpanic(err)\n}",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.VpcSubnetsPutSubnet"
         },
         "x-rust": {
@@ -5572,8 +5572,8 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "networkInterfaceResultsPage, err := client.SubnetsIpsGet(limit, pageToken, sortBy, organizationName, projectName, subnetName, vpcName)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.SubnetsIpsGet"
+          "example": "// SubnetsIpsGet\n//\n// List IP addresses on a VPC subnet.\n//\n// To iterate over all pages, use the `SubnetsIpsGetAllPages` method, instead.\n//\n// Parameters:\n//\t- `subnetName`\n//\t- `vpcName`\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\n//\t- `organizationName`\n//\t- `projectName`\n\nnetworkInterfaceResultsPage, err := client.SubnetsIpsGet(limit, pageToken, sortBy, organizationName, projectName, subnetName, vpcName)\n\n// - OR -\n\n// SubnetsIpsGetAllPages\n//\n// List IP addresses on a VPC subnet.\n//\n// This method is a wrapper around the `SubnetsIpsGet` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `subnetName`\n//\t- `vpcName`\n\nNetworkInterface, err := client.SubnetsIpsGetAllPages( sortBy, organizationName, projectName, subnetName, vpcName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.SubnetsIpsGetAllPages"
         },
         "x-rust": {
           "example": "let vec_crate_types_network_interface = client.networking().subnets_ips_get(limit, page_token, sort_by, organization_name, project_name, subnet_name, vpc_name).await?;",
@@ -5626,8 +5626,8 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "roleResultsPage, err := client.RolesGet(limit, pageToken)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.RolesGet"
+          "example": "// RolesGet\n//\n// List the built-in roles\n//\n// To iterate over all pages, use the `RolesGetAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n\nroleResultsPage, err := client.RolesGet(limit, pageToken)\n\n// - OR -\n\n// RolesGetAllPages\n//\n// List the built-in roles\n//\n// This method is a wrapper around the `RolesGet` method.\n// This method returns all the pages at once.\n\nRole, err := client.RolesGetAllPages(, )",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.RolesGetAllPages"
         },
         "x-rust": {
           "example": "let vec_crate_types_role = client.roles().get_page(limit, page_token).await?;",
@@ -5667,7 +5667,7 @@
           "roles"
         ],
         "x-go": {
-          "example": "role, err := client.RolesGetRole(roleName)",
+          "example": "// RolesGetRole\n//\n// Fetch a specific built-in role\n//\n// Parameters:\n//\t- `roleName`\n\nrole, err := client.RolesGetRole(roleName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.RolesGetRole"
         },
         "x-rust": {
@@ -5729,8 +5729,8 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "sagaResultsPage, err := client.SagasGet(limit, pageToken, sortBy)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.SagasGet"
+          "example": "// SagasGet\n//\n// List all sagas (for debugging)\n//\n// To iterate over all pages, use the `SagasGetAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\n\nsagaResultsPage, err := client.SagasGet(limit, pageToken, sortBy)\n\n// - OR -\n\n// SagasGetAllPages\n//\n// List all sagas (for debugging)\n//\n// This method is a wrapper around the `SagasGet` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\n\nSaga, err := client.SagasGetAllPages( sortBy)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.SagasGetAllPages"
         },
         "x-rust": {
           "example": "let vec_crate_types_saga = client.sagas().get_page(limit, page_token, sort_by).await?;",
@@ -5770,7 +5770,7 @@
           "sagas"
         ],
         "x-go": {
-          "example": "saga, err := client.SagasGetSaga(sagaId)",
+          "example": "// SagasGetSaga\n//\n// Fetch information about a single saga (for debugging)\n//\n// Parameters:\n//\t- `sagaId`\n\nsaga, err := client.SagasGetSaga(sagaId)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.SagasGetSaga"
         },
         "x-rust": {
@@ -5796,7 +5796,7 @@
           }
         },
         "x-go": {
-          "example": "sessionUser, err := client.SessionMe()",
+          "example": "// SessionMe\n//\n// Fetch the user associated with the current session\n\nsessionUser, err := client.SessionMe()",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.SessionMe"
         },
         "x-rust": {
@@ -5850,8 +5850,8 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "timeseriesSchemaResultsPage, err := client.TimeseriesSchemaGet(limit, pageToken)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.TimeseriesSchemaGet"
+          "example": "// TimeseriesSchemaGet\n//\n// List all timeseries schema\n//\n// To iterate over all pages, use the `TimeseriesSchemaGetAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n\ntimeseriesSchemaResultsPage, err := client.TimeseriesSchemaGet(limit, pageToken)\n\n// - OR -\n\n// TimeseriesSchemaGetAllPages\n//\n// List all timeseries schema\n//\n// This method is a wrapper around the `TimeseriesSchemaGet` method.\n// This method returns all the pages at once.\n\nTimeseriesSchema, err := client.TimeseriesSchemaGetAllPages(, )",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.TimeseriesSchemaGetAllPages"
         },
         "x-rust": {
           "example": "let vec_crate_types_timeseries_schema = client.metrics().timeseries_schema_get(limit, page_token).await?;",
@@ -5912,8 +5912,8 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "userResultsPage, err := client.UsersGet(limit, pageToken, sortBy)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.UsersGet"
+          "example": "// UsersGet\n//\n// List the built-in system users\n//\n// To iterate over all pages, use the `UsersGetAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\n\nuserResultsPage, err := client.UsersGet(limit, pageToken, sortBy)\n\n// - OR -\n\n// UsersGetAllPages\n//\n// List the built-in system users\n//\n// This method is a wrapper around the `UsersGet` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\n\nUser, err := client.UsersGetAllPages( sortBy)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.UsersGetAllPages"
         },
         "x-rust": {
           "example": "let vec_crate_types_user = client.users().get_page(limit, page_token, sort_by).await?;",
@@ -5952,7 +5952,7 @@
           "users"
         ],
         "x-go": {
-          "example": "user, err := client.UsersGetUser(userName)",
+          "example": "// UsersGetUser\n//\n// Fetch a specific built-in system user\n//\n// Parameters:\n//\t- `userName`\n\nuser, err := client.UsersGetUser(userName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.UsersGetUser"
         },
         "x-rust": {
