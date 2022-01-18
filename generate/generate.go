@@ -469,8 +469,8 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 	ogDocParamsString := docParamsString
 	if len(pagedRespType) > 0 {
 		fnName += "AllPages"
-		docParamsString = strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(docParamsString, "pageToken", ""), "limit", ""), ", ,", "")
-		paramsString = strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(paramsString, "pageToken string", ""), "limit int", ""), ", ,", "")
+		docParamsString = strings.TrimSpace(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(docParamsString, "pageToken", ""), "limit", ""), ", ,", ""))
+		paramsString = strings.TrimSpace(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(paramsString, "pageToken string", ""), "limit int", ""), ", ,", ""))
 		delete(params, "page_token")
 		delete(params, "limit")
 	}

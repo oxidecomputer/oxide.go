@@ -2367,7 +2367,7 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "// RacksList\n//\n// List racks in the system.\n//\n// To iterate over all pages, use the `RacksListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\n\nHardware, err := client.rackResultsPage.RacksList(limit, pageToken, sortBy)\n\n// - OR -\n\n// RacksListAllPages\n//\n// List racks in the system.\n//\n// This method is a wrapper around the `RacksList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\n\nHardware, err := client.Rack.RacksListAllPages( sortBy)",
+          "example": "// RacksList\n//\n// List racks in the system.\n//\n// To iterate over all pages, use the `RacksListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\n\nHardware, err := client.rackResultsPage.RacksList(limit, pageToken, sortBy)\n\n// - OR -\n\n// RacksListAllPages\n//\n// List racks in the system.\n//\n// This method is a wrapper around the `RacksList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\n\nHardware, err := client.Rack.RacksListAllPages(sortBy)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#HardwareService.RacksList"
         },
         "x-rust": {
@@ -2471,7 +2471,7 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "// SledsList\n//\n// List sleds in the system.\n//\n// To iterate over all pages, use the `SledsListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\n\nHardware, err := client.sledResultsPage.SledsList(limit, pageToken, sortBy)\n\n// - OR -\n\n// SledsListAllPages\n//\n// List sleds in the system.\n//\n// This method is a wrapper around the `SledsList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\n\nHardware, err := client.Sled.SledsListAllPages( sortBy)",
+          "example": "// SledsList\n//\n// List sleds in the system.\n//\n// To iterate over all pages, use the `SledsListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\n\nHardware, err := client.sledResultsPage.SledsList(limit, pageToken, sortBy)\n\n// - OR -\n\n// SledsListAllPages\n//\n// List sleds in the system.\n//\n// This method is a wrapper around the `SledsList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\n\nHardware, err := client.Sled.SledsListAllPages(sortBy)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#HardwareService.SledsList"
         },
         "x-rust": {
@@ -2621,7 +2621,7 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "// List\n//\n// List all organizations.\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\n\nOrganizations, err := client.organizationResultsPage.List(limit, pageToken, sortBy)\n\n// - OR -\n\n// ListAllPages\n//\n// List all organizations.\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\n\nOrganizations, err := client.Organization.ListAllPages( sortBy)",
+          "example": "// List\n//\n// List all organizations.\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\n\nOrganizations, err := client.organizationResultsPage.List(limit, pageToken, sortBy)\n\n// - OR -\n\n// ListAllPages\n//\n// List all organizations.\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\n\nOrganizations, err := client.Organization.ListAllPages(sortBy)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#OrganizationsService.List"
         },
         "x-rust": {
@@ -2848,7 +2848,7 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "// List\n//\n// List all projects.\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `sortBy`\n\nProjects, err := client.projectResultsPage.List(limit, pageToken, sortBy, organizationName)\n\n// - OR -\n\n// ListAllPages\n//\n// List all projects.\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `sortBy`\n\nProjects, err := client.Project.ListAllPages( sortBy, organizationName)",
+          "example": "// List\n//\n// List all projects.\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `sortBy`\n\nProjects, err := client.projectResultsPage.List(limit, pageToken, sortBy, organizationName)\n\n// - OR -\n\n// ListAllPages\n//\n// List all projects.\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `sortBy`\n\nProjects, err := client.Project.ListAllPages(sortBy, organizationName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ProjectsService.List"
         },
         "x-rust": {
@@ -3122,7 +3122,7 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "// DisksList\n//\n// List disks in a project.\n//\n// To iterate over all pages, use the `DisksListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n\nProjects, err := client.diskResultsPage.DisksList(limit, pageToken, sortBy, organizationName, projectName)\n\n// - OR -\n\n// DisksListAllPages\n//\n// List disks in a project.\n//\n// This method is a wrapper around the `DisksList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n\nProjects, err := client.Disk.DisksListAllPages( sortBy, organizationName, projectName)",
+          "example": "// DisksList\n//\n// List disks in a project.\n//\n// To iterate over all pages, use the `DisksListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n\nProjects, err := client.diskResultsPage.DisksList(limit, pageToken, sortBy, organizationName, projectName)\n\n// - OR -\n\n// DisksListAllPages\n//\n// List disks in a project.\n//\n// This method is a wrapper around the `DisksList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n\nProjects, err := client.Disk.DisksListAllPages(sortBy, organizationName, projectName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ProjectsService.DisksList"
         },
         "x-rust": {
@@ -3366,7 +3366,7 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "// List\n//\n// List instances in a project.\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n\nInstances, err := client.instanceResultsPage.List(limit, pageToken, sortBy, organizationName, projectName)\n\n// - OR -\n\n// ListAllPages\n//\n// List instances in a project.\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n\nInstances, err := client.Instance.ListAllPages( sortBy, organizationName, projectName)",
+          "example": "// List\n//\n// List instances in a project.\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n\nInstances, err := client.instanceResultsPage.List(limit, pageToken, sortBy, organizationName, projectName)\n\n// - OR -\n\n// ListAllPages\n//\n// List instances in a project.\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n\nInstances, err := client.Instance.ListAllPages(sortBy, organizationName, projectName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#InstancesService.List"
         },
         "x-rust": {
@@ -3619,7 +3619,7 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "// DisksList\n//\n// List disks attached to this instance.\n//\n// To iterate over all pages, use the `DisksListAllPages` method, instead.\n//\n// Parameters:\n//\t- `instanceName`\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n\nInstances, err := client.diskResultsPage.DisksList(limit, pageToken, sortBy, instanceName, organizationName, projectName)\n\n// - OR -\n\n// DisksListAllPages\n//\n// List disks attached to this instance.\n//\n// This method is a wrapper around the `DisksList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `instanceName`\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n\nInstances, err := client.Disk.DisksListAllPages( sortBy, instanceName, organizationName, projectName)",
+          "example": "// DisksList\n//\n// List disks attached to this instance.\n//\n// To iterate over all pages, use the `DisksListAllPages` method, instead.\n//\n// Parameters:\n//\t- `instanceName`\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n\nInstances, err := client.diskResultsPage.DisksList(limit, pageToken, sortBy, instanceName, organizationName, projectName)\n\n// - OR -\n\n// DisksListAllPages\n//\n// List disks attached to this instance.\n//\n// This method is a wrapper around the `DisksList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `instanceName`\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n\nInstances, err := client.Disk.DisksListAllPages(sortBy, instanceName, organizationName, projectName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#InstancesService.DisksList"
         },
         "x-rust": {
@@ -4007,7 +4007,7 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "// VPCsList\n//\n// List VPCs in a project.\n//\n// To iterate over all pages, use the `VPCsListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n\nNetworking, err := client.vPCResultsPage.VPCsList(limit, pageToken, sortBy, organizationName, projectName)\n\n// - OR -\n\n// VPCsListAllPages\n//\n// List VPCs in a project.\n//\n// This method is a wrapper around the `VPCsList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n\nNetworking, err := client.VPC.VPCsListAllPages( sortBy, organizationName, projectName)",
+          "example": "// VPCsList\n//\n// List VPCs in a project.\n//\n// To iterate over all pages, use the `VPCsListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n\nNetworking, err := client.vPCResultsPage.VPCsList(limit, pageToken, sortBy, organizationName, projectName)\n\n// - OR -\n\n// VPCsListAllPages\n//\n// List VPCs in a project.\n//\n// This method is a wrapper around the `VPCsList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n\nNetworking, err := client.VPC.VPCsListAllPages(sortBy, organizationName, projectName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#NetworkingService.VPCsList"
         },
         "x-rust": {
@@ -4319,7 +4319,7 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "// VPCFirewallRulesList\n//\n// List firewall rules for a VPC.\n//\n// To iterate over all pages, use the `VPCFirewallRulesListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nNetworking, err := client.vPCFirewallRuleResultsPage.VPCFirewallRulesList(limit, pageToken, sortBy, organizationName, projectName, vpcName)\n\n// - OR -\n\n// VPCFirewallRulesListAllPages\n//\n// List firewall rules for a VPC.\n//\n// This method is a wrapper around the `VPCFirewallRulesList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nNetworking, err := client.VPCFirewallRule.VPCFirewallRulesListAllPages( sortBy, organizationName, projectName, vpcName)",
+          "example": "// VPCFirewallRulesList\n//\n// List firewall rules for a VPC.\n//\n// To iterate over all pages, use the `VPCFirewallRulesListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nNetworking, err := client.vPCFirewallRuleResultsPage.VPCFirewallRulesList(limit, pageToken, sortBy, organizationName, projectName, vpcName)\n\n// - OR -\n\n// VPCFirewallRulesListAllPages\n//\n// List firewall rules for a VPC.\n//\n// This method is a wrapper around the `VPCFirewallRulesList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nNetworking, err := client.VPCFirewallRule.VPCFirewallRulesListAllPages(sortBy, organizationName, projectName, vpcName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#NetworkingService.VPCFirewallRulesList"
         },
         "x-rust": {
@@ -4474,7 +4474,7 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "// VPCRoutersList\n//\n// List VPC Custom and System Routers\n//\n// To iterate over all pages, use the `VPCRoutersListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nNetworking, err := client.vPCRouterResultsPage.VPCRoutersList(limit, pageToken, sortBy, organizationName, projectName, vpcName)\n\n// - OR -\n\n// VPCRoutersListAllPages\n//\n// List VPC Custom and System Routers\n//\n// This method is a wrapper around the `VPCRoutersList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nNetworking, err := client.VPCRouter.VPCRoutersListAllPages( sortBy, organizationName, projectName, vpcName)",
+          "example": "// VPCRoutersList\n//\n// List VPC Custom and System Routers\n//\n// To iterate over all pages, use the `VPCRoutersListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nNetworking, err := client.vPCRouterResultsPage.VPCRoutersList(limit, pageToken, sortBy, organizationName, projectName, vpcName)\n\n// - OR -\n\n// VPCRoutersListAllPages\n//\n// List VPC Custom and System Routers\n//\n// This method is a wrapper around the `VPCRoutersList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nNetworking, err := client.VPCRouter.VPCRoutersListAllPages(sortBy, organizationName, projectName, vpcName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#NetworkingService.VPCRoutersList"
         },
         "x-rust": {
@@ -4831,7 +4831,7 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "// RoutersRoutesList\n//\n// List a Router's routes\n//\n// To iterate over all pages, use the `RoutersRoutesListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nNetworking, err := client.routerRouteResultsPage.RoutersRoutesList(limit, pageToken, sortBy, organizationName, projectName, routerName, vpcName)\n\n// - OR -\n\n// RoutersRoutesListAllPages\n//\n// List a Router's routes\n//\n// This method is a wrapper around the `RoutersRoutesList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nNetworking, err := client.RouterRoute.RoutersRoutesListAllPages( sortBy, organizationName, projectName, routerName, vpcName)",
+          "example": "// RoutersRoutesList\n//\n// List a Router's routes\n//\n// To iterate over all pages, use the `RoutersRoutesListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nNetworking, err := client.routerRouteResultsPage.RoutersRoutesList(limit, pageToken, sortBy, organizationName, projectName, routerName, vpcName)\n\n// - OR -\n\n// RoutersRoutesListAllPages\n//\n// List a Router's routes\n//\n// This method is a wrapper around the `RoutersRoutesList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nNetworking, err := client.RouterRoute.RoutersRoutesListAllPages(sortBy, organizationName, projectName, routerName, vpcName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#NetworkingService.RoutersRoutesList"
         },
         "x-rust": {
@@ -5215,7 +5215,7 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "// VPCSubnetsList\n//\n// List subnets in a VPC.\n//\n// To iterate over all pages, use the `VPCSubnetsListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nNetworking, err := client.vPCSubnetResultsPage.VPCSubnetsList(limit, pageToken, sortBy, organizationName, projectName, vpcName)\n\n// - OR -\n\n// VPCSubnetsListAllPages\n//\n// List subnets in a VPC.\n//\n// This method is a wrapper around the `VPCSubnetsList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nNetworking, err := client.VPCSubnet.VPCSubnetsListAllPages( sortBy, organizationName, projectName, vpcName)",
+          "example": "// VPCSubnetsList\n//\n// List subnets in a VPC.\n//\n// To iterate over all pages, use the `VPCSubnetsListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nNetworking, err := client.vPCSubnetResultsPage.VPCSubnetsList(limit, pageToken, sortBy, organizationName, projectName, vpcName)\n\n// - OR -\n\n// VPCSubnetsListAllPages\n//\n// List subnets in a VPC.\n//\n// This method is a wrapper around the `VPCSubnetsList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nNetworking, err := client.VPCSubnet.VPCSubnetsListAllPages(sortBy, organizationName, projectName, vpcName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#NetworkingService.VPCSubnetsList"
         },
         "x-rust": {
@@ -5572,7 +5572,7 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "// SubnetsIpsList\n//\n// List IP addresses on a VPC subnet.\n//\n// To iterate over all pages, use the `SubnetsIpsListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `subnetName`\n//\t- `vpcName`\n\nNetworking, err := client.networkInterfaceResultsPage.SubnetsIpsList(limit, pageToken, sortBy, organizationName, projectName, subnetName, vpcName)\n\n// - OR -\n\n// SubnetsIpsListAllPages\n//\n// List IP addresses on a VPC subnet.\n//\n// This method is a wrapper around the `SubnetsIpsList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `subnetName`\n//\t- `vpcName`\n\nNetworking, err := client.NetworkInterface.SubnetsIpsListAllPages( sortBy, organizationName, projectName, subnetName, vpcName)",
+          "example": "// SubnetsIpsList\n//\n// List IP addresses on a VPC subnet.\n//\n// To iterate over all pages, use the `SubnetsIpsListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `subnetName`\n//\t- `vpcName`\n\nNetworking, err := client.networkInterfaceResultsPage.SubnetsIpsList(limit, pageToken, sortBy, organizationName, projectName, subnetName, vpcName)\n\n// - OR -\n\n// SubnetsIpsListAllPages\n//\n// List IP addresses on a VPC subnet.\n//\n// This method is a wrapper around the `SubnetsIpsList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `subnetName`\n//\t- `vpcName`\n\nNetworking, err := client.NetworkInterface.SubnetsIpsListAllPages(sortBy, organizationName, projectName, subnetName, vpcName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#NetworkingService.SubnetsIpsList"
         },
         "x-rust": {
@@ -5626,7 +5626,7 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "// List\n//\n// List the built-in roles\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n\nRoles, err := client.roleResultsPage.List(limit, pageToken)\n\n// - OR -\n\n// ListAllPages\n//\n// List the built-in roles\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n\nRoles, err := client.Role.ListAllPages(, )",
+          "example": "// List\n//\n// List the built-in roles\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n\nRoles, err := client.roleResultsPage.List(limit, pageToken)\n\n// - OR -\n\n// ListAllPages\n//\n// List the built-in roles\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n\nRoles, err := client.Role.ListAllPages(,)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RolesService.List"
         },
         "x-rust": {
@@ -5729,7 +5729,7 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "// List\n//\n// List all sagas (for debugging)\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\n\nSagas, err := client.sagaResultsPage.List(limit, pageToken, sortBy)\n\n// - OR -\n\n// ListAllPages\n//\n// List all sagas (for debugging)\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\n\nSagas, err := client.Saga.ListAllPages( sortBy)",
+          "example": "// List\n//\n// List all sagas (for debugging)\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\n\nSagas, err := client.sagaResultsPage.List(limit, pageToken, sortBy)\n\n// - OR -\n\n// ListAllPages\n//\n// List all sagas (for debugging)\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\n\nSagas, err := client.Saga.ListAllPages(sortBy)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SagasService.List"
         },
         "x-rust": {
@@ -5850,7 +5850,7 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "// TimeseriesSchemaList\n//\n// List all timeseries schema\n//\n// To iterate over all pages, use the `TimeseriesSchemaListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n\nMetrics, err := client.timeseriesSchemaResultsPage.TimeseriesSchemaList(limit, pageToken)\n\n// - OR -\n\n// TimeseriesSchemaListAllPages\n//\n// List all timeseries schema\n//\n// This method is a wrapper around the `TimeseriesSchemaList` method.\n// This method returns all the pages at once.\n\nMetrics, err := client.TimeseriesSchema.TimeseriesSchemaListAllPages(, )",
+          "example": "// TimeseriesSchemaList\n//\n// List all timeseries schema\n//\n// To iterate over all pages, use the `TimeseriesSchemaListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n\nMetrics, err := client.timeseriesSchemaResultsPage.TimeseriesSchemaList(limit, pageToken)\n\n// - OR -\n\n// TimeseriesSchemaListAllPages\n//\n// List all timeseries schema\n//\n// This method is a wrapper around the `TimeseriesSchemaList` method.\n// This method returns all the pages at once.\n\nMetrics, err := client.TimeseriesSchema.TimeseriesSchemaListAllPages(,)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#MetricsService.TimeseriesSchemaList"
         },
         "x-rust": {
@@ -5912,7 +5912,7 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "// List\n//\n// List the built-in system users\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\n\nUsers, err := client.userResultsPage.List(limit, pageToken, sortBy)\n\n// - OR -\n\n// ListAllPages\n//\n// List the built-in system users\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\n\nUsers, err := client.User.ListAllPages( sortBy)",
+          "example": "// List\n//\n// List the built-in system users\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\n\nUsers, err := client.userResultsPage.List(limit, pageToken, sortBy)\n\n// - OR -\n\n// ListAllPages\n//\n// List the built-in system users\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\n\nUsers, err := client.User.ListAllPages(sortBy)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#UsersService.List"
         },
         "x-rust": {
