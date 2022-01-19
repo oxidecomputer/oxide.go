@@ -276,6 +276,14 @@ func cleanFnName(name string, tag string, path string) string {
 		name = strings.TrimPrefix(name, "s")
 	}
 
+	if name == "RacksGetRack" {
+		name = "GetRack"
+	}
+
+	if name == "SledsGetSled" {
+		name = "GetSled"
+	}
+
 	return name
 }
 
@@ -290,8 +298,8 @@ func printProperty(p string) string {
 		c = "IPAddress"
 	} else if c == "UserId" {
 		c = "UserID"
-	} else if c == "IdSortMode" {
-		c = "IDSortMode"
+	} else if strings.Contains(c, "IdSortMode") {
+		strings.ReplaceAll(c, "IdSortMode", "IDSortMode")
 	} else if strings.HasPrefix(c, "Cpu") {
 		c = strings.Replace(c, "Cpu", "CPU", 1)
 	} else if strings.HasPrefix(c, "Vpc") {
@@ -306,8 +314,35 @@ func printProperty(p string) string {
 		c = strings.TrimSuffix(c, "Id") + "ID"
 	} else if strings.Contains(c, "Cpu") {
 		c = strings.ReplaceAll(c, "Cpu", "CPU")
+	} else if strings.HasPrefix(c, "SubnetsIps") {
+		c = strings.ReplaceAll(c, "SubnetsIps", "SubnetsIPs")
 	}
+
 	return c
+}
+
+func printPropertyLower(p string) string {
+	s := strcase.ToLowerCamel(printProperty(p))
+
+	if strings.HasPrefix(s, "vPC") {
+		s = "vpc" + strings.TrimPrefix(s, "vPC")
+	} else if strings.HasPrefix(s, "cPU") {
+		s = "cpu" + strings.TrimPrefix(s, "cPU")
+	} else if strings.HasPrefix(s, "iPv4") {
+		s = "ipv4" + strings.TrimPrefix(s, "iPv4")
+	} else if strings.HasPrefix(s, "iPv6") {
+		s = "ipv6" + strings.TrimPrefix(s, "iPv6")
+	}
+
+	if s == "iD" {
+		s = "id"
+	} else if s == "iPAddress" {
+		s = "ipAddress"
+	} else if s == "iDSortMode" {
+		s = "idSortMode"
+	}
+
+	return s
 }
 
 // printType converts a schema type to a valid Go type.
@@ -414,7 +449,7 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 			continue
 		}
 
-		paramName := strcase.ToLowerCamel(p.Value.Name)
+		paramName := printPropertyLower(p.Value.Name)
 
 		// Check if we have a page result.
 		if isPageParam(paramName) && method == http.MethodGet {
@@ -642,12 +677,13 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 		for _, name := range keys {
 			p := params[name]
 			t := printType(name, p.Schema)
+			n := printPropertyLower(name)
 			if t == "string" {
-				fmt.Fprintf(f, "	%q: %s,\n", strcase.ToLowerCamel(name), strcase.ToLowerCamel(name))
+				fmt.Fprintf(f, "	%q: %s,\n", name, n)
 			} else if t == "int" {
-				fmt.Fprintf(f, "	%q: strconv.Itoa(%s),\n", strcase.ToLowerCamel(name), strcase.ToLowerCamel(name))
+				fmt.Fprintf(f, "	%q: strconv.Itoa(%s),\n", name, n)
 			} else {
-				fmt.Fprintf(f, "	%q: string(%s),\n", strcase.ToLowerCamel(name), strcase.ToLowerCamel(name))
+				fmt.Fprintf(f, "	%q: string(%s),\n", name, n)
 			}
 		}
 		fmt.Fprintln(f, "}); err != nil {")

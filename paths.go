@@ -21,7 +21,7 @@ import (
 //	- `limit`
 //	- `pageToken`
 //	- `sortBy`
-func (s *HardwareService) RacksList(limit int, pageToken string, sortBy IDSortMode) (*RackResultsPage, error) {
+func (s *HardwareService) RacksList(limit int, pageToken string, sortBy IdSortMode) (*RackResultsPage, error) {
 	// Create the url.
 	path := "/hardware/racks"
 	uri := resolveRelative(s.client.server, path)
@@ -32,9 +32,9 @@ func (s *HardwareService) RacksList(limit int, pageToken string, sortBy IDSortMo
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"limit":     strconv.Itoa(limit),
-		"pageToken": pageToken,
-		"sortBy":    string(sortBy),
+		"limit":      strconv.Itoa(limit),
+		"page_token": pageToken,
+		"sort_by":    string(sortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -69,7 +69,7 @@ func (s *HardwareService) RacksList(limit int, pageToken string, sortBy IDSortMo
 //
 // Parameters:
 //	- `sortBy`
-func (s *HardwareService) RacksListAllPages(sortBy IDSortMode) (*[]Rack, error) {
+func (s *HardwareService) RacksListAllPages(sortBy IdSortMode) (*[]Rack, error) {
 
 	var allPages []Rack
 	pageToken := ""
@@ -87,13 +87,13 @@ func (s *HardwareService) RacksListAllPages(sortBy IDSortMode) (*[]Rack, error) 
 	}
 
 	return &allPages, nil
-} // RacksGetRack
+} // GetRack
 //
 // Fetch information about a particular rack.
 //
 // Parameters:
 //	- `rackId`
-func (s *HardwareService) RacksGetRack(rackId string) (*Rack, error) {
+func (s *HardwareService) GetRack(rackID string) (*Rack, error) {
 	// Create the url.
 	path := "/hardware/racks/{{.rack_id}}"
 	uri := resolveRelative(s.client.server, path)
@@ -104,7 +104,7 @@ func (s *HardwareService) RacksGetRack(rackId string) (*Rack, error) {
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"rackId": rackId,
+		"rack_id": rackID,
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -140,7 +140,7 @@ func (s *HardwareService) RacksGetRack(rackId string) (*Rack, error) {
 //	- `limit`
 //	- `pageToken`
 //	- `sortBy`
-func (s *HardwareService) SledsList(limit int, pageToken string, sortBy IDSortMode) (*SledResultsPage, error) {
+func (s *HardwareService) SledsList(limit int, pageToken string, sortBy IdSortMode) (*SledResultsPage, error) {
 	// Create the url.
 	path := "/hardware/sleds"
 	uri := resolveRelative(s.client.server, path)
@@ -151,9 +151,9 @@ func (s *HardwareService) SledsList(limit int, pageToken string, sortBy IDSortMo
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"limit":     strconv.Itoa(limit),
-		"pageToken": pageToken,
-		"sortBy":    string(sortBy),
+		"limit":      strconv.Itoa(limit),
+		"page_token": pageToken,
+		"sort_by":    string(sortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -188,7 +188,7 @@ func (s *HardwareService) SledsList(limit int, pageToken string, sortBy IDSortMo
 //
 // Parameters:
 //	- `sortBy`
-func (s *HardwareService) SledsListAllPages(sortBy IDSortMode) (*[]Sled, error) {
+func (s *HardwareService) SledsListAllPages(sortBy IdSortMode) (*[]Sled, error) {
 
 	var allPages []Sled
 	pageToken := ""
@@ -206,13 +206,13 @@ func (s *HardwareService) SledsListAllPages(sortBy IDSortMode) (*[]Sled, error) 
 	}
 
 	return &allPages, nil
-} // SledsGetSled
+} // GetSled
 //
 // Fetch information about a sled in the system.
 //
 // Parameters:
 //	- `sledId`
-func (s *HardwareService) SledsGetSled(sledId string) (*Sled, error) {
+func (s *HardwareService) GetSled(sledID string) (*Sled, error) {
 	// Create the url.
 	path := "/hardware/sleds/{{.sled_id}}"
 	uri := resolveRelative(s.client.server, path)
@@ -223,7 +223,7 @@ func (s *HardwareService) SledsGetSled(sledId string) (*Sled, error) {
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"sledId": sledId,
+		"sled_id": sledID,
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -270,9 +270,9 @@ func (s *OrganizationsService) List(limit int, pageToken string, sortBy NameOrId
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"limit":     strconv.Itoa(limit),
-		"pageToken": pageToken,
-		"sortBy":    string(sortBy),
+		"limit":      strconv.Itoa(limit),
+		"page_token": pageToken,
+		"sort_by":    string(sortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -381,7 +381,7 @@ func (s *OrganizationsService) Get(organizationName Name) (*Organization, error)
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"organizationName": string(organizationName),
+		"organization_name": string(organizationName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -430,7 +430,7 @@ func (s *OrganizationsService) Put(organizationName Name, j *OrganizationUpdate)
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"organizationName": string(organizationName),
+		"organization_name": string(organizationName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -473,7 +473,7 @@ func (s *OrganizationsService) Delete(organizationName Name) error {
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"organizationName": string(organizationName),
+		"organization_name": string(organizationName),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -513,10 +513,10 @@ func (s *ProjectsService) List(limit int, pageToken string, sortBy NameOrIdSortM
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"limit":            strconv.Itoa(limit),
-		"organizationName": string(organizationName),
-		"pageToken":        pageToken,
-		"sortBy":           string(sortBy),
+		"limit":             strconv.Itoa(limit),
+		"organization_name": string(organizationName),
+		"page_token":        pageToken,
+		"sort_by":           string(sortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -592,7 +592,7 @@ func (s *ProjectsService) Create(organizationName Name, j *ProjectCreate) (*Proj
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"organizationName": string(organizationName),
+		"organization_name": string(organizationName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -636,8 +636,8 @@ func (s *ProjectsService) Get(organizationName Name, projectName Name) (*Project
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -687,8 +687,8 @@ func (s *OrganizationsService) PutProject(organizationName Name, projectName Nam
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -732,8 +732,8 @@ func (s *ProjectsService) Delete(organizationName Name, projectName Name) error 
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -774,11 +774,11 @@ func (s *ProjectsService) DisksList(limit int, pageToken string, sortBy NameSort
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"limit":            strconv.Itoa(limit),
-		"organizationName": string(organizationName),
-		"pageToken":        pageToken,
-		"projectName":      string(projectName),
-		"sortBy":           string(sortBy),
+		"limit":             strconv.Itoa(limit),
+		"organization_name": string(organizationName),
+		"page_token":        pageToken,
+		"project_name":      string(projectName),
+		"sort_by":           string(sortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -857,8 +857,8 @@ func (s *ProjectsService) DisksCreate(organizationName Name, projectName Name, j
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -903,9 +903,9 @@ func (s *ProjectsService) DisksGetDisk(diskName Name, organizationName Name, pro
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"diskName":         string(diskName),
-		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
+		"disk_name":         string(diskName),
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -950,9 +950,9 @@ func (s *ProjectsService) DisksDeleteDisk(diskName Name, organizationName Name, 
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"diskName":         string(diskName),
-		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
+		"disk_name":         string(diskName),
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -993,11 +993,11 @@ func (s *InstancesService) List(limit int, pageToken string, sortBy NameSortMode
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"limit":            strconv.Itoa(limit),
-		"organizationName": string(organizationName),
-		"pageToken":        pageToken,
-		"projectName":      string(projectName),
-		"sortBy":           string(sortBy),
+		"limit":             strconv.Itoa(limit),
+		"organization_name": string(organizationName),
+		"page_token":        pageToken,
+		"project_name":      string(projectName),
+		"sort_by":           string(sortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1076,8 +1076,8 @@ func (s *InstancesService) Create(organizationName Name, projectName Name, j *In
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1122,9 +1122,9 @@ func (s *InstancesService) Get(instanceName Name, organizationName Name, project
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"instanceName":     string(instanceName),
-		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
+		"instance_name":     string(instanceName),
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1169,9 +1169,9 @@ func (s *InstancesService) Delete(instanceName Name, organizationName Name, proj
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"instanceName":     string(instanceName),
-		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
+		"instance_name":     string(instanceName),
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1213,12 +1213,12 @@ func (s *InstancesService) DisksList(limit int, pageToken string, sortBy NameSor
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"instanceName":     string(instanceName),
-		"limit":            strconv.Itoa(limit),
-		"organizationName": string(organizationName),
-		"pageToken":        pageToken,
-		"projectName":      string(projectName),
-		"sortBy":           string(sortBy),
+		"instance_name":     string(instanceName),
+		"limit":             strconv.Itoa(limit),
+		"organization_name": string(organizationName),
+		"page_token":        pageToken,
+		"project_name":      string(projectName),
+		"sort_by":           string(sortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1296,9 +1296,9 @@ func (s *InstancesService) DisksAttach(instanceName Name, organizationName Name,
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"instanceName":     string(instanceName),
-		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
+		"instance_name":     string(instanceName),
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1346,9 +1346,9 @@ func (s *InstancesService) DisksDetach(instanceName Name, organizationName Name,
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"instanceName":     string(instanceName),
-		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
+		"instance_name":     string(instanceName),
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1393,9 +1393,9 @@ func (s *InstancesService) Reboot(instanceName Name, organizationName Name, proj
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"instanceName":     string(instanceName),
-		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
+		"instance_name":     string(instanceName),
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1440,9 +1440,9 @@ func (s *InstancesService) Start(instanceName Name, organizationName Name, proje
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"instanceName":     string(instanceName),
-		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
+		"instance_name":     string(instanceName),
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1487,9 +1487,9 @@ func (s *InstancesService) Stop(instanceName Name, organizationName Name, projec
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"instanceName":     string(instanceName),
-		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
+		"instance_name":     string(instanceName),
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1538,11 +1538,11 @@ func (s *NetworkingService) VPCsList(limit int, pageToken string, sortBy NameSor
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"limit":            strconv.Itoa(limit),
-		"organizationName": string(organizationName),
-		"pageToken":        pageToken,
-		"projectName":      string(projectName),
-		"sortBy":           string(sortBy),
+		"limit":             strconv.Itoa(limit),
+		"organization_name": string(organizationName),
+		"page_token":        pageToken,
+		"project_name":      string(projectName),
+		"sort_by":           string(sortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1620,8 +1620,8 @@ func (s *NetworkingService) VPCsCreate(organizationName Name, projectName Name, 
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1666,9 +1666,9 @@ func (s *NetworkingService) VPCsGetVPC(organizationName Name, projectName Name, 
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
-		"vpcName":          string(vpcName),
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
+		"vpc_name":          string(vpcName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1718,9 +1718,9 @@ func (s *NetworkingService) VPCsPutVPC(organizationName Name, projectName Name, 
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
-		"vpcName":          string(vpcName),
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
+		"vpc_name":          string(vpcName),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1757,9 +1757,9 @@ func (s *NetworkingService) VPCsDeleteVPC(organizationName Name, projectName Nam
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
-		"vpcName":          string(vpcName),
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
+		"vpc_name":          string(vpcName),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1801,12 +1801,12 @@ func (s *NetworkingService) VPCFirewallRulesList(limit int, pageToken string, so
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"limit":            strconv.Itoa(limit),
-		"organizationName": string(organizationName),
-		"pageToken":        pageToken,
-		"projectName":      string(projectName),
-		"sortBy":           string(sortBy),
-		"vpcName":          string(vpcName),
+		"limit":             strconv.Itoa(limit),
+		"organization_name": string(organizationName),
+		"page_token":        pageToken,
+		"project_name":      string(projectName),
+		"sort_by":           string(sortBy),
+		"vpc_name":          string(vpcName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1886,9 +1886,9 @@ func (s *NetworkingService) VPCFirewallRulesPut(organizationName Name, projectNa
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
-		"vpcName":          string(vpcName),
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
+		"vpc_name":          string(vpcName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1938,12 +1938,12 @@ func (s *NetworkingService) VPCRoutersList(limit int, pageToken string, sortBy N
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"limit":            strconv.Itoa(limit),
-		"organizationName": string(organizationName),
-		"pageToken":        pageToken,
-		"projectName":      string(projectName),
-		"sortBy":           string(sortBy),
-		"vpcName":          string(vpcName),
+		"limit":             strconv.Itoa(limit),
+		"organization_name": string(organizationName),
+		"page_token":        pageToken,
+		"project_name":      string(projectName),
+		"sort_by":           string(sortBy),
+		"vpc_name":          string(vpcName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -2023,9 +2023,9 @@ func (s *NetworkingService) VPCRoutersCreate(organizationName Name, projectName 
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
-		"vpcName":          string(vpcName),
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
+		"vpc_name":          string(vpcName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -2071,10 +2071,10 @@ func (s *NetworkingService) VPCRoutersGetRouter(organizationName Name, projectNa
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
-		"routerName":       string(routerName),
-		"vpcName":          string(vpcName),
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
+		"router_name":       string(routerName),
+		"vpc_name":          string(vpcName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -2125,10 +2125,10 @@ func (s *NetworkingService) VPCRoutersPutRouter(organizationName Name, projectNa
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
-		"routerName":       string(routerName),
-		"vpcName":          string(vpcName),
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
+		"router_name":       string(routerName),
+		"vpc_name":          string(vpcName),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -2166,10 +2166,10 @@ func (s *NetworkingService) VPCRoutersDeleteRouter(organizationName Name, projec
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
-		"routerName":       string(routerName),
-		"vpcName":          string(vpcName),
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
+		"router_name":       string(routerName),
+		"vpc_name":          string(vpcName),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -2212,13 +2212,13 @@ func (s *NetworkingService) RoutersRoutesList(limit int, pageToken string, sortB
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"limit":            strconv.Itoa(limit),
-		"organizationName": string(organizationName),
-		"pageToken":        pageToken,
-		"projectName":      string(projectName),
-		"routerName":       string(routerName),
-		"sortBy":           string(sortBy),
-		"vpcName":          string(vpcName),
+		"limit":             strconv.Itoa(limit),
+		"organization_name": string(organizationName),
+		"page_token":        pageToken,
+		"project_name":      string(projectName),
+		"router_name":       string(routerName),
+		"sort_by":           string(sortBy),
+		"vpc_name":          string(vpcName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -2300,10 +2300,10 @@ func (s *NetworkingService) RoutersRoutesCreate(organizationName Name, projectNa
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
-		"routerName":       string(routerName),
-		"vpcName":          string(vpcName),
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
+		"router_name":       string(routerName),
+		"vpc_name":          string(vpcName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -2350,11 +2350,11 @@ func (s *NetworkingService) RoutersRoutesGetRoute(organizationName Name, project
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
-		"routeName":        string(routeName),
-		"routerName":       string(routerName),
-		"vpcName":          string(vpcName),
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
+		"route_name":        string(routeName),
+		"router_name":       string(routerName),
+		"vpc_name":          string(vpcName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -2406,11 +2406,11 @@ func (s *NetworkingService) RoutersRoutesPutRoute(organizationName Name, project
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
-		"routeName":        string(routeName),
-		"routerName":       string(routerName),
-		"vpcName":          string(vpcName),
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
+		"route_name":        string(routeName),
+		"router_name":       string(routerName),
+		"vpc_name":          string(vpcName),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -2449,11 +2449,11 @@ func (s *NetworkingService) RoutersRoutesDeleteRoute(organizationName Name, proj
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
-		"routeName":        string(routeName),
-		"routerName":       string(routerName),
-		"vpcName":          string(vpcName),
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
+		"route_name":        string(routeName),
+		"router_name":       string(routerName),
+		"vpc_name":          string(vpcName),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -2495,12 +2495,12 @@ func (s *NetworkingService) VPCSubnetsList(limit int, pageToken string, sortBy N
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"limit":            strconv.Itoa(limit),
-		"organizationName": string(organizationName),
-		"pageToken":        pageToken,
-		"projectName":      string(projectName),
-		"sortBy":           string(sortBy),
-		"vpcName":          string(vpcName),
+		"limit":             strconv.Itoa(limit),
+		"organization_name": string(organizationName),
+		"page_token":        pageToken,
+		"project_name":      string(projectName),
+		"sort_by":           string(sortBy),
+		"vpc_name":          string(vpcName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -2580,9 +2580,9 @@ func (s *NetworkingService) VPCSubnetsCreate(organizationName Name, projectName 
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
-		"vpcName":          string(vpcName),
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
+		"vpc_name":          string(vpcName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -2628,10 +2628,10 @@ func (s *NetworkingService) VPCSubnetsGetSubnet(organizationName Name, projectNa
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
-		"subnetName":       string(subnetName),
-		"vpcName":          string(vpcName),
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
+		"subnet_name":       string(subnetName),
+		"vpc_name":          string(vpcName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -2682,10 +2682,10 @@ func (s *NetworkingService) VPCSubnetsPutSubnet(organizationName Name, projectNa
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
-		"subnetName":       string(subnetName),
-		"vpcName":          string(vpcName),
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
+		"subnet_name":       string(subnetName),
+		"vpc_name":          string(vpcName),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -2723,10 +2723,10 @@ func (s *NetworkingService) VPCSubnetsDeleteSubnet(organizationName Name, projec
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"organizationName": string(organizationName),
-		"projectName":      string(projectName),
-		"subnetName":       string(subnetName),
-		"vpcName":          string(vpcName),
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
+		"subnet_name":       string(subnetName),
+		"vpc_name":          string(vpcName),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -2744,11 +2744,11 @@ func (s *NetworkingService) VPCSubnetsDeleteSubnet(organizationName Name, projec
 	return nil
 }
 
-// SubnetsIpsList
+// SubnetsIPsList
 //
 // List IP addresses on a VPC subnet.
 //
-// To iterate over all pages, use the `SubnetsIpsListAllPages` method, instead.
+// To iterate over all pages, use the `SubnetsIPsListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`
@@ -2758,7 +2758,7 @@ func (s *NetworkingService) VPCSubnetsDeleteSubnet(organizationName Name, projec
 //	- `sortBy`
 //	- `subnetName`
 //	- `vpcName`
-func (s *NetworkingService) SubnetsIpsList(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, subnetName Name, vpcName Name) (*NetworkInterfaceResultsPage, error) {
+func (s *NetworkingService) SubnetsIPsList(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, subnetName Name, vpcName Name) (*NetworkInterfaceResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets/{{.subnet_name}}/ips"
 	uri := resolveRelative(s.client.server, path)
@@ -2769,13 +2769,13 @@ func (s *NetworkingService) SubnetsIpsList(limit int, pageToken string, sortBy N
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"limit":            strconv.Itoa(limit),
-		"organizationName": string(organizationName),
-		"pageToken":        pageToken,
-		"projectName":      string(projectName),
-		"sortBy":           string(sortBy),
-		"subnetName":       string(subnetName),
-		"vpcName":          string(vpcName),
+		"limit":             strconv.Itoa(limit),
+		"organization_name": string(organizationName),
+		"page_token":        pageToken,
+		"project_name":      string(projectName),
+		"sort_by":           string(sortBy),
+		"subnet_name":       string(subnetName),
+		"vpc_name":          string(vpcName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -2801,11 +2801,11 @@ func (s *NetworkingService) SubnetsIpsList(limit int, pageToken string, sortBy N
 	return &body, nil
 }
 
-// SubnetsIpsListAllPages
+// SubnetsIPsListAllPages
 //
 // List IP addresses on a VPC subnet.
 //
-// This method is a wrapper around the `SubnetsIpsList` method.
+// This method is a wrapper around the `SubnetsIPsList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
@@ -2814,13 +2814,13 @@ func (s *NetworkingService) SubnetsIpsList(limit int, pageToken string, sortBy N
 //	- `sortBy`
 //	- `subnetName`
 //	- `vpcName`
-func (s *NetworkingService) SubnetsIpsListAllPages(sortBy NameSortMode, organizationName Name, projectName Name, subnetName Name, vpcName Name) (*[]NetworkInterface, error) {
+func (s *NetworkingService) SubnetsIPsListAllPages(sortBy NameSortMode, organizationName Name, projectName Name, subnetName Name, vpcName Name) (*[]NetworkInterface, error) {
 
 	var allPages []NetworkInterface
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.SubnetsIpsList(limit, pageToken, sortBy, organizationName, projectName, subnetName, vpcName)
+		page, err := s.SubnetsIPsList(limit, pageToken, sortBy, organizationName, projectName, subnetName, vpcName)
 		if err != nil {
 			return nil, err
 		}
@@ -2852,8 +2852,8 @@ func (s *RolesService) List(limit int, pageToken string) (*RoleResultsPage, erro
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"limit":     strconv.Itoa(limit),
-		"pageToken": pageToken,
+		"limit":      strconv.Itoa(limit),
+		"page_token": pageToken,
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -2920,7 +2920,7 @@ func (s *RolesService) Get(roleName string) (*Role, error) {
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"roleName": roleName,
+		"role_name": roleName,
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -2956,7 +2956,7 @@ func (s *RolesService) Get(roleName string) (*Role, error) {
 //	- `limit`
 //	- `pageToken`
 //	- `sortBy`
-func (s *SagasService) List(limit int, pageToken string, sortBy IDSortMode) (*SagaResultsPage, error) {
+func (s *SagasService) List(limit int, pageToken string, sortBy IdSortMode) (*SagaResultsPage, error) {
 	// Create the url.
 	path := "/sagas"
 	uri := resolveRelative(s.client.server, path)
@@ -2967,9 +2967,9 @@ func (s *SagasService) List(limit int, pageToken string, sortBy IDSortMode) (*Sa
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"limit":     strconv.Itoa(limit),
-		"pageToken": pageToken,
-		"sortBy":    string(sortBy),
+		"limit":      strconv.Itoa(limit),
+		"page_token": pageToken,
+		"sort_by":    string(sortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -3004,7 +3004,7 @@ func (s *SagasService) List(limit int, pageToken string, sortBy IDSortMode) (*Sa
 //
 // Parameters:
 //	- `sortBy`
-func (s *SagasService) ListAllPages(sortBy IDSortMode) (*[]Saga, error) {
+func (s *SagasService) ListAllPages(sortBy IdSortMode) (*[]Saga, error) {
 
 	var allPages []Saga
 	pageToken := ""
@@ -3028,7 +3028,7 @@ func (s *SagasService) ListAllPages(sortBy IDSortMode) (*[]Saga, error) {
 //
 // Parameters:
 //	- `sagaId`
-func (s *SagasService) Get(sagaId string) (*Saga, error) {
+func (s *SagasService) Get(sagaID string) (*Saga, error) {
 	// Create the url.
 	path := "/sagas/{{.saga_id}}"
 	uri := resolveRelative(s.client.server, path)
@@ -3039,7 +3039,7 @@ func (s *SagasService) Get(sagaId string) (*Saga, error) {
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"sagaId": sagaId,
+		"saga_id": sagaID,
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -3085,8 +3085,8 @@ func (s *MetricsService) TimeseriesSchemaList(limit int, pageToken string) (*Tim
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"limit":     strconv.Itoa(limit),
-		"pageToken": pageToken,
+		"limit":      strconv.Itoa(limit),
+		"page_token": pageToken,
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -3157,9 +3157,9 @@ func (s *UsersService) List(limit int, pageToken string, sortBy NameSortMode) (*
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"limit":     strconv.Itoa(limit),
-		"pageToken": pageToken,
-		"sortBy":    string(sortBy),
+		"limit":      strconv.Itoa(limit),
+		"page_token": pageToken,
+		"sort_by":    string(sortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -3229,7 +3229,7 @@ func (s *UsersService) Get(userName Name) (*User, error) {
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"userName": string(userName),
+		"user_name": string(userName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}

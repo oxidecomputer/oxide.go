@@ -2409,8 +2409,8 @@
           "hardware"
         ],
         "x-go": {
-          "example": "// RacksGetRack\n//\n// Fetch information about a particular rack.\n//\n// Parameters:\n//\t- `rackId`\n\nrack, err := client.Hardware.RacksGetRack(rackId)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#HardwareService.RacksGetRack"
+          "example": "// GetRack\n//\n// Fetch information about a particular rack.\n//\n// Parameters:\n//\t- `rackId`\n\nrack, err := client.Hardware.GetRack(rackID)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#HardwareService.GetRack"
         },
         "x-rust": {
           "example": "let rack = client.hardware().racks_get_rack(rack_id).await?;",
@@ -2513,8 +2513,8 @@
           "hardware"
         ],
         "x-go": {
-          "example": "// SledsGetSled\n//\n// Fetch information about a sled in the system.\n//\n// Parameters:\n//\t- `sledId`\n\nsled, err := client.Hardware.SledsGetSled(sledId)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#HardwareService.SledsGetSled"
+          "example": "// GetSled\n//\n// Fetch information about a sled in the system.\n//\n// Parameters:\n//\t- `sledId`\n\nsled, err := client.Hardware.GetSled(sledID)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#HardwareService.GetSled"
         },
         "x-rust": {
           "example": "let sled = client.hardware().sleds_get_sled(sled_id).await?;",
@@ -5572,8 +5572,8 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "// SubnetsIpsList\n//\n// List IP addresses on a VPC subnet.\n//\n// To iterate over all pages, use the `SubnetsIpsListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `subnetName`\n//\t- `vpcName`\n\nnetworkInterfaceResultsPage, err := client.Networking.SubnetsIpsList(limit, pageToken, sortBy, organizationName, projectName, subnetName, vpcName)\n\n// - OR -\n\n// SubnetsIpsListAllPages\n//\n// List IP addresses on a VPC subnet.\n//\n// This method is a wrapper around the `SubnetsIpsList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `subnetName`\n//\t- `vpcName`\n\nNetworkInterface, err := client.Networking.SubnetsIpsListAllPages(sortBy, organizationName, projectName, subnetName, vpcName)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#NetworkingService.SubnetsIpsList"
+          "example": "// SubnetsIPsList\n//\n// List IP addresses on a VPC subnet.\n//\n// To iterate over all pages, use the `SubnetsIPsListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `subnetName`\n//\t- `vpcName`\n\nnetworkInterfaceResultsPage, err := client.Networking.SubnetsIPsList(limit, pageToken, sortBy, organizationName, projectName, subnetName, vpcName)\n\n// - OR -\n\n// SubnetsIPsListAllPages\n//\n// List IP addresses on a VPC subnet.\n//\n// This method is a wrapper around the `SubnetsIPsList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `subnetName`\n//\t- `vpcName`\n\nNetworkInterface, err := client.Networking.SubnetsIPsListAllPages(sortBy, organizationName, projectName, subnetName, vpcName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#NetworkingService.SubnetsIPsList"
         },
         "x-rust": {
           "example": "let vec_crate_types_network_interface = client.networking().subnets_ips_get(limit, page_token, sort_by, organization_name, project_name, subnet_name, vpc_name).await?;",
@@ -5770,7 +5770,7 @@
           "sagas"
         ],
         "x-go": {
-          "example": "// Get\n//\n// Fetch information about a single saga (for debugging)\n//\n// Parameters:\n//\t- `sagaId`\n\nsaga, err := client.Sagas.Get(sagaId)",
+          "example": "// Get\n//\n// Fetch information about a single saga (for debugging)\n//\n// Parameters:\n//\t- `sagaId`\n\nsaga, err := client.Sagas.Get(sagaID)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SagasService.Get"
         },
         "x-rust": {

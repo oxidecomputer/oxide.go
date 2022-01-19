@@ -198,14 +198,14 @@ const (
 	FieldTypeBool FieldType = "Bool"
 )
 
-// IDSortMode is supported set of sort modes for scanning by id only.
+// IdSortMode is supported set of sort modes for scanning by id only.
 //
 // Currently, we only support scanning in ascending order.
-type IDSortMode string
+type IdSortMode string
 
 const (
-	// IDSortModeIdAscending represents the IDSortMode `"id-ascending"`.
-	IDSortModeIdAscending IDSortMode = "id-ascending"
+	// IdSortModeIdAscending represents the IdSortMode `"id-ascending"`.
+	IdSortModeIdAscending IdSortMode = "id-ascending"
 )
 
 // IdentityMetadata is identity-related metadata that's included in nearly all public API objects
@@ -1210,9 +1210,9 @@ var FieldTypes = []FieldType{
 	FieldTypeUuid,
 }
 
-// IDSortModes is the collection of all IDSortMode values.
-var IDSortModes = []IDSortMode{
-	IDSortModeIdAscending,
+// IdSortModes is the collection of all IdSortMode values.
+var IdSortModes = []IdSortMode{
+	IdSortModeIdAscending,
 }
 
 // InstanceStates is the collection of all InstanceState values.
