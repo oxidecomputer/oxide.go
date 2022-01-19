@@ -272,6 +272,10 @@ func cleanFnName(name string, tag string, path string) string {
 		name = fmt.Sprintf("%sCreate", strings.TrimSuffix(name, "Post"))
 	}
 
+	if strings.HasPrefix(name, "s") {
+		name = strings.TrimPrefix(name, "s")
+	}
+
 	return name
 }
 

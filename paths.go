@@ -663,7 +663,7 @@ func (s *ProjectsService) Get(organizationName Name, projectName Name) (*Project
 	return &body, nil
 }
 
-// sPutProject
+// PutProject
 //
 // Update a specific project.
 //  * TODO-correctness: Is it valid for PUT to accept application/json that's a subset of what the resource actually represents?  If not, is that a problem? (HTTP may require that this be idempotent.)  If so, can we get around that having this be a slightly different content-type (e.g., "application/json-patch")?  We should see what other APIs do.
@@ -671,7 +671,7 @@ func (s *ProjectsService) Get(organizationName Name, projectName Name) (*Project
 // Parameters:
 //	- `organizationName`
 //	- `projectName`
-func (s *OrganizationsService) sPutProject(organizationName Name, projectName Name, j *ProjectUpdate) (*Project, error) {
+func (s *OrganizationsService) PutProject(organizationName Name, projectName Name, j *ProjectUpdate) (*Project, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}"
 	uri := resolveRelative(s.client.server, path)

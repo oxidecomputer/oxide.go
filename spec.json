@@ -3042,8 +3042,8 @@
           "organizations"
         ],
         "x-go": {
-          "example": "// sPutProject\n//\n// Update a specific project.\n//  * TODO-correctness: Is it valid for PUT to accept application/json that's a subset of what the resource actually represents?  If not, is that a problem? (HTTP may require that this be idempotent.)  If so, can we get around that having this be a slightly different content-type (e.g., \"application/json-patch\")?  We should see what other APIs do.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n\nproject, err := client.Organizations.sPutProject(organizationName, projectName, body)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#OrganizationsService.sPutProject"
+          "example": "// PutProject\n//\n// Update a specific project.\n//  * TODO-correctness: Is it valid for PUT to accept application/json that's a subset of what the resource actually represents?  If not, is that a problem? (HTTP may require that this be idempotent.)  If so, can we get around that having this be a slightly different content-type (e.g., \"application/json-patch\")?  We should see what other APIs do.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n\nproject, err := client.Organizations.PutProject(organizationName, projectName, body)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#OrganizationsService.PutProject"
         },
         "x-rust": {
           "example": "let project = client.organizations().projects_put_project(organization_name, project_name, body).await?;",
