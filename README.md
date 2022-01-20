@@ -3,7 +3,7 @@
 The Golang API client for Oxide.
 
 - [Go docs](https://pkg.go.dev/github.com/oxidecomputer/oxide.go)
-- [Oxide API Docs](https://docs.oxide.computer/?lang=go)
+- [Oxide API Docs](https://docs.oxide.computer/api?lang=go)
 
 ## Generating
 
