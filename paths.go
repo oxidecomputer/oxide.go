@@ -11,17 +11,17 @@ import (
 	"strconv"
 )
 
-// HardwareList
+// List
 //
 // List racks in the system.
 //
-// To iterate over all pages, use the `HardwareListAllPages` method, instead.
+// To iterate over all pages, use the `ListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`
 //	- `pageToken`
 //	- `sortBy`
-func (s *RacksService) HardwareList(limit int, pageToken string, sortBy IdSortMode) (*RackResultsPage, error) {
+func (s *RacksService) List(limit int, pageToken string, sortBy IdSortMode) (*RackResultsPage, error) {
 	// Create the url.
 	path := "/hardware/racks"
 	uri := resolveRelative(s.client.server, path)
@@ -60,22 +60,22 @@ func (s *RacksService) HardwareList(limit int, pageToken string, sortBy IdSortMo
 	return &body, nil
 }
 
-// HardwareListAllPages
+// ListAllPages
 //
 // List racks in the system.
 //
-// This method is a wrapper around the `HardwareList` method.
+// This method is a wrapper around the `List` method.
 // This method returns all the pages at once.
 //
 // Parameters:
 //	- `sortBy`
-func (s *RacksService) HardwareListAllPages(sortBy IdSortMode) (*[]Rack, error) {
+func (s *RacksService) ListAllPages(sortBy IdSortMode) (*[]Rack, error) {
 
 	var allPages []Rack
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.HardwareList(limit, pageToken, sortBy)
+		page, err := s.List(limit, pageToken, sortBy)
 		if err != nil {
 			return nil, err
 		}
@@ -87,13 +87,13 @@ func (s *RacksService) HardwareListAllPages(sortBy IdSortMode) (*[]Rack, error) 
 	}
 
 	return &allPages, nil
-} // HardwareGet
+} // Get
 //
 // Fetch information about a particular rack.
 //
 // Parameters:
 //	- `rackId`
-func (s *RacksService) HardwareGet(rackID string) (*Rack, error) {
+func (s *RacksService) Get(rackID string) (*Rack, error) {
 	// Create the url.
 	path := "/hardware/racks/{{.rack_id}}"
 	uri := resolveRelative(s.client.server, path)
@@ -130,17 +130,17 @@ func (s *RacksService) HardwareGet(rackID string) (*Rack, error) {
 	return &body, nil
 }
 
-// HardwareList
+// List
 //
 // List sleds in the system.
 //
-// To iterate over all pages, use the `HardwareListAllPages` method, instead.
+// To iterate over all pages, use the `ListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`
 //	- `pageToken`
 //	- `sortBy`
-func (s *SledsService) HardwareList(limit int, pageToken string, sortBy IdSortMode) (*SledResultsPage, error) {
+func (s *SledsService) List(limit int, pageToken string, sortBy IdSortMode) (*SledResultsPage, error) {
 	// Create the url.
 	path := "/hardware/sleds"
 	uri := resolveRelative(s.client.server, path)
@@ -179,22 +179,22 @@ func (s *SledsService) HardwareList(limit int, pageToken string, sortBy IdSortMo
 	return &body, nil
 }
 
-// HardwareListAllPages
+// ListAllPages
 //
 // List sleds in the system.
 //
-// This method is a wrapper around the `HardwareList` method.
+// This method is a wrapper around the `List` method.
 // This method returns all the pages at once.
 //
 // Parameters:
 //	- `sortBy`
-func (s *SledsService) HardwareListAllPages(sortBy IdSortMode) (*[]Sled, error) {
+func (s *SledsService) ListAllPages(sortBy IdSortMode) (*[]Sled, error) {
 
 	var allPages []Sled
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.HardwareList(limit, pageToken, sortBy)
+		page, err := s.List(limit, pageToken, sortBy)
 		if err != nil {
 			return nil, err
 		}
@@ -206,13 +206,13 @@ func (s *SledsService) HardwareListAllPages(sortBy IdSortMode) (*[]Sled, error) 
 	}
 
 	return &allPages, nil
-} // HardwareGet
+} // Get
 //
 // Fetch information about a sled in the system.
 //
 // Parameters:
 //	- `sledId`
-func (s *SledsService) HardwareGet(sledID string) (*Sled, error) {
+func (s *SledsService) Get(sledID string) (*Sled, error) {
 	// Create the url.
 	path := "/hardware/sleds/{{.sled_id}}"
 	uri := resolveRelative(s.client.server, path)
@@ -1830,11 +1830,11 @@ func (s *VpcsService) Delete(organizationName Name, projectName Name, vpcName Na
 	return nil
 }
 
-// VPCRulesList
+// RulesList
 //
 // List firewall rules for a VPC.
 //
-// To iterate over all pages, use the `VPCRulesListAllPages` method, instead.
+// To iterate over all pages, use the `RulesListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`
@@ -1843,7 +1843,7 @@ func (s *VpcsService) Delete(organizationName Name, projectName Name, vpcName Na
 //	- `projectName`
 //	- `sortBy`
 //	- `vpcName`
-func (s *FirewallService) VPCRulesList(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*VPCFirewallRuleResultsPage, error) {
+func (s *FirewallService) RulesList(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*FirewallRuleResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/firewall/rules"
 	uri := resolveRelative(s.client.server, path)
@@ -1877,7 +1877,7 @@ func (s *FirewallService) VPCRulesList(limit int, pageToken string, sortBy NameS
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body VPCFirewallRuleResultsPage
+	var body FirewallRuleResultsPage
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -1885,11 +1885,11 @@ func (s *FirewallService) VPCRulesList(limit int, pageToken string, sortBy NameS
 	return &body, nil
 }
 
-// VPCRulesListAllPages
+// RulesListAllPages
 //
 // List firewall rules for a VPC.
 //
-// This method is a wrapper around the `VPCRulesList` method.
+// This method is a wrapper around the `RulesList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
@@ -1897,13 +1897,13 @@ func (s *FirewallService) VPCRulesList(limit int, pageToken string, sortBy NameS
 //	- `projectName`
 //	- `sortBy`
 //	- `vpcName`
-func (s *FirewallService) VPCRulesListAllPages(sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*[]VPCFirewallRule, error) {
+func (s *FirewallService) RulesListAllPages(sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*[]FirewallRule, error) {
 
-	var allPages []VPCFirewallRule
+	var allPages []FirewallRule
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.VPCRulesList(limit, pageToken, sortBy, organizationName, projectName, vpcName)
+		page, err := s.RulesList(limit, pageToken, sortBy, organizationName, projectName, vpcName)
 		if err != nil {
 			return nil, err
 		}
@@ -1915,7 +1915,7 @@ func (s *FirewallService) VPCRulesListAllPages(sortBy NameSortMode, organization
 	}
 
 	return &allPages, nil
-} // VPCRulesPut
+} // RulesPut
 //
 // Replace the firewall rules for a VPC
 //
@@ -1923,7 +1923,7 @@ func (s *FirewallService) VPCRulesListAllPages(sortBy NameSortMode, organization
 //	- `organizationName`
 //	- `projectName`
 //	- `vpcName`
-func (s *FirewallService) VPCRulesPut(organizationName Name, projectName Name, vpcName Name, j *VPCFirewallRuleUpdateParams) (*VPCFirewallRuleUpdateResult, error) {
+func (s *FirewallService) RulesPut(organizationName Name, projectName Name, vpcName Name, j *FirewallRuleUpdateParams) (*FirewallRuleUpdateResult, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/firewall/rules"
 	uri := resolveRelative(s.client.server, path)
@@ -1959,7 +1959,7 @@ func (s *FirewallService) VPCRulesPut(organizationName Name, projectName Name, v
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body VPCFirewallRuleUpdateResult
+	var body FirewallRuleUpdateResult
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -1967,11 +1967,11 @@ func (s *FirewallService) VPCRulesPut(organizationName Name, projectName Name, v
 	return &body, nil
 }
 
-// VPCList
+// List
 //
 // List VPC Custom and System Routers
 //
-// To iterate over all pages, use the `VPCListAllPages` method, instead.
+// To iterate over all pages, use the `ListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`
@@ -1980,7 +1980,7 @@ func (s *FirewallService) VPCRulesPut(organizationName Name, projectName Name, v
 //	- `projectName`
 //	- `sortBy`
 //	- `vpcName`
-func (s *RoutersService) VPCList(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*VPCRouterResultsPage, error) {
+func (s *RoutersService) List(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*RouterResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers"
 	uri := resolveRelative(s.client.server, path)
@@ -2014,7 +2014,7 @@ func (s *RoutersService) VPCList(limit int, pageToken string, sortBy NameSortMod
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body VPCRouterResultsPage
+	var body RouterResultsPage
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -2022,11 +2022,11 @@ func (s *RoutersService) VPCList(limit int, pageToken string, sortBy NameSortMod
 	return &body, nil
 }
 
-// VPCListAllPages
+// ListAllPages
 //
 // List VPC Custom and System Routers
 //
-// This method is a wrapper around the `VPCList` method.
+// This method is a wrapper around the `List` method.
 // This method returns all the pages at once.
 //
 // Parameters:
@@ -2034,13 +2034,13 @@ func (s *RoutersService) VPCList(limit int, pageToken string, sortBy NameSortMod
 //	- `projectName`
 //	- `sortBy`
 //	- `vpcName`
-func (s *RoutersService) VPCListAllPages(sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*[]VPCRouter, error) {
+func (s *RoutersService) ListAllPages(sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*[]Router, error) {
 
-	var allPages []VPCRouter
+	var allPages []Router
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.VPCList(limit, pageToken, sortBy, organizationName, projectName, vpcName)
+		page, err := s.List(limit, pageToken, sortBy, organizationName, projectName, vpcName)
 		if err != nil {
 			return nil, err
 		}
@@ -2052,7 +2052,7 @@ func (s *RoutersService) VPCListAllPages(sortBy NameSortMode, organizationName N
 	}
 
 	return &allPages, nil
-} // VPCCreate
+} // Create
 //
 // Create a VPC Router
 //
@@ -2060,7 +2060,7 @@ func (s *RoutersService) VPCListAllPages(sortBy NameSortMode, organizationName N
 //	- `organizationName`
 //	- `projectName`
 //	- `vpcName`
-func (s *RoutersService) VPCCreate(organizationName Name, projectName Name, vpcName Name, j *VPCRouterCreate) (*VPCRouter, error) {
+func (s *RoutersService) Create(organizationName Name, projectName Name, vpcName Name, j *RouterCreate) (*Router, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers"
 	uri := resolveRelative(s.client.server, path)
@@ -2096,7 +2096,7 @@ func (s *RoutersService) VPCCreate(organizationName Name, projectName Name, vpcN
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body VPCRouter
+	var body Router
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -2104,7 +2104,7 @@ func (s *RoutersService) VPCCreate(organizationName Name, projectName Name, vpcN
 	return &body, nil
 }
 
-// VPCGet
+// Get
 //
 // Get a VPC Router
 //
@@ -2113,7 +2113,7 @@ func (s *RoutersService) VPCCreate(organizationName Name, projectName Name, vpcN
 //	- `projectName`
 //	- `routerName`
 //	- `vpcName`
-func (s *RoutersService) VPCGet(organizationName Name, projectName Name, routerName Name, vpcName Name) (*VPCRouter, error) {
+func (s *RoutersService) Get(organizationName Name, projectName Name, routerName Name, vpcName Name) (*Router, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -2145,7 +2145,7 @@ func (s *RoutersService) VPCGet(organizationName Name, projectName Name, routerN
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body VPCRouter
+	var body Router
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -2153,7 +2153,7 @@ func (s *RoutersService) VPCGet(organizationName Name, projectName Name, routerN
 	return &body, nil
 }
 
-// VPCPut
+// Put
 //
 // Update a VPC Router
 //
@@ -2162,7 +2162,7 @@ func (s *RoutersService) VPCGet(organizationName Name, projectName Name, routerN
 //	- `projectName`
 //	- `routerName`
 //	- `vpcName`
-func (s *RoutersService) VPCPut(organizationName Name, projectName Name, routerName Name, vpcName Name, j *VPCRouterUpdate) error {
+func (s *RoutersService) Put(organizationName Name, projectName Name, routerName Name, vpcName Name, j *RouterUpdate) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -2199,7 +2199,7 @@ func (s *RoutersService) VPCPut(organizationName Name, projectName Name, routerN
 	return nil
 }
 
-// VPCDelete
+// Delete
 //
 // Delete a router from its VPC
 //
@@ -2208,7 +2208,7 @@ func (s *RoutersService) VPCPut(organizationName Name, projectName Name, routerN
 //	- `projectName`
 //	- `routerName`
 //	- `vpcName`
-func (s *RoutersService) VPCDelete(organizationName Name, projectName Name, routerName Name, vpcName Name) error {
+func (s *RoutersService) Delete(organizationName Name, projectName Name, routerName Name, vpcName Name) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -2524,11 +2524,11 @@ func (s *RoutesService) rsDelete(organizationName Name, projectName Name, routeN
 	return nil
 }
 
-// VPCList
+// List
 //
 // List subnets in a VPC.
 //
-// To iterate over all pages, use the `VPCListAllPages` method, instead.
+// To iterate over all pages, use the `ListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`
@@ -2537,7 +2537,7 @@ func (s *RoutesService) rsDelete(organizationName Name, projectName Name, routeN
 //	- `projectName`
 //	- `sortBy`
 //	- `vpcName`
-func (s *SubnetsService) VPCList(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*VPCSubnetResultsPage, error) {
+func (s *SubnetsService) List(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*SubnetResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets"
 	uri := resolveRelative(s.client.server, path)
@@ -2571,7 +2571,7 @@ func (s *SubnetsService) VPCList(limit int, pageToken string, sortBy NameSortMod
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body VPCSubnetResultsPage
+	var body SubnetResultsPage
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -2579,11 +2579,11 @@ func (s *SubnetsService) VPCList(limit int, pageToken string, sortBy NameSortMod
 	return &body, nil
 }
 
-// VPCListAllPages
+// ListAllPages
 //
 // List subnets in a VPC.
 //
-// This method is a wrapper around the `VPCList` method.
+// This method is a wrapper around the `List` method.
 // This method returns all the pages at once.
 //
 // Parameters:
@@ -2591,13 +2591,13 @@ func (s *SubnetsService) VPCList(limit int, pageToken string, sortBy NameSortMod
 //	- `projectName`
 //	- `sortBy`
 //	- `vpcName`
-func (s *SubnetsService) VPCListAllPages(sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*[]VPCSubnet, error) {
+func (s *SubnetsService) ListAllPages(sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*[]Subnet, error) {
 
-	var allPages []VPCSubnet
+	var allPages []Subnet
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.VPCList(limit, pageToken, sortBy, organizationName, projectName, vpcName)
+		page, err := s.List(limit, pageToken, sortBy, organizationName, projectName, vpcName)
 		if err != nil {
 			return nil, err
 		}
@@ -2609,7 +2609,7 @@ func (s *SubnetsService) VPCListAllPages(sortBy NameSortMode, organizationName N
 	}
 
 	return &allPages, nil
-} // VPCCreate
+} // Create
 //
 // Create a subnet in a VPC.
 //
@@ -2617,7 +2617,7 @@ func (s *SubnetsService) VPCListAllPages(sortBy NameSortMode, organizationName N
 //	- `organizationName`
 //	- `projectName`
 //	- `vpcName`
-func (s *SubnetsService) VPCCreate(organizationName Name, projectName Name, vpcName Name, j *VPCSubnetCreate) (*VPCSubnet, error) {
+func (s *SubnetsService) Create(organizationName Name, projectName Name, vpcName Name, j *SubnetCreate) (*Subnet, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets"
 	uri := resolveRelative(s.client.server, path)
@@ -2653,7 +2653,7 @@ func (s *SubnetsService) VPCCreate(organizationName Name, projectName Name, vpcN
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body VPCSubnet
+	var body Subnet
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -2661,7 +2661,7 @@ func (s *SubnetsService) VPCCreate(organizationName Name, projectName Name, vpcN
 	return &body, nil
 }
 
-// VPCGet
+// Get
 //
 // Get subnet in a VPC.
 //
@@ -2670,7 +2670,7 @@ func (s *SubnetsService) VPCCreate(organizationName Name, projectName Name, vpcN
 //	- `projectName`
 //	- `subnetName`
 //	- `vpcName`
-func (s *SubnetsService) VPCGet(organizationName Name, projectName Name, subnetName Name, vpcName Name) (*VPCSubnet, error) {
+func (s *SubnetsService) Get(organizationName Name, projectName Name, subnetName Name, vpcName Name) (*Subnet, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets/{{.subnet_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -2702,7 +2702,7 @@ func (s *SubnetsService) VPCGet(organizationName Name, projectName Name, subnetN
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body VPCSubnet
+	var body Subnet
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -2710,7 +2710,7 @@ func (s *SubnetsService) VPCGet(organizationName Name, projectName Name, subnetN
 	return &body, nil
 }
 
-// VPCPut
+// Put
 //
 // Update a VPC Subnet.
 //
@@ -2719,7 +2719,7 @@ func (s *SubnetsService) VPCGet(organizationName Name, projectName Name, subnetN
 //	- `projectName`
 //	- `subnetName`
 //	- `vpcName`
-func (s *SubnetsService) VPCPut(organizationName Name, projectName Name, subnetName Name, vpcName Name, j *VPCSubnetUpdate) error {
+func (s *SubnetsService) Put(organizationName Name, projectName Name, subnetName Name, vpcName Name, j *SubnetUpdate) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets/{{.subnet_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -2756,7 +2756,7 @@ func (s *SubnetsService) VPCPut(organizationName Name, projectName Name, subnetN
 	return nil
 }
 
-// VPCDelete
+// Delete
 //
 // Delete a subnet from a VPC.
 //
@@ -2765,7 +2765,7 @@ func (s *SubnetsService) VPCPut(organizationName Name, projectName Name, subnetN
 //	- `projectName`
 //	- `subnetName`
 //	- `vpcName`
-func (s *SubnetsService) VPCDelete(organizationName Name, projectName Name, subnetName Name, vpcName Name) error {
+func (s *SubnetsService) Delete(organizationName Name, projectName Name, subnetName Name, vpcName Name) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets/{{.subnet_name}}"
 	uri := resolveRelative(s.client.server, path)

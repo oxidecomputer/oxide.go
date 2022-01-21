@@ -872,16 +872,16 @@ type VPCCreate struct {
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
-// VPCFirewallRule is a single rule in a VPC firewall
-type VPCFirewallRule struct {
+// FirewallRule is a single rule in a VPC firewall
+type FirewallRule struct {
 	// Action is whether traffic matching the rule should be allowed or dropped
-	Action VPCFirewallRuleAction `json:"action,omitempty" yaml:"action,omitempty"`
+	Action FirewallRuleAction `json:"action,omitempty" yaml:"action,omitempty"`
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Direction is whether this rule is for incoming or outgoing traffic
-	Direction VPCFirewallRuleDirection `json:"direction,omitempty" yaml:"direction,omitempty"`
+	Direction FirewallRuleDirection `json:"direction,omitempty" yaml:"direction,omitempty"`
 	// Filters is reductions on the scope of the rule
-	Filters VPCFirewallRuleFilter `json:"filters,omitempty" yaml:"filters,omitempty"`
+	Filters FirewallRuleFilter `json:"filters,omitempty" yaml:"filters,omitempty"`
 	// ID is unique, immutable, system-controlled identifier for each resource
 	ID string `json:"id,omitempty" yaml:"id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
@@ -889,212 +889,212 @@ type VPCFirewallRule struct {
 	// Priority is the relative priority of this rule
 	Priority int `json:"priority,omitempty" yaml:"priority,omitempty"`
 	// Status is whether this rule is in effect
-	Status VPCFirewallRuleStatus `json:"status,omitempty" yaml:"status,omitempty"`
+	Status FirewallRuleStatus `json:"status,omitempty" yaml:"status,omitempty"`
 	// Targets is list of sets of instances that the rule applies to
-	Targets []VPCFirewallRuleTarget `json:"targets,omitempty" yaml:"targets,omitempty"`
+	Targets []FirewallRuleTarget `json:"targets,omitempty" yaml:"targets,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
 }
 
-// VPCFirewallRuleAction is the type definition for a VPCFirewallRuleAction.
-type VPCFirewallRuleAction string
+// FirewallRuleAction is the type definition for a FirewallRuleAction.
+type FirewallRuleAction string
 
 const (
-	// VPCFirewallRuleActionAllow represents the VPCFirewallRuleAction `"allow"`.
-	VPCFirewallRuleActionAllow VPCFirewallRuleAction = "allow"
-	// VPCFirewallRuleActionDeny represents the VPCFirewallRuleAction `"deny"`.
-	VPCFirewallRuleActionDeny VPCFirewallRuleAction = "deny"
+	// FirewallRuleActionAllow represents the FirewallRuleAction `"allow"`.
+	FirewallRuleActionAllow FirewallRuleAction = "allow"
+	// FirewallRuleActionDeny represents the FirewallRuleAction `"deny"`.
+	FirewallRuleActionDeny FirewallRuleAction = "deny"
 )
 
-// VPCFirewallRuleDirection is the type definition for a VPCFirewallRuleDirection.
-type VPCFirewallRuleDirection string
+// FirewallRuleDirection is the type definition for a FirewallRuleDirection.
+type FirewallRuleDirection string
 
 const (
-	// VPCFirewallRuleDirectionInbound represents the VPCFirewallRuleDirection `"inbound"`.
-	VPCFirewallRuleDirectionInbound VPCFirewallRuleDirection = "inbound"
-	// VPCFirewallRuleDirectionOutbound represents the VPCFirewallRuleDirection `"outbound"`.
-	VPCFirewallRuleDirectionOutbound VPCFirewallRuleDirection = "outbound"
+	// FirewallRuleDirectionInbound represents the FirewallRuleDirection `"inbound"`.
+	FirewallRuleDirectionInbound FirewallRuleDirection = "inbound"
+	// FirewallRuleDirectionOutbound represents the FirewallRuleDirection `"outbound"`.
+	FirewallRuleDirectionOutbound FirewallRuleDirection = "outbound"
 )
 
-// VPCFirewallRuleFilter is filter for a firewall rule. A given packet must match every field that is present for the rule to apply to it. A packet matches a field if any entry in that field matches the packet.
-type VPCFirewallRuleFilter struct {
+// FirewallRuleFilter is filter for a firewall rule. A given packet must match every field that is present for the rule to apply to it. A packet matches a field if any entry in that field matches the packet.
+type FirewallRuleFilter struct {
 	// Hosts is if present, the sources (if incoming) or destinations (if outgoing) this rule applies to.
-	Hosts []VPCFirewallRuleHostFilter `json:"hosts,omitempty" yaml:"hosts,omitempty"`
+	Hosts []FirewallRuleHostFilter `json:"hosts,omitempty" yaml:"hosts,omitempty"`
 	// Ports is if present, the destination ports this rule applies to.
 	Ports []L4PortRange `json:"ports,omitempty" yaml:"ports,omitempty"`
 	// Protocols is if present, the networking protocols this rule applies to.
-	Protocols []VPCFirewallRuleProtocol `json:"protocols,omitempty" yaml:"protocols,omitempty"`
+	Protocols []FirewallRuleProtocol `json:"protocols,omitempty" yaml:"protocols,omitempty"`
 }
 
-// VPCFirewallRuleHostFilterVPC is the type definition for a VPCFirewallRuleHostFilterVPC.
-type VPCFirewallRuleHostFilterVPC struct {
-	Type VPCFirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
+// FirewallRuleHostFilterVPC is the type definition for a FirewallRuleHostFilterVPC.
+type FirewallRuleHostFilterVPC struct {
+	Type FirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-// VPCFirewallRuleHostFilterType is the type definition for a VPCFirewallRuleHostFilterType.
-type VPCFirewallRuleHostFilterType string
+// FirewallRuleHostFilterType is the type definition for a FirewallRuleHostFilterType.
+type FirewallRuleHostFilterType string
 
 const (
-	// VPCFirewallRuleHostFilterTypeVpc represents the VPCFirewallRuleHostFilterType `"vpc"`.
-	VPCFirewallRuleHostFilterTypeVpc VPCFirewallRuleHostFilterType = "vpc"
+	// FirewallRuleHostFilterTypeVpc represents the FirewallRuleHostFilterType `"vpc"`.
+	FirewallRuleHostFilterTypeVpc FirewallRuleHostFilterType = "vpc"
 )
 
-// VPCFirewallRuleHostFilterSubnet is the type definition for a VPCFirewallRuleHostFilterSubnet.
-type VPCFirewallRuleHostFilterSubnet struct {
-	Type VPCFirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
-}
-
-const (
-	// VPCFirewallRuleHostFilterTypeSubnet represents the VPCFirewallRuleHostFilterType `"subnet"`.
-	VPCFirewallRuleHostFilterTypeSubnet VPCFirewallRuleHostFilterType = "subnet"
-)
-
-// VPCFirewallRuleHostFilterInstance is the type definition for a VPCFirewallRuleHostFilterInstance.
-type VPCFirewallRuleHostFilterInstance struct {
-	Type VPCFirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
+// FirewallRuleHostFilterSubnet is the type definition for a FirewallRuleHostFilterSubnet.
+type FirewallRuleHostFilterSubnet struct {
+	Type FirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 const (
-	// VPCFirewallRuleHostFilterTypeInstance represents the VPCFirewallRuleHostFilterType `"instance"`.
-	VPCFirewallRuleHostFilterTypeInstance VPCFirewallRuleHostFilterType = "instance"
+	// FirewallRuleHostFilterTypeSubnet represents the FirewallRuleHostFilterType `"subnet"`.
+	FirewallRuleHostFilterTypeSubnet FirewallRuleHostFilterType = "subnet"
 )
 
-// VPCFirewallRuleHostFilterIp is the type definition for a VPCFirewallRuleHostFilterIp.
-type VPCFirewallRuleHostFilterIp struct {
-	Type  VPCFirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
-	Value string                        `json:"value,omitempty" yaml:"value,omitempty"`
-}
-
-const (
-	// VPCFirewallRuleHostFilterTypeIp represents the VPCFirewallRuleHostFilterType `"ip"`.
-	VPCFirewallRuleHostFilterTypeIp VPCFirewallRuleHostFilterType = "ip"
-)
-
-// VPCFirewallRuleHostFilterInternetGateway is the type definition for a VPCFirewallRuleHostFilterInternetGateway.
-type VPCFirewallRuleHostFilterInternetGateway struct {
-	Type VPCFirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
+// FirewallRuleHostFilterInstance is the type definition for a FirewallRuleHostFilterInstance.
+type FirewallRuleHostFilterInstance struct {
+	Type FirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 const (
-	// VPCFirewallRuleHostFilterTypeInternetGateway represents the VPCFirewallRuleHostFilterType `"internet_gateway"`.
-	VPCFirewallRuleHostFilterTypeInternetGateway VPCFirewallRuleHostFilterType = "internet_gateway"
+	// FirewallRuleHostFilterTypeInstance represents the FirewallRuleHostFilterType `"instance"`.
+	FirewallRuleHostFilterTypeInstance FirewallRuleHostFilterType = "instance"
 )
 
-// VPCFirewallRuleHostFilter is a subset of [`NetworkTarget`], `VpcFirewallRuleHostFilter` specifies all possible targets that a route can forward to.
-type VPCFirewallRuleHostFilter struct {
+// FirewallRuleHostFilterIp is the type definition for a FirewallRuleHostFilterIp.
+type FirewallRuleHostFilterIp struct {
+	Type  FirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value string                     `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+const (
+	// FirewallRuleHostFilterTypeIp represents the FirewallRuleHostFilterType `"ip"`.
+	FirewallRuleHostFilterTypeIp FirewallRuleHostFilterType = "ip"
+)
+
+// FirewallRuleHostFilterInternetGateway is the type definition for a FirewallRuleHostFilterInternetGateway.
+type FirewallRuleHostFilterInternetGateway struct {
+	Type FirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+const (
+	// FirewallRuleHostFilterTypeInternetGateway represents the FirewallRuleHostFilterType `"internet_gateway"`.
+	FirewallRuleHostFilterTypeInternetGateway FirewallRuleHostFilterType = "internet_gateway"
+)
+
+// FirewallRuleHostFilter is a subset of [`NetworkTarget`], `VpcFirewallRuleHostFilter` specifies all possible targets that a route can forward to.
+type FirewallRuleHostFilter struct {
 	Type  string `json:"type,omitempty" yaml:"type,omitempty"`
 	Value Name   `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-// VPCFirewallRuleProtocol is the protocols that may be specified in a firewall rule's filter
-type VPCFirewallRuleProtocol string
+// FirewallRuleProtocol is the protocols that may be specified in a firewall rule's filter
+type FirewallRuleProtocol string
 
 const (
-	// VPCFirewallRuleProtocolTCP represents the VPCFirewallRuleProtocol `"TCP"`.
-	VPCFirewallRuleProtocolTCP VPCFirewallRuleProtocol = "TCP"
-	// VPCFirewallRuleProtocolUDP represents the VPCFirewallRuleProtocol `"UDP"`.
-	VPCFirewallRuleProtocolUDP VPCFirewallRuleProtocol = "UDP"
-	// VPCFirewallRuleProtocolICMP represents the VPCFirewallRuleProtocol `"ICMP"`.
-	VPCFirewallRuleProtocolICMP VPCFirewallRuleProtocol = "ICMP"
+	// FirewallRuleProtocolTCP represents the FirewallRuleProtocol `"TCP"`.
+	FirewallRuleProtocolTCP FirewallRuleProtocol = "TCP"
+	// FirewallRuleProtocolUDP represents the FirewallRuleProtocol `"UDP"`.
+	FirewallRuleProtocolUDP FirewallRuleProtocol = "UDP"
+	// FirewallRuleProtocolICMP represents the FirewallRuleProtocol `"ICMP"`.
+	FirewallRuleProtocolICMP FirewallRuleProtocol = "ICMP"
 )
 
-// VPCFirewallRuleResultsPage is a single page of results
-type VPCFirewallRuleResultsPage struct {
+// FirewallRuleResultsPage is a single page of results
+type FirewallRuleResultsPage struct {
 	// Items is list of items on this page of results
-	Items []VPCFirewallRule `json:"items,omitempty" yaml:"items,omitempty"`
+	Items []FirewallRule `json:"items,omitempty" yaml:"items,omitempty"`
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// VPCFirewallRuleStatus is the type definition for a VPCFirewallRuleStatus.
-type VPCFirewallRuleStatus string
+// FirewallRuleStatus is the type definition for a FirewallRuleStatus.
+type FirewallRuleStatus string
 
 const (
-	// VPCFirewallRuleStatusDisabled represents the VPCFirewallRuleStatus `"disabled"`.
-	VPCFirewallRuleStatusDisabled VPCFirewallRuleStatus = "disabled"
-	// VPCFirewallRuleStatusEnabled represents the VPCFirewallRuleStatus `"enabled"`.
-	VPCFirewallRuleStatusEnabled VPCFirewallRuleStatus = "enabled"
+	// FirewallRuleStatusDisabled represents the FirewallRuleStatus `"disabled"`.
+	FirewallRuleStatusDisabled FirewallRuleStatus = "disabled"
+	// FirewallRuleStatusEnabled represents the FirewallRuleStatus `"enabled"`.
+	FirewallRuleStatusEnabled FirewallRuleStatus = "enabled"
 )
 
-// VPCFirewallRuleTargetVPC is the type definition for a VPCFirewallRuleTargetVPC.
-type VPCFirewallRuleTargetVPC struct {
-	Type VPCFirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
+// FirewallRuleTargetVPC is the type definition for a FirewallRuleTargetVPC.
+type FirewallRuleTargetVPC struct {
+	Type FirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-// VPCFirewallRuleTargetType is the type definition for a VPCFirewallRuleTargetType.
-type VPCFirewallRuleTargetType string
+// FirewallRuleTargetType is the type definition for a FirewallRuleTargetType.
+type FirewallRuleTargetType string
 
 const (
-	// VPCFirewallRuleTargetTypeVpc represents the VPCFirewallRuleTargetType `"vpc"`.
-	VPCFirewallRuleTargetTypeVpc VPCFirewallRuleTargetType = "vpc"
+	// FirewallRuleTargetTypeVpc represents the FirewallRuleTargetType `"vpc"`.
+	FirewallRuleTargetTypeVpc FirewallRuleTargetType = "vpc"
 )
 
-// VPCFirewallRuleTargetSubnet is the type definition for a VPCFirewallRuleTargetSubnet.
-type VPCFirewallRuleTargetSubnet struct {
-	Type VPCFirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
-}
-
-const (
-	// VPCFirewallRuleTargetTypeSubnet represents the VPCFirewallRuleTargetType `"subnet"`.
-	VPCFirewallRuleTargetTypeSubnet VPCFirewallRuleTargetType = "subnet"
-)
-
-// VPCFirewallRuleTargetInstance is the type definition for a VPCFirewallRuleTargetInstance.
-type VPCFirewallRuleTargetInstance struct {
-	Type VPCFirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
+// FirewallRuleTargetSubnet is the type definition for a FirewallRuleTargetSubnet.
+type FirewallRuleTargetSubnet struct {
+	Type FirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 const (
-	// VPCFirewallRuleTargetTypeInstance represents the VPCFirewallRuleTargetType `"instance"`.
-	VPCFirewallRuleTargetTypeInstance VPCFirewallRuleTargetType = "instance"
+	// FirewallRuleTargetTypeSubnet represents the FirewallRuleTargetType `"subnet"`.
+	FirewallRuleTargetTypeSubnet FirewallRuleTargetType = "subnet"
 )
 
-// VPCFirewallRuleTarget is a subset of [`NetworkTarget`], `VpcFirewallRuleTarget` specifies all possible targets that a firewall rule can be attached to.
-type VPCFirewallRuleTarget struct {
+// FirewallRuleTargetInstance is the type definition for a FirewallRuleTargetInstance.
+type FirewallRuleTargetInstance struct {
+	Type FirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+const (
+	// FirewallRuleTargetTypeInstance represents the FirewallRuleTargetType `"instance"`.
+	FirewallRuleTargetTypeInstance FirewallRuleTargetType = "instance"
+)
+
+// FirewallRuleTarget is a subset of [`NetworkTarget`], `VpcFirewallRuleTarget` specifies all possible targets that a firewall rule can be attached to.
+type FirewallRuleTarget struct {
 	Type  string `json:"type,omitempty" yaml:"type,omitempty"`
 	Value Name   `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-// VPCFirewallRuleUpdate is a single rule in a VPC firewall
-type VPCFirewallRuleUpdate struct {
+// FirewallRuleUpdate is a single rule in a VPC firewall
+type FirewallRuleUpdate struct {
 	// Action is whether traffic matching the rule should be allowed or dropped
-	Action VPCFirewallRuleAction `json:"action,omitempty" yaml:"action,omitempty"`
+	Action FirewallRuleAction `json:"action,omitempty" yaml:"action,omitempty"`
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Direction is whether this rule is for incoming or outgoing traffic
-	Direction VPCFirewallRuleDirection `json:"direction,omitempty" yaml:"direction,omitempty"`
+	Direction FirewallRuleDirection `json:"direction,omitempty" yaml:"direction,omitempty"`
 	// Filters is reductions on the scope of the rule
-	Filters VPCFirewallRuleFilter `json:"filters,omitempty" yaml:"filters,omitempty"`
+	Filters FirewallRuleFilter `json:"filters,omitempty" yaml:"filters,omitempty"`
 	// Priority is the relative priority of this rule
 	Priority int `json:"priority,omitempty" yaml:"priority,omitempty"`
 	// Status is whether this rule is in effect
-	Status VPCFirewallRuleStatus `json:"status,omitempty" yaml:"status,omitempty"`
+	Status FirewallRuleStatus `json:"status,omitempty" yaml:"status,omitempty"`
 	// Targets is list of sets of instances that the rule applies to
-	Targets []VPCFirewallRuleTarget `json:"targets,omitempty" yaml:"targets,omitempty"`
+	Targets []FirewallRuleTarget `json:"targets,omitempty" yaml:"targets,omitempty"`
 }
 
-// VPCFirewallRuleUpdateParams is updateable properties of a [`Vpc`]'s firewall Note that VpcFirewallRules are implicitly created along with a Vpc, so there is no explicit creation.
-type VPCFirewallRuleUpdateParams struct {
+// FirewallRuleUpdateParams is updateable properties of a [`Vpc`]'s firewall Note that VpcFirewallRules are implicitly created along with a Vpc, so there is no explicit creation.
+type FirewallRuleUpdateParams struct {
 }
 
-// VPCFirewallRuleUpdateResult is response to an update replacing [`Vpc`]'s firewall
-type VPCFirewallRuleUpdateResult struct {
+// FirewallRuleUpdateResult is response to an update replacing [`Vpc`]'s firewall
+type FirewallRuleUpdateResult struct {
 }
 
 // VPCResultsPage is a single page of results
@@ -1105,13 +1105,13 @@ type VPCResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// VPCRouter is a VPC router defines a series of rules that indicate where traffic should be sent depending on its destination.
-type VPCRouter struct {
+// Router is a VPC router defines a series of rules that indicate where traffic should be sent depending on its destination.
+type Router struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// ID is unique, immutable, system-controlled identifier for each resource
-	ID   string        `json:"id,omitempty" yaml:"id,omitempty"`
-	Kind VPCRouterKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+	ID   string     `json:"id,omitempty" yaml:"id,omitempty"`
+	Kind RouterKind `json:"kind,omitempty" yaml:"kind,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// TimeCreated is timestamp when this resource was created
@@ -1122,39 +1122,39 @@ type VPCRouter struct {
 	VPCId string `json:"vpc_id,omitempty" yaml:"vpc_id,omitempty"`
 }
 
-// VPCRouterCreate is create-time parameters for a [`VpcRouter`]
-type VPCRouterCreate struct {
+// RouterCreate is create-time parameters for a [`VpcRouter`]
+type RouterCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
-// VPCRouterKind is the type definition for a VPCRouterKind.
-type VPCRouterKind string
+// RouterKind is the type definition for a RouterKind.
+type RouterKind string
 
 const (
-	// VPCRouterKindSystem represents the VPCRouterKind `"system"`.
-	VPCRouterKindSystem VPCRouterKind = "system"
-	// VPCRouterKindCustom represents the VPCRouterKind `"custom"`.
-	VPCRouterKindCustom VPCRouterKind = "custom"
+	// RouterKindSystem represents the RouterKind `"system"`.
+	RouterKindSystem RouterKind = "system"
+	// RouterKindCustom represents the RouterKind `"custom"`.
+	RouterKindCustom RouterKind = "custom"
 )
 
-// VPCRouterResultsPage is a single page of results
-type VPCRouterResultsPage struct {
+// RouterResultsPage is a single page of results
+type RouterResultsPage struct {
 	// Items is list of items on this page of results
-	Items []VPCRouter `json:"items,omitempty" yaml:"items,omitempty"`
+	Items []Router `json:"items,omitempty" yaml:"items,omitempty"`
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// VPCRouterUpdate is updateable properties of a [`VpcRouter`]
-type VPCRouterUpdate struct {
+// RouterUpdate is updateable properties of a [`VpcRouter`]
+type RouterUpdate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
-// VPCSubnet is a VPC subnet represents a logical grouping for instances that allows network traffic between them, within a IPv4 subnetwork or optionall an IPv6 subnetwork.
-type VPCSubnet struct {
+// Subnet is a VPC subnet represents a logical grouping for instances that allows network traffic between them, within a IPv4 subnetwork or optionall an IPv6 subnetwork.
+type Subnet struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// ID is unique, immutable, system-controlled identifier for each resource
@@ -1173,8 +1173,8 @@ type VPCSubnet struct {
 	VPCId string `json:"vpc_id,omitempty" yaml:"vpc_id,omitempty"`
 }
 
-// VPCSubnetCreate is create-time parameters for a [`VpcSubnet`]
-type VPCSubnetCreate struct {
+// SubnetCreate is create-time parameters for a [`VpcSubnet`]
+type SubnetCreate struct {
 	Description string  `json:"description,omitempty" yaml:"description,omitempty"`
 	IPv4Block   IPv4Net `json:"ipv4_block,omitempty" yaml:"ipv4_block,omitempty"`
 	IPv6Block   IPv6Net `json:"ipv6_block,omitempty" yaml:"ipv6_block,omitempty"`
@@ -1182,16 +1182,16 @@ type VPCSubnetCreate struct {
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
-// VPCSubnetResultsPage is a single page of results
-type VPCSubnetResultsPage struct {
+// SubnetResultsPage is a single page of results
+type SubnetResultsPage struct {
 	// Items is list of items on this page of results
-	Items []VPCSubnet `json:"items,omitempty" yaml:"items,omitempty"`
+	Items []Subnet `json:"items,omitempty" yaml:"items,omitempty"`
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// VPCSubnetUpdate is updateable properties of a [`VpcSubnet`]
-type VPCSubnetUpdate struct {
+// SubnetUpdate is updateable properties of a [`VpcSubnet`]
+type SubnetUpdate struct {
 	Description string  `json:"description,omitempty" yaml:"description,omitempty"`
 	IPv4Block   IPv4Net `json:"ipv4_block,omitempty" yaml:"ipv4_block,omitempty"`
 	IPv6Block   IPv6Net `json:"ipv6_block,omitempty" yaml:"ipv6_block,omitempty"`
@@ -1244,6 +1244,47 @@ var FieldTypes = []FieldType{
 	FieldTypeUuid,
 }
 
+// FirewallRuleActions is the collection of all FirewallRuleAction values.
+var FirewallRuleActions = []FirewallRuleAction{
+	FirewallRuleActionAllow,
+	FirewallRuleActionDeny,
+}
+
+// FirewallRuleDirections is the collection of all FirewallRuleDirection values.
+var FirewallRuleDirections = []FirewallRuleDirection{
+	FirewallRuleDirectionInbound,
+	FirewallRuleDirectionOutbound,
+}
+
+// FirewallRuleHostFilterTypes is the collection of all FirewallRuleHostFilterType values.
+var FirewallRuleHostFilterTypes = []FirewallRuleHostFilterType{
+	FirewallRuleHostFilterTypeInstance,
+	FirewallRuleHostFilterTypeInternetGateway,
+	FirewallRuleHostFilterTypeIp,
+	FirewallRuleHostFilterTypeSubnet,
+	FirewallRuleHostFilterTypeVpc,
+}
+
+// FirewallRuleProtocols is the collection of all FirewallRuleProtocol values.
+var FirewallRuleProtocols = []FirewallRuleProtocol{
+	FirewallRuleProtocolICMP,
+	FirewallRuleProtocolTCP,
+	FirewallRuleProtocolUDP,
+}
+
+// FirewallRuleStatuses is the collection of all FirewallRuleStatus values.
+var FirewallRuleStatuses = []FirewallRuleStatus{
+	FirewallRuleStatusDisabled,
+	FirewallRuleStatusEnabled,
+}
+
+// FirewallRuleTargetTypes is the collection of all FirewallRuleTargetType values.
+var FirewallRuleTargetTypes = []FirewallRuleTargetType{
+	FirewallRuleTargetTypeInstance,
+	FirewallRuleTargetTypeSubnet,
+	FirewallRuleTargetTypeVpc,
+}
+
 // IdSortModes is the collection of all IdSortMode values.
 var IdSortModes = []IdSortMode{
 	IdSortModeIdAscending,
@@ -1290,6 +1331,12 @@ var RouteTargetTypes = []RouteTargetType{
 	RouteTargetTypeVpc,
 }
 
+// RouterKinds is the collection of all RouterKind values.
+var RouterKinds = []RouterKind{
+	RouterKindCustom,
+	RouterKindSystem,
+}
+
 // RouterRouteKinds is the collection of all RouterRouteKind values.
 var RouterRouteKinds = []RouterRouteKind{
 	RouterRouteKindCustom,
@@ -1312,51 +1359,4 @@ var SagaStateStates = []SagaStateState{
 	SagaStateStateFailed,
 	SagaStateStateRunning,
 	SagaStateStateSucceeded,
-}
-
-// VPCFirewallRuleActions is the collection of all VPCFirewallRuleAction values.
-var VPCFirewallRuleActions = []VPCFirewallRuleAction{
-	VPCFirewallRuleActionAllow,
-	VPCFirewallRuleActionDeny,
-}
-
-// VPCFirewallRuleDirections is the collection of all VPCFirewallRuleDirection values.
-var VPCFirewallRuleDirections = []VPCFirewallRuleDirection{
-	VPCFirewallRuleDirectionInbound,
-	VPCFirewallRuleDirectionOutbound,
-}
-
-// VPCFirewallRuleHostFilterTypes is the collection of all VPCFirewallRuleHostFilterType values.
-var VPCFirewallRuleHostFilterTypes = []VPCFirewallRuleHostFilterType{
-	VPCFirewallRuleHostFilterTypeInstance,
-	VPCFirewallRuleHostFilterTypeInternetGateway,
-	VPCFirewallRuleHostFilterTypeIp,
-	VPCFirewallRuleHostFilterTypeSubnet,
-	VPCFirewallRuleHostFilterTypeVpc,
-}
-
-// VPCFirewallRuleProtocols is the collection of all VPCFirewallRuleProtocol values.
-var VPCFirewallRuleProtocols = []VPCFirewallRuleProtocol{
-	VPCFirewallRuleProtocolICMP,
-	VPCFirewallRuleProtocolTCP,
-	VPCFirewallRuleProtocolUDP,
-}
-
-// VPCFirewallRuleStatuses is the collection of all VPCFirewallRuleStatus values.
-var VPCFirewallRuleStatuses = []VPCFirewallRuleStatus{
-	VPCFirewallRuleStatusDisabled,
-	VPCFirewallRuleStatusEnabled,
-}
-
-// VPCFirewallRuleTargetTypes is the collection of all VPCFirewallRuleTargetType values.
-var VPCFirewallRuleTargetTypes = []VPCFirewallRuleTargetType{
-	VPCFirewallRuleTargetTypeInstance,
-	VPCFirewallRuleTargetTypeSubnet,
-	VPCFirewallRuleTargetTypeVpc,
-}
-
-// VPCRouterKinds is the collection of all VPCRouterKind values.
-var VPCRouterKinds = []VPCRouterKind{
-	VPCRouterKindCustom,
-	VPCRouterKindSystem,
 }

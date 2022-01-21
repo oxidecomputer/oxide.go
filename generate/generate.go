@@ -284,6 +284,10 @@ func cleanFnName(name string, tag string, path string) string {
 		name = "GetSled"
 	}
 
+	if strings.HasPrefix(name, "Hardware") {
+		name = strings.TrimPrefix(name, "Hardware")
+	}
+
 	return name
 }
 
@@ -317,6 +321,11 @@ func printProperty(p string) string {
 	} else if strings.HasPrefix(c, "SubnetsIps") {
 		c = strings.ReplaceAll(c, "SubnetsIps", "SubnetsIPs")
 	}
+
+	// Before we remove the tag from the name, we want to remove any lingering "Vpc" strings.
+	c = strings.Replace(c, "VPCFirewallRule", "FirewallRule", -1)
+	c = strings.Replace(c, "VPCRouter", "Router", -1)
+	c = strings.Replace(c, "VPCSubnet", "Subnet", -1)
 
 	return c
 }

@@ -2466,8 +2466,8 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "// HardwareList\n//\n// List racks in the system.\n//\n// To iterate over all pages, use the `HardwareListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\n\nrackResultsPage, err := client.Racks.HardwareList(limit, pageToken, sortBy)\n\n// - OR -\n\n// HardwareListAllPages\n//\n// List racks in the system.\n//\n// This method is a wrapper around the `HardwareList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\n\nRack, err := client.Racks.HardwareListAllPages(sortBy)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RacksService.HardwareList"
+          "example": "// List\n//\n// List racks in the system.\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\n\nrackResultsPage, err := client.Racks.List(limit, pageToken, sortBy)\n\n// - OR -\n\n// ListAllPages\n//\n// List racks in the system.\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\n\nRack, err := client.Racks.ListAllPages(sortBy)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RacksService.List"
         }
       }
     },
@@ -2504,8 +2504,8 @@
           "racks"
         ],
         "x-go": {
-          "example": "// HardwareGet\n//\n// Fetch information about a particular rack.\n//\n// Parameters:\n//\t- `rackId`\n\nrack, err := client.Racks.HardwareGet(rackID)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RacksService.HardwareGet"
+          "example": "// Get\n//\n// Fetch information about a particular rack.\n//\n// Parameters:\n//\t- `rackId`\n\nrack, err := client.Racks.Get(rackID)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RacksService.Get"
         }
       }
     },
@@ -2562,8 +2562,8 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "// HardwareList\n//\n// List sleds in the system.\n//\n// To iterate over all pages, use the `HardwareListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\n\nsledResultsPage, err := client.Sleds.HardwareList(limit, pageToken, sortBy)\n\n// - OR -\n\n// HardwareListAllPages\n//\n// List sleds in the system.\n//\n// This method is a wrapper around the `HardwareList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\n\nSled, err := client.Sleds.HardwareListAllPages(sortBy)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SledsService.HardwareList"
+          "example": "// List\n//\n// List sleds in the system.\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\n\nsledResultsPage, err := client.Sleds.List(limit, pageToken, sortBy)\n\n// - OR -\n\n// ListAllPages\n//\n// List sleds in the system.\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\n\nSled, err := client.Sleds.ListAllPages(sortBy)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SledsService.List"
         }
       }
     },
@@ -2600,8 +2600,8 @@
           "sleds"
         ],
         "x-go": {
-          "example": "// HardwareGet\n//\n// Fetch information about a sled in the system.\n//\n// Parameters:\n//\t- `sledId`\n\nsled, err := client.Sleds.HardwareGet(sledID)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SledsService.HardwareGet"
+          "example": "// Get\n//\n// Fetch information about a sled in the system.\n//\n// Parameters:\n//\t- `sledId`\n\nsled, err := client.Sleds.Get(sledID)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SledsService.Get"
         }
       }
     },
@@ -4284,8 +4284,8 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "// VPCRulesList\n//\n// List firewall rules for a VPC.\n//\n// To iterate over all pages, use the `VPCRulesListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nvPCFirewallRuleResultsPage, err := client.Firewall.VPCRulesList(limit, pageToken, sortBy, organizationName, projectName, vpcName)\n\n// - OR -\n\n// VPCRulesListAllPages\n//\n// List firewall rules for a VPC.\n//\n// This method is a wrapper around the `VPCRulesList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nVPCFirewallRule, err := client.Firewall.VPCRulesListAllPages(sortBy, organizationName, projectName, vpcName)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#FirewallService.VPCRulesList"
+          "example": "// RulesList\n//\n// List firewall rules for a VPC.\n//\n// To iterate over all pages, use the `RulesListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nfirewallRuleResultsPage, err := client.Firewall.RulesList(limit, pageToken, sortBy, organizationName, projectName, vpcName)\n\n// - OR -\n\n// RulesListAllPages\n//\n// List firewall rules for a VPC.\n//\n// This method is a wrapper around the `RulesList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nFirewallRule, err := client.Firewall.RulesListAllPages(sortBy, organizationName, projectName, vpcName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#FirewallService.RulesList"
         }
       },
       "put": {
@@ -4346,8 +4346,8 @@
           "firewall"
         ],
         "x-go": {
-          "example": "// VPCRulesPut\n//\n// Replace the firewall rules for a VPC\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\n\nvPCFirewallRuleUpdateResult, err := client.Firewall.VPCRulesPut(organizationName, projectName, vpcName, body)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#FirewallService.VPCRulesPut"
+          "example": "// RulesPut\n//\n// Replace the firewall rules for a VPC\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\n\nfirewallRuleUpdateResult, err := client.Firewall.RulesPut(organizationName, projectName, vpcName, body)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#FirewallService.RulesPut"
         }
       }
     },
@@ -4431,8 +4431,8 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "// VPCList\n//\n// List VPC Custom and System Routers\n//\n// To iterate over all pages, use the `VPCListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nvPCRouterResultsPage, err := client.Routers.VPCList(limit, pageToken, sortBy, organizationName, projectName, vpcName)\n\n// - OR -\n\n// VPCListAllPages\n//\n// List VPC Custom and System Routers\n//\n// This method is a wrapper around the `VPCList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nVPCRouter, err := client.Routers.VPCListAllPages(sortBy, organizationName, projectName, vpcName)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RoutersService.VPCList"
+          "example": "// List\n//\n// List VPC Custom and System Routers\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nrouterResultsPage, err := client.Routers.List(limit, pageToken, sortBy, organizationName, projectName, vpcName)\n\n// - OR -\n\n// ListAllPages\n//\n// List VPC Custom and System Routers\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nRouter, err := client.Routers.ListAllPages(sortBy, organizationName, projectName, vpcName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RoutersService.List"
         }
       },
       "post": {
@@ -4493,8 +4493,8 @@
           "routers"
         ],
         "x-go": {
-          "example": "// VPCCreate\n//\n// Create a VPC Router\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\n\nvPCRouter, err := client.Routers.VPCCreate(organizationName, projectName, vpcName, body)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RoutersService.VPCCreate"
+          "example": "// Create\n//\n// Create a VPC Router\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\n\nrouter, err := client.Routers.Create(organizationName, projectName, vpcName, body)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RoutersService.Create"
         }
       }
     },
@@ -4549,8 +4549,8 @@
           "routers"
         ],
         "x-go": {
-          "example": "// VPCDelete\n//\n// Delete a router from its VPC\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `vpcName`\n\nif err := client.Routers.VPCDelete(organizationName, projectName, routerName, vpcName); err != nil {\n\tpanic(err)\n}",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RoutersService.VPCDelete"
+          "example": "// Delete\n//\n// Delete a router from its VPC\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `vpcName`\n\nif err := client.Routers.Delete(organizationName, projectName, routerName, vpcName); err != nil {\n\tpanic(err)\n}",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RoutersService.Delete"
         }
       },
       "get": {
@@ -4610,8 +4610,8 @@
           "routers"
         ],
         "x-go": {
-          "example": "// VPCGet\n//\n// Get a VPC Router\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `vpcName`\n\nvPCRouter, err := client.Routers.VPCGet(organizationName, projectName, routerName, vpcName)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RoutersService.VPCGet"
+          "example": "// Get\n//\n// Get a VPC Router\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `vpcName`\n\nrouter, err := client.Routers.Get(organizationName, projectName, routerName, vpcName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RoutersService.Get"
         }
       },
       "put": {
@@ -4674,8 +4674,8 @@
           "routers"
         ],
         "x-go": {
-          "example": "// VPCPut\n//\n// Update a VPC Router\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `vpcName`\n\nif err := client.Routers.VPCPut(organizationName, projectName, routerName, vpcName, body); err != nil {\n\tpanic(err)\n}",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RoutersService.VPCPut"
+          "example": "// Put\n//\n// Update a VPC Router\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `vpcName`\n\nif err := client.Routers.Put(organizationName, projectName, routerName, vpcName, body); err != nil {\n\tpanic(err)\n}",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RoutersService.Put"
         }
       }
     },
@@ -5132,8 +5132,8 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "// VPCList\n//\n// List subnets in a VPC.\n//\n// To iterate over all pages, use the `VPCListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nvPCSubnetResultsPage, err := client.Subnets.VPCList(limit, pageToken, sortBy, organizationName, projectName, vpcName)\n\n// - OR -\n\n// VPCListAllPages\n//\n// List subnets in a VPC.\n//\n// This method is a wrapper around the `VPCList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nVPCSubnet, err := client.Subnets.VPCListAllPages(sortBy, organizationName, projectName, vpcName)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SubnetsService.VPCList"
+          "example": "// List\n//\n// List subnets in a VPC.\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nsubnetResultsPage, err := client.Subnets.List(limit, pageToken, sortBy, organizationName, projectName, vpcName)\n\n// - OR -\n\n// ListAllPages\n//\n// List subnets in a VPC.\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nSubnet, err := client.Subnets.ListAllPages(sortBy, organizationName, projectName, vpcName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SubnetsService.List"
         }
       },
       "post": {
@@ -5194,8 +5194,8 @@
           "subnets"
         ],
         "x-go": {
-          "example": "// VPCCreate\n//\n// Create a subnet in a VPC.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\n\nvPCSubnet, err := client.Subnets.VPCCreate(organizationName, projectName, vpcName, body)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SubnetsService.VPCCreate"
+          "example": "// Create\n//\n// Create a subnet in a VPC.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\n\nsubnet, err := client.Subnets.Create(organizationName, projectName, vpcName, body)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SubnetsService.Create"
         }
       }
     },
@@ -5250,8 +5250,8 @@
           "subnets"
         ],
         "x-go": {
-          "example": "// VPCDelete\n//\n// Delete a subnet from a VPC.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `subnetName`\n//\t- `vpcName`\n\nif err := client.Subnets.VPCDelete(organizationName, projectName, subnetName, vpcName); err != nil {\n\tpanic(err)\n}",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SubnetsService.VPCDelete"
+          "example": "// Delete\n//\n// Delete a subnet from a VPC.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `subnetName`\n//\t- `vpcName`\n\nif err := client.Subnets.Delete(organizationName, projectName, subnetName, vpcName); err != nil {\n\tpanic(err)\n}",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SubnetsService.Delete"
         }
       },
       "get": {
@@ -5311,8 +5311,8 @@
           "subnets"
         ],
         "x-go": {
-          "example": "// VPCGet\n//\n// Get subnet in a VPC.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `subnetName`\n//\t- `vpcName`\n\nvPCSubnet, err := client.Subnets.VPCGet(organizationName, projectName, subnetName, vpcName)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SubnetsService.VPCGet"
+          "example": "// Get\n//\n// Get subnet in a VPC.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `subnetName`\n//\t- `vpcName`\n\nsubnet, err := client.Subnets.Get(organizationName, projectName, subnetName, vpcName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SubnetsService.Get"
         }
       },
       "put": {
@@ -5375,8 +5375,8 @@
           "subnets"
         ],
         "x-go": {
-          "example": "// VPCPut\n//\n// Update a VPC Subnet.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `subnetName`\n//\t- `vpcName`\n\nif err := client.Subnets.VPCPut(organizationName, projectName, subnetName, vpcName, body); err != nil {\n\tpanic(err)\n}",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SubnetsService.VPCPut"
+          "example": "// Put\n//\n// Update a VPC Subnet.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `subnetName`\n//\t- `vpcName`\n\nif err := client.Subnets.Put(organizationName, projectName, subnetName, vpcName, body); err != nil {\n\tpanic(err)\n}",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SubnetsService.Put"
         }
       }
     },
