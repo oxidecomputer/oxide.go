@@ -29,7 +29,7 @@
             "description": "human-readable free-form text about a resource",
             "type": "string"
           },
-          "devicePath": {
+          "device_path": {
             "type": "string"
           },
           "id": {
@@ -45,14 +45,14 @@
             ],
             "description": "unique, mutable, user-controlled identifier for each resource"
           },
-          "projectId": {
+          "project_id": {
             "format": "uuid",
             "type": "string"
           },
           "size": {
             "$ref": "#/components/schemas/ByteCount"
           },
-          "snapshotId": {
+          "snapshot_id": {
             "format": "uuid",
             "nullable": true,
             "type": "string"
@@ -60,12 +60,12 @@
           "state": {
             "$ref": "#/components/schemas/DiskState"
           },
-          "timeCreated": {
+          "time_created": {
             "description": "timestamp when this resource was created",
             "format": "date-time",
             "type": "string"
           },
-          "timeModified": {
+          "time_modified": {
             "description": "timestamp when this resource was last modified",
             "format": "date-time",
             "type": "string"
@@ -73,14 +73,14 @@
         },
         "required": [
           "description",
-          "devicePath",
+          "device_path",
           "id",
           "name",
-          "projectId",
+          "project_id",
           "size",
           "state",
-          "timeCreated",
-          "timeModified"
+          "time_created",
+          "time_modified"
         ],
         "type": "object"
       },
@@ -101,7 +101,7 @@
             ],
             "description": "size of the Disk"
           },
-          "snapshotId": {
+          "snapshot_id": {
             "description": "id for snapshot from which the Disk should be created, if any",
             "format": "uuid",
             "nullable": true,
@@ -319,46 +319,6 @@
         ],
         "type": "string"
       },
-      "IdentityMetadata": {
-        "description": "Identity-related metadata that's included in nearly all public API objects",
-        "properties": {
-          "description": {
-            "description": "human-readable free-form text about a resource",
-            "type": "string"
-          },
-          "id": {
-            "description": "unique, immutable, system-controlled identifier for each resource",
-            "format": "uuid",
-            "type": "string"
-          },
-          "name": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Name"
-              }
-            ],
-            "description": "unique, mutable, user-controlled identifier for each resource"
-          },
-          "timeCreated": {
-            "description": "timestamp when this resource was created",
-            "format": "date-time",
-            "type": "string"
-          },
-          "timeModified": {
-            "description": "timestamp when this resource was last modified",
-            "format": "date-time",
-            "type": "string"
-          }
-        },
-        "required": [
-          "description",
-          "id",
-          "name",
-          "timeCreated",
-          "timeModified"
-        ],
-        "type": "object"
-      },
       "Instance": {
         "description": "Client view of an [`Instance`]",
         "properties": {
@@ -399,25 +359,25 @@
             ],
             "description": "number of CPUs allocated for this Instance"
           },
-          "projectId": {
+          "project_id": {
             "description": "id for the project containing this Instance",
             "format": "uuid",
             "type": "string"
           },
-          "runState": {
+          "run_state": {
             "$ref": "#/components/schemas/InstanceState"
           },
-          "timeCreated": {
+          "time_created": {
             "description": "timestamp when this resource was created",
             "format": "date-time",
             "type": "string"
           },
-          "timeModified": {
+          "time_modified": {
             "description": "timestamp when this resource was last modified",
             "format": "date-time",
             "type": "string"
           },
-          "timeRunStateUpdated": {
+          "time_run_state_updated": {
             "format": "date-time",
             "type": "string"
           }
@@ -429,11 +389,11 @@
           "memory",
           "name",
           "ncpus",
-          "projectId",
-          "runState",
-          "timeCreated",
-          "timeModified",
-          "timeRunStateUpdated"
+          "project_id",
+          "run_state",
+          "time_created",
+          "time_modified",
+          "time_run_state_updated"
         ],
         "type": "object"
       },
@@ -574,13 +534,14 @@
       "NetworkInterface": {
         "description": "A `NetworkInterface` represents a virtual network interface device.",
         "properties": {
-          "identity": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/IdentityMetadata"
-              }
-            ],
-            "description": "common identifying metadata"
+          "description": {
+            "description": "human-readable free-form text about a resource",
+            "type": "string"
+          },
+          "id": {
+            "description": "unique, immutable, system-controlled identifier for each resource",
+            "format": "uuid",
+            "type": "string"
           },
           "instance_id": {
             "description": "The Instance to which the interface belongs.",
@@ -600,9 +561,27 @@
             ],
             "description": "The MAC address assigned to this interface."
           },
+          "name": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Name"
+              }
+            ],
+            "description": "unique, mutable, user-controlled identifier for each resource"
+          },
           "subnet_id": {
             "description": "The subnet to which the interface belongs.",
             "format": "uuid",
+            "type": "string"
+          },
+          "time_created": {
+            "description": "timestamp when this resource was created",
+            "format": "date-time",
+            "type": "string"
+          },
+          "time_modified": {
+            "description": "timestamp when this resource was last modified",
+            "format": "date-time",
             "type": "string"
           },
           "vpc_id": {
@@ -612,11 +591,15 @@
           }
         },
         "required": [
-          "identity",
+          "description",
+          "id",
           "instance_id",
           "ip",
           "mac",
+          "name",
           "subnet_id",
+          "time_created",
+          "time_modified",
           "vpc_id"
         ],
         "type": "object"
@@ -662,12 +645,12 @@
             ],
             "description": "unique, mutable, user-controlled identifier for each resource"
           },
-          "timeCreated": {
+          "time_created": {
             "description": "timestamp when this resource was created",
             "format": "date-time",
             "type": "string"
           },
-          "timeModified": {
+          "time_modified": {
             "description": "timestamp when this resource was last modified",
             "format": "date-time",
             "type": "string"
@@ -677,8 +660,8 @@
           "description",
           "id",
           "name",
-          "timeCreated",
-          "timeModified"
+          "time_created",
+          "time_modified"
         ],
         "type": "object"
       },
@@ -757,16 +740,16 @@
             ],
             "description": "unique, mutable, user-controlled identifier for each resource"
           },
-          "organizationId": {
+          "organization_id": {
             "format": "uuid",
             "type": "string"
           },
-          "timeCreated": {
+          "time_created": {
             "description": "timestamp when this resource was created",
             "format": "date-time",
             "type": "string"
           },
-          "timeModified": {
+          "time_modified": {
             "description": "timestamp when this resource was last modified",
             "format": "date-time",
             "type": "string"
@@ -776,9 +759,9 @@
           "description",
           "id",
           "name",
-          "organizationId",
-          "timeCreated",
-          "timeModified"
+          "organization_id",
+          "time_created",
+          "time_modified"
         ],
         "type": "object"
       },
@@ -840,12 +823,40 @@
       "Rack": {
         "description": "Client view of an [`Rack`]",
         "properties": {
-          "identity": {
-            "$ref": "#/components/schemas/IdentityMetadata"
+          "description": {
+            "description": "human-readable free-form text about a resource",
+            "type": "string"
+          },
+          "id": {
+            "description": "unique, immutable, system-controlled identifier for each resource",
+            "format": "uuid",
+            "type": "string"
+          },
+          "name": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Name"
+              }
+            ],
+            "description": "unique, mutable, user-controlled identifier for each resource"
+          },
+          "time_created": {
+            "description": "timestamp when this resource was created",
+            "format": "date-time",
+            "type": "string"
+          },
+          "time_modified": {
+            "description": "timestamp when this resource was last modified",
+            "format": "date-time",
+            "type": "string"
           }
         },
         "required": [
-          "identity"
+          "description",
+          "id",
+          "name",
+          "time_created",
+          "time_modified"
         ],
         "type": "object"
       },
@@ -1054,7 +1065,7 @@
             "properties": {
               "type": {
                 "enum": [
-                  "internetGateway"
+                  "internet_gateway"
                 ],
                 "type": "string"
               },
@@ -1073,16 +1084,17 @@
       "RouterRoute": {
         "description": "A route defines a rule that governs where traffic should be sent based on its destination.",
         "properties": {
+          "description": {
+            "description": "human-readable free-form text about a resource",
+            "type": "string"
+          },
           "destination": {
             "$ref": "#/components/schemas/RouteDestination"
           },
-          "identity": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/IdentityMetadata"
-              }
-            ],
-            "description": "common identifying metadata"
+          "id": {
+            "description": "unique, immutable, system-controlled identifier for each resource",
+            "format": "uuid",
+            "type": "string"
           },
           "kind": {
             "allOf": [
@@ -1092,6 +1104,14 @@
             ],
             "description": "Describes the kind of router. Set at creation. `read-only`"
           },
+          "name": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Name"
+              }
+            ],
+            "description": "unique, mutable, user-controlled identifier for each resource"
+          },
           "router_id": {
             "description": "The VPC Router to which the route belongs.",
             "format": "uuid",
@@ -1099,14 +1119,28 @@
           },
           "target": {
             "$ref": "#/components/schemas/RouteTarget"
+          },
+          "time_created": {
+            "description": "timestamp when this resource was created",
+            "format": "date-time",
+            "type": "string"
+          },
+          "time_modified": {
+            "description": "timestamp when this resource was last modified",
+            "format": "date-time",
+            "type": "string"
           }
         },
         "required": [
+          "description",
           "destination",
-          "identity",
+          "id",
           "kind",
+          "name",
           "router_id",
-          "target"
+          "target",
+          "time_created",
+          "time_modified"
         ],
         "type": "object"
       },
@@ -1137,10 +1171,10 @@
       "RouterRouteKind": {
         "description": "The classification of a [`RouterRoute`] as defined by the system. The kind determines certain attributes such as if the route is modifiable and describes how or where the route was created.\n\nSee [RFD-21](https://rfd.shared.oxide.computer/rfd/0021#concept-router) for more context",
         "enum": [
-          "Default",
-          "VpcSubnet",
-          "VpcPeering",
-          "Custom"
+          "default",
+          "vpc_subnet",
+          "vpc_peering",
+          "custom"
         ],
         "type": "string"
       },
@@ -1215,7 +1249,7 @@
             "properties": {
               "error": {
                 "enum": [
-                  "actionFailed"
+                  "action_failed"
                 ],
                 "type": "string"
               },
@@ -1231,7 +1265,7 @@
             "properties": {
               "error": {
                 "enum": [
-                  "deserializeFailed"
+                  "deserialize_failed"
                 ],
                 "type": "string"
               },
@@ -1249,7 +1283,7 @@
             "properties": {
               "error": {
                 "enum": [
-                  "injectedError"
+                  "injected_error"
                 ],
                 "type": "string"
               }
@@ -1263,7 +1297,7 @@
             "properties": {
               "error": {
                 "enum": [
-                  "serializeFailed"
+                  "serialize_failed"
                 ],
                 "type": "string"
               },
@@ -1281,7 +1315,7 @@
             "properties": {
               "error": {
                 "enum": [
-                  "subsagaCreateFailed"
+                  "subsaga_create_failed"
                 ],
                 "type": "string"
               },
@@ -1405,15 +1439,15 @@
             ],
             "description": "unique, mutable, user-controlled identifier for each resource"
           },
-          "serviceAddress": {
+          "service_address": {
             "type": "string"
           },
-          "timeCreated": {
+          "time_created": {
             "description": "timestamp when this resource was created",
             "format": "date-time",
             "type": "string"
           },
-          "timeModified": {
+          "time_modified": {
             "description": "timestamp when this resource was last modified",
             "format": "date-time",
             "type": "string"
@@ -1423,9 +1457,9 @@
           "description",
           "id",
           "name",
-          "serviceAddress",
-          "timeCreated",
-          "timeModified"
+          "service_address",
+          "time_created",
+          "time_modified"
         ],
         "type": "object"
       },
@@ -1525,12 +1559,12 @@
             ],
             "description": "unique, mutable, user-controlled identifier for each resource"
           },
-          "timeCreated": {
+          "time_created": {
             "description": "timestamp when this resource was created",
             "format": "date-time",
             "type": "string"
           },
-          "timeModified": {
+          "time_modified": {
             "description": "timestamp when this resource was last modified",
             "format": "date-time",
             "type": "string"
@@ -1540,8 +1574,8 @@
           "description",
           "id",
           "name",
-          "timeCreated",
-          "timeModified"
+          "time_created",
+          "time_modified"
         ],
         "type": "object"
       },
@@ -1573,7 +1607,7 @@
             "description": "human-readable free-form text about a resource",
             "type": "string"
           },
-          "dnsName": {
+          "dns_name": {
             "allOf": [
               {
                 "$ref": "#/components/schemas/Name"
@@ -1594,22 +1628,22 @@
             ],
             "description": "unique, mutable, user-controlled identifier for each resource"
           },
-          "projectId": {
+          "project_id": {
             "description": "id for the project containing this VPC",
             "format": "uuid",
             "type": "string"
           },
-          "systemRouterId": {
+          "system_router_id": {
             "description": "id for the system router where subnet default routes are registered",
             "format": "uuid",
             "type": "string"
           },
-          "timeCreated": {
+          "time_created": {
             "description": "timestamp when this resource was created",
             "format": "date-time",
             "type": "string"
           },
-          "timeModified": {
+          "time_modified": {
             "description": "timestamp when this resource was last modified",
             "format": "date-time",
             "type": "string"
@@ -1617,13 +1651,13 @@
         },
         "required": [
           "description",
-          "dnsName",
+          "dns_name",
           "id",
           "name",
-          "projectId",
-          "systemRouterId",
-          "timeCreated",
-          "timeModified"
+          "project_id",
+          "system_router_id",
+          "time_created",
+          "time_modified"
         ],
         "type": "object"
       },
@@ -1633,7 +1667,7 @@
           "description": {
             "type": "string"
           },
-          "dnsName": {
+          "dns_name": {
             "$ref": "#/components/schemas/Name"
           },
           "name": {
@@ -1642,7 +1676,7 @@
         },
         "required": [
           "description",
-          "dnsName",
+          "dns_name",
           "name"
         ],
         "type": "object"
@@ -1657,6 +1691,10 @@
               }
             ],
             "description": "whether traffic matching the rule should be allowed or dropped"
+          },
+          "description": {
+            "description": "human-readable free-form text about a resource",
+            "type": "string"
           },
           "direction": {
             "allOf": [
@@ -1674,13 +1712,18 @@
             ],
             "description": "reductions on the scope of the rule"
           },
-          "identity": {
+          "id": {
+            "description": "unique, immutable, system-controlled identifier for each resource",
+            "format": "uuid",
+            "type": "string"
+          },
+          "name": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/IdentityMetadata"
+                "$ref": "#/components/schemas/Name"
               }
             ],
-            "description": "common identifying metadata"
+            "description": "unique, mutable, user-controlled identifier for each resource"
           },
           "priority": {
             "description": "the relative priority of this rule",
@@ -1702,16 +1745,30 @@
               "$ref": "#/components/schemas/VpcFirewallRuleTarget"
             },
             "type": "array"
+          },
+          "time_created": {
+            "description": "timestamp when this resource was created",
+            "format": "date-time",
+            "type": "string"
+          },
+          "time_modified": {
+            "description": "timestamp when this resource was last modified",
+            "format": "date-time",
+            "type": "string"
           }
         },
         "required": [
           "action",
+          "description",
           "direction",
           "filters",
-          "identity",
+          "id",
+          "name",
           "priority",
           "status",
-          "targets"
+          "targets",
+          "time_created",
+          "time_modified"
         ],
         "type": "object"
       },
@@ -1839,7 +1896,7 @@
             "properties": {
               "type": {
                 "enum": [
-                  "internetGateway"
+                  "internet_gateway"
                 ],
                 "type": "string"
               },
@@ -2053,16 +2110,35 @@
       "VpcRouter": {
         "description": "A VPC router defines a series of rules that indicate where traffic should be sent depending on its destination.",
         "properties": {
-          "identity": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/IdentityMetadata"
-              }
-            ],
-            "description": "common identifying metadata"
+          "description": {
+            "description": "human-readable free-form text about a resource",
+            "type": "string"
+          },
+          "id": {
+            "description": "unique, immutable, system-controlled identifier for each resource",
+            "format": "uuid",
+            "type": "string"
           },
           "kind": {
             "$ref": "#/components/schemas/VpcRouterKind"
+          },
+          "name": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Name"
+              }
+            ],
+            "description": "unique, mutable, user-controlled identifier for each resource"
+          },
+          "time_created": {
+            "description": "timestamp when this resource was created",
+            "format": "date-time",
+            "type": "string"
+          },
+          "time_modified": {
+            "description": "timestamp when this resource was last modified",
+            "format": "date-time",
+            "type": "string"
           },
           "vpc_id": {
             "description": "The VPC to which the router belongs.",
@@ -2071,8 +2147,12 @@
           }
         },
         "required": [
-          "identity",
+          "description",
+          "id",
           "kind",
+          "name",
+          "time_created",
+          "time_modified",
           "vpc_id"
         ],
         "type": "object"
@@ -2142,13 +2222,14 @@
       "VpcSubnet": {
         "description": "A VPC subnet represents a logical grouping for instances that allows network traffic between them, within a IPv4 subnetwork or optionall an IPv6 subnetwork.",
         "properties": {
-          "identity": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/IdentityMetadata"
-              }
-            ],
-            "description": "common identifying metadata"
+          "description": {
+            "description": "human-readable free-form text about a resource",
+            "type": "string"
+          },
+          "id": {
+            "description": "unique, immutable, system-controlled identifier for each resource",
+            "format": "uuid",
+            "type": "string"
           },
           "ipv4_block": {
             "allOf": [
@@ -2168,6 +2249,24 @@
             "description": "The IPv6 subnet CIDR block.",
             "nullable": true
           },
+          "name": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Name"
+              }
+            ],
+            "description": "unique, mutable, user-controlled identifier for each resource"
+          },
+          "time_created": {
+            "description": "timestamp when this resource was created",
+            "format": "date-time",
+            "type": "string"
+          },
+          "time_modified": {
+            "description": "timestamp when this resource was last modified",
+            "format": "date-time",
+            "type": "string"
+          },
           "vpc_id": {
             "description": "The VPC to which the subnet belongs.",
             "format": "uuid",
@@ -2175,7 +2274,11 @@
           }
         },
         "required": [
-          "identity",
+          "description",
+          "id",
+          "name",
+          "time_created",
+          "time_modified",
           "vpc_id"
         ],
         "type": "object"
@@ -2186,7 +2289,7 @@
           "description": {
             "type": "string"
           },
-          "ipv4Block": {
+          "ipv4_block": {
             "allOf": [
               {
                 "$ref": "#/components/schemas/Ipv4Net"
@@ -2194,7 +2297,7 @@
             ],
             "nullable": true
           },
-          "ipv6Block": {
+          "ipv6_block": {
             "allOf": [
               {
                 "$ref": "#/components/schemas/Ipv6Net"
@@ -2240,7 +2343,7 @@
             "nullable": true,
             "type": "string"
           },
-          "ipv4Block": {
+          "ipv4_block": {
             "allOf": [
               {
                 "$ref": "#/components/schemas/Ipv4Net"
@@ -2248,7 +2351,7 @@
             ],
             "nullable": true
           },
-          "ipv6Block": {
+          "ipv6_block": {
             "allOf": [
               {
                 "$ref": "#/components/schemas/Ipv6Net"
@@ -2274,7 +2377,7 @@
             "nullable": true,
             "type": "string"
           },
-          "dnsName": {
+          "dns_name": {
             "allOf": [
               {
                 "$ref": "#/components/schemas/Name"
@@ -2306,10 +2409,6 @@
     "x-go": {
       "client": "// Create a client with your token and host.\nclient, err := oxide.NewClient(\"$OXIDE_TOKEN\", \"your apps user agent\", \"$OXIDE_HOST\")\nif err != nil {\n  panic(err)\n}\n\n// - OR -\n\n// Create a new client with your token and host parsed from the environment\n// variables: OXIDE_TOKEN, OXIDE_HOST.\nclient, err := oxide.NewClientFromEnv(\"your apps user agent\")\nif err != nil {\n  panic(err)\n}",
       "install": "go get github.com/oxidecomputer/oxide.go"
-    },
-    "x-rust": {
-      "client": "use oxide_api::Client;\n\nlet client = Client::new(String::from(\"api-key\"));",
-      "install": "[dependencies]\noxide-api = \"0.1.0-rc.7\""
     }
   },
   "openapi": "3.0.3",
@@ -2363,16 +2462,12 @@
           }
         },
         "tags": [
-          "hardware"
+          "racks"
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "// RacksList\n//\n// List racks in the system.\n//\n// To iterate over all pages, use the `RacksListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\n\nrackResultsPage, err := client.Hardware.RacksList(limit, pageToken, sortBy)\n\n// - OR -\n\n// RacksListAllPages\n//\n// List racks in the system.\n//\n// This method is a wrapper around the `RacksList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\n\nRack, err := client.Hardware.RacksListAllPages(sortBy)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#HardwareService.RacksList"
-        },
-        "x-rust": {
-          "example": "let vec_crate_types_rack = client.hardware().racks_get(limit, page_token, sort_by).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/hardware/struct.Hardware.html#method.racks_get"
+          "example": "// HardwareList\n//\n// List racks in the system.\n//\n// To iterate over all pages, use the `HardwareListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\n\nrackResultsPage, err := client.Racks.HardwareList(limit, pageToken, sortBy)\n\n// - OR -\n\n// HardwareListAllPages\n//\n// List racks in the system.\n//\n// This method is a wrapper around the `HardwareList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\n\nRack, err := client.Racks.HardwareListAllPages(sortBy)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RacksService.HardwareList"
         }
       }
     },
@@ -2406,15 +2501,11 @@
           }
         },
         "tags": [
-          "hardware"
+          "racks"
         ],
         "x-go": {
-          "example": "// GetRack\n//\n// Fetch information about a particular rack.\n//\n// Parameters:\n//\t- `rackId`\n\nrack, err := client.Hardware.GetRack(rackID)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#HardwareService.GetRack"
-        },
-        "x-rust": {
-          "example": "let rack = client.hardware().racks_get_rack(rack_id).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/hardware/struct.Hardware.html#method.racks_get_rack"
+          "example": "// HardwareGet\n//\n// Fetch information about a particular rack.\n//\n// Parameters:\n//\t- `rackId`\n\nrack, err := client.Racks.HardwareGet(rackID)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RacksService.HardwareGet"
         }
       }
     },
@@ -2467,16 +2558,12 @@
           }
         },
         "tags": [
-          "hardware"
+          "sleds"
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "// SledsList\n//\n// List sleds in the system.\n//\n// To iterate over all pages, use the `SledsListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\n\nsledResultsPage, err := client.Hardware.SledsList(limit, pageToken, sortBy)\n\n// - OR -\n\n// SledsListAllPages\n//\n// List sleds in the system.\n//\n// This method is a wrapper around the `SledsList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\n\nSled, err := client.Hardware.SledsListAllPages(sortBy)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#HardwareService.SledsList"
-        },
-        "x-rust": {
-          "example": "let vec_crate_types_sled = client.hardware().sleds_get(limit, page_token, sort_by).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/hardware/struct.Hardware.html#method.sleds_get"
+          "example": "// HardwareList\n//\n// List sleds in the system.\n//\n// To iterate over all pages, use the `HardwareListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\n\nsledResultsPage, err := client.Sleds.HardwareList(limit, pageToken, sortBy)\n\n// - OR -\n\n// HardwareListAllPages\n//\n// List sleds in the system.\n//\n// This method is a wrapper around the `HardwareList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\n\nSled, err := client.Sleds.HardwareListAllPages(sortBy)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SledsService.HardwareList"
         }
       }
     },
@@ -2510,15 +2597,11 @@
           }
         },
         "tags": [
-          "hardware"
+          "sleds"
         ],
         "x-go": {
-          "example": "// GetSled\n//\n// Fetch information about a sled in the system.\n//\n// Parameters:\n//\t- `sledId`\n\nsled, err := client.Hardware.GetSled(sledID)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#HardwareService.GetSled"
-        },
-        "x-rust": {
-          "example": "let sled = client.hardware().sleds_get_sled(sled_id).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/hardware/struct.Hardware.html#method.sleds_get_sled"
+          "example": "// HardwareGet\n//\n// Fetch information about a sled in the system.\n//\n// Parameters:\n//\t- `sledId`\n\nsled, err := client.Sleds.HardwareGet(sledID)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SledsService.HardwareGet"
         }
       }
     },
@@ -2540,13 +2623,12 @@
             "description": ""
           }
         },
+        "tags": [
+          "hidden"
+        ],
         "x-go": {
-          "example": "// SpoofLogin\n\nif err := client.SpoofLogin(body); err != nil {\n\tpanic(err)\n}",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.SpoofLogin"
-        },
-        "x-rust": {
-          "example": "client.login().spoof(body).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/login/struct.Login.html#method.spoof"
+          "example": "// SpoofLogin\n\nif err := client.Hidden.SpoofLogin(body); err != nil {\n\tpanic(err)\n}",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#HiddenService.SpoofLogin"
         }
       }
     },
@@ -2558,13 +2640,12 @@
             "description": ""
           }
         },
+        "tags": [
+          "hidden"
+        ],
         "x-go": {
-          "example": "// Logout\n\nif err := client.Logout(); err != nil {\n\tpanic(err)\n}",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.Logout"
-        },
-        "x-rust": {
-          "example": "client.logout().get().await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/logout/struct.Logout.html#method.get"
+          "example": "// Logout\n\nif err := client.Hidden.Logout(); err != nil {\n\tpanic(err)\n}",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#HiddenService.Logout"
         }
       }
     },
@@ -2623,10 +2704,6 @@
         "x-go": {
           "example": "// List\n//\n// List all organizations.\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\n\norganizationResultsPage, err := client.Organizations.List(limit, pageToken, sortBy)\n\n// - OR -\n\n// ListAllPages\n//\n// List all organizations.\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\n\nOrganization, err := client.Organizations.ListAllPages(sortBy)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#OrganizationsService.List"
-        },
-        "x-rust": {
-          "example": "let vec_crate_types_user = client.organizations().get_page(limit, page_token, sort_by).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/organizations/struct.Organizations.html#method.get_page"
         }
       },
       "post": {
@@ -2660,10 +2737,6 @@
         "x-go": {
           "example": "// Create\n//\n// Create a new organization.\n\norganization, err := client.Organizations.Create(body)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#OrganizationsService.Create"
-        },
-        "x-rust": {
-          "example": "let user = client.organizations().post(body).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/organizations/struct.Organizations.html#method.post"
         }
       }
     },
@@ -2693,10 +2766,6 @@
         "x-go": {
           "example": "// Delete\n//\n// Delete a specific organization.\n//\n// Parameters:\n//\t- `organizationName`\n\nif err := client.Organizations.Delete(organizationName); err != nil {\n\tpanic(err)\n}",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#OrganizationsService.Delete"
-        },
-        "x-rust": {
-          "example": "client.organizations().delete(organization_name).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/organizations/struct.Organizations.html#method.delete"
         }
       },
       "get": {
@@ -2731,10 +2800,6 @@
         "x-go": {
           "example": "// Get\n//\n// Fetch a specific organization\n//\n// Parameters:\n//\t- `organizationName`\n\norganization, err := client.Organizations.Get(organizationName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#OrganizationsService.Get"
-        },
-        "x-rust": {
-          "example": "let user = client.organizations().get(organization_name).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/organizations/struct.Organizations.html#method.get"
         }
       },
       "put": {
@@ -2779,10 +2844,6 @@
         "x-go": {
           "example": "// Put\n//\n// Update a specific organization.\n//  * TODO-correctness: Is it valid for PUT to accept application/json that's a subset of what the resource actually represents?  If not, is that a problem? (HTTP may require that this be idempotent.)  If so, can we get around that having this be a slightly different content-type (e.g., \"application/json-patch\")?  We should see what other APIs do.\n//\n// Parameters:\n//\t- `organizationName`\n\norganization, err := client.Organizations.Put(organizationName, body)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#OrganizationsService.Put"
-        },
-        "x-rust": {
-          "example": "let user = client.organizations().put(organization_name, body).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/organizations/struct.Organizations.html#method.put"
         }
       }
     },
@@ -2850,10 +2911,6 @@
         "x-go": {
           "example": "// List\n//\n// List all projects.\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `sortBy`\n\nprojectResultsPage, err := client.Projects.List(limit, pageToken, sortBy, organizationName)\n\n// - OR -\n\n// ListAllPages\n//\n// List all projects.\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `sortBy`\n\nProject, err := client.Projects.ListAllPages(sortBy, organizationName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ProjectsService.List"
-        },
-        "x-rust": {
-          "example": "let vec_crate_types_project = client.projects().get_page(limit, page_token, sort_by, organization_name).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/projects/struct.Projects.html#method.get_page"
         }
       },
       "post": {
@@ -2898,10 +2955,6 @@
         "x-go": {
           "example": "// Create\n//\n// Create a new project.\n//\n// Parameters:\n//\t- `organizationName`\n\nproject, err := client.Projects.Create(organizationName, body)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ProjectsService.Create"
-        },
-        "x-rust": {
-          "example": "let project = client.projects().post(organization_name, body).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/projects/struct.Projects.html#method.post"
         }
       }
     },
@@ -2940,10 +2993,6 @@
         "x-go": {
           "example": "// Delete\n//\n// Delete a specific project.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n\nif err := client.Projects.Delete(organizationName, projectName); err != nil {\n\tpanic(err)\n}",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ProjectsService.Delete"
-        },
-        "x-rust": {
-          "example": "client.projects().delete(organization_name, project_name).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/projects/struct.Projects.html#method.delete"
         }
       },
       "get": {
@@ -2987,10 +3036,6 @@
         "x-go": {
           "example": "// Get\n//\n// Fetch a specific project\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n\nproject, err := client.Projects.Get(organizationName, projectName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ProjectsService.Get"
-        },
-        "x-rust": {
-          "example": "let project = client.projects().get(organization_name, project_name).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/projects/struct.Projects.html#method.get"
         }
       },
       "put": {
@@ -3039,15 +3084,11 @@
           }
         },
         "tags": [
-          "organizations"
+          "projects"
         ],
         "x-go": {
-          "example": "// PutProject\n//\n// Update a specific project.\n//  * TODO-correctness: Is it valid for PUT to accept application/json that's a subset of what the resource actually represents?  If not, is that a problem? (HTTP may require that this be idempotent.)  If so, can we get around that having this be a slightly different content-type (e.g., \"application/json-patch\")?  We should see what other APIs do.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n\nproject, err := client.Organizations.PutProject(organizationName, projectName, body)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#OrganizationsService.PutProject"
-        },
-        "x-rust": {
-          "example": "let project = client.organizations().projects_put_project(organization_name, project_name, body).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/organizations/struct.Organizations.html#method.projects_put_project"
+          "example": "// Put\n//\n// Update a specific project.\n//  * TODO-correctness: Is it valid for PUT to accept application/json that's a subset of what the resource actually represents?  If not, is that a problem? (HTTP may require that this be idempotent.)  If so, can we get around that having this be a slightly different content-type (e.g., \"application/json-patch\")?  We should see what other APIs do.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n\nproject, err := client.Projects.Put(organizationName, projectName, body)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ProjectsService.Put"
         }
       }
     },
@@ -3118,16 +3159,12 @@
           }
         },
         "tags": [
-          "projects"
+          "disks"
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "// DisksList\n//\n// List disks in a project.\n//\n// To iterate over all pages, use the `DisksListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n\ndiskResultsPage, err := client.Projects.DisksList(limit, pageToken, sortBy, organizationName, projectName)\n\n// - OR -\n\n// DisksListAllPages\n//\n// List disks in a project.\n//\n// This method is a wrapper around the `DisksList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n\nDisk, err := client.Projects.DisksListAllPages(sortBy, organizationName, projectName)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ProjectsService.DisksList"
-        },
-        "x-rust": {
-          "example": "let vec_crate_types_disk = client.projects().disks_get(limit, page_token, sort_by, organization_name, project_name).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/projects/struct.Projects.html#method.disks_get"
+          "example": "// List\n//\n// List disks in a project.\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n\ndiskResultsPage, err := client.Disks.List(limit, pageToken, sortBy, organizationName, projectName)\n\n// - OR -\n\n// ListAllPages\n//\n// List disks in a project.\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n\nDisk, err := client.Disks.ListAllPages(sortBy, organizationName, projectName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#DisksService.List"
         }
       },
       "post": {
@@ -3176,15 +3213,11 @@
           }
         },
         "tags": [
-          "projects"
+          "disks"
         ],
         "x-go": {
-          "example": "// DisksCreate\n//\n// Create a disk in a project.\n//  * TODO-correctness See note about instance create.  This should be async.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n\ndisk, err := client.Projects.DisksCreate(organizationName, projectName, body)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ProjectsService.DisksCreate"
-        },
-        "x-rust": {
-          "example": "let disk = client.projects().disks_post(organization_name, project_name, body).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/projects/struct.Projects.html#method.disks_post"
+          "example": "// Create\n//\n// Create a disk in a project.\n//  * TODO-correctness See note about instance create.  This should be async.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n\ndisk, err := client.Disks.Create(organizationName, projectName, body)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#DisksService.Create"
         }
       }
     },
@@ -3227,15 +3260,11 @@
           }
         },
         "tags": [
-          "projects"
+          "disks"
         ],
         "x-go": {
-          "example": "// DisksDeleteDisk\n//\n// Delete a disk from a project.\n//\n// Parameters:\n//\t- `diskName`\n//\t- `organizationName`\n//\t- `projectName`\n\nif err := client.Projects.DisksDeleteDisk(diskName, organizationName, projectName); err != nil {\n\tpanic(err)\n}",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ProjectsService.DisksDeleteDisk"
-        },
-        "x-rust": {
-          "example": "client.projects().disks_delete_disk(disk_name, organization_name, project_name).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/projects/struct.Projects.html#method.disks_delete_disk"
+          "example": "// Delete\n//\n// Delete a disk from a project.\n//\n// Parameters:\n//\t- `diskName`\n//\t- `organizationName`\n//\t- `projectName`\n\nif err := client.Disks.Delete(diskName, organizationName, projectName); err != nil {\n\tpanic(err)\n}",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#DisksService.Delete"
         }
       },
       "get": {
@@ -3283,15 +3312,11 @@
           }
         },
         "tags": [
-          "projects"
+          "disks"
         ],
         "x-go": {
-          "example": "// DisksGetDisk\n//\n// Fetch a single disk in a project.\n//\n// Parameters:\n//\t- `diskName`\n//\t- `organizationName`\n//\t- `projectName`\n\ndisk, err := client.Projects.DisksGetDisk(diskName, organizationName, projectName)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ProjectsService.DisksGetDisk"
-        },
-        "x-rust": {
-          "example": "let disk = client.projects().disks_get_disk(disk_name, organization_name, project_name).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/projects/struct.Projects.html#method.disks_get_disk"
+          "example": "// Get\n//\n// Fetch a single disk in a project.\n//\n// Parameters:\n//\t- `diskName`\n//\t- `organizationName`\n//\t- `projectName`\n\ndisk, err := client.Disks.Get(diskName, organizationName, projectName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#DisksService.Get"
         }
       }
     },
@@ -3368,10 +3393,6 @@
         "x-go": {
           "example": "// List\n//\n// List instances in a project.\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n\ninstanceResultsPage, err := client.Instances.List(limit, pageToken, sortBy, organizationName, projectName)\n\n// - OR -\n\n// ListAllPages\n//\n// List instances in a project.\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n\nInstance, err := client.Instances.ListAllPages(sortBy, organizationName, projectName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#InstancesService.List"
-        },
-        "x-rust": {
-          "example": "let vec_crate_types_instance = client.instances().get_page(limit, page_token, sort_by, organization_name, project_name).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/instances/struct.Instances.html#method.get_page"
         }
       },
       "post": {
@@ -3425,10 +3446,6 @@
         "x-go": {
           "example": "// Create\n//\n// Create an instance in a project.\n//  * TODO-correctness This is supposed to be async.  Is that right?  We can create the instance immediately -- it's just not booted yet.  Maybe the boot operation is what's a separate operation_id.  What about the response code (201 Created vs 202 Accepted)?  Is that orthogonal?  Things can return a useful response, including an operation id, with either response code.  Maybe a \"reboot\" operation would return a 202 Accepted because there's no actual resource created?\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n\ninstance, err := client.Instances.Create(organizationName, projectName, body)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#InstancesService.Create"
-        },
-        "x-rust": {
-          "example": "let instance = client.instances().post(organization_name, project_name, body).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/instances/struct.Instances.html#method.post"
         }
       }
     },
@@ -3476,10 +3493,6 @@
         "x-go": {
           "example": "// Delete\n//\n// Delete an instance from a project.\n//\n// Parameters:\n//\t- `instanceName`\n//\t- `organizationName`\n//\t- `projectName`\n\nif err := client.Instances.Delete(instanceName, organizationName, projectName); err != nil {\n\tpanic(err)\n}",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#InstancesService.Delete"
-        },
-        "x-rust": {
-          "example": "client.instances().delete(instance_name, organization_name, project_name).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/instances/struct.Instances.html#method.delete"
         }
       },
       "get": {
@@ -3532,10 +3545,6 @@
         "x-go": {
           "example": "// Get\n//\n// Get an instance in a project.\n//\n// Parameters:\n//\t- `instanceName`\n//\t- `organizationName`\n//\t- `projectName`\n\ninstance, err := client.Instances.Get(instanceName, organizationName, projectName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#InstancesService.Get"
-        },
-        "x-rust": {
-          "example": "let instance = client.instances().get(instance_name, organization_name, project_name).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/instances/struct.Instances.html#method.get"
         }
       }
     },
@@ -3621,10 +3630,6 @@
         "x-go": {
           "example": "// DisksList\n//\n// List disks attached to this instance.\n//\n// To iterate over all pages, use the `DisksListAllPages` method, instead.\n//\n// Parameters:\n//\t- `instanceName`\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n\ndiskResultsPage, err := client.Instances.DisksList(limit, pageToken, sortBy, instanceName, organizationName, projectName)\n\n// - OR -\n\n// DisksListAllPages\n//\n// List disks attached to this instance.\n//\n// This method is a wrapper around the `DisksList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `instanceName`\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n\nDisk, err := client.Instances.DisksListAllPages(sortBy, instanceName, organizationName, projectName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#InstancesService.DisksList"
-        },
-        "x-rust": {
-          "example": "let vec_crate_types_disk = client.instances().disks_get(limit, page_token, sort_by, instance_name, organization_name, project_name).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/instances/struct.Instances.html#method.disks_get"
         }
       }
     },
@@ -3688,10 +3693,6 @@
         "x-go": {
           "example": "// DisksAttach\n//\n// Parameters:\n//\t- `instanceName`\n//\t- `organizationName`\n//\t- `projectName`\n\ndisk, err := client.Instances.DisksAttach(instanceName, organizationName, projectName, body)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#InstancesService.DisksAttach"
-        },
-        "x-rust": {
-          "example": "let disk = client.instances().disks_attach(instance_name, organization_name, project_name, body).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/instances/struct.Instances.html#method.disks_attach"
         }
       }
     },
@@ -3755,10 +3756,6 @@
         "x-go": {
           "example": "// DisksDetach\n//\n// Parameters:\n//\t- `instanceName`\n//\t- `organizationName`\n//\t- `projectName`\n\ndisk, err := client.Instances.DisksDetach(instanceName, organizationName, projectName, body)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#InstancesService.DisksDetach"
-        },
-        "x-rust": {
-          "example": "let disk = client.instances().disks_detach(instance_name, organization_name, project_name, body).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/instances/struct.Instances.html#method.disks_detach"
         }
       }
     },
@@ -3813,10 +3810,6 @@
         "x-go": {
           "example": "// Reboot\n//\n// Reboot an instance.\n//\n// Parameters:\n//\t- `instanceName`\n//\t- `organizationName`\n//\t- `projectName`\n\ninstance, err := client.Instances.Reboot(instanceName, organizationName, projectName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#InstancesService.Reboot"
-        },
-        "x-rust": {
-          "example": "let instance = client.instances().reboot(instance_name, organization_name, project_name).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/instances/struct.Instances.html#method.reboot"
         }
       }
     },
@@ -3871,10 +3864,6 @@
         "x-go": {
           "example": "// Start\n//\n// Boot an instance.\n//\n// Parameters:\n//\t- `instanceName`\n//\t- `organizationName`\n//\t- `projectName`\n\ninstance, err := client.Instances.Start(instanceName, organizationName, projectName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#InstancesService.Start"
-        },
-        "x-rust": {
-          "example": "let instance = client.instances().start(instance_name, organization_name, project_name).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/instances/struct.Instances.html#method.start"
         }
       }
     },
@@ -3929,10 +3918,6 @@
         "x-go": {
           "example": "// Stop\n//\n// Halt an instance.\n//\n// Parameters:\n//\t- `instanceName`\n//\t- `organizationName`\n//\t- `projectName`\n\ninstance, err := client.Instances.Stop(instanceName, organizationName, projectName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#InstancesService.Stop"
-        },
-        "x-rust": {
-          "example": "let instance = client.instances().stop(instance_name, organization_name, project_name).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/instances/struct.Instances.html#method.stop"
         }
       }
     },
@@ -4003,16 +3988,12 @@
           }
         },
         "tags": [
-          "networking"
+          "vpcs"
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "// VPCsList\n//\n// List VPCs in a project.\n//\n// To iterate over all pages, use the `VPCsListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n\nvPCResultsPage, err := client.Networking.VPCsList(limit, pageToken, sortBy, organizationName, projectName)\n\n// - OR -\n\n// VPCsListAllPages\n//\n// List VPCs in a project.\n//\n// This method is a wrapper around the `VPCsList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n\nVPC, err := client.Networking.VPCsListAllPages(sortBy, organizationName, projectName)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#NetworkingService.VPCsList"
-        },
-        "x-rust": {
-          "example": "let vec_crate_types_vpc = client.networking().vpcs_get(limit, page_token, sort_by, organization_name, project_name).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.vpcs_get"
+          "example": "// List\n//\n// List VPCs in a project.\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n\nvPCResultsPage, err := client.Vpcs.List(limit, pageToken, sortBy, organizationName, projectName)\n\n// - OR -\n\n// ListAllPages\n//\n// List VPCs in a project.\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n\nVPC, err := client.Vpcs.ListAllPages(sortBy, organizationName, projectName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#VpcsService.List"
         }
       },
       "post": {
@@ -4061,15 +4042,11 @@
           }
         },
         "tags": [
-          "networking"
+          "vpcs"
         ],
         "x-go": {
-          "example": "// VPCsCreate\n//\n// Create a VPC in a project.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n\nvPC, err := client.Networking.VPCsCreate(organizationName, projectName, body)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#NetworkingService.VPCsCreate"
-        },
-        "x-rust": {
-          "example": "let vpc = client.networking().vpcs_post(organization_name, project_name, body).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.vpcs_post"
+          "example": "// Create\n//\n// Create a VPC in a project.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n\nvPC, err := client.Vpcs.Create(organizationName, projectName, body)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#VpcsService.Create"
         }
       }
     },
@@ -4112,15 +4089,11 @@
           }
         },
         "tags": [
-          "networking"
+          "vpcs"
         ],
         "x-go": {
-          "example": "// VPCsDeleteVPC\n//\n// Delete a vpc from a project.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\n\nif err := client.Networking.VPCsDeleteVPC(organizationName, projectName, vpcName); err != nil {\n\tpanic(err)\n}",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#NetworkingService.VPCsDeleteVPC"
-        },
-        "x-rust": {
-          "example": "client.networking().vpcs_delete_vpc(organization_name, project_name, vpc_name).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.vpcs_delete_vpc"
+          "example": "// Delete\n//\n// Delete a vpc from a project.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\n\nif err := client.Vpcs.Delete(organizationName, projectName, vpcName); err != nil {\n\tpanic(err)\n}",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#VpcsService.Delete"
         }
       },
       "get": {
@@ -4168,15 +4141,11 @@
           }
         },
         "tags": [
-          "networking"
+          "vpcs"
         ],
         "x-go": {
-          "example": "// VPCsGetVPC\n//\n// Get a VPC in a project.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\n\nvPC, err := client.Networking.VPCsGetVPC(organizationName, projectName, vpcName)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#NetworkingService.VPCsGetVPC"
-        },
-        "x-rust": {
-          "example": "let vpc = client.networking().vpcs_get_vpc(organization_name, project_name, vpc_name).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.vpcs_get_vpc"
+          "example": "// Get\n//\n// Get a VPC in a project.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\n\nvPC, err := client.Vpcs.Get(organizationName, projectName, vpcName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#VpcsService.Get"
         }
       },
       "put": {
@@ -4227,15 +4196,11 @@
           }
         },
         "tags": [
-          "networking"
+          "vpcs"
         ],
         "x-go": {
-          "example": "// VPCsPutVPC\n//\n// Update a VPC.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\n\nif err := client.Networking.VPCsPutVPC(organizationName, projectName, vpcName, body); err != nil {\n\tpanic(err)\n}",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#NetworkingService.VPCsPutVPC"
-        },
-        "x-rust": {
-          "example": "client.networking().vpcs_put_vpc(organization_name, project_name, vpc_name, body).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.vpcs_put_vpc"
+          "example": "// Put\n//\n// Update a VPC.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\n\nif err := client.Vpcs.Put(organizationName, projectName, vpcName, body); err != nil {\n\tpanic(err)\n}",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#VpcsService.Put"
         }
       }
     },
@@ -4315,16 +4280,12 @@
           }
         },
         "tags": [
-          "networking"
+          "firewall"
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "// VPCFirewallRulesList\n//\n// List firewall rules for a VPC.\n//\n// To iterate over all pages, use the `VPCFirewallRulesListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nvPCFirewallRuleResultsPage, err := client.Networking.VPCFirewallRulesList(limit, pageToken, sortBy, organizationName, projectName, vpcName)\n\n// - OR -\n\n// VPCFirewallRulesListAllPages\n//\n// List firewall rules for a VPC.\n//\n// This method is a wrapper around the `VPCFirewallRulesList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nVPCFirewallRule, err := client.Networking.VPCFirewallRulesListAllPages(sortBy, organizationName, projectName, vpcName)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#NetworkingService.VPCFirewallRulesList"
-        },
-        "x-rust": {
-          "example": "let vec_crate_types_vpc_firewall_rule = client.networking().vpc_firewall_rules_get(limit, page_token, sort_by, organization_name, project_name, vpc_name).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.vpc_firewall_rules_get"
+          "example": "// VPCRulesList\n//\n// List firewall rules for a VPC.\n//\n// To iterate over all pages, use the `VPCRulesListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nvPCFirewallRuleResultsPage, err := client.Firewall.VPCRulesList(limit, pageToken, sortBy, organizationName, projectName, vpcName)\n\n// - OR -\n\n// VPCRulesListAllPages\n//\n// List firewall rules for a VPC.\n//\n// This method is a wrapper around the `VPCRulesList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nVPCFirewallRule, err := client.Firewall.VPCRulesListAllPages(sortBy, organizationName, projectName, vpcName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#FirewallService.VPCRulesList"
         }
       },
       "put": {
@@ -4382,15 +4343,11 @@
           }
         },
         "tags": [
-          "networking"
+          "firewall"
         ],
         "x-go": {
-          "example": "// VPCFirewallRulesPut\n//\n// Replace the firewall rules for a VPC\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\n\nvPCFirewallRuleUpdateResult, err := client.Networking.VPCFirewallRulesPut(organizationName, projectName, vpcName, body)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#NetworkingService.VPCFirewallRulesPut"
-        },
-        "x-rust": {
-          "example": "let vpc_firewall_rule = client.networking().vpc_firewall_rules_put(organization_name, project_name, vpc_name, body).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.vpc_firewall_rules_put"
+          "example": "// VPCRulesPut\n//\n// Replace the firewall rules for a VPC\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\n\nvPCFirewallRuleUpdateResult, err := client.Firewall.VPCRulesPut(organizationName, projectName, vpcName, body)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#FirewallService.VPCRulesPut"
         }
       }
     },
@@ -4470,16 +4427,12 @@
           }
         },
         "tags": [
-          "networking"
+          "routers"
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "// VPCRoutersList\n//\n// List VPC Custom and System Routers\n//\n// To iterate over all pages, use the `VPCRoutersListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nvPCRouterResultsPage, err := client.Networking.VPCRoutersList(limit, pageToken, sortBy, organizationName, projectName, vpcName)\n\n// - OR -\n\n// VPCRoutersListAllPages\n//\n// List VPC Custom and System Routers\n//\n// This method is a wrapper around the `VPCRoutersList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nVPCRouter, err := client.Networking.VPCRoutersListAllPages(sortBy, organizationName, projectName, vpcName)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#NetworkingService.VPCRoutersList"
-        },
-        "x-rust": {
-          "example": "let vec_crate_types_vpc_router = client.networking().vpc_routers_get(limit, page_token, sort_by, organization_name, project_name, vpc_name).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.vpc_routers_get"
+          "example": "// VPCList\n//\n// List VPC Custom and System Routers\n//\n// To iterate over all pages, use the `VPCListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nvPCRouterResultsPage, err := client.Routers.VPCList(limit, pageToken, sortBy, organizationName, projectName, vpcName)\n\n// - OR -\n\n// VPCListAllPages\n//\n// List VPC Custom and System Routers\n//\n// This method is a wrapper around the `VPCList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nVPCRouter, err := client.Routers.VPCListAllPages(sortBy, organizationName, projectName, vpcName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RoutersService.VPCList"
         }
       },
       "post": {
@@ -4537,15 +4490,11 @@
           }
         },
         "tags": [
-          "networking"
+          "routers"
         ],
         "x-go": {
-          "example": "// VPCRoutersCreate\n//\n// Create a VPC Router\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\n\nvPCRouter, err := client.Networking.VPCRoutersCreate(organizationName, projectName, vpcName, body)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#NetworkingService.VPCRoutersCreate"
-        },
-        "x-rust": {
-          "example": "let vpc_router = client.networking().vpc_routers_post(organization_name, project_name, vpc_name, body).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.vpc_routers_post"
+          "example": "// VPCCreate\n//\n// Create a VPC Router\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\n\nvPCRouter, err := client.Routers.VPCCreate(organizationName, projectName, vpcName, body)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RoutersService.VPCCreate"
         }
       }
     },
@@ -4597,15 +4546,11 @@
           }
         },
         "tags": [
-          "networking"
+          "routers"
         ],
         "x-go": {
-          "example": "// VPCRoutersDeleteRouter\n//\n// Delete a router from its VPC\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `vpcName`\n\nif err := client.Networking.VPCRoutersDeleteRouter(organizationName, projectName, routerName, vpcName); err != nil {\n\tpanic(err)\n}",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#NetworkingService.VPCRoutersDeleteRouter"
-        },
-        "x-rust": {
-          "example": "client.networking().vpc_routers_delete_router(organization_name, project_name, router_name, vpc_name).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.vpc_routers_delete_router"
+          "example": "// VPCDelete\n//\n// Delete a router from its VPC\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `vpcName`\n\nif err := client.Routers.VPCDelete(organizationName, projectName, routerName, vpcName); err != nil {\n\tpanic(err)\n}",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RoutersService.VPCDelete"
         }
       },
       "get": {
@@ -4662,15 +4607,11 @@
           }
         },
         "tags": [
-          "networking"
+          "routers"
         ],
         "x-go": {
-          "example": "// VPCRoutersGetRouter\n//\n// Get a VPC Router\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `vpcName`\n\nvPCRouter, err := client.Networking.VPCRoutersGetRouter(organizationName, projectName, routerName, vpcName)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#NetworkingService.VPCRoutersGetRouter"
-        },
-        "x-rust": {
-          "example": "let vpc_router = client.networking().vpc_routers_get_router(organization_name, project_name, router_name, vpc_name).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.vpc_routers_get_router"
+          "example": "// VPCGet\n//\n// Get a VPC Router\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `vpcName`\n\nvPCRouter, err := client.Routers.VPCGet(organizationName, projectName, routerName, vpcName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RoutersService.VPCGet"
         }
       },
       "put": {
@@ -4730,15 +4671,11 @@
           }
         },
         "tags": [
-          "networking"
+          "routers"
         ],
         "x-go": {
-          "example": "// VPCRoutersPutRouter\n//\n// Update a VPC Router\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `vpcName`\n\nif err := client.Networking.VPCRoutersPutRouter(organizationName, projectName, routerName, vpcName, body); err != nil {\n\tpanic(err)\n}",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#NetworkingService.VPCRoutersPutRouter"
-        },
-        "x-rust": {
-          "example": "client.networking().vpc_routers_put_router(organization_name, project_name, router_name, vpc_name, body).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.vpc_routers_put_router"
+          "example": "// VPCPut\n//\n// Update a VPC Router\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `vpcName`\n\nif err := client.Routers.VPCPut(organizationName, projectName, routerName, vpcName, body); err != nil {\n\tpanic(err)\n}",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RoutersService.VPCPut"
         }
       }
     },
@@ -4827,16 +4764,12 @@
           }
         },
         "tags": [
-          "networking"
+          "routes"
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "// RoutersRoutesList\n//\n// List a Router's routes\n//\n// To iterate over all pages, use the `RoutersRoutesListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nrouterRouteResultsPage, err := client.Networking.RoutersRoutesList(limit, pageToken, sortBy, organizationName, projectName, routerName, vpcName)\n\n// - OR -\n\n// RoutersRoutesListAllPages\n//\n// List a Router's routes\n//\n// This method is a wrapper around the `RoutersRoutesList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nRouterRoute, err := client.Networking.RoutersRoutesListAllPages(sortBy, organizationName, projectName, routerName, vpcName)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#NetworkingService.RoutersRoutesList"
-        },
-        "x-rust": {
-          "example": "let vec_crate_types_router_route = client.networking().routers_routes_get(limit, page_token, sort_by, organization_name, project_name, router_name, vpc_name).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.routers_routes_get"
+          "example": "// rsList\n//\n// List a Router's routes\n//\n// To iterate over all pages, use the `rsListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nrouterRouteResultsPage, err := client.Routes.rsList(limit, pageToken, sortBy, organizationName, projectName, routerName, vpcName)\n\n// - OR -\n\n// rsListAllPages\n//\n// List a Router's routes\n//\n// This method is a wrapper around the `rsList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nRouterRoute, err := client.Routes.rsListAllPages(sortBy, organizationName, projectName, routerName, vpcName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RoutesService.rsList"
         }
       },
       "post": {
@@ -4903,15 +4836,11 @@
           }
         },
         "tags": [
-          "networking"
+          "routes"
         ],
         "x-go": {
-          "example": "// RoutersRoutesCreate\n//\n// Create a VPC Router\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `vpcName`\n\nrouterRoute, err := client.Networking.RoutersRoutesCreate(organizationName, projectName, routerName, vpcName, body)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#NetworkingService.RoutersRoutesCreate"
-        },
-        "x-rust": {
-          "example": "let router_route = client.networking().routers_routes_post(organization_name, project_name, router_name, vpc_name, body).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.routers_routes_post"
+          "example": "// rsCreate\n//\n// Create a VPC Router\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `vpcName`\n\nrouterRoute, err := client.Routes.rsCreate(organizationName, projectName, routerName, vpcName, body)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RoutesService.rsCreate"
         }
       }
     },
@@ -4972,15 +4901,11 @@
           }
         },
         "tags": [
-          "networking"
+          "routes"
         ],
         "x-go": {
-          "example": "// RoutersRoutesDeleteRoute\n//\n// Delete a route from its router\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routeName`\n//\t- `routerName`\n//\t- `vpcName`\n\nif err := client.Networking.RoutersRoutesDeleteRoute(organizationName, projectName, routeName, routerName, vpcName); err != nil {\n\tpanic(err)\n}",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#NetworkingService.RoutersRoutesDeleteRoute"
-        },
-        "x-rust": {
-          "example": "client.networking().routers_routes_delete_route(organization_name, project_name, route_name, router_name, vpc_name).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.routers_routes_delete_route"
+          "example": "// rsDelete\n//\n// Delete a route from its router\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routeName`\n//\t- `routerName`\n//\t- `vpcName`\n\nif err := client.Routes.rsDelete(organizationName, projectName, routeName, routerName, vpcName); err != nil {\n\tpanic(err)\n}",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RoutesService.rsDelete"
         }
       },
       "get": {
@@ -5046,15 +4971,11 @@
           }
         },
         "tags": [
-          "networking"
+          "routes"
         ],
         "x-go": {
-          "example": "// RoutersRoutesGetRoute\n//\n// Get a VPC Router route\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routeName`\n//\t- `routerName`\n//\t- `vpcName`\n\nrouterRoute, err := client.Networking.RoutersRoutesGetRoute(organizationName, projectName, routeName, routerName, vpcName)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#NetworkingService.RoutersRoutesGetRoute"
-        },
-        "x-rust": {
-          "example": "let router_route = client.networking().routers_routes_get_route(organization_name, project_name, route_name, router_name, vpc_name).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.routers_routes_get_route"
+          "example": "// rsGet\n//\n// Get a VPC Router route\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routeName`\n//\t- `routerName`\n//\t- `vpcName`\n\nrouterRoute, err := client.Routes.rsGet(organizationName, projectName, routeName, routerName, vpcName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RoutesService.rsGet"
         }
       },
       "put": {
@@ -5123,15 +5044,11 @@
           }
         },
         "tags": [
-          "networking"
+          "routes"
         ],
         "x-go": {
-          "example": "// RoutersRoutesPutRoute\n//\n// Update a Router route\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routeName`\n//\t- `routerName`\n//\t- `vpcName`\n\nif err := client.Networking.RoutersRoutesPutRoute(organizationName, projectName, routeName, routerName, vpcName, body); err != nil {\n\tpanic(err)\n}",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#NetworkingService.RoutersRoutesPutRoute"
-        },
-        "x-rust": {
-          "example": "client.networking().routers_routes_put_route(organization_name, project_name, route_name, router_name, vpc_name, body).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.routers_routes_put_route"
+          "example": "// rsPut\n//\n// Update a Router route\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routeName`\n//\t- `routerName`\n//\t- `vpcName`\n\nif err := client.Routes.rsPut(organizationName, projectName, routeName, routerName, vpcName, body); err != nil {\n\tpanic(err)\n}",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RoutesService.rsPut"
         }
       }
     },
@@ -5211,16 +5128,12 @@
           }
         },
         "tags": [
-          "networking"
+          "subnets"
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "// VPCSubnetsList\n//\n// List subnets in a VPC.\n//\n// To iterate over all pages, use the `VPCSubnetsListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nvPCSubnetResultsPage, err := client.Networking.VPCSubnetsList(limit, pageToken, sortBy, organizationName, projectName, vpcName)\n\n// - OR -\n\n// VPCSubnetsListAllPages\n//\n// List subnets in a VPC.\n//\n// This method is a wrapper around the `VPCSubnetsList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nVPCSubnet, err := client.Networking.VPCSubnetsListAllPages(sortBy, organizationName, projectName, vpcName)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#NetworkingService.VPCSubnetsList"
-        },
-        "x-rust": {
-          "example": "let vec_crate_types_vpc_subnet = client.networking().vpc_subnets_get(limit, page_token, sort_by, organization_name, project_name, vpc_name).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.vpc_subnets_get"
+          "example": "// VPCList\n//\n// List subnets in a VPC.\n//\n// To iterate over all pages, use the `VPCListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nvPCSubnetResultsPage, err := client.Subnets.VPCList(limit, pageToken, sortBy, organizationName, projectName, vpcName)\n\n// - OR -\n\n// VPCListAllPages\n//\n// List subnets in a VPC.\n//\n// This method is a wrapper around the `VPCList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\n\nVPCSubnet, err := client.Subnets.VPCListAllPages(sortBy, organizationName, projectName, vpcName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SubnetsService.VPCList"
         }
       },
       "post": {
@@ -5278,15 +5191,11 @@
           }
         },
         "tags": [
-          "networking"
+          "subnets"
         ],
         "x-go": {
-          "example": "// VPCSubnetsCreate\n//\n// Create a subnet in a VPC.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\n\nvPCSubnet, err := client.Networking.VPCSubnetsCreate(organizationName, projectName, vpcName, body)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#NetworkingService.VPCSubnetsCreate"
-        },
-        "x-rust": {
-          "example": "let vpc_subnet = client.networking().vpc_subnets_post(organization_name, project_name, vpc_name, body).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.vpc_subnets_post"
+          "example": "// VPCCreate\n//\n// Create a subnet in a VPC.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\n\nvPCSubnet, err := client.Subnets.VPCCreate(organizationName, projectName, vpcName, body)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SubnetsService.VPCCreate"
         }
       }
     },
@@ -5338,15 +5247,11 @@
           }
         },
         "tags": [
-          "networking"
+          "subnets"
         ],
         "x-go": {
-          "example": "// VPCSubnetsDeleteSubnet\n//\n// Delete a subnet from a VPC.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `subnetName`\n//\t- `vpcName`\n\nif err := client.Networking.VPCSubnetsDeleteSubnet(organizationName, projectName, subnetName, vpcName); err != nil {\n\tpanic(err)\n}",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#NetworkingService.VPCSubnetsDeleteSubnet"
-        },
-        "x-rust": {
-          "example": "client.networking().vpc_subnets_delete_subnet(organization_name, project_name, subnet_name, vpc_name).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.vpc_subnets_delete_subnet"
+          "example": "// VPCDelete\n//\n// Delete a subnet from a VPC.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `subnetName`\n//\t- `vpcName`\n\nif err := client.Subnets.VPCDelete(organizationName, projectName, subnetName, vpcName); err != nil {\n\tpanic(err)\n}",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SubnetsService.VPCDelete"
         }
       },
       "get": {
@@ -5403,15 +5308,11 @@
           }
         },
         "tags": [
-          "networking"
+          "subnets"
         ],
         "x-go": {
-          "example": "// VPCSubnetsGetSubnet\n//\n// Get subnet in a VPC.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `subnetName`\n//\t- `vpcName`\n\nvPCSubnet, err := client.Networking.VPCSubnetsGetSubnet(organizationName, projectName, subnetName, vpcName)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#NetworkingService.VPCSubnetsGetSubnet"
-        },
-        "x-rust": {
-          "example": "let vpc_subnet = client.networking().vpc_subnets_get_subnet(organization_name, project_name, subnet_name, vpc_name).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.vpc_subnets_get_subnet"
+          "example": "// VPCGet\n//\n// Get subnet in a VPC.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `subnetName`\n//\t- `vpcName`\n\nvPCSubnet, err := client.Subnets.VPCGet(organizationName, projectName, subnetName, vpcName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SubnetsService.VPCGet"
         }
       },
       "put": {
@@ -5471,15 +5372,11 @@
           }
         },
         "tags": [
-          "networking"
+          "subnets"
         ],
         "x-go": {
-          "example": "// VPCSubnetsPutSubnet\n//\n// Update a VPC Subnet.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `subnetName`\n//\t- `vpcName`\n\nif err := client.Networking.VPCSubnetsPutSubnet(organizationName, projectName, subnetName, vpcName, body); err != nil {\n\tpanic(err)\n}",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#NetworkingService.VPCSubnetsPutSubnet"
-        },
-        "x-rust": {
-          "example": "client.networking().vpc_subnets_put_subnet(organization_name, project_name, subnet_name, vpc_name, body).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.vpc_subnets_put_subnet"
+          "example": "// VPCPut\n//\n// Update a VPC Subnet.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `subnetName`\n//\t- `vpcName`\n\nif err := client.Subnets.VPCPut(organizationName, projectName, subnetName, vpcName, body); err != nil {\n\tpanic(err)\n}",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SubnetsService.VPCPut"
         }
       }
     },
@@ -5568,16 +5465,12 @@
           }
         },
         "tags": [
-          "networking"
+          "subnets"
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "// SubnetsIPsList\n//\n// List IP addresses on a VPC subnet.\n//\n// To iterate over all pages, use the `SubnetsIPsListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `subnetName`\n//\t- `vpcName`\n\nnetworkInterfaceResultsPage, err := client.Networking.SubnetsIPsList(limit, pageToken, sortBy, organizationName, projectName, subnetName, vpcName)\n\n// - OR -\n\n// SubnetsIPsListAllPages\n//\n// List IP addresses on a VPC subnet.\n//\n// This method is a wrapper around the `SubnetsIPsList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `subnetName`\n//\t- `vpcName`\n\nNetworkInterface, err := client.Networking.SubnetsIPsListAllPages(sortBy, organizationName, projectName, subnetName, vpcName)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#NetworkingService.SubnetsIPsList"
-        },
-        "x-rust": {
-          "example": "let vec_crate_types_network_interface = client.networking().subnets_ips_get(limit, page_token, sort_by, organization_name, project_name, subnet_name, vpc_name).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/networking/struct.Networking.html#method.subnets_ips_get"
+          "example": "// IPsList\n//\n// List IP addresses on a VPC subnet.\n//\n// To iterate over all pages, use the `IPsListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `subnetName`\n//\t- `vpcName`\n\nnetworkInterfaceResultsPage, err := client.Subnets.IPsList(limit, pageToken, sortBy, organizationName, projectName, subnetName, vpcName)\n\n// - OR -\n\n// IPsListAllPages\n//\n// List IP addresses on a VPC subnet.\n//\n// This method is a wrapper around the `IPsList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `subnetName`\n//\t- `vpcName`\n\nNetworkInterface, err := client.Subnets.IPsListAllPages(sortBy, organizationName, projectName, subnetName, vpcName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SubnetsService.IPsList"
         }
       }
     },
@@ -5628,10 +5521,6 @@
         "x-go": {
           "example": "// List\n//\n// List the built-in roles\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n\nroleResultsPage, err := client.Roles.List(limit, pageToken)\n\n// - OR -\n\n// ListAllPages\n//\n// List the built-in roles\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n\nRole, err := client.Roles.ListAllPages(,)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RolesService.List"
-        },
-        "x-rust": {
-          "example": "let vec_crate_types_role = client.roles().get_page(limit, page_token).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/roles/struct.Roles.html#method.get_page"
         }
       }
     },
@@ -5669,10 +5558,6 @@
         "x-go": {
           "example": "// Get\n//\n// Fetch a specific built-in role\n//\n// Parameters:\n//\t- `roleName`\n\nrole, err := client.Roles.Get(roleName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RolesService.Get"
-        },
-        "x-rust": {
-          "example": "let role = client.roles().get(role_name).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/roles/struct.Roles.html#method.get"
         }
       }
     },
@@ -5731,10 +5616,6 @@
         "x-go": {
           "example": "// List\n//\n// List all sagas (for debugging)\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\n\nsagaResultsPage, err := client.Sagas.List(limit, pageToken, sortBy)\n\n// - OR -\n\n// ListAllPages\n//\n// List all sagas (for debugging)\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\n\nSaga, err := client.Sagas.ListAllPages(sortBy)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SagasService.List"
-        },
-        "x-rust": {
-          "example": "let vec_crate_types_saga = client.sagas().get_page(limit, page_token, sort_by).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/sagas/struct.Sagas.html#method.get_page"
         }
       }
     },
@@ -5772,10 +5653,6 @@
         "x-go": {
           "example": "// Get\n//\n// Fetch information about a single saga (for debugging)\n//\n// Parameters:\n//\t- `sagaId`\n\nsaga, err := client.Sagas.Get(sagaID)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SagasService.Get"
-        },
-        "x-rust": {
-          "example": "let saga = client.sagas().get(saga_id).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/sagas/struct.Sagas.html#method.get"
         }
       }
     },
@@ -5795,13 +5672,12 @@
             "description": "successful operation"
           }
         },
+        "tags": [
+          "hidden"
+        ],
         "x-go": {
-          "example": "// SessionMe\n//\n// Fetch the user associated with the current session\n\nsessionUser, err := client.SessionMe()",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#Client.SessionMe"
-        },
-        "x-rust": {
-          "example": "let session_user = client.session().me().await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/session/struct.Session.html#method.me"
+          "example": "// SessionMe\n//\n// Fetch the user associated with the current session\n\nsessionUser, err := client.Hidden.SessionMe()",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#HiddenService.SessionMe"
         }
       }
     },
@@ -5852,10 +5728,6 @@
         "x-go": {
           "example": "// TimeseriesSchemaList\n//\n// List all timeseries schema\n//\n// To iterate over all pages, use the `TimeseriesSchemaListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n\ntimeseriesSchemaResultsPage, err := client.Metrics.TimeseriesSchemaList(limit, pageToken)\n\n// - OR -\n\n// TimeseriesSchemaListAllPages\n//\n// List all timeseries schema\n//\n// This method is a wrapper around the `TimeseriesSchemaList` method.\n// This method returns all the pages at once.\n\nTimeseriesSchema, err := client.Metrics.TimeseriesSchemaListAllPages(,)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#MetricsService.TimeseriesSchemaList"
-        },
-        "x-rust": {
-          "example": "let vec_crate_types_timeseries_schema = client.metrics().timeseries_schema_get(limit, page_token).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/metrics/struct.Metrics.html#method.timeseries_schema_get"
         }
       }
     },
@@ -5914,10 +5786,6 @@
         "x-go": {
           "example": "// List\n//\n// List the built-in system users\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\n\nuserResultsPage, err := client.Users.List(limit, pageToken, sortBy)\n\n// - OR -\n\n// ListAllPages\n//\n// List the built-in system users\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\n\nUser, err := client.Users.ListAllPages(sortBy)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#UsersService.List"
-        },
-        "x-rust": {
-          "example": "let vec_crate_types_user = client.users().get_page(limit, page_token, sort_by).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/users/struct.Users.html#method.get_page"
         }
       }
     },
@@ -5954,20 +5822,22 @@
         "x-go": {
           "example": "// Get\n//\n// Fetch a specific built-in system user\n//\n// Parameters:\n//\t- `userName`\n\nuser, err := client.Users.Get(userName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#UsersService.Get"
-        },
-        "x-rust": {
-          "example": "let user = client.users().get(user_name).await?;",
-          "libDocsLink": "https://docs.rs/oxide-api/latest/oxide_api/users/struct.Users.html#method.get"
         }
       }
     }
   },
   "tags": [
     {
-      "name": "hardware"
+      "name": "racks"
+    },
+    {
+      "name": "sleds"
     },
     {
       "name": "organizations"
+    },
+    {
+      "name": "disks"
     },
     {
       "name": "projects"
@@ -5988,7 +5858,22 @@
       "name": "metrics"
     },
     {
-      "name": "networking"
+      "name": "vpcs"
+    },
+    {
+      "name": "subnets"
+    },
+    {
+      "name": "firewall"
+    },
+    {
+      "name": "routers"
+    },
+    {
+      "name": "routes"
+    },
+    {
+      "name": "hidden"
     }
   ]
 }

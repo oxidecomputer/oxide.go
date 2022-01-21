@@ -15,20 +15,31 @@ type Client struct {
 
 	// token is the API token used for authentication.
 	token         string
-	Hardware      *HardwareService
+	Racks         *RacksService
+	Sleds         *SledsService
 	Organizations *OrganizationsService
+	Disks         *DisksService
 	Projects      *ProjectsService
 	Users         *UsersService
 	Roles         *RolesService
 	Instances     *InstancesService
 	Sagas         *SagasService
 	Metrics       *MetricsService
-	Networking    *NetworkingService
+	Vpcs          *VpcsService
+	Subnets       *SubnetsService
+	Firewall      *FirewallService
+	Routers       *RoutersService
+	Routes        *RoutesService
+	Hidden        *HiddenService
 }
 
-type HardwareService service
+type RacksService service
+
+type SledsService service
 
 type OrganizationsService service
+
+type DisksService service
 
 type ProjectsService service
 
@@ -42,4 +53,14 @@ type SagasService service
 
 type MetricsService service
 
-type NetworkingService service
+type VpcsService service
+
+type SubnetsService service
+
+type FirewallService service
+
+type RoutersService service
+
+type RoutesService service
+
+type HiddenService service
