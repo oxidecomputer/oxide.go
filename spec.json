@@ -2409,6 +2409,10 @@
     "x-go": {
       "client": "// Create a client with your token and host.\nclient, err := oxide.NewClient(\"$OXIDE_TOKEN\", \"your apps user agent\", \"$OXIDE_HOST\")\nif err != nil {\n  panic(err)\n}\n\n// - OR -\n\n// Create a new client with your token and host parsed from the environment\n// variables: OXIDE_TOKEN, OXIDE_HOST.\nclient, err := oxide.NewClientFromEnv(\"your apps user agent\")\nif err != nil {\n  panic(err)\n}",
       "install": "go get github.com/oxidecomputer/oxide.go"
+    },
+    "x-ts": {
+      "client": "// Create a new HttpClient and configure it with the baseUrl and token.\nlet client = new Api({\n    baseUrl: \"$OXIDE_HOST\",\n    token: \"$OXIDE_TOKEN\",\n});",
+      "install": "yarn add @oxidecomputer/api\n# - OR -\n$ npm install @oxidecomputer/api"
     }
   },
   "openapi": "3.0.3",
@@ -2468,6 +2472,9 @@
         "x-go": {
           "example": "// List\n//\n// List racks in the system.\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\nrackResultsPage, err := client.Racks.List(limit, pageToken, sortBy)\n\n// - OR -\n\n// ListAllPages\n//\n// List racks in the system.\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\nRack, err := client.Racks.ListAllPages(sortBy)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RacksService.List"
+        },
+        "x-ts": {
+          "example": "let resp = client.hardwareRacksGet(query, params);"
         }
       }
     },
@@ -2506,6 +2513,9 @@
         "x-go": {
           "example": "// Get\n//\n// Fetch information about a particular rack.\n//\n// Parameters:\n//\t- `rackId`\nrack, err := client.Racks.Get(rackID)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RacksService.Get"
+        },
+        "x-ts": {
+          "example": "let resp = client.hardwareRacksGetRack(HardwareRacksGetRackParams{rackId}, params);"
         }
       }
     },
@@ -2564,6 +2574,9 @@
         "x-go": {
           "example": "// List\n//\n// List sleds in the system.\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\nsledResultsPage, err := client.Sleds.List(limit, pageToken, sortBy)\n\n// - OR -\n\n// ListAllPages\n//\n// List sleds in the system.\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\nSled, err := client.Sleds.ListAllPages(sortBy)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SledsService.List"
+        },
+        "x-ts": {
+          "example": "let resp = client.hardwareSledsGet(query, params);"
         }
       }
     },
@@ -2602,6 +2615,9 @@
         "x-go": {
           "example": "// Get\n//\n// Fetch information about a sled in the system.\n//\n// Parameters:\n//\t- `sledId`\nsled, err := client.Sleds.Get(sledID)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SledsService.Get"
+        },
+        "x-ts": {
+          "example": "let resp = client.hardwareSledsGetSled(HardwareSledsGetSledParams{sledId}, params);"
         }
       }
     },
@@ -2629,6 +2645,9 @@
         "x-go": {
           "example": "// SpoofLogin\nif err := client.Hidden.SpoofLogin(body); err != nil {\n\tpanic(err)\n}",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#HiddenService.SpoofLogin"
+        },
+        "x-ts": {
+          "example": "let resp = client.spoofLogin(query, data, params);"
         }
       }
     },
@@ -2646,6 +2665,9 @@
         "x-go": {
           "example": "// Logout\nif err := client.Hidden.Logout(); err != nil {\n\tpanic(err)\n}",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#HiddenService.Logout"
+        },
+        "x-ts": {
+          "example": "let resp = client.logout(query, params);"
         }
       }
     },
@@ -2704,6 +2726,9 @@
         "x-go": {
           "example": "// List\n//\n// List all organizations.\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\norganizationResultsPage, err := client.Organizations.List(limit, pageToken, sortBy)\n\n// - OR -\n\n// ListAllPages\n//\n// List all organizations.\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\nOrganization, err := client.Organizations.ListAllPages(sortBy)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#OrganizationsService.List"
+        },
+        "x-ts": {
+          "example": "let resp = client.organizationsGet(query, params);"
         }
       },
       "post": {
@@ -2737,6 +2762,9 @@
         "x-go": {
           "example": "// Create\n//\n// Create a new organization.\norganization, err := client.Organizations.Create(body)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#OrganizationsService.Create"
+        },
+        "x-ts": {
+          "example": "let resp = client.organizationsPost(query, data, params);"
         }
       }
     },
@@ -2766,6 +2794,9 @@
         "x-go": {
           "example": "// Delete\n//\n// Delete a specific organization.\n//\n// Parameters:\n//\t- `organizationName`\nif err := client.Organizations.Delete(organizationName); err != nil {\n\tpanic(err)\n}",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#OrganizationsService.Delete"
+        },
+        "x-ts": {
+          "example": "let resp = client.organizationsDeleteOrganization(OrganizationsDeleteOrganizationParams{orgName}, params);"
         }
       },
       "get": {
@@ -2800,6 +2831,9 @@
         "x-go": {
           "example": "// Get\n//\n// Fetch a specific organization\n//\n// Parameters:\n//\t- `organizationName`\norganization, err := client.Organizations.Get(organizationName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#OrganizationsService.Get"
+        },
+        "x-ts": {
+          "example": "let resp = client.organizationsGetOrganization(OrganizationsGetOrganizationParams{orgName}, params);"
         }
       },
       "put": {
@@ -2844,6 +2878,9 @@
         "x-go": {
           "example": "// Put\n//\n// Update a specific organization.\n//  * TODO-correctness: Is it valid for PUT to accept application/json that's a subset of what the resource actually represents?  If not, is that a problem? (HTTP may require that this be idempotent.)  If so, can we get around that having this be a slightly different content-type (e.g., \"application/json-patch\")?  We should see what other APIs do.\n//\n// Parameters:\n//\t- `organizationName`\norganization, err := client.Organizations.Put(organizationName, body)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#OrganizationsService.Put"
+        },
+        "x-ts": {
+          "example": "let resp = client.organizationsPutOrganization(OrganizationsPutOrganizationParams{orgName}, data, params);"
         }
       }
     },
@@ -2911,6 +2948,9 @@
         "x-go": {
           "example": "// List\n//\n// List all projects.\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `sortBy`\nprojectResultsPage, err := client.Projects.List(limit, pageToken, sortBy, organizationName)\n\n// - OR -\n\n// ListAllPages\n//\n// List all projects.\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `sortBy`\nProject, err := client.Projects.ListAllPages(sortBy, organizationName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ProjectsService.List"
+        },
+        "x-ts": {
+          "example": "let resp = client.organizationProjectsGet(OrganizationProjectsGetParams{orgName}, params);"
         }
       },
       "post": {
@@ -2955,6 +2995,9 @@
         "x-go": {
           "example": "// Create\n//\n// Create a new project.\n//\n// Parameters:\n//\t- `organizationName`\nproject, err := client.Projects.Create(organizationName, body)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ProjectsService.Create"
+        },
+        "x-ts": {
+          "example": "let resp = client.organizationProjectsPost(OrganizationProjectsPostParams{orgName}, data, params);"
         }
       }
     },
@@ -2993,6 +3036,9 @@
         "x-go": {
           "example": "// Delete\n//\n// Delete a specific project.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\nif err := client.Projects.Delete(organizationName, projectName); err != nil {\n\tpanic(err)\n}",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ProjectsService.Delete"
+        },
+        "x-ts": {
+          "example": "let resp = client.organizationProjectsDeleteProject(OrganizationProjectsDeleteProjectParams{orgName, projectName}, params);"
         }
       },
       "get": {
@@ -3036,6 +3082,9 @@
         "x-go": {
           "example": "// Get\n//\n// Fetch a specific project\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\nproject, err := client.Projects.Get(organizationName, projectName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ProjectsService.Get"
+        },
+        "x-ts": {
+          "example": "let resp = client.organizationProjectsGetProject(OrganizationProjectsGetProjectParams{orgName, projectName}, params);"
         }
       },
       "put": {
@@ -3089,6 +3138,9 @@
         "x-go": {
           "example": "// Put\n//\n// Update a specific project.\n//  * TODO-correctness: Is it valid for PUT to accept application/json that's a subset of what the resource actually represents?  If not, is that a problem? (HTTP may require that this be idempotent.)  If so, can we get around that having this be a slightly different content-type (e.g., \"application/json-patch\")?  We should see what other APIs do.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\nproject, err := client.Projects.Put(organizationName, projectName, body)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ProjectsService.Put"
+        },
+        "x-ts": {
+          "example": "let resp = client.organizationProjectsPutProject(OrganizationProjectsPutProjectParams{orgName, projectName}, data, params);"
         }
       }
     },
@@ -3165,6 +3217,9 @@
         "x-go": {
           "example": "// List\n//\n// List disks in a project.\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\ndiskResultsPage, err := client.Disks.List(limit, pageToken, sortBy, organizationName, projectName)\n\n// - OR -\n\n// ListAllPages\n//\n// List disks in a project.\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\nDisk, err := client.Disks.ListAllPages(sortBy, organizationName, projectName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#DisksService.List"
+        },
+        "x-ts": {
+          "example": "let resp = client.projectDisksGet(ProjectDisksGetParams{orgName, projectName}, params);"
         }
       },
       "post": {
@@ -3218,6 +3273,9 @@
         "x-go": {
           "example": "// Create\n//\n// Create a disk in a project.\n//  * TODO-correctness See note about instance create.  This should be async.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\ndisk, err := client.Disks.Create(organizationName, projectName, body)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#DisksService.Create"
+        },
+        "x-ts": {
+          "example": "let resp = client.projectDisksPost(ProjectDisksPostParams{orgName, projectName}, data, params);"
         }
       }
     },
@@ -3265,6 +3323,9 @@
         "x-go": {
           "example": "// Delete\n//\n// Delete a disk from a project.\n//\n// Parameters:\n//\t- `diskName`\n//\t- `organizationName`\n//\t- `projectName`\nif err := client.Disks.Delete(diskName, organizationName, projectName); err != nil {\n\tpanic(err)\n}",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#DisksService.Delete"
+        },
+        "x-ts": {
+          "example": "let resp = client.projectDisksDeleteDisk(ProjectDisksDeleteDiskParams{diskName, orgName, projectName}, params);"
         }
       },
       "get": {
@@ -3317,6 +3378,9 @@
         "x-go": {
           "example": "// Get\n//\n// Fetch a single disk in a project.\n//\n// Parameters:\n//\t- `diskName`\n//\t- `organizationName`\n//\t- `projectName`\ndisk, err := client.Disks.Get(diskName, organizationName, projectName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#DisksService.Get"
+        },
+        "x-ts": {
+          "example": "let resp = client.projectDisksGetDisk(ProjectDisksGetDiskParams{diskName, orgName, projectName}, params);"
         }
       }
     },
@@ -3393,6 +3457,9 @@
         "x-go": {
           "example": "// List\n//\n// List instances in a project.\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\ninstanceResultsPage, err := client.Instances.List(limit, pageToken, sortBy, organizationName, projectName)\n\n// - OR -\n\n// ListAllPages\n//\n// List instances in a project.\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\nInstance, err := client.Instances.ListAllPages(sortBy, organizationName, projectName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#InstancesService.List"
+        },
+        "x-ts": {
+          "example": "let resp = client.projectInstancesGet(ProjectInstancesGetParams{orgName, projectName}, params);"
         }
       },
       "post": {
@@ -3446,6 +3513,9 @@
         "x-go": {
           "example": "// Create\n//\n// Create an instance in a project.\n//  * TODO-correctness This is supposed to be async.  Is that right?  We can create the instance immediately -- it's just not booted yet.  Maybe the boot operation is what's a separate operation_id.  What about the response code (201 Created vs 202 Accepted)?  Is that orthogonal?  Things can return a useful response, including an operation id, with either response code.  Maybe a \"reboot\" operation would return a 202 Accepted because there's no actual resource created?\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\ninstance, err := client.Instances.Create(organizationName, projectName, body)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#InstancesService.Create"
+        },
+        "x-ts": {
+          "example": "let resp = client.projectInstancesPost(ProjectInstancesPostParams{orgName, projectName}, data, params);"
         }
       }
     },
@@ -3493,6 +3563,9 @@
         "x-go": {
           "example": "// Delete\n//\n// Delete an instance from a project.\n//\n// Parameters:\n//\t- `instanceName`\n//\t- `organizationName`\n//\t- `projectName`\nif err := client.Instances.Delete(instanceName, organizationName, projectName); err != nil {\n\tpanic(err)\n}",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#InstancesService.Delete"
+        },
+        "x-ts": {
+          "example": "let resp = client.projectInstancesDeleteInstance(ProjectInstancesDeleteInstanceParams{instanceName, orgName, projectName}, params);"
         }
       },
       "get": {
@@ -3545,6 +3618,9 @@
         "x-go": {
           "example": "// Get\n//\n// Get an instance in a project.\n//\n// Parameters:\n//\t- `instanceName`\n//\t- `organizationName`\n//\t- `projectName`\ninstance, err := client.Instances.Get(instanceName, organizationName, projectName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#InstancesService.Get"
+        },
+        "x-ts": {
+          "example": "let resp = client.projectInstancesGetInstance(ProjectInstancesGetInstanceParams{instanceName, orgName, projectName}, params);"
         }
       }
     },
@@ -3630,6 +3706,9 @@
         "x-go": {
           "example": "// DisksList\n//\n// List disks attached to this instance.\n//\n// To iterate over all pages, use the `DisksListAllPages` method, instead.\n//\n// Parameters:\n//\t- `instanceName`\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\ndiskResultsPage, err := client.Instances.DisksList(limit, pageToken, sortBy, instanceName, organizationName, projectName)\n\n// - OR -\n\n// DisksListAllPages\n//\n// List disks attached to this instance.\n//\n// This method is a wrapper around the `DisksList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `instanceName`\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\nDisk, err := client.Instances.DisksListAllPages(sortBy, instanceName, organizationName, projectName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#InstancesService.DisksList"
+        },
+        "x-ts": {
+          "example": "let resp = client.instanceDisksGet(InstanceDisksGetParams{instanceName, orgName, projectName}, params);"
         }
       }
     },
@@ -3693,6 +3772,9 @@
         "x-go": {
           "example": "// DisksAttach\n//\n// Parameters:\n//\t- `instanceName`\n//\t- `organizationName`\n//\t- `projectName`\ndisk, err := client.Instances.DisksAttach(instanceName, organizationName, projectName, body)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#InstancesService.DisksAttach"
+        },
+        "x-ts": {
+          "example": "let resp = client.instanceDisksAttach(InstanceDisksAttachParams{instanceName, orgName, projectName}, data, params);"
         }
       }
     },
@@ -3756,6 +3838,9 @@
         "x-go": {
           "example": "// DisksDetach\n//\n// Parameters:\n//\t- `instanceName`\n//\t- `organizationName`\n//\t- `projectName`\ndisk, err := client.Instances.DisksDetach(instanceName, organizationName, projectName, body)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#InstancesService.DisksDetach"
+        },
+        "x-ts": {
+          "example": "let resp = client.instanceDisksDetach(InstanceDisksDetachParams{instanceName, orgName, projectName}, data, params);"
         }
       }
     },
@@ -3810,6 +3895,9 @@
         "x-go": {
           "example": "// Reboot\n//\n// Reboot an instance.\n//\n// Parameters:\n//\t- `instanceName`\n//\t- `organizationName`\n//\t- `projectName`\ninstance, err := client.Instances.Reboot(instanceName, organizationName, projectName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#InstancesService.Reboot"
+        },
+        "x-ts": {
+          "example": "let resp = client.projectInstancesInstanceReboot(ProjectInstancesInstanceRebootParams{instanceName, orgName, projectName}, params);"
         }
       }
     },
@@ -3864,6 +3952,9 @@
         "x-go": {
           "example": "// Start\n//\n// Boot an instance.\n//\n// Parameters:\n//\t- `instanceName`\n//\t- `organizationName`\n//\t- `projectName`\ninstance, err := client.Instances.Start(instanceName, organizationName, projectName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#InstancesService.Start"
+        },
+        "x-ts": {
+          "example": "let resp = client.projectInstancesInstanceStart(ProjectInstancesInstanceStartParams{instanceName, orgName, projectName}, params);"
         }
       }
     },
@@ -3918,6 +4009,9 @@
         "x-go": {
           "example": "// Stop\n//\n// Halt an instance.\n//\n// Parameters:\n//\t- `instanceName`\n//\t- `organizationName`\n//\t- `projectName`\ninstance, err := client.Instances.Stop(instanceName, organizationName, projectName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#InstancesService.Stop"
+        },
+        "x-ts": {
+          "example": "let resp = client.projectInstancesInstanceStop(ProjectInstancesInstanceStopParams{instanceName, orgName, projectName}, params);"
         }
       }
     },
@@ -3994,6 +4088,9 @@
         "x-go": {
           "example": "// List\n//\n// List VPCs in a project.\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\nvPCResultsPage, err := client.Vpcs.List(limit, pageToken, sortBy, organizationName, projectName)\n\n// - OR -\n\n// ListAllPages\n//\n// List VPCs in a project.\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\nVPC, err := client.Vpcs.ListAllPages(sortBy, organizationName, projectName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#VpcsService.List"
+        },
+        "x-ts": {
+          "example": "let resp = client.projectVpcsGet(ProjectVpcsGetParams{orgName, projectName}, params);"
         }
       },
       "post": {
@@ -4047,6 +4144,9 @@
         "x-go": {
           "example": "// Create\n//\n// Create a VPC in a project.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\nvPC, err := client.Vpcs.Create(organizationName, projectName, body)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#VpcsService.Create"
+        },
+        "x-ts": {
+          "example": "let resp = client.projectVpcsPost(ProjectVpcsPostParams{orgName, projectName}, data, params);"
         }
       }
     },
@@ -4094,6 +4194,9 @@
         "x-go": {
           "example": "// Delete\n//\n// Delete a vpc from a project.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\nif err := client.Vpcs.Delete(organizationName, projectName, vpcName); err != nil {\n\tpanic(err)\n}",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#VpcsService.Delete"
+        },
+        "x-ts": {
+          "example": "let resp = client.projectVpcsDeleteVpc(ProjectVpcsDeleteVpcParams{orgName, projectName, vpcName}, params);"
         }
       },
       "get": {
@@ -4146,6 +4249,9 @@
         "x-go": {
           "example": "// Get\n//\n// Get a VPC in a project.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\nvPC, err := client.Vpcs.Get(organizationName, projectName, vpcName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#VpcsService.Get"
+        },
+        "x-ts": {
+          "example": "let resp = client.projectVpcsGetVpc(ProjectVpcsGetVpcParams{orgName, projectName, vpcName}, params);"
         }
       },
       "put": {
@@ -4201,6 +4307,9 @@
         "x-go": {
           "example": "// Put\n//\n// Update a VPC.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\nif err := client.Vpcs.Put(organizationName, projectName, vpcName, body); err != nil {\n\tpanic(err)\n}",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#VpcsService.Put"
+        },
+        "x-ts": {
+          "example": "let resp = client.projectVpcsPutVpc(ProjectVpcsPutVpcParams{orgName, projectName, vpcName}, data, params);"
         }
       }
     },
@@ -4286,6 +4395,9 @@
         "x-go": {
           "example": "// RulesList\n//\n// List firewall rules for a VPC.\n//\n// To iterate over all pages, use the `RulesListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\nfirewallRuleResultsPage, err := client.Firewall.RulesList(limit, pageToken, sortBy, organizationName, projectName, vpcName)\n\n// - OR -\n\n// RulesListAllPages\n//\n// List firewall rules for a VPC.\n//\n// This method is a wrapper around the `RulesList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\nFirewallRule, err := client.Firewall.RulesListAllPages(sortBy, organizationName, projectName, vpcName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#FirewallService.RulesList"
+        },
+        "x-ts": {
+          "example": "let resp = client.vpcFirewallRulesGet(VpcFirewallRulesGetParams{orgName, projectName, vpcName}, params);"
         }
       },
       "put": {
@@ -4348,6 +4460,9 @@
         "x-go": {
           "example": "// RulesPut\n//\n// Replace the firewall rules for a VPC\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\nfirewallRuleUpdateResult, err := client.Firewall.RulesPut(organizationName, projectName, vpcName, body)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#FirewallService.RulesPut"
+        },
+        "x-ts": {
+          "example": "let resp = client.vpcFirewallRulesPut(VpcFirewallRulesPutParams{orgName, projectName, vpcName}, data, params);"
         }
       }
     },
@@ -4433,6 +4548,9 @@
         "x-go": {
           "example": "// List\n//\n// List VPC Custom and System Routers\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\nrouterResultsPage, err := client.Routers.List(limit, pageToken, sortBy, organizationName, projectName, vpcName)\n\n// - OR -\n\n// ListAllPages\n//\n// List VPC Custom and System Routers\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\nRouter, err := client.Routers.ListAllPages(sortBy, organizationName, projectName, vpcName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RoutersService.List"
+        },
+        "x-ts": {
+          "example": "let resp = client.vpcRoutersGet(VpcRoutersGetParams{orgName, projectName, vpcName}, params);"
         }
       },
       "post": {
@@ -4495,6 +4613,9 @@
         "x-go": {
           "example": "// Create\n//\n// Create a VPC Router\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\nrouter, err := client.Routers.Create(organizationName, projectName, vpcName, body)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RoutersService.Create"
+        },
+        "x-ts": {
+          "example": "let resp = client.vpcRoutersPost(VpcRoutersPostParams{orgName, projectName, vpcName}, data, params);"
         }
       }
     },
@@ -4551,6 +4672,9 @@
         "x-go": {
           "example": "// Delete\n//\n// Delete a router from its VPC\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `vpcName`\nif err := client.Routers.Delete(organizationName, projectName, routerName, vpcName); err != nil {\n\tpanic(err)\n}",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RoutersService.Delete"
+        },
+        "x-ts": {
+          "example": "let resp = client.vpcRoutersDeleteRouter(VpcRoutersDeleteRouterParams{orgName, projectName, routerName, vpcName}, params);"
         }
       },
       "get": {
@@ -4612,6 +4736,9 @@
         "x-go": {
           "example": "// Get\n//\n// Get a VPC Router\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `vpcName`\nrouter, err := client.Routers.Get(organizationName, projectName, routerName, vpcName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RoutersService.Get"
+        },
+        "x-ts": {
+          "example": "let resp = client.vpcRoutersGetRouter(VpcRoutersGetRouterParams{orgName, projectName, routerName, vpcName}, params);"
         }
       },
       "put": {
@@ -4676,6 +4803,9 @@
         "x-go": {
           "example": "// Put\n//\n// Update a VPC Router\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `vpcName`\nif err := client.Routers.Put(organizationName, projectName, routerName, vpcName, body); err != nil {\n\tpanic(err)\n}",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RoutersService.Put"
+        },
+        "x-ts": {
+          "example": "let resp = client.vpcRoutersPutRouter(VpcRoutersPutRouterParams{orgName, projectName, routerName, vpcName}, data, params);"
         }
       }
     },
@@ -4770,6 +4900,9 @@
         "x-go": {
           "example": "// rsList\n//\n// List a Router's routes\n//\n// To iterate over all pages, use the `rsListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `sortBy`\n//\t- `vpcName`\nrouterRouteResultsPage, err := client.Routes.rsList(limit, pageToken, sortBy, organizationName, projectName, routerName, vpcName)\n\n// - OR -\n\n// rsListAllPages\n//\n// List a Router's routes\n//\n// This method is a wrapper around the `rsList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `sortBy`\n//\t- `vpcName`\nRouterRoute, err := client.Routes.rsListAllPages(sortBy, organizationName, projectName, routerName, vpcName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RoutesService.rsList"
+        },
+        "x-ts": {
+          "example": "let resp = client.routersRoutesGet(RoutersRoutesGetParams{orgName, projectName, routerName, vpcName}, params);"
         }
       },
       "post": {
@@ -4841,6 +4974,9 @@
         "x-go": {
           "example": "// rsCreate\n//\n// Create a VPC Router\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `vpcName`\nrouterRoute, err := client.Routes.rsCreate(organizationName, projectName, routerName, vpcName, body)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RoutesService.rsCreate"
+        },
+        "x-ts": {
+          "example": "let resp = client.routersRoutesPost(RoutersRoutesPostParams{orgName, projectName, routerName, vpcName}, data, params);"
         }
       }
     },
@@ -4906,6 +5042,9 @@
         "x-go": {
           "example": "// rsDelete\n//\n// Delete a route from its router\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routeName`\n//\t- `routerName`\n//\t- `vpcName`\nif err := client.Routes.rsDelete(organizationName, projectName, routeName, routerName, vpcName); err != nil {\n\tpanic(err)\n}",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RoutesService.rsDelete"
+        },
+        "x-ts": {
+          "example": "let resp = client.routersRoutesDeleteRoute(RoutersRoutesDeleteRouteParams{orgName, projectName, routeName, routerName, vpcName}, params);"
         }
       },
       "get": {
@@ -4976,6 +5115,9 @@
         "x-go": {
           "example": "// rsGet\n//\n// Get a VPC Router route\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routeName`\n//\t- `routerName`\n//\t- `vpcName`\nrouterRoute, err := client.Routes.rsGet(organizationName, projectName, routeName, routerName, vpcName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RoutesService.rsGet"
+        },
+        "x-ts": {
+          "example": "let resp = client.routersRoutesGetRoute(RoutersRoutesGetRouteParams{orgName, projectName, routeName, routerName, vpcName}, params);"
         }
       },
       "put": {
@@ -5049,6 +5191,9 @@
         "x-go": {
           "example": "// rsPut\n//\n// Update a Router route\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routeName`\n//\t- `routerName`\n//\t- `vpcName`\nif err := client.Routes.rsPut(organizationName, projectName, routeName, routerName, vpcName, body); err != nil {\n\tpanic(err)\n}",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RoutesService.rsPut"
+        },
+        "x-ts": {
+          "example": "let resp = client.routersRoutesPutRoute(RoutersRoutesPutRouteParams{orgName, projectName, routeName, routerName, vpcName}, data, params);"
         }
       }
     },
@@ -5134,6 +5279,9 @@
         "x-go": {
           "example": "// List\n//\n// List subnets in a VPC.\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\nsubnetResultsPage, err := client.Subnets.List(limit, pageToken, sortBy, organizationName, projectName, vpcName)\n\n// - OR -\n\n// ListAllPages\n//\n// List subnets in a VPC.\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `vpcName`\nSubnet, err := client.Subnets.ListAllPages(sortBy, organizationName, projectName, vpcName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SubnetsService.List"
+        },
+        "x-ts": {
+          "example": "let resp = client.vpcSubnetsGet(VpcSubnetsGetParams{orgName, projectName, vpcName}, params);"
         }
       },
       "post": {
@@ -5196,6 +5344,9 @@
         "x-go": {
           "example": "// Create\n//\n// Create a subnet in a VPC.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\nsubnet, err := client.Subnets.Create(organizationName, projectName, vpcName, body)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SubnetsService.Create"
+        },
+        "x-ts": {
+          "example": "let resp = client.vpcSubnetsPost(VpcSubnetsPostParams{orgName, projectName, vpcName}, data, params);"
         }
       }
     },
@@ -5252,6 +5403,9 @@
         "x-go": {
           "example": "// Delete\n//\n// Delete a subnet from a VPC.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `subnetName`\n//\t- `vpcName`\nif err := client.Subnets.Delete(organizationName, projectName, subnetName, vpcName); err != nil {\n\tpanic(err)\n}",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SubnetsService.Delete"
+        },
+        "x-ts": {
+          "example": "let resp = client.vpcSubnetsDeleteSubnet(VpcSubnetsDeleteSubnetParams{orgName, projectName, subnetName, vpcName}, params);"
         }
       },
       "get": {
@@ -5313,6 +5467,9 @@
         "x-go": {
           "example": "// Get\n//\n// Get subnet in a VPC.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `subnetName`\n//\t- `vpcName`\nsubnet, err := client.Subnets.Get(organizationName, projectName, subnetName, vpcName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SubnetsService.Get"
+        },
+        "x-ts": {
+          "example": "let resp = client.vpcSubnetsGetSubnet(VpcSubnetsGetSubnetParams{orgName, projectName, subnetName, vpcName}, params);"
         }
       },
       "put": {
@@ -5377,6 +5534,9 @@
         "x-go": {
           "example": "// Put\n//\n// Update a VPC Subnet.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `subnetName`\n//\t- `vpcName`\nif err := client.Subnets.Put(organizationName, projectName, subnetName, vpcName, body); err != nil {\n\tpanic(err)\n}",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SubnetsService.Put"
+        },
+        "x-ts": {
+          "example": "let resp = client.vpcSubnetsPutSubnet(VpcSubnetsPutSubnetParams{orgName, projectName, subnetName, vpcName}, data, params);"
         }
       }
     },
@@ -5471,6 +5631,9 @@
         "x-go": {
           "example": "// IPsList\n//\n// List IP addresses on a VPC subnet.\n//\n// To iterate over all pages, use the `IPsListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `organizationName`\n//\t- `pageToken`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `subnetName`\n//\t- `vpcName`\nnetworkInterfaceResultsPage, err := client.Subnets.IPsList(limit, pageToken, sortBy, organizationName, projectName, subnetName, vpcName)\n\n// - OR -\n\n// IPsListAllPages\n//\n// List IP addresses on a VPC subnet.\n//\n// This method is a wrapper around the `IPsList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `sortBy`\n//\t- `subnetName`\n//\t- `vpcName`\nNetworkInterface, err := client.Subnets.IPsListAllPages(sortBy, organizationName, projectName, subnetName, vpcName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SubnetsService.IPsList"
+        },
+        "x-ts": {
+          "example": "let resp = client.subnetsIpsGet(SubnetsIpsGetParams{orgName, projectName, subnetName, vpcName}, params);"
         }
       }
     },
@@ -5521,6 +5684,9 @@
         "x-go": {
           "example": "// List\n//\n// List the built-in roles\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\nroleResultsPage, err := client.Roles.List(limit, pageToken)\n\n// - OR -\n\n// ListAllPages\n//\n// List the built-in roles\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\nRole, err := client.Roles.ListAllPages(,)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RolesService.List"
+        },
+        "x-ts": {
+          "example": "let resp = client.rolesGet(query, params);"
         }
       }
     },
@@ -5558,6 +5724,9 @@
         "x-go": {
           "example": "// Get\n//\n// Fetch a specific built-in role\n//\n// Parameters:\n//\t- `roleName`\nrole, err := client.Roles.Get(roleName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RolesService.Get"
+        },
+        "x-ts": {
+          "example": "let resp = client.rolesGetRole(RolesGetRoleParams{roleName}, params);"
         }
       }
     },
@@ -5616,6 +5785,9 @@
         "x-go": {
           "example": "// List\n//\n// List all sagas (for debugging)\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\nsagaResultsPage, err := client.Sagas.List(limit, pageToken, sortBy)\n\n// - OR -\n\n// ListAllPages\n//\n// List all sagas (for debugging)\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\nSaga, err := client.Sagas.ListAllPages(sortBy)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SagasService.List"
+        },
+        "x-ts": {
+          "example": "let resp = client.sagasGet(query, params);"
         }
       }
     },
@@ -5653,6 +5825,9 @@
         "x-go": {
           "example": "// Get\n//\n// Fetch information about a single saga (for debugging)\n//\n// Parameters:\n//\t- `sagaId`\nsaga, err := client.Sagas.Get(sagaID)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SagasService.Get"
+        },
+        "x-ts": {
+          "example": "let resp = client.sagasGetSaga(SagasGetSagaParams{sagaId}, params);"
         }
       }
     },
@@ -5678,6 +5853,9 @@
         "x-go": {
           "example": "// SessionMe\n//\n// Fetch the user associated with the current session\nsessionUser, err := client.Hidden.SessionMe()",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#HiddenService.SessionMe"
+        },
+        "x-ts": {
+          "example": "let resp = client.sessionMe(query, params);"
         }
       }
     },
@@ -5728,6 +5906,9 @@
         "x-go": {
           "example": "// TimeseriesSchemaList\n//\n// List all timeseries schema\n//\n// To iterate over all pages, use the `TimeseriesSchemaListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\ntimeseriesSchemaResultsPage, err := client.Metrics.TimeseriesSchemaList(limit, pageToken)\n\n// - OR -\n\n// TimeseriesSchemaListAllPages\n//\n// List all timeseries schema\n//\n// This method is a wrapper around the `TimeseriesSchemaList` method.\n// This method returns all the pages at once.\nTimeseriesSchema, err := client.Metrics.TimeseriesSchemaListAllPages(,)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#MetricsService.TimeseriesSchemaList"
+        },
+        "x-ts": {
+          "example": "let resp = client.timeseriesSchemaGet(query, params);"
         }
       }
     },
@@ -5786,6 +5967,9 @@
         "x-go": {
           "example": "// List\n//\n// List the built-in system users\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`\n//\t- `pageToken`\n//\t- `sortBy`\nuserResultsPage, err := client.Users.List(limit, pageToken, sortBy)\n\n// - OR -\n\n// ListAllPages\n//\n// List the built-in system users\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\nUser, err := client.Users.ListAllPages(sortBy)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#UsersService.List"
+        },
+        "x-ts": {
+          "example": "let resp = client.usersGet(query, params);"
         }
       }
     },
@@ -5822,6 +6006,9 @@
         "x-go": {
           "example": "// Get\n//\n// Fetch a specific built-in system user\n//\n// Parameters:\n//\t- `userName`\nuser, err := client.Users.Get(userName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#UsersService.Get"
+        },
+        "x-ts": {
+          "example": "let resp = client.usersGetUser(UsersGetUserParams{userName}, params);"
         }
       }
     }

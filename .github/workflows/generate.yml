@@ -38,5 +38,5 @@ jobs:
           git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
           git fetch origin
           git add .
-          git commit -am "I have generated the latest API!"
-          git push origin ${{github.event.pull_request.head.ref }}
+          git commit -am "I have generated the latest API!" || true
+          git push origin ${{github.event.pull_request.head.ref }} || true
