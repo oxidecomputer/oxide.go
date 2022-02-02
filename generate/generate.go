@@ -569,7 +569,7 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 	fmt.Fprintf(f, description.String())
 
 	docInfo := map[string]string{
-		"example":     fmt.Sprintf("%s\n", description.String()),
+		"example":     fmt.Sprintf("%s", description.String()),
 		"libDocsLink": fmt.Sprintf("https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#%sService.%s", tag, fnName),
 	}
 	if isGetAllPages {
