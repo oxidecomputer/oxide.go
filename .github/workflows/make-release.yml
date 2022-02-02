@@ -38,5 +38,5 @@ jobs:
           fi
       - name: Create a Release
         uses: softprops/action-gh-release@v1
-          with:
-            prerelease: ${{steps.extract_prerelease.outputs.prerelease}}
+        with:
+          prerelease: ${{steps.extract_prerelease.outputs.prerelease}}
