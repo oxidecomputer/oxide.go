@@ -252,6 +252,11 @@ type InstanceCreate struct {
 	NCPUs InstanceCPUCount `json:"ncpus,omitempty" yaml:"ncpus,omitempty"`
 }
 
+// InstanceMigrate is migration parameters for an [`Instance`]
+type InstanceMigrate struct {
+	DstSledUuid string `json:"dst_sled_uuid,omitempty" yaml:"dst_sled_uuid,omitempty"`
+}
+
 // InstanceResultsPage is a single page of results
 type InstanceResultsPage struct {
 	// Items is list of items on this page of results
@@ -278,6 +283,8 @@ const (
 	InstanceStateStopped InstanceState = "stopped"
 	// InstanceStateRebooting represents the InstanceState `"rebooting"`.
 	InstanceStateRebooting InstanceState = "rebooting"
+	// InstanceStateMigrating represents the InstanceState `"migrating"`.
+	InstanceStateMigrating InstanceState = "migrating"
 	// InstanceStateRepairing represents the InstanceState `"repairing"`.
 	InstanceStateRepairing InstanceState = "repairing"
 	// InstanceStateFailed represents the InstanceState `"failed"`.
@@ -1295,6 +1302,7 @@ var InstanceStates = []InstanceState{
 	InstanceStateCreating,
 	InstanceStateDestroyed,
 	InstanceStateFailed,
+	InstanceStateMigrating,
 	InstanceStateRebooting,
 	InstanceStateRepairing,
 	InstanceStateRunning,
