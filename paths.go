@@ -11,15 +11,13 @@ import (
 	"strconv"
 )
 
-// List
-//
-// List racks in the system.
+// List: List racks in the system.
 //
 // To iterate over all pages, use the `ListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`
-//	- `pageToken`
+//	- `limit`: Maximum number of items returned by a single call
+//	- `pageToken`: Token returned by previous call to retreive the subsequent page
 //	- `sortBy`
 func (s *RacksService) List(limit int, pageToken string, sortBy IdSortMode) (*RackResultsPage, error) {
 	// Create the url.
@@ -60,9 +58,7 @@ func (s *RacksService) List(limit int, pageToken string, sortBy IdSortMode) (*Ra
 	return &body, nil
 }
 
-// ListAllPages
-//
-// List racks in the system.
+// ListAllPages: List racks in the system.
 //
 // This method is a wrapper around the `List` method.
 // This method returns all the pages at once.
@@ -87,12 +83,10 @@ func (s *RacksService) ListAllPages(sortBy IdSortMode) (*[]Rack, error) {
 	}
 
 	return &allPages, nil
-} // Get
-//
-// Fetch information about a particular rack.
+} // Get: Fetch information about a particular rack.
 //
 // Parameters:
-//	- `rackId`
+//	- `rackId`: The rack's unique ID.
 func (s *RacksService) Get(rackID string) (*Rack, error) {
 	// Create the url.
 	path := "/hardware/racks/{{.rack_id}}"
@@ -130,15 +124,13 @@ func (s *RacksService) Get(rackID string) (*Rack, error) {
 	return &body, nil
 }
 
-// List
-//
-// List sleds in the system.
+// List: List sleds in the system.
 //
 // To iterate over all pages, use the `ListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`
-//	- `pageToken`
+//	- `limit`: Maximum number of items returned by a single call
+//	- `pageToken`: Token returned by previous call to retreive the subsequent page
 //	- `sortBy`
 func (s *SledsService) List(limit int, pageToken string, sortBy IdSortMode) (*SledResultsPage, error) {
 	// Create the url.
@@ -179,9 +171,7 @@ func (s *SledsService) List(limit int, pageToken string, sortBy IdSortMode) (*Sl
 	return &body, nil
 }
 
-// ListAllPages
-//
-// List sleds in the system.
+// ListAllPages: List sleds in the system.
 //
 // This method is a wrapper around the `List` method.
 // This method returns all the pages at once.
@@ -206,12 +196,10 @@ func (s *SledsService) ListAllPages(sortBy IdSortMode) (*[]Sled, error) {
 	}
 
 	return &allPages, nil
-} // Get
-//
-// Fetch information about a sled in the system.
+} // Get: Fetch information about a sled in the system.
 //
 // Parameters:
-//	- `sledId`
+//	- `sledId`: The sled's unique ID.
 func (s *SledsService) Get(sledID string) (*Sled, error) {
 	// Create the url.
 	path := "/hardware/sleds/{{.sled_id}}"
@@ -302,15 +290,13 @@ func (s *HiddenService) Logout() error {
 	return nil
 }
 
-// List
-//
-// List all organizations.
+// List: List all organizations.
 //
 // To iterate over all pages, use the `ListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`
-//	- `pageToken`
+//	- `limit`: Maximum number of items returned by a single call
+//	- `pageToken`: Token returned by previous call to retreive the subsequent page
 //	- `sortBy`
 func (s *OrganizationsService) List(limit int, pageToken string, sortBy NameOrIdSortMode) (*OrganizationResultsPage, error) {
 	// Create the url.
@@ -351,9 +337,7 @@ func (s *OrganizationsService) List(limit int, pageToken string, sortBy NameOrId
 	return &body, nil
 }
 
-// ListAllPages
-//
-// List all organizations.
+// ListAllPages: List all organizations.
 //
 // This method is a wrapper around the `List` method.
 // This method returns all the pages at once.
@@ -378,9 +362,7 @@ func (s *OrganizationsService) ListAllPages(sortBy NameOrIdSortMode) (*[]Organiz
 	}
 
 	return &allPages, nil
-} // Create
-//
-// Create a new organization.
+} // Create: Create a new organization.
 func (s *OrganizationsService) Create(j *OrganizationCreate) (*Organization, error) {
 	// Create the url.
 	path := "/organizations"
@@ -417,12 +399,10 @@ func (s *OrganizationsService) Create(j *OrganizationCreate) (*Organization, err
 	return &body, nil
 }
 
-// Get
-//
-// Fetch a specific organization
+// Get: Fetch a specific organization
 //
 // Parameters:
-//	- `organizationName`
+//	- `organizationName`: The organization's unique name.
 func (s *OrganizationsService) Get(organizationName Name) (*Organization, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}"
@@ -460,13 +440,10 @@ func (s *OrganizationsService) Get(organizationName Name) (*Organization, error)
 	return &body, nil
 }
 
-// Put
-//
-// Update a specific organization.
-//  * TODO-correctness: Is it valid for PUT to accept application/json that's a subset of what the resource actually represents?  If not, is that a problem? (HTTP may require that this be idempotent.)  If so, can we get around that having this be a slightly different content-type (e.g., "application/json-patch")?  We should see what other APIs do.
+// Put: Update a specific organization.
 //
 // Parameters:
-//	- `organizationName`
+//	- `organizationName`: The organization's unique name.
 func (s *OrganizationsService) Put(organizationName Name, j *OrganizationUpdate) (*Organization, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}"
@@ -509,12 +486,10 @@ func (s *OrganizationsService) Put(organizationName Name, j *OrganizationUpdate)
 	return &body, nil
 }
 
-// Delete
-//
-// Delete a specific organization.
+// Delete: Delete a specific organization.
 //
 // Parameters:
-//	- `organizationName`
+//	- `organizationName`: The organization's unique name.
 func (s *OrganizationsService) Delete(organizationName Name) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}"
@@ -544,16 +519,14 @@ func (s *OrganizationsService) Delete(organizationName Name) error {
 	return nil
 }
 
-// List
-//
-// List all projects.
+// List: List all projects.
 //
 // To iterate over all pages, use the `ListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`
-//	- `organizationName`
-//	- `pageToken`
+//	- `limit`: Maximum number of items returned by a single call
+//	- `organizationName`: The organization's unique name.
+//	- `pageToken`: Token returned by previous call to retreive the subsequent page
 //	- `sortBy`
 func (s *ProjectsService) List(limit int, pageToken string, sortBy NameOrIdSortMode, organizationName Name) (*ProjectResultsPage, error) {
 	// Create the url.
@@ -595,15 +568,13 @@ func (s *ProjectsService) List(limit int, pageToken string, sortBy NameOrIdSortM
 	return &body, nil
 }
 
-// ListAllPages
-//
-// List all projects.
+// ListAllPages: List all projects.
 //
 // This method is a wrapper around the `List` method.
 // This method returns all the pages at once.
 //
 // Parameters:
-//	- `organizationName`
+//	- `organizationName`: The organization's unique name.
 //	- `sortBy`
 func (s *ProjectsService) ListAllPages(sortBy NameOrIdSortMode, organizationName Name) (*[]Project, error) {
 
@@ -623,12 +594,10 @@ func (s *ProjectsService) ListAllPages(sortBy NameOrIdSortMode, organizationName
 	}
 
 	return &allPages, nil
-} // Create
-//
-// Create a new project.
+} // Create: Create a new project.
 //
 // Parameters:
-//	- `organizationName`
+//	- `organizationName`: The organization's unique name.
 func (s *ProjectsService) Create(organizationName Name, j *ProjectCreate) (*Project, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects"
@@ -671,13 +640,11 @@ func (s *ProjectsService) Create(organizationName Name, j *ProjectCreate) (*Proj
 	return &body, nil
 }
 
-// Get
-//
-// Fetch a specific project
+// Get: Fetch a specific project
 //
 // Parameters:
-//	- `organizationName`
-//	- `projectName`
+//	- `organizationName`: The organization's unique name.
+//	- `projectName`: The project's unique name within the organization.
 func (s *ProjectsService) Get(organizationName Name, projectName Name) (*Project, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}"
@@ -716,14 +683,11 @@ func (s *ProjectsService) Get(organizationName Name, projectName Name) (*Project
 	return &body, nil
 }
 
-// Put
-//
-// Update a specific project.
-//  * TODO-correctness: Is it valid for PUT to accept application/json that's a subset of what the resource actually represents?  If not, is that a problem? (HTTP may require that this be idempotent.)  If so, can we get around that having this be a slightly different content-type (e.g., "application/json-patch")?  We should see what other APIs do.
+// Put: Update a specific project.
 //
 // Parameters:
-//	- `organizationName`
-//	- `projectName`
+//	- `organizationName`: The organization's unique name.
+//	- `projectName`: The project's unique name within the organization.
 func (s *ProjectsService) Put(organizationName Name, projectName Name, j *ProjectUpdate) (*Project, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}"
@@ -767,13 +731,11 @@ func (s *ProjectsService) Put(organizationName Name, projectName Name, j *Projec
 	return &body, nil
 }
 
-// Delete
-//
-// Delete a specific project.
+// Delete: Delete a specific project.
 //
 // Parameters:
-//	- `organizationName`
-//	- `projectName`
+//	- `organizationName`: The organization's unique name.
+//	- `projectName`: The project's unique name within the organization.
 func (s *ProjectsService) Delete(organizationName Name, projectName Name) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}"
@@ -804,17 +766,15 @@ func (s *ProjectsService) Delete(organizationName Name, projectName Name) error 
 	return nil
 }
 
-// List
-//
-// List disks in a project.
+// List: List disks in a project.
 //
 // To iterate over all pages, use the `ListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`
-//	- `organizationName`
-//	- `pageToken`
-//	- `projectName`
+//	- `limit`: Maximum number of items returned by a single call
+//	- `organizationName`: The organization's unique name.
+//	- `pageToken`: Token returned by previous call to retreive the subsequent page
+//	- `projectName`: The project's unique name within the organization.
 //	- `sortBy`
 func (s *DisksService) List(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name) (*DiskResultsPage, error) {
 	// Create the url.
@@ -857,16 +817,14 @@ func (s *DisksService) List(limit int, pageToken string, sortBy NameSortMode, or
 	return &body, nil
 }
 
-// ListAllPages
-//
-// List disks in a project.
+// ListAllPages: List disks in a project.
 //
 // This method is a wrapper around the `List` method.
 // This method returns all the pages at once.
 //
 // Parameters:
-//	- `organizationName`
-//	- `projectName`
+//	- `organizationName`: The organization's unique name.
+//	- `projectName`: The project's unique name within the organization.
 //	- `sortBy`
 func (s *DisksService) ListAllPages(sortBy NameSortMode, organizationName Name, projectName Name) (*[]Disk, error) {
 
@@ -886,14 +844,11 @@ func (s *DisksService) ListAllPages(sortBy NameSortMode, organizationName Name, 
 	}
 
 	return &allPages, nil
-} // Create
-//
-// Create a disk in a project.
-//  * TODO-correctness See note about instance create.  This should be async.
+} // Create: Create a disk in a project.
 //
 // Parameters:
-//	- `organizationName`
-//	- `projectName`
+//	- `organizationName`: The organization's unique name.
+//	- `projectName`: The project's unique name within the organization.
 func (s *DisksService) Create(organizationName Name, projectName Name, j *DiskCreate) (*Disk, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/disks"
@@ -937,9 +892,7 @@ func (s *DisksService) Create(organizationName Name, projectName Name, j *DiskCr
 	return &body, nil
 }
 
-// Get
-//
-// Fetch a single disk in a project.
+// Get: Fetch a single disk in a project.
 //
 // Parameters:
 //	- `diskName`
@@ -984,9 +937,7 @@ func (s *DisksService) Get(diskName Name, organizationName Name, projectName Nam
 	return &body, nil
 }
 
-// Delete
-//
-// Delete a disk from a project.
+// Delete: Delete a disk from a project.
 //
 // Parameters:
 //	- `diskName`
@@ -1023,17 +974,15 @@ func (s *DisksService) Delete(diskName Name, organizationName Name, projectName 
 	return nil
 }
 
-// List
-//
-// List instances in a project.
+// List: List instances in a project.
 //
 // To iterate over all pages, use the `ListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`
-//	- `organizationName`
-//	- `pageToken`
-//	- `projectName`
+//	- `limit`: Maximum number of items returned by a single call
+//	- `organizationName`: The organization's unique name.
+//	- `pageToken`: Token returned by previous call to retreive the subsequent page
+//	- `projectName`: The project's unique name within the organization.
 //	- `sortBy`
 func (s *InstancesService) List(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name) (*InstanceResultsPage, error) {
 	// Create the url.
@@ -1076,16 +1025,14 @@ func (s *InstancesService) List(limit int, pageToken string, sortBy NameSortMode
 	return &body, nil
 }
 
-// ListAllPages
-//
-// List instances in a project.
+// ListAllPages: List instances in a project.
 //
 // This method is a wrapper around the `List` method.
 // This method returns all the pages at once.
 //
 // Parameters:
-//	- `organizationName`
-//	- `projectName`
+//	- `organizationName`: The organization's unique name.
+//	- `projectName`: The project's unique name within the organization.
 //	- `sortBy`
 func (s *InstancesService) ListAllPages(sortBy NameSortMode, organizationName Name, projectName Name) (*[]Instance, error) {
 
@@ -1105,14 +1052,11 @@ func (s *InstancesService) ListAllPages(sortBy NameSortMode, organizationName Na
 	}
 
 	return &allPages, nil
-} // Create
-//
-// Create an instance in a project.
-//  * TODO-correctness This is supposed to be async.  Is that right?  We can create the instance immediately -- it's just not booted yet.  Maybe the boot operation is what's a separate operation_id.  What about the response code (201 Created vs 202 Accepted)?  Is that orthogonal?  Things can return a useful response, including an operation id, with either response code.  Maybe a "reboot" operation would return a 202 Accepted because there's no actual resource created?
+} // Create: Create an instance in a project.
 //
 // Parameters:
-//	- `organizationName`
-//	- `projectName`
+//	- `organizationName`: The organization's unique name.
+//	- `projectName`: The project's unique name within the organization.
 func (s *InstancesService) Create(organizationName Name, projectName Name, j *InstanceCreate) (*Instance, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances"
@@ -1156,9 +1100,7 @@ func (s *InstancesService) Create(organizationName Name, projectName Name, j *In
 	return &body, nil
 }
 
-// Get
-//
-// Get an instance in a project.
+// Get: Get an instance in a project.
 //
 // Parameters:
 //	- `instanceName`
@@ -1203,9 +1145,7 @@ func (s *InstancesService) Get(instanceName Name, organizationName Name, project
 	return &body, nil
 }
 
-// Delete
-//
-// Delete an instance from a project.
+// Delete: Delete an instance from a project.
 //
 // Parameters:
 //	- `instanceName`
@@ -1242,17 +1182,15 @@ func (s *InstancesService) Delete(instanceName Name, organizationName Name, proj
 	return nil
 }
 
-// DisksList
-//
-// List disks attached to this instance.
+// DisksList: List disks attached to this instance.
 //
 // To iterate over all pages, use the `DisksListAllPages` method, instead.
 //
 // Parameters:
 //	- `instanceName`
-//	- `limit`
+//	- `limit`: Maximum number of items returned by a single call
 //	- `organizationName`
-//	- `pageToken`
+//	- `pageToken`: Token returned by previous call to retreive the subsequent page
 //	- `projectName`
 //	- `sortBy`
 func (s *InstancesService) DisksList(limit int, pageToken string, sortBy NameSortMode, instanceName Name, organizationName Name, projectName Name) (*DiskResultsPage, error) {
@@ -1297,9 +1235,7 @@ func (s *InstancesService) DisksList(limit int, pageToken string, sortBy NameSor
 	return &body, nil
 }
 
-// DisksListAllPages
-//
-// List disks attached to this instance.
+// DisksListAllPages: List disks attached to this instance.
 //
 // This method is a wrapper around the `DisksList` method.
 // This method returns all the pages at once.
@@ -1427,9 +1363,274 @@ func (s *InstancesService) DisksDetach(instanceName Name, organizationName Name,
 	return &body, nil
 }
 
-// Reboot
+// Migrate: Migrate an instance to a different propolis-server, possibly on a different sled.
 //
-// Reboot an instance.
+// Parameters:
+//	- `instanceName`
+//	- `organizationName`
+//	- `projectName`
+func (s *InstancesService) Migrate(instanceName Name, organizationName Name, projectName Name, j *InstanceMigrate) (*Instance, error) {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/migrate"
+	uri := resolveRelative(s.client.server, path)
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"instance_name":     string(instanceName),
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body Instance
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// NetworkInterfacesList: List network interfaces attached to this instance.
+//
+// To iterate over all pages, use the `NetworkInterfacesListAllPages` method, instead.
+//
+// Parameters:
+//	- `instanceName`
+//	- `limit`: Maximum number of items returned by a single call
+//	- `organizationName`
+//	- `pageToken`: Token returned by previous call to retreive the subsequent page
+//	- `projectName`
+//	- `sortBy`
+func (s *InstancesService) NetworkInterfacesList(limit int, pageToken string, sortBy NameSortMode, instanceName Name, organizationName Name, projectName Name) (*NetworkInterfaceResultsPage, error) {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/network-interfaces"
+	uri := resolveRelative(s.client.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"instance_name":     string(instanceName),
+		"limit":             strconv.Itoa(limit),
+		"organization_name": string(organizationName),
+		"page_token":        pageToken,
+		"project_name":      string(projectName),
+		"sort_by":           string(sortBy),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body NetworkInterfaceResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// NetworkInterfacesListAllPages: List network interfaces attached to this instance.
+//
+// This method is a wrapper around the `NetworkInterfacesList` method.
+// This method returns all the pages at once.
+//
+// Parameters:
+//	- `instanceName`
+//	- `organizationName`
+//	- `projectName`
+//	- `sortBy`
+func (s *InstancesService) NetworkInterfacesListAllPages(sortBy NameSortMode, instanceName Name, organizationName Name, projectName Name) (*[]NetworkInterface, error) {
+
+	var allPages []NetworkInterface
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := s.NetworkInterfacesList(limit, pageToken, sortBy, instanceName, organizationName, projectName)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+} // NetworkInterfacesCreate: Create a network interface for an instance.
+//
+// Parameters:
+//	- `instanceName`
+//	- `organizationName`
+//	- `projectName`
+func (s *InstancesService) NetworkInterfacesCreate(instanceName Name, organizationName Name, projectName Name, j *NetworkInterfaceCreate) (*NetworkInterface, error) {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/network-interfaces"
+	uri := resolveRelative(s.client.server, path)
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"instance_name":     string(instanceName),
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body NetworkInterface
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// NetworkInterfacesGetInterface: Get an interface attached to an instance.
+//
+// Parameters:
+//	- `instanceName`
+//	- `interfaceName`
+//	- `organizationName`
+//	- `projectName`
+func (s *InstancesService) NetworkInterfacesGetInterface(instanceName Name, interfaceName Name, organizationName Name, projectName Name) (*NetworkInterface, error) {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/network-interfaces/{{.interface_name}}"
+	uri := resolveRelative(s.client.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"instance_name":     string(instanceName),
+		"interface_name":    string(interfaceName),
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body NetworkInterface
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// NetworkInterfacesDeleteInterface: Detach a network interface from an instance.
+//
+// Parameters:
+//	- `instanceName`
+//	- `interfaceName`
+//	- `organizationName`
+//	- `projectName`
+func (s *InstancesService) NetworkInterfacesDeleteInterface(instanceName Name, interfaceName Name, organizationName Name, projectName Name) error {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/network-interfaces/{{.interface_name}}"
+	uri := resolveRelative(s.client.server, path)
+	// Create the request.
+	req, err := http.NewRequest("DELETE", uri, nil)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"instance_name":     string(instanceName),
+		"interface_name":    string(interfaceName),
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
+	}); err != nil {
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+	// Return.
+	return nil
+}
+
+// Reboot: Reboot an instance.
 //
 // Parameters:
 //	- `instanceName`
@@ -1474,9 +1675,7 @@ func (s *InstancesService) Reboot(instanceName Name, organizationName Name, proj
 	return &body, nil
 }
 
-// Start
-//
-// Boot an instance.
+// Start: Boot an instance.
 //
 // Parameters:
 //	- `instanceName`
@@ -1521,9 +1720,7 @@ func (s *InstancesService) Start(instanceName Name, organizationName Name, proje
 	return &body, nil
 }
 
-// Stop
-//
-// Halt an instance.
+// Stop: Halt an instance.
 //
 // Parameters:
 //	- `instanceName`
@@ -1568,17 +1765,15 @@ func (s *InstancesService) Stop(instanceName Name, organizationName Name, projec
 	return &body, nil
 }
 
-// List
-//
-// List VPCs in a project.
+// List: List VPCs in a project.
 //
 // To iterate over all pages, use the `ListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`
-//	- `organizationName`
-//	- `pageToken`
-//	- `projectName`
+//	- `limit`: Maximum number of items returned by a single call
+//	- `organizationName`: The organization's unique name.
+//	- `pageToken`: Token returned by previous call to retreive the subsequent page
+//	- `projectName`: The project's unique name within the organization.
 //	- `sortBy`
 func (s *VpcsService) List(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name) (*VPCResultsPage, error) {
 	// Create the url.
@@ -1621,16 +1816,14 @@ func (s *VpcsService) List(limit int, pageToken string, sortBy NameSortMode, org
 	return &body, nil
 }
 
-// ListAllPages
-//
-// List VPCs in a project.
+// ListAllPages: List VPCs in a project.
 //
 // This method is a wrapper around the `List` method.
 // This method returns all the pages at once.
 //
 // Parameters:
-//	- `organizationName`
-//	- `projectName`
+//	- `organizationName`: The organization's unique name.
+//	- `projectName`: The project's unique name within the organization.
 //	- `sortBy`
 func (s *VpcsService) ListAllPages(sortBy NameSortMode, organizationName Name, projectName Name) (*[]VPC, error) {
 
@@ -1650,13 +1843,11 @@ func (s *VpcsService) ListAllPages(sortBy NameSortMode, organizationName Name, p
 	}
 
 	return &allPages, nil
-} // Create
-//
-// Create a VPC in a project.
+} // Create: Create a VPC in a project.
 //
 // Parameters:
-//	- `organizationName`
-//	- `projectName`
+//	- `organizationName`: The organization's unique name.
+//	- `projectName`: The project's unique name within the organization.
 func (s *VpcsService) Create(organizationName Name, projectName Name, j *VPCCreate) (*VPC, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs"
@@ -1700,9 +1891,7 @@ func (s *VpcsService) Create(organizationName Name, projectName Name, j *VPCCrea
 	return &body, nil
 }
 
-// Get
-//
-// Get a VPC in a project.
+// Get: Get a VPC in a project.
 //
 // Parameters:
 //	- `organizationName`
@@ -1747,27 +1936,25 @@ func (s *VpcsService) Get(organizationName Name, projectName Name, vpcName Name)
 	return &body, nil
 }
 
-// Put
-//
-// Update a VPC.
+// Put: Update a VPC.
 //
 // Parameters:
 //	- `organizationName`
 //	- `projectName`
 //	- `vpcName`
-func (s *VpcsService) Put(organizationName Name, projectName Name, vpcName Name, j *VPCUpdate) error {
+func (s *VpcsService) Put(organizationName Name, projectName Name, vpcName Name, j *VPCUpdate) (*VPC, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}"
 	uri := resolveRelative(s.client.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
-		return fmt.Errorf("encoding json body request failed: %v", err)
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 	// Create the request.
 	req, err := http.NewRequest("PUT", uri, b)
 	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
+		return nil, fmt.Errorf("error creating request: %v", err)
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
@@ -1775,25 +1962,31 @@ func (s *VpcsService) Put(organizationName Name, projectName Name, vpcName Name,
 		"project_name":      string(projectName),
 		"vpc_name":          string(vpcName),
 	}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
 	resp, err := s.client.client.Do(req)
 	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
+		return nil, fmt.Errorf("error sending request: %v", err)
 	}
 	defer resp.Body.Close()
 	// Check the response.
 	if err := checkResponse(resp); err != nil {
-		return err
+		return nil, err
 	}
-	// Return.
-	return nil
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body VPC
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
-// Delete
-//
-// Delete a vpc from a project.
+// Delete: Delete a vpc from a project.
 //
 // Parameters:
 //	- `organizationName`
@@ -1830,20 +2023,13 @@ func (s *VpcsService) Delete(organizationName Name, projectName Name, vpcName Na
 	return nil
 }
 
-// RulesList
-//
-// List firewall rules for a VPC.
-//
-// To iterate over all pages, use the `RulesListAllPages` method, instead.
+// RulesList: List firewall rules for a VPC.
 //
 // Parameters:
-//	- `limit`
 //	- `organizationName`
-//	- `pageToken`
 //	- `projectName`
-//	- `sortBy`
 //	- `vpcName`
-func (s *FirewallService) RulesList(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*FirewallRuleResultsPage, error) {
+func (s *FirewallService) RulesList(organizationName Name, projectName Name, vpcName Name) (*FirewallRules, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/firewall/rules"
 	uri := resolveRelative(s.client.server, path)
@@ -1854,11 +2040,8 @@ func (s *FirewallService) RulesList(limit int, pageToken string, sortBy NameSort
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"limit":             strconv.Itoa(limit),
 		"organization_name": string(organizationName),
-		"page_token":        pageToken,
 		"project_name":      string(projectName),
-		"sort_by":           string(sortBy),
 		"vpc_name":          string(vpcName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
@@ -1877,7 +2060,7 @@ func (s *FirewallService) RulesList(limit int, pageToken string, sortBy NameSort
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body FirewallRuleResultsPage
+	var body FirewallRules
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -1885,45 +2068,13 @@ func (s *FirewallService) RulesList(limit int, pageToken string, sortBy NameSort
 	return &body, nil
 }
 
-// RulesListAllPages
-//
-// List firewall rules for a VPC.
-//
-// This method is a wrapper around the `RulesList` method.
-// This method returns all the pages at once.
-//
-// Parameters:
-//	- `organizationName`
-//	- `projectName`
-//	- `sortBy`
-//	- `vpcName`
-func (s *FirewallService) RulesListAllPages(sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*[]FirewallRule, error) {
-
-	var allPages []FirewallRule
-	pageToken := ""
-	limit := 100
-	for {
-		page, err := s.RulesList(limit, pageToken, sortBy, organizationName, projectName, vpcName)
-		if err != nil {
-			return nil, err
-		}
-		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" {
-			break
-		}
-		pageToken = page.NextPage
-	}
-
-	return &allPages, nil
-} // RulesPut
-//
-// Replace the firewall rules for a VPC
+// RulesPut: Replace the firewall rules for a VPC
 //
 // Parameters:
 //	- `organizationName`
 //	- `projectName`
 //	- `vpcName`
-func (s *FirewallService) RulesPut(organizationName Name, projectName Name, vpcName Name, j *FirewallRuleUpdateParams) (*FirewallRuleUpdateResult, error) {
+func (s *FirewallService) RulesPut(organizationName Name, projectName Name, vpcName Name, j *FirewallRuleUpdateParams) (*FirewallRules, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/firewall/rules"
 	uri := resolveRelative(s.client.server, path)
@@ -1959,7 +2110,7 @@ func (s *FirewallService) RulesPut(organizationName Name, projectName Name, vpcN
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body FirewallRuleUpdateResult
+	var body FirewallRules
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -1967,16 +2118,14 @@ func (s *FirewallService) RulesPut(organizationName Name, projectName Name, vpcN
 	return &body, nil
 }
 
-// List
-//
-// List VPC Custom and System Routers
+// List: List VPC Custom and System Routers
 //
 // To iterate over all pages, use the `ListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`
+//	- `limit`: Maximum number of items returned by a single call
 //	- `organizationName`
-//	- `pageToken`
+//	- `pageToken`: Token returned by previous call to retreive the subsequent page
 //	- `projectName`
 //	- `sortBy`
 //	- `vpcName`
@@ -2022,9 +2171,7 @@ func (s *RoutersService) List(limit int, pageToken string, sortBy NameSortMode, 
 	return &body, nil
 }
 
-// ListAllPages
-//
-// List VPC Custom and System Routers
+// ListAllPages: List VPC Custom and System Routers
 //
 // This method is a wrapper around the `List` method.
 // This method returns all the pages at once.
@@ -2052,9 +2199,7 @@ func (s *RoutersService) ListAllPages(sortBy NameSortMode, organizationName Name
 	}
 
 	return &allPages, nil
-} // Create
-//
-// Create a VPC Router
+} // Create: Create a VPC Router
 //
 // Parameters:
 //	- `organizationName`
@@ -2104,9 +2249,7 @@ func (s *RoutersService) Create(organizationName Name, projectName Name, vpcName
 	return &body, nil
 }
 
-// Get
-//
-// Get a VPC Router
+// Get: Get a VPC Router
 //
 // Parameters:
 //	- `organizationName`
@@ -2153,9 +2296,7 @@ func (s *RoutersService) Get(organizationName Name, projectName Name, routerName
 	return &body, nil
 }
 
-// Put
-//
-// Update a VPC Router
+// Put: Update a VPC Router
 //
 // Parameters:
 //	- `organizationName`
@@ -2199,9 +2340,7 @@ func (s *RoutersService) Put(organizationName Name, projectName Name, routerName
 	return nil
 }
 
-// Delete
-//
-// Delete a router from its VPC
+// Delete: Delete a router from its VPC
 //
 // Parameters:
 //	- `organizationName`
@@ -2240,16 +2379,14 @@ func (s *RoutersService) Delete(organizationName Name, projectName Name, routerN
 	return nil
 }
 
-// rsList
-//
-// List a Router's routes
+// rsList: List a Router's routes
 //
 // To iterate over all pages, use the `rsListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`
+//	- `limit`: Maximum number of items returned by a single call
 //	- `organizationName`
-//	- `pageToken`
+//	- `pageToken`: Token returned by previous call to retreive the subsequent page
 //	- `projectName`
 //	- `routerName`
 //	- `sortBy`
@@ -2297,9 +2434,7 @@ func (s *RoutesService) rsList(limit int, pageToken string, sortBy NameSortMode,
 	return &body, nil
 }
 
-// rsListAllPages
-//
-// List a Router's routes
+// rsListAllPages: List a Router's routes
 //
 // This method is a wrapper around the `rsList` method.
 // This method returns all the pages at once.
@@ -2328,9 +2463,7 @@ func (s *RoutesService) rsListAllPages(sortBy NameSortMode, organizationName Nam
 	}
 
 	return &allPages, nil
-} // rsCreate
-//
-// Create a VPC Router
+} // rsCreate: Create a VPC Router
 //
 // Parameters:
 //	- `organizationName`
@@ -2382,9 +2515,7 @@ func (s *RoutesService) rsCreate(organizationName Name, projectName Name, router
 	return &body, nil
 }
 
-// rsGet
-//
-// Get a VPC Router route
+// rsGet: Get a VPC Router route
 //
 // Parameters:
 //	- `organizationName`
@@ -2433,9 +2564,7 @@ func (s *RoutesService) rsGet(organizationName Name, projectName Name, routeName
 	return &body, nil
 }
 
-// rsPut
-//
-// Update a Router route
+// rsPut: Update a Router route
 //
 // Parameters:
 //	- `organizationName`
@@ -2481,9 +2610,7 @@ func (s *RoutesService) rsPut(organizationName Name, projectName Name, routeName
 	return nil
 }
 
-// rsDelete
-//
-// Delete a route from its router
+// rsDelete: Delete a route from its router
 //
 // Parameters:
 //	- `organizationName`
@@ -2524,16 +2651,14 @@ func (s *RoutesService) rsDelete(organizationName Name, projectName Name, routeN
 	return nil
 }
 
-// List
-//
-// List subnets in a VPC.
+// List: List subnets in a VPC.
 //
 // To iterate over all pages, use the `ListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`
+//	- `limit`: Maximum number of items returned by a single call
 //	- `organizationName`
-//	- `pageToken`
+//	- `pageToken`: Token returned by previous call to retreive the subsequent page
 //	- `projectName`
 //	- `sortBy`
 //	- `vpcName`
@@ -2579,9 +2704,7 @@ func (s *SubnetsService) List(limit int, pageToken string, sortBy NameSortMode, 
 	return &body, nil
 }
 
-// ListAllPages
-//
-// List subnets in a VPC.
+// ListAllPages: List subnets in a VPC.
 //
 // This method is a wrapper around the `List` method.
 // This method returns all the pages at once.
@@ -2609,9 +2732,7 @@ func (s *SubnetsService) ListAllPages(sortBy NameSortMode, organizationName Name
 	}
 
 	return &allPages, nil
-} // Create
-//
-// Create a subnet in a VPC.
+} // Create: Create a subnet in a VPC.
 //
 // Parameters:
 //	- `organizationName`
@@ -2661,9 +2782,7 @@ func (s *SubnetsService) Create(organizationName Name, projectName Name, vpcName
 	return &body, nil
 }
 
-// Get
-//
-// Get subnet in a VPC.
+// Get: Get subnet in a VPC.
 //
 // Parameters:
 //	- `organizationName`
@@ -2710,28 +2829,26 @@ func (s *SubnetsService) Get(organizationName Name, projectName Name, subnetName
 	return &body, nil
 }
 
-// Put
-//
-// Update a VPC Subnet.
+// Put: Update a VPC Subnet.
 //
 // Parameters:
 //	- `organizationName`
 //	- `projectName`
 //	- `subnetName`
 //	- `vpcName`
-func (s *SubnetsService) Put(organizationName Name, projectName Name, subnetName Name, vpcName Name, j *SubnetUpdate) error {
+func (s *SubnetsService) Put(organizationName Name, projectName Name, subnetName Name, vpcName Name, j *SubnetUpdate) (*Subnet, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets/{{.subnet_name}}"
 	uri := resolveRelative(s.client.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
-		return fmt.Errorf("encoding json body request failed: %v", err)
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 	// Create the request.
 	req, err := http.NewRequest("PUT", uri, b)
 	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
+		return nil, fmt.Errorf("error creating request: %v", err)
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
@@ -2740,25 +2857,31 @@ func (s *SubnetsService) Put(organizationName Name, projectName Name, subnetName
 		"subnet_name":       string(subnetName),
 		"vpc_name":          string(vpcName),
 	}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
 	resp, err := s.client.client.Do(req)
 	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
+		return nil, fmt.Errorf("error sending request: %v", err)
 	}
 	defer resp.Body.Close()
 	// Check the response.
 	if err := checkResponse(resp); err != nil {
-		return err
+		return nil, err
 	}
-	// Return.
-	return nil
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body Subnet
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
-// Delete
-//
-// Delete a subnet from a VPC.
+// Delete: Delete a subnet from a VPC.
 //
 // Parameters:
 //	- `organizationName`
@@ -2797,23 +2920,21 @@ func (s *SubnetsService) Delete(organizationName Name, projectName Name, subnetN
 	return nil
 }
 
-// IPsList
+// NetworkInterfacesList: List network interfaces in a VPC subnet.
 //
-// List IP addresses on a VPC subnet.
-//
-// To iterate over all pages, use the `IPsListAllPages` method, instead.
+// To iterate over all pages, use the `NetworkInterfacesListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`
+//	- `limit`: Maximum number of items returned by a single call
 //	- `organizationName`
-//	- `pageToken`
+//	- `pageToken`: Token returned by previous call to retreive the subsequent page
 //	- `projectName`
 //	- `sortBy`
 //	- `subnetName`
 //	- `vpcName`
-func (s *SubnetsService) IPsList(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, subnetName Name, vpcName Name) (*NetworkInterfaceResultsPage, error) {
+func (s *SubnetsService) NetworkInterfacesList(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, subnetName Name, vpcName Name) (*NetworkInterfaceResultsPage, error) {
 	// Create the url.
-	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets/{{.subnet_name}}/ips"
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets/{{.subnet_name}}/network-interfaces"
 	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
@@ -2854,11 +2975,9 @@ func (s *SubnetsService) IPsList(limit int, pageToken string, sortBy NameSortMod
 	return &body, nil
 }
 
-// IPsListAllPages
+// NetworkInterfacesListAllPages: List network interfaces in a VPC subnet.
 //
-// List IP addresses on a VPC subnet.
-//
-// This method is a wrapper around the `IPsList` method.
+// This method is a wrapper around the `NetworkInterfacesList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
@@ -2867,13 +2986,13 @@ func (s *SubnetsService) IPsList(limit int, pageToken string, sortBy NameSortMod
 //	- `sortBy`
 //	- `subnetName`
 //	- `vpcName`
-func (s *SubnetsService) IPsListAllPages(sortBy NameSortMode, organizationName Name, projectName Name, subnetName Name, vpcName Name) (*[]NetworkInterface, error) {
+func (s *SubnetsService) NetworkInterfacesListAllPages(sortBy NameSortMode, organizationName Name, projectName Name, subnetName Name, vpcName Name) (*[]NetworkInterface, error) {
 
 	var allPages []NetworkInterface
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.IPsList(limit, pageToken, sortBy, organizationName, projectName, subnetName, vpcName)
+		page, err := s.NetworkInterfacesList(limit, pageToken, sortBy, organizationName, projectName, subnetName, vpcName)
 		if err != nil {
 			return nil, err
 		}
@@ -2885,15 +3004,13 @@ func (s *SubnetsService) IPsListAllPages(sortBy NameSortMode, organizationName N
 	}
 
 	return &allPages, nil
-} // List
-//
-// List the built-in roles
+} // List: List the built-in roles
 //
 // To iterate over all pages, use the `ListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`
-//	- `pageToken`
+//	- `limit`: Maximum number of items returned by a single call
+//	- `pageToken`: Token returned by previous call to retreive the subsequent page
 func (s *RolesService) List(limit int, pageToken string) (*RoleResultsPage, error) {
 	// Create the url.
 	path := "/roles"
@@ -2932,9 +3049,7 @@ func (s *RolesService) List(limit int, pageToken string) (*RoleResultsPage, erro
 	return &body, nil
 }
 
-// ListAllPages
-//
-// List the built-in roles
+// ListAllPages: List the built-in roles
 //
 // This method is a wrapper around the `List` method.
 // This method returns all the pages at once.
@@ -2956,12 +3071,10 @@ func (s *RolesService) ListAllPages() (*[]Role, error) {
 	}
 
 	return &allPages, nil
-} // Get
-//
-// Fetch a specific built-in role
+} // Get: Fetch a specific built-in role
 //
 // Parameters:
-//	- `roleName`
+//	- `roleName`: The built-in role's unique name.
 func (s *RolesService) Get(roleName string) (*Role, error) {
 	// Create the url.
 	path := "/roles/{{.role_name}}"
@@ -2999,15 +3112,13 @@ func (s *RolesService) Get(roleName string) (*Role, error) {
 	return &body, nil
 }
 
-// List
-//
-// List all sagas (for debugging)
+// List: List all sagas (for debugging)
 //
 // To iterate over all pages, use the `ListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`
-//	- `pageToken`
+//	- `limit`: Maximum number of items returned by a single call
+//	- `pageToken`: Token returned by previous call to retreive the subsequent page
 //	- `sortBy`
 func (s *SagasService) List(limit int, pageToken string, sortBy IdSortMode) (*SagaResultsPage, error) {
 	// Create the url.
@@ -3048,9 +3159,7 @@ func (s *SagasService) List(limit int, pageToken string, sortBy IdSortMode) (*Sa
 	return &body, nil
 }
 
-// ListAllPages
-//
-// List all sagas (for debugging)
+// ListAllPages: List all sagas (for debugging)
 //
 // This method is a wrapper around the `List` method.
 // This method returns all the pages at once.
@@ -3075,9 +3184,7 @@ func (s *SagasService) ListAllPages(sortBy IdSortMode) (*[]Saga, error) {
 	}
 
 	return &allPages, nil
-} // Get
-//
-// Fetch information about a single saga (for debugging)
+} // Get: Fetch information about a single saga (for debugging)
 //
 // Parameters:
 //	- `sagaId`
@@ -3118,9 +3225,7 @@ func (s *SagasService) Get(sagaID string) (*Saga, error) {
 	return &body, nil
 }
 
-// SessionMe
-//
-// Fetch the user associated with the current session
+// SessionMe: Fetch the user associated with the current session
 func (s *HiddenService) SessionMe() (*SessionUser, error) {
 	// Create the url.
 	path := "/session/me"
@@ -3152,15 +3257,13 @@ func (s *HiddenService) SessionMe() (*SessionUser, error) {
 	return &body, nil
 }
 
-// TimeseriesSchemaList
-//
-// List all timeseries schema
+// TimeseriesSchemaList: List all timeseries schema
 //
 // To iterate over all pages, use the `TimeseriesSchemaListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`
-//	- `pageToken`
+//	- `limit`: Maximum number of items returned by a single call
+//	- `pageToken`: Token returned by previous call to retreive the subsequent page
 func (s *MetricsService) TimeseriesSchemaList(limit int, pageToken string) (*TimeseriesSchemaResultsPage, error) {
 	// Create the url.
 	path := "/timeseries/schema"
@@ -3199,9 +3302,7 @@ func (s *MetricsService) TimeseriesSchemaList(limit int, pageToken string) (*Tim
 	return &body, nil
 }
 
-// TimeseriesSchemaListAllPages
-//
-// List all timeseries schema
+// TimeseriesSchemaListAllPages: List all timeseries schema
 //
 // This method is a wrapper around the `TimeseriesSchemaList` method.
 // This method returns all the pages at once.
@@ -3223,15 +3324,37 @@ func (s *MetricsService) TimeseriesSchemaListAllPages() (*[]TimeseriesSchema, er
 	}
 
 	return &allPages, nil
-} // List
-//
-// List the built-in system users
+} // Refresh: Refresh update metadata
+func (s *UpdatesService) Refresh() error {
+	// Create the url.
+	path := "/updates/refresh"
+	uri := resolveRelative(s.client.server, path)
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, nil)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+	// Return.
+	return nil
+}
+
+// List: List the built-in system users
 //
 // To iterate over all pages, use the `ListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`
-//	- `pageToken`
+//	- `limit`: Maximum number of items returned by a single call
+//	- `pageToken`: Token returned by previous call to retreive the subsequent page
 //	- `sortBy`
 func (s *UsersService) List(limit int, pageToken string, sortBy NameSortMode) (*UserResultsPage, error) {
 	// Create the url.
@@ -3272,9 +3395,7 @@ func (s *UsersService) List(limit int, pageToken string, sortBy NameSortMode) (*
 	return &body, nil
 }
 
-// ListAllPages
-//
-// List the built-in system users
+// ListAllPages: List the built-in system users
 //
 // This method is a wrapper around the `List` method.
 // This method returns all the pages at once.
@@ -3299,12 +3420,10 @@ func (s *UsersService) ListAllPages(sortBy NameSortMode) (*[]User, error) {
 	}
 
 	return &allPages, nil
-} // Get
-//
-// Fetch a specific built-in system user
+} // Get: Fetch a specific built-in system user
 //
 // Parameters:
-//	- `userName`
+//	- `userName`: The built-in user's unique name.
 func (s *UsersService) Get(userName Name) (*User, error) {
 	// Create the url.
 	path := "/users/{{.user_name}}"
