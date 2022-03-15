@@ -768,7 +768,7 @@ func getSuccessResponseType(o *openapi3.Operation, isGetAllPages bool) (string, 
 			name = "200"
 		}
 
-		statusCode, err := strconv.Atoi(name)
+		statusCode, err := strconv.Atoi(strings.ReplaceAll(name, "XX", "00"))
 		if err != nil {
 			fmt.Printf("error converting %q to an integer: %v\n", name, err)
 			os.Exit(1)
@@ -950,6 +950,10 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 
 							typeName = printProperty(p.Value.Enum[0].(string))
 						}
+					}
+
+					if len(typeName) == 0 && len(keys) == 1 && v.Value.Required != nil && len(v.Value.Required) == 1 {
+						typeName = printProperty(v.Value.Required[0])
 					}
 				}
 

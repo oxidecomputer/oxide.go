@@ -14,53 +14,90 @@ type Client struct {
 	client *http.Client
 
 	// token is the API token used for authentication.
-	token         string
-	Racks         *RacksService
-	Sleds         *SledsService
+	token string
+	// Disks: Virtual disks are used to store instance-local data which includes the operating system.
+	Disks *DisksService
+	// Firewall: Firewall operation controls the flow of network data into a VPC
+	Firewall *FirewallService
+	// Hidden: TODO operations that will not ship to customers
+	Hidden *HiddenService
+	// Instances: Virtual machine instances are the basic unit of computation. These operations are used for provisioning, controlling, and destroying instances.
+	Instances *InstancesService
+	// Metrics: Metrics provide insight into the operation of the Oxide deployment. These include telemetry on hardware and software components that can be used to understand the current state as well as to diagnose issues.
+	Metrics *MetricsService
+	// Organizations: Organizations represent a subset of users and projects in an Oxide deployment.
 	Organizations *OrganizationsService
-	Disks         *DisksService
-	Projects      *ProjectsService
-	Users         *UsersService
-	Roles         *RolesService
-	Instances     *InstancesService
-	Sagas         *SagasService
-	Metrics       *MetricsService
-	Vpcs          *VpcsService
-	Subnets       *SubnetsService
-	Firewall      *FirewallService
-	Routers       *RoutersService
-	Routes        *RoutesService
-	Hidden        *HiddenService
+	// Projects: Projects are a grouping of associated resources such as instances and disks within an organization for purposes of billing and access control.
+	Projects *ProjectsService
+	// Racks: These operations pertain to hardware inventory and management. Racks are the unit of expansion of an Oxide deployment. Racks are in turn composed of sleds, switches, power supplies, and a cabled backplane.
+	Racks *RacksService
+	// Roles: Roles are a component of Identity and Access Management (IAM) that allow a user or agent account access to additional permissions.
+	Roles *RolesService
+	// Routers: Routers direct the flow of network traffic into, out of, and within a VPC via routes.
+	Routers *RoutersService
+	// Routes: Routes define router policy.
+	Routes *RoutesService
+	// Sagas: Sagas are the abstraction used to represent multi-step operations within the Oxide deployment. These operations can be used to query saga status and report errors.
+	Sagas *SagasService
+	// Sleds: This tag should be moved into hardware
+	Sleds *SledsService
+	// Subnets: This tag should be moved into a generic network tag
+	Subnets *SubnetsService
+	// Updates: This tag should be moved into a operations tag
+	Updates *UpdatesService
+	// Users: This tag should be moved into an IAM tag
+	Users *UsersService
+	// Vpcs: A Virtual Private Cloud (VPC) is an isolated network environment that should probaby be moved into a more generic networking tag
+	Vpcs *VpcsService
 }
 
-type RacksService service
-
-type SledsService service
-
-type OrganizationsService service
-
+// DisksService: Virtual disks are used to store instance-local data which includes the operating system.
 type DisksService service
 
-type ProjectsService service
-
-type UsersService service
-
-type RolesService service
-
-type InstancesService service
-
-type SagasService service
-
-type MetricsService service
-
-type VpcsService service
-
-type SubnetsService service
-
+// FirewallService: Firewall operation controls the flow of network data into a VPC
 type FirewallService service
 
+// HiddenService: TODO operations that will not ship to customers
+type HiddenService service
+
+// InstancesService: Virtual machine instances are the basic unit of computation. These operations are used for provisioning, controlling, and destroying instances.
+type InstancesService service
+
+// MetricsService: Metrics provide insight into the operation of the Oxide deployment. These include telemetry on hardware and software components that can be used to understand the current state as well as to diagnose issues.
+type MetricsService service
+
+// OrganizationsService: Organizations represent a subset of users and projects in an Oxide deployment.
+type OrganizationsService service
+
+// ProjectsService: Projects are a grouping of associated resources such as instances and disks within an organization for purposes of billing and access control.
+type ProjectsService service
+
+// RacksService: These operations pertain to hardware inventory and management. Racks are the unit of expansion of an Oxide deployment. Racks are in turn composed of sleds, switches, power supplies, and a cabled backplane.
+type RacksService service
+
+// RolesService: Roles are a component of Identity and Access Management (IAM) that allow a user or agent account access to additional permissions.
+type RolesService service
+
+// RoutersService: Routers direct the flow of network traffic into, out of, and within a VPC via routes.
 type RoutersService service
 
+// RoutesService: Routes define router policy.
 type RoutesService service
 
-type HiddenService service
+// SagasService: Sagas are the abstraction used to represent multi-step operations within the Oxide deployment. These operations can be used to query saga status and report errors.
+type SagasService service
+
+// SledsService: This tag should be moved into hardware
+type SledsService service
+
+// SubnetsService: This tag should be moved into a generic network tag
+type SubnetsService service
+
+// UpdatesService: This tag should be moved into a operations tag
+type UpdatesService service
+
+// UsersService: This tag should be moved into an IAM tag
+type UsersService service
+
+// VpcsService: A Virtual Private Cloud (VPC) is an isolated network environment that should probaby be moved into a more generic networking tag
+type VpcsService service
