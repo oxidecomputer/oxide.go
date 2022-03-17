@@ -1765,6 +1765,214 @@ func (s *InstancesService) Stop(instanceName Name, organizationName Name, projec
 	return &body, nil
 }
 
+// List: List snapshots in a project.
+//
+// To iterate over all pages, use the `ListAllPages` method, instead.
+//
+// Parameters:
+//	- `limit`: Maximum number of items returned by a single call
+//	- `organizationName`: The organization's unique name.
+//	- `pageToken`: Token returned by previous call to retreive the subsequent page
+//	- `projectName`: The project's unique name within the organization.
+//	- `sortBy`
+func (s *SnapshotsService) List(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name) (*SnapshotResultsPage, error) {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/snapshots"
+	uri := resolveRelative(s.client.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"limit":             strconv.Itoa(limit),
+		"organization_name": string(organizationName),
+		"page_token":        pageToken,
+		"project_name":      string(projectName),
+		"sort_by":           string(sortBy),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body SnapshotResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// ListAllPages: List snapshots in a project.
+//
+// This method is a wrapper around the `List` method.
+// This method returns all the pages at once.
+//
+// Parameters:
+//	- `organizationName`: The organization's unique name.
+//	- `projectName`: The project's unique name within the organization.
+//	- `sortBy`
+func (s *SnapshotsService) ListAllPages(sortBy NameSortMode, organizationName Name, projectName Name) (*[]Snapshot, error) {
+
+	var allPages []Snapshot
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := s.List(limit, pageToken, sortBy, organizationName, projectName)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+} // Create: Create a snapshot of a disk.
+//
+// Parameters:
+//	- `organizationName`: The organization's unique name.
+//	- `projectName`: The project's unique name within the organization.
+func (s *SnapshotsService) Create(organizationName Name, projectName Name, j *SnapshotCreate) (*Snapshot, error) {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/snapshots"
+	uri := resolveRelative(s.client.server, path)
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body Snapshot
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// Get: Get a snapshot in a project.
+//
+// Parameters:
+//	- `organizationName`
+//	- `projectName`
+//	- `snapshotName`
+func (s *SnapshotsService) Get(organizationName Name, projectName Name, snapshotName Name) (*Snapshot, error) {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/snapshots/{{.snapshot_name}}"
+	uri := resolveRelative(s.client.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
+		"snapshot_name":     string(snapshotName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body Snapshot
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// Delete: Delete a snapshot from a project.
+//
+// Parameters:
+//	- `organizationName`
+//	- `projectName`
+//	- `snapshotName`
+func (s *SnapshotsService) Delete(organizationName Name, projectName Name, snapshotName Name) error {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/snapshots/{{.snapshot_name}}"
+	uri := resolveRelative(s.client.server, path)
+	// Create the request.
+	req, err := http.NewRequest("DELETE", uri, nil)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"organization_name": string(organizationName),
+		"project_name":      string(projectName),
+		"snapshot_name":     string(snapshotName),
+	}); err != nil {
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+	// Return.
+	return nil
+}
+
 // List: List VPCs in a project.
 //
 // To iterate over all pages, use the `ListAllPages` method, instead.
@@ -2303,19 +2511,19 @@ func (s *RoutersService) Get(organizationName Name, projectName Name, routerName
 //	- `projectName`
 //	- `routerName`
 //	- `vpcName`
-func (s *RoutersService) Put(organizationName Name, projectName Name, routerName Name, vpcName Name, j *RouterUpdate) error {
+func (s *RoutersService) Put(organizationName Name, projectName Name, routerName Name, vpcName Name, j *RouterUpdate) (*Router, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}"
 	uri := resolveRelative(s.client.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
-		return fmt.Errorf("encoding json body request failed: %v", err)
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 	// Create the request.
 	req, err := http.NewRequest("PUT", uri, b)
 	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
+		return nil, fmt.Errorf("error creating request: %v", err)
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
@@ -2324,20 +2532,28 @@ func (s *RoutersService) Put(organizationName Name, projectName Name, routerName
 		"router_name":       string(routerName),
 		"vpc_name":          string(vpcName),
 	}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
 	resp, err := s.client.client.Do(req)
 	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
+		return nil, fmt.Errorf("error sending request: %v", err)
 	}
 	defer resp.Body.Close()
 	// Check the response.
 	if err := checkResponse(resp); err != nil {
-		return err
+		return nil, err
 	}
-	// Return.
-	return nil
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body Router
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // Delete: Delete a router from its VPC
@@ -2572,19 +2788,19 @@ func (s *RoutesService) rsGet(organizationName Name, projectName Name, routeName
 //	- `routeName`
 //	- `routerName`
 //	- `vpcName`
-func (s *RoutesService) rsPut(organizationName Name, projectName Name, routeName Name, routerName Name, vpcName Name, j *RouterRouteUpdateParams) error {
+func (s *RoutesService) rsPut(organizationName Name, projectName Name, routeName Name, routerName Name, vpcName Name, j *RouterRouteUpdateParams) (*RouterRoute, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes/{{.route_name}}"
 	uri := resolveRelative(s.client.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
-		return fmt.Errorf("encoding json body request failed: %v", err)
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 	// Create the request.
 	req, err := http.NewRequest("PUT", uri, b)
 	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
+		return nil, fmt.Errorf("error creating request: %v", err)
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
@@ -2594,20 +2810,28 @@ func (s *RoutesService) rsPut(organizationName Name, projectName Name, routeName
 		"router_name":       string(routerName),
 		"vpc_name":          string(vpcName),
 	}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
 	resp, err := s.client.client.Do(req)
 	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
+		return nil, fmt.Errorf("error sending request: %v", err)
 	}
 	defer resp.Body.Close()
 	// Check the response.
 	if err := checkResponse(resp); err != nil {
-		return err
+		return nil, err
 	}
-	// Return.
-	return nil
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body RouterRoute
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // rsDelete: Delete a route from its router

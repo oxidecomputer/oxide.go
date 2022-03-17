@@ -1701,6 +1701,106 @@
         ],
         "type": "object"
       },
+      "Snapshot": {
+        "description": "Client view of a Snapshot",
+        "properties": {
+          "description": {
+            "description": "human-readable free-form text about a resource",
+            "type": "string"
+          },
+          "disk_id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "id": {
+            "description": "unique, immutable, system-controlled identifier for each resource",
+            "format": "uuid",
+            "type": "string"
+          },
+          "name": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Name"
+              }
+            ],
+            "description": "unique, mutable, user-controlled identifier for each resource"
+          },
+          "project_id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "size": {
+            "$ref": "#/components/schemas/ByteCount"
+          },
+          "time_created": {
+            "description": "timestamp when this resource was created",
+            "format": "date-time",
+            "type": "string"
+          },
+          "time_modified": {
+            "description": "timestamp when this resource was last modified",
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "description",
+          "disk_id",
+          "id",
+          "name",
+          "project_id",
+          "size",
+          "time_created",
+          "time_modified"
+        ],
+        "type": "object"
+      },
+      "SnapshotCreate": {
+        "description": "Create-time parameters for a [`Snapshot`](omicron_common::api::external::Snapshot)",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "disk": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Name"
+              }
+            ],
+            "description": "The name of the disk to be snapshotted"
+          },
+          "name": {
+            "$ref": "#/components/schemas/Name"
+          }
+        },
+        "required": [
+          "description",
+          "disk",
+          "name"
+        ],
+        "type": "object"
+      },
+      "SnapshotResultsPage": {
+        "description": "A single page of results",
+        "properties": {
+          "items": {
+            "description": "list of items on this page of results",
+            "items": {
+              "$ref": "#/components/schemas/Snapshot"
+            },
+            "type": "array"
+          },
+          "next_page": {
+            "description": "token used to fetch the next page of results (if any)",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
       "TimeseriesName": {
         "description": "Names are constructed by concatenating the target and metric names with ':'. Target and metric names must be lowercase alphanumeric characters with '_' separating words.",
         "pattern": "(([a-z]+[a-z0-9]*)(_([a-z0-9]+))*):(([a-z]+[a-z0-9]*)(_([a-z0-9]+))*)",
@@ -2450,7 +2550,7 @@
         "type": "object"
       },
       "VpcRouterCreate": {
-        "description": "Create-time parameters for a [`VpcRouter`](omicron_common::api::external::VpcRouter)",
+        "description": "Create-time parameters for a [`VpcRouter`](crate::external_api::views::VpcRouter)",
         "properties": {
           "description": {
             "type": "string"
@@ -2494,7 +2594,7 @@
         "type": "object"
       },
       "VpcRouterUpdate": {
-        "description": "Updateable properties of a [`VpcRouter`](omicron_common::api::external::VpcRouter)",
+        "description": "Updateable properties of a [`VpcRouter`](crate::external_api::views::VpcRouter)",
         "properties": {
           "description": {
             "nullable": true,
@@ -4869,6 +4969,274 @@
         }
       }
     },
+    "/organizations/{organization_name}/projects/{project_name}/snapshots": {
+      "get": {
+        "operationId": "project_snapshots_get",
+        "parameters": [
+          {
+            "description": "Maximum number of items returned by a single call",
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "format": "uint32",
+              "minimum": 1,
+              "nullable": true,
+              "type": "integer"
+            },
+            "style": "form"
+          },
+          {
+            "description": "Token returned by previous call to retreive the subsequent page",
+            "in": "query",
+            "name": "page_token",
+            "schema": {
+              "nullable": true,
+              "type": "string"
+            },
+            "style": "form"
+          },
+          {
+            "in": "query",
+            "name": "sort_by",
+            "schema": {
+              "$ref": "#/components/schemas/NameSortMode"
+            },
+            "style": "form"
+          },
+          {
+            "description": "The organization's unique name.",
+            "in": "path",
+            "name": "organization_name",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Name"
+            },
+            "style": "simple"
+          },
+          {
+            "description": "The project's unique name within the organization.",
+            "in": "path",
+            "name": "project_name",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Name"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SnapshotResultsPage"
+                }
+              }
+            },
+            "description": "successful operation"
+          },
+          "4XX": {
+            "$ref": "#/components/responses/Error"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "summary": "List snapshots in a project.",
+        "tags": [
+          "snapshots"
+        ],
+        "x-dropshot-pagination": true,
+        "x-go": {
+          "example": "// List: List snapshots in a project.\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`: Maximum number of items returned by a single call\n//\t- `organizationName`: The organization's unique name.\n//\t- `pageToken`: Token returned by previous call to retreive the subsequent page\n//\t- `projectName`: The project's unique name within the organization.\n//\t- `sortBy`\nsnapshotResultsPage, err := client.Snapshots.List(limit, pageToken, sortBy, organizationName, projectName)\n\n// - OR -\n\n// ListAllPages: List snapshots in a project.\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`: The organization's unique name.\n//\t- `projectName`: The project's unique name within the organization.\n//\t- `sortBy`\nSnapshot, err := client.Snapshots.ListAllPages(sortBy, organizationName, projectName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SnapshotsService.List"
+        },
+        "x-ts": {
+          "example": "let resp = client.projectSnapshotsGet(ProjectSnapshotsGetParams{orgName, projectName}, params);"
+        }
+      },
+      "post": {
+        "operationId": "project_snapshots_post",
+        "parameters": [
+          {
+            "description": "The organization's unique name.",
+            "in": "path",
+            "name": "organization_name",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Name"
+            },
+            "style": "simple"
+          },
+          {
+            "description": "The project's unique name within the organization.",
+            "in": "path",
+            "name": "project_name",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Name"
+            },
+            "style": "simple"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SnapshotCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Snapshot"
+                }
+              }
+            },
+            "description": "successful creation"
+          },
+          "4XX": {
+            "$ref": "#/components/responses/Error"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "summary": "Create a snapshot of a disk.",
+        "tags": [
+          "snapshots"
+        ],
+        "x-go": {
+          "example": "// Create: Create a snapshot of a disk.\n//\n// Parameters:\n//\t- `organizationName`: The organization's unique name.\n//\t- `projectName`: The project's unique name within the organization.\nsnapshot, err := client.Snapshots.Create(organizationName, projectName, body)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SnapshotsService.Create"
+        },
+        "x-ts": {
+          "example": "let resp = client.projectSnapshotsPost(ProjectSnapshotsPostParams{orgName, projectName}, data, params);"
+        }
+      }
+    },
+    "/organizations/{organization_name}/projects/{project_name}/snapshots/{snapshot_name}": {
+      "delete": {
+        "operationId": "project_snapshots_delete_snapshot",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organization_name",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Name"
+            },
+            "style": "simple"
+          },
+          {
+            "in": "path",
+            "name": "project_name",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Name"
+            },
+            "style": "simple"
+          },
+          {
+            "in": "path",
+            "name": "snapshot_name",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Name"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "successful deletion"
+          },
+          "4XX": {
+            "$ref": "#/components/responses/Error"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "summary": "Delete a snapshot from a project.",
+        "tags": [
+          "snapshots"
+        ],
+        "x-go": {
+          "example": "// Delete: Delete a snapshot from a project.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `snapshotName`\nif err := client.Snapshots.Delete(organizationName, projectName, snapshotName); err != nil {\n\tpanic(err)\n}",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SnapshotsService.Delete"
+        },
+        "x-ts": {
+          "example": "let resp = client.projectSnapshotsDeleteSnapshot(ProjectSnapshotsDeleteSnapshotParams{orgName, projectName, snapshotName}, params);"
+        }
+      },
+      "get": {
+        "operationId": "project_snapshots_get_snapshot",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organization_name",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Name"
+            },
+            "style": "simple"
+          },
+          {
+            "in": "path",
+            "name": "project_name",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Name"
+            },
+            "style": "simple"
+          },
+          {
+            "in": "path",
+            "name": "snapshot_name",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Name"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Snapshot"
+                }
+              }
+            },
+            "description": "successful operation"
+          },
+          "4XX": {
+            "$ref": "#/components/responses/Error"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "summary": "Get a snapshot in a project.",
+        "tags": [
+          "snapshots"
+        ],
+        "x-go": {
+          "example": "// Get: Get a snapshot in a project.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `snapshotName`\nsnapshot, err := client.Snapshots.Get(organizationName, projectName, snapshotName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SnapshotsService.Get"
+        },
+        "x-ts": {
+          "example": "let resp = client.projectSnapshotsGetSnapshot(ProjectSnapshotsGetSnapshotParams{orgName, projectName, snapshotName}, params);"
+        }
+      }
+    },
     "/organizations/{organization_name}/projects/{project_name}/vpcs": {
       "get": {
         "operationId": "project_vpcs_get",
@@ -5692,8 +6060,15 @@
           "required": true
         },
         "responses": {
-          "204": {
-            "description": "resource updated"
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VpcRouter"
+                }
+              }
+            },
+            "description": "successful operation"
           },
           "4XX": {
             "$ref": "#/components/responses/Error"
@@ -5707,7 +6082,7 @@
           "routers"
         ],
         "x-go": {
-          "example": "// Put: Update a VPC Router\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `vpcName`\nif err := client.Routers.Put(organizationName, projectName, routerName, vpcName, body); err != nil {\n\tpanic(err)\n}",
+          "example": "// Put: Update a VPC Router\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `vpcName`\nrouter, err := client.Routers.Put(organizationName, projectName, routerName, vpcName, body)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RoutersService.Put"
         },
         "x-ts": {
@@ -6110,8 +6485,15 @@
           "required": true
         },
         "responses": {
-          "204": {
-            "description": "resource updated"
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RouterRoute"
+                }
+              }
+            },
+            "description": "successful operation"
           },
           "4XX": {
             "$ref": "#/components/responses/Error"
@@ -6125,7 +6507,7 @@
           "routes"
         ],
         "x-go": {
-          "example": "// rsPut: Update a Router route\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routeName`\n//\t- `routerName`\n//\t- `vpcName`\nif err := client.Routes.rsPut(organizationName, projectName, routeName, routerName, vpcName, body); err != nil {\n\tpanic(err)\n}",
+          "example": "// rsPut: Update a Router route\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routeName`\n//\t- `routerName`\n//\t- `vpcName`\nrouterRoute, err := client.Routes.rsPut(organizationName, projectName, routeName, routerName, vpcName, body)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RoutesService.rsPut"
         },
         "x-ts": {
@@ -7159,6 +7541,13 @@
         "url": "http://oxide.computer/docs/#xxx"
       },
       "name": "sleds"
+    },
+    {
+      "description": "Snapshots of Virtual Disks at a particular point in time.",
+      "externalDocs": {
+        "url": "http://oxide.computer/docs/#xxx"
+      },
+      "name": "snapshots"
     },
     {
       "description": "This tag should be moved into a generic network tag",

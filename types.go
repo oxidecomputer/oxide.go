@@ -910,6 +910,43 @@ type SledResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+// Snapshot is client view of a Snapshot
+type Snapshot struct {
+	// Description is human-readable free-form text about a resource
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	DiskID      string `json:"disk_id,omitempty" yaml:"disk_id,omitempty"`
+	// ID is unique, immutable, system-controlled identifier for each resource
+	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Name is unique, mutable, user-controlled identifier for each resource
+	Name      Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	ProjectID string `json:"project_id,omitempty" yaml:"project_id,omitempty"`
+	// Size is a count of bytes, typically used either for memory or storage capacity
+	//
+	// The maximum supported byte count is [`i64::MAX`].  This makes it somewhat inconvenient to define constructors: a u32 constructor can be infallible, but an i64 constructor can fail (if the value is negative) and a u64 constructor can fail (if the value is larger than i64::MAX).  We provide all of these for consumers' convenience.
+	Size ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
+	// TimeCreated is timestamp when this resource was created
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	// TimeModified is timestamp when this resource was last modified
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+}
+
+// SnapshotCreate is create-time parameters for a [`Snapshot`](omicron_common::api::external::Snapshot)
+type SnapshotCreate struct {
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Disk is the name of the disk to be snapshotted
+	Disk Name `json:"disk,omitempty" yaml:"disk,omitempty"`
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+}
+
+// SnapshotResultsPage is a single page of results
+type SnapshotResultsPage struct {
+	// Items is list of items on this page of results
+	Items []Snapshot `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
 // TimeseriesName is names are constructed by concatenating the target and metric names with ':'. Target and metric names must be lowercase alphanumeric characters with '_' separating words.
 type TimeseriesName string
 
@@ -1261,7 +1298,7 @@ type Router struct {
 	VPCId string `json:"vpc_id,omitempty" yaml:"vpc_id,omitempty"`
 }
 
-// RouterCreate is create-time parameters for a [`VpcRouter`](omicron_common::api::external::VpcRouter)
+// RouterCreate is create-time parameters for a [`VpcRouter`](crate::external_api::views::VpcRouter)
 type RouterCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
@@ -1286,7 +1323,7 @@ type RouterResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// RouterUpdate is updateable properties of a [`VpcRouter`](omicron_common::api::external::VpcRouter)
+// RouterUpdate is updateable properties of a [`VpcRouter`](crate::external_api::views::VpcRouter)
 type RouterUpdate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
