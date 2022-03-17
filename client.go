@@ -41,6 +41,8 @@ type Client struct {
 	Sagas *SagasService
 	// Sleds: This tag should be moved into hardware
 	Sleds *SledsService
+	// Snapshots: Snapshots of Virtual Disks at a particular point in time.
+	Snapshots *SnapshotsService
 	// Subnets: This tag should be moved into a generic network tag
 	Subnets *SubnetsService
 	// Updates: This tag should be moved into a operations tag
@@ -89,6 +91,9 @@ type SagasService service
 
 // SledsService: This tag should be moved into hardware
 type SledsService service
+
+// SnapshotsService: Snapshots of Virtual Disks at a particular point in time.
+type SnapshotsService service
 
 // SubnetsService: This tag should be moved into a generic network tag
 type SubnetsService service
