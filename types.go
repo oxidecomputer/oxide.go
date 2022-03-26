@@ -36,54 +36,54 @@ const (
 // Disk is client view of an [`Disk`]
 type Disk struct {
 	// Description is human-readable free-form text about a resource
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	DevicePath  string `json:"device_path,omitempty" yaml:"device_path,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
+	DevicePath  string `json:"device_path,omitempty" yaml:"device_path,omitempty" tfsdk:"device_path"`
 	// ID is unique, immutable, system-controlled identifier for each resource
-	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	ID string `json:"id,omitempty" yaml:"id,omitempty" tfsdk:"id"`
 	// Name is unique, mutable, user-controlled identifier for each resource
-	Name      Name   `json:"name,omitempty" yaml:"name,omitempty"`
-	ProjectID string `json:"project_id,omitempty" yaml:"project_id,omitempty"`
+	Name      Name   `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
+	ProjectID string `json:"project_id,omitempty" yaml:"project_id,omitempty" tfsdk:"project_id"`
 	// Size is a count of bytes, typically used either for memory or storage capacity
 	//
 	// The maximum supported byte count is [`i64::MAX`].  This makes it somewhat inconvenient to define constructors: a u32 constructor can be infallible, but an i64 constructor can fail (if the value is negative) and a u64 constructor can fail (if the value is larger than i64::MAX).  We provide all of these for consumers' convenience.
-	Size       ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
-	SnapshotID string    `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
+	Size       ByteCount `json:"size,omitempty" yaml:"size,omitempty" tfsdk:"size"`
+	SnapshotID string    `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty" tfsdk:"snapshot_id"`
 	// State is state of a Disk (primarily: attached or not)
-	State DiskState `json:"state,omitempty" yaml:"state,omitempty"`
+	State DiskState `json:"state,omitempty" yaml:"state,omitempty" tfsdk:"state"`
 	// TimeCreated is timestamp when this resource was created
-	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty" tfsdk:"time_created"`
 	// TimeModified is timestamp when this resource was last modified
-	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty" tfsdk:"time_modified"`
 }
 
 // DiskCreate is create-time parameters for a [`Disk`](omicron_common::api::external::Disk)
 type DiskCreate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name Name `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
 	// Size is size of the Disk
-	Size ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
+	Size ByteCount `json:"size,omitempty" yaml:"size,omitempty" tfsdk:"size"`
 	// SnapshotID is id for snapshot from which the Disk should be created, if any
-	SnapshotID string `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
+	SnapshotID string `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty" tfsdk:"snapshot_id"`
 }
 
 // DiskIdentifier is parameters for the [`Disk`](omicron_common::api::external::Disk) to be attached or detached to an instance
 type DiskIdentifier struct {
 	// Disk is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Disk Name `json:"disk,omitempty" yaml:"disk,omitempty"`
+	Disk Name `json:"disk,omitempty" yaml:"disk,omitempty" tfsdk:"disk"`
 }
 
 // DiskResultsPage is a single page of results
 type DiskResultsPage struct {
 	// Items is list of items on this page of results
-	Items []Disk `json:"items,omitempty" yaml:"items,omitempty"`
+	Items []Disk `json:"items,omitempty" yaml:"items,omitempty" tfsdk:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty" tfsdk:"next_page"`
 }
 
 // DiskStateCreating is disk is being initialized
 type DiskStateCreating struct {
-	State DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
+	State DiskStateState `json:"state,omitempty" yaml:"state,omitempty" tfsdk:"state"`
 }
 
 // DiskStateState is the type definition for a DiskStateState.
@@ -96,7 +96,7 @@ const (
 
 // DiskStateDetached is disk is ready but detached from any Instance
 type DiskStateDetached struct {
-	State DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
+	State DiskStateState `json:"state,omitempty" yaml:"state,omitempty" tfsdk:"state"`
 }
 
 const (
@@ -106,8 +106,8 @@ const (
 
 // DiskStateAttaching is disk is being attached to the given Instance
 type DiskStateAttaching struct {
-	Instance string         `json:"instance,omitempty" yaml:"instance,omitempty"`
-	State    DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
+	Instance string         `json:"instance,omitempty" yaml:"instance,omitempty" tfsdk:"instance"`
+	State    DiskStateState `json:"state,omitempty" yaml:"state,omitempty" tfsdk:"state"`
 }
 
 const (
@@ -117,8 +117,8 @@ const (
 
 // DiskStateAttached is disk is attached to the given Instance
 type DiskStateAttached struct {
-	Instance string         `json:"instance,omitempty" yaml:"instance,omitempty"`
-	State    DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
+	Instance string         `json:"instance,omitempty" yaml:"instance,omitempty" tfsdk:"instance"`
+	State    DiskStateState `json:"state,omitempty" yaml:"state,omitempty" tfsdk:"state"`
 }
 
 const (
@@ -128,8 +128,8 @@ const (
 
 // DiskStateDetaching is disk is being detached from the given Instance
 type DiskStateDetaching struct {
-	Instance string         `json:"instance,omitempty" yaml:"instance,omitempty"`
-	State    DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
+	Instance string         `json:"instance,omitempty" yaml:"instance,omitempty" tfsdk:"instance"`
+	State    DiskStateState `json:"state,omitempty" yaml:"state,omitempty" tfsdk:"state"`
 }
 
 const (
@@ -139,7 +139,7 @@ const (
 
 // DiskStateDestroyed is disk has been destroyed
 type DiskStateDestroyed struct {
-	State DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
+	State DiskStateState `json:"state,omitempty" yaml:"state,omitempty" tfsdk:"state"`
 }
 
 const (
@@ -149,7 +149,7 @@ const (
 
 // DiskStateFaulted is disk is unavailable
 type DiskStateFaulted struct {
-	State DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
+	State DiskStateState `json:"state,omitempty" yaml:"state,omitempty" tfsdk:"state"`
 }
 
 const (
@@ -165,18 +165,18 @@ type DiskState struct {
 
 // Error is error information from a response.
 type Error struct {
-	ErrorCode string `json:"error_code,omitempty" yaml:"error_code,omitempty"`
-	Message   string `json:"message,omitempty" yaml:"message,omitempty"`
-	RequestID string `json:"request_id,omitempty" yaml:"request_id,omitempty"`
+	ErrorCode string `json:"error_code,omitempty" yaml:"error_code,omitempty" tfsdk:"error_code"`
+	Message   string `json:"message,omitempty" yaml:"message,omitempty" tfsdk:"message"`
+	RequestID string `json:"request_id,omitempty" yaml:"request_id,omitempty" tfsdk:"request_id"`
 }
 
 // FieldSchema is the name and type information for a field of a timeseries schema.
 type FieldSchema struct {
-	Name string `json:"name,omitempty" yaml:"name,omitempty"`
+	Name string `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
 	// Source is the source from which a field is derived, the target or metric.
-	Source FieldSource `json:"source,omitempty" yaml:"source,omitempty"`
+	Source FieldSource `json:"source,omitempty" yaml:"source,omitempty" tfsdk:"source"`
 	// Ty is the `FieldType` identifies the data type of a target or metric field.
-	Ty FieldType `json:"ty,omitempty" yaml:"ty,omitempty"`
+	Ty FieldType `json:"ty,omitempty" yaml:"ty,omitempty" tfsdk:"ty"`
 }
 
 // FieldSource is the source from which a field is derived, the target or metric.
@@ -218,28 +218,28 @@ const (
 // Instance is client view of an [`Instance`]
 type Instance struct {
 	// Description is human-readable free-form text about a resource
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
 	// Hostname is rFC1035-compliant hostname for the Instance.
-	Hostname string `json:"hostname,omitempty" yaml:"hostname,omitempty"`
+	Hostname string `json:"hostname,omitempty" yaml:"hostname,omitempty" tfsdk:"hostname"`
 	// ID is unique, immutable, system-controlled identifier for each resource
-	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	ID string `json:"id,omitempty" yaml:"id,omitempty" tfsdk:"id"`
 	// Memory is memory allocated for this Instance
-	Memory ByteCount `json:"memory,omitempty" yaml:"memory,omitempty"`
+	Memory ByteCount `json:"memory,omitempty" yaml:"memory,omitempty" tfsdk:"memory"`
 	// Name is unique, mutable, user-controlled identifier for each resource
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name Name `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
 	// NCPUs is number of CPUs allocated for this Instance
-	NCPUs InstanceCPUCount `json:"ncpus,omitempty" yaml:"ncpus,omitempty"`
+	NCPUs InstanceCPUCount `json:"ncpus,omitempty" yaml:"ncpus,omitempty" tfsdk:"ncpus"`
 	// ProjectID is id for the project containing this Instance
-	ProjectID string `json:"project_id,omitempty" yaml:"project_id,omitempty"`
+	ProjectID string `json:"project_id,omitempty" yaml:"project_id,omitempty" tfsdk:"project_id"`
 	// RunState is running state of an Instance (primarily: booted or stopped)
 	//
 	// This typically reflects whether it's starting, running, stopping, or stopped, but also includes states related to the Instance's lifecycle
-	RunState InstanceState `json:"run_state,omitempty" yaml:"run_state,omitempty"`
+	RunState InstanceState `json:"run_state,omitempty" yaml:"run_state,omitempty" tfsdk:"run_state"`
 	// TimeCreated is timestamp when this resource was created
-	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty" tfsdk:"time_created"`
 	// TimeModified is timestamp when this resource was last modified
-	TimeModified        *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
-	TimeRunStateUpdated *time.Time `json:"time_run_state_updated,omitempty" yaml:"time_run_state_updated,omitempty"`
+	TimeModified        *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty" tfsdk:"time_modified"`
+	TimeRunStateUpdated *time.Time `json:"time_run_state_updated,omitempty" yaml:"time_run_state_updated,omitempty" tfsdk:"time_run_state_updated"`
 }
 
 // InstanceCPUCount is the number of CPUs in an Instance
@@ -247,29 +247,29 @@ type InstanceCPUCount int
 
 // InstanceCreate is create-time parameters for an [`Instance`](omicron_common::api::external::Instance)
 type InstanceCreate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	Hostname    string `json:"hostname,omitempty" yaml:"hostname,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
+	Hostname    string `json:"hostname,omitempty" yaml:"hostname,omitempty" tfsdk:"hostname"`
 	// Memory is a count of bytes, typically used either for memory or storage capacity
 	//
 	// The maximum supported byte count is [`i64::MAX`].  This makes it somewhat inconvenient to define constructors: a u32 constructor can be infallible, but an i64 constructor can fail (if the value is negative) and a u64 constructor can fail (if the value is larger than i64::MAX).  We provide all of these for consumers' convenience.
-	Memory ByteCount `json:"memory,omitempty" yaml:"memory,omitempty"`
+	Memory ByteCount `json:"memory,omitempty" yaml:"memory,omitempty" tfsdk:"memory"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name Name `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
 	// NCPUs is the number of CPUs in an Instance
-	NCPUs InstanceCPUCount `json:"ncpus,omitempty" yaml:"ncpus,omitempty"`
+	NCPUs InstanceCPUCount `json:"ncpus,omitempty" yaml:"ncpus,omitempty" tfsdk:"ncpus"`
 	// NetworkInterfaces is the network interfaces to be created for this instance.
-	NetworkInterfaces InstanceNetworkInterfaceAttachment `json:"network_interfaces,omitempty" yaml:"network_interfaces,omitempty"`
+	NetworkInterfaces InstanceNetworkInterfaceAttachment `json:"network_interfaces,omitempty" yaml:"network_interfaces,omitempty" tfsdk:"network_interfaces"`
 }
 
 // InstanceMigrate is migration parameters for an [`Instance`](omicron_common::api::external::Instance)
 type InstanceMigrate struct {
-	DstSledUuid string `json:"dst_sled_uuid,omitempty" yaml:"dst_sled_uuid,omitempty"`
+	DstSledUuid string `json:"dst_sled_uuid,omitempty" yaml:"dst_sled_uuid,omitempty" tfsdk:"dst_sled_uuid"`
 }
 
 // InstanceNetworkInterfaceAttachmentCreate is create one or more `NetworkInterface`s for the `Instance`
 type InstanceNetworkInterfaceAttachmentCreate struct {
-	Params InstanceNetworkInterfaceCreate         `json:"params,omitempty" yaml:"params,omitempty"`
-	Type   InstanceNetworkInterfaceAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
+	Params InstanceNetworkInterfaceCreate         `json:"params,omitempty" yaml:"params,omitempty" tfsdk:"params"`
+	Type   InstanceNetworkInterfaceAttachmentType `json:"type,omitempty" yaml:"type,omitempty" tfsdk:"type"`
 }
 
 // InstanceNetworkInterfaceAttachmentType is the type definition for a InstanceNetworkInterfaceAttachmentType.
@@ -282,7 +282,7 @@ const (
 
 // InstanceNetworkInterfaceAttachmentDefault is default networking setup, which creates a single interface with an auto-assigned IP address from project's "default" VPC and "default" VPC Subnet.
 type InstanceNetworkInterfaceAttachmentDefault struct {
-	Type InstanceNetworkInterfaceAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
+	Type InstanceNetworkInterfaceAttachmentType `json:"type,omitempty" yaml:"type,omitempty" tfsdk:"type"`
 }
 
 const (
@@ -292,7 +292,7 @@ const (
 
 // InstanceNetworkInterfaceAttachmentNone is no network interfaces at all will be created for the instance.
 type InstanceNetworkInterfaceAttachmentNone struct {
-	Type InstanceNetworkInterfaceAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
+	Type InstanceNetworkInterfaceAttachmentType `json:"type,omitempty" yaml:"type,omitempty" tfsdk:"type"`
 }
 
 const (
@@ -308,15 +308,15 @@ type InstanceNetworkInterfaceAttachment struct {
 
 // InstanceNetworkInterfaceCreate is the type definition for a InstanceNetworkInterfaceCreate.
 type InstanceNetworkInterfaceCreate struct {
-	Params []NetworkInterfaceCreate `json:"params,omitempty" yaml:"params,omitempty"`
+	Params []NetworkInterfaceCreate `json:"params,omitempty" yaml:"params,omitempty" tfsdk:"params"`
 }
 
 // InstanceResultsPage is a single page of results
 type InstanceResultsPage struct {
 	// Items is list of items on this page of results
-	Items []Instance `json:"items,omitempty" yaml:"items,omitempty"`
+	Items []Instance `json:"items,omitempty" yaml:"items,omitempty" tfsdk:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty" tfsdk:"next_page"`
 }
 
 // InstanceState is running state of an Instance (primarily: booted or stopped)
@@ -350,13 +350,13 @@ const (
 // IpNetV4 is the type definition for a IpNetV4.
 type IpNetV4 struct {
 	// V4 is an IPv4 subnet, including prefix and subnet mask
-	V4 IPv4Net `json:"V4,omitempty" yaml:"V4,omitempty"`
+	V4 IPv4Net `json:"V4,omitempty" yaml:"V4,omitempty" tfsdk:"V4"`
 }
 
 // IpNetV6 is the type definition for a IpNetV6.
 type IpNetV6 struct {
 	// V6 is an IPv6 subnet, including prefix and subnet mask
-	V6 IPv6Net `json:"V6,omitempty" yaml:"V6,omitempty"`
+	V6 IPv6Net `json:"V6,omitempty" yaml:"V6,omitempty" tfsdk:"V6"`
 }
 
 // IpNet is an `IpNet` represents an IP network, either IPv4 or IPv6.
@@ -376,7 +376,7 @@ type L4PortRange string
 
 // LoginParams is the type definition for a LoginParams.
 type LoginParams struct {
-	Username string `json:"username,omitempty" yaml:"username,omitempty"`
+	Username string `json:"username,omitempty" yaml:"username,omitempty" tfsdk:"username"`
 }
 
 // MacAddr is a Media Access Control address, in EUI-48 format
@@ -410,146 +410,146 @@ const (
 // NetworkInterface is a `NetworkInterface` represents a virtual network interface device.
 type NetworkInterface struct {
 	// Description is human-readable free-form text about a resource
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
 	// ID is unique, immutable, system-controlled identifier for each resource
-	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	ID string `json:"id,omitempty" yaml:"id,omitempty" tfsdk:"id"`
 	// InstanceID is the Instance to which the interface belongs.
-	InstanceID string `json:"instance_id,omitempty" yaml:"instance_id,omitempty"`
+	InstanceID string `json:"instance_id,omitempty" yaml:"instance_id,omitempty" tfsdk:"instance_id"`
 	// Ip is the IP address assigned to this interface.
-	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
+	Ip string `json:"ip,omitempty" yaml:"ip,omitempty" tfsdk:"ip"`
 	// Mac is the MAC address assigned to this interface.
-	Mac MacAddr `json:"mac,omitempty" yaml:"mac,omitempty"`
+	Mac MacAddr `json:"mac,omitempty" yaml:"mac,omitempty" tfsdk:"mac"`
 	// Name is unique, mutable, user-controlled identifier for each resource
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name Name `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
 	// SubnetID is the subnet to which the interface belongs.
-	SubnetID string `json:"subnet_id,omitempty" yaml:"subnet_id,omitempty"`
+	SubnetID string `json:"subnet_id,omitempty" yaml:"subnet_id,omitempty" tfsdk:"subnet_id"`
 	// TimeCreated is timestamp when this resource was created
-	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty" tfsdk:"time_created"`
 	// TimeModified is timestamp when this resource was last modified
-	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty" tfsdk:"time_modified"`
 	// VPCId is the VPC to which the interface belongs.
-	VPCId string `json:"vpc_id,omitempty" yaml:"vpc_id,omitempty"`
+	VPCId string `json:"vpc_id,omitempty" yaml:"vpc_id,omitempty" tfsdk:"vpc_id"`
 }
 
 // NetworkInterfaceCreate is create-time parameters for a [`NetworkInterface`](omicron_common::api::external::NetworkInterface)
 type NetworkInterfaceCreate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
 	// Ip is the IP address for the interface. One will be auto-assigned if not provided.
-	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
+	Ip string `json:"ip,omitempty" yaml:"ip,omitempty" tfsdk:"ip"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name Name `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
 	// SubnetName is the VPC Subnet in which to create the interface.
-	SubnetName Name `json:"subnet_name,omitempty" yaml:"subnet_name,omitempty"`
+	SubnetName Name `json:"subnet_name,omitempty" yaml:"subnet_name,omitempty" tfsdk:"subnet_name"`
 	// VPCName is the VPC in which to create the interface.
-	VPCName Name `json:"vpc_name,omitempty" yaml:"vpc_name,omitempty"`
+	VPCName Name `json:"vpc_name,omitempty" yaml:"vpc_name,omitempty" tfsdk:"vpc_name"`
 }
 
 // NetworkInterfaceResultsPage is a single page of results
 type NetworkInterfaceResultsPage struct {
 	// Items is list of items on this page of results
-	Items []NetworkInterface `json:"items,omitempty" yaml:"items,omitempty"`
+	Items []NetworkInterface `json:"items,omitempty" yaml:"items,omitempty" tfsdk:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty" tfsdk:"next_page"`
 }
 
 // Organization is client view of an [`Organization`]
 type Organization struct {
 	// Description is human-readable free-form text about a resource
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
 	// ID is unique, immutable, system-controlled identifier for each resource
-	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	ID string `json:"id,omitempty" yaml:"id,omitempty" tfsdk:"id"`
 	// Name is unique, mutable, user-controlled identifier for each resource
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name Name `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
 	// TimeCreated is timestamp when this resource was created
-	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty" tfsdk:"time_created"`
 	// TimeModified is timestamp when this resource was last modified
-	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty" tfsdk:"time_modified"`
 }
 
 // OrganizationCreate is create-time parameters for an [`Organization`](crate::external_api::views::Organization)
 type OrganizationCreate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name Name `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
 }
 
 // OrganizationResultsPage is a single page of results
 type OrganizationResultsPage struct {
 	// Items is list of items on this page of results
-	Items []Organization `json:"items,omitempty" yaml:"items,omitempty"`
+	Items []Organization `json:"items,omitempty" yaml:"items,omitempty" tfsdk:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty" tfsdk:"next_page"`
 }
 
 // OrganizationUpdate is updateable properties of an [`Organization`](crate::external_api::views::Organization)
 type OrganizationUpdate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
+	Name        Name   `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
 }
 
 // Project is client view of a [`Project`]
 type Project struct {
 	// Description is human-readable free-form text about a resource
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
 	// ID is unique, immutable, system-controlled identifier for each resource
-	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	ID string `json:"id,omitempty" yaml:"id,omitempty" tfsdk:"id"`
 	// Name is unique, mutable, user-controlled identifier for each resource
-	Name           Name   `json:"name,omitempty" yaml:"name,omitempty"`
-	OrganizationID string `json:"organization_id,omitempty" yaml:"organization_id,omitempty"`
+	Name           Name   `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
+	OrganizationID string `json:"organization_id,omitempty" yaml:"organization_id,omitempty" tfsdk:"organization_id"`
 	// TimeCreated is timestamp when this resource was created
-	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty" tfsdk:"time_created"`
 	// TimeModified is timestamp when this resource was last modified
-	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty" tfsdk:"time_modified"`
 }
 
 // ProjectCreate is create-time parameters for a [`Project`](crate::external_api::views::Project)
 type ProjectCreate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name Name `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
 }
 
 // ProjectResultsPage is a single page of results
 type ProjectResultsPage struct {
 	// Items is list of items on this page of results
-	Items []Project `json:"items,omitempty" yaml:"items,omitempty"`
+	Items []Project `json:"items,omitempty" yaml:"items,omitempty" tfsdk:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty" tfsdk:"next_page"`
 }
 
 // ProjectUpdate is updateable properties of a [`Project`](crate::external_api::views::Project)
 type ProjectUpdate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
+	Name        Name   `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
 }
 
 // Rack is client view of an [`Rack`]
 type Rack struct {
 	// Description is human-readable free-form text about a resource
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
 	// ID is unique, immutable, system-controlled identifier for each resource
-	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	ID string `json:"id,omitempty" yaml:"id,omitempty" tfsdk:"id"`
 	// Name is unique, mutable, user-controlled identifier for each resource
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name Name `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
 	// TimeCreated is timestamp when this resource was created
-	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty" tfsdk:"time_created"`
 	// TimeModified is timestamp when this resource was last modified
-	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty" tfsdk:"time_modified"`
 }
 
 // RackResultsPage is a single page of results
 type RackResultsPage struct {
 	// Items is list of items on this page of results
-	Items []Rack `json:"items,omitempty" yaml:"items,omitempty"`
+	Items []Rack `json:"items,omitempty" yaml:"items,omitempty" tfsdk:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty" tfsdk:"next_page"`
 }
 
 // Role is client view of a [`Role`]
 type Role struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
 	// Name is role names consist of two string components separated by dot (".").
-	Name RoleName `json:"name,omitempty" yaml:"name,omitempty"`
+	Name RoleName `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
 }
 
 // RoleName is role names consist of two string components separated by dot (".").
@@ -558,15 +558,15 @@ type RoleName string
 // RoleResultsPage is a single page of results
 type RoleResultsPage struct {
 	// Items is list of items on this page of results
-	Items []Role `json:"items,omitempty" yaml:"items,omitempty"`
+	Items []Role `json:"items,omitempty" yaml:"items,omitempty" tfsdk:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty" tfsdk:"next_page"`
 }
 
 // RouteDestinationIp is route applies to traffic destined for a specific IP address
 type RouteDestinationIp struct {
-	Type  RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
-	Value string               `json:"value,omitempty" yaml:"value,omitempty"`
+	Type  RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty" tfsdk:"type"`
+	Value string               `json:"value,omitempty" yaml:"value,omitempty" tfsdk:"value"`
 }
 
 // RouteDestinationType is the type definition for a RouteDestinationType.
@@ -579,9 +579,9 @@ const (
 
 // RouteDestinationIpNet is route applies to traffic destined for a specific IP subnet
 type RouteDestinationIpNet struct {
-	Type RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
+	Type RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty" tfsdk:"type"`
 	// Value is an `IpNet` represents an IP network, either IPv4 or IPv6.
-	Value IpNet `json:"value,omitempty" yaml:"value,omitempty"`
+	Value IpNet `json:"value,omitempty" yaml:"value,omitempty" tfsdk:"value"`
 }
 
 const (
@@ -591,9 +591,9 @@ const (
 
 // RouteDestinationVPC is route applies to traffic destined for the given VPC.
 type RouteDestinationVPC struct {
-	Type RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
+	Type RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty" tfsdk:"type"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+	Value Name `json:"value,omitempty" yaml:"value,omitempty" tfsdk:"value"`
 }
 
 const (
@@ -603,9 +603,9 @@ const (
 
 // RouteDestinationSubnet is route applies to traffic
 type RouteDestinationSubnet struct {
-	Type RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
+	Type RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty" tfsdk:"type"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+	Value Name `json:"value,omitempty" yaml:"value,omitempty" tfsdk:"value"`
 }
 
 const (
@@ -623,8 +623,8 @@ type RouteDestination struct {
 
 // RouteTargetIp is forward traffic to a particular IP address.
 type RouteTargetIp struct {
-	Type  RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
-	Value string          `json:"value,omitempty" yaml:"value,omitempty"`
+	Type  RouteTargetType `json:"type,omitempty" yaml:"type,omitempty" tfsdk:"type"`
+	Value string          `json:"value,omitempty" yaml:"value,omitempty" tfsdk:"value"`
 }
 
 // RouteTargetType is the type definition for a RouteTargetType.
@@ -637,9 +637,9 @@ const (
 
 // RouteTargetVPC is forward traffic to a VPC
 type RouteTargetVPC struct {
-	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
+	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty" tfsdk:"type"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+	Value Name `json:"value,omitempty" yaml:"value,omitempty" tfsdk:"value"`
 }
 
 const (
@@ -649,9 +649,9 @@ const (
 
 // RouteTargetSubnet is forward traffic to a VPC Subnet
 type RouteTargetSubnet struct {
-	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
+	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty" tfsdk:"type"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+	Value Name `json:"value,omitempty" yaml:"value,omitempty" tfsdk:"value"`
 }
 
 const (
@@ -661,9 +661,9 @@ const (
 
 // RouteTargetInstance is forward traffic to a specific instance
 type RouteTargetInstance struct {
-	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
+	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty" tfsdk:"type"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+	Value Name `json:"value,omitempty" yaml:"value,omitempty" tfsdk:"value"`
 }
 
 const (
@@ -673,9 +673,9 @@ const (
 
 // RouteTargetInternetGateway is forward traffic to an internet gateway
 type RouteTargetInternetGateway struct {
-	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
+	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty" tfsdk:"type"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+	Value Name `json:"value,omitempty" yaml:"value,omitempty" tfsdk:"value"`
 }
 
 const (
@@ -692,38 +692,38 @@ type RouteTarget struct {
 // RouterRoute is a route defines a rule that governs where traffic should be sent based on its destination.
 type RouterRoute struct {
 	// Description is human-readable free-form text about a resource
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
 	// Destination is a `RouteDestination` is used to match traffic with a routing rule, on the destination of that traffic.
 	//
 	// When traffic is to be sent to a destination that is within a given `RouteDestination`, the corresponding [`RouterRoute`] applies, and traffic will be forward to the [`RouteTarget`] for that rule.
-	Destination RouteDestination `json:"destination,omitempty" yaml:"destination,omitempty"`
+	Destination RouteDestination `json:"destination,omitempty" yaml:"destination,omitempty" tfsdk:"destination"`
 	// ID is unique, immutable, system-controlled identifier for each resource
-	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	ID string `json:"id,omitempty" yaml:"id,omitempty" tfsdk:"id"`
 	// Kind is describes the kind of router. Set at creation. `read-only`
-	Kind RouterRouteKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+	Kind RouterRouteKind `json:"kind,omitempty" yaml:"kind,omitempty" tfsdk:"kind"`
 	// Name is unique, mutable, user-controlled identifier for each resource
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name Name `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
 	// RouterID is the VPC Router to which the route belongs.
-	RouterID string `json:"router_id,omitempty" yaml:"router_id,omitempty"`
+	RouterID string `json:"router_id,omitempty" yaml:"router_id,omitempty" tfsdk:"router_id"`
 	// Target is a `RouteTarget` describes the possible locations that traffic matching a route destination can be sent.
-	Target RouteTarget `json:"target,omitempty" yaml:"target,omitempty"`
+	Target RouteTarget `json:"target,omitempty" yaml:"target,omitempty" tfsdk:"target"`
 	// TimeCreated is timestamp when this resource was created
-	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty" tfsdk:"time_created"`
 	// TimeModified is timestamp when this resource was last modified
-	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty" tfsdk:"time_modified"`
 }
 
 // RouterRouteCreateParams is create-time parameters for a [`RouterRoute`]
 type RouterRouteCreateParams struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
 	// Destination is a `RouteDestination` is used to match traffic with a routing rule, on the destination of that traffic.
 	//
 	// When traffic is to be sent to a destination that is within a given `RouteDestination`, the corresponding [`RouterRoute`] applies, and traffic will be forward to the [`RouteTarget`] for that rule.
-	Destination RouteDestination `json:"destination,omitempty" yaml:"destination,omitempty"`
+	Destination RouteDestination `json:"destination,omitempty" yaml:"destination,omitempty" tfsdk:"destination"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name Name `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
 	// Target is a `RouteTarget` describes the possible locations that traffic matching a route destination can be sent.
-	Target RouteTarget `json:"target,omitempty" yaml:"target,omitempty"`
+	Target RouteTarget `json:"target,omitempty" yaml:"target,omitempty" tfsdk:"target"`
 }
 
 // RouterRouteKind is the classification of a [`RouterRoute`] as defined by the system. The kind determines certain attributes such as if the route is modifiable and describes how or where the route was created.
@@ -745,33 +745,33 @@ const (
 // RouterRouteResultsPage is a single page of results
 type RouterRouteResultsPage struct {
 	// Items is list of items on this page of results
-	Items []RouterRoute `json:"items,omitempty" yaml:"items,omitempty"`
+	Items []RouterRoute `json:"items,omitempty" yaml:"items,omitempty" tfsdk:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty" tfsdk:"next_page"`
 }
 
 // RouterRouteUpdateParams is updateable properties of a [`RouterRoute`]
 type RouterRouteUpdateParams struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
 	// Destination is a `RouteDestination` is used to match traffic with a routing rule, on the destination of that traffic.
 	//
 	// When traffic is to be sent to a destination that is within a given `RouteDestination`, the corresponding [`RouterRoute`] applies, and traffic will be forward to the [`RouteTarget`] for that rule.
-	Destination RouteDestination `json:"destination,omitempty" yaml:"destination,omitempty"`
-	Name        Name             `json:"name,omitempty" yaml:"name,omitempty"`
+	Destination RouteDestination `json:"destination,omitempty" yaml:"destination,omitempty" tfsdk:"destination"`
+	Name        Name             `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
 	// Target is a `RouteTarget` describes the possible locations that traffic matching a route destination can be sent.
-	Target RouteTarget `json:"target,omitempty" yaml:"target,omitempty"`
+	Target RouteTarget `json:"target,omitempty" yaml:"target,omitempty" tfsdk:"target"`
 }
 
 // Saga is the type definition for a Saga.
 type Saga struct {
-	ID    string    `json:"id,omitempty" yaml:"id,omitempty"`
-	State SagaState `json:"state,omitempty" yaml:"state,omitempty"`
+	ID    string    `json:"id,omitempty" yaml:"id,omitempty" tfsdk:"id"`
+	State SagaState `json:"state,omitempty" yaml:"state,omitempty" tfsdk:"state"`
 }
 
 // SagaErrorInfoActionFailed is the type definition for a SagaErrorInfoActionFailed.
 type SagaErrorInfoActionFailed struct {
-	Error       SagaErrorInfoError `json:"error,omitempty" yaml:"error,omitempty"`
-	SourceError interface{}        `json:"source_error,omitempty" yaml:"source_error,omitempty"`
+	Error       SagaErrorInfoError `json:"error,omitempty" yaml:"error,omitempty" tfsdk:"error"`
+	SourceError interface{}        `json:"source_error,omitempty" yaml:"source_error,omitempty" tfsdk:"source_error"`
 }
 
 // SagaErrorInfoError is the type definition for a SagaErrorInfoError.
@@ -784,8 +784,8 @@ const (
 
 // SagaErrorInfoDeserializeFailed is the type definition for a SagaErrorInfoDeserializeFailed.
 type SagaErrorInfoDeserializeFailed struct {
-	Error   SagaErrorInfoError `json:"error,omitempty" yaml:"error,omitempty"`
-	Message string             `json:"message,omitempty" yaml:"message,omitempty"`
+	Error   SagaErrorInfoError `json:"error,omitempty" yaml:"error,omitempty" tfsdk:"error"`
+	Message string             `json:"message,omitempty" yaml:"message,omitempty" tfsdk:"message"`
 }
 
 const (
@@ -795,7 +795,7 @@ const (
 
 // SagaErrorInfoInjectedError is the type definition for a SagaErrorInfoInjectedError.
 type SagaErrorInfoInjectedError struct {
-	Error SagaErrorInfoError `json:"error,omitempty" yaml:"error,omitempty"`
+	Error SagaErrorInfoError `json:"error,omitempty" yaml:"error,omitempty" tfsdk:"error"`
 }
 
 const (
@@ -805,8 +805,8 @@ const (
 
 // SagaErrorInfoSerializeFailed is the type definition for a SagaErrorInfoSerializeFailed.
 type SagaErrorInfoSerializeFailed struct {
-	Error   SagaErrorInfoError `json:"error,omitempty" yaml:"error,omitempty"`
-	Message string             `json:"message,omitempty" yaml:"message,omitempty"`
+	Error   SagaErrorInfoError `json:"error,omitempty" yaml:"error,omitempty" tfsdk:"error"`
+	Message string             `json:"message,omitempty" yaml:"message,omitempty" tfsdk:"message"`
 }
 
 const (
@@ -816,8 +816,8 @@ const (
 
 // SagaErrorInfoSubsagaCreateFailed is the type definition for a SagaErrorInfoSubsagaCreateFailed.
 type SagaErrorInfoSubsagaCreateFailed struct {
-	Error   SagaErrorInfoError `json:"error,omitempty" yaml:"error,omitempty"`
-	Message string             `json:"message,omitempty" yaml:"message,omitempty"`
+	Error   SagaErrorInfoError `json:"error,omitempty" yaml:"error,omitempty" tfsdk:"error"`
+	Message string             `json:"message,omitempty" yaml:"message,omitempty" tfsdk:"message"`
 }
 
 const (
@@ -835,14 +835,14 @@ type SagaErrorInfo struct {
 // SagaResultsPage is a single page of results
 type SagaResultsPage struct {
 	// Items is list of items on this page of results
-	Items []Saga `json:"items,omitempty" yaml:"items,omitempty"`
+	Items []Saga `json:"items,omitempty" yaml:"items,omitempty" tfsdk:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty" tfsdk:"next_page"`
 }
 
 // SagaStateRunning is the type definition for a SagaStateRunning.
 type SagaStateRunning struct {
-	State SagaStateState `json:"state,omitempty" yaml:"state,omitempty"`
+	State SagaStateState `json:"state,omitempty" yaml:"state,omitempty" tfsdk:"state"`
 }
 
 // SagaStateState is the type definition for a SagaStateState.
@@ -855,7 +855,7 @@ const (
 
 // SagaStateSucceeded is the type definition for a SagaStateSucceeded.
 type SagaStateSucceeded struct {
-	State SagaStateState `json:"state,omitempty" yaml:"state,omitempty"`
+	State SagaStateState `json:"state,omitempty" yaml:"state,omitempty" tfsdk:"state"`
 }
 
 const (
@@ -865,9 +865,9 @@ const (
 
 // SagaStateFailed is the type definition for a SagaStateFailed.
 type SagaStateFailed struct {
-	ErrorInfo     SagaErrorInfo  `json:"error_info,omitempty" yaml:"error_info,omitempty"`
-	ErrorNodeName string         `json:"error_node_name,omitempty" yaml:"error_node_name,omitempty"`
-	State         SagaStateState `json:"state,omitempty" yaml:"state,omitempty"`
+	ErrorInfo     SagaErrorInfo  `json:"error_info,omitempty" yaml:"error_info,omitempty" tfsdk:"error_info"`
+	ErrorNodeName string         `json:"error_node_name,omitempty" yaml:"error_node_name,omitempty" tfsdk:"error_node_name"`
+	State         SagaStateState `json:"state,omitempty" yaml:"state,omitempty" tfsdk:"state"`
 }
 
 const (
@@ -884,67 +884,67 @@ type SagaState struct {
 
 // SessionUser is client view of currently authed user.
 type SessionUser struct {
-	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	ID string `json:"id,omitempty" yaml:"id,omitempty" tfsdk:"id"`
 }
 
 // Sled is client view of an [`Sled`]
 type Sled struct {
 	// Description is human-readable free-form text about a resource
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
 	// ID is unique, immutable, system-controlled identifier for each resource
-	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	ID string `json:"id,omitempty" yaml:"id,omitempty" tfsdk:"id"`
 	// Name is unique, mutable, user-controlled identifier for each resource
-	Name           Name   `json:"name,omitempty" yaml:"name,omitempty"`
-	ServiceAddress string `json:"service_address,omitempty" yaml:"service_address,omitempty"`
+	Name           Name   `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
+	ServiceAddress string `json:"service_address,omitempty" yaml:"service_address,omitempty" tfsdk:"service_address"`
 	// TimeCreated is timestamp when this resource was created
-	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty" tfsdk:"time_created"`
 	// TimeModified is timestamp when this resource was last modified
-	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty" tfsdk:"time_modified"`
 }
 
 // SledResultsPage is a single page of results
 type SledResultsPage struct {
 	// Items is list of items on this page of results
-	Items []Sled `json:"items,omitempty" yaml:"items,omitempty"`
+	Items []Sled `json:"items,omitempty" yaml:"items,omitempty" tfsdk:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty" tfsdk:"next_page"`
 }
 
 // Snapshot is client view of a Snapshot
 type Snapshot struct {
 	// Description is human-readable free-form text about a resource
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	DiskID      string `json:"disk_id,omitempty" yaml:"disk_id,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
+	DiskID      string `json:"disk_id,omitempty" yaml:"disk_id,omitempty" tfsdk:"disk_id"`
 	// ID is unique, immutable, system-controlled identifier for each resource
-	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	ID string `json:"id,omitempty" yaml:"id,omitempty" tfsdk:"id"`
 	// Name is unique, mutable, user-controlled identifier for each resource
-	Name      Name   `json:"name,omitempty" yaml:"name,omitempty"`
-	ProjectID string `json:"project_id,omitempty" yaml:"project_id,omitempty"`
+	Name      Name   `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
+	ProjectID string `json:"project_id,omitempty" yaml:"project_id,omitempty" tfsdk:"project_id"`
 	// Size is a count of bytes, typically used either for memory or storage capacity
 	//
 	// The maximum supported byte count is [`i64::MAX`].  This makes it somewhat inconvenient to define constructors: a u32 constructor can be infallible, but an i64 constructor can fail (if the value is negative) and a u64 constructor can fail (if the value is larger than i64::MAX).  We provide all of these for consumers' convenience.
-	Size ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
+	Size ByteCount `json:"size,omitempty" yaml:"size,omitempty" tfsdk:"size"`
 	// TimeCreated is timestamp when this resource was created
-	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty" tfsdk:"time_created"`
 	// TimeModified is timestamp when this resource was last modified
-	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty" tfsdk:"time_modified"`
 }
 
 // SnapshotCreate is create-time parameters for a [`Snapshot`](omicron_common::api::external::Snapshot)
 type SnapshotCreate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
 	// Disk is the name of the disk to be snapshotted
-	Disk Name `json:"disk,omitempty" yaml:"disk,omitempty"`
+	Disk Name `json:"disk,omitempty" yaml:"disk,omitempty" tfsdk:"disk"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name Name `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
 }
 
 // SnapshotResultsPage is a single page of results
 type SnapshotResultsPage struct {
 	// Items is list of items on this page of results
-	Items []Snapshot `json:"items,omitempty" yaml:"items,omitempty"`
+	Items []Snapshot `json:"items,omitempty" yaml:"items,omitempty" tfsdk:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty" tfsdk:"next_page"`
 }
 
 // TimeseriesName is names are constructed by concatenating the target and metric names with ':'. Target and metric names must be lowercase alphanumeric characters with '_' separating words.
@@ -954,105 +954,105 @@ type TimeseriesName string
 //
 // This includes the name of the timeseries, as well as the datum type of its metric and the schema for each field.
 type TimeseriesSchema struct {
-	Created *time.Time `json:"created,omitempty" yaml:"created,omitempty"`
+	Created *time.Time `json:"created,omitempty" yaml:"created,omitempty" tfsdk:"created"`
 	// DatumType is the type of an individual datum of a metric.
-	DatumType   DatumType     `json:"datum_type,omitempty" yaml:"datum_type,omitempty"`
-	FieldSchema []FieldSchema `json:"field_schema,omitempty" yaml:"field_schema,omitempty"`
+	DatumType   DatumType     `json:"datum_type,omitempty" yaml:"datum_type,omitempty" tfsdk:"datum_type"`
+	FieldSchema []FieldSchema `json:"field_schema,omitempty" yaml:"field_schema,omitempty" tfsdk:"field_schema"`
 	// TimeseriesName is names are constructed by concatenating the target and metric names with ':'. Target and metric names must be lowercase alphanumeric characters with '_' separating words.
-	TimeseriesName TimeseriesName `json:"timeseries_name,omitempty" yaml:"timeseries_name,omitempty"`
+	TimeseriesName TimeseriesName `json:"timeseries_name,omitempty" yaml:"timeseries_name,omitempty" tfsdk:"timeseries_name"`
 }
 
 // TimeseriesSchemaResultsPage is a single page of results
 type TimeseriesSchemaResultsPage struct {
 	// Items is list of items on this page of results
-	Items []TimeseriesSchema `json:"items,omitempty" yaml:"items,omitempty"`
+	Items []TimeseriesSchema `json:"items,omitempty" yaml:"items,omitempty" tfsdk:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty" tfsdk:"next_page"`
 }
 
 // User is client view of a [`User`]
 type User struct {
 	// Description is human-readable free-form text about a resource
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
 	// ID is unique, immutable, system-controlled identifier for each resource
-	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	ID string `json:"id,omitempty" yaml:"id,omitempty" tfsdk:"id"`
 	// Name is unique, mutable, user-controlled identifier for each resource
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name Name `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
 	// TimeCreated is timestamp when this resource was created
-	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty" tfsdk:"time_created"`
 	// TimeModified is timestamp when this resource was last modified
-	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty" tfsdk:"time_modified"`
 }
 
 // UserResultsPage is a single page of results
 type UserResultsPage struct {
 	// Items is list of items on this page of results
-	Items []User `json:"items,omitempty" yaml:"items,omitempty"`
+	Items []User `json:"items,omitempty" yaml:"items,omitempty" tfsdk:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty" tfsdk:"next_page"`
 }
 
 // VPC is client view of a [`Vpc`]
 type VPC struct {
 	// Description is human-readable free-form text about a resource
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
 	// DnsName is the name used for the VPC in DNS.
-	DnsName Name `json:"dns_name,omitempty" yaml:"dns_name,omitempty"`
+	DnsName Name `json:"dns_name,omitempty" yaml:"dns_name,omitempty" tfsdk:"dns_name"`
 	// ID is unique, immutable, system-controlled identifier for each resource
-	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	ID string `json:"id,omitempty" yaml:"id,omitempty" tfsdk:"id"`
 	// IPv6Prefix is the unique local IPv6 address range for subnets in this VPC
-	IPv6Prefix IPv6Net `json:"ipv6_prefix,omitempty" yaml:"ipv6_prefix,omitempty"`
+	IPv6Prefix IPv6Net `json:"ipv6_prefix,omitempty" yaml:"ipv6_prefix,omitempty" tfsdk:"ipv6_prefix"`
 	// Name is unique, mutable, user-controlled identifier for each resource
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name Name `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
 	// ProjectID is id for the project containing this VPC
-	ProjectID string `json:"project_id,omitempty" yaml:"project_id,omitempty"`
+	ProjectID string `json:"project_id,omitempty" yaml:"project_id,omitempty" tfsdk:"project_id"`
 	// SystemRouterID is id for the system router where subnet default routes are registered
-	SystemRouterID string `json:"system_router_id,omitempty" yaml:"system_router_id,omitempty"`
+	SystemRouterID string `json:"system_router_id,omitempty" yaml:"system_router_id,omitempty" tfsdk:"system_router_id"`
 	// TimeCreated is timestamp when this resource was created
-	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty" tfsdk:"time_created"`
 	// TimeModified is timestamp when this resource was last modified
-	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty" tfsdk:"time_modified"`
 }
 
 // VPCCreate is create-time parameters for a [`Vpc`](crate::external_api::views::Vpc)
 type VPCCreate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
 	// DnsName is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	DnsName Name `json:"dns_name,omitempty" yaml:"dns_name,omitempty"`
+	DnsName Name `json:"dns_name,omitempty" yaml:"dns_name,omitempty" tfsdk:"dns_name"`
 	// IPv6Prefix is the IPv6 prefix for this VPC.
 	//
 	// All IPv6 subnets created from this VPC must be taken from this range, which sould be a Unique Local Address in the range `fd00::/48`. The default VPC Subnet will have the first `/64` range from this prefix.
-	IPv6Prefix IPv6Net `json:"ipv6_prefix,omitempty" yaml:"ipv6_prefix,omitempty"`
+	IPv6Prefix IPv6Net `json:"ipv6_prefix,omitempty" yaml:"ipv6_prefix,omitempty" tfsdk:"ipv6_prefix"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name Name `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
 }
 
 // FirewallRule is a single rule in a VPC firewall
 type FirewallRule struct {
 	// Action is whether traffic matching the rule should be allowed or dropped
-	Action FirewallRuleAction `json:"action,omitempty" yaml:"action,omitempty"`
+	Action FirewallRuleAction `json:"action,omitempty" yaml:"action,omitempty" tfsdk:"action"`
 	// Description is human-readable free-form text about a resource
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
 	// Direction is whether this rule is for incoming or outgoing traffic
-	Direction FirewallRuleDirection `json:"direction,omitempty" yaml:"direction,omitempty"`
+	Direction FirewallRuleDirection `json:"direction,omitempty" yaml:"direction,omitempty" tfsdk:"direction"`
 	// Filters is reductions on the scope of the rule
-	Filters FirewallRuleFilter `json:"filters,omitempty" yaml:"filters,omitempty"`
+	Filters FirewallRuleFilter `json:"filters,omitempty" yaml:"filters,omitempty" tfsdk:"filters"`
 	// ID is unique, immutable, system-controlled identifier for each resource
-	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	ID string `json:"id,omitempty" yaml:"id,omitempty" tfsdk:"id"`
 	// Name is unique, mutable, user-controlled identifier for each resource
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name Name `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
 	// Priority is the relative priority of this rule
-	Priority int `json:"priority,omitempty" yaml:"priority,omitempty"`
+	Priority int `json:"priority,omitempty" yaml:"priority,omitempty" tfsdk:"priority"`
 	// Status is whether this rule is in effect
-	Status FirewallRuleStatus `json:"status,omitempty" yaml:"status,omitempty"`
+	Status FirewallRuleStatus `json:"status,omitempty" yaml:"status,omitempty" tfsdk:"status"`
 	// Targets is list of sets of instances that the rule applies to
-	Targets []FirewallRuleTarget `json:"targets,omitempty" yaml:"targets,omitempty"`
+	Targets []FirewallRuleTarget `json:"targets,omitempty" yaml:"targets,omitempty" tfsdk:"targets"`
 	// TimeCreated is timestamp when this resource was created
-	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty" tfsdk:"time_created"`
 	// TimeModified is timestamp when this resource was last modified
-	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty" tfsdk:"time_modified"`
 	// VPCId is the VPC to which this rule belongs
-	VPCId string `json:"vpc_id,omitempty" yaml:"vpc_id,omitempty"`
+	VPCId string `json:"vpc_id,omitempty" yaml:"vpc_id,omitempty" tfsdk:"vpc_id"`
 }
 
 // FirewallRuleAction is the type definition for a FirewallRuleAction.
@@ -1078,18 +1078,18 @@ const (
 // FirewallRuleFilter is filter for a firewall rule. A given packet must match every field that is present for the rule to apply to it. A packet matches a field if any entry in that field matches the packet.
 type FirewallRuleFilter struct {
 	// Hosts is if present, the sources (if incoming) or destinations (if outgoing) this rule applies to.
-	Hosts []FirewallRuleHostFilter `json:"hosts,omitempty" yaml:"hosts,omitempty"`
+	Hosts []FirewallRuleHostFilter `json:"hosts,omitempty" yaml:"hosts,omitempty" tfsdk:"hosts"`
 	// Ports is if present, the destination ports this rule applies to.
-	Ports []L4PortRange `json:"ports,omitempty" yaml:"ports,omitempty"`
+	Ports []L4PortRange `json:"ports,omitempty" yaml:"ports,omitempty" tfsdk:"ports"`
 	// Protocols is if present, the networking protocols this rule applies to.
-	Protocols []FirewallRuleProtocol `json:"protocols,omitempty" yaml:"protocols,omitempty"`
+	Protocols []FirewallRuleProtocol `json:"protocols,omitempty" yaml:"protocols,omitempty" tfsdk:"protocols"`
 }
 
 // FirewallRuleHostFilterVPC is the rule applies to traffic from/to all instances in the VPC
 type FirewallRuleHostFilterVPC struct {
-	Type FirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
+	Type FirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty" tfsdk:"type"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+	Value Name `json:"value,omitempty" yaml:"value,omitempty" tfsdk:"value"`
 }
 
 // FirewallRuleHostFilterType is the type definition for a FirewallRuleHostFilterType.
@@ -1102,9 +1102,9 @@ const (
 
 // FirewallRuleHostFilterSubnet is the rule applies to traffic from/to all instances in the VPC Subnet
 type FirewallRuleHostFilterSubnet struct {
-	Type FirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
+	Type FirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty" tfsdk:"type"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+	Value Name `json:"value,omitempty" yaml:"value,omitempty" tfsdk:"value"`
 }
 
 const (
@@ -1114,9 +1114,9 @@ const (
 
 // FirewallRuleHostFilterInstance is the rule applies to traffic from/to this specific instance
 type FirewallRuleHostFilterInstance struct {
-	Type FirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
+	Type FirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty" tfsdk:"type"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+	Value Name `json:"value,omitempty" yaml:"value,omitempty" tfsdk:"value"`
 }
 
 const (
@@ -1126,8 +1126,8 @@ const (
 
 // FirewallRuleHostFilterIp is the rule applies to traffic from/to a specific IP address
 type FirewallRuleHostFilterIp struct {
-	Type  FirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
-	Value string                     `json:"value,omitempty" yaml:"value,omitempty"`
+	Type  FirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty" tfsdk:"type"`
+	Value string                     `json:"value,omitempty" yaml:"value,omitempty" tfsdk:"value"`
 }
 
 const (
@@ -1137,9 +1137,9 @@ const (
 
 // FirewallRuleHostFilterIpNet is the rule applies to traffic from/to a specific IP subnet
 type FirewallRuleHostFilterIpNet struct {
-	Type FirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
+	Type FirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty" tfsdk:"type"`
 	// Value is an `IpNet` represents an IP network, either IPv4 or IPv6.
-	Value IpNet `json:"value,omitempty" yaml:"value,omitempty"`
+	Value IpNet `json:"value,omitempty" yaml:"value,omitempty" tfsdk:"value"`
 }
 
 const (
@@ -1177,9 +1177,9 @@ const (
 
 // FirewallRuleTargetVPC is the rule applies to all instances in the VPC
 type FirewallRuleTargetVPC struct {
-	Type FirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
+	Type FirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty" tfsdk:"type"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+	Value Name `json:"value,omitempty" yaml:"value,omitempty" tfsdk:"value"`
 }
 
 // FirewallRuleTargetType is the type definition for a FirewallRuleTargetType.
@@ -1192,9 +1192,9 @@ const (
 
 // FirewallRuleTargetSubnet is the rule applies to all instances in the VPC Subnet
 type FirewallRuleTargetSubnet struct {
-	Type FirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
+	Type FirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty" tfsdk:"type"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+	Value Name `json:"value,omitempty" yaml:"value,omitempty" tfsdk:"value"`
 }
 
 const (
@@ -1204,9 +1204,9 @@ const (
 
 // FirewallRuleTargetInstance is the rule applies to this specific instance
 type FirewallRuleTargetInstance struct {
-	Type FirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
+	Type FirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty" tfsdk:"type"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+	Value Name `json:"value,omitempty" yaml:"value,omitempty" tfsdk:"value"`
 }
 
 const (
@@ -1216,8 +1216,8 @@ const (
 
 // FirewallRuleTargetIp is the rule applies to a specific IP address
 type FirewallRuleTargetIp struct {
-	Type  FirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
-	Value string                 `json:"value,omitempty" yaml:"value,omitempty"`
+	Type  FirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty" tfsdk:"type"`
+	Value string                 `json:"value,omitempty" yaml:"value,omitempty" tfsdk:"value"`
 }
 
 const (
@@ -1227,9 +1227,9 @@ const (
 
 // FirewallRuleTargetIpNet is the rule applies to a specific IP subnet
 type FirewallRuleTargetIpNet struct {
-	Type FirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
+	Type FirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty" tfsdk:"type"`
 	// Value is an `IpNet` represents an IP network, either IPv4 or IPv6.
-	Value IpNet `json:"value,omitempty" yaml:"value,omitempty"`
+	Value IpNet `json:"value,omitempty" yaml:"value,omitempty" tfsdk:"value"`
 }
 
 const (
@@ -1246,63 +1246,63 @@ type FirewallRuleTarget struct {
 // FirewallRuleUpdate is a single rule in a VPC firewall
 type FirewallRuleUpdate struct {
 	// Action is whether traffic matching the rule should be allowed or dropped
-	Action FirewallRuleAction `json:"action,omitempty" yaml:"action,omitempty"`
+	Action FirewallRuleAction `json:"action,omitempty" yaml:"action,omitempty" tfsdk:"action"`
 	// Description is human-readable free-form text about a resource
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
 	// Direction is whether this rule is for incoming or outgoing traffic
-	Direction FirewallRuleDirection `json:"direction,omitempty" yaml:"direction,omitempty"`
+	Direction FirewallRuleDirection `json:"direction,omitempty" yaml:"direction,omitempty" tfsdk:"direction"`
 	// Filters is reductions on the scope of the rule
-	Filters FirewallRuleFilter `json:"filters,omitempty" yaml:"filters,omitempty"`
+	Filters FirewallRuleFilter `json:"filters,omitempty" yaml:"filters,omitempty" tfsdk:"filters"`
 	// Name is name of the rule, unique to this VPC
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name Name `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
 	// Priority is the relative priority of this rule
-	Priority int `json:"priority,omitempty" yaml:"priority,omitempty"`
+	Priority int `json:"priority,omitempty" yaml:"priority,omitempty" tfsdk:"priority"`
 	// Status is whether this rule is in effect
-	Status FirewallRuleStatus `json:"status,omitempty" yaml:"status,omitempty"`
+	Status FirewallRuleStatus `json:"status,omitempty" yaml:"status,omitempty" tfsdk:"status"`
 	// Targets is list of sets of instances that the rule applies to
-	Targets []FirewallRuleTarget `json:"targets,omitempty" yaml:"targets,omitempty"`
+	Targets []FirewallRuleTarget `json:"targets,omitempty" yaml:"targets,omitempty" tfsdk:"targets"`
 }
 
 // FirewallRuleUpdateParams is updateable properties of a `Vpc`'s firewall Note that VpcFirewallRules are implicitly created along with a Vpc, so there is no explicit creation.
 type FirewallRuleUpdateParams struct {
-	Rules []FirewallRuleUpdate `json:"rules,omitempty" yaml:"rules,omitempty"`
+	Rules []FirewallRuleUpdate `json:"rules,omitempty" yaml:"rules,omitempty" tfsdk:"rules"`
 }
 
 // FirewallRules is collection of a [`Vpc`]'s firewall rules
 type FirewallRules struct {
-	Rules []FirewallRule `json:"rules,omitempty" yaml:"rules,omitempty"`
+	Rules []FirewallRule `json:"rules,omitempty" yaml:"rules,omitempty" tfsdk:"rules"`
 }
 
 // VPCResultsPage is a single page of results
 type VPCResultsPage struct {
 	// Items is list of items on this page of results
-	Items []VPC `json:"items,omitempty" yaml:"items,omitempty"`
+	Items []VPC `json:"items,omitempty" yaml:"items,omitempty" tfsdk:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty" tfsdk:"next_page"`
 }
 
 // Router is a VPC router defines a series of rules that indicate where traffic should be sent depending on its destination.
 type Router struct {
 	// Description is human-readable free-form text about a resource
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
 	// ID is unique, immutable, system-controlled identifier for each resource
-	ID   string     `json:"id,omitempty" yaml:"id,omitempty"`
-	Kind RouterKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+	ID   string     `json:"id,omitempty" yaml:"id,omitempty" tfsdk:"id"`
+	Kind RouterKind `json:"kind,omitempty" yaml:"kind,omitempty" tfsdk:"kind"`
 	// Name is unique, mutable, user-controlled identifier for each resource
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name Name `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
 	// TimeCreated is timestamp when this resource was created
-	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty" tfsdk:"time_created"`
 	// TimeModified is timestamp when this resource was last modified
-	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty" tfsdk:"time_modified"`
 	// VPCId is the VPC to which the router belongs.
-	VPCId string `json:"vpc_id,omitempty" yaml:"vpc_id,omitempty"`
+	VPCId string `json:"vpc_id,omitempty" yaml:"vpc_id,omitempty" tfsdk:"vpc_id"`
 }
 
 // RouterCreate is create-time parameters for a [`VpcRouter`](crate::external_api::views::VpcRouter)
 type RouterCreate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name Name `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
 }
 
 // RouterKind is the type definition for a RouterKind.
@@ -1318,73 +1318,73 @@ const (
 // RouterResultsPage is a single page of results
 type RouterResultsPage struct {
 	// Items is list of items on this page of results
-	Items []Router `json:"items,omitempty" yaml:"items,omitempty"`
+	Items []Router `json:"items,omitempty" yaml:"items,omitempty" tfsdk:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty" tfsdk:"next_page"`
 }
 
 // RouterUpdate is updateable properties of a [`VpcRouter`](crate::external_api::views::VpcRouter)
 type RouterUpdate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
+	Name        Name   `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
 }
 
 // Subnet is a VPC subnet represents a logical grouping for instances that allows network traffic between them, within a IPv4 subnetwork or optionall an IPv6 subnetwork.
 type Subnet struct {
 	// Description is human-readable free-form text about a resource
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
 	// ID is unique, immutable, system-controlled identifier for each resource
-	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	ID string `json:"id,omitempty" yaml:"id,omitempty" tfsdk:"id"`
 	// IPv4Block is the IPv4 subnet CIDR block.
-	IPv4Block IPv4Net `json:"ipv4_block,omitempty" yaml:"ipv4_block,omitempty"`
+	IPv4Block IPv4Net `json:"ipv4_block,omitempty" yaml:"ipv4_block,omitempty" tfsdk:"ipv4_block"`
 	// IPv6Block is the IPv6 subnet CIDR block.
-	IPv6Block IPv6Net `json:"ipv6_block,omitempty" yaml:"ipv6_block,omitempty"`
+	IPv6Block IPv6Net `json:"ipv6_block,omitempty" yaml:"ipv6_block,omitempty" tfsdk:"ipv6_block"`
 	// Name is unique, mutable, user-controlled identifier for each resource
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name Name `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
 	// TimeCreated is timestamp when this resource was created
-	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty" tfsdk:"time_created"`
 	// TimeModified is timestamp when this resource was last modified
-	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty" tfsdk:"time_modified"`
 	// VPCId is the VPC to which the subnet belongs.
-	VPCId string `json:"vpc_id,omitempty" yaml:"vpc_id,omitempty"`
+	VPCId string `json:"vpc_id,omitempty" yaml:"vpc_id,omitempty" tfsdk:"vpc_id"`
 }
 
 // SubnetCreate is create-time parameters for a [`VpcSubnet`](crate::external_api::views::VpcSubnet)
 type SubnetCreate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
 	// IPv4Block is the IPv4 address range for this subnet.
 	//
 	// It must be allocated from an RFC 1918 private address range, and must not overlap with any other existing subnet in the VPC.
-	IPv4Block IPv4Net `json:"ipv4_block,omitempty" yaml:"ipv4_block,omitempty"`
+	IPv4Block IPv4Net `json:"ipv4_block,omitempty" yaml:"ipv4_block,omitempty" tfsdk:"ipv4_block"`
 	// IPv6Block is the IPv6 address range for this subnet.
 	//
 	// It must be allocated from the RFC 4193 Unique Local Address range, with the prefix equal to the parent VPC's prefix. A random `/64` block will be assigned if one is not provided. It must not overlap with any existing subnet in the VPC.
-	IPv6Block IPv6Net `json:"ipv6_block,omitempty" yaml:"ipv6_block,omitempty"`
+	IPv6Block IPv6Net `json:"ipv6_block,omitempty" yaml:"ipv6_block,omitempty" tfsdk:"ipv6_block"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name Name `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
 }
 
 // SubnetResultsPage is a single page of results
 type SubnetResultsPage struct {
 	// Items is list of items on this page of results
-	Items []Subnet `json:"items,omitempty" yaml:"items,omitempty"`
+	Items []Subnet `json:"items,omitempty" yaml:"items,omitempty" tfsdk:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty" tfsdk:"next_page"`
 }
 
 // SubnetUpdate is updateable properties of a [`VpcSubnet`](crate::external_api::views::VpcSubnet)
 type SubnetUpdate struct {
-	Description string  `json:"description,omitempty" yaml:"description,omitempty"`
-	IPv4Block   IPv4Net `json:"ipv4_block,omitempty" yaml:"ipv4_block,omitempty"`
-	IPv6Block   IPv6Net `json:"ipv6_block,omitempty" yaml:"ipv6_block,omitempty"`
-	Name        Name    `json:"name,omitempty" yaml:"name,omitempty"`
+	Description string  `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
+	IPv4Block   IPv4Net `json:"ipv4_block,omitempty" yaml:"ipv4_block,omitempty" tfsdk:"ipv4_block"`
+	IPv6Block   IPv6Net `json:"ipv6_block,omitempty" yaml:"ipv6_block,omitempty" tfsdk:"ipv6_block"`
+	Name        Name    `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
 }
 
 // VPCUpdate is updateable properties of a [`Vpc`](crate::external_api::views::Vpc)
 type VPCUpdate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	DnsName     Name   `json:"dns_name,omitempty" yaml:"dns_name,omitempty"`
-	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
+	DnsName     Name   `json:"dns_name,omitempty" yaml:"dns_name,omitempty" tfsdk:"dns_name"`
+	Name        Name   `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
 }
 
 // DatumTypes is the collection of all DatumType values.

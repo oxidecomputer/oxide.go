@@ -288,6 +288,11 @@ func cleanFnName(name string, tag string, path string) string {
 		name = strings.TrimPrefix(name, "Hardware")
 	}
 
+	// Routes paths wind up weird so clean them up.
+	if strings.HasPrefix(name, "rs") {
+		name = strings.TrimPrefix(name, "rs")
+	}
+
 	return name
 }
 
@@ -892,7 +897,7 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 			if v.Value.Description != "" {
 				fmt.Fprintf(f, "\t// %s is %s\n", printProperty(k), toLowerFirstLetter(strings.ReplaceAll(v.Value.Description, "\n", "\n// ")))
 			}
-			fmt.Fprintf(f, "\t%s %s `json:\"%s,omitempty\" yaml:\"%s,omitempty\"`\n", printProperty(k), typeName, k, k)
+			fmt.Fprintf(f, "\t%s %s `json:\"%s,omitempty\" yaml:\"%s,omitempty\" tfsdk:\"%s\"`\n", printProperty(k), typeName, k, k, k)
 		}
 		fmt.Fprintf(f, "}\n")
 

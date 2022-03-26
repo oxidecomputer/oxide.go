@@ -2595,9 +2595,9 @@ func (s *RoutersService) Delete(organizationName Name, projectName Name, routerN
 	return nil
 }
 
-// rsList: List a Router's routes
+// List: List a Router's routes
 //
-// To iterate over all pages, use the `rsListAllPages` method, instead.
+// To iterate over all pages, use the `ListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
@@ -2607,7 +2607,7 @@ func (s *RoutersService) Delete(organizationName Name, projectName Name, routerN
 //	- `routerName`
 //	- `sortBy`
 //	- `vpcName`
-func (s *RoutesService) rsList(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, routerName Name, vpcName Name) (*RouterRouteResultsPage, error) {
+func (s *RoutesService) List(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, routerName Name, vpcName Name) (*RouterRouteResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes"
 	uri := resolveRelative(s.client.server, path)
@@ -2650,9 +2650,9 @@ func (s *RoutesService) rsList(limit int, pageToken string, sortBy NameSortMode,
 	return &body, nil
 }
 
-// rsListAllPages: List a Router's routes
+// ListAllPages: List a Router's routes
 //
-// This method is a wrapper around the `rsList` method.
+// This method is a wrapper around the `List` method.
 // This method returns all the pages at once.
 //
 // Parameters:
@@ -2661,13 +2661,13 @@ func (s *RoutesService) rsList(limit int, pageToken string, sortBy NameSortMode,
 //	- `routerName`
 //	- `sortBy`
 //	- `vpcName`
-func (s *RoutesService) rsListAllPages(sortBy NameSortMode, organizationName Name, projectName Name, routerName Name, vpcName Name) (*[]RouterRoute, error) {
+func (s *RoutesService) ListAllPages(sortBy NameSortMode, organizationName Name, projectName Name, routerName Name, vpcName Name) (*[]RouterRoute, error) {
 
 	var allPages []RouterRoute
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.rsList(limit, pageToken, sortBy, organizationName, projectName, routerName, vpcName)
+		page, err := s.List(limit, pageToken, sortBy, organizationName, projectName, routerName, vpcName)
 		if err != nil {
 			return nil, err
 		}
@@ -2679,14 +2679,14 @@ func (s *RoutesService) rsListAllPages(sortBy NameSortMode, organizationName Nam
 	}
 
 	return &allPages, nil
-} // rsCreate: Create a VPC Router
+} // Create: Create a VPC Router
 //
 // Parameters:
 //	- `organizationName`
 //	- `projectName`
 //	- `routerName`
 //	- `vpcName`
-func (s *RoutesService) rsCreate(organizationName Name, projectName Name, routerName Name, vpcName Name, j *RouterRouteCreateParams) (*RouterRoute, error) {
+func (s *RoutesService) Create(organizationName Name, projectName Name, routerName Name, vpcName Name, j *RouterRouteCreateParams) (*RouterRoute, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes"
 	uri := resolveRelative(s.client.server, path)
@@ -2731,7 +2731,7 @@ func (s *RoutesService) rsCreate(organizationName Name, projectName Name, router
 	return &body, nil
 }
 
-// rsGet: Get a VPC Router route
+// Get: Get a VPC Router route
 //
 // Parameters:
 //	- `organizationName`
@@ -2739,7 +2739,7 @@ func (s *RoutesService) rsCreate(organizationName Name, projectName Name, router
 //	- `routeName`
 //	- `routerName`
 //	- `vpcName`
-func (s *RoutesService) rsGet(organizationName Name, projectName Name, routeName Name, routerName Name, vpcName Name) (*RouterRoute, error) {
+func (s *RoutesService) Get(organizationName Name, projectName Name, routeName Name, routerName Name, vpcName Name) (*RouterRoute, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes/{{.route_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -2780,7 +2780,7 @@ func (s *RoutesService) rsGet(organizationName Name, projectName Name, routeName
 	return &body, nil
 }
 
-// rsPut: Update a Router route
+// Put: Update a Router route
 //
 // Parameters:
 //	- `organizationName`
@@ -2788,7 +2788,7 @@ func (s *RoutesService) rsGet(organizationName Name, projectName Name, routeName
 //	- `routeName`
 //	- `routerName`
 //	- `vpcName`
-func (s *RoutesService) rsPut(organizationName Name, projectName Name, routeName Name, routerName Name, vpcName Name, j *RouterRouteUpdateParams) (*RouterRoute, error) {
+func (s *RoutesService) Put(organizationName Name, projectName Name, routeName Name, routerName Name, vpcName Name, j *RouterRouteUpdateParams) (*RouterRoute, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes/{{.route_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -2834,7 +2834,7 @@ func (s *RoutesService) rsPut(organizationName Name, projectName Name, routeName
 	return &body, nil
 }
 
-// rsDelete: Delete a route from its router
+// Delete: Delete a route from its router
 //
 // Parameters:
 //	- `organizationName`
@@ -2842,7 +2842,7 @@ func (s *RoutesService) rsPut(organizationName Name, projectName Name, routeName
 //	- `routeName`
 //	- `routerName`
 //	- `vpcName`
-func (s *RoutesService) rsDelete(organizationName Name, projectName Name, routeName Name, routerName Name, vpcName Name) error {
+func (s *RoutesService) Delete(organizationName Name, projectName Name, routeName Name, routerName Name, vpcName Name) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes/{{.route_name}}"
 	uri := resolveRelative(s.client.server, path)
