@@ -331,6 +331,7 @@ func printProperty(p string) string {
 	c = strings.Replace(c, "VPCFirewallRule", "FirewallRule", -1)
 	c = strings.Replace(c, "VPCRouter", "Router", -1)
 	c = strings.Replace(c, "VPCSubnet", "Subnet", -1)
+	c = strings.Replace(c, "RouterRoute", "Route", -1)
 
 	return c
 }
@@ -825,6 +826,8 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 		writeSchemaTypeDescription(typeName, s, f)
 	}
 
+	rootTypes := []string{"Organization", "Project", "Disk", "Router", "Instance", "Route", "Subnet", "Snapshot", "VPC"}
+
 	if otype == "string" {
 		// If this is an enum, write the enum type.
 		if len(s.Enum) > 0 {
@@ -899,6 +902,18 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 			}
 			fmt.Fprintf(f, "\t%s %s `json:\"%s,omitempty\" yaml:\"%s,omitempty\" tfsdk:\"%s\"`\n", printProperty(k), typeName, k, k, k)
 		}
+
+		// For terraform, we need to add the fields for the path parameters, but we will not
+		// take these into account for the JSON serialization.
+		if !strings.HasPrefix(typeName, "Organization") && (strings.HasSuffix(typeName, "Create") || strings.HasSuffix(typeName, "Update") || contains(rootTypes, typeName)) {
+			// We have to add the OrganizationName to the type.
+			fmt.Fprintf(f, "\tOrganizationName string `json:\"-\" yaml:\"-\" tfsdk:\"organization\"`\n")
+			if !strings.HasPrefix(typeName, "Project") {
+				// We have to add the ProjectName to the type.
+				fmt.Fprintf(f, "\tProjectName string `json:\"-\" yaml:\"-\" tfsdk:\"project\"`\n")
+			}
+		}
+
 		fmt.Fprintf(f, "}\n")
 
 		if recursive {

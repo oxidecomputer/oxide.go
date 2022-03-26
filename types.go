@@ -53,7 +53,9 @@ type Disk struct {
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty" tfsdk:"time_created"`
 	// TimeModified is timestamp when this resource was last modified
-	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty" tfsdk:"time_modified"`
+	TimeModified     *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty" tfsdk:"time_modified"`
+	OrganizationName string     `json:"-" yaml:"-" tfsdk:"organization"`
+	ProjectName      string     `json:"-" yaml:"-" tfsdk:"project"`
 }
 
 // DiskCreate is create-time parameters for a [`Disk`](omicron_common::api::external::Disk)
@@ -64,7 +66,9 @@ type DiskCreate struct {
 	// Size is size of the Disk
 	Size ByteCount `json:"size,omitempty" yaml:"size,omitempty" tfsdk:"size"`
 	// SnapshotID is id for snapshot from which the Disk should be created, if any
-	SnapshotID string `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty" tfsdk:"snapshot_id"`
+	SnapshotID       string `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty" tfsdk:"snapshot_id"`
+	OrganizationName string `json:"-" yaml:"-" tfsdk:"organization"`
+	ProjectName      string `json:"-" yaml:"-" tfsdk:"project"`
 }
 
 // DiskIdentifier is parameters for the [`Disk`](omicron_common::api::external::Disk) to be attached or detached to an instance
@@ -240,6 +244,8 @@ type Instance struct {
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified        *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty" tfsdk:"time_modified"`
 	TimeRunStateUpdated *time.Time `json:"time_run_state_updated,omitempty" yaml:"time_run_state_updated,omitempty" tfsdk:"time_run_state_updated"`
+	OrganizationName    string     `json:"-" yaml:"-" tfsdk:"organization"`
+	ProjectName         string     `json:"-" yaml:"-" tfsdk:"project"`
 }
 
 // InstanceCPUCount is the number of CPUs in an Instance
@@ -259,6 +265,8 @@ type InstanceCreate struct {
 	NCPUs InstanceCPUCount `json:"ncpus,omitempty" yaml:"ncpus,omitempty" tfsdk:"ncpus"`
 	// NetworkInterfaces is the network interfaces to be created for this instance.
 	NetworkInterfaces InstanceNetworkInterfaceAttachment `json:"network_interfaces,omitempty" yaml:"network_interfaces,omitempty" tfsdk:"network_interfaces"`
+	OrganizationName  string                             `json:"-" yaml:"-" tfsdk:"organization"`
+	ProjectName       string                             `json:"-" yaml:"-" tfsdk:"project"`
 }
 
 // InstanceMigrate is migration parameters for an [`Instance`](omicron_common::api::external::Instance)
@@ -268,8 +276,10 @@ type InstanceMigrate struct {
 
 // InstanceNetworkInterfaceAttachmentCreate is create one or more `NetworkInterface`s for the `Instance`
 type InstanceNetworkInterfaceAttachmentCreate struct {
-	Params InstanceNetworkInterfaceCreate         `json:"params,omitempty" yaml:"params,omitempty" tfsdk:"params"`
-	Type   InstanceNetworkInterfaceAttachmentType `json:"type,omitempty" yaml:"type,omitempty" tfsdk:"type"`
+	Params           InstanceNetworkInterfaceCreate         `json:"params,omitempty" yaml:"params,omitempty" tfsdk:"params"`
+	Type             InstanceNetworkInterfaceAttachmentType `json:"type,omitempty" yaml:"type,omitempty" tfsdk:"type"`
+	OrganizationName string                                 `json:"-" yaml:"-" tfsdk:"organization"`
+	ProjectName      string                                 `json:"-" yaml:"-" tfsdk:"project"`
 }
 
 // InstanceNetworkInterfaceAttachmentType is the type definition for a InstanceNetworkInterfaceAttachmentType.
@@ -308,7 +318,9 @@ type InstanceNetworkInterfaceAttachment struct {
 
 // InstanceNetworkInterfaceCreate is the type definition for a InstanceNetworkInterfaceCreate.
 type InstanceNetworkInterfaceCreate struct {
-	Params []NetworkInterfaceCreate `json:"params,omitempty" yaml:"params,omitempty" tfsdk:"params"`
+	Params           []NetworkInterfaceCreate `json:"params,omitempty" yaml:"params,omitempty" tfsdk:"params"`
+	OrganizationName string                   `json:"-" yaml:"-" tfsdk:"organization"`
+	ProjectName      string                   `json:"-" yaml:"-" tfsdk:"project"`
 }
 
 // InstanceResultsPage is a single page of results
@@ -441,7 +453,9 @@ type NetworkInterfaceCreate struct {
 	// SubnetName is the VPC Subnet in which to create the interface.
 	SubnetName Name `json:"subnet_name,omitempty" yaml:"subnet_name,omitempty" tfsdk:"subnet_name"`
 	// VPCName is the VPC in which to create the interface.
-	VPCName Name `json:"vpc_name,omitempty" yaml:"vpc_name,omitempty" tfsdk:"vpc_name"`
+	VPCName          Name   `json:"vpc_name,omitempty" yaml:"vpc_name,omitempty" tfsdk:"vpc_name"`
+	OrganizationName string `json:"-" yaml:"-" tfsdk:"organization"`
+	ProjectName      string `json:"-" yaml:"-" tfsdk:"project"`
 }
 
 // NetworkInterfaceResultsPage is a single page of results
@@ -499,14 +513,16 @@ type Project struct {
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty" tfsdk:"time_created"`
 	// TimeModified is timestamp when this resource was last modified
-	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty" tfsdk:"time_modified"`
+	TimeModified     *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty" tfsdk:"time_modified"`
+	OrganizationName string     `json:"-" yaml:"-" tfsdk:"organization"`
 }
 
 // ProjectCreate is create-time parameters for a [`Project`](crate::external_api::views::Project)
 type ProjectCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Name Name `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
+	Name             Name   `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
+	OrganizationName string `json:"-" yaml:"-" tfsdk:"organization"`
 }
 
 // ProjectResultsPage is a single page of results
@@ -519,8 +535,9 @@ type ProjectResultsPage struct {
 
 // ProjectUpdate is updateable properties of a [`Project`](crate::external_api::views::Project)
 type ProjectUpdate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
-	Name        Name   `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
+	Description      string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
+	Name             Name   `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
+	OrganizationName string `json:"-" yaml:"-" tfsdk:"organization"`
 }
 
 // Rack is client view of an [`Rack`]
@@ -689,8 +706,8 @@ type RouteTarget struct {
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-// RouterRoute is a route defines a rule that governs where traffic should be sent based on its destination.
-type RouterRoute struct {
+// Route is a route defines a rule that governs where traffic should be sent based on its destination.
+type Route struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
 	// Destination is a `RouteDestination` is used to match traffic with a routing rule, on the destination of that traffic.
@@ -700,7 +717,7 @@ type RouterRoute struct {
 	// ID is unique, immutable, system-controlled identifier for each resource
 	ID string `json:"id,omitempty" yaml:"id,omitempty" tfsdk:"id"`
 	// Kind is describes the kind of router. Set at creation. `read-only`
-	Kind RouterRouteKind `json:"kind,omitempty" yaml:"kind,omitempty" tfsdk:"kind"`
+	Kind RouteKind `json:"kind,omitempty" yaml:"kind,omitempty" tfsdk:"kind"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
 	// RouterID is the VPC Router to which the route belongs.
@@ -710,11 +727,13 @@ type RouterRoute struct {
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty" tfsdk:"time_created"`
 	// TimeModified is timestamp when this resource was last modified
-	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty" tfsdk:"time_modified"`
+	TimeModified     *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty" tfsdk:"time_modified"`
+	OrganizationName string     `json:"-" yaml:"-" tfsdk:"organization"`
+	ProjectName      string     `json:"-" yaml:"-" tfsdk:"project"`
 }
 
-// RouterRouteCreateParams is create-time parameters for a [`RouterRoute`]
-type RouterRouteCreateParams struct {
+// RouteCreateParams is create-time parameters for a [`RouterRoute`]
+type RouteCreateParams struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
 	// Destination is a `RouteDestination` is used to match traffic with a routing rule, on the destination of that traffic.
 	//
@@ -726,32 +745,32 @@ type RouterRouteCreateParams struct {
 	Target RouteTarget `json:"target,omitempty" yaml:"target,omitempty" tfsdk:"target"`
 }
 
-// RouterRouteKind is the classification of a [`RouterRoute`] as defined by the system. The kind determines certain attributes such as if the route is modifiable and describes how or where the route was created.
+// RouteKind is the classification of a [`RouterRoute`] as defined by the system. The kind determines certain attributes such as if the route is modifiable and describes how or where the route was created.
 //
 // See [RFD-21](https://rfd.shared.oxide.computer/rfd/0021#concept-router) for more context
-type RouterRouteKind string
+type RouteKind string
 
 const (
-	// RouterRouteKindDefault represents the RouterRouteKind `"default"`.
-	RouterRouteKindDefault RouterRouteKind = "default"
-	// RouterRouteKindVpcSubnet represents the RouterRouteKind `"vpc_subnet"`.
-	RouterRouteKindVpcSubnet RouterRouteKind = "vpc_subnet"
-	// RouterRouteKindVpcPeering represents the RouterRouteKind `"vpc_peering"`.
-	RouterRouteKindVpcPeering RouterRouteKind = "vpc_peering"
-	// RouterRouteKindCustom represents the RouterRouteKind `"custom"`.
-	RouterRouteKindCustom RouterRouteKind = "custom"
+	// RouteKindDefault represents the RouteKind `"default"`.
+	RouteKindDefault RouteKind = "default"
+	// RouteKindVpcSubnet represents the RouteKind `"vpc_subnet"`.
+	RouteKindVpcSubnet RouteKind = "vpc_subnet"
+	// RouteKindVpcPeering represents the RouteKind `"vpc_peering"`.
+	RouteKindVpcPeering RouteKind = "vpc_peering"
+	// RouteKindCustom represents the RouteKind `"custom"`.
+	RouteKindCustom RouteKind = "custom"
 )
 
-// RouterRouteResultsPage is a single page of results
-type RouterRouteResultsPage struct {
+// RouteResultsPage is a single page of results
+type RouteResultsPage struct {
 	// Items is list of items on this page of results
-	Items []RouterRoute `json:"items,omitempty" yaml:"items,omitempty" tfsdk:"items"`
+	Items []Route `json:"items,omitempty" yaml:"items,omitempty" tfsdk:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty" tfsdk:"next_page"`
 }
 
-// RouterRouteUpdateParams is updateable properties of a [`RouterRoute`]
-type RouterRouteUpdateParams struct {
+// RouteUpdateParams is updateable properties of a [`RouterRoute`]
+type RouteUpdateParams struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
 	// Destination is a `RouteDestination` is used to match traffic with a routing rule, on the destination of that traffic.
 	//
@@ -927,7 +946,9 @@ type Snapshot struct {
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty" tfsdk:"time_created"`
 	// TimeModified is timestamp when this resource was last modified
-	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty" tfsdk:"time_modified"`
+	TimeModified     *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty" tfsdk:"time_modified"`
+	OrganizationName string     `json:"-" yaml:"-" tfsdk:"organization"`
+	ProjectName      string     `json:"-" yaml:"-" tfsdk:"project"`
 }
 
 // SnapshotCreate is create-time parameters for a [`Snapshot`](omicron_common::api::external::Snapshot)
@@ -936,7 +957,9 @@ type SnapshotCreate struct {
 	// Disk is the name of the disk to be snapshotted
 	Disk Name `json:"disk,omitempty" yaml:"disk,omitempty" tfsdk:"disk"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Name Name `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
+	Name             Name   `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
+	OrganizationName string `json:"-" yaml:"-" tfsdk:"organization"`
+	ProjectName      string `json:"-" yaml:"-" tfsdk:"project"`
 }
 
 // SnapshotResultsPage is a single page of results
@@ -1011,7 +1034,9 @@ type VPC struct {
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty" tfsdk:"time_created"`
 	// TimeModified is timestamp when this resource was last modified
-	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty" tfsdk:"time_modified"`
+	TimeModified     *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty" tfsdk:"time_modified"`
+	OrganizationName string     `json:"-" yaml:"-" tfsdk:"organization"`
+	ProjectName      string     `json:"-" yaml:"-" tfsdk:"project"`
 }
 
 // VPCCreate is create-time parameters for a [`Vpc`](crate::external_api::views::Vpc)
@@ -1024,7 +1049,9 @@ type VPCCreate struct {
 	// All IPv6 subnets created from this VPC must be taken from this range, which sould be a Unique Local Address in the range `fd00::/48`. The default VPC Subnet will have the first `/64` range from this prefix.
 	IPv6Prefix IPv6Net `json:"ipv6_prefix,omitempty" yaml:"ipv6_prefix,omitempty" tfsdk:"ipv6_prefix"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Name Name `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
+	Name             Name   `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
+	OrganizationName string `json:"-" yaml:"-" tfsdk:"organization"`
+	ProjectName      string `json:"-" yaml:"-" tfsdk:"project"`
 }
 
 // FirewallRule is a single rule in a VPC firewall
@@ -1260,7 +1287,9 @@ type FirewallRuleUpdate struct {
 	// Status is whether this rule is in effect
 	Status FirewallRuleStatus `json:"status,omitempty" yaml:"status,omitempty" tfsdk:"status"`
 	// Targets is list of sets of instances that the rule applies to
-	Targets []FirewallRuleTarget `json:"targets,omitempty" yaml:"targets,omitempty" tfsdk:"targets"`
+	Targets          []FirewallRuleTarget `json:"targets,omitempty" yaml:"targets,omitempty" tfsdk:"targets"`
+	OrganizationName string               `json:"-" yaml:"-" tfsdk:"organization"`
+	ProjectName      string               `json:"-" yaml:"-" tfsdk:"project"`
 }
 
 // FirewallRuleUpdateParams is updateable properties of a `Vpc`'s firewall Note that VpcFirewallRules are implicitly created along with a Vpc, so there is no explicit creation.
@@ -1295,14 +1324,18 @@ type Router struct {
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty" tfsdk:"time_modified"`
 	// VPCId is the VPC to which the router belongs.
-	VPCId string `json:"vpc_id,omitempty" yaml:"vpc_id,omitempty" tfsdk:"vpc_id"`
+	VPCId            string `json:"vpc_id,omitempty" yaml:"vpc_id,omitempty" tfsdk:"vpc_id"`
+	OrganizationName string `json:"-" yaml:"-" tfsdk:"organization"`
+	ProjectName      string `json:"-" yaml:"-" tfsdk:"project"`
 }
 
 // RouterCreate is create-time parameters for a [`VpcRouter`](crate::external_api::views::VpcRouter)
 type RouterCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Name Name `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
+	Name             Name   `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
+	OrganizationName string `json:"-" yaml:"-" tfsdk:"organization"`
+	ProjectName      string `json:"-" yaml:"-" tfsdk:"project"`
 }
 
 // RouterKind is the type definition for a RouterKind.
@@ -1325,8 +1358,10 @@ type RouterResultsPage struct {
 
 // RouterUpdate is updateable properties of a [`VpcRouter`](crate::external_api::views::VpcRouter)
 type RouterUpdate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
-	Name        Name   `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
+	Description      string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
+	Name             Name   `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
+	OrganizationName string `json:"-" yaml:"-" tfsdk:"organization"`
+	ProjectName      string `json:"-" yaml:"-" tfsdk:"project"`
 }
 
 // Subnet is a VPC subnet represents a logical grouping for instances that allows network traffic between them, within a IPv4 subnetwork or optionall an IPv6 subnetwork.
@@ -1346,7 +1381,9 @@ type Subnet struct {
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty" tfsdk:"time_modified"`
 	// VPCId is the VPC to which the subnet belongs.
-	VPCId string `json:"vpc_id,omitempty" yaml:"vpc_id,omitempty" tfsdk:"vpc_id"`
+	VPCId            string `json:"vpc_id,omitempty" yaml:"vpc_id,omitempty" tfsdk:"vpc_id"`
+	OrganizationName string `json:"-" yaml:"-" tfsdk:"organization"`
+	ProjectName      string `json:"-" yaml:"-" tfsdk:"project"`
 }
 
 // SubnetCreate is create-time parameters for a [`VpcSubnet`](crate::external_api::views::VpcSubnet)
@@ -1361,7 +1398,9 @@ type SubnetCreate struct {
 	// It must be allocated from the RFC 4193 Unique Local Address range, with the prefix equal to the parent VPC's prefix. A random `/64` block will be assigned if one is not provided. It must not overlap with any existing subnet in the VPC.
 	IPv6Block IPv6Net `json:"ipv6_block,omitempty" yaml:"ipv6_block,omitempty" tfsdk:"ipv6_block"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Name Name `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
+	Name             Name   `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
+	OrganizationName string `json:"-" yaml:"-" tfsdk:"organization"`
+	ProjectName      string `json:"-" yaml:"-" tfsdk:"project"`
 }
 
 // SubnetResultsPage is a single page of results
@@ -1374,17 +1413,21 @@ type SubnetResultsPage struct {
 
 // SubnetUpdate is updateable properties of a [`VpcSubnet`](crate::external_api::views::VpcSubnet)
 type SubnetUpdate struct {
-	Description string  `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
-	IPv4Block   IPv4Net `json:"ipv4_block,omitempty" yaml:"ipv4_block,omitempty" tfsdk:"ipv4_block"`
-	IPv6Block   IPv6Net `json:"ipv6_block,omitempty" yaml:"ipv6_block,omitempty" tfsdk:"ipv6_block"`
-	Name        Name    `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
+	Description      string  `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
+	IPv4Block        IPv4Net `json:"ipv4_block,omitempty" yaml:"ipv4_block,omitempty" tfsdk:"ipv4_block"`
+	IPv6Block        IPv6Net `json:"ipv6_block,omitempty" yaml:"ipv6_block,omitempty" tfsdk:"ipv6_block"`
+	Name             Name    `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
+	OrganizationName string  `json:"-" yaml:"-" tfsdk:"organization"`
+	ProjectName      string  `json:"-" yaml:"-" tfsdk:"project"`
 }
 
 // VPCUpdate is updateable properties of a [`Vpc`](crate::external_api::views::Vpc)
 type VPCUpdate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
-	DnsName     Name   `json:"dns_name,omitempty" yaml:"dns_name,omitempty" tfsdk:"dns_name"`
-	Name        Name   `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
+	Description      string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
+	DnsName          Name   `json:"dns_name,omitempty" yaml:"dns_name,omitempty" tfsdk:"dns_name"`
+	Name             Name   `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
+	OrganizationName string `json:"-" yaml:"-" tfsdk:"organization"`
+	ProjectName      string `json:"-" yaml:"-" tfsdk:"project"`
 }
 
 // DatumTypes is the collection of all DatumType values.
@@ -1515,6 +1558,14 @@ var RouteDestinationTypes = []RouteDestinationType{
 	RouteDestinationTypeVpc,
 }
 
+// RouteKinds is the collection of all RouteKind values.
+var RouteKinds = []RouteKind{
+	RouteKindCustom,
+	RouteKindDefault,
+	RouteKindVpcPeering,
+	RouteKindVpcSubnet,
+}
+
 // RouteTargetTypes is the collection of all RouteTargetType values.
 var RouteTargetTypes = []RouteTargetType{
 	RouteTargetTypeInstance,
@@ -1528,14 +1579,6 @@ var RouteTargetTypes = []RouteTargetType{
 var RouterKinds = []RouterKind{
 	RouterKindCustom,
 	RouterKindSystem,
-}
-
-// RouterRouteKinds is the collection of all RouterRouteKind values.
-var RouterRouteKinds = []RouterRouteKind{
-	RouterRouteKindCustom,
-	RouterRouteKindDefault,
-	RouterRouteKindVpcPeering,
-	RouterRouteKindVpcSubnet,
 }
 
 // SagaErrorInfoErrors is the collection of all SagaErrorInfoError values.

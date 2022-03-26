@@ -2607,7 +2607,7 @@ func (s *RoutersService) Delete(organizationName Name, projectName Name, routerN
 //	- `routerName`
 //	- `sortBy`
 //	- `vpcName`
-func (s *RoutesService) List(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, routerName Name, vpcName Name) (*RouterRouteResultsPage, error) {
+func (s *RoutesService) List(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, routerName Name, vpcName Name) (*RouteResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes"
 	uri := resolveRelative(s.client.server, path)
@@ -2642,7 +2642,7 @@ func (s *RoutesService) List(limit int, pageToken string, sortBy NameSortMode, o
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body RouterRouteResultsPage
+	var body RouteResultsPage
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -2661,9 +2661,9 @@ func (s *RoutesService) List(limit int, pageToken string, sortBy NameSortMode, o
 //	- `routerName`
 //	- `sortBy`
 //	- `vpcName`
-func (s *RoutesService) ListAllPages(sortBy NameSortMode, organizationName Name, projectName Name, routerName Name, vpcName Name) (*[]RouterRoute, error) {
+func (s *RoutesService) ListAllPages(sortBy NameSortMode, organizationName Name, projectName Name, routerName Name, vpcName Name) (*[]Route, error) {
 
-	var allPages []RouterRoute
+	var allPages []Route
 	pageToken := ""
 	limit := 100
 	for {
@@ -2686,7 +2686,7 @@ func (s *RoutesService) ListAllPages(sortBy NameSortMode, organizationName Name,
 //	- `projectName`
 //	- `routerName`
 //	- `vpcName`
-func (s *RoutesService) Create(organizationName Name, projectName Name, routerName Name, vpcName Name, j *RouterRouteCreateParams) (*RouterRoute, error) {
+func (s *RoutesService) Create(organizationName Name, projectName Name, routerName Name, vpcName Name, j *RouteCreateParams) (*Route, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes"
 	uri := resolveRelative(s.client.server, path)
@@ -2723,7 +2723,7 @@ func (s *RoutesService) Create(organizationName Name, projectName Name, routerNa
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body RouterRoute
+	var body Route
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -2739,7 +2739,7 @@ func (s *RoutesService) Create(organizationName Name, projectName Name, routerNa
 //	- `routeName`
 //	- `routerName`
 //	- `vpcName`
-func (s *RoutesService) Get(organizationName Name, projectName Name, routeName Name, routerName Name, vpcName Name) (*RouterRoute, error) {
+func (s *RoutesService) Get(organizationName Name, projectName Name, routeName Name, routerName Name, vpcName Name) (*Route, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes/{{.route_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -2772,7 +2772,7 @@ func (s *RoutesService) Get(organizationName Name, projectName Name, routeName N
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body RouterRoute
+	var body Route
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -2788,7 +2788,7 @@ func (s *RoutesService) Get(organizationName Name, projectName Name, routeName N
 //	- `routeName`
 //	- `routerName`
 //	- `vpcName`
-func (s *RoutesService) Put(organizationName Name, projectName Name, routeName Name, routerName Name, vpcName Name, j *RouterRouteUpdateParams) (*RouterRoute, error) {
+func (s *RoutesService) Put(organizationName Name, projectName Name, routeName Name, routerName Name, vpcName Name, j *RouteUpdateParams) (*Route, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes/{{.route_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -2826,7 +2826,7 @@ func (s *RoutesService) Put(organizationName Name, projectName Name, routeName N
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body RouterRoute
+	var body Route
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}

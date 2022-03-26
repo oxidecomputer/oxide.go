@@ -6185,7 +6185,7 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "// List: List a Router's routes\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`: Maximum number of items returned by a single call\n//\t- `organizationName`\n//\t- `pageToken`: Token returned by previous call to retreive the subsequent page\n//\t- `projectName`\n//\t- `routerName`\n//\t- `sortBy`\n//\t- `vpcName`\nrouterRouteResultsPage, err := client.Routes.List(limit, pageToken, sortBy, organizationName, projectName, routerName, vpcName)\n\n// - OR -\n\n// ListAllPages: List a Router's routes\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `sortBy`\n//\t- `vpcName`\nRouterRoute, err := client.Routes.ListAllPages(sortBy, organizationName, projectName, routerName, vpcName)",
+          "example": "// List: List a Router's routes\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`: Maximum number of items returned by a single call\n//\t- `organizationName`\n//\t- `pageToken`: Token returned by previous call to retreive the subsequent page\n//\t- `projectName`\n//\t- `routerName`\n//\t- `sortBy`\n//\t- `vpcName`\nrouteResultsPage, err := client.Routes.List(limit, pageToken, sortBy, organizationName, projectName, routerName, vpcName)\n\n// - OR -\n\n// ListAllPages: List a Router's routes\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `sortBy`\n//\t- `vpcName`\nRoute, err := client.Routes.ListAllPages(sortBy, organizationName, projectName, routerName, vpcName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RoutesService.List"
         },
         "x-ts": {
@@ -6265,7 +6265,7 @@
           "routes"
         ],
         "x-go": {
-          "example": "// Create: Create a VPC Router\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `vpcName`\nrouterRoute, err := client.Routes.Create(organizationName, projectName, routerName, vpcName, body)",
+          "example": "// Create: Create a VPC Router\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routerName`\n//\t- `vpcName`\nroute, err := client.Routes.Create(organizationName, projectName, routerName, vpcName, body)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RoutesService.Create"
         },
         "x-ts": {
@@ -6418,7 +6418,7 @@
           "routes"
         ],
         "x-go": {
-          "example": "// Get: Get a VPC Router route\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routeName`\n//\t- `routerName`\n//\t- `vpcName`\nrouterRoute, err := client.Routes.Get(organizationName, projectName, routeName, routerName, vpcName)",
+          "example": "// Get: Get a VPC Router route\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routeName`\n//\t- `routerName`\n//\t- `vpcName`\nroute, err := client.Routes.Get(organizationName, projectName, routeName, routerName, vpcName)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RoutesService.Get"
         },
         "x-ts": {
@@ -6507,7 +6507,7 @@
           "routes"
         ],
         "x-go": {
-          "example": "// Put: Update a Router route\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routeName`\n//\t- `routerName`\n//\t- `vpcName`\nrouterRoute, err := client.Routes.Put(organizationName, projectName, routeName, routerName, vpcName, body)",
+          "example": "// Put: Update a Router route\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `routeName`\n//\t- `routerName`\n//\t- `vpcName`\nroute, err := client.Routes.Put(organizationName, projectName, routeName, routerName, vpcName, body)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#RoutesService.Put"
         },
         "x-ts": {
