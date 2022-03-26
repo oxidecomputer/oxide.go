@@ -1983,7 +1983,7 @@ func (s *SnapshotsService) Delete(organizationName Name, projectName Name, snaps
 //	- `pageToken`: Token returned by previous call to retreive the subsequent page
 //	- `projectName`: The project's unique name within the organization.
 //	- `sortBy`
-func (s *VpcsService) List(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name) (*VPCResultsPage, error) {
+func (s *VPCsService) List(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name) (*VPCResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs"
 	uri := resolveRelative(s.client.server, path)
@@ -2033,7 +2033,7 @@ func (s *VpcsService) List(limit int, pageToken string, sortBy NameSortMode, org
 //	- `organizationName`: The organization's unique name.
 //	- `projectName`: The project's unique name within the organization.
 //	- `sortBy`
-func (s *VpcsService) ListAllPages(sortBy NameSortMode, organizationName Name, projectName Name) (*[]VPC, error) {
+func (s *VPCsService) ListAllPages(sortBy NameSortMode, organizationName Name, projectName Name) (*[]VPC, error) {
 
 	var allPages []VPC
 	pageToken := ""
@@ -2056,7 +2056,7 @@ func (s *VpcsService) ListAllPages(sortBy NameSortMode, organizationName Name, p
 // Parameters:
 //	- `organizationName`: The organization's unique name.
 //	- `projectName`: The project's unique name within the organization.
-func (s *VpcsService) Create(organizationName Name, projectName Name, j *VPCCreate) (*VPC, error) {
+func (s *VPCsService) Create(organizationName Name, projectName Name, j *VPCCreate) (*VPC, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs"
 	uri := resolveRelative(s.client.server, path)
@@ -2105,7 +2105,7 @@ func (s *VpcsService) Create(organizationName Name, projectName Name, j *VPCCrea
 //	- `organizationName`
 //	- `projectName`
 //	- `vpcName`
-func (s *VpcsService) Get(organizationName Name, projectName Name, vpcName Name) (*VPC, error) {
+func (s *VPCsService) Get(organizationName Name, projectName Name, vpcName Name) (*VPC, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -2150,7 +2150,7 @@ func (s *VpcsService) Get(organizationName Name, projectName Name, vpcName Name)
 //	- `organizationName`
 //	- `projectName`
 //	- `vpcName`
-func (s *VpcsService) Put(organizationName Name, projectName Name, vpcName Name, j *VPCUpdate) (*VPC, error) {
+func (s *VPCsService) Put(organizationName Name, projectName Name, vpcName Name, j *VPCUpdate) (*VPC, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -2200,7 +2200,7 @@ func (s *VpcsService) Put(organizationName Name, projectName Name, vpcName Name,
 //	- `organizationName`
 //	- `projectName`
 //	- `vpcName`
-func (s *VpcsService) Delete(organizationName Name, projectName Name, vpcName Name) error {
+func (s *VPCsService) Delete(organizationName Name, projectName Name, vpcName Name) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}"
 	uri := resolveRelative(s.client.server, path)

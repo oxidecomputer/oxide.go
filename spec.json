@@ -5316,8 +5316,8 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "// List: List VPCs in a project.\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`: Maximum number of items returned by a single call\n//\t- `organizationName`: The organization's unique name.\n//\t- `pageToken`: Token returned by previous call to retreive the subsequent page\n//\t- `projectName`: The project's unique name within the organization.\n//\t- `sortBy`\nvPCResultsPage, err := client.Vpcs.List(limit, pageToken, sortBy, organizationName, projectName)\n\n// - OR -\n\n// ListAllPages: List VPCs in a project.\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`: The organization's unique name.\n//\t- `projectName`: The project's unique name within the organization.\n//\t- `sortBy`\nVPC, err := client.Vpcs.ListAllPages(sortBy, organizationName, projectName)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#VpcsService.List"
+          "example": "// List: List VPCs in a project.\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`: Maximum number of items returned by a single call\n//\t- `organizationName`: The organization's unique name.\n//\t- `pageToken`: Token returned by previous call to retreive the subsequent page\n//\t- `projectName`: The project's unique name within the organization.\n//\t- `sortBy`\nvPCResultsPage, err := client.VPCs.List(limit, pageToken, sortBy, organizationName, projectName)\n\n// - OR -\n\n// ListAllPages: List VPCs in a project.\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`: The organization's unique name.\n//\t- `projectName`: The project's unique name within the organization.\n//\t- `sortBy`\nVPC, err := client.VPCs.ListAllPages(sortBy, organizationName, projectName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#VPCsService.List"
         },
         "x-ts": {
           "example": "let resp = client.projectVpcsGet(ProjectVpcsGetParams{orgName, projectName}, params);"
@@ -5380,8 +5380,8 @@
           "vpcs"
         ],
         "x-go": {
-          "example": "// Create: Create a VPC in a project.\n//\n// Parameters:\n//\t- `organizationName`: The organization's unique name.\n//\t- `projectName`: The project's unique name within the organization.\nvPC, err := client.Vpcs.Create(organizationName, projectName, body)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#VpcsService.Create"
+          "example": "// Create: Create a VPC in a project.\n//\n// Parameters:\n//\t- `organizationName`: The organization's unique name.\n//\t- `projectName`: The project's unique name within the organization.\nvPC, err := client.VPCs.Create(organizationName, projectName, body)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#VPCsService.Create"
         },
         "x-ts": {
           "example": "let resp = client.projectVpcsPost(ProjectVpcsPostParams{orgName, projectName}, data, params);"
@@ -5436,8 +5436,8 @@
           "vpcs"
         ],
         "x-go": {
-          "example": "// Delete: Delete a vpc from a project.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\nif err := client.Vpcs.Delete(organizationName, projectName, vpcName); err != nil {\n\tpanic(err)\n}",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#VpcsService.Delete"
+          "example": "// Delete: Delete a vpc from a project.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\nif err := client.VPCs.Delete(organizationName, projectName, vpcName); err != nil {\n\tpanic(err)\n}",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#VPCsService.Delete"
         },
         "x-ts": {
           "example": "let resp = client.projectVpcsDeleteVpc(ProjectVpcsDeleteVpcParams{orgName, projectName, vpcName}, params);"
@@ -5497,8 +5497,8 @@
           "vpcs"
         ],
         "x-go": {
-          "example": "// Get: Get a VPC in a project.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\nvPC, err := client.Vpcs.Get(organizationName, projectName, vpcName)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#VpcsService.Get"
+          "example": "// Get: Get a VPC in a project.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\nvPC, err := client.VPCs.Get(organizationName, projectName, vpcName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#VPCsService.Get"
         },
         "x-ts": {
           "example": "let resp = client.projectVpcsGetVpc(ProjectVpcsGetVpcParams{orgName, projectName, vpcName}, params);"
@@ -5568,8 +5568,8 @@
           "vpcs"
         ],
         "x-go": {
-          "example": "// Put: Update a VPC.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\nvPC, err := client.Vpcs.Put(organizationName, projectName, vpcName, body)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#VpcsService.Put"
+          "example": "// Put: Update a VPC.\n//\n// Parameters:\n//\t- `organizationName`\n//\t- `projectName`\n//\t- `vpcName`\nvPC, err := client.VPCs.Put(organizationName, projectName, vpcName, body)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#VPCsService.Put"
         },
         "x-ts": {
           "example": "let resp = client.projectVpcsPutVpc(ProjectVpcsPutVpcParams{orgName, projectName, vpcName}, data, params);"

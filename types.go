@@ -730,6 +730,8 @@ type Route struct {
 	TimeModified     *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty" tfsdk:"time_modified"`
 	OrganizationName string     `json:"-" yaml:"-" tfsdk:"organization"`
 	ProjectName      string     `json:"-" yaml:"-" tfsdk:"project"`
+	VPCName          string     `json:"-" yaml:"-" tfsdk:"vpc"`
+	RouterName       string     `json:"-" yaml:"-" tfsdk:"router"`
 }
 
 // RouteCreateParams is create-time parameters for a [`RouterRoute`]
@@ -1327,6 +1329,7 @@ type Router struct {
 	VPCId            string `json:"vpc_id,omitempty" yaml:"vpc_id,omitempty" tfsdk:"vpc_id"`
 	OrganizationName string `json:"-" yaml:"-" tfsdk:"organization"`
 	ProjectName      string `json:"-" yaml:"-" tfsdk:"project"`
+	VPCName          string `json:"-" yaml:"-" tfsdk:"vpc"`
 }
 
 // RouterCreate is create-time parameters for a [`VpcRouter`](crate::external_api::views::VpcRouter)
@@ -1336,6 +1339,7 @@ type RouterCreate struct {
 	Name             Name   `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
 	OrganizationName string `json:"-" yaml:"-" tfsdk:"organization"`
 	ProjectName      string `json:"-" yaml:"-" tfsdk:"project"`
+	VPCName          string `json:"-" yaml:"-" tfsdk:"vpc"`
 }
 
 // RouterKind is the type definition for a RouterKind.
@@ -1362,6 +1366,7 @@ type RouterUpdate struct {
 	Name             Name   `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
 	OrganizationName string `json:"-" yaml:"-" tfsdk:"organization"`
 	ProjectName      string `json:"-" yaml:"-" tfsdk:"project"`
+	VPCName          string `json:"-" yaml:"-" tfsdk:"vpc"`
 }
 
 // Subnet is a VPC subnet represents a logical grouping for instances that allows network traffic between them, within a IPv4 subnetwork or optionall an IPv6 subnetwork.
@@ -1384,6 +1389,7 @@ type Subnet struct {
 	VPCId            string `json:"vpc_id,omitempty" yaml:"vpc_id,omitempty" tfsdk:"vpc_id"`
 	OrganizationName string `json:"-" yaml:"-" tfsdk:"organization"`
 	ProjectName      string `json:"-" yaml:"-" tfsdk:"project"`
+	VPCName          string `json:"-" yaml:"-" tfsdk:"vpc"`
 }
 
 // SubnetCreate is create-time parameters for a [`VpcSubnet`](crate::external_api::views::VpcSubnet)
@@ -1401,6 +1407,7 @@ type SubnetCreate struct {
 	Name             Name   `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
 	OrganizationName string `json:"-" yaml:"-" tfsdk:"organization"`
 	ProjectName      string `json:"-" yaml:"-" tfsdk:"project"`
+	VPCName          string `json:"-" yaml:"-" tfsdk:"vpc"`
 }
 
 // SubnetResultsPage is a single page of results
@@ -1419,6 +1426,7 @@ type SubnetUpdate struct {
 	Name             Name    `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
 	OrganizationName string  `json:"-" yaml:"-" tfsdk:"organization"`
 	ProjectName      string  `json:"-" yaml:"-" tfsdk:"project"`
+	VPCName          string  `json:"-" yaml:"-" tfsdk:"vpc"`
 }
 
 // VPCUpdate is updateable properties of a [`Vpc`](crate::external_api::views::Vpc)

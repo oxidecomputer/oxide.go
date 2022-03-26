@@ -183,20 +183,28 @@ type Client struct {
 `)
 
 	for _, tag := range doc.Tags {
-		if tag.Description != "" {
-			fmt.Fprintf(f, "// %s: %s\n", strcase.ToCamel(tag.Name), tag.Description)
+		name := strcase.ToCamel(tag.Name)
+		if name == "Vpcs" {
+			name = "VPCs"
 		}
-		fmt.Fprintf(f, "%s\t*%sService\n", strcase.ToCamel(tag.Name), strcase.ToCamel(tag.Name))
+		if tag.Description != "" {
+			fmt.Fprintf(f, "// %s: %s\n", name, tag.Description)
+		}
+		fmt.Fprintf(f, "%s\t*%sService\n", name, name)
 	}
 
 	// Close the struct.
 	fmt.Fprintf(f, "}\n\n")
 
 	for _, tag := range doc.Tags {
-		if tag.Description != "" {
-			fmt.Fprintf(f, "// %sService: %s\n", strcase.ToCamel(tag.Name), tag.Description)
+		name := strcase.ToCamel(tag.Name)
+		if name == "Vpcs" {
+			name = "VPCs"
 		}
-		fmt.Fprintf(f, "type %sService service\n\n", strcase.ToCamel(tag.Name))
+		if tag.Description != "" {
+			fmt.Fprintf(f, "// %sService: %s\n", name, tag.Description)
+		}
+		fmt.Fprintf(f, "type %sService service\n\n", name)
 	}
 }
 
@@ -451,6 +459,10 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 	tag := strcase.ToCamel(o.Tags[0])
 
 	fnName := cleanFnName(o.OperationID, tag, path)
+
+	if tag == "Vpcs" {
+		tag = "VPCs"
+	}
 
 	pageResult := false
 
@@ -911,6 +923,15 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 			if !strings.HasPrefix(typeName, "Project") {
 				// We have to add the ProjectName to the type.
 				fmt.Fprintf(f, "\tProjectName string `json:\"-\" yaml:\"-\" tfsdk:\"project\"`\n")
+			}
+
+			if strings.HasPrefix(typeName, "Subnet") || strings.HasPrefix(typeName, "Route") {
+				// We have to add the DiskName to the type.
+				fmt.Fprintf(f, "\tVPCName string `json:\"-\" yaml:\"-\" tfsdk:\"vpc\"`\n")
+			}
+
+			if typeName == "Route" || typeName == "RouteCreate" || typeName == "RouteUpdate" {
+				fmt.Fprintf(f, "\tRouterName string `json:\"-\" yaml:\"-\" tfsdk:\"router\"`\n")
 			}
 		}
 

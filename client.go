@@ -49,8 +49,8 @@ type Client struct {
 	Updates *UpdatesService
 	// Users: This tag should be moved into an IAM tag
 	Users *UsersService
-	// Vpcs: A Virtual Private Cloud (VPC) is an isolated network environment that should probaby be moved into a more generic networking tag
-	Vpcs *VpcsService
+	// VPCs: A Virtual Private Cloud (VPC) is an isolated network environment that should probaby be moved into a more generic networking tag
+	VPCs *VPCsService
 }
 
 // DisksService: Virtual disks are used to store instance-local data which includes the operating system.
@@ -104,5 +104,5 @@ type UpdatesService service
 // UsersService: This tag should be moved into an IAM tag
 type UsersService service
 
-// VpcsService: A Virtual Private Cloud (VPC) is an isolated network environment that should probaby be moved into a more generic networking tag
-type VpcsService service
+// VPCsService: A Virtual Private Cloud (VPC) is an isolated network environment that should probaby be moved into a more generic networking tag
+type VPCsService service
