@@ -341,6 +341,10 @@ func printProperty(p string) string {
 	c = strings.Replace(c, "VPCSubnet", "Subnet", -1)
 	c = strings.Replace(c, "RouterRoute", "Route", -1)
 
+	if strings.HasSuffix(c, "Params") && c != "Params" && !strings.HasPrefix(c, "FirewallRule") {
+		c = strings.TrimSuffix(c, "Params")
+	}
+
 	return c
 }
 

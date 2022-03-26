@@ -238,7 +238,7 @@ func (s *SledsService) Get(sledID string) (*Sled, error) {
 }
 
 // SpoofLogin
-func (s *HiddenService) SpoofLogin(j *LoginParams) error {
+func (s *HiddenService) SpoofLogin(j *Login) error {
 	// Create the url.
 	path := "/login"
 	uri := resolveRelative(s.client.server, path)
@@ -2686,7 +2686,7 @@ func (s *RoutesService) ListAllPages(sortBy NameSortMode, organizationName Name,
 //	- `projectName`
 //	- `routerName`
 //	- `vpcName`
-func (s *RoutesService) Create(organizationName Name, projectName Name, routerName Name, vpcName Name, j *RouteCreateParams) (*Route, error) {
+func (s *RoutesService) Create(organizationName Name, projectName Name, routerName Name, vpcName Name, j *RouteCreate) (*Route, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes"
 	uri := resolveRelative(s.client.server, path)
@@ -2788,7 +2788,7 @@ func (s *RoutesService) Get(organizationName Name, projectName Name, routeName N
 //	- `routeName`
 //	- `routerName`
 //	- `vpcName`
-func (s *RoutesService) Put(organizationName Name, projectName Name, routeName Name, routerName Name, vpcName Name, j *RouteUpdateParams) (*Route, error) {
+func (s *RoutesService) Put(organizationName Name, projectName Name, routeName Name, routerName Name, vpcName Name, j *RouteUpdate) (*Route, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes/{{.route_name}}"
 	uri := resolveRelative(s.client.server, path)

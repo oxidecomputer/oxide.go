@@ -386,8 +386,8 @@ type IPv6Net string
 // L4PortRange is an inclusive-inclusive range of IP ports. The second port may be omitted to represent a single port
 type L4PortRange string
 
-// LoginParams is the type definition for a LoginParams.
-type LoginParams struct {
+// Login is the type definition for a Login.
+type Login struct {
 	Username string `json:"username,omitempty" yaml:"username,omitempty" tfsdk:"username"`
 }
 
@@ -734,8 +734,8 @@ type Route struct {
 	RouterName       string     `json:"-" yaml:"-" tfsdk:"router"`
 }
 
-// RouteCreateParams is create-time parameters for a [`RouterRoute`]
-type RouteCreateParams struct {
+// RouteCreate is create-time parameters for a [`RouterRoute`]
+type RouteCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
 	// Destination is a `RouteDestination` is used to match traffic with a routing rule, on the destination of that traffic.
 	//
@@ -744,7 +744,11 @@ type RouteCreateParams struct {
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
 	// Target is a `RouteTarget` describes the possible locations that traffic matching a route destination can be sent.
-	Target RouteTarget `json:"target,omitempty" yaml:"target,omitempty" tfsdk:"target"`
+	Target           RouteTarget `json:"target,omitempty" yaml:"target,omitempty" tfsdk:"target"`
+	OrganizationName string      `json:"-" yaml:"-" tfsdk:"organization"`
+	ProjectName      string      `json:"-" yaml:"-" tfsdk:"project"`
+	VPCName          string      `json:"-" yaml:"-" tfsdk:"vpc"`
+	RouterName       string      `json:"-" yaml:"-" tfsdk:"router"`
 }
 
 // RouteKind is the classification of a [`RouterRoute`] as defined by the system. The kind determines certain attributes such as if the route is modifiable and describes how or where the route was created.
@@ -771,8 +775,8 @@ type RouteResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty" tfsdk:"next_page"`
 }
 
-// RouteUpdateParams is updateable properties of a [`RouterRoute`]
-type RouteUpdateParams struct {
+// RouteUpdate is updateable properties of a [`RouterRoute`]
+type RouteUpdate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty" tfsdk:"description"`
 	// Destination is a `RouteDestination` is used to match traffic with a routing rule, on the destination of that traffic.
 	//
@@ -780,7 +784,11 @@ type RouteUpdateParams struct {
 	Destination RouteDestination `json:"destination,omitempty" yaml:"destination,omitempty" tfsdk:"destination"`
 	Name        Name             `json:"name,omitempty" yaml:"name,omitempty" tfsdk:"name"`
 	// Target is a `RouteTarget` describes the possible locations that traffic matching a route destination can be sent.
-	Target RouteTarget `json:"target,omitempty" yaml:"target,omitempty" tfsdk:"target"`
+	Target           RouteTarget `json:"target,omitempty" yaml:"target,omitempty" tfsdk:"target"`
+	OrganizationName string      `json:"-" yaml:"-" tfsdk:"organization"`
+	ProjectName      string      `json:"-" yaml:"-" tfsdk:"project"`
+	VPCName          string      `json:"-" yaml:"-" tfsdk:"vpc"`
+	RouterName       string      `json:"-" yaml:"-" tfsdk:"router"`
 }
 
 // Saga is the type definition for a Saga.
