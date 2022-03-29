@@ -56,6 +56,25 @@ func NewClient(token, userAgent, host string) (*Client, error) {
 		Timeout: 600 * time.Second,
 	}
 
+	// TODO: generate all of these
+	client.Disks = &DisksService{client}
+	client.Projects = &ProjectsService{client}
+	client.Organizations = &OrganizationsService{client}
+	client.Firewall = &FirewallService{client}
+	client.Hidden = &HiddenService{client}
+	client.Instances = &InstancesService{client}
+	client.Metrics = &MetricsService{client}
+	client.Racks = &RacksService{client}
+	client.Roles = &RolesService{client}
+	client.Sleds = &SledsService{client}
+	client.Routers = &RoutersService{client}
+	client.Routes = &RoutesService{client}
+	client.Sagas = &SagasService{client}
+	client.Snapshots = &SnapshotsService{client}
+	client.Subnets = &SubnetsService{client}
+	client.Updates = &UpdatesService{client}
+	client.Users = &UsersService{client}
+
 	return client, nil
 }
 
