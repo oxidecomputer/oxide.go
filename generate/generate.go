@@ -379,7 +379,16 @@ func printType(property string, r *openapi3.SchemaRef) string {
 
 	// If we have a reference, just use that.
 	if r.Ref != "" {
-		return getReferenceSchema(r)
+		ref := getReferenceSchema(r)
+		// Just use the type of the reference, unless it is a Name or ByteCount. In that case,
+		//recurse the actual type.
+		if ref == "ByteCount" {
+			return "int64"
+		} else if ref == "Name" {
+			return "string"
+		} else {
+			return ref
+		}
 	}
 
 	// See if we have an allOf.
