@@ -21,3 +21,12 @@ $ make generate
 
 Please do not change the code directly since it is generated. PRs that change
 the code directly will be automatically closed by a bot.
+
+### Releasing a new version
+
+1. Make sure the `VERSION.txt` has the new version you want to release.
+2. Run `make tag` this is just an easy command for making a tag formatted
+   correctly with the version.
+3. Push the tag (the result of `make tag` gives instructions for this)
+4. Everything else is triggered from the tag push. Just make sure all the tests
+   pass on the `main` branch before making and pushing a new tag.
