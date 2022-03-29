@@ -7,7 +7,7 @@ import "time"
 // ByteCount is a count of bytes, typically used either for memory or storage capacity
 //
 // The maximum supported byte count is [`i64::MAX`].  This makes it somewhat inconvenient to define constructors: a u32 constructor can be infallible, but an i64 constructor can fail (if the value is negative) and a u64 constructor can fail (if the value is larger than i64::MAX).  We provide all of these for consumers' convenience.
-type ByteCount int
+type ByteCount int64
 
 // DatumType is the type of an individual datum of a metric.
 type DatumType string
@@ -249,7 +249,7 @@ type Instance struct {
 }
 
 // InstanceCPUCount is the number of CPUs in an Instance
-type InstanceCPUCount int
+type InstanceCPUCount int64
 
 // InstanceCreate is create-time parameters for an [`Instance`](omicron_common::api::external::Instance)
 type InstanceCreate struct {

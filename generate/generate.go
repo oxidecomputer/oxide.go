@@ -881,7 +881,7 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 			fmt.Fprintf(f, "type %s string\n", name)
 		}
 	} else if otype == "integer" {
-		fmt.Fprintf(f, "type %s int\n", name)
+		fmt.Fprintf(f, "type %s int64\n", name)
 	} else if otype == "number" {
 		fmt.Fprintf(f, "type %s float64\n", name)
 	} else if otype == "boolean" {
