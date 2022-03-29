@@ -651,7 +651,7 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 					return nil, err
 				}
 				allPages = append(allPages, page.Items...)
-				if  page.NextPage == "" {
+				if  page.NextPage == "" || page.NextPage == pageToken {
 					break
 				}
 				pageToken = page.NextPage

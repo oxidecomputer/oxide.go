@@ -76,7 +76,7 @@ func (s *RacksService) ListAllPages(sortBy IdSortMode) (*[]Rack, error) {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" {
+		if page.NextPage == "" || page.NextPage == pageToken {
 			break
 		}
 		pageToken = page.NextPage
@@ -189,7 +189,7 @@ func (s *SledsService) ListAllPages(sortBy IdSortMode) (*[]Sled, error) {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" {
+		if page.NextPage == "" || page.NextPage == pageToken {
 			break
 		}
 		pageToken = page.NextPage
@@ -355,7 +355,7 @@ func (s *OrganizationsService) ListAllPages(sortBy NameOrIdSortMode) (*[]Organiz
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" {
+		if page.NextPage == "" || page.NextPage == pageToken {
 			break
 		}
 		pageToken = page.NextPage
@@ -587,7 +587,7 @@ func (s *ProjectsService) ListAllPages(sortBy NameOrIdSortMode, organizationName
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" {
+		if page.NextPage == "" || page.NextPage == pageToken {
 			break
 		}
 		pageToken = page.NextPage
@@ -837,7 +837,7 @@ func (s *DisksService) ListAllPages(sortBy NameSortMode, organizationName string
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" {
+		if page.NextPage == "" || page.NextPage == pageToken {
 			break
 		}
 		pageToken = page.NextPage
@@ -1045,7 +1045,7 @@ func (s *InstancesService) ListAllPages(sortBy NameSortMode, organizationName st
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" {
+		if page.NextPage == "" || page.NextPage == pageToken {
 			break
 		}
 		pageToken = page.NextPage
@@ -1256,7 +1256,7 @@ func (s *InstancesService) DisksListAllPages(sortBy NameSortMode, instanceName s
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" {
+		if page.NextPage == "" || page.NextPage == pageToken {
 			break
 		}
 		pageToken = page.NextPage
@@ -1487,7 +1487,7 @@ func (s *InstancesService) NetworkInterfacesListAllPages(sortBy NameSortMode, in
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" {
+		if page.NextPage == "" || page.NextPage == pageToken {
 			break
 		}
 		pageToken = page.NextPage
@@ -1836,7 +1836,7 @@ func (s *SnapshotsService) ListAllPages(sortBy NameSortMode, organizationName st
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" {
+		if page.NextPage == "" || page.NextPage == pageToken {
 			break
 		}
 		pageToken = page.NextPage
@@ -2044,7 +2044,7 @@ func (s *VPCsService) ListAllPages(sortBy NameSortMode, organizationName string,
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" {
+		if page.NextPage == "" || page.NextPage == pageToken {
 			break
 		}
 		pageToken = page.NextPage
@@ -2400,7 +2400,7 @@ func (s *RoutersService) ListAllPages(sortBy NameSortMode, organizationName stri
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" {
+		if page.NextPage == "" || page.NextPage == pageToken {
 			break
 		}
 		pageToken = page.NextPage
@@ -2672,7 +2672,7 @@ func (s *RoutesService) ListAllPages(sortBy NameSortMode, organizationName strin
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" {
+		if page.NextPage == "" || page.NextPage == pageToken {
 			break
 		}
 		pageToken = page.NextPage
@@ -2949,7 +2949,7 @@ func (s *SubnetsService) ListAllPages(sortBy NameSortMode, organizationName stri
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" {
+		if page.NextPage == "" || page.NextPage == pageToken {
 			break
 		}
 		pageToken = page.NextPage
@@ -3221,7 +3221,7 @@ func (s *SubnetsService) NetworkInterfacesListAllPages(sortBy NameSortMode, orga
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" {
+		if page.NextPage == "" || page.NextPage == pageToken {
 			break
 		}
 		pageToken = page.NextPage
@@ -3288,7 +3288,7 @@ func (s *RolesService) ListAllPages() (*[]Role, error) {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" {
+		if page.NextPage == "" || page.NextPage == pageToken {
 			break
 		}
 		pageToken = page.NextPage
@@ -3401,7 +3401,7 @@ func (s *SagasService) ListAllPages(sortBy IdSortMode) (*[]Saga, error) {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" {
+		if page.NextPage == "" || page.NextPage == pageToken {
 			break
 		}
 		pageToken = page.NextPage
@@ -3541,7 +3541,7 @@ func (s *MetricsService) TimeseriesSchemaListAllPages() (*[]TimeseriesSchema, er
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" {
+		if page.NextPage == "" || page.NextPage == pageToken {
 			break
 		}
 		pageToken = page.NextPage
@@ -3637,7 +3637,7 @@ func (s *UsersService) ListAllPages(sortBy NameSortMode) (*[]User, error) {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" {
+		if page.NextPage == "" || page.NextPage == pageToken {
 			break
 		}
 		pageToken = page.NextPage
