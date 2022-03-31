@@ -41,7 +41,7 @@ type Disk struct {
 	// ID is unique, immutable, system-controlled identifier for each resource
 	ID string `json:"id,omitempty" yaml:"id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
-	Name      Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	Name      string `json:"name,omitempty" yaml:"name,omitempty"`
 	ProjectID string `json:"project_id,omitempty" yaml:"project_id,omitempty"`
 	// Size is a count of bytes, typically used either for memory or storage capacity
 	//
@@ -60,7 +60,7 @@ type Disk struct {
 type DiskCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// Size is size of the Disk
 	Size ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
 	// SnapshotID is id for snapshot from which the Disk should be created, if any
@@ -70,7 +70,7 @@ type DiskCreate struct {
 // DiskIdentifier is parameters for the [`Disk`](omicron_common::api::external::Disk) to be attached or detached to an instance
 type DiskIdentifier struct {
 	// Disk is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Disk Name `json:"disk,omitempty" yaml:"disk,omitempty"`
+	Disk string `json:"disk,omitempty" yaml:"disk,omitempty"`
 }
 
 // DiskResultsPage is a single page of results
@@ -226,7 +226,7 @@ type Instance struct {
 	// Memory is memory allocated for this Instance
 	Memory ByteCount `json:"memory,omitempty" yaml:"memory,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// NCPUs is number of CPUs allocated for this Instance
 	NCPUs InstanceCPUCount `json:"ncpus,omitempty" yaml:"ncpus,omitempty"`
 	// ProjectID is id for the project containing this Instance
@@ -254,7 +254,7 @@ type InstanceCreate struct {
 	// The maximum supported byte count is [`i64::MAX`].  This makes it somewhat inconvenient to define constructors: a u32 constructor can be infallible, but an i64 constructor can fail (if the value is negative) and a u64 constructor can fail (if the value is larger than i64::MAX).  We provide all of these for consumers' convenience.
 	Memory ByteCount `json:"memory,omitempty" yaml:"memory,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// NCPUs is the number of CPUs in an Instance
 	NCPUs InstanceCPUCount `json:"ncpus,omitempty" yaml:"ncpus,omitempty"`
 	// NetworkInterfaces is the network interfaces to be created for this instance.
@@ -420,7 +420,7 @@ type NetworkInterface struct {
 	// Mac is the MAC address assigned to this interface.
 	Mac MacAddr `json:"mac,omitempty" yaml:"mac,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// SubnetID is the subnet to which the interface belongs.
 	SubnetID string `json:"subnet_id,omitempty" yaml:"subnet_id,omitempty"`
 	// TimeCreated is timestamp when this resource was created
@@ -437,11 +437,11 @@ type NetworkInterfaceCreate struct {
 	// Ip is the IP address for the interface. One will be auto-assigned if not provided.
 	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// SubnetName is the VPC Subnet in which to create the interface.
-	SubnetName Name `json:"subnet_name,omitempty" yaml:"subnet_name,omitempty"`
+	SubnetName string `json:"subnet_name,omitempty" yaml:"subnet_name,omitempty"`
 	// VPCName is the VPC in which to create the interface.
-	VPCName Name `json:"vpc_name,omitempty" yaml:"vpc_name,omitempty"`
+	VPCName string `json:"vpc_name,omitempty" yaml:"vpc_name,omitempty"`
 }
 
 // NetworkInterfaceResultsPage is a single page of results
@@ -459,7 +459,7 @@ type Organization struct {
 	// ID is unique, immutable, system-controlled identifier for each resource
 	ID string `json:"id,omitempty" yaml:"id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
@@ -470,7 +470,7 @@ type Organization struct {
 type OrganizationCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
 // OrganizationResultsPage is a single page of results
@@ -484,7 +484,7 @@ type OrganizationResultsPage struct {
 // OrganizationUpdate is updateable properties of an [`Organization`](crate::external_api::views::Organization)
 type OrganizationUpdate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	Name        string `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
 // Project is client view of a [`Project`]
@@ -494,7 +494,7 @@ type Project struct {
 	// ID is unique, immutable, system-controlled identifier for each resource
 	ID string `json:"id,omitempty" yaml:"id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
-	Name           Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	Name           string `json:"name,omitempty" yaml:"name,omitempty"`
 	OrganizationID string `json:"organization_id,omitempty" yaml:"organization_id,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
@@ -506,7 +506,7 @@ type Project struct {
 type ProjectCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
 // ProjectResultsPage is a single page of results
@@ -520,7 +520,7 @@ type ProjectResultsPage struct {
 // ProjectUpdate is updateable properties of a [`Project`](crate::external_api::views::Project)
 type ProjectUpdate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	Name        string `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
 // Rack is client view of an [`Rack`]
@@ -530,7 +530,7 @@ type Rack struct {
 	// ID is unique, immutable, system-controlled identifier for each resource
 	ID string `json:"id,omitempty" yaml:"id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
@@ -593,7 +593,7 @@ const (
 type RouteDestinationVPC struct {
 	Type RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 const (
@@ -605,7 +605,7 @@ const (
 type RouteDestinationSubnet struct {
 	Type RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 const (
@@ -639,7 +639,7 @@ const (
 type RouteTargetVPC struct {
 	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 const (
@@ -651,7 +651,7 @@ const (
 type RouteTargetSubnet struct {
 	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 const (
@@ -663,7 +663,7 @@ const (
 type RouteTargetInstance struct {
 	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 const (
@@ -675,7 +675,7 @@ const (
 type RouteTargetInternetGateway struct {
 	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 const (
@@ -702,7 +702,7 @@ type Route struct {
 	// Kind is describes the kind of router. Set at creation. `read-only`
 	Kind RouteKind `json:"kind,omitempty" yaml:"kind,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// RouterID is the VPC Router to which the route belongs.
 	RouterID string `json:"router_id,omitempty" yaml:"router_id,omitempty"`
 	// Target is a `RouteTarget` describes the possible locations that traffic matching a route destination can be sent.
@@ -721,7 +721,7 @@ type RouteCreate struct {
 	// When traffic is to be sent to a destination that is within a given `RouteDestination`, the corresponding [`RouterRoute`] applies, and traffic will be forward to the [`RouteTarget`] for that rule.
 	Destination RouteDestination `json:"destination,omitempty" yaml:"destination,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// Target is a `RouteTarget` describes the possible locations that traffic matching a route destination can be sent.
 	Target RouteTarget `json:"target,omitempty" yaml:"target,omitempty"`
 }
@@ -757,7 +757,7 @@ type RouteUpdate struct {
 	//
 	// When traffic is to be sent to a destination that is within a given `RouteDestination`, the corresponding [`RouterRoute`] applies, and traffic will be forward to the [`RouteTarget`] for that rule.
 	Destination RouteDestination `json:"destination,omitempty" yaml:"destination,omitempty"`
-	Name        Name             `json:"name,omitempty" yaml:"name,omitempty"`
+	Name        string           `json:"name,omitempty" yaml:"name,omitempty"`
 	// Target is a `RouteTarget` describes the possible locations that traffic matching a route destination can be sent.
 	Target RouteTarget `json:"target,omitempty" yaml:"target,omitempty"`
 }
@@ -894,7 +894,7 @@ type Sled struct {
 	// ID is unique, immutable, system-controlled identifier for each resource
 	ID string `json:"id,omitempty" yaml:"id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
-	Name           Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	Name           string `json:"name,omitempty" yaml:"name,omitempty"`
 	ServiceAddress string `json:"service_address,omitempty" yaml:"service_address,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
@@ -918,7 +918,7 @@ type Snapshot struct {
 	// ID is unique, immutable, system-controlled identifier for each resource
 	ID string `json:"id,omitempty" yaml:"id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
-	Name      Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	Name      string `json:"name,omitempty" yaml:"name,omitempty"`
 	ProjectID string `json:"project_id,omitempty" yaml:"project_id,omitempty"`
 	// Size is a count of bytes, typically used either for memory or storage capacity
 	//
@@ -934,9 +934,9 @@ type Snapshot struct {
 type SnapshotCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Disk is the name of the disk to be snapshotted
-	Disk Name `json:"disk,omitempty" yaml:"disk,omitempty"`
+	Disk string `json:"disk,omitempty" yaml:"disk,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
 // SnapshotResultsPage is a single page of results
@@ -977,7 +977,7 @@ type User struct {
 	// ID is unique, immutable, system-controlled identifier for each resource
 	ID string `json:"id,omitempty" yaml:"id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
@@ -997,13 +997,13 @@ type VPC struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// DnsName is the name used for the VPC in DNS.
-	DnsName Name `json:"dns_name,omitempty" yaml:"dns_name,omitempty"`
+	DnsName string `json:"dns_name,omitempty" yaml:"dns_name,omitempty"`
 	// ID is unique, immutable, system-controlled identifier for each resource
 	ID string `json:"id,omitempty" yaml:"id,omitempty"`
 	// IPv6Prefix is the unique local IPv6 address range for subnets in this VPC
 	IPv6Prefix IPv6Net `json:"ipv6_prefix,omitempty" yaml:"ipv6_prefix,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// ProjectID is id for the project containing this VPC
 	ProjectID string `json:"project_id,omitempty" yaml:"project_id,omitempty"`
 	// SystemRouterID is id for the system router where subnet default routes are registered
@@ -1018,13 +1018,13 @@ type VPC struct {
 type VPCCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// DnsName is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	DnsName Name `json:"dns_name,omitempty" yaml:"dns_name,omitempty"`
+	DnsName string `json:"dns_name,omitempty" yaml:"dns_name,omitempty"`
 	// IPv6Prefix is the IPv6 prefix for this VPC.
 	//
 	// All IPv6 subnets created from this VPC must be taken from this range, which sould be a Unique Local Address in the range `fd00::/48`. The default VPC Subnet will have the first `/64` range from this prefix.
 	IPv6Prefix IPv6Net `json:"ipv6_prefix,omitempty" yaml:"ipv6_prefix,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
 // FirewallRule is a single rule in a VPC firewall
@@ -1040,7 +1040,7 @@ type FirewallRule struct {
 	// ID is unique, immutable, system-controlled identifier for each resource
 	ID string `json:"id,omitempty" yaml:"id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// Priority is the relative priority of this rule
 	Priority int `json:"priority,omitempty" yaml:"priority,omitempty"`
 	// Status is whether this rule is in effect
@@ -1089,7 +1089,7 @@ type FirewallRuleFilter struct {
 type FirewallRuleHostFilterVPC struct {
 	Type FirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // FirewallRuleHostFilterType is the type definition for a FirewallRuleHostFilterType.
@@ -1104,7 +1104,7 @@ const (
 type FirewallRuleHostFilterSubnet struct {
 	Type FirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 const (
@@ -1116,7 +1116,7 @@ const (
 type FirewallRuleHostFilterInstance struct {
 	Type FirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 const (
@@ -1150,7 +1150,7 @@ const (
 // FirewallRuleHostFilter is the `VpcFirewallRuleHostFilter` is used to filter traffic on the basis of its source or destination host.
 type FirewallRuleHostFilter struct {
 	Type  string `json:"type,omitempty" yaml:"type,omitempty"`
-	Value Name   `json:"value,omitempty" yaml:"value,omitempty"`
+	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // FirewallRuleProtocol is the protocols that may be specified in a firewall rule's filter
@@ -1179,7 +1179,7 @@ const (
 type FirewallRuleTargetVPC struct {
 	Type FirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // FirewallRuleTargetType is the type definition for a FirewallRuleTargetType.
@@ -1194,7 +1194,7 @@ const (
 type FirewallRuleTargetSubnet struct {
 	Type FirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 const (
@@ -1206,7 +1206,7 @@ const (
 type FirewallRuleTargetInstance struct {
 	Type FirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 const (
@@ -1240,7 +1240,7 @@ const (
 // FirewallRuleTarget is a `VpcFirewallRuleTarget` is used to specify the set of [`Instance`]s to which a firewall rule applies.
 type FirewallRuleTarget struct {
 	Type  string `json:"type,omitempty" yaml:"type,omitempty"`
-	Value Name   `json:"value,omitempty" yaml:"value,omitempty"`
+	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // FirewallRuleUpdate is a single rule in a VPC firewall
@@ -1254,7 +1254,7 @@ type FirewallRuleUpdate struct {
 	// Filters is reductions on the scope of the rule
 	Filters FirewallRuleFilter `json:"filters,omitempty" yaml:"filters,omitempty"`
 	// Name is name of the rule, unique to this VPC
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// Priority is the relative priority of this rule
 	Priority int `json:"priority,omitempty" yaml:"priority,omitempty"`
 	// Status is whether this rule is in effect
@@ -1289,7 +1289,7 @@ type Router struct {
 	ID   string     `json:"id,omitempty" yaml:"id,omitempty"`
 	Kind RouterKind `json:"kind,omitempty" yaml:"kind,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
@@ -1302,7 +1302,7 @@ type Router struct {
 type RouterCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
 // RouterKind is the type definition for a RouterKind.
@@ -1326,7 +1326,7 @@ type RouterResultsPage struct {
 // RouterUpdate is updateable properties of a [`VpcRouter`](crate::external_api::views::VpcRouter)
 type RouterUpdate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	Name        string `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
 // Subnet is a VPC subnet represents a logical grouping for instances that allows network traffic between them, within a IPv4 subnetwork or optionall an IPv6 subnetwork.
@@ -1340,7 +1340,7 @@ type Subnet struct {
 	// IPv6Block is the IPv6 subnet CIDR block.
 	IPv6Block IPv6Net `json:"ipv6_block,omitempty" yaml:"ipv6_block,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
@@ -1361,7 +1361,7 @@ type SubnetCreate struct {
 	// It must be allocated from the RFC 4193 Unique Local Address range, with the prefix equal to the parent VPC's prefix. A random `/64` block will be assigned if one is not provided. It must not overlap with any existing subnet in the VPC.
 	IPv6Block IPv6Net `json:"ipv6_block,omitempty" yaml:"ipv6_block,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
 // SubnetResultsPage is a single page of results
@@ -1377,14 +1377,14 @@ type SubnetUpdate struct {
 	Description string  `json:"description,omitempty" yaml:"description,omitempty"`
 	IPv4Block   IPv4Net `json:"ipv4_block,omitempty" yaml:"ipv4_block,omitempty"`
 	IPv6Block   IPv6Net `json:"ipv6_block,omitempty" yaml:"ipv6_block,omitempty"`
-	Name        Name    `json:"name,omitempty" yaml:"name,omitempty"`
+	Name        string  `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
 // VPCUpdate is updateable properties of a [`Vpc`](crate::external_api::views::Vpc)
 type VPCUpdate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	DnsName     Name   `json:"dns_name,omitempty" yaml:"dns_name,omitempty"`
-	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	DnsName     string `json:"dns_name,omitempty" yaml:"dns_name,omitempty"`
+	Name        string `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
 // DatumTypes is the collection of all DatumType values.

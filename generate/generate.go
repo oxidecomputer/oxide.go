@@ -381,6 +381,10 @@ func printType(property string, r *openapi3.SchemaRef) string {
 	if r.Ref != "" {
 		ref := getReferenceSchema(r)
 		// Just use the type of the reference.
+		if ref == "Name" {
+			return "string"
+		}
+
 		return ref
 	}
 
