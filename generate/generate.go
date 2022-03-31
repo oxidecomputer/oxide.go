@@ -380,15 +380,8 @@ func printType(property string, r *openapi3.SchemaRef) string {
 	// If we have a reference, just use that.
 	if r.Ref != "" {
 		ref := getReferenceSchema(r)
-		// Just use the type of the reference, unless it is a Name or ByteCount. In that case,
-		//recurse the actual type.
-		if ref == "ByteCount" {
-			return "int64"
-		} else if ref == "Name" {
-			return "string"
-		} else {
-			return ref
-		}
+		// Just use the type of the reference.
+		return ref
 	}
 
 	// See if we have an allOf.
@@ -851,8 +844,6 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 		writeSchemaTypeDescription(typeName, s, f)
 	}
 
-	rootTypes := []string{"Organization", "Project", "Disk", "Router", "Instance", "Route", "Subnet", "Snapshot", "VPC"}
-
 	if otype == "string" {
 		// If this is an enum, write the enum type.
 		if len(s.Enum) > 0 {
@@ -925,27 +916,7 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 			if v.Value.Description != "" {
 				fmt.Fprintf(f, "\t// %s is %s\n", printProperty(k), toLowerFirstLetter(strings.ReplaceAll(v.Value.Description, "\n", "\n// ")))
 			}
-			fmt.Fprintf(f, "\t%s %s `json:\"%s,omitempty\" yaml:\"%s,omitempty\" tfsdk:\"%s\"`\n", printProperty(k), typeName, k, k, k)
-		}
-
-		// For terraform, we need to add the fields for the path parameters, but we will not
-		// take these into account for the JSON serialization.
-		if !strings.HasPrefix(typeName, "Organization") && (strings.HasSuffix(typeName, "Create") || strings.HasSuffix(typeName, "Update") || contains(rootTypes, typeName)) {
-			// We have to add the OrganizationName to the type.
-			fmt.Fprintf(f, "\tOrganizationName string `json:\"-\" yaml:\"-\" tfsdk:\"organization\"`\n")
-			if !strings.HasPrefix(typeName, "Project") {
-				// We have to add the ProjectName to the type.
-				fmt.Fprintf(f, "\tProjectName string `json:\"-\" yaml:\"-\" tfsdk:\"project\"`\n")
-			}
-
-			if strings.HasPrefix(typeName, "Subnet") || strings.HasPrefix(typeName, "Route") {
-				// We have to add the DiskName to the type.
-				fmt.Fprintf(f, "\tVPCName string `json:\"-\" yaml:\"-\" tfsdk:\"vpc\"`\n")
-			}
-
-			if typeName == "Route" || typeName == "RouteCreate" || typeName == "RouteUpdate" {
-				fmt.Fprintf(f, "\tRouterName string `json:\"-\" yaml:\"-\" tfsdk:\"router\"`\n")
-			}
+			fmt.Fprintf(f, "\t%s %s `json:\"%s,omitempty\" yaml:\"%s,omitempty\"`\n", printProperty(k), typeName, k, k)
 		}
 
 		fmt.Fprintf(f, "}\n")
