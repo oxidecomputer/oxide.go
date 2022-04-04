@@ -258,6 +258,7 @@ func openGeneratedFile(filename string) *os.File {
 }
 
 func cleanFnName(name string, tag string, path string) string {
+	ogName := name
 	name = printProperty(name)
 
 	name = strings.ReplaceAll(name, strcase.ToCamel(tag), "")
@@ -299,6 +300,10 @@ func cleanFnName(name string, tag string, path string) string {
 	// Routes paths wind up weird so clean them up.
 	if strings.HasPrefix(name, "rs") {
 		name = strings.TrimPrefix(name, "rs")
+	}
+
+	if tag == "Image" && strings.HasPrefix(ogName, "images_") {
+		name = fmt.Sprintf("Global%s", name)
 	}
 
 	return name
@@ -467,6 +472,11 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 		return
 	}
 	tag := strcase.ToCamel(o.Tags[0])
+
+	if tag == "Hidden" {
+		// return early.
+		return
+	}
 
 	fnName := cleanFnName(o.OperationID, tag, path)
 

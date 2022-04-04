@@ -3388,8 +3388,8 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "// List: List global images.\n//\n// Returns a list of all the global images. Global images are returned sorted by creation date, with the most recent images appearing first.\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`: Maximum number of items returned by a single call\n//\t- `pageToken`: Token returned by previous call to retreive the subsequent page\n//\t- `sortBy`\nimageResultsPage, err := client.Images.List(limit, pageToken, sortBy)\n\n// - OR -\n\n// ListAllPages: List global images.\n//\n// Returns a list of all the global images. Global images are returned sorted by creation date, with the most recent images appearing first.\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\nImage, err := client.Images.ListAllPages(sortBy)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ImagesService.List"
+          "example": "// GlobalList: List global images.\n//\n// Returns a list of all the global images. Global images are returned sorted by creation date, with the most recent images appearing first.\n//\n// To iterate over all pages, use the `GlobalListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`: Maximum number of items returned by a single call\n//\t- `pageToken`: Token returned by previous call to retreive the subsequent page\n//\t- `sortBy`\nimageResultsPage, err := client.Images.GlobalList(limit, pageToken, sortBy)\n\n// - OR -\n\n// GlobalListAllPages: List global images.\n//\n// Returns a list of all the global images. Global images are returned sorted by creation date, with the most recent images appearing first.\n//\n// This method is a wrapper around the `GlobalList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\nImage, err := client.Images.GlobalListAllPages(sortBy)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ImagesService.GlobalList"
         },
         "x-ts": {
           "example": "let resp = client.imagesGet(query, params);"
@@ -3431,8 +3431,8 @@
           "images"
         ],
         "x-go": {
-          "example": "// Create: Create a global image.\n//\n// Create a new global image. This image can then be used by any user as a base for instances.\nimage, err := client.Images.Create(body)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ImagesService.Create"
+          "example": "// GlobalCreate: Create a global image.\n//\n// Create a new global image. This image can then be used by any user as a base for instances.\nimage, err := client.Images.GlobalCreate(body)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ImagesService.GlobalCreate"
         },
         "x-ts": {
           "example": "let resp = client.imagesPost(query, data, params);"
@@ -3470,8 +3470,8 @@
           "images"
         ],
         "x-go": {
-          "example": "// Delete: Delete a global image.\n//\n// Permanently delete a global image. This operation cannot be undone. Any instances using the global image will continue to run, however new instances can not be created with this image.\n//\n// Parameters:\n//\t- `imageName`\nif err := client.Images.Delete(imageName); err != nil {\n\tpanic(err)\n}",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ImagesService.Delete"
+          "example": "// GlobalDelete: Delete a global image.\n//\n// Permanently delete a global image. This operation cannot be undone. Any instances using the global image will continue to run, however new instances can not be created with this image.\n//\n// Parameters:\n//\t- `imageName`\nif err := client.Images.GlobalDelete(imageName); err != nil {\n\tpanic(err)\n}",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ImagesService.GlobalDelete"
         },
         "x-ts": {
           "example": "let resp = client.imagesDeleteImage(ImagesDeleteImageParams{imageName}, params);"
@@ -3514,8 +3514,8 @@
           "images"
         ],
         "x-go": {
-          "example": "// Get: Get a global image.\n//\n// Returns the details of a specific global image.\n//\n// Parameters:\n//\t- `imageName`\nimage, err := client.Images.Get(imageName)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ImagesService.Get"
+          "example": "// GlobalGet: Get a global image.\n//\n// Returns the details of a specific global image.\n//\n// Parameters:\n//\t- `imageName`\nimage, err := client.Images.GlobalGet(imageName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ImagesService.GlobalGet"
         },
         "x-ts": {
           "example": "let resp = client.imagesGetImage(ImagesGetImageParams{imageName}, params);"
@@ -4470,12 +4470,12 @@
         },
         "summary": "List images",
         "tags": [
-          "images"
+          "projects"
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "// List: List images\n//\n// List images in a project. The images are returned sorted by creation date, with the most recent images appearing first.\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`: Maximum number of items returned by a single call\n//\t- `organizationName`: The organization's unique name.\n//\t- `pageToken`: Token returned by previous call to retreive the subsequent page\n//\t- `projectName`: The project's unique name within the organization.\n//\t- `sortBy`\nimageResultsPage, err := client.Images.List(limit, pageToken, sortBy, organizationName, projectName)\n\n// - OR -\n\n// ListAllPages: List images\n//\n// List images in a project. The images are returned sorted by creation date, with the most recent images appearing first.\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`: The organization's unique name.\n//\t- `projectName`: The project's unique name within the organization.\n//\t- `sortBy`\nImage, err := client.Images.ListAllPages(sortBy, organizationName, projectName)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ImagesService.List"
+          "example": "// ImagesList: List images\n//\n// List images in a project. The images are returned sorted by creation date, with the most recent images appearing first.\n//\n// To iterate over all pages, use the `ImagesListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`: Maximum number of items returned by a single call\n//\t- `organizationName`: The organization's unique name.\n//\t- `pageToken`: Token returned by previous call to retreive the subsequent page\n//\t- `projectName`: The project's unique name within the organization.\n//\t- `sortBy`\nimageResultsPage, err := client.Projects.ImagesList(limit, pageToken, sortBy, organizationName, projectName)\n\n// - OR -\n\n// ImagesListAllPages: List images\n//\n// List images in a project. The images are returned sorted by creation date, with the most recent images appearing first.\n//\n// This method is a wrapper around the `ImagesList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`: The organization's unique name.\n//\t- `projectName`: The project's unique name within the organization.\n//\t- `sortBy`\nImage, err := client.Projects.ImagesListAllPages(sortBy, organizationName, projectName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ProjectsService.ImagesList"
         },
         "x-ts": {
           "example": "let resp = client.projectImagesGet(ProjectImagesGetParams{orgName, projectName}, params);"
