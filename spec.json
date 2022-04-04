@@ -350,6 +350,135 @@
         ],
         "type": "string"
       },
+      "Image": {
+        "description": "Client view of Images",
+        "properties": {
+          "description": {
+            "description": "human-readable free-form text about a resource",
+            "type": "string"
+          },
+          "id": {
+            "description": "unique, immutable, system-controlled identifier for each resource",
+            "format": "uuid",
+            "type": "string"
+          },
+          "name": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Name"
+              }
+            ],
+            "description": "unique, mutable, user-controlled identifier for each resource"
+          },
+          "project_id": {
+            "format": "uuid",
+            "nullable": true,
+            "type": "string"
+          },
+          "size": {
+            "$ref": "#/components/schemas/ByteCount"
+          },
+          "time_created": {
+            "description": "timestamp when this resource was created",
+            "format": "date-time",
+            "type": "string"
+          },
+          "time_modified": {
+            "description": "timestamp when this resource was last modified",
+            "format": "date-time",
+            "type": "string"
+          },
+          "url": {
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "description",
+          "id",
+          "name",
+          "size",
+          "time_created",
+          "time_modified"
+        ],
+        "type": "object"
+      },
+      "ImageCreate": {
+        "description": "Create-time parameters for an [`Image`](omicron_common::api::external::Image)",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "name": {
+            "$ref": "#/components/schemas/Name"
+          },
+          "source": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ImageSource"
+              }
+            ],
+            "description": "The source of the image's contents."
+          }
+        },
+        "required": [
+          "description",
+          "name",
+          "source"
+        ],
+        "type": "object"
+      },
+      "ImageResultsPage": {
+        "description": "A single page of results",
+        "properties": {
+          "items": {
+            "description": "list of items on this page of results",
+            "items": {
+              "$ref": "#/components/schemas/Image"
+            },
+            "type": "array"
+          },
+          "next_page": {
+            "description": "token used to fetch the next page of results (if any)",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "type": "object"
+      },
+      "ImageSource": {
+        "description": "The source of the underlying image.",
+        "oneOf": [
+          {
+            "additionalProperties": false,
+            "properties": {
+              "Url": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "Url"
+            ],
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "properties": {
+              "Snapshot": {
+                "format": "uuid",
+                "type": "string"
+              }
+            },
+            "required": [
+              "Snapshot"
+            ],
+            "type": "object"
+          }
+        ]
+      },
       "Instance": {
         "description": "Client view of an [`Instance`]",
         "properties": {
@@ -440,6 +569,13 @@
           "description": {
             "type": "string"
           },
+          "disks": {
+            "description": "The disks to be created or attached for this instance.",
+            "items": {
+              "$ref": "#/components/schemas/InstanceDiskAttachment"
+            },
+            "type": "array"
+          },
           "hostname": {
             "type": "string"
           },
@@ -469,6 +605,73 @@
           "ncpus"
         ],
         "type": "object"
+      },
+      "InstanceDiskAttachment": {
+        "description": "Describe the instance's disks at creation time",
+        "oneOf": [
+          {
+            "description": "During instance creation, create and attach disks",
+            "properties": {
+              "description": {
+                "type": "string"
+              },
+              "name": {
+                "$ref": "#/components/schemas/Name"
+              },
+              "size": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ByteCount"
+                  }
+                ],
+                "description": "size of the Disk"
+              },
+              "snapshot_id": {
+                "description": "id for snapshot from which the Disk should be created, if any",
+                "format": "uuid",
+                "nullable": true,
+                "type": "string"
+              },
+              "type": {
+                "enum": [
+                  "create"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "description",
+              "name",
+              "size",
+              "type"
+            ],
+            "type": "object"
+          },
+          {
+            "description": "During instance creation, attach this disk",
+            "properties": {
+              "disk": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/Name"
+                  }
+                ],
+                "description": "A disk name to attach"
+              },
+              "type": {
+                "enum": [
+                  "attach"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "disk",
+              "type"
+            ],
+            "type": "object"
+          }
+        ]
       },
       "InstanceMigrate": {
         "description": "Migration parameters for an [`Instance`](omicron_common::api::external::Instance)",
@@ -1329,11 +1532,6 @@
             ],
             "description": "unique, mutable, user-controlled identifier for each resource"
           },
-          "router_id": {
-            "description": "The VPC Router to which the route belongs.",
-            "format": "uuid",
-            "type": "string"
-          },
           "target": {
             "$ref": "#/components/schemas/RouteTarget"
           },
@@ -1346,6 +1544,11 @@
             "description": "timestamp when this resource was last modified",
             "format": "date-time",
             "type": "string"
+          },
+          "vpc_router_id": {
+            "description": "The VPC Router to which the route belongs.",
+            "format": "uuid",
+            "type": "string"
           }
         },
         "required": [
@@ -1354,10 +1557,10 @@
           "id",
           "kind",
           "name",
-          "router_id",
           "target",
           "time_created",
-          "time_modified"
+          "time_modified",
+          "vpc_router_id"
         ],
         "type": "object"
       },
@@ -1633,6 +1836,92 @@
         },
         "required": [
           "id"
+        ],
+        "type": "object"
+      },
+      "Silo": {
+        "description": "Client view of a ['Silo']",
+        "properties": {
+          "description": {
+            "description": "human-readable free-form text about a resource",
+            "type": "string"
+          },
+          "discoverable": {
+            "description": "A silo where discoverable is false can be retrieved only by its id - it will not be part of the \"list all silos\" output.",
+            "type": "boolean"
+          },
+          "id": {
+            "description": "unique, immutable, system-controlled identifier for each resource",
+            "format": "uuid",
+            "type": "string"
+          },
+          "name": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Name"
+              }
+            ],
+            "description": "unique, mutable, user-controlled identifier for each resource"
+          },
+          "time_created": {
+            "description": "timestamp when this resource was created",
+            "format": "date-time",
+            "type": "string"
+          },
+          "time_modified": {
+            "description": "timestamp when this resource was last modified",
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "description",
+          "discoverable",
+          "id",
+          "name",
+          "time_created",
+          "time_modified"
+        ],
+        "type": "object"
+      },
+      "SiloCreate": {
+        "description": "Create-time parameters for a [`Silo`](crate::external_api::views::Silo)",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "discoverable": {
+            "type": "boolean"
+          },
+          "name": {
+            "$ref": "#/components/schemas/Name"
+          }
+        },
+        "required": [
+          "description",
+          "discoverable",
+          "name"
+        ],
+        "type": "object"
+      },
+      "SiloResultsPage": {
+        "description": "A single page of results",
+        "properties": {
+          "items": {
+            "description": "list of items on this page of results",
+            "items": {
+              "$ref": "#/components/schemas/Silo"
+            },
+            "type": "array"
+          },
+          "next_page": {
+            "description": "token used to fetch the next page of results (if any)",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "items"
         ],
         "type": "object"
       },
@@ -3039,6 +3328,200 @@
         }
       }
     },
+    "/images": {
+      "get": {
+        "description": "Returns a list of all the global images. Global images are returned sorted by creation date, with the most recent images appearing first.",
+        "operationId": "images_get",
+        "parameters": [
+          {
+            "description": "Maximum number of items returned by a single call",
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "format": "uint32",
+              "minimum": 1,
+              "nullable": true,
+              "type": "integer"
+            },
+            "style": "form"
+          },
+          {
+            "description": "Token returned by previous call to retreive the subsequent page",
+            "in": "query",
+            "name": "page_token",
+            "schema": {
+              "nullable": true,
+              "type": "string"
+            },
+            "style": "form"
+          },
+          {
+            "in": "query",
+            "name": "sort_by",
+            "schema": {
+              "$ref": "#/components/schemas/NameSortMode"
+            },
+            "style": "form"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageResultsPage"
+                }
+              }
+            },
+            "description": "successful operation"
+          },
+          "4XX": {
+            "$ref": "#/components/responses/Error"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "summary": "List global images.",
+        "tags": [
+          "images"
+        ],
+        "x-dropshot-pagination": true,
+        "x-go": {
+          "example": "// List: List global images.\n//\n// Returns a list of all the global images. Global images are returned sorted by creation date, with the most recent images appearing first.\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`: Maximum number of items returned by a single call\n//\t- `pageToken`: Token returned by previous call to retreive the subsequent page\n//\t- `sortBy`\nimageResultsPage, err := client.Images.List(limit, pageToken, sortBy)\n\n// - OR -\n\n// ListAllPages: List global images.\n//\n// Returns a list of all the global images. Global images are returned sorted by creation date, with the most recent images appearing first.\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\nImage, err := client.Images.ListAllPages(sortBy)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ImagesService.List"
+        },
+        "x-ts": {
+          "example": "let resp = client.imagesGet(query, params);"
+        }
+      },
+      "post": {
+        "description": "Create a new global image. This image can then be used by any user as a base for instances.",
+        "operationId": "images_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImageCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Image"
+                }
+              }
+            },
+            "description": "successful creation"
+          },
+          "4XX": {
+            "$ref": "#/components/responses/Error"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "summary": "Create a global image.",
+        "tags": [
+          "images"
+        ],
+        "x-go": {
+          "example": "// Create: Create a global image.\n//\n// Create a new global image. This image can then be used by any user as a base for instances.\nimage, err := client.Images.Create(body)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ImagesService.Create"
+        },
+        "x-ts": {
+          "example": "let resp = client.imagesPost(query, data, params);"
+        }
+      }
+    },
+    "/images/{image_name}": {
+      "delete": {
+        "description": "Permanently delete a global image. This operation cannot be undone. Any instances using the global image will continue to run, however new instances can not be created with this image.",
+        "operationId": "images_delete_image",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "image_name",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Name"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "successful deletion"
+          },
+          "4XX": {
+            "$ref": "#/components/responses/Error"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "summary": "Delete a global image.",
+        "tags": [
+          "images"
+        ],
+        "x-go": {
+          "example": "// Delete: Delete a global image.\n//\n// Permanently delete a global image. This operation cannot be undone. Any instances using the global image will continue to run, however new instances can not be created with this image.\n//\n// Parameters:\n//\t- `imageName`\nif err := client.Images.Delete(imageName); err != nil {\n\tpanic(err)\n}",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ImagesService.Delete"
+        },
+        "x-ts": {
+          "example": "let resp = client.imagesDeleteImage(ImagesDeleteImageParams{imageName}, params);"
+        }
+      },
+      "get": {
+        "description": "Returns the details of a specific global image.",
+        "operationId": "images_get_image",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "image_name",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Name"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Image"
+                }
+              }
+            },
+            "description": "successful operation"
+          },
+          "4XX": {
+            "$ref": "#/components/responses/Error"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "summary": "Get a global image.",
+        "tags": [
+          "images"
+        ],
+        "x-go": {
+          "example": "// Get: Get a global image.\n//\n// Returns the details of a specific global image.\n//\n// Parameters:\n//\t- `imageName`\nimage, err := client.Images.Get(imageName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ImagesService.Get"
+        },
+        "x-ts": {
+          "example": "let resp = client.imagesGetImage(ImagesGetImageParams{imageName}, params);"
+        }
+      }
+    },
     "/login": {
       "post": {
         "operationId": "spoof_login",
@@ -3054,6 +3537,11 @@
         },
         "responses": {
           "default": {
+            "content": {
+              "*/*": {
+                "schema": {}
+              }
+            },
             "description": ""
           }
         },
@@ -3061,7 +3549,7 @@
           "hidden"
         ],
         "x-go": {
-          "example": "// SpoofLogin\nif err := client.Hidden.SpoofLogin(body); err != nil {\n\tpanic(err)\n}",
+          "example": "// SpoofLogin\nspoofLoginResponse, err := client.Hidden.SpoofLogin(body)",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#HiddenService.SpoofLogin"
         },
         "x-ts": {
@@ -3074,6 +3562,11 @@
         "operationId": "logout",
         "responses": {
           "default": {
+            "content": {
+              "*/*": {
+                "schema": {}
+              }
+            },
             "description": ""
           }
         },
@@ -3081,7 +3574,7 @@
           "hidden"
         ],
         "x-go": {
-          "example": "// Logout\nif err := client.Hidden.Logout(); err != nil {\n\tpanic(err)\n}",
+          "example": "// Logout\nlogoutResponse, err := client.Hidden.Logout()",
           "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#HiddenService.Logout"
         },
         "x-ts": {
@@ -3898,6 +4391,278 @@
         },
         "x-ts": {
           "example": "let resp = client.projectDisksGetDisk(ProjectDisksGetDiskParams{diskName, orgName, projectName}, params);"
+        }
+      }
+    },
+    "/organizations/{organization_name}/projects/{project_name}/images": {
+      "get": {
+        "description": "List images in a project. The images are returned sorted by creation date, with the most recent images appearing first.",
+        "operationId": "project_images_get",
+        "parameters": [
+          {
+            "description": "Maximum number of items returned by a single call",
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "format": "uint32",
+              "minimum": 1,
+              "nullable": true,
+              "type": "integer"
+            },
+            "style": "form"
+          },
+          {
+            "description": "Token returned by previous call to retreive the subsequent page",
+            "in": "query",
+            "name": "page_token",
+            "schema": {
+              "nullable": true,
+              "type": "string"
+            },
+            "style": "form"
+          },
+          {
+            "in": "query",
+            "name": "sort_by",
+            "schema": {
+              "$ref": "#/components/schemas/NameSortMode"
+            },
+            "style": "form"
+          },
+          {
+            "description": "The organization's unique name.",
+            "in": "path",
+            "name": "organization_name",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Name"
+            },
+            "style": "simple"
+          },
+          {
+            "description": "The project's unique name within the organization.",
+            "in": "path",
+            "name": "project_name",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Name"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageResultsPage"
+                }
+              }
+            },
+            "description": "successful operation"
+          },
+          "4XX": {
+            "$ref": "#/components/responses/Error"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "summary": "List images",
+        "tags": [
+          "images"
+        ],
+        "x-dropshot-pagination": true,
+        "x-go": {
+          "example": "// List: List images\n//\n// List images in a project. The images are returned sorted by creation date, with the most recent images appearing first.\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`: Maximum number of items returned by a single call\n//\t- `organizationName`: The organization's unique name.\n//\t- `pageToken`: Token returned by previous call to retreive the subsequent page\n//\t- `projectName`: The project's unique name within the organization.\n//\t- `sortBy`\nimageResultsPage, err := client.Images.List(limit, pageToken, sortBy, organizationName, projectName)\n\n// - OR -\n\n// ListAllPages: List images\n//\n// List images in a project. The images are returned sorted by creation date, with the most recent images appearing first.\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `organizationName`: The organization's unique name.\n//\t- `projectName`: The project's unique name within the organization.\n//\t- `sortBy`\nImage, err := client.Images.ListAllPages(sortBy, organizationName, projectName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ImagesService.List"
+        },
+        "x-ts": {
+          "example": "let resp = client.projectImagesGet(ProjectImagesGetParams{orgName, projectName}, params);"
+        }
+      },
+      "post": {
+        "description": "Create a new image in a project.",
+        "operationId": "project_images_post",
+        "parameters": [
+          {
+            "description": "The organization's unique name.",
+            "in": "path",
+            "name": "organization_name",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Name"
+            },
+            "style": "simple"
+          },
+          {
+            "description": "The project's unique name within the organization.",
+            "in": "path",
+            "name": "project_name",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Name"
+            },
+            "style": "simple"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImageCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Image"
+                }
+              }
+            },
+            "description": "successful creation"
+          },
+          "4XX": {
+            "$ref": "#/components/responses/Error"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "summary": "Create an image",
+        "tags": [
+          "images"
+        ],
+        "x-go": {
+          "example": "// Create: Create an image\n//\n// Create a new image in a project.\n//\n// Parameters:\n//\t- `organizationName`: The organization's unique name.\n//\t- `projectName`: The project's unique name within the organization.\nimage, err := client.Images.Create(organizationName, projectName, body)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ImagesService.Create"
+        },
+        "x-ts": {
+          "example": "let resp = client.projectImagesPost(ProjectImagesPostParams{orgName, projectName}, data, params);"
+        }
+      }
+    },
+    "/organizations/{organization_name}/projects/{project_name}/images/{image_name}": {
+      "delete": {
+        "description": "Permanently delete an image from a project. This operation cannot be undone. Any instances in the project using the image will continue to run, however new instances can not be created with this image.",
+        "operationId": "project_images_delete_image",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "image_name",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Name"
+            },
+            "style": "simple"
+          },
+          {
+            "in": "path",
+            "name": "organization_name",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Name"
+            },
+            "style": "simple"
+          },
+          {
+            "in": "path",
+            "name": "project_name",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Name"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "successful deletion"
+          },
+          "4XX": {
+            "$ref": "#/components/responses/Error"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "summary": "Delete an image",
+        "tags": [
+          "images"
+        ],
+        "x-go": {
+          "example": "// Delete: Delete an image\n//\n// Permanently delete an image from a project. This operation cannot be undone. Any instances in the project using the image will continue to run, however new instances can not be created with this image.\n//\n// Parameters:\n//\t- `imageName`\n//\t- `organizationName`\n//\t- `projectName`\nif err := client.Images.Delete(imageName, organizationName, projectName); err != nil {\n\tpanic(err)\n}",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ImagesService.Delete"
+        },
+        "x-ts": {
+          "example": "let resp = client.projectImagesDeleteImage(ProjectImagesDeleteImageParams{imageName, orgName, projectName}, params);"
+        }
+      },
+      "get": {
+        "description": "Get the details of a specific image in a project.",
+        "operationId": "project_images_get_image",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "image_name",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Name"
+            },
+            "style": "simple"
+          },
+          {
+            "in": "path",
+            "name": "organization_name",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Name"
+            },
+            "style": "simple"
+          },
+          {
+            "in": "path",
+            "name": "project_name",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Name"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Image"
+                }
+              }
+            },
+            "description": "successful operation"
+          },
+          "4XX": {
+            "$ref": "#/components/responses/Error"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "summary": "Get an image",
+        "tags": [
+          "images"
+        ],
+        "x-go": {
+          "example": "// Get: Get an image\n//\n// Get the details of a specific image in a project.\n//\n// Parameters:\n//\t- `imageName`\n//\t- `organizationName`\n//\t- `projectName`\nimage, err := client.Images.Get(imageName, organizationName, projectName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ImagesService.Get"
+        },
+        "x-ts": {
+          "example": "let resp = client.projectImagesGetImage(ProjectImagesGetImageParams{imageName, orgName, projectName}, params);"
         }
       }
     },
@@ -7250,6 +8015,197 @@
         }
       }
     },
+    "/silos": {
+      "get": {
+        "operationId": "silos_get",
+        "parameters": [
+          {
+            "description": "Maximum number of items returned by a single call",
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "format": "uint32",
+              "minimum": 1,
+              "nullable": true,
+              "type": "integer"
+            },
+            "style": "form"
+          },
+          {
+            "description": "Token returned by previous call to retreive the subsequent page",
+            "in": "query",
+            "name": "page_token",
+            "schema": {
+              "nullable": true,
+              "type": "string"
+            },
+            "style": "form"
+          },
+          {
+            "in": "query",
+            "name": "sort_by",
+            "schema": {
+              "$ref": "#/components/schemas/NameOrIdSortMode"
+            },
+            "style": "form"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SiloResultsPage"
+                }
+              }
+            },
+            "description": "successful operation"
+          },
+          "4XX": {
+            "$ref": "#/components/responses/Error"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "tags": [
+          "silos"
+        ],
+        "x-dropshot-pagination": true,
+        "x-go": {
+          "example": "// List\n//\n// To iterate over all pages, use the `ListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`: Maximum number of items returned by a single call\n//\t- `pageToken`: Token returned by previous call to retreive the subsequent page\n//\t- `sortBy`\nsiloResultsPage, err := client.Silos.List(limit, pageToken, sortBy)\n\n// - OR -\n\n// ListAllPages\n//\n// This method is a wrapper around the `List` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\nSilo, err := client.Silos.ListAllPages(sortBy)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SilosService.List"
+        },
+        "x-ts": {
+          "example": "let resp = client.silosGet(query, params);"
+        }
+      },
+      "post": {
+        "operationId": "silos_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SiloCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Silo"
+                }
+              }
+            },
+            "description": "successful creation"
+          },
+          "4XX": {
+            "$ref": "#/components/responses/Error"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "summary": "Create a new silo.",
+        "tags": [
+          "silos"
+        ],
+        "x-go": {
+          "example": "// Create: Create a new silo.\nsilo, err := client.Silos.Create(body)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SilosService.Create"
+        },
+        "x-ts": {
+          "example": "let resp = client.silosPost(query, data, params);"
+        }
+      }
+    },
+    "/silos/{silo_name}": {
+      "delete": {
+        "operationId": "silos_delete_silo",
+        "parameters": [
+          {
+            "description": "The silo's unique name.",
+            "in": "path",
+            "name": "silo_name",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Name"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "successful deletion"
+          },
+          "4XX": {
+            "$ref": "#/components/responses/Error"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "summary": "Delete a specific silo.",
+        "tags": [
+          "silos"
+        ],
+        "x-go": {
+          "example": "// Delete: Delete a specific silo.\n//\n// Parameters:\n//\t- `siloName`: The silo's unique name.\nif err := client.Silos.Delete(siloName); err != nil {\n\tpanic(err)\n}",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SilosService.Delete"
+        },
+        "x-ts": {
+          "example": "let resp = client.silosDeleteSilo(SilosDeleteSiloParams{siloName}, params);"
+        }
+      },
+      "get": {
+        "operationId": "silos_get_silo",
+        "parameters": [
+          {
+            "description": "The silo's unique name.",
+            "in": "path",
+            "name": "silo_name",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Name"
+            },
+            "style": "simple"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Silo"
+                }
+              }
+            },
+            "description": "successful operation"
+          },
+          "4XX": {
+            "$ref": "#/components/responses/Error"
+          },
+          "5XX": {
+            "$ref": "#/components/responses/Error"
+          }
+        },
+        "summary": "Fetch a specific silo",
+        "tags": [
+          "silos"
+        ],
+        "x-go": {
+          "example": "// Get: Fetch a specific silo\n//\n// Parameters:\n//\t- `siloName`: The silo's unique name.\nsilo, err := client.Silos.Get(siloName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#SilosService.Get"
+        },
+        "x-ts": {
+          "example": "let resp = client.silosGetSilo(SilosGetSiloParams{siloName}, params);"
+        }
+      }
+    },
     "/timeseries/schema": {
       "get": {
         "operationId": "timeseries_schema_get",
@@ -7473,6 +8429,13 @@
       "name": "hidden"
     },
     {
+      "description": "Images are read-only Virtual Disks that may be used to boot Virtual Machines",
+      "externalDocs": {
+        "url": "http://oxide.computer/docs/#xxx"
+      },
+      "name": "images"
+    },
+    {
       "description": "Virtual machine instances are the basic unit of computation. These operations are used for provisioning, controlling, and destroying instances.",
       "externalDocs": {
         "url": "http://oxide.computer/docs/#xxx"
@@ -7534,6 +8497,13 @@
         "url": "http://oxide.computer/docs/#xxx"
       },
       "name": "sagas"
+    },
+    {
+      "description": "Silos represent a logical partition of users and resources.",
+      "externalDocs": {
+        "url": "http://oxide.computer/docs/#xxx"
+      },
+      "name": "silos"
     },
     {
       "description": "This tag should be moved into hardware",

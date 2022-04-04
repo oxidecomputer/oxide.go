@@ -215,6 +215,59 @@ const (
 	IdSortModeIdAscending IdSortMode = "id-ascending"
 )
 
+// Image is client view of Images
+type Image struct {
+	// Description is human-readable free-form text about a resource
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// ID is unique, immutable, system-controlled identifier for each resource
+	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Name is unique, mutable, user-controlled identifier for each resource
+	Name      string `json:"name,omitempty" yaml:"name,omitempty"`
+	ProjectID string `json:"project_id,omitempty" yaml:"project_id,omitempty"`
+	// Size is a count of bytes, typically used either for memory or storage capacity
+	//
+	// The maximum supported byte count is [`i64::MAX`].  This makes it somewhat inconvenient to define constructors: a u32 constructor can be infallible, but an i64 constructor can fail (if the value is negative) and a u64 constructor can fail (if the value is larger than i64::MAX).  We provide all of these for consumers' convenience.
+	Size ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
+	// TimeCreated is timestamp when this resource was created
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	// TimeModified is timestamp when this resource was last modified
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+	Url          string     `json:"url,omitempty" yaml:"url,omitempty"`
+}
+
+// ImageCreate is create-time parameters for an [`Image`](omicron_common::api::external::Image)
+type ImageCreate struct {
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
+	// Source is the source of the image's contents.
+	Source ImageSource `json:"source,omitempty" yaml:"source,omitempty"`
+}
+
+// ImageResultsPage is a single page of results
+type ImageResultsPage struct {
+	// Items is list of items on this page of results
+	Items []Image `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// ImageSourceUrl is the type definition for a ImageSourceUrl.
+type ImageSourceUrl struct {
+	Url string `json:"Url,omitempty" yaml:"Url,omitempty"`
+}
+
+// ImageSourceSnapshot is the type definition for a ImageSourceSnapshot.
+type ImageSourceSnapshot struct {
+	Snapshot string `json:"Snapshot,omitempty" yaml:"Snapshot,omitempty"`
+}
+
+// ImageSource is the source of the underlying image.
+type ImageSource struct {
+	Url      string `json:"Url,omitempty" yaml:"Url,omitempty"`
+	Snapshot string `json:"Snapshot,omitempty" yaml:"Snapshot,omitempty"`
+}
+
 // Instance is client view of an [`Instance`]
 type Instance struct {
 	// Description is human-readable free-form text about a resource
@@ -248,7 +301,9 @@ type InstanceCPUCount int64
 // InstanceCreate is create-time parameters for an [`Instance`](omicron_common::api::external::Instance)
 type InstanceCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	Hostname    string `json:"hostname,omitempty" yaml:"hostname,omitempty"`
+	// Disks is the disks to be created or attached for this instance.
+	Disks    []InstanceDiskAttachment `json:"disks,omitempty" yaml:"disks,omitempty"`
+	Hostname string                   `json:"hostname,omitempty" yaml:"hostname,omitempty"`
 	// Memory is a count of bytes, typically used either for memory or storage capacity
 	//
 	// The maximum supported byte count is [`i64::MAX`].  This makes it somewhat inconvenient to define constructors: a u32 constructor can be infallible, but an i64 constructor can fail (if the value is negative) and a u64 constructor can fail (if the value is larger than i64::MAX).  We provide all of these for consumers' convenience.
@@ -259,6 +314,48 @@ type InstanceCreate struct {
 	NCPUs InstanceCPUCount `json:"ncpus,omitempty" yaml:"ncpus,omitempty"`
 	// NetworkInterfaces is the network interfaces to be created for this instance.
 	NetworkInterfaces InstanceNetworkInterfaceAttachment `json:"network_interfaces,omitempty" yaml:"network_interfaces,omitempty"`
+}
+
+// InstanceDiskAttachmentCreate is during instance creation, create and attach disks
+type InstanceDiskAttachmentCreate struct {
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
+	// Size is size of the Disk
+	Size ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
+	// SnapshotID is id for snapshot from which the Disk should be created, if any
+	SnapshotID string                     `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
+	Type       InstanceDiskAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// InstanceDiskAttachmentType is the type definition for a InstanceDiskAttachmentType.
+type InstanceDiskAttachmentType string
+
+const (
+	// InstanceDiskAttachmentTypeCreate represents the InstanceDiskAttachmentType `"create"`.
+	InstanceDiskAttachmentTypeCreate InstanceDiskAttachmentType = "create"
+)
+
+// InstanceDiskAttachmentAttach is during instance creation, attach this disk
+type InstanceDiskAttachmentAttach struct {
+	// Disk is a disk name to attach
+	Disk string                     `json:"disk,omitempty" yaml:"disk,omitempty"`
+	Type InstanceDiskAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+const (
+	// InstanceDiskAttachmentTypeAttach represents the InstanceDiskAttachmentType `"attach"`.
+	InstanceDiskAttachmentTypeAttach InstanceDiskAttachmentType = "attach"
+)
+
+// InstanceDiskAttachment is describe the instance's disks at creation time
+type InstanceDiskAttachment struct {
+	Description string    `json:"description,omitempty" yaml:"description,omitempty"`
+	Name        string    `json:"name,omitempty" yaml:"name,omitempty"`
+	Size        ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
+	SnapshotID  string    `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
+	Type        string    `json:"type,omitempty" yaml:"type,omitempty"`
+	Disk        string    `json:"disk,omitempty" yaml:"disk,omitempty"`
 }
 
 // InstanceMigrate is migration parameters for an [`Instance`](omicron_common::api::external::Instance)
@@ -703,14 +800,14 @@ type Route struct {
 	Kind RouteKind `json:"kind,omitempty" yaml:"kind,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
-	// RouterID is the VPC Router to which the route belongs.
-	RouterID string `json:"router_id,omitempty" yaml:"router_id,omitempty"`
 	// Target is a `RouteTarget` describes the possible locations that traffic matching a route destination can be sent.
 	Target RouteTarget `json:"target,omitempty" yaml:"target,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+	// RouterId is the VPC Router to which the route belongs.
+	RouterId string `json:"vpc_router_id,omitempty" yaml:"vpc_router_id,omitempty"`
 }
 
 // RouteCreate is create-time parameters for a [`RouterRoute`]
@@ -885,6 +982,38 @@ type SagaState struct {
 // SessionUser is client view of currently authed user.
 type SessionUser struct {
 	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+}
+
+// Silo is client view of a ['Silo']
+type Silo struct {
+	// Description is human-readable free-form text about a resource
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Discoverable is a silo where discoverable is false can be retrieved only by its id - it will not be part of the "list all silos" output.
+	Discoverable bool `json:"discoverable,omitempty" yaml:"discoverable,omitempty"`
+	// ID is unique, immutable, system-controlled identifier for each resource
+	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Name is unique, mutable, user-controlled identifier for each resource
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
+	// TimeCreated is timestamp when this resource was created
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	// TimeModified is timestamp when this resource was last modified
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+}
+
+// SiloCreate is create-time parameters for a [`Silo`](crate::external_api::views::Silo)
+type SiloCreate struct {
+	Description  string `json:"description,omitempty" yaml:"description,omitempty"`
+	Discoverable bool   `json:"discoverable,omitempty" yaml:"discoverable,omitempty"`
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
+}
+
+// SiloResultsPage is a single page of results
+type SiloResultsPage struct {
+	// Items is list of items on this page of results
+	Items []Silo `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
 // Sled is client view of an [`Sled`]
@@ -1472,6 +1601,12 @@ var FirewallRuleTargetTypes = []FirewallRuleTargetType{
 // IdSortModes is the collection of all IdSortMode values.
 var IdSortModes = []IdSortMode{
 	IdSortModeIdAscending,
+}
+
+// InstanceDiskAttachmentTypes is the collection of all InstanceDiskAttachmentType values.
+var InstanceDiskAttachmentTypes = []InstanceDiskAttachmentType{
+	InstanceDiskAttachmentTypeAttach,
+	InstanceDiskAttachmentTypeCreate,
 }
 
 // InstanceNetworkInterfaceAttachmentTypes is the collection of all InstanceNetworkInterfaceAttachmentType values.
