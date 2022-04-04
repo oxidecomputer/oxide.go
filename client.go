@@ -21,6 +21,8 @@ type Client struct {
 	Firewall *FirewallService
 	// Hidden: TODO operations that will not ship to customers
 	Hidden *HiddenService
+	// Images: Images are read-only Virtual Disks that may be used to boot Virtual Machines
+	Images *ImagesService
 	// Instances: Virtual machine instances are the basic unit of computation. These operations are used for provisioning, controlling, and destroying instances.
 	Instances *InstancesService
 	// Metrics: Metrics provide insight into the operation of the Oxide deployment. These include telemetry on hardware and software components that can be used to understand the current state as well as to diagnose issues.
@@ -39,6 +41,8 @@ type Client struct {
 	Routes *RoutesService
 	// Sagas: Sagas are the abstraction used to represent multi-step operations within the Oxide deployment. These operations can be used to query saga status and report errors.
 	Sagas *SagasService
+	// Silos: Silos represent a logical partition of users and resources.
+	Silos *SilosService
 	// Sleds: This tag should be moved into hardware
 	Sleds *SledsService
 	// Snapshots: Snapshots of Virtual Disks at a particular point in time.
@@ -61,6 +65,9 @@ type FirewallService service
 
 // HiddenService: TODO operations that will not ship to customers
 type HiddenService service
+
+// ImagesService: Images are read-only Virtual Disks that may be used to boot Virtual Machines
+type ImagesService service
 
 // InstancesService: Virtual machine instances are the basic unit of computation. These operations are used for provisioning, controlling, and destroying instances.
 type InstancesService service
@@ -88,6 +95,9 @@ type RoutesService service
 
 // SagasService: Sagas are the abstraction used to represent multi-step operations within the Oxide deployment. These operations can be used to query saga status and report errors.
 type SagasService service
+
+// SilosService: Silos represent a logical partition of users and resources.
+type SilosService service
 
 // SledsService: This tag should be moved into hardware
 type SledsService service

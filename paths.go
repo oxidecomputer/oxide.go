@@ -237,20 +237,184 @@ func (s *SledsService) Get(sledID string) (*Sled, error) {
 	return &body, nil
 }
 
-// SpoofLogin
-func (s *HiddenService) SpoofLogin(j *Login) error {
+// List: List global images.
+//
+// Returns a list of all the global images. Global images are returned sorted by creation date, with the most recent images appearing first.
+//
+// To iterate over all pages, use the `ListAllPages` method, instead.
+//
+// Parameters:
+//	- `limit`: Maximum number of items returned by a single call
+//	- `pageToken`: Token returned by previous call to retreive the subsequent page
+//	- `sortBy`
+func (s *ImagesService) List(limit int, pageToken string, sortBy NameSortMode) (*ImageResultsPage, error) {
 	// Create the url.
-	path := "/login"
+	path := "/images"
+	uri := resolveRelative(s.client.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"limit":      strconv.Itoa(limit),
+		"page_token": pageToken,
+		"sort_by":    string(sortBy),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body ImageResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// ListAllPages: List global images.
+//
+// Returns a list of all the global images. Global images are returned sorted by creation date, with the most recent images appearing first.
+//
+// This method is a wrapper around the `List` method.
+// This method returns all the pages at once.
+//
+// Parameters:
+//	- `sortBy`
+func (s *ImagesService) ListAllPages(sortBy NameSortMode) (*[]Image, error) {
+
+	var allPages []Image
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := s.List(limit, pageToken, sortBy)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == pageToken {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+} // Create: Create a global image.
+//
+// Create a new global image. This image can then be used by any user as a base for instances.
+func (s *ImagesService) Create(j *ImageCreate) (*Image, error) {
+	// Create the url.
+	path := "/images"
 	uri := resolveRelative(s.client.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
-		return fmt.Errorf("encoding json body request failed: %v", err)
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 	// Create the request.
 	req, err := http.NewRequest("POST", uri, b)
 	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body Image
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// Get: Get a global image.
+//
+// Returns the details of a specific global image.
+//
+// Parameters:
+//	- `imageName`
+func (s *ImagesService) Get(imageName string) (*Image, error) {
+	// Create the url.
+	path := "/images/{{.image_name}}"
+	uri := resolveRelative(s.client.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"image_name": imageName,
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body Image
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// Delete: Delete a global image.
+//
+// Permanently delete a global image. This operation cannot be undone. Any instances using the global image will continue to run, however new instances can not be created with this image.
+//
+// Parameters:
+//	- `imageName`
+func (s *ImagesService) Delete(imageName string) error {
+	// Create the url.
+	path := "/images/{{.image_name}}"
+	uri := resolveRelative(s.client.server, path)
+	// Create the request.
+	req, err := http.NewRequest("DELETE", uri, nil)
+	if err != nil {
 		return fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"image_name": imageName,
+	}); err != nil {
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
 	resp, err := s.client.client.Do(req)
@@ -266,28 +430,73 @@ func (s *HiddenService) SpoofLogin(j *Login) error {
 	return nil
 }
 
+// SpoofLogin
+func (s *HiddenService) SpoofLogin(j *Login) (*SpoofLoginResponse, error) {
+	// Create the url.
+	path := "/login"
+	uri := resolveRelative(s.client.server, path)
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body SpoofLoginResponse
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
 // Logout
-func (s *HiddenService) Logout() error {
+func (s *HiddenService) Logout() (*LogoutResponse, error) {
 	// Create the url.
 	path := "/logout"
 	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("POST", uri, nil)
 	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
+		return nil, fmt.Errorf("error creating request: %v", err)
 	}
 	// Send the request.
 	resp, err := s.client.client.Do(req)
 	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
+		return nil, fmt.Errorf("error sending request: %v", err)
 	}
 	defer resp.Body.Close()
 	// Check the response.
 	if err := checkResponse(resp); err != nil {
-		return err
+		return nil, err
 	}
-	// Return.
-	return nil
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body LogoutResponse
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // List: List all organizations.
@@ -955,6 +1164,224 @@ func (s *DisksService) Delete(diskName string, organizationName string, projectN
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
 		"disk_name":         diskName,
+		"organization_name": organizationName,
+		"project_name":      projectName,
+	}); err != nil {
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+	// Return.
+	return nil
+}
+
+// List: List images
+//
+// List images in a project. The images are returned sorted by creation date, with the most recent images appearing first.
+//
+// To iterate over all pages, use the `ListAllPages` method, instead.
+//
+// Parameters:
+//	- `limit`: Maximum number of items returned by a single call
+//	- `organizationName`: The organization's unique name.
+//	- `pageToken`: Token returned by previous call to retreive the subsequent page
+//	- `projectName`: The project's unique name within the organization.
+//	- `sortBy`
+func (s *ImagesService) List(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string) (*ImageResultsPage, error) {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/images"
+	uri := resolveRelative(s.client.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"limit":             strconv.Itoa(limit),
+		"organization_name": organizationName,
+		"page_token":        pageToken,
+		"project_name":      projectName,
+		"sort_by":           string(sortBy),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body ImageResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// ListAllPages: List images
+//
+// List images in a project. The images are returned sorted by creation date, with the most recent images appearing first.
+//
+// This method is a wrapper around the `List` method.
+// This method returns all the pages at once.
+//
+// Parameters:
+//	- `organizationName`: The organization's unique name.
+//	- `projectName`: The project's unique name within the organization.
+//	- `sortBy`
+func (s *ImagesService) ListAllPages(sortBy NameSortMode, organizationName string, projectName string) (*[]Image, error) {
+
+	var allPages []Image
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := s.List(limit, pageToken, sortBy, organizationName, projectName)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == pageToken {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+} // Create: Create an image
+//
+// Create a new image in a project.
+//
+// Parameters:
+//	- `organizationName`: The organization's unique name.
+//	- `projectName`: The project's unique name within the organization.
+func (s *ImagesService) Create(organizationName string, projectName string, j *ImageCreate) (*Image, error) {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/images"
+	uri := resolveRelative(s.client.server, path)
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"organization_name": organizationName,
+		"project_name":      projectName,
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body Image
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// Get: Get an image
+//
+// Get the details of a specific image in a project.
+//
+// Parameters:
+//	- `imageName`
+//	- `organizationName`
+//	- `projectName`
+func (s *ImagesService) Get(imageName string, organizationName string, projectName string) (*Image, error) {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/images/{{.image_name}}"
+	uri := resolveRelative(s.client.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"image_name":        imageName,
+		"organization_name": organizationName,
+		"project_name":      projectName,
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body Image
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// Delete: Delete an image
+//
+// Permanently delete an image from a project. This operation cannot be undone. Any instances in the project using the image will continue to run, however new instances can not be created with this image.
+//
+// Parameters:
+//	- `imageName`
+//	- `organizationName`
+//	- `projectName`
+func (s *ImagesService) Delete(imageName string, organizationName string, projectName string) error {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/images/{{.image_name}}"
+	uri := resolveRelative(s.client.server, path)
+	// Create the request.
+	req, err := http.NewRequest("DELETE", uri, nil)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"image_name":        imageName,
 		"organization_name": organizationName,
 		"project_name":      projectName,
 	}); err != nil {
@@ -3479,6 +3906,189 @@ func (s *HiddenService) SessionMe() (*SessionUser, error) {
 	}
 	// Return the response.
 	return &body, nil
+}
+
+// List
+//
+// To iterate over all pages, use the `ListAllPages` method, instead.
+//
+// Parameters:
+//	- `limit`: Maximum number of items returned by a single call
+//	- `pageToken`: Token returned by previous call to retreive the subsequent page
+//	- `sortBy`
+func (s *SilosService) List(limit int, pageToken string, sortBy NameOrIdSortMode) (*SiloResultsPage, error) {
+	// Create the url.
+	path := "/silos"
+	uri := resolveRelative(s.client.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"limit":      strconv.Itoa(limit),
+		"page_token": pageToken,
+		"sort_by":    string(sortBy),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body SiloResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// ListAllPages
+//
+// This method is a wrapper around the `List` method.
+// This method returns all the pages at once.
+//
+// Parameters:
+//	- `sortBy`
+func (s *SilosService) ListAllPages(sortBy NameOrIdSortMode) (*[]Silo, error) {
+
+	var allPages []Silo
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := s.List(limit, pageToken, sortBy)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == pageToken {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+} // Create: Create a new silo.
+func (s *SilosService) Create(j *SiloCreate) (*Silo, error) {
+	// Create the url.
+	path := "/silos"
+	uri := resolveRelative(s.client.server, path)
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body Silo
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// Get: Fetch a specific silo
+//
+// Parameters:
+//	- `siloName`: The silo's unique name.
+func (s *SilosService) Get(siloName string) (*Silo, error) {
+	// Create the url.
+	path := "/silos/{{.silo_name}}"
+	uri := resolveRelative(s.client.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"silo_name": siloName,
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body Silo
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// Delete: Delete a specific silo.
+//
+// Parameters:
+//	- `siloName`: The silo's unique name.
+func (s *SilosService) Delete(siloName string) error {
+	// Create the url.
+	path := "/silos/{{.silo_name}}"
+	uri := resolveRelative(s.client.server, path)
+	// Create the request.
+	req, err := http.NewRequest("DELETE", uri, nil)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"silo_name": siloName,
+	}); err != nil {
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+	// Return.
+	return nil
 }
 
 // TimeseriesSchemaList: List all timeseries schema
