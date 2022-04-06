@@ -237,17 +237,17 @@ func (s *SledsService) Get(sledID string) (*Sled, error) {
 	return &body, nil
 }
 
-// GlobalList: List global images.
+// ImagesList: List global images.
 //
 // Returns a list of all the global images. Global images are returned sorted by creation date, with the most recent images appearing first.
 //
-// To iterate over all pages, use the `GlobalListAllPages` method, instead.
+// To iterate over all pages, use the `ImagesListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
 //	- `pageToken`: Token returned by previous call to retreive the subsequent page
 //	- `sortBy`
-func (s *ImagesService) GlobalList(limit int, pageToken string, sortBy NameSortMode) (*ImageResultsPage, error) {
+func (s *ImagesglobalService) ImagesList(limit int, pageToken string, sortBy NameSortMode) (*ImageResultsPage, error) {
 	// Create the url.
 	path := "/images"
 	uri := resolveRelative(s.client.server, path)
@@ -286,22 +286,22 @@ func (s *ImagesService) GlobalList(limit int, pageToken string, sortBy NameSortM
 	return &body, nil
 }
 
-// GlobalListAllPages: List global images.
+// ImagesListAllPages: List global images.
 //
 // Returns a list of all the global images. Global images are returned sorted by creation date, with the most recent images appearing first.
 //
-// This method is a wrapper around the `GlobalList` method.
+// This method is a wrapper around the `ImagesList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
 //	- `sortBy`
-func (s *ImagesService) GlobalListAllPages(sortBy NameSortMode) (*[]Image, error) {
+func (s *ImagesglobalService) ImagesListAllPages(sortBy NameSortMode) (*[]Image, error) {
 
 	var allPages []Image
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.GlobalList(limit, pageToken, sortBy)
+		page, err := s.ImagesList(limit, pageToken, sortBy)
 		if err != nil {
 			return nil, err
 		}
@@ -313,10 +313,10 @@ func (s *ImagesService) GlobalListAllPages(sortBy NameSortMode) (*[]Image, error
 	}
 
 	return &allPages, nil
-} // GlobalCreate: Create a global image.
+} // ImagesCreate: Create a global image.
 //
 // Create a new global image. This image can then be used by any user as a base for instances.
-func (s *ImagesService) GlobalCreate(j *ImageCreate) (*Image, error) {
+func (s *ImagesglobalService) ImagesCreate(j *ImageCreate) (*Image, error) {
 	// Create the url.
 	path := "/images"
 	uri := resolveRelative(s.client.server, path)
@@ -352,13 +352,13 @@ func (s *ImagesService) GlobalCreate(j *ImageCreate) (*Image, error) {
 	return &body, nil
 }
 
-// GlobalGet: Get a global image.
+// ImagesGetImage: Get a global image.
 //
 // Returns the details of a specific global image.
 //
 // Parameters:
 //	- `imageName`
-func (s *ImagesService) GlobalGet(imageName string) (*Image, error) {
+func (s *ImagesglobalService) ImagesGetImage(imageName string) (*Image, error) {
 	// Create the url.
 	path := "/images/{{.image_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -395,13 +395,13 @@ func (s *ImagesService) GlobalGet(imageName string) (*Image, error) {
 	return &body, nil
 }
 
-// GlobalDelete: Delete a global image.
+// ImagesDeleteImage: Delete a global image.
 //
 // Permanently delete a global image. This operation cannot be undone. Any instances using the global image will continue to run, however new instances can not be created with this image.
 //
 // Parameters:
 //	- `imageName`
-func (s *ImagesService) GlobalDelete(imageName string) error {
+func (s *ImagesglobalService) ImagesDeleteImage(imageName string) error {
 	// Create the url.
 	path := "/images/{{.image_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -1114,11 +1114,11 @@ func (s *DisksService) Delete(diskName string, organizationName string, projectN
 	return nil
 }
 
-// ImagesList: List images
+// List: List images
 //
 // List images in a project. The images are returned sorted by creation date, with the most recent images appearing first.
 //
-// To iterate over all pages, use the `ImagesListAllPages` method, instead.
+// To iterate over all pages, use the `ListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
@@ -1126,7 +1126,7 @@ func (s *DisksService) Delete(diskName string, organizationName string, projectN
 //	- `pageToken`: Token returned by previous call to retreive the subsequent page
 //	- `projectName`: The project's unique name within the organization.
 //	- `sortBy`
-func (s *ProjectsService) ImagesList(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string) (*ImageResultsPage, error) {
+func (s *ImagesService) List(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string) (*ImageResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/images"
 	uri := resolveRelative(s.client.server, path)
@@ -1167,24 +1167,24 @@ func (s *ProjectsService) ImagesList(limit int, pageToken string, sortBy NameSor
 	return &body, nil
 }
 
-// ImagesListAllPages: List images
+// ListAllPages: List images
 //
 // List images in a project. The images are returned sorted by creation date, with the most recent images appearing first.
 //
-// This method is a wrapper around the `ImagesList` method.
+// This method is a wrapper around the `List` method.
 // This method returns all the pages at once.
 //
 // Parameters:
 //	- `organizationName`: The organization's unique name.
 //	- `projectName`: The project's unique name within the organization.
 //	- `sortBy`
-func (s *ProjectsService) ImagesListAllPages(sortBy NameSortMode, organizationName string, projectName string) (*[]Image, error) {
+func (s *ImagesService) ListAllPages(sortBy NameSortMode, organizationName string, projectName string) (*[]Image, error) {
 
 	var allPages []Image
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.ImagesList(limit, pageToken, sortBy, organizationName, projectName)
+		page, err := s.List(limit, pageToken, sortBy, organizationName, projectName)
 		if err != nil {
 			return nil, err
 		}
