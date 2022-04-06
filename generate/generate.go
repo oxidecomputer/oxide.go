@@ -21,6 +21,8 @@ import (
 
 var EnumStringTypes map[string][]string = map[string][]string{}
 
+const GLOBAL_SUFFIX = ":global"
+
 func main() {
 	// TODO: actually host the spec here.
 	/*uri := "https://api.oxide.computer"
@@ -258,8 +260,10 @@ func openGeneratedFile(filename string) *os.File {
 }
 
 func cleanFnName(name string, tag string, path string) string {
-	ogName := name
 	name = printProperty(name)
+
+	global := strings.HasSuffix(tag, GLOBAL_SUFFIX)
+	tag = strings.TrimSuffix(tag, GLOBAL_SUFFIX)
 
 	name = strings.ReplaceAll(name, strcase.ToCamel(tag), "")
 
@@ -302,7 +306,7 @@ func cleanFnName(name string, tag string, path string) string {
 		name = strings.TrimPrefix(name, "rs")
 	}
 
-	if tag == "Image" && strings.HasPrefix(ogName, "images_") {
+	if global {
 		name = fmt.Sprintf("Global%s", name)
 	}
 
@@ -471,14 +475,15 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 		fmt.Printf("[WARN] TODO: skipping operation %q, since it has no tag\n", o.OperationID)
 		return
 	}
-	tag := strcase.ToCamel(o.Tags[0])
+	ogTag := o.Tags[0]
+	tag := strcase.ToCamel(strings.ReplaceAll(ogTag, GLOBAL_SUFFIX, ""))
 
 	if tag == "Hidden" {
 		// return early.
 		return
 	}
 
-	fnName := cleanFnName(o.OperationID, tag, path)
+	fnName := cleanFnName(o.OperationID, ogTag, path)
 
 	if tag == "Vpcs" {
 		tag = "VPCs"

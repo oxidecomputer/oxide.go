@@ -237,17 +237,17 @@ func (s *SledsService) Get(sledID string) (*Sled, error) {
 	return &body, nil
 }
 
-// ImagesList: List global images.
+// GlobalList: List global images.
 //
 // Returns a list of all the global images. Global images are returned sorted by creation date, with the most recent images appearing first.
 //
-// To iterate over all pages, use the `ImagesListAllPages` method, instead.
+// To iterate over all pages, use the `GlobalListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
 //	- `pageToken`: Token returned by previous call to retreive the subsequent page
 //	- `sortBy`
-func (s *ImagesglobalService) ImagesList(limit int, pageToken string, sortBy NameSortMode) (*ImageResultsPage, error) {
+func (s *ImagesService) GlobalList(limit int, pageToken string, sortBy NameSortMode) (*ImageResultsPage, error) {
 	// Create the url.
 	path := "/images"
 	uri := resolveRelative(s.client.server, path)
@@ -286,22 +286,22 @@ func (s *ImagesglobalService) ImagesList(limit int, pageToken string, sortBy Nam
 	return &body, nil
 }
 
-// ImagesListAllPages: List global images.
+// GlobalListAllPages: List global images.
 //
 // Returns a list of all the global images. Global images are returned sorted by creation date, with the most recent images appearing first.
 //
-// This method is a wrapper around the `ImagesList` method.
+// This method is a wrapper around the `GlobalList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
 //	- `sortBy`
-func (s *ImagesglobalService) ImagesListAllPages(sortBy NameSortMode) (*[]Image, error) {
+func (s *ImagesService) GlobalListAllPages(sortBy NameSortMode) (*[]Image, error) {
 
 	var allPages []Image
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.ImagesList(limit, pageToken, sortBy)
+		page, err := s.GlobalList(limit, pageToken, sortBy)
 		if err != nil {
 			return nil, err
 		}
@@ -313,10 +313,10 @@ func (s *ImagesglobalService) ImagesListAllPages(sortBy NameSortMode) (*[]Image,
 	}
 
 	return &allPages, nil
-} // ImagesCreate: Create a global image.
+} // GlobalCreate: Create a global image.
 //
 // Create a new global image. This image can then be used by any user as a base for instances.
-func (s *ImagesglobalService) ImagesCreate(j *ImageCreate) (*Image, error) {
+func (s *ImagesService) GlobalCreate(j *ImageCreate) (*Image, error) {
 	// Create the url.
 	path := "/images"
 	uri := resolveRelative(s.client.server, path)
@@ -352,13 +352,13 @@ func (s *ImagesglobalService) ImagesCreate(j *ImageCreate) (*Image, error) {
 	return &body, nil
 }
 
-// ImagesGetImage: Get a global image.
+// GlobalGet: Get a global image.
 //
 // Returns the details of a specific global image.
 //
 // Parameters:
 //	- `imageName`
-func (s *ImagesglobalService) ImagesGetImage(imageName string) (*Image, error) {
+func (s *ImagesService) GlobalGet(imageName string) (*Image, error) {
 	// Create the url.
 	path := "/images/{{.image_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -395,13 +395,13 @@ func (s *ImagesglobalService) ImagesGetImage(imageName string) (*Image, error) {
 	return &body, nil
 }
 
-// ImagesDeleteImage: Delete a global image.
+// GlobalDelete: Delete a global image.
 //
 // Permanently delete a global image. This operation cannot be undone. Any instances using the global image will continue to run, however new instances can not be created with this image.
 //
 // Parameters:
 //	- `imageName`
-func (s *ImagesglobalService) ImagesDeleteImage(imageName string) error {
+func (s *ImagesService) GlobalDelete(imageName string) error {
 	// Create the url.
 	path := "/images/{{.image_name}}"
 	uri := resolveRelative(s.client.server, path)

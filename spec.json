@@ -3377,8 +3377,8 @@
         ],
         "x-dropshot-pagination": true,
         "x-go": {
-          "example": "// ImagesList: List global images.\n//\n// Returns a list of all the global images. Global images are returned sorted by creation date, with the most recent images appearing first.\n//\n// To iterate over all pages, use the `ImagesListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`: Maximum number of items returned by a single call\n//\t- `pageToken`: Token returned by previous call to retreive the subsequent page\n//\t- `sortBy`\nimageResultsPage, err := client.Imagesglobal.ImagesList(limit, pageToken, sortBy)\n\n// - OR -\n\n// ImagesListAllPages: List global images.\n//\n// Returns a list of all the global images. Global images are returned sorted by creation date, with the most recent images appearing first.\n//\n// This method is a wrapper around the `ImagesList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\nImage, err := client.Imagesglobal.ImagesListAllPages(sortBy)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ImagesglobalService.ImagesList"
+          "example": "// GlobalList: List global images.\n//\n// Returns a list of all the global images. Global images are returned sorted by creation date, with the most recent images appearing first.\n//\n// To iterate over all pages, use the `GlobalListAllPages` method, instead.\n//\n// Parameters:\n//\t- `limit`: Maximum number of items returned by a single call\n//\t- `pageToken`: Token returned by previous call to retreive the subsequent page\n//\t- `sortBy`\nimageResultsPage, err := client.Images.GlobalList(limit, pageToken, sortBy)\n\n// - OR -\n\n// GlobalListAllPages: List global images.\n//\n// Returns a list of all the global images. Global images are returned sorted by creation date, with the most recent images appearing first.\n//\n// This method is a wrapper around the `GlobalList` method.\n// This method returns all the pages at once.\n//\n// Parameters:\n//\t- `sortBy`\nImage, err := client.Images.GlobalListAllPages(sortBy)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ImagesService.GlobalList"
         },
         "x-ts": {
           "example": "let resp = client.imagesGet(query, params);"
@@ -3420,8 +3420,8 @@
           "images:global"
         ],
         "x-go": {
-          "example": "// ImagesCreate: Create a global image.\n//\n// Create a new global image. This image can then be used by any user as a base for instances.\nimage, err := client.Imagesglobal.ImagesCreate(body)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ImagesglobalService.ImagesCreate"
+          "example": "// GlobalCreate: Create a global image.\n//\n// Create a new global image. This image can then be used by any user as a base for instances.\nimage, err := client.Images.GlobalCreate(body)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ImagesService.GlobalCreate"
         },
         "x-ts": {
           "example": "let resp = client.imagesPost(query, data, params);"
@@ -3459,8 +3459,8 @@
           "images:global"
         ],
         "x-go": {
-          "example": "// ImagesDeleteImage: Delete a global image.\n//\n// Permanently delete a global image. This operation cannot be undone. Any instances using the global image will continue to run, however new instances can not be created with this image.\n//\n// Parameters:\n//\t- `imageName`\nif err := client.Imagesglobal.ImagesDeleteImage(imageName); err != nil {\n\tpanic(err)\n}",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ImagesglobalService.ImagesDeleteImage"
+          "example": "// GlobalDelete: Delete a global image.\n//\n// Permanently delete a global image. This operation cannot be undone. Any instances using the global image will continue to run, however new instances can not be created with this image.\n//\n// Parameters:\n//\t- `imageName`\nif err := client.Images.GlobalDelete(imageName); err != nil {\n\tpanic(err)\n}",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ImagesService.GlobalDelete"
         },
         "x-ts": {
           "example": "let resp = client.imagesDeleteImage(ImagesDeleteImageParams{imageName}, params);"
@@ -3503,8 +3503,8 @@
           "images:global"
         ],
         "x-go": {
-          "example": "// ImagesGetImage: Get a global image.\n//\n// Returns the details of a specific global image.\n//\n// Parameters:\n//\t- `imageName`\nimage, err := client.Imagesglobal.ImagesGetImage(imageName)",
-          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ImagesglobalService.ImagesGetImage"
+          "example": "// GlobalGet: Get a global image.\n//\n// Returns the details of a specific global image.\n//\n// Parameters:\n//\t- `imageName`\nimage, err := client.Images.GlobalGet(imageName)",
+          "libDocsLink": "https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#ImagesService.GlobalGet"
         },
         "x-ts": {
           "example": "let resp = client.imagesGetImage(ImagesGetImageParams{imageName}, params);"
