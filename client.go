@@ -23,6 +23,8 @@ type Client struct {
 	Hidden *HiddenService
 	// Images: Images are read-only Virtual Disks that may be used to boot Virtual Machines
 	Images *ImagesService
+	// Imagesglobal: Images are read-only Virtual Disks that may be used to boot Virtual Machines. These images are scoped globally.
+	Imagesglobal *ImagesglobalService
 	// Instances: Virtual machine instances are the basic unit of computation. These operations are used for provisioning, controlling, and destroying instances.
 	Instances *InstancesService
 	// Metrics: Metrics provide insight into the operation of the Oxide deployment. These include telemetry on hardware and software components that can be used to understand the current state as well as to diagnose issues.
@@ -68,6 +70,9 @@ type HiddenService service
 
 // ImagesService: Images are read-only Virtual Disks that may be used to boot Virtual Machines
 type ImagesService service
+
+// ImagesglobalService: Images are read-only Virtual Disks that may be used to boot Virtual Machines. These images are scoped globally.
+type ImagesglobalService service
 
 // InstancesService: Virtual machine instances are the basic unit of computation. These operations are used for provisioning, controlling, and destroying instances.
 type InstancesService service

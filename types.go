@@ -365,7 +365,7 @@ type InstanceMigrate struct {
 
 // InstanceNetworkInterfaceAttachmentCreate is create one or more `NetworkInterface`s for the `Instance`
 type InstanceNetworkInterfaceAttachmentCreate struct {
-	Params InstanceNetworkInterfaceCreate         `json:"params,omitempty" yaml:"params,omitempty"`
+	Params []NetworkInterfaceCreate               `json:"params,omitempty" yaml:"params,omitempty"`
 	Type   InstanceNetworkInterfaceAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -399,13 +399,8 @@ const (
 
 // InstanceNetworkInterfaceAttachment is describes an attachment of a `NetworkInterface` to an `Instance`, at the time the instance is created.
 type InstanceNetworkInterfaceAttachment struct {
-	Params InstanceNetworkInterfaceCreate `json:"params,omitempty" yaml:"params,omitempty"`
-	Type   string                         `json:"type,omitempty" yaml:"type,omitempty"`
-}
-
-// InstanceNetworkInterfaceCreate is the type definition for a InstanceNetworkInterfaceCreate.
-type InstanceNetworkInterfaceCreate struct {
 	Params []NetworkInterfaceCreate `json:"params,omitempty" yaml:"params,omitempty"`
+	Type   string                   `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // InstanceResultsPage is a single page of results
