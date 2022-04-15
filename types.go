@@ -4,6 +4,8 @@ package oxide
 
 import "time"
 
+type BlockSize int64
+
 // ByteCount is a count of bytes, typically used either for memory or storage capacity
 //
 // The maximum supported byte count is [`i64::MAX`].  This makes it somewhat inconvenient to define constructors: a u32 constructor can be infallible, but an i64 constructor can fail (if the value is negative) and a u64 constructor can fail (if the value is larger than i64::MAX).  We provide all of these for consumers' convenience.
@@ -35,11 +37,16 @@ const (
 
 // Disk is client view of an [`Disk`]
 type Disk struct {
+	// BlockSize is a count of bytes, typically used either for memory or storage capacity
+	//
+	// The maximum supported byte count is [`i64::MAX`].  This makes it somewhat inconvenient to define constructors: a u32 constructor can be infallible, but an i64 constructor can fail (if the value is negative) and a u64 constructor can fail (if the value is larger than i64::MAX).  We provide all of these for consumers' convenience.
+	BlockSize ByteCount `json:"block_size,omitempty" yaml:"block_size,omitempty"`
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	DevicePath  string `json:"device_path,omitempty" yaml:"device_path,omitempty"`
 	// ID is unique, immutable, system-controlled identifier for each resource
-	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	ID      string `json:"id,omitempty" yaml:"id,omitempty"`
+	ImageID string `json:"image_id,omitempty" yaml:"image_id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name      string `json:"name,omitempty" yaml:"name,omitempty"`
 	ProjectID string `json:"project_id,omitempty" yaml:"project_id,omitempty"`
@@ -58,10 +65,14 @@ type Disk struct {
 
 // DiskCreate is create-time parameters for a [`Disk`](omicron_common::api::external::Disk)
 type DiskCreate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// BlockSize is size of blocks for this Disk. valid values are: 512, 2048, or 4096
+	BlockSize   BlockSize `json:"block_size,omitempty" yaml:"block_size,omitempty"`
+	Description string    `json:"description,omitempty" yaml:"description,omitempty"`
+	// ImageID is id for image from which the Disk should be created, if any
+	ImageID string `json:"image_id,omitempty" yaml:"image_id,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
-	// Size is size of the Disk
+	// Size is total size of the Disk in bytes
 	Size ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
 	// SnapshotID is id for snapshot from which the Disk should be created, if any
 	SnapshotID string `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
@@ -69,8 +80,8 @@ type DiskCreate struct {
 
 // DiskIdentifier is parameters for the [`Disk`](omicron_common::api::external::Disk) to be attached or detached to an instance
 type DiskIdentifier struct {
-	// Disk is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-	Disk string `json:"disk,omitempty" yaml:"disk,omitempty"`
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
 // DiskResultsPage is a single page of results
@@ -318,10 +329,14 @@ type InstanceCreate struct {
 
 // InstanceDiskAttachmentCreate is during instance creation, create and attach disks
 type InstanceDiskAttachmentCreate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// BlockSize is size of blocks for this Disk. valid values are: 512, 2048, or 4096
+	BlockSize   BlockSize `json:"block_size,omitempty" yaml:"block_size,omitempty"`
+	Description string    `json:"description,omitempty" yaml:"description,omitempty"`
+	// ImageID is id for image from which the Disk should be created, if any
+	ImageID string `json:"image_id,omitempty" yaml:"image_id,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
-	// Size is size of the Disk
+	// Size is total size of the Disk in bytes
 	Size ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
 	// SnapshotID is id for snapshot from which the Disk should be created, if any
 	SnapshotID string                     `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
@@ -338,8 +353,8 @@ const (
 
 // InstanceDiskAttachmentAttach is during instance creation, attach this disk
 type InstanceDiskAttachmentAttach struct {
-	// Disk is a disk name to attach
-	Disk string                     `json:"disk,omitempty" yaml:"disk,omitempty"`
+	// Name is a disk name to attach
+	Name string                     `json:"name,omitempty" yaml:"name,omitempty"`
 	Type InstanceDiskAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -350,12 +365,13 @@ const (
 
 // InstanceDiskAttachment is describe the instance's disks at creation time
 type InstanceDiskAttachment struct {
+	BlockSize   BlockSize `json:"block_size,omitempty" yaml:"block_size,omitempty"`
 	Description string    `json:"description,omitempty" yaml:"description,omitempty"`
+	ImageID     string    `json:"image_id,omitempty" yaml:"image_id,omitempty"`
 	Name        string    `json:"name,omitempty" yaml:"name,omitempty"`
 	Size        ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
 	SnapshotID  string    `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
 	Type        string    `json:"type,omitempty" yaml:"type,omitempty"`
-	Disk        string    `json:"disk,omitempty" yaml:"disk,omitempty"`
 }
 
 // InstanceMigrate is migration parameters for an [`Instance`](omicron_common::api::external::Instance)
