@@ -35,6 +35,16 @@ const (
 	DatumTypeHistogramF64 DatumType = "HistogramF64"
 )
 
+// DigestSha256 is the type definition for a DigestSha256.
+type DigestSha256 struct {
+	Sha256 string `json:"Sha256,omitempty" yaml:"Sha256,omitempty"`
+}
+
+// Digest is the type definition for a Digest.
+type Digest struct {
+	Sha256 string `json:"Sha256,omitempty" yaml:"Sha256,omitempty"`
+}
+
 // Disk is client view of an [`Disk`]
 type Disk struct {
 	// BlockSize is a count of bytes, typically used either for memory or storage capacity
@@ -65,17 +75,13 @@ type Disk struct {
 
 // DiskCreate is create-time parameters for a [`Disk`](omicron_common::api::external::Disk)
 type DiskCreate struct {
-	// BlockSize is size of blocks for this Disk. valid values are: 512, 2048, or 4096
-	BlockSize   BlockSize `json:"block_size,omitempty" yaml:"block_size,omitempty"`
-	Description string    `json:"description,omitempty" yaml:"description,omitempty"`
-	// ImageID is id for image from which the Disk should be created, if any
-	ImageID string `json:"image_id,omitempty" yaml:"image_id,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// DiskSource is initial source for this disk
+	DiskSource DiskSource `json:"disk_source,omitempty" yaml:"disk_source,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// Size is total size of the Disk in bytes
 	Size ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
-	// SnapshotID is id for snapshot from which the Disk should be created, if any
-	SnapshotID string `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
 }
 
 // DiskIdentifier is parameters for the [`Disk`](omicron_common::api::external::Disk) to be attached or detached to an instance
@@ -90,6 +96,62 @@ type DiskResultsPage struct {
 	Items []Disk `json:"items,omitempty" yaml:"items,omitempty"`
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// DiskSourceBlank is create a blank disk
+type DiskSourceBlank struct {
+	// BlockSize is size of blocks for this Disk. valid values are: 512, 2048, or 4096
+	BlockSize BlockSize      `json:"block_size,omitempty" yaml:"block_size,omitempty"`
+	Type      DiskSourceType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// DiskSourceType is the type definition for a DiskSourceType.
+type DiskSourceType string
+
+const (
+	// DiskSourceTypeBlank represents the DiskSourceType `"Blank"`.
+	DiskSourceTypeBlank DiskSourceType = "Blank"
+)
+
+// DiskSourceSnapshot is create a disk from a disk snapshot
+type DiskSourceSnapshot struct {
+	SnapshotID string         `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
+	Type       DiskSourceType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+const (
+	// DiskSourceTypeSnapshot represents the DiskSourceType `"Snapshot"`.
+	DiskSourceTypeSnapshot DiskSourceType = "Snapshot"
+)
+
+// DiskSourceImage is create a disk from a project image
+type DiskSourceImage struct {
+	ImageID string         `json:"image_id,omitempty" yaml:"image_id,omitempty"`
+	Type    DiskSourceType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+const (
+	// DiskSourceTypeImage represents the DiskSourceType `"Image"`.
+	DiskSourceTypeImage DiskSourceType = "Image"
+)
+
+// DiskSourceGlobalImage is create a disk from a global image
+type DiskSourceGlobalImage struct {
+	ImageID string         `json:"image_id,omitempty" yaml:"image_id,omitempty"`
+	Type    DiskSourceType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+const (
+	// DiskSourceTypeGlobalImage represents the DiskSourceType `"GlobalImage"`.
+	DiskSourceTypeGlobalImage DiskSourceType = "GlobalImage"
+)
+
+// DiskSource is different sources for a disk
+type DiskSource struct {
+	BlockSize  BlockSize `json:"block_size,omitempty" yaml:"block_size,omitempty"`
+	Type       string    `json:"type,omitempty" yaml:"type,omitempty"`
+	SnapshotID string    `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
+	ImageID    string    `json:"image_id,omitempty" yaml:"image_id,omitempty"`
 }
 
 // DiskStateCreating is disk is being initialized
@@ -216,6 +278,38 @@ const (
 	FieldTypeBool FieldType = "Bool"
 )
 
+// GlobalImage is client view of global Images
+type GlobalImage struct {
+	// BlockSize is size of blocks in bytes
+	BlockSize ByteCount `json:"block_size,omitempty" yaml:"block_size,omitempty"`
+	// Description is human-readable free-form text about a resource
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Digest is hash of the image contents, if applicable
+	Digest Digest `json:"digest,omitempty" yaml:"digest,omitempty"`
+	// ID is unique, immutable, system-controlled identifier for each resource
+	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Name is unique, mutable, user-controlled identifier for each resource
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
+	// Size is total size in bytes
+	Size ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
+	// TimeCreated is timestamp when this resource was created
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	// TimeModified is timestamp when this resource was last modified
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+	// Url is uRL source of this image, if any
+	Url string `json:"url,omitempty" yaml:"url,omitempty"`
+	// Version is version of this, if any
+	Version string `json:"version,omitempty" yaml:"version,omitempty"`
+}
+
+// GlobalImageResultsPage is a single page of results
+type GlobalImageResultsPage struct {
+	// Items is list of items on this page of results
+	Items []GlobalImage `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
 // IdSortMode is supported set of sort modes for scanning by id only.
 //
 // Currently, we only support scanning in ascending order.
@@ -226,29 +320,47 @@ const (
 	IdSortModeIdAscending IdSortMode = "id-ascending"
 )
 
-// Image is client view of Images
+// IdentityType is describes what kind of identity is described by an id
+type IdentityType string
+
+const (
+	// IdentityTypeUserBuiltin represents the IdentityType `"user_builtin"`.
+	IdentityTypeUserBuiltin IdentityType = "user_builtin"
+	// IdentityTypeSiloUser represents the IdentityType `"silo_user"`.
+	IdentityTypeSiloUser IdentityType = "silo_user"
+)
+
+// Image is client view of project Images
 type Image struct {
+	// BlockSize is size of blocks in bytes
+	BlockSize ByteCount `json:"block_size,omitempty" yaml:"block_size,omitempty"`
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Digest is hash of the image contents, if applicable
+	Digest Digest `json:"digest,omitempty" yaml:"digest,omitempty"`
 	// ID is unique, immutable, system-controlled identifier for each resource
 	ID string `json:"id,omitempty" yaml:"id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
-	Name      string `json:"name,omitempty" yaml:"name,omitempty"`
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
+	// ProjectID is the project the disk belongs to
 	ProjectID string `json:"project_id,omitempty" yaml:"project_id,omitempty"`
-	// Size is a count of bytes, typically used either for memory or storage capacity
-	//
-	// The maximum supported byte count is [`i64::MAX`].  This makes it somewhat inconvenient to define constructors: a u32 constructor can be infallible, but an i64 constructor can fail (if the value is negative) and a u64 constructor can fail (if the value is larger than i64::MAX).  We provide all of these for consumers' convenience.
+	// Size is total size in bytes
 	Size ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
-	Url          string     `json:"url,omitempty" yaml:"url,omitempty"`
+	// Url is uRL source of this image, if any
+	Url string `json:"url,omitempty" yaml:"url,omitempty"`
+	// Version is version of this, if any
+	Version string `json:"version,omitempty" yaml:"version,omitempty"`
 }
 
 // ImageCreate is create-time parameters for an [`Image`](omicron_common::api::external::Image)
 type ImageCreate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// BlockSize is block size in bytes
+	BlockSize   BlockSize `json:"block_size,omitempty" yaml:"block_size,omitempty"`
+	Description string    `json:"description,omitempty" yaml:"description,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// Source is the source of the image's contents.
@@ -325,22 +437,20 @@ type InstanceCreate struct {
 	NCPUs InstanceCPUCount `json:"ncpus,omitempty" yaml:"ncpus,omitempty"`
 	// NetworkInterfaces is the network interfaces to be created for this instance.
 	NetworkInterfaces InstanceNetworkInterfaceAttachment `json:"network_interfaces,omitempty" yaml:"network_interfaces,omitempty"`
+	// UserData is user data for instance initialization systems (such as cloud-init). Must be a Base64-encoded string, as specified in RFC 4648 § 4 (+ and / characters with padding). Maximum 32 KiB unencoded data.
+	UserData string `json:"user_data,omitempty" yaml:"user_data,omitempty"`
 }
 
 // InstanceDiskAttachmentCreate is during instance creation, create and attach disks
 type InstanceDiskAttachmentCreate struct {
-	// BlockSize is size of blocks for this Disk. valid values are: 512, 2048, or 4096
-	BlockSize   BlockSize `json:"block_size,omitempty" yaml:"block_size,omitempty"`
-	Description string    `json:"description,omitempty" yaml:"description,omitempty"`
-	// ImageID is id for image from which the Disk should be created, if any
-	ImageID string `json:"image_id,omitempty" yaml:"image_id,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// DiskSource is initial source for this disk
+	DiskSource DiskSource `json:"disk_source,omitempty" yaml:"disk_source,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// Size is total size of the Disk in bytes
-	Size ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
-	// SnapshotID is id for snapshot from which the Disk should be created, if any
-	SnapshotID string                     `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
-	Type       InstanceDiskAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
+	Size ByteCount                  `json:"size,omitempty" yaml:"size,omitempty"`
+	Type InstanceDiskAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // InstanceDiskAttachmentType is the type definition for a InstanceDiskAttachmentType.
@@ -365,13 +475,11 @@ const (
 
 // InstanceDiskAttachment is describe the instance's disks at creation time
 type InstanceDiskAttachment struct {
-	BlockSize   BlockSize `json:"block_size,omitempty" yaml:"block_size,omitempty"`
-	Description string    `json:"description,omitempty" yaml:"description,omitempty"`
-	ImageID     string    `json:"image_id,omitempty" yaml:"image_id,omitempty"`
-	Name        string    `json:"name,omitempty" yaml:"name,omitempty"`
-	Size        ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
-	SnapshotID  string    `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
-	Type        string    `json:"type,omitempty" yaml:"type,omitempty"`
+	Description string     `json:"description,omitempty" yaml:"description,omitempty"`
+	DiskSource  DiskSource `json:"disk_source,omitempty" yaml:"disk_source,omitempty"`
+	Name        string     `json:"name,omitempty" yaml:"name,omitempty"`
+	Size        ByteCount  `json:"size,omitempty" yaml:"size,omitempty"`
+	Type        string     `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // InstanceMigrate is migration parameters for an [`Instance`](omicron_common::api::external::Instance)
@@ -589,6 +697,34 @@ type OrganizationResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+// OrganizationRole is the type definition for a OrganizationRole.
+type OrganizationRole string
+
+const (
+	// OrganizationRoleAdmin represents the OrganizationRole `"Admin"`.
+	OrganizationRoleAdmin OrganizationRole = "Admin"
+	// OrganizationRoleCollaborator represents the OrganizationRole `"Collaborator"`.
+	OrganizationRoleCollaborator OrganizationRole = "Collaborator"
+)
+
+// OrganizationRolesPolicy is client view of a [`Policy`], which describes how this resource may be accessed
+//
+// Note that the Policy only describes access granted explicitly for this resource.  The policies of parent resources can also cause a user to have access to this resource.
+type OrganizationRolesPolicy struct {
+	// RoleAssignments is roles directly assigned on this resource
+	RoleAssignments []OrganizationRolesRoleAssignment `json:"role_assignments,omitempty" yaml:"role_assignments,omitempty"`
+}
+
+// OrganizationRolesRoleAssignment is describes the assignment of a particular role on a particular resource to a particular identity (user, group, etc.)
+//
+// The resource is not part of this structure.  Rather, [`RoleAssignment`]s are put into a [`Policy`] and that Policy is applied to a particular resource.
+type OrganizationRolesRoleAssignment struct {
+	IdentityID string `json:"identity_id,omitempty" yaml:"identity_id,omitempty"`
+	// IdentityType is describes what kind of identity is described by an id
+	IdentityType IdentityType     `json:"identity_type,omitempty" yaml:"identity_type,omitempty"`
+	RoleName     OrganizationRole `json:"role_name,omitempty" yaml:"role_name,omitempty"`
+}
+
 // OrganizationUpdate is updateable properties of an [`Organization`](crate::external_api::views::Organization)
 type OrganizationUpdate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
@@ -623,6 +759,36 @@ type ProjectResultsPage struct {
 	Items []Project `json:"items,omitempty" yaml:"items,omitempty"`
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// ProjectRole is the type definition for a ProjectRole.
+type ProjectRole string
+
+const (
+	// ProjectRoleAdmin represents the ProjectRole `"Admin"`.
+	ProjectRoleAdmin ProjectRole = "Admin"
+	// ProjectRoleCollaborator represents the ProjectRole `"Collaborator"`.
+	ProjectRoleCollaborator ProjectRole = "Collaborator"
+	// ProjectRoleViewer represents the ProjectRole `"Viewer"`.
+	ProjectRoleViewer ProjectRole = "Viewer"
+)
+
+// ProjectRolesPolicy is client view of a [`Policy`], which describes how this resource may be accessed
+//
+// Note that the Policy only describes access granted explicitly for this resource.  The policies of parent resources can also cause a user to have access to this resource.
+type ProjectRolesPolicy struct {
+	// RoleAssignments is roles directly assigned on this resource
+	RoleAssignments []ProjectRolesRoleAssignment `json:"role_assignments,omitempty" yaml:"role_assignments,omitempty"`
+}
+
+// ProjectRolesRoleAssignment is describes the assignment of a particular role on a particular resource to a particular identity (user, group, etc.)
+//
+// The resource is not part of this structure.  Rather, [`RoleAssignment`]s are put into a [`Policy`] and that Policy is applied to a particular resource.
+type ProjectRolesRoleAssignment struct {
+	IdentityID string `json:"identity_id,omitempty" yaml:"identity_id,omitempty"`
+	// IdentityType is describes what kind of identity is described by an id
+	IdentityType IdentityType `json:"identity_type,omitempty" yaml:"identity_type,omitempty"`
+	RoleName     ProjectRole  `json:"role_name,omitempty" yaml:"role_name,omitempty"`
 }
 
 // ProjectUpdate is updateable properties of a [`Project`](crate::external_api::views::Project)
@@ -1027,6 +1193,36 @@ type SiloResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+// SiloRole is the type definition for a SiloRole.
+type SiloRole string
+
+const (
+	// SiloRoleAdmin represents the SiloRole `"Admin"`.
+	SiloRoleAdmin SiloRole = "Admin"
+	// SiloRoleCollaborator represents the SiloRole `"Collaborator"`.
+	SiloRoleCollaborator SiloRole = "Collaborator"
+	// SiloRoleViewer represents the SiloRole `"Viewer"`.
+	SiloRoleViewer SiloRole = "Viewer"
+)
+
+// SiloRolesPolicy is client view of a [`Policy`], which describes how this resource may be accessed
+//
+// Note that the Policy only describes access granted explicitly for this resource.  The policies of parent resources can also cause a user to have access to this resource.
+type SiloRolesPolicy struct {
+	// RoleAssignments is roles directly assigned on this resource
+	RoleAssignments []SiloRolesRoleAssignment `json:"role_assignments,omitempty" yaml:"role_assignments,omitempty"`
+}
+
+// SiloRolesRoleAssignment is describes the assignment of a particular role on a particular resource to a particular identity (user, group, etc.)
+//
+// The resource is not part of this structure.  Rather, [`RoleAssignment`]s are put into a [`Policy`] and that Policy is applied to a particular resource.
+type SiloRolesRoleAssignment struct {
+	IdentityID string `json:"identity_id,omitempty" yaml:"identity_id,omitempty"`
+	// IdentityType is describes what kind of identity is described by an id
+	IdentityType IdentityType `json:"identity_type,omitempty" yaml:"identity_type,omitempty"`
+	RoleName     SiloRole     `json:"role_name,omitempty" yaml:"role_name,omitempty"`
+}
+
 // Sled is client view of an [`Sled`]
 type Sled struct {
 	// Description is human-readable free-form text about a resource
@@ -1083,6 +1279,41 @@ type SnapshotCreate struct {
 type SnapshotResultsPage struct {
 	// Items is list of items on this page of results
 	Items []Snapshot `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// SshKey is client view of a [`SshKey`]
+type SshKey struct {
+	// Description is human-readable free-form text about a resource
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// ID is unique, immutable, system-controlled identifier for each resource
+	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Name is unique, mutable, user-controlled identifier for each resource
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
+	// PublicKey is sSH public key, e.g., `"ssh-ed25519 AAAAC3NzaC..."`
+	PublicKey string `json:"public_key,omitempty" yaml:"public_key,omitempty"`
+	// SiloUserID is the user to whom this key belongs
+	SiloUserID string `json:"silo_user_id,omitempty" yaml:"silo_user_id,omitempty"`
+	// TimeCreated is timestamp when this resource was created
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	// TimeModified is timestamp when this resource was last modified
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+}
+
+// SshKeyCreate is create-time parameters for an [`SshKey`](crate::external_api::views::SshKey)
+type SshKeyCreate struct {
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
+	// PublicKey is sSH public key, e.g., `"ssh-ed25519 AAAAC3NzaC..."`
+	PublicKey string `json:"public_key,omitempty" yaml:"public_key,omitempty"`
+}
+
+// SshKeyResultsPage is a single page of results
+type SshKeyResultsPage struct {
+	// Items is list of items on this page of results
+	Items []SshKey `json:"items,omitempty" yaml:"items,omitempty"`
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
@@ -1514,10 +1745,8 @@ type SubnetResultsPage struct {
 
 // SubnetUpdate is updateable properties of a [`VpcSubnet`](crate::external_api::views::VpcSubnet)
 type SubnetUpdate struct {
-	Description string  `json:"description,omitempty" yaml:"description,omitempty"`
-	IPv4Block   IPv4Net `json:"ipv4_block,omitempty" yaml:"ipv4_block,omitempty"`
-	IPv6Block   IPv6Net `json:"ipv6_block,omitempty" yaml:"ipv6_block,omitempty"`
-	Name        string  `json:"name,omitempty" yaml:"name,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Name        string `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
 // VPCUpdate is updateable properties of a [`Vpc`](crate::external_api::views::Vpc)
@@ -1538,6 +1767,14 @@ var DatumTypes = []DatumType{
 	DatumTypeHistogramI64,
 	DatumTypeI64,
 	DatumTypeString,
+}
+
+// DiskSourceTypes is the collection of all DiskSourceType values.
+var DiskSourceTypes = []DiskSourceType{
+	DiskSourceTypeBlank,
+	DiskSourceTypeGlobalImage,
+	DiskSourceTypeImage,
+	DiskSourceTypeSnapshot,
 }
 
 // DiskStateStates is the collection of all DiskStateState values.
@@ -1614,6 +1851,12 @@ var IdSortModes = []IdSortMode{
 	IdSortModeIdAscending,
 }
 
+// IdentityTypes is the collection of all IdentityType values.
+var IdentityTypes = []IdentityType{
+	IdentityTypeSiloUser,
+	IdentityTypeUserBuiltin,
+}
+
 // InstanceDiskAttachmentTypes is the collection of all InstanceDiskAttachmentType values.
 var InstanceDiskAttachmentTypes = []InstanceDiskAttachmentType{
 	InstanceDiskAttachmentTypeAttach,
@@ -1651,6 +1894,19 @@ var NameOrIdSortModes = []NameOrIdSortMode{
 // NameSortModes is the collection of all NameSortMode values.
 var NameSortModes = []NameSortMode{
 	NameSortModeNameAscending,
+}
+
+// OrganizationRoles is the collection of all OrganizationRole values.
+var OrganizationRoles = []OrganizationRole{
+	OrganizationRoleAdmin,
+	OrganizationRoleCollaborator,
+}
+
+// ProjectRoles is the collection of all ProjectRole values.
+var ProjectRoles = []ProjectRole{
+	ProjectRoleAdmin,
+	ProjectRoleCollaborator,
+	ProjectRoleViewer,
 }
 
 // RouteDestinationTypes is the collection of all RouteDestinationType values.
@@ -1698,4 +1954,11 @@ var SagaStateStates = []SagaStateState{
 	SagaStateStateFailed,
 	SagaStateStateRunning,
 	SagaStateStateSucceeded,
+}
+
+// SiloRoles is the collection of all SiloRole values.
+var SiloRoles = []SiloRole{
+	SiloRoleAdmin,
+	SiloRoleCollaborator,
+	SiloRoleViewer,
 }
