@@ -49,6 +49,8 @@ type Client struct {
 	Sleds *SledsService
 	// Snapshots: Snapshots of Virtual Disks at a particular point in time.
 	Snapshots *SnapshotsService
+	// Sshkeys: Public SSH keys for an individual user
+	Sshkeys *SshkeysService
 	// Subnets: This tag should be moved into a generic network tag
 	Subnets *SubnetsService
 	// Updates: This tag should be moved into a operations tag
@@ -109,6 +111,9 @@ type SledsService service
 
 // SnapshotsService: Snapshots of Virtual Disks at a particular point in time.
 type SnapshotsService service
+
+// SshkeysService: Public SSH keys for an individual user
+type SshkeysService service
 
 // SubnetsService: This tag should be moved into a generic network tag
 type SubnetsService service

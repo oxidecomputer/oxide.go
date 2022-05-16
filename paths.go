@@ -247,7 +247,7 @@ func (s *SledsService) Get(sledID string) (*Sled, error) {
 //	- `limit`: Maximum number of items returned by a single call
 //	- `pageToken`: Token returned by previous call to retreive the subsequent page
 //	- `sortBy`
-func (s *ImagesService) GlobalList(limit int, pageToken string, sortBy NameSortMode) (*ImageResultsPage, error) {
+func (s *ImagesService) GlobalList(limit int, pageToken string, sortBy NameSortMode) (*GlobalImageResultsPage, error) {
 	// Create the url.
 	path := "/images"
 	uri := resolveRelative(s.client.server, path)
@@ -278,7 +278,7 @@ func (s *ImagesService) GlobalList(limit int, pageToken string, sortBy NameSortM
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body ImageResultsPage
+	var body GlobalImageResultsPage
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -295,9 +295,9 @@ func (s *ImagesService) GlobalList(limit int, pageToken string, sortBy NameSortM
 //
 // Parameters:
 //	- `sortBy`
-func (s *ImagesService) GlobalListAllPages(sortBy NameSortMode) (*[]Image, error) {
+func (s *ImagesService) GlobalListAllPages(sortBy NameSortMode) (*[]GlobalImage, error) {
 
-	var allPages []Image
+	var allPages []GlobalImage
 	pageToken := ""
 	limit := 100
 	for {
@@ -316,7 +316,7 @@ func (s *ImagesService) GlobalListAllPages(sortBy NameSortMode) (*[]Image, error
 } // GlobalCreate: Create a global image.
 //
 // Create a new global image. This image can then be used by any user as a base for instances.
-func (s *ImagesService) GlobalCreate(j *ImageCreate) (*Image, error) {
+func (s *ImagesService) GlobalCreate(j *ImageCreate) (*GlobalImage, error) {
 	// Create the url.
 	path := "/images"
 	uri := resolveRelative(s.client.server, path)
@@ -344,7 +344,7 @@ func (s *ImagesService) GlobalCreate(j *ImageCreate) (*Image, error) {
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body Image
+	var body GlobalImage
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -358,7 +358,7 @@ func (s *ImagesService) GlobalCreate(j *ImageCreate) (*Image, error) {
 //
 // Parameters:
 //	- `imageName`
-func (s *ImagesService) GlobalGet(imageName string) (*Image, error) {
+func (s *ImagesService) GlobalGet(imageName string) (*GlobalImage, error) {
 	// Create the url.
 	path := "/images/{{.image_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -387,7 +387,7 @@ func (s *ImagesService) GlobalGet(imageName string) (*Image, error) {
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body Image
+	var body GlobalImage
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -657,6 +657,93 @@ func (s *OrganizationsService) Delete(organizationName string) error {
 	}
 	// Return.
 	return nil
+}
+
+// GetPolicy: Fetch the IAM policy for this Organization
+//
+// Parameters:
+//	- `organizationName`: The organization's unique name.
+func (s *OrganizationsService) GetPolicy(organizationName string) (*OrganizationRolesPolicy, error) {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/policy"
+	uri := resolveRelative(s.client.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"organization_name": organizationName,
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body OrganizationRolesPolicy
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// PutPolicy: Update the IAM policy for this Organization
+//
+// Parameters:
+//	- `organizationName`: The organization's unique name.
+func (s *OrganizationsService) PutPolicy(organizationName string, j *OrganizationRolesPolicy) (*OrganizationRolesPolicy, error) {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/policy"
+	uri := resolveRelative(s.client.server, path)
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+	// Create the request.
+	req, err := http.NewRequest("PUT", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"organization_name": organizationName,
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body OrganizationRolesPolicy
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // List: List all projects.
@@ -2116,6 +2203,97 @@ func (s *InstancesService) Stop(instanceName string, organizationName string, pr
 		return nil, errors.New("request returned an empty body in the response")
 	}
 	var body Instance
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// GetPolicy: Fetch the IAM policy for this Project
+//
+// Parameters:
+//	- `organizationName`: The organization's unique name.
+//	- `projectName`: The project's unique name within the organization.
+func (s *ProjectsService) GetPolicy(organizationName string, projectName string) (*ProjectRolesPolicy, error) {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/policy"
+	uri := resolveRelative(s.client.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"organization_name": organizationName,
+		"project_name":      projectName,
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body ProjectRolesPolicy
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// PutPolicy: Update the IAM policy for this Project
+//
+// Parameters:
+//	- `organizationName`: The organization's unique name.
+//	- `projectName`: The project's unique name within the organization.
+func (s *ProjectsService) PutPolicy(organizationName string, projectName string, j *ProjectRolesPolicy) (*ProjectRolesPolicy, error) {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/policy"
+	uri := resolveRelative(s.client.server, path)
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+	// Create the request.
+	req, err := http.NewRequest("PUT", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"organization_name": organizationName,
+		"project_name":      projectName,
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body ProjectRolesPolicy
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -3807,6 +3985,189 @@ func (s *SagasService) Get(sagaID string) (*Saga, error) {
 	return &body, nil
 }
 
+// List: List the current user's SSH public keys
+//
+// To iterate over all pages, use the `ListAllPages` method, instead.
+//
+// Parameters:
+//	- `limit`: Maximum number of items returned by a single call
+//	- `pageToken`: Token returned by previous call to retreive the subsequent page
+//	- `sortBy`
+func (s *SshkeysService) List(limit int, pageToken string, sortBy NameSortMode) (*SshKeyResultsPage, error) {
+	// Create the url.
+	path := "/session/me/sshkeys"
+	uri := resolveRelative(s.client.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"limit":      strconv.Itoa(limit),
+		"page_token": pageToken,
+		"sort_by":    string(sortBy),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body SshKeyResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// ListAllPages: List the current user's SSH public keys
+//
+// This method is a wrapper around the `List` method.
+// This method returns all the pages at once.
+//
+// Parameters:
+//	- `sortBy`
+func (s *SshkeysService) ListAllPages(sortBy NameSortMode) (*[]SshKey, error) {
+
+	var allPages []SshKey
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := s.List(limit, pageToken, sortBy)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == pageToken {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+} // Create: Create a new SSH public key for the current user
+func (s *SshkeysService) Create(j *SshKeyCreate) (*SshKey, error) {
+	// Create the url.
+	path := "/session/me/sshkeys"
+	uri := resolveRelative(s.client.server, path)
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body SshKey
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// GetKey: Get (by name) an SSH public key belonging to the current user
+//
+// Parameters:
+//	- `sshKeyName`
+func (s *SshkeysService) GetKey(sshKeyName string) (*SshKey, error) {
+	// Create the url.
+	path := "/session/me/sshkeys/{{.ssh_key_name}}"
+	uri := resolveRelative(s.client.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"ssh_key_name": sshKeyName,
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body SshKey
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// DeleteKey: Delete (by name) an SSH public key belonging to the current user
+//
+// Parameters:
+//	- `sshKeyName`
+func (s *SshkeysService) DeleteKey(sshKeyName string) error {
+	// Create the url.
+	path := "/session/me/sshkeys/{{.ssh_key_name}}"
+	uri := resolveRelative(s.client.server, path)
+	// Create the request.
+	req, err := http.NewRequest("DELETE", uri, nil)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"ssh_key_name": sshKeyName,
+	}); err != nil {
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+	// Return.
+	return nil
+}
+
 // List
 //
 // To iterate over all pages, use the `ListAllPages` method, instead.
@@ -3988,6 +4349,93 @@ func (s *SilosService) Delete(siloName string) error {
 	}
 	// Return.
 	return nil
+}
+
+// GetPolicy: Fetch the IAM policy for this Silo
+//
+// Parameters:
+//	- `siloName`: The silo's unique name.
+func (s *SilosService) GetPolicy(siloName string) (*SiloRolesPolicy, error) {
+	// Create the url.
+	path := "/silos/{{.silo_name}}/policy"
+	uri := resolveRelative(s.client.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"silo_name": siloName,
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body SiloRolesPolicy
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// PutPolicy: Update the IAM policy for this Silo
+//
+// Parameters:
+//	- `siloName`: The silo's unique name.
+func (s *SilosService) PutPolicy(siloName string, j *SiloRolesPolicy) (*SiloRolesPolicy, error) {
+	// Create the url.
+	path := "/silos/{{.silo_name}}/policy"
+	uri := resolveRelative(s.client.server, path)
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+	// Create the request.
+	req, err := http.NewRequest("PUT", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"silo_name": siloName,
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body SiloRolesPolicy
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
 }
 
 // TimeseriesSchemaList: List all timeseries schema
