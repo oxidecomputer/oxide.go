@@ -4,7 +4,6 @@ package main
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -104,15 +103,15 @@ func main() {
 	// }
 
 	// Write back out the new spec.
-	out, err := json.MarshalIndent(doc, "", "  ")
-	if err != nil {
-		fmt.Printf("error marshalling openAPI spec: %v\n", err)
-		os.Exit(1)
-	}
-	if err := ioutil.WriteFile(p, out, 0644); err != nil {
-		fmt.Printf("error writing openAPI spec to %s: %v\n", p, err)
-		os.Exit(1)
-	}
+	// out, err := json.MarshalIndent(doc, "", "  ")
+	// if err != nil {
+	// 	fmt.Printf("error marshalling openAPI spec: %v\n", err)
+	// 	os.Exit(1)
+	// }
+	// if err := ioutil.WriteFile(p, out, 0644); err != nil {
+	// 	fmt.Printf("error writing openAPI spec to %s: %v\n", p, err)
+	// 	os.Exit(1)
+	// }
 
 }
 
@@ -627,39 +626,42 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 		fmt.Fprintf(&description, "//\t`%s`: %s\n", reqBodyParam, strings.ReplaceAll(reqBodyDescription, "\n", "\n// "))
 	}
 
+	// Write the description to the file.
+	fmt.Fprintf(f, description.String())
+
+	docInfo := map[string]string{
+		"example":     fmt.Sprintf("%s", description.String()),
+		"libDocsLink": fmt.Sprintf("https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#%sService.%s", tag, fnName),
+	}
+
 	// TODO: Remove this code once we have restored examples. Leaving this here for now
 	// will be useful to know how the examples were being generated
-	// Write the description to the file.
-	//	fmt.Fprintf(f, description.String())
-	//
-	//	docInfo := map[string]string{
-	//		"example":     fmt.Sprintf("%s", description.String()),
-	//		"libDocsLink": fmt.Sprintf("https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#%sService.%s", tag, fnName),
-	//	}
-	//	if isGetAllPages {
-	//		og := doc.Paths[path].Get.Extensions["x-go"].(map[string]string)
-	//		docInfo["example"] = fmt.Sprintf("%s\n\n// - OR -\n\n%s", og["example"], docInfo["example"])
-	//		docInfo["libDocsLink"] = fmt.Sprintf("https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#%sService.%s", tag, ogFnName)
-	//	}
-	//
-	//	// Write the method.
-	//	if respType != "" {
-	//		fmt.Fprintf(f, "func (s *%sService) %s(%s) (*%s, error) {\n",
-	//			tag,
-	//			fnName,
-	//			paramsString,
-	//			respType)
-	//		docInfo["example"] += fmt.Sprintf("%s, err := client.%s.%s(%s)", strcase.ToLowerCamel(respType), tag, fnName, docParamsString)
-	//	} else {
-	//		fmt.Fprintf(f, "func (s *%sService) %s(%s) (error) {\n",
-	//			tag,
-	//			fnName,
-	//			paramsString)
-	//		docInfo["example"] += fmt.Sprintf(`if err := client.%s.%s(%s); err != nil {
-	//	panic(err)
-	//}`, tag, fnName, docParamsString)
-	//	}
-	//
+	// if isGetAllPages {
+	// 	og := doc.Paths[path].Get.Extensions["x-go"].(map[string]string)
+	// 	docInfo["example"] = fmt.Sprintf("%s\n\n// - OR -\n\n%s", og["example"], docInfo["example"])
+	// 	docInfo["libDocsLink"] = fmt.Sprintf("https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#%sService.%s", tag, ogFnName)
+	// }
+
+	// Write the method.
+	if respType != "" {
+		fmt.Fprintf(f, "func (s *%sService) %s(%s) (*%s, error) {\n",
+			tag,
+			fnName,
+			paramsString,
+			respType)
+		docInfo["example"] += fmt.Sprintf("%s, err := client.%s.%s(%s)", strcase.ToLowerCamel(respType), tag, fnName, docParamsString)
+	} else {
+		fmt.Fprintf(f, "func (s *%sService) %s(%s) (error) {\n",
+			tag,
+			fnName,
+			paramsString)
+		docInfo["example"] += fmt.Sprintf(`if err := client.%s.%s(%s); err != nil {
+		 	panic(err)
+		 }`, tag, fnName, docParamsString)
+	}
+
+	// TODO: Remove this code once we have restored examples. Leaving this here for now
+	// will be useful to know how the examples were being generated
 	//	if method == http.MethodGet {
 	//		doc.Paths[path].Get.Extensions["x-go"] = docInfo
 	//	} else if method == http.MethodPost {
