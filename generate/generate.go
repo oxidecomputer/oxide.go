@@ -7,7 +7,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"sort"
@@ -24,8 +26,21 @@ var EnumStringTypes map[string][]string = map[string][]string{}
 const GLOBAL_SUFFIX = ":global"
 
 func main() {
+	wd, err := os.Getwd()
+	if err != nil {
+		fmt.Printf("error getting current working directory: %v\n", err)
+		os.Exit(1)
+	}
+	p := filepath.Join(wd, "VERSION_OMICRON.txt")
+	omicronVersion, err := ioutil.ReadFile(p)
+	if err != nil {
+		log.Fatal(err)
+	}
+	ov := string(omicronVersion)
+
 	// TODO: actually host the spec here.
-	/*uri := "https://api.oxide.computer"
+	// uri := "https://api.oxide.computer"
+	uri := fmt.Sprintf("https://raw.githubusercontent.com/oxidecomputer/omicron/%s/openapi/nexus.json", ov)
 	u, err := url.Parse(uri)
 	if err != nil {
 		fmt.Printf("error parsing url %q: %v\n", uri, err)
@@ -37,20 +52,22 @@ func main() {
 	if err != nil {
 		fmt.Printf("error loading openAPI spec from %q: %v\n", uri, err)
 		os.Exit(1)
-	}*/
+	}
 
+	// TODO: Remove this code once we have restored examples. Leaving this here for now
+	// in case there is a need to revert.
 	// Load the open API spec from the file.
-	wd, err := os.Getwd()
-	if err != nil {
-		fmt.Printf("error getting current working directory: %v\n", err)
-		os.Exit(1)
-	}
-	p := filepath.Join(wd, "spec.json")
-	doc, err := openapi3.NewLoader().LoadFromFile(p)
-	if err != nil {
-		fmt.Printf("error loading openAPI spec from file %q: %v\n", p, err)
-		os.Exit(1)
-	}
+	// wd, err := os.Getwd()
+	// if err != nil {
+	// 	fmt.Printf("error getting current working directory: %v\n", err)
+	// 	os.Exit(1)
+	// }
+	// p := filepath.Join(wd, "spec.json")
+	// doc, err := openapi3.NewLoader().LoadFromFile(p)
+	// if err != nil {
+	// 	fmt.Printf("error loading openAPI spec from file %q: %v\n", p, err)
+	// 	os.Exit(1)
+	// }
 
 	// Generate the client.go file.
 	generateClient(doc)
@@ -64,25 +81,27 @@ func main() {
 	// Generate the paths.go file.
 	generatePaths(doc)
 
-	clientInfo := `// Create a client with your token and host.
-client, err := oxide.NewClient("$OXIDE_TOKEN", "your apps user agent", "$OXIDE_HOST")
-if err != nil {
-  panic(err)
-}
+	// TODO: Remove this code once we have restored examples. Leaving this here for now
+	// will be useful to know how the examples were being generated
+	//  	clientInfo := `// Create a client with your token and host.
+	// client, err := oxide.NewClient("$OXIDE_TOKEN", "your apps user agent", "$OXIDE_HOST")
+	// if err != nil {
+	//   panic(err)
+	// }
+	//
+	// // - OR -
+	//
+	// // Create a new client with your token and host parsed from the environment
+	// // variables: OXIDE_TOKEN, OXIDE_HOST.
+	// client, err := oxide.NewClientFromEnv("your apps user agent")
+	// if err != nil {
+	//   panic(err)
+	// }`
 
-// - OR -
-
-// Create a new client with your token and host parsed from the environment
-// variables: OXIDE_TOKEN, OXIDE_HOST.
-client, err := oxide.NewClientFromEnv("your apps user agent")
-if err != nil {
-  panic(err)
-}`
-
-	doc.Info.Extensions["x-go"] = map[string]string{
-		"install": "go get github.com/oxidecomputer/oxide.go",
-		"client":  clientInfo,
-	}
+	// doc.Info.Extensions["x-go"] = map[string]string{
+	// 	"install": "go get github.com/oxidecomputer/oxide.go",
+	// 	"client":  clientInfo,
+	// }
 
 	// Write back out the new spec.
 	out, err := json.MarshalIndent(doc, "", "  ")
@@ -608,48 +627,50 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 		fmt.Fprintf(&description, "//\t`%s`: %s\n", reqBodyParam, strings.ReplaceAll(reqBodyDescription, "\n", "\n// "))
 	}
 
+	// TODO: Remove this code once we have restored examples. Leaving this here for now
+	// will be useful to know how the examples were being generated
 	// Write the description to the file.
-	fmt.Fprintf(f, description.String())
-
-	docInfo := map[string]string{
-		"example":     fmt.Sprintf("%s", description.String()),
-		"libDocsLink": fmt.Sprintf("https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#%sService.%s", tag, fnName),
-	}
-	if isGetAllPages {
-		og := doc.Paths[path].Get.Extensions["x-go"].(map[string]string)
-		docInfo["example"] = fmt.Sprintf("%s\n\n// - OR -\n\n%s", og["example"], docInfo["example"])
-		docInfo["libDocsLink"] = fmt.Sprintf("https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#%sService.%s", tag, ogFnName)
-	}
-
-	// Write the method.
-	if respType != "" {
-		fmt.Fprintf(f, "func (s *%sService) %s(%s) (*%s, error) {\n",
-			tag,
-			fnName,
-			paramsString,
-			respType)
-		docInfo["example"] += fmt.Sprintf("%s, err := client.%s.%s(%s)", strcase.ToLowerCamel(respType), tag, fnName, docParamsString)
-	} else {
-		fmt.Fprintf(f, "func (s *%sService) %s(%s) (error) {\n",
-			tag,
-			fnName,
-			paramsString)
-		docInfo["example"] += fmt.Sprintf(`if err := client.%s.%s(%s); err != nil {
-	panic(err)
-}`, tag, fnName, docParamsString)
-	}
-
-	if method == http.MethodGet {
-		doc.Paths[path].Get.Extensions["x-go"] = docInfo
-	} else if method == http.MethodPost {
-		doc.Paths[path].Post.Extensions["x-go"] = docInfo
-	} else if method == http.MethodPut {
-		doc.Paths[path].Put.Extensions["x-go"] = docInfo
-	} else if method == http.MethodDelete {
-		doc.Paths[path].Delete.Extensions["x-go"] = docInfo
-	} else if method == http.MethodPatch {
-		doc.Paths[path].Patch.Extensions["x-go"] = docInfo
-	}
+	//	fmt.Fprintf(f, description.String())
+	//
+	//	docInfo := map[string]string{
+	//		"example":     fmt.Sprintf("%s", description.String()),
+	//		"libDocsLink": fmt.Sprintf("https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#%sService.%s", tag, fnName),
+	//	}
+	//	if isGetAllPages {
+	//		og := doc.Paths[path].Get.Extensions["x-go"].(map[string]string)
+	//		docInfo["example"] = fmt.Sprintf("%s\n\n// - OR -\n\n%s", og["example"], docInfo["example"])
+	//		docInfo["libDocsLink"] = fmt.Sprintf("https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#%sService.%s", tag, ogFnName)
+	//	}
+	//
+	//	// Write the method.
+	//	if respType != "" {
+	//		fmt.Fprintf(f, "func (s *%sService) %s(%s) (*%s, error) {\n",
+	//			tag,
+	//			fnName,
+	//			paramsString,
+	//			respType)
+	//		docInfo["example"] += fmt.Sprintf("%s, err := client.%s.%s(%s)", strcase.ToLowerCamel(respType), tag, fnName, docParamsString)
+	//	} else {
+	//		fmt.Fprintf(f, "func (s *%sService) %s(%s) (error) {\n",
+	//			tag,
+	//			fnName,
+	//			paramsString)
+	//		docInfo["example"] += fmt.Sprintf(`if err := client.%s.%s(%s); err != nil {
+	//	panic(err)
+	//}`, tag, fnName, docParamsString)
+	//	}
+	//
+	//	if method == http.MethodGet {
+	//		doc.Paths[path].Get.Extensions["x-go"] = docInfo
+	//	} else if method == http.MethodPost {
+	//		doc.Paths[path].Post.Extensions["x-go"] = docInfo
+	//	} else if method == http.MethodPut {
+	//		doc.Paths[path].Put.Extensions["x-go"] = docInfo
+	//	} else if method == http.MethodDelete {
+	//		doc.Paths[path].Delete.Extensions["x-go"] = docInfo
+	//	} else if method == http.MethodPatch {
+	//		doc.Paths[path].Patch.Extensions["x-go"] = docInfo
+	//	}
 
 	if len(pagedRespType) > 0 {
 		// We want to just recursively call the method for each page.
@@ -1101,7 +1122,7 @@ func writeSchemaTypeDescription(name string, s *openapi3.Schema, f *os.File) {
 	}
 }
 
-// writeReponseTypeDescription writes the description of the given type.
+// writeResponseTypeDescription writes the description of the given type.
 func writeResponseTypeDescription(name string, r *openapi3.Response, f *os.File) {
 	if r.Description != nil {
 		fmt.Fprintf(f, "// %s is the response given when %s\n", name, toLowerFirstLetter(
