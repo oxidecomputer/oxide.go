@@ -4,8 +4,7 @@ permissions:
 on:
   pull_request:
     paths:
-      - 'Makefile'
-      - 'spec.json'
+      - "Makefile"
       - .github/workflows/generate.yml
   workflow_dispatch:
     inputs:
@@ -20,7 +19,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
       - uses: actions/setup-go@v3
         with:
-          go-version: '1.x'
+          go-version: "1.x"
       - name: Run generate
         shell: bash
         run: |

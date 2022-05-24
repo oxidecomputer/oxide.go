@@ -15,34 +15,44 @@ type ByteCount int64
 type DatumType string
 
 const (
-	// DatumTypeBool represents the DatumType `"Bool"`.
-	DatumTypeBool DatumType = "Bool"
-	// DatumTypeI64 represents the DatumType `"I64"`.
-	DatumTypeI64 DatumType = "I64"
-	// DatumTypeF64 represents the DatumType `"F64"`.
-	DatumTypeF64 DatumType = "F64"
-	// DatumTypeString represents the DatumType `"String"`.
-	DatumTypeString DatumType = "String"
-	// DatumTypeBytes represents the DatumType `"Bytes"`.
-	DatumTypeBytes DatumType = "Bytes"
-	// DatumTypeCumulativeI64 represents the DatumType `"CumulativeI64"`.
-	DatumTypeCumulativeI64 DatumType = "CumulativeI64"
-	// DatumTypeCumulativeF64 represents the DatumType `"CumulativeF64"`.
-	DatumTypeCumulativeF64 DatumType = "CumulativeF64"
-	// DatumTypeHistogramI64 represents the DatumType `"HistogramI64"`.
-	DatumTypeHistogramI64 DatumType = "HistogramI64"
-	// DatumTypeHistogramF64 represents the DatumType `"HistogramF64"`.
-	DatumTypeHistogramF64 DatumType = "HistogramF64"
+	// DatumTypeBool represents the DatumType `"bool"`.
+	DatumTypeBool DatumType = "bool"
+	// DatumTypeI64 represents the DatumType `"i64"`.
+	DatumTypeI64 DatumType = "i64"
+	// DatumTypeF64 represents the DatumType `"f64"`.
+	DatumTypeF64 DatumType = "f64"
+	// DatumTypeString represents the DatumType `"string"`.
+	DatumTypeString DatumType = "string"
+	// DatumTypeBytes represents the DatumType `"bytes"`.
+	DatumTypeBytes DatumType = "bytes"
+	// DatumTypeCumulativeI64 represents the DatumType `"cumulative_i64"`.
+	DatumTypeCumulativeI64 DatumType = "cumulative_i64"
+	// DatumTypeCumulativeF64 represents the DatumType `"cumulative_f64"`.
+	DatumTypeCumulativeF64 DatumType = "cumulative_f64"
+	// DatumTypeHistogramI64 represents the DatumType `"histogram_i64"`.
+	DatumTypeHistogramI64 DatumType = "histogram_i64"
+	// DatumTypeHistogramF64 represents the DatumType `"histogram_f64"`.
+	DatumTypeHistogramF64 DatumType = "histogram_f64"
 )
 
 // DigestSha256 is the type definition for a DigestSha256.
 type DigestSha256 struct {
-	Sha256 string `json:"Sha256,omitempty" yaml:"Sha256,omitempty"`
+	Type  DigestType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value string     `json:"value,omitempty" yaml:"value,omitempty"`
 }
+
+// DigestType is the type definition for a DigestType.
+type DigestType string
+
+const (
+	// DigestTypeSha256 represents the DigestType `"sha256"`.
+	DigestTypeSha256 DigestType = "sha256"
+)
 
 // Digest is the type definition for a Digest.
 type Digest struct {
-	Sha256 string `json:"Sha256,omitempty" yaml:"Sha256,omitempty"`
+	Type  string `json:"type,omitempty" yaml:"type,omitempty"`
+	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // Disk is client view of an [`Disk`]
@@ -109,8 +119,8 @@ type DiskSourceBlank struct {
 type DiskSourceType string
 
 const (
-	// DiskSourceTypeBlank represents the DiskSourceType `"Blank"`.
-	DiskSourceTypeBlank DiskSourceType = "Blank"
+	// DiskSourceTypeBlank represents the DiskSourceType `"blank"`.
+	DiskSourceTypeBlank DiskSourceType = "blank"
 )
 
 // DiskSourceSnapshot is create a disk from a disk snapshot
@@ -120,8 +130,8 @@ type DiskSourceSnapshot struct {
 }
 
 const (
-	// DiskSourceTypeSnapshot represents the DiskSourceType `"Snapshot"`.
-	DiskSourceTypeSnapshot DiskSourceType = "Snapshot"
+	// DiskSourceTypeSnapshot represents the DiskSourceType `"snapshot"`.
+	DiskSourceTypeSnapshot DiskSourceType = "snapshot"
 )
 
 // DiskSourceImage is create a disk from a project image
@@ -131,8 +141,8 @@ type DiskSourceImage struct {
 }
 
 const (
-	// DiskSourceTypeImage represents the DiskSourceType `"Image"`.
-	DiskSourceTypeImage DiskSourceType = "Image"
+	// DiskSourceTypeImage represents the DiskSourceType `"image"`.
+	DiskSourceTypeImage DiskSourceType = "image"
 )
 
 // DiskSourceGlobalImage is create a disk from a global image
@@ -142,8 +152,8 @@ type DiskSourceGlobalImage struct {
 }
 
 const (
-	// DiskSourceTypeGlobalImage represents the DiskSourceType `"GlobalImage"`.
-	DiskSourceTypeGlobalImage DiskSourceType = "GlobalImage"
+	// DiskSourceTypeGlobalImage represents the DiskSourceType `"global_image"`.
+	DiskSourceTypeGlobalImage DiskSourceType = "global_image"
 )
 
 // DiskSource is different sources for a disk
@@ -256,27 +266,57 @@ type FieldSchema struct {
 type FieldSource string
 
 const (
-	// FieldSourceTarget represents the FieldSource `"Target"`.
-	FieldSourceTarget FieldSource = "Target"
-	// FieldSourceMetric represents the FieldSource `"Metric"`.
-	FieldSourceMetric FieldSource = "Metric"
+	// FieldSourceTarget represents the FieldSource `"target"`.
+	FieldSourceTarget FieldSource = "target"
+	// FieldSourceMetric represents the FieldSource `"metric"`.
+	FieldSourceMetric FieldSource = "metric"
 )
 
 // FieldType is the `FieldType` identifies the data type of a target or metric field.
 type FieldType string
 
 const (
-	// FieldTypeString represents the FieldType `"String"`.
-	FieldTypeString FieldType = "String"
-	// FieldTypeI64 represents the FieldType `"I64"`.
-	FieldTypeI64 FieldType = "I64"
-	// FieldTypeIpAddr represents the FieldType `"IpAddr"`.
-	FieldTypeIpAddr FieldType = "IpAddr"
-	// FieldTypeUuid represents the FieldType `"Uuid"`.
-	FieldTypeUuid FieldType = "Uuid"
-	// FieldTypeBool represents the FieldType `"Bool"`.
-	FieldTypeBool FieldType = "Bool"
+	// FieldTypeString represents the FieldType `"string"`.
+	FieldTypeString FieldType = "string"
+	// FieldTypeI64 represents the FieldType `"i64"`.
+	FieldTypeI64 FieldType = "i64"
+	// FieldTypeIpAddr represents the FieldType `"ip_addr"`.
+	FieldTypeIpAddr FieldType = "ip_addr"
+	// FieldTypeUuid represents the FieldType `"uuid"`.
+	FieldTypeUuid FieldType = "uuid"
+	// FieldTypeBool represents the FieldType `"bool"`.
+	FieldTypeBool FieldType = "bool"
 )
+
+// FleetRole is the type definition for a FleetRole.
+type FleetRole string
+
+const (
+	// FleetRoleAdmin represents the FleetRole `"admin"`.
+	FleetRoleAdmin FleetRole = "admin"
+	// FleetRoleCollaborator represents the FleetRole `"collaborator"`.
+	FleetRoleCollaborator FleetRole = "collaborator"
+	// FleetRoleViewer represents the FleetRole `"viewer"`.
+	FleetRoleViewer FleetRole = "viewer"
+)
+
+// FleetRolesPolicy is client view of a [`Policy`], which describes how this resource may be accessed
+//
+// Note that the Policy only describes access granted explicitly for this resource.  The policies of parent resources can also cause a user to have access to this resource.
+type FleetRolesPolicy struct {
+	// RoleAssignments is roles directly assigned on this resource
+	RoleAssignments []FleetRolesRoleAssignment `json:"role_assignments,omitempty" yaml:"role_assignments,omitempty"`
+}
+
+// FleetRolesRoleAssignment is describes the assignment of a particular role on a particular resource to a particular identity (user, group, etc.)
+//
+// The resource is not part of this structure.  Rather, [`RoleAssignment`]s are put into a [`Policy`] and that Policy is applied to a particular resource.
+type FleetRolesRoleAssignment struct {
+	IdentityID string `json:"identity_id,omitempty" yaml:"identity_id,omitempty"`
+	// IdentityType is describes what kind of identity is described by an id
+	IdentityType IdentityType `json:"identity_type,omitempty" yaml:"identity_type,omitempty"`
+	RoleName     FleetRole    `json:"role_name,omitempty" yaml:"role_name,omitempty"`
+}
 
 // GlobalImage is client view of global Images
 type GlobalImage struct {
@@ -316,16 +356,14 @@ type GlobalImageResultsPage struct {
 type IdSortMode string
 
 const (
-	// IdSortModeIdAscending represents the IdSortMode `"id-ascending"`.
-	IdSortModeIdAscending IdSortMode = "id-ascending"
+	// IdSortModeIdAscending represents the IdSortMode `"id_ascending"`.
+	IdSortModeIdAscending IdSortMode = "id_ascending"
 )
 
 // IdentityType is describes what kind of identity is described by an id
 type IdentityType string
 
 const (
-	// IdentityTypeUserBuiltin represents the IdentityType `"user_builtin"`.
-	IdentityTypeUserBuiltin IdentityType = "user_builtin"
 	// IdentityTypeSiloUser represents the IdentityType `"silo_user"`.
 	IdentityTypeSiloUser IdentityType = "silo_user"
 )
@@ -377,18 +415,33 @@ type ImageResultsPage struct {
 
 // ImageSourceUrl is the type definition for a ImageSourceUrl.
 type ImageSourceUrl struct {
-	Url string `json:"Url,omitempty" yaml:"Url,omitempty"`
+	Src  string          `json:"src,omitempty" yaml:"src,omitempty"`
+	Type ImageSourceType `json:"type,omitempty" yaml:"type,omitempty"`
 }
+
+// ImageSourceType is the type definition for a ImageSourceType.
+type ImageSourceType string
+
+const (
+	// ImageSourceTypeUrl represents the ImageSourceType `"url"`.
+	ImageSourceTypeUrl ImageSourceType = "url"
+)
 
 // ImageSourceSnapshot is the type definition for a ImageSourceSnapshot.
 type ImageSourceSnapshot struct {
-	Snapshot string `json:"Snapshot,omitempty" yaml:"Snapshot,omitempty"`
+	Src  string          `json:"src,omitempty" yaml:"src,omitempty"`
+	Type ImageSourceType `json:"type,omitempty" yaml:"type,omitempty"`
 }
+
+const (
+	// ImageSourceTypeSnapshot represents the ImageSourceType `"snapshot"`.
+	ImageSourceTypeSnapshot ImageSourceType = "snapshot"
+)
 
 // ImageSource is the source of the underlying image.
 type ImageSource struct {
-	Url      string `json:"Url,omitempty" yaml:"Url,omitempty"`
-	Snapshot string `json:"Snapshot,omitempty" yaml:"Snapshot,omitempty"`
+	Src  string `json:"src,omitempty" yaml:"src,omitempty"`
+	Type string `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // Instance is client view of an [`Instance`]
@@ -497,8 +550,8 @@ type InstanceNetworkInterfaceAttachmentCreate struct {
 type InstanceNetworkInterfaceAttachmentType string
 
 const (
-	// InstanceNetworkInterfaceAttachmentTypeCreate represents the InstanceNetworkInterfaceAttachmentType `"Create"`.
-	InstanceNetworkInterfaceAttachmentTypeCreate InstanceNetworkInterfaceAttachmentType = "Create"
+	// InstanceNetworkInterfaceAttachmentTypeCreate represents the InstanceNetworkInterfaceAttachmentType `"create"`.
+	InstanceNetworkInterfaceAttachmentTypeCreate InstanceNetworkInterfaceAttachmentType = "create"
 )
 
 // InstanceNetworkInterfaceAttachmentDefault is default networking setup, which creates a single interface with an auto-assigned IP address from project's "default" VPC and "default" VPC Subnet.
@@ -507,8 +560,8 @@ type InstanceNetworkInterfaceAttachmentDefault struct {
 }
 
 const (
-	// InstanceNetworkInterfaceAttachmentTypeDefault represents the InstanceNetworkInterfaceAttachmentType `"Default"`.
-	InstanceNetworkInterfaceAttachmentTypeDefault InstanceNetworkInterfaceAttachmentType = "Default"
+	// InstanceNetworkInterfaceAttachmentTypeDefault represents the InstanceNetworkInterfaceAttachmentType `"default"`.
+	InstanceNetworkInterfaceAttachmentTypeDefault InstanceNetworkInterfaceAttachmentType = "default"
 )
 
 // InstanceNetworkInterfaceAttachmentNone is no network interfaces at all will be created for the instance.
@@ -517,8 +570,8 @@ type InstanceNetworkInterfaceAttachmentNone struct {
 }
 
 const (
-	// InstanceNetworkInterfaceAttachmentTypeNone represents the InstanceNetworkInterfaceAttachmentType `"None"`.
-	InstanceNetworkInterfaceAttachmentTypeNone InstanceNetworkInterfaceAttachmentType = "None"
+	// InstanceNetworkInterfaceAttachmentTypeNone represents the InstanceNetworkInterfaceAttachmentType `"none"`.
+	InstanceNetworkInterfaceAttachmentTypeNone InstanceNetworkInterfaceAttachmentType = "none"
 )
 
 // InstanceNetworkInterfaceAttachment is describes an attachment of a `NetworkInterface` to an `Instance`, at the time the instance is created.
@@ -563,22 +616,12 @@ const (
 	InstanceStateDestroyed InstanceState = "destroyed"
 )
 
-// IpNetV4 is the type definition for a IpNetV4.
-type IpNetV4 struct {
-	// V4 is an IPv4 subnet, including prefix and subnet mask
-	V4 IPv4Net `json:"V4,omitempty" yaml:"V4,omitempty"`
-}
+// IpNet is the type definition for a IpNet.
 
-// IpNetV6 is the type definition for a IpNetV6.
-type IpNetV6 struct {
-	// V6 is an IPv6 subnet, including prefix and subnet mask
-	V6 IPv6Net `json:"V6,omitempty" yaml:"V6,omitempty"`
-}
+// IpNet is the type definition for a IpNet.
 
-// IpNet is an `IpNet` represents an IP network, either IPv4 or IPv6.
+// IpNet is the type definition for a IpNet.
 type IpNet struct {
-	V4 IPv4Net `json:"V4,omitempty" yaml:"V4,omitempty"`
-	V6 IPv6Net `json:"V6,omitempty" yaml:"V6,omitempty"`
 }
 
 // IPv4Net is an IPv4 subnet, including prefix and subnet mask
@@ -605,12 +648,12 @@ type Name string
 type NameOrIdSortMode string
 
 const (
-	// NameOrIdSortModeNameAscending represents the NameOrIdSortMode `"name-ascending"`.
-	NameOrIdSortModeNameAscending NameOrIdSortMode = "name-ascending"
-	// NameOrIdSortModeNameDescending represents the NameOrIdSortMode `"name-descending"`.
-	NameOrIdSortModeNameDescending NameOrIdSortMode = "name-descending"
-	// NameOrIdSortModeIdAscending represents the NameOrIdSortMode `"id-ascending"`.
-	NameOrIdSortModeIdAscending NameOrIdSortMode = "id-ascending"
+	// NameOrIdSortModeNameAscending represents the NameOrIdSortMode `"name_ascending"`.
+	NameOrIdSortModeNameAscending NameOrIdSortMode = "name_ascending"
+	// NameOrIdSortModeNameDescending represents the NameOrIdSortMode `"name_descending"`.
+	NameOrIdSortModeNameDescending NameOrIdSortMode = "name_descending"
+	// NameOrIdSortModeIdAscending represents the NameOrIdSortMode `"id_ascending"`.
+	NameOrIdSortModeIdAscending NameOrIdSortMode = "id_ascending"
 )
 
 // NameSortMode is supported set of sort modes for scanning by name only
@@ -619,8 +662,8 @@ const (
 type NameSortMode string
 
 const (
-	// NameSortModeNameAscending represents the NameSortMode `"name-ascending"`.
-	NameSortModeNameAscending NameSortMode = "name-ascending"
+	// NameSortModeNameAscending represents the NameSortMode `"name_ascending"`.
+	NameSortModeNameAscending NameSortMode = "name_ascending"
 )
 
 // NetworkInterface is a `NetworkInterface` represents a virtual network interface device.
@@ -701,10 +744,10 @@ type OrganizationResultsPage struct {
 type OrganizationRole string
 
 const (
-	// OrganizationRoleAdmin represents the OrganizationRole `"Admin"`.
-	OrganizationRoleAdmin OrganizationRole = "Admin"
-	// OrganizationRoleCollaborator represents the OrganizationRole `"Collaborator"`.
-	OrganizationRoleCollaborator OrganizationRole = "Collaborator"
+	// OrganizationRoleAdmin represents the OrganizationRole `"admin"`.
+	OrganizationRoleAdmin OrganizationRole = "admin"
+	// OrganizationRoleCollaborator represents the OrganizationRole `"collaborator"`.
+	OrganizationRoleCollaborator OrganizationRole = "collaborator"
 )
 
 // OrganizationRolesPolicy is client view of a [`Policy`], which describes how this resource may be accessed
@@ -765,12 +808,12 @@ type ProjectResultsPage struct {
 type ProjectRole string
 
 const (
-	// ProjectRoleAdmin represents the ProjectRole `"Admin"`.
-	ProjectRoleAdmin ProjectRole = "Admin"
-	// ProjectRoleCollaborator represents the ProjectRole `"Collaborator"`.
-	ProjectRoleCollaborator ProjectRole = "Collaborator"
-	// ProjectRoleViewer represents the ProjectRole `"Viewer"`.
-	ProjectRoleViewer ProjectRole = "Viewer"
+	// ProjectRoleAdmin represents the ProjectRole `"admin"`.
+	ProjectRoleAdmin ProjectRole = "admin"
+	// ProjectRoleCollaborator represents the ProjectRole `"collaborator"`.
+	ProjectRoleCollaborator ProjectRole = "collaborator"
+	// ProjectRoleViewer represents the ProjectRole `"viewer"`.
+	ProjectRoleViewer ProjectRole = "viewer"
 )
 
 // ProjectRolesPolicy is client view of a [`Policy`], which describes how this resource may be accessed
@@ -853,9 +896,8 @@ const (
 
 // RouteDestinationIpNet is route applies to traffic destined for a specific IP subnet
 type RouteDestinationIpNet struct {
-	Type RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is an `IpNet` represents an IP network, either IPv4 or IPv6.
-	Value IpNet `json:"value,omitempty" yaml:"value,omitempty"`
+	Type  RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value IpNet                `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 const (
@@ -1197,12 +1239,12 @@ type SiloResultsPage struct {
 type SiloRole string
 
 const (
-	// SiloRoleAdmin represents the SiloRole `"Admin"`.
-	SiloRoleAdmin SiloRole = "Admin"
-	// SiloRoleCollaborator represents the SiloRole `"Collaborator"`.
-	SiloRoleCollaborator SiloRole = "Collaborator"
-	// SiloRoleViewer represents the SiloRole `"Viewer"`.
-	SiloRoleViewer SiloRole = "Viewer"
+	// SiloRoleAdmin represents the SiloRole `"admin"`.
+	SiloRoleAdmin SiloRole = "admin"
+	// SiloRoleCollaborator represents the SiloRole `"collaborator"`.
+	SiloRoleCollaborator SiloRole = "collaborator"
+	// SiloRoleViewer represents the SiloRole `"viewer"`.
+	SiloRoleViewer SiloRole = "viewer"
 )
 
 // SiloRolesPolicy is client view of a [`Policy`], which describes how this resource may be accessed
@@ -1508,9 +1550,8 @@ const (
 
 // FirewallRuleHostFilterIpNet is the rule applies to traffic from/to a specific IP subnet
 type FirewallRuleHostFilterIpNet struct {
-	Type FirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is an `IpNet` represents an IP network, either IPv4 or IPv6.
-	Value IpNet `json:"value,omitempty" yaml:"value,omitempty"`
+	Type  FirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value IpNet                      `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 const (
@@ -1598,9 +1639,8 @@ const (
 
 // FirewallRuleTargetIpNet is the rule applies to a specific IP subnet
 type FirewallRuleTargetIpNet struct {
-	Type FirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is an `IpNet` represents an IP network, either IPv4 or IPv6.
-	Value IpNet `json:"value,omitempty" yaml:"value,omitempty"`
+	Type  FirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value IpNet                  `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 const (
@@ -1769,6 +1809,11 @@ var DatumTypes = []DatumType{
 	DatumTypeString,
 }
 
+// DigestTypes is the collection of all DigestType values.
+var DigestTypes = []DigestType{
+	DigestTypeSha256,
+}
+
 // DiskSourceTypes is the collection of all DiskSourceType values.
 var DiskSourceTypes = []DiskSourceType{
 	DiskSourceTypeBlank,
@@ -1846,6 +1891,13 @@ var FirewallRuleTargetTypes = []FirewallRuleTargetType{
 	FirewallRuleTargetTypeVpc,
 }
 
+// FleetRoles is the collection of all FleetRole values.
+var FleetRoles = []FleetRole{
+	FleetRoleAdmin,
+	FleetRoleCollaborator,
+	FleetRoleViewer,
+}
+
 // IdSortModes is the collection of all IdSortMode values.
 var IdSortModes = []IdSortMode{
 	IdSortModeIdAscending,
@@ -1854,7 +1906,12 @@ var IdSortModes = []IdSortMode{
 // IdentityTypes is the collection of all IdentityType values.
 var IdentityTypes = []IdentityType{
 	IdentityTypeSiloUser,
-	IdentityTypeUserBuiltin,
+}
+
+// ImageSourceTypes is the collection of all ImageSourceType values.
+var ImageSourceTypes = []ImageSourceType{
+	ImageSourceTypeSnapshot,
+	ImageSourceTypeUrl,
 }
 
 // InstanceDiskAttachmentTypes is the collection of all InstanceDiskAttachmentType values.

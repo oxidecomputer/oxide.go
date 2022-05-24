@@ -31,6 +31,8 @@ type Client struct {
 	Metrics *MetricsService
 	// Organizations: Organizations represent a subset of users and projects in an Oxide deployment.
 	Organizations *OrganizationsService
+	// Policy: System-wide IAM policy
+	Policy *PolicyService
 	// Projects: Projects are a grouping of associated resources such as instances and disks within an organization for purposes of billing and access control.
 	Projects *ProjectsService
 	// Racks: These operations pertain to hardware inventory and management. Racks are the unit of expansion of an Oxide deployment. Racks are in turn composed of sleds, switches, power supplies, and a cabled backplane.
@@ -84,6 +86,9 @@ type MetricsService service
 
 // OrganizationsService: Organizations represent a subset of users and projects in an Oxide deployment.
 type OrganizationsService service
+
+// PolicyService: System-wide IAM policy
+type PolicyService service
 
 // ProjectsService: Projects are a grouping of associated resources such as instances and disks within an organization for purposes of billing and access control.
 type ProjectsService service
