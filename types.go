@@ -55,7 +55,7 @@ type Digest struct {
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-// Disk is client view of an [`Disk`]
+// Disk is client view of a [`Disk`]
 type Disk struct {
 	// BlockSize is a count of bytes, typically used either for memory or storage capacity
 	//
@@ -246,6 +246,9 @@ type DiskState struct {
 	Instance string `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
 
+// Distribution is distribution must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+type Distribution string
+
 // Error is error information from a response.
 type Error struct {
 	ErrorCode string `json:"error_code,omitempty" yaml:"error_code,omitempty"`
@@ -326,6 +329,8 @@ type GlobalImage struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Digest is hash of the image contents, if applicable
 	Digest Digest `json:"digest,omitempty" yaml:"digest,omitempty"`
+	// Distribution is image distribution
+	Distribution string `json:"distribution,omitempty" yaml:"distribution,omitempty"`
 	// ID is unique, immutable, system-controlled identifier for each resource
 	ID string `json:"id,omitempty" yaml:"id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
@@ -338,7 +343,22 @@ type GlobalImage struct {
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
 	// Url is uRL source of this image, if any
 	Url string `json:"url,omitempty" yaml:"url,omitempty"`
-	// Version is version of this, if any
+	// Version is image version
+	Version string `json:"version,omitempty" yaml:"version,omitempty"`
+}
+
+// GlobalImageCreate is create-time parameters for an [`GlobalImage`](omicron_common::api::external::GlobalImage)
+type GlobalImageCreate struct {
+	// BlockSize is block size in bytes
+	BlockSize   BlockSize `json:"block_size,omitempty" yaml:"block_size,omitempty"`
+	Description string    `json:"description,omitempty" yaml:"description,omitempty"`
+	// Distribution is oS image distribution
+	Distribution Distribution `json:"distribution,omitempty" yaml:"distribution,omitempty"`
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
+	// Source is the source of the image's contents.
+	Source ImageSource `json:"source,omitempty" yaml:"source,omitempty"`
+	// Version is image version
 	Version string `json:"version,omitempty" yaml:"version,omitempty"`
 }
 
@@ -415,8 +435,8 @@ type ImageResultsPage struct {
 
 // ImageSourceUrl is the type definition for a ImageSourceUrl.
 type ImageSourceUrl struct {
-	Src  string          `json:"src,omitempty" yaml:"src,omitempty"`
 	Type ImageSourceType `json:"type,omitempty" yaml:"type,omitempty"`
+	Url  string          `json:"url,omitempty" yaml:"url,omitempty"`
 }
 
 // ImageSourceType is the type definition for a ImageSourceType.
@@ -429,7 +449,7 @@ const (
 
 // ImageSourceSnapshot is the type definition for a ImageSourceSnapshot.
 type ImageSourceSnapshot struct {
-	Src  string          `json:"src,omitempty" yaml:"src,omitempty"`
+	ID   string          `json:"id,omitempty" yaml:"id,omitempty"`
 	Type ImageSourceType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -438,10 +458,21 @@ const (
 	ImageSourceTypeSnapshot ImageSourceType = "snapshot"
 )
 
+// ImageSourceYouCanBootAnythingAsLongAsItsAlpine is boot the Alpine ISO that ships with the Propolis zone. Intended for development purposes only.
+type ImageSourceYouCanBootAnythingAsLongAsItsAlpine struct {
+	Type ImageSourceType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+const (
+	// ImageSourceTypeYouCanBootAnythingAsLongAsItsAlpine represents the ImageSourceType `"you_can_boot_anything_as_long_as_its_alpine"`.
+	ImageSourceTypeYouCanBootAnythingAsLongAsItsAlpine ImageSourceType = "you_can_boot_anything_as_long_as_its_alpine"
+)
+
 // ImageSource is the source of the underlying image.
 type ImageSource struct {
-	Src  string `json:"src,omitempty" yaml:"src,omitempty"`
 	Type string `json:"type,omitempty" yaml:"type,omitempty"`
+	Url  string `json:"url,omitempty" yaml:"url,omitempty"`
+	ID   string `json:"id,omitempty" yaml:"id,omitempty"`
 }
 
 // Instance is client view of an [`Instance`]
@@ -540,7 +571,9 @@ type InstanceMigrate struct {
 	DstSledUuid string `json:"dst_sled_uuid,omitempty" yaml:"dst_sled_uuid,omitempty"`
 }
 
-// InstanceNetworkInterfaceAttachmentCreate is create one or more `NetworkInterface`s for the `Instance`
+// InstanceNetworkInterfaceAttachmentCreate is create one or more `NetworkInterface`s for the `Instance`.
+//
+// If more than one interface is provided, then the first will be designated the primary interface for the instance.
 type InstanceNetworkInterfaceAttachmentCreate struct {
 	Params []NetworkInterfaceCreate               `json:"params,omitempty" yaml:"params,omitempty"`
 	Type   InstanceNetworkInterfaceAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
@@ -554,7 +587,7 @@ const (
 	InstanceNetworkInterfaceAttachmentTypeCreate InstanceNetworkInterfaceAttachmentType = "create"
 )
 
-// InstanceNetworkInterfaceAttachmentDefault is default networking setup, which creates a single interface with an auto-assigned IP address from project's "default" VPC and "default" VPC Subnet.
+// InstanceNetworkInterfaceAttachmentDefault is the default networking configuration for an instance is to create a single primary interface with an automatically-assigned IP address. The IP will be pulled from the Project's default VPC / VPC Subnet.
 type InstanceNetworkInterfaceAttachmentDefault struct {
 	Type InstanceNetworkInterfaceAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
 }
@@ -680,6 +713,8 @@ type NetworkInterface struct {
 	Mac MacAddr `json:"mac,omitempty" yaml:"mac,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
+	// Primary is true if this interface is the primary for the instance to which it's attached.
+	Primary bool `json:"primary,omitempty" yaml:"primary,omitempty"`
 	// SubnetID is the subnet to which the interface belongs.
 	SubnetID string `json:"subnet_id,omitempty" yaml:"subnet_id,omitempty"`
 	// TimeCreated is timestamp when this resource was created
@@ -748,6 +783,8 @@ const (
 	OrganizationRoleAdmin OrganizationRole = "admin"
 	// OrganizationRoleCollaborator represents the OrganizationRole `"collaborator"`.
 	OrganizationRoleCollaborator OrganizationRole = "collaborator"
+	// OrganizationRoleViewer represents the OrganizationRole `"viewer"`.
+	OrganizationRoleViewer OrganizationRole = "viewer"
 )
 
 // OrganizationRolesPolicy is client view of a [`Policy`], which describes how this resource may be accessed
@@ -1912,6 +1949,7 @@ var IdentityTypes = []IdentityType{
 var ImageSourceTypes = []ImageSourceType{
 	ImageSourceTypeSnapshot,
 	ImageSourceTypeUrl,
+	ImageSourceTypeYouCanBootAnythingAsLongAsItsAlpine,
 }
 
 // InstanceDiskAttachmentTypes is the collection of all InstanceDiskAttachmentType values.
@@ -1957,6 +1995,7 @@ var NameSortModes = []NameSortMode{
 var OrganizationRoles = []OrganizationRole{
 	OrganizationRoleAdmin,
 	OrganizationRoleCollaborator,
+	OrganizationRoleViewer,
 }
 
 // ProjectRoles is the collection of all ProjectRole values.

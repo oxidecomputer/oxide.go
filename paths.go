@@ -17,7 +17,7 @@ import (
 //
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
-//	- `pageToken`: Token returned by previous call to retreive the subsequent page
+//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `sortBy`
 func (s *RacksService) List(limit int, pageToken string, sortBy IdSortMode) (*RackResultsPage, error) {
 	// Create the url.
@@ -130,7 +130,7 @@ func (s *RacksService) Get(rackID string) (*Rack, error) {
 //
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
-//	- `pageToken`: Token returned by previous call to retreive the subsequent page
+//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `sortBy`
 func (s *SledsService) List(limit int, pageToken string, sortBy IdSortMode) (*SledResultsPage, error) {
 	// Create the url.
@@ -245,7 +245,7 @@ func (s *SledsService) Get(sledID string) (*Sled, error) {
 //
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
-//	- `pageToken`: Token returned by previous call to retreive the subsequent page
+//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `sortBy`
 func (s *ImagesService) GlobalList(limit int, pageToken string, sortBy NameSortMode) (*GlobalImageResultsPage, error) {
 	// Create the url.
@@ -316,7 +316,7 @@ func (s *ImagesService) GlobalListAllPages(sortBy NameSortMode) (*[]GlobalImage,
 } // GlobalCreate: Create a global image.
 //
 // Create a new global image. This image can then be used by any user as a base for instances.
-func (s *ImagesService) GlobalCreate(j *ImageCreate) (*GlobalImage, error) {
+func (s *ImagesService) GlobalCreate(j *GlobalImageCreate) (*GlobalImage, error) {
 	// Create the url.
 	path := "/images"
 	uri := resolveRelative(s.client.server, path)
@@ -436,7 +436,7 @@ func (s *ImagesService) GlobalDelete(imageName string) error {
 //
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
-//	- `pageToken`: Token returned by previous call to retreive the subsequent page
+//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `sortBy`
 func (s *OrganizationsService) List(limit int, pageToken string, sortBy NameOrIdSortMode) (*OrganizationResultsPage, error) {
 	// Create the url.
@@ -753,7 +753,7 @@ func (s *OrganizationsService) PutPolicy(organizationName string, j *Organizatio
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
 //	- `organizationName`: The organization's unique name.
-//	- `pageToken`: Token returned by previous call to retreive the subsequent page
+//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `sortBy`
 func (s *ProjectsService) List(limit int, pageToken string, sortBy NameOrIdSortMode, organizationName string) (*ProjectResultsPage, error) {
 	// Create the url.
@@ -1000,7 +1000,7 @@ func (s *ProjectsService) Delete(organizationName string, projectName string) er
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
 //	- `organizationName`: The organization's unique name.
-//	- `pageToken`: Token returned by previous call to retreive the subsequent page
+//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `projectName`: The project's unique name within the organization.
 //	- `sortBy`
 func (s *DisksService) List(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string) (*DiskResultsPage, error) {
@@ -1210,7 +1210,7 @@ func (s *DisksService) Delete(diskName string, organizationName string, projectN
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
 //	- `organizationName`: The organization's unique name.
-//	- `pageToken`: Token returned by previous call to retreive the subsequent page
+//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `projectName`: The project's unique name within the organization.
 //	- `sortBy`
 func (s *ImagesService) List(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string) (*ImageResultsPage, error) {
@@ -1426,7 +1426,7 @@ func (s *ImagesService) Delete(imageName string, organizationName string, projec
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
 //	- `organizationName`: The organization's unique name.
-//	- `pageToken`: Token returned by previous call to retreive the subsequent page
+//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `projectName`: The project's unique name within the organization.
 //	- `sortBy`
 func (s *InstancesService) List(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string) (*InstanceResultsPage, error) {
@@ -1635,7 +1635,7 @@ func (s *InstancesService) Delete(instanceName string, organizationName string, 
 //	- `instanceName`
 //	- `limit`: Maximum number of items returned by a single call
 //	- `organizationName`
-//	- `pageToken`: Token returned by previous call to retreive the subsequent page
+//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `projectName`
 //	- `sortBy`
 func (s *InstancesService) DisksList(limit int, pageToken string, sortBy NameSortMode, instanceName string, organizationName string, projectName string) (*DiskResultsPage, error) {
@@ -1866,7 +1866,7 @@ func (s *InstancesService) Migrate(instanceName string, organizationName string,
 //	- `instanceName`
 //	- `limit`: Maximum number of items returned by a single call
 //	- `organizationName`
-//	- `pageToken`: Token returned by previous call to retreive the subsequent page
+//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `projectName`
 //	- `sortBy`
 func (s *InstancesService) NetworkInterfacesList(limit int, pageToken string, sortBy NameSortMode, instanceName string, organizationName string, projectName string) (*NetworkInterfaceResultsPage, error) {
@@ -2037,6 +2037,8 @@ func (s *InstancesService) NetworkInterfacesGetInterface(instanceName string, in
 }
 
 // NetworkInterfacesDeleteInterface: Detach a network interface from an instance.
+//
+// Note that the primary interface for an instance cannot be deleted if there are any secondary interfaces. A new primary interface must be designated first. The primary interface can be deleted if there are no secondary interfaces.
 //
 // Parameters:
 //	- `instanceName`
@@ -2308,7 +2310,7 @@ func (s *ProjectsService) PutPolicy(organizationName string, projectName string,
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
 //	- `organizationName`: The organization's unique name.
-//	- `pageToken`: Token returned by previous call to retreive the subsequent page
+//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `projectName`: The project's unique name within the organization.
 //	- `sortBy`
 func (s *SnapshotsService) List(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string) (*SnapshotResultsPage, error) {
@@ -2516,7 +2518,7 @@ func (s *SnapshotsService) Delete(organizationName string, projectName string, s
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
 //	- `organizationName`: The organization's unique name.
-//	- `pageToken`: Token returned by previous call to retreive the subsequent page
+//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `projectName`: The project's unique name within the organization.
 //	- `sortBy`
 func (s *VPCsService) List(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string) (*VPCResultsPage, error) {
@@ -2869,7 +2871,7 @@ func (s *FirewallService) RulesPut(organizationName string, projectName string, 
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
 //	- `organizationName`
-//	- `pageToken`: Token returned by previous call to retreive the subsequent page
+//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `projectName`
 //	- `sortBy`
 //	- `vpcName`
@@ -3138,7 +3140,7 @@ func (s *RoutersService) Delete(organizationName string, projectName string, rou
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
 //	- `organizationName`
-//	- `pageToken`: Token returned by previous call to retreive the subsequent page
+//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `projectName`
 //	- `routerName`
 //	- `sortBy`
@@ -3418,7 +3420,7 @@ func (s *RoutesService) Delete(organizationName string, projectName string, rout
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
 //	- `organizationName`
-//	- `pageToken`: Token returned by previous call to retreive the subsequent page
+//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `projectName`
 //	- `sortBy`
 //	- `vpcName`
@@ -3687,7 +3689,7 @@ func (s *SubnetsService) Delete(organizationName string, projectName string, sub
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
 //	- `organizationName`
-//	- `pageToken`: Token returned by previous call to retreive the subsequent page
+//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `projectName`
 //	- `sortBy`
 //	- `subnetName`
@@ -3839,7 +3841,7 @@ func (s *PolicyService) Put(j *FleetRolesPolicy) (*FleetRolesPolicy, error) {
 //
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
-//	- `pageToken`: Token returned by previous call to retreive the subsequent page
+//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 func (s *RolesService) List(limit int, pageToken string) (*RoleResultsPage, error) {
 	// Create the url.
 	path := "/roles"
@@ -3947,7 +3949,7 @@ func (s *RolesService) Get(roleName string) (*Role, error) {
 //
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
-//	- `pageToken`: Token returned by previous call to retreive the subsequent page
+//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `sortBy`
 func (s *SagasService) List(limit int, pageToken string, sortBy IdSortMode) (*SagaResultsPage, error) {
 	// Create the url.
@@ -4060,7 +4062,7 @@ func (s *SagasService) Get(sagaID string) (*Saga, error) {
 //
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
-//	- `pageToken`: Token returned by previous call to retreive the subsequent page
+//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `sortBy`
 func (s *SshkeysService) List(limit int, pageToken string, sortBy NameSortMode) (*SshKeyResultsPage, error) {
 	// Create the url.
@@ -4243,7 +4245,7 @@ func (s *SshkeysService) DeleteKey(sshKeyName string) error {
 //
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
-//	- `pageToken`: Token returned by previous call to retreive the subsequent page
+//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `sortBy`
 func (s *SilosService) List(limit int, pageToken string, sortBy NameOrIdSortMode) (*SiloResultsPage, error) {
 	// Create the url.
@@ -4513,7 +4515,7 @@ func (s *SilosService) PutPolicy(siloName string, j *SiloRolesPolicy) (*SiloRole
 //
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
-//	- `pageToken`: Token returned by previous call to retreive the subsequent page
+//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 func (s *MetricsService) TimeseriesSchemaList(limit int, pageToken string) (*TimeseriesSchemaResultsPage, error) {
 	// Create the url.
 	path := "/timeseries/schema"
@@ -4604,7 +4606,7 @@ func (s *UpdatesService) Refresh() error {
 //
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
-//	- `pageToken`: Token returned by previous call to retreive the subsequent page
+//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `sortBy`
 func (s *UsersService) List(limit int, pageToken string, sortBy NameSortMode) (*UserResultsPage, error) {
 	// Create the url.
