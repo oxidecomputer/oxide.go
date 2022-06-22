@@ -231,6 +231,10 @@ func openGeneratedFile(filename string) *os.File {
 func cleanFnName(name string, tag string, path string) string {
 	name = printProperty(name)
 
+	if name == "Login" {
+		return name
+	}
+
 	global := strings.HasSuffix(tag, GLOBAL_SUFFIX)
 	tag = strings.TrimSuffix(tag, GLOBAL_SUFFIX)
 
@@ -396,7 +400,7 @@ func printType(property string, r *openapi3.SchemaRef) string {
 		}
 
 		// TODO: handle if it is not a reference.
-		return "[]TODO"
+		return "[]string"
 	} else if t == "object" {
 		// Most likely this is a local object, we will handle it.
 		return strcase.ToCamel(property)
@@ -586,7 +590,7 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 	}
 
 	// Write the method.
-	if respType != "" {
+	if respType != "" && respType != "ConsumeCredentialsResponse" && respType != "LoginResponse" {
 		fmt.Fprintf(f, "func (s *%sService) %s(%s) (*%s, error) {\n",
 			tag,
 			fnName,
@@ -660,7 +664,7 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 
 	fmt.Fprintf(f, "req, err := http.NewRequest(%q, uri, %s)\n", method, reqBodyParam)
 	fmt.Fprintln(f, "if err != nil {")
-	if respType != "" {
+	if respType != "" && respType != "ConsumeCredentialsResponse" && respType != "LoginResponse" {
 		fmt.Fprintln(f, `return nil, fmt.Errorf("error creating request: %v", err)`)
 	} else {
 		fmt.Fprintln(f, `return fmt.Errorf("error creating request: %v", err)`)
@@ -691,7 +695,7 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 			}
 		}
 		fmt.Fprintln(f, "}); err != nil {")
-		if respType != "" {
+		if respType != "" && respType != "ConsumeCredentialsResponse" && respType != "LoginResponse" {
 			fmt.Fprintln(f, `return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)`)
 		} else {
 			fmt.Fprintln(f, `return fmt.Errorf("expanding URL with parameters failed: %v", err)`)
@@ -703,7 +707,7 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 	fmt.Fprintln(f, "// Send the request.")
 	fmt.Fprintln(f, "resp, err := s.client.client.Do(req)")
 	fmt.Fprintln(f, "if err != nil {")
-	if respType != "" {
+	if respType != "" && respType != "ConsumeCredentialsResponse" && respType != "LoginResponse" {
 		fmt.Fprintln(f, `return nil, fmt.Errorf("error sending request: %v", err)`)
 	} else {
 		fmt.Fprintln(f, `return fmt.Errorf("error sending request: %v", err)`)
@@ -714,14 +718,14 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 	// Check the response if there were any errors.
 	fmt.Fprintln(f, "// Check the response.")
 	fmt.Fprintln(f, "if err := checkResponse(resp); err != nil {")
-	if respType != "" {
+	if respType != "" && respType != "ConsumeCredentialsResponse" && respType != "LoginResponse" {
 		fmt.Fprintln(f, "return nil, err")
 	} else {
 		fmt.Fprintln(f, "return err")
 	}
 	fmt.Fprintln(f, "}")
 
-	if respType != "" {
+	if respType != "" && respType != "ConsumeCredentialsResponse" && respType != "LoginResponse" {
 		// Decode the body from the response.
 		fmt.Fprintln(f, "// Decode the body from the response.")
 		fmt.Fprintln(f, "if resp.Body == nil {")

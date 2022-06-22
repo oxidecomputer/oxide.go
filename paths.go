@@ -430,6 +430,80 @@ func (s *ImagesService) GlobalDelete(imageName string) error {
 	return nil
 }
 
+// Login: Ask the user to login to their identity provider
+//
+// Either display a page asking a user for their credentials, or redirect them to their identity provider.
+//
+// Parameters:
+//	- `providerName`
+//	- `siloName`
+func (s *LoginService) Login(providerName string, siloName string) error {
+	// Create the url.
+	path := "/login/{{.silo_name}}/{{.provider_name}}"
+	uri := resolveRelative(s.client.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"provider_name": providerName,
+		"silo_name":     siloName,
+	}); err != nil {
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+	// Return.
+	return nil
+}
+
+// ConsumeCredentials: Consume some sort of credentials, and authenticate a user.
+//
+// Either receive a username and password, or some sort of identity provider data (like a SAMLResponse). Use these to set the user's session cookie.
+//
+// Parameters:
+//	- `providerName`
+//	- `siloName`
+func (s *LoginService) ConsumeCredentials(providerName string, siloName string) error {
+	// Create the url.
+	path := "/login/{{.silo_name}}/{{.provider_name}}"
+	uri := resolveRelative(s.client.server, path)
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, nil)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"provider_name": providerName,
+		"silo_name":     siloName,
+	}); err != nil {
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+	// Return.
+	return nil
+}
+
 // List: List all organizations.
 //
 // To iterate over all pages, use the `ListAllPages` method, instead.
@@ -663,7 +737,7 @@ func (s *OrganizationsService) Delete(organizationName string) error {
 //
 // Parameters:
 //	- `organizationName`: The organization's unique name.
-func (s *OrganizationsService) GetPolicy(organizationName string) (*OrganizationRolesPolicy, error) {
+func (s *OrganizationsService) GetPolicy(organizationName string) (*OrganizationRolePolicy, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/policy"
 	uri := resolveRelative(s.client.server, path)
@@ -692,7 +766,7 @@ func (s *OrganizationsService) GetPolicy(organizationName string) (*Organization
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body OrganizationRolesPolicy
+	var body OrganizationRolePolicy
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -704,7 +778,7 @@ func (s *OrganizationsService) GetPolicy(organizationName string) (*Organization
 //
 // Parameters:
 //	- `organizationName`: The organization's unique name.
-func (s *OrganizationsService) PutPolicy(organizationName string, j *OrganizationRolesPolicy) (*OrganizationRolesPolicy, error) {
+func (s *OrganizationsService) PutPolicy(organizationName string, j *OrganizationRolePolicy) (*OrganizationRolePolicy, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/policy"
 	uri := resolveRelative(s.client.server, path)
@@ -738,7 +812,7 @@ func (s *OrganizationsService) PutPolicy(organizationName string, j *Organizatio
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body OrganizationRolesPolicy
+	var body OrganizationRolePolicy
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -2036,6 +2110,58 @@ func (s *InstancesService) NetworkInterfacesGetInterface(instanceName string, in
 	return &body, nil
 }
 
+// NetworkInterfacesPutInterface: Update information about an instance's network interface
+//
+// Parameters:
+//	- `instanceName`
+//	- `interfaceName`
+//	- `organizationName`
+//	- `projectName`
+func (s *InstancesService) NetworkInterfacesPutInterface(instanceName string, interfaceName string, organizationName string, projectName string, j *NetworkInterfaceUpdate) (*NetworkInterface, error) {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/network-interfaces/{{.interface_name}}"
+	uri := resolveRelative(s.client.server, path)
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+	// Create the request.
+	req, err := http.NewRequest("PUT", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"instance_name":     instanceName,
+		"interface_name":    interfaceName,
+		"organization_name": organizationName,
+		"project_name":      projectName,
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body NetworkInterface
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
 // NetworkInterfacesDeleteInterface: Detach a network interface from an instance.
 //
 // Note that the primary interface for an instance cannot be deleted if there are any secondary interfaces. A new primary interface must be designated first. The primary interface can be deleted if there are no secondary interfaces.
@@ -2115,6 +2241,57 @@ func (s *InstancesService) Reboot(instanceName string, organizationName string, 
 		return nil, errors.New("request returned an empty body in the response")
 	}
 	var body Instance
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// SerialList: Get contents of an instance's serial console.
+//
+// Parameters:
+//	- `fromStart`: Character index in the serial buffer from which to read, counting the bytes output since instance start. If this is not provided, `most_recent` must be provided, and if this *is* provided, `most_recent` must *not* be provided.
+//	- `instanceName`
+//	- `maxBytes`: Maximum number of bytes of buffered serial console contents to return. If the requested range runs to the end of the available buffer, the data returned will be shorter than `max_bytes`.
+//	- `mostRecent`: Character index in the serial buffer from which to read, counting *backward* from the most recently buffered data retrieved from the instance. (See note on `from_start` about mutual exclusivity)
+//	- `organizationName`
+//	- `projectName`
+func (s *InstancesService) SerialList(instanceName string, organizationName string, projectName string, fromStart int, maxBytes int, mostRecent int) (*InstanceSerialConsoleData, error) {
+	// Create the url.
+	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/serial"
+	uri := resolveRelative(s.client.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"from_start":        strconv.Itoa(fromStart),
+		"instance_name":     instanceName,
+		"max_bytes":         strconv.Itoa(maxBytes),
+		"most_recent":       strconv.Itoa(mostRecent),
+		"organization_name": organizationName,
+		"project_name":      projectName,
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body InstanceSerialConsoleData
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -2217,7 +2394,7 @@ func (s *InstancesService) Stop(instanceName string, organizationName string, pr
 // Parameters:
 //	- `organizationName`: The organization's unique name.
 //	- `projectName`: The project's unique name within the organization.
-func (s *ProjectsService) GetPolicy(organizationName string, projectName string) (*ProjectRolesPolicy, error) {
+func (s *ProjectsService) GetPolicy(organizationName string, projectName string) (*ProjectRolePolicy, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/policy"
 	uri := resolveRelative(s.client.server, path)
@@ -2247,7 +2424,7 @@ func (s *ProjectsService) GetPolicy(organizationName string, projectName string)
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body ProjectRolesPolicy
+	var body ProjectRolePolicy
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -2260,7 +2437,7 @@ func (s *ProjectsService) GetPolicy(organizationName string, projectName string)
 // Parameters:
 //	- `organizationName`: The organization's unique name.
 //	- `projectName`: The project's unique name within the organization.
-func (s *ProjectsService) PutPolicy(organizationName string, projectName string, j *ProjectRolesPolicy) (*ProjectRolesPolicy, error) {
+func (s *ProjectsService) PutPolicy(organizationName string, projectName string, j *ProjectRolePolicy) (*ProjectRolePolicy, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/policy"
 	uri := resolveRelative(s.client.server, path)
@@ -2295,7 +2472,7 @@ func (s *ProjectsService) PutPolicy(organizationName string, projectName string,
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body ProjectRolesPolicy
+	var body ProjectRolePolicy
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -3767,7 +3944,7 @@ func (s *SubnetsService) NetworkInterfacesListAllPages(sortBy NameSortMode, orga
 
 	return &allPages, nil
 } // List: Fetch the top-level IAM policy
-func (s *PolicyService) List() (*FleetRolesPolicy, error) {
+func (s *PolicyService) List() (*FleetRolePolicy, error) {
 	// Create the url.
 	path := "/policy"
 	uri := resolveRelative(s.client.server, path)
@@ -3790,7 +3967,7 @@ func (s *PolicyService) List() (*FleetRolesPolicy, error) {
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body FleetRolesPolicy
+	var body FleetRolePolicy
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -3799,7 +3976,7 @@ func (s *PolicyService) List() (*FleetRolesPolicy, error) {
 }
 
 // Put: Update the top-level IAM policy
-func (s *PolicyService) Put(j *FleetRolesPolicy) (*FleetRolesPolicy, error) {
+func (s *PolicyService) Put(j *FleetRolePolicy) (*FleetRolePolicy, error) {
 	// Create the url.
 	path := "/policy"
 	uri := resolveRelative(s.client.server, path)
@@ -3827,7 +4004,7 @@ func (s *PolicyService) Put(j *FleetRolesPolicy) (*FleetRolesPolicy, error) {
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body FleetRolesPolicy
+	var body FleetRolePolicy
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -4422,11 +4599,86 @@ func (s *SilosService) Delete(siloName string) error {
 	return nil
 }
 
-// GetPolicy: Fetch the IAM policy for this Silo
+// GetIdentityProviders: List Silo identity providers
+//
+// To iterate over all pages, use the `GetIdentityProvidersAllPages` method, instead.
+//
+// Parameters:
+//	- `limit`: Maximum number of items returned by a single call
+//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
+//	- `siloName`: The silo's unique name.
+//	- `sortBy`
+func (s *SilosService) GetIdentityProviders(siloName string, limit int, pageToken string, sortBy NameSortMode) (*IdentityProviderResultsPage, error) {
+	// Create the url.
+	path := "/silos/{{.silo_name}}/identity_providers"
+	uri := resolveRelative(s.client.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"limit":      strconv.Itoa(limit),
+		"page_token": pageToken,
+		"silo_name":  siloName,
+		"sort_by":    string(sortBy),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body IdentityProviderResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// GetIdentityProvidersAllPages: List Silo identity providers
+//
+// This method is a wrapper around the `GetIdentityProviders` method.
+// This method returns all the pages at once.
 //
 // Parameters:
 //	- `siloName`: The silo's unique name.
-func (s *SilosService) GetPolicy(siloName string) (*SiloRolesPolicy, error) {
+//	- `sortBy`
+func (s *SilosService) GetIdentityProvidersAllPages(siloName string, sortBy NameSortMode) (*[]IdentityProvider, error) {
+
+	var allPages []IdentityProvider
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := s.GetIdentityProviders(siloName, limit, pageToken, sortBy)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == pageToken {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+} // GetPolicy: Fetch the IAM policy for this Silo
+//
+// Parameters:
+//	- `siloName`: The silo's unique name.
+func (s *SilosService) GetPolicy(siloName string) (*SiloRolePolicy, error) {
 	// Create the url.
 	path := "/silos/{{.silo_name}}/policy"
 	uri := resolveRelative(s.client.server, path)
@@ -4455,7 +4707,7 @@ func (s *SilosService) GetPolicy(siloName string) (*SiloRolesPolicy, error) {
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body SiloRolesPolicy
+	var body SiloRolePolicy
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -4467,7 +4719,7 @@ func (s *SilosService) GetPolicy(siloName string) (*SiloRolesPolicy, error) {
 //
 // Parameters:
 //	- `siloName`: The silo's unique name.
-func (s *SilosService) PutPolicy(siloName string, j *SiloRolesPolicy) (*SiloRolesPolicy, error) {
+func (s *SilosService) PutPolicy(siloName string, j *SiloRolePolicy) (*SiloRolePolicy, error) {
 	// Create the url.
 	path := "/silos/{{.silo_name}}/policy"
 	uri := resolveRelative(s.client.server, path)
@@ -4501,7 +4753,96 @@ func (s *SilosService) PutPolicy(siloName string, j *SiloRolesPolicy) (*SiloRole
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body SiloRolesPolicy
+	var body SiloRolePolicy
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// SamlIdpCreate: Create a new SAML identity provider for a silo.
+//
+// Parameters:
+//	- `siloName`: The silo's unique name.
+func (s *SilosService) SamlIdpCreate(siloName string, j *SamlIdentityProviderCreate) (*SamlIdentityProvider, error) {
+	// Create the url.
+	path := "/silos/{{.silo_name}}/saml_identity_providers"
+	uri := resolveRelative(s.client.server, path)
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"silo_name": siloName,
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body SamlIdentityProvider
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// SamlIdpFetch: GET a silo's SAML identity provider
+//
+// Parameters:
+//	- `providerName`: The SAML identity provider's name
+//	- `siloName`: The silo's unique name.
+func (s *SilosService) SamlIdpFetch(providerName string, siloName string) (*SamlIdentityProvider, error) {
+	// Create the url.
+	path := "/silos/{{.silo_name}}/saml_identity_providers/{{.provider_name}}"
+	uri := resolveRelative(s.client.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"provider_name": providerName,
+		"silo_name":     siloName,
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body SamlIdentityProvider
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}

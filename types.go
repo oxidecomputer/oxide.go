@@ -35,6 +35,14 @@ const (
 	DatumTypeHistogramF64 DatumType = "histogram_f64"
 )
 
+// DerEncodedKeyPair is the type definition for a DerEncodedKeyPair.
+type DerEncodedKeyPair struct {
+	// PrivateKey is request signing private key (base64 encoded der file)
+	PrivateKey string `json:"private_key,omitempty" yaml:"private_key,omitempty"`
+	// PublicCert is request signing public certificate (base64 encoded der file)
+	PublicCert string `json:"public_cert,omitempty" yaml:"public_cert,omitempty"`
+}
+
 // DigestSha256 is the type definition for a DigestSha256.
 type DigestSha256 struct {
 	Type  DigestType `json:"type,omitempty" yaml:"type,omitempty"`
@@ -246,8 +254,13 @@ type DiskState struct {
 	Instance string `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
 
-// Distribution is distribution must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
-type Distribution string
+// Distribution is oS image distribution
+type Distribution struct {
+	// Name is the name of the distribution (e.g. "alpine" or "ubuntu")
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
+	// Version is the version of the distribution (e.g. "3.10" or "18.04")
+	Version string `json:"version,omitempty" yaml:"version,omitempty"`
+}
 
 // Error is error information from a response.
 type Error struct {
@@ -303,18 +316,18 @@ const (
 	FleetRoleViewer FleetRole = "viewer"
 )
 
-// FleetRolesPolicy is client view of a [`Policy`], which describes how this resource may be accessed
+// FleetRolePolicy is client view of a [`Policy`], which describes how this resource may be accessed
 //
 // Note that the Policy only describes access granted explicitly for this resource.  The policies of parent resources can also cause a user to have access to this resource.
-type FleetRolesPolicy struct {
+type FleetRolePolicy struct {
 	// RoleAssignments is roles directly assigned on this resource
-	RoleAssignments []FleetRolesRoleAssignment `json:"role_assignments,omitempty" yaml:"role_assignments,omitempty"`
+	RoleAssignments []FleetRoleRoleAssignment `json:"role_assignments,omitempty" yaml:"role_assignments,omitempty"`
 }
 
-// FleetRolesRoleAssignment is describes the assignment of a particular role on a particular resource to a particular identity (user, group, etc.)
+// FleetRoleRoleAssignment is describes the assignment of a particular role on a particular resource to a particular identity (user, group, etc.)
 //
 // The resource is not part of this structure.  Rather, [`RoleAssignment`]s are put into a [`Policy`] and that Policy is applied to a particular resource.
-type FleetRolesRoleAssignment struct {
+type FleetRoleRoleAssignment struct {
 	IdentityID string `json:"identity_id,omitempty" yaml:"identity_id,omitempty"`
 	// IdentityType is describes what kind of identity is described by an id
 	IdentityType IdentityType `json:"identity_type,omitempty" yaml:"identity_type,omitempty"`
@@ -358,8 +371,6 @@ type GlobalImageCreate struct {
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// Source is the source of the image's contents.
 	Source ImageSource `json:"source,omitempty" yaml:"source,omitempty"`
-	// Version is image version
-	Version string `json:"version,omitempty" yaml:"version,omitempty"`
 }
 
 // GlobalImageResultsPage is a single page of results
@@ -380,6 +391,38 @@ const (
 	IdSortModeIdAscending IdSortMode = "id_ascending"
 )
 
+// IdentityProvider is client view of an [`IdentityProvider`]
+type IdentityProvider struct {
+	// Description is human-readable free-form text about a resource
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// ID is unique, immutable, system-controlled identifier for each resource
+	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Name is unique, mutable, user-controlled identifier for each resource
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
+	// ProviderType is identity provider type
+	ProviderType IdentityProviderType `json:"provider_type,omitempty" yaml:"provider_type,omitempty"`
+	// TimeCreated is timestamp when this resource was created
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	// TimeModified is timestamp when this resource was last modified
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+}
+
+// IdentityProviderResultsPage is a single page of results
+type IdentityProviderResultsPage struct {
+	// Items is list of items on this page of results
+	Items []IdentityProvider `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// IdentityProviderType is the type definition for a IdentityProviderType.
+type IdentityProviderType string
+
+const (
+	// IdentityProviderTypeSaml represents the IdentityProviderType `"saml"`.
+	IdentityProviderTypeSaml IdentityProviderType = "saml"
+)
+
 // IdentityType is describes what kind of identity is described by an id
 type IdentityType string
 
@@ -387,6 +430,38 @@ const (
 	// IdentityTypeSiloUser represents the IdentityType `"silo_user"`.
 	IdentityTypeSiloUser IdentityType = "silo_user"
 )
+
+// IdpMetadataSourceUrl is the type definition for a IdpMetadataSourceUrl.
+type IdpMetadataSourceUrl struct {
+	Type IdpMetadataSourceType `json:"type,omitempty" yaml:"type,omitempty"`
+	Url  string                `json:"url,omitempty" yaml:"url,omitempty"`
+}
+
+// IdpMetadataSourceType is the type definition for a IdpMetadataSourceType.
+type IdpMetadataSourceType string
+
+const (
+	// IdpMetadataSourceTypeUrl represents the IdpMetadataSourceType `"url"`.
+	IdpMetadataSourceTypeUrl IdpMetadataSourceType = "url"
+)
+
+// IdpMetadataSourceBase64EncodedXml is the type definition for a IdpMetadataSourceBase64EncodedXml.
+type IdpMetadataSourceBase64EncodedXml struct {
+	Data string                `json:"data,omitempty" yaml:"data,omitempty"`
+	Type IdpMetadataSourceType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+const (
+	// IdpMetadataSourceTypeBase64EncodedXml represents the IdpMetadataSourceType `"base64_encoded_xml"`.
+	IdpMetadataSourceTypeBase64EncodedXml IdpMetadataSourceType = "base64_encoded_xml"
+)
+
+// IdpMetadataSource is the type definition for a IdpMetadataSource.
+type IdpMetadataSource struct {
+	Type string `json:"type,omitempty" yaml:"type,omitempty"`
+	Url  string `json:"url,omitempty" yaml:"url,omitempty"`
+	Data string `json:"data,omitempty" yaml:"data,omitempty"`
+}
 
 // Image is client view of project Images
 type Image struct {
@@ -568,7 +643,7 @@ type InstanceDiskAttachment struct {
 
 // InstanceMigrate is migration parameters for an [`Instance`](omicron_common::api::external::Instance)
 type InstanceMigrate struct {
-	DstSledUuid string `json:"dst_sled_uuid,omitempty" yaml:"dst_sled_uuid,omitempty"`
+	DstSledID string `json:"dst_sled_id,omitempty" yaml:"dst_sled_id,omitempty"`
 }
 
 // InstanceNetworkInterfaceAttachmentCreate is create one or more `NetworkInterface`s for the `Instance`.
@@ -621,6 +696,14 @@ type InstanceResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+// InstanceSerialConsoleData is contents of an Instance's serial console buffer.
+type InstanceSerialConsoleData struct {
+	// Data is the bytes starting from the requested offset up to either the end of the buffer or the request's `max_bytes`. Provided as a u8 array rather than a string, as it may not be UTF-8.
+	Data []string `json:"data,omitempty" yaml:"data,omitempty"`
+	// LastByteOffset is the absolute offset since boot (suitable for use as `byte_offset` in a subsequent request) of the last byte returned in `data`.
+	LastByteOffset int `json:"last_byte_offset,omitempty" yaml:"last_byte_offset,omitempty"`
+}
+
 // InstanceState is running state of an Instance (primarily: booted or stopped)
 //
 // This typically reflects whether it's starting, running, stopping, or stopped, but also includes states related to the Instance's lifecycle
@@ -665,11 +748,6 @@ type IPv6Net string
 
 // L4PortRange is an inclusive-inclusive range of IP ports. The second port may be omitted to represent a single port
 type L4PortRange string
-
-// Login is the type definition for a Login.
-type Login struct {
-	Username string `json:"username,omitempty" yaml:"username,omitempty"`
-}
 
 // MacAddr is a Media Access Control address, in EUI-48 format
 type MacAddr string
@@ -746,6 +824,20 @@ type NetworkInterfaceResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+// NetworkInterfaceUpdate is parameters for updating a [`NetworkInterface`](omicron_common::api::external::NetworkInterface).
+//
+// Note that modifying IP addresses for an interface is not yet supported, a new interface must be created instead.
+type NetworkInterfaceUpdate struct {
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// MakePrimary is make a secondary interface the instance's primary interface.
+	//
+	// If applied to a secondary interface, that interface will become the primary on the next reboot of the instance. Note that this may have implications for routing between instances, as the new primary interface will be on a distinct subnet from the previous primary interface.
+	//
+	// Note that this can only be used to select a new primary interface for an instance. Requests to change the primary interface into a secondary will return an error.
+	MakePrimary bool   `json:"make_primary,omitempty" yaml:"make_primary,omitempty"`
+	Name        string `json:"name,omitempty" yaml:"name,omitempty"`
+}
+
 // Organization is client view of an [`Organization`]
 type Organization struct {
 	// Description is human-readable free-form text about a resource
@@ -787,18 +879,18 @@ const (
 	OrganizationRoleViewer OrganizationRole = "viewer"
 )
 
-// OrganizationRolesPolicy is client view of a [`Policy`], which describes how this resource may be accessed
+// OrganizationRolePolicy is client view of a [`Policy`], which describes how this resource may be accessed
 //
 // Note that the Policy only describes access granted explicitly for this resource.  The policies of parent resources can also cause a user to have access to this resource.
-type OrganizationRolesPolicy struct {
+type OrganizationRolePolicy struct {
 	// RoleAssignments is roles directly assigned on this resource
-	RoleAssignments []OrganizationRolesRoleAssignment `json:"role_assignments,omitempty" yaml:"role_assignments,omitempty"`
+	RoleAssignments []OrganizationRoleRoleAssignment `json:"role_assignments,omitempty" yaml:"role_assignments,omitempty"`
 }
 
-// OrganizationRolesRoleAssignment is describes the assignment of a particular role on a particular resource to a particular identity (user, group, etc.)
+// OrganizationRoleRoleAssignment is describes the assignment of a particular role on a particular resource to a particular identity (user, group, etc.)
 //
 // The resource is not part of this structure.  Rather, [`RoleAssignment`]s are put into a [`Policy`] and that Policy is applied to a particular resource.
-type OrganizationRolesRoleAssignment struct {
+type OrganizationRoleRoleAssignment struct {
 	IdentityID string `json:"identity_id,omitempty" yaml:"identity_id,omitempty"`
 	// IdentityType is describes what kind of identity is described by an id
 	IdentityType IdentityType     `json:"identity_type,omitempty" yaml:"identity_type,omitempty"`
@@ -853,18 +945,18 @@ const (
 	ProjectRoleViewer ProjectRole = "viewer"
 )
 
-// ProjectRolesPolicy is client view of a [`Policy`], which describes how this resource may be accessed
+// ProjectRolePolicy is client view of a [`Policy`], which describes how this resource may be accessed
 //
 // Note that the Policy only describes access granted explicitly for this resource.  The policies of parent resources can also cause a user to have access to this resource.
-type ProjectRolesPolicy struct {
+type ProjectRolePolicy struct {
 	// RoleAssignments is roles directly assigned on this resource
-	RoleAssignments []ProjectRolesRoleAssignment `json:"role_assignments,omitempty" yaml:"role_assignments,omitempty"`
+	RoleAssignments []ProjectRoleRoleAssignment `json:"role_assignments,omitempty" yaml:"role_assignments,omitempty"`
 }
 
-// ProjectRolesRoleAssignment is describes the assignment of a particular role on a particular resource to a particular identity (user, group, etc.)
+// ProjectRoleRoleAssignment is describes the assignment of a particular role on a particular resource to a particular identity (user, group, etc.)
 //
 // The resource is not part of this structure.  Rather, [`RoleAssignment`]s are put into a [`Policy`] and that Policy is applied to a particular resource.
-type ProjectRolesRoleAssignment struct {
+type ProjectRoleRoleAssignment struct {
 	IdentityID string `json:"identity_id,omitempty" yaml:"identity_id,omitempty"`
 	// IdentityType is describes what kind of identity is described by an id
 	IdentityType IdentityType `json:"identity_type,omitempty" yaml:"identity_type,omitempty"`
@@ -1235,6 +1327,53 @@ type SagaState struct {
 	ErrorNodeName string        `json:"error_node_name,omitempty" yaml:"error_node_name,omitempty"`
 }
 
+// SamlIdentityProvider is identity-related metadata that's included in nearly all public API objects
+type SamlIdentityProvider struct {
+	// AcsUrl is service provider endpoint where the response will be sent
+	AcsUrl string `json:"acs_url,omitempty" yaml:"acs_url,omitempty"`
+	// Description is human-readable free-form text about a resource
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// ID is unique, immutable, system-controlled identifier for each resource
+	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	// IdpEntityID is idp's entity id
+	IdpEntityID string `json:"idp_entity_id,omitempty" yaml:"idp_entity_id,omitempty"`
+	// Name is unique, mutable, user-controlled identifier for each resource
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
+	// PublicCert is optional request signing public certificate (base64 encoded der file)
+	PublicCert string `json:"public_cert,omitempty" yaml:"public_cert,omitempty"`
+	// SloUrl is service provider endpoint where the idp should send log out requests
+	SloUrl string `json:"slo_url,omitempty" yaml:"slo_url,omitempty"`
+	// SpClientID is sp's client id
+	SpClientID string `json:"sp_client_id,omitempty" yaml:"sp_client_id,omitempty"`
+	// TechnicalContactEmail is customer's technical contact for saml configuration
+	TechnicalContactEmail string `json:"technical_contact_email,omitempty" yaml:"technical_contact_email,omitempty"`
+	// TimeCreated is timestamp when this resource was created
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	// TimeModified is timestamp when this resource was last modified
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+}
+
+// SamlIdentityProviderCreate is create-time identity-related parameters
+type SamlIdentityProviderCreate struct {
+	// AcsUrl is service provider endpoint where the response will be sent
+	AcsUrl      string `json:"acs_url,omitempty" yaml:"acs_url,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// IdpEntityID is idp's entity id
+	IdpEntityID string `json:"idp_entity_id,omitempty" yaml:"idp_entity_id,omitempty"`
+	// IdpMetadataSource is the source of an identity provider metadata descriptor
+	IdpMetadataSource IdpMetadataSource `json:"idp_metadata_source,omitempty" yaml:"idp_metadata_source,omitempty"`
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
+	// SigningKeypair is optional request signing key pair
+	SigningKeypair DerEncodedKeyPair `json:"signing_keypair,omitempty" yaml:"signing_keypair,omitempty"`
+	// SloUrl is service provider endpoint where the idp should send log out requests
+	SloUrl string `json:"slo_url,omitempty" yaml:"slo_url,omitempty"`
+	// SpClientID is sp's client id
+	SpClientID string `json:"sp_client_id,omitempty" yaml:"sp_client_id,omitempty"`
+	// TechnicalContactEmail is customer's technical contact for saml configuration
+	TechnicalContactEmail string `json:"technical_contact_email,omitempty" yaml:"technical_contact_email,omitempty"`
+}
+
 // SessionUser is client view of currently authed user.
 type SessionUser struct {
 	ID string `json:"id,omitempty" yaml:"id,omitempty"`
@@ -1284,18 +1423,18 @@ const (
 	SiloRoleViewer SiloRole = "viewer"
 )
 
-// SiloRolesPolicy is client view of a [`Policy`], which describes how this resource may be accessed
+// SiloRolePolicy is client view of a [`Policy`], which describes how this resource may be accessed
 //
 // Note that the Policy only describes access granted explicitly for this resource.  The policies of parent resources can also cause a user to have access to this resource.
-type SiloRolesPolicy struct {
+type SiloRolePolicy struct {
 	// RoleAssignments is roles directly assigned on this resource
-	RoleAssignments []SiloRolesRoleAssignment `json:"role_assignments,omitempty" yaml:"role_assignments,omitempty"`
+	RoleAssignments []SiloRoleRoleAssignment `json:"role_assignments,omitempty" yaml:"role_assignments,omitempty"`
 }
 
-// SiloRolesRoleAssignment is describes the assignment of a particular role on a particular resource to a particular identity (user, group, etc.)
+// SiloRoleRoleAssignment is describes the assignment of a particular role on a particular resource to a particular identity (user, group, etc.)
 //
 // The resource is not part of this structure.  Rather, [`RoleAssignment`]s are put into a [`Policy`] and that Policy is applied to a particular resource.
-type SiloRolesRoleAssignment struct {
+type SiloRoleRoleAssignment struct {
 	IdentityID string `json:"identity_id,omitempty" yaml:"identity_id,omitempty"`
 	// IdentityType is describes what kind of identity is described by an id
 	IdentityType IdentityType `json:"identity_type,omitempty" yaml:"identity_type,omitempty"`
@@ -1360,6 +1499,11 @@ type SnapshotResultsPage struct {
 	Items []Snapshot `json:"items,omitempty" yaml:"items,omitempty"`
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// SpoofLoginBody is the type definition for a SpoofLoginBody.
+type SpoofLoginBody struct {
+	Username string `json:"username,omitempty" yaml:"username,omitempty"`
 }
 
 // SshKey is client view of a [`SshKey`]
@@ -1940,9 +2084,20 @@ var IdSortModes = []IdSortMode{
 	IdSortModeIdAscending,
 }
 
+// IdentityProviderTypes is the collection of all IdentityProviderType values.
+var IdentityProviderTypes = []IdentityProviderType{
+	IdentityProviderTypeSaml,
+}
+
 // IdentityTypes is the collection of all IdentityType values.
 var IdentityTypes = []IdentityType{
 	IdentityTypeSiloUser,
+}
+
+// IdpMetadataSourceTypes is the collection of all IdpMetadataSourceType values.
+var IdpMetadataSourceTypes = []IdpMetadataSourceType{
+	IdpMetadataSourceTypeBase64EncodedXml,
+	IdpMetadataSourceTypeUrl,
 }
 
 // ImageSourceTypes is the collection of all ImageSourceType values.
