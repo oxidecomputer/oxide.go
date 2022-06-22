@@ -27,6 +27,8 @@ type Client struct {
 	Imagesglobal *ImagesglobalService
 	// Instances: Virtual machine instances are the basic unit of computation. These operations are used for provisioning, controlling, and destroying instances.
 	Instances *InstancesService
+	// Login: Authentication endpoints
+	Login *LoginService
 	// Metrics: Metrics provide insight into the operation of the Oxide deployment. These include telemetry on hardware and software components that can be used to understand the current state as well as to diagnose issues.
 	Metrics *MetricsService
 	// Organizations: Organizations represent a subset of users and projects in an Oxide deployment.
@@ -80,6 +82,9 @@ type ImagesglobalService service
 
 // InstancesService: Virtual machine instances are the basic unit of computation. These operations are used for provisioning, controlling, and destroying instances.
 type InstancesService service
+
+// LoginService: Authentication endpoints
+type LoginService service
 
 // MetricsService: Metrics provide insight into the operation of the Oxide deployment. These include telemetry on hardware and software components that can be used to understand the current state as well as to diagnose issues.
 type MetricsService service
