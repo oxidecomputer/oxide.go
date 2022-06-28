@@ -430,6 +430,395 @@ func (s *ImagesService) GlobalDelete(imageName string) error {
 	return nil
 }
 
+// List: List IP Pools.
+//
+// To iterate over all pages, use the `ListAllPages` method, instead.
+//
+// Parameters:
+//	- `limit`: Maximum number of items returned by a single call
+//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
+//	- `sortBy`
+func (s *IpPoolsService) List(limit int, pageToken string, sortBy NameOrIdSortMode) (*IpPoolResultsPage, error) {
+	// Create the url.
+	path := "/ip-pools"
+	uri := resolveRelative(s.client.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"limit":      strconv.Itoa(limit),
+		"page_token": pageToken,
+		"sort_by":    string(sortBy),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body IpPoolResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// ListAllPages: List IP Pools.
+//
+// This method is a wrapper around the `List` method.
+// This method returns all the pages at once.
+//
+// Parameters:
+//	- `sortBy`
+func (s *IpPoolsService) ListAllPages(sortBy NameOrIdSortMode) (*[]IpPool, error) {
+
+	var allPages []IpPool
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := s.List(limit, pageToken, sortBy)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == pageToken {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+} // Create: Create a new IP Pool.
+func (s *IpPoolsService) Create(j *IpPoolCreate) (*IpPool, error) {
+	// Create the url.
+	path := "/ip-pools"
+	uri := resolveRelative(s.client.server, path)
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body IpPool
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// Get: Fetch a single IP Pool.
+//
+// Parameters:
+//	- `poolName`
+func (s *IpPoolsService) Get(poolName string) (*IpPool, error) {
+	// Create the url.
+	path := "/ip-pools/{{.pool_name}}"
+	uri := resolveRelative(s.client.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"pool_name": poolName,
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body IpPool
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// Put: Update an IP Pool.
+//
+// Parameters:
+//	- `poolName`
+func (s *IpPoolsService) Put(poolName string, j *IpPoolUpdate) (*IpPool, error) {
+	// Create the url.
+	path := "/ip-pools/{{.pool_name}}"
+	uri := resolveRelative(s.client.server, path)
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+	// Create the request.
+	req, err := http.NewRequest("PUT", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"pool_name": poolName,
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body IpPool
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// Delete: Delete an IP Pool.
+//
+// Parameters:
+//	- `poolName`
+func (s *IpPoolsService) Delete(poolName string) error {
+	// Create the url.
+	path := "/ip-pools/{{.pool_name}}"
+	uri := resolveRelative(s.client.server, path)
+	// Create the request.
+	req, err := http.NewRequest("DELETE", uri, nil)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"pool_name": poolName,
+	}); err != nil {
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+	// Return.
+	return nil
+}
+
+// RangesList: List the ranges of IP addresses within an existing IP Pool.
+//
+// Note that ranges are listed sorted by their first address.
+//
+// To iterate over all pages, use the `RangesListAllPages` method, instead.
+//
+// Parameters:
+//	- `limit`: Maximum number of items returned by a single call
+//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
+//	- `poolName`
+func (s *IpPoolsService) RangesList(poolName string, limit int, pageToken string) (*IpPoolRangeResultsPage, error) {
+	// Create the url.
+	path := "/ip-pools/{{.pool_name}}/ranges"
+	uri := resolveRelative(s.client.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"limit":      strconv.Itoa(limit),
+		"page_token": pageToken,
+		"pool_name":  poolName,
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body IpPoolRangeResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// RangesListAllPages: List the ranges of IP addresses within an existing IP Pool.
+//
+// Note that ranges are listed sorted by their first address.
+//
+// This method is a wrapper around the `RangesList` method.
+// This method returns all the pages at once.
+//
+// Parameters:
+//	- `poolName`
+func (s *IpPoolsService) RangesListAllPages(poolName string) (*[]IpPoolRange, error) {
+
+	var allPages []IpPoolRange
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := s.RangesList(poolName, limit, pageToken)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == pageToken {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+} // RangesAdd: Add a new range to an existing IP Pool.
+//
+// Parameters:
+//	- `poolName`
+func (s *IpPoolsService) RangesAdd(poolName string, j *IpRange) (*IpPoolRange, error) {
+	// Create the url.
+	path := "/ip-pools/{{.pool_name}}/ranges/add"
+	uri := resolveRelative(s.client.server, path)
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"pool_name": poolName,
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body IpPoolRange
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// RangesDelete: Remove a range from an existing IP Pool.
+//
+// Parameters:
+//	- `poolName`
+func (s *IpPoolsService) RangesDelete(poolName string, j *IpRange) error {
+	// Create the url.
+	path := "/ip-pools/{{.pool_name}}/ranges/delete"
+	uri := resolveRelative(s.client.server, path)
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return fmt.Errorf("encoding json body request failed: %v", err)
+	}
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, b)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"pool_name": poolName,
+	}); err != nil {
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+	// Return.
+	return nil
+}
+
 // Login: Ask the user to login to their identity provider
 //
 // Either display a page asking a user for their credentials, or redirect them to their identity provider.
@@ -4941,15 +5330,15 @@ func (s *UpdatesService) Refresh() error {
 	return nil
 }
 
-// List: List the built-in system users
+// UsersList: List users
 //
-// To iterate over all pages, use the `ListAllPages` method, instead.
+// To iterate over all pages, use the `UsersListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `sortBy`
-func (s *UsersService) List(limit int, pageToken string, sortBy NameSortMode) (*UserResultsPage, error) {
+func (s *SilosService) UsersList(limit int, pageToken string, sortBy IdSortMode) (*UserResultsPage, error) {
 	// Create the url.
 	path := "/users"
 	uri := resolveRelative(s.client.server, path)
@@ -4988,20 +5377,20 @@ func (s *UsersService) List(limit int, pageToken string, sortBy NameSortMode) (*
 	return &body, nil
 }
 
-// ListAllPages: List the built-in system users
+// UsersListAllPages: List users
 //
-// This method is a wrapper around the `List` method.
+// This method is a wrapper around the `UsersList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
 //	- `sortBy`
-func (s *UsersService) ListAllPages(sortBy NameSortMode) (*[]User, error) {
+func (s *SilosService) UsersListAllPages(sortBy IdSortMode) (*[]User, error) {
 
 	var allPages []User
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.List(limit, pageToken, sortBy)
+		page, err := s.UsersList(limit, pageToken, sortBy)
 		if err != nil {
 			return nil, err
 		}
@@ -5013,13 +5402,85 @@ func (s *UsersService) ListAllPages(sortBy NameSortMode) (*[]User, error) {
 	}
 
 	return &allPages, nil
-} // Get: Fetch a specific built-in system user
+} // BuiltinUsersList: List the built-in system users
+//
+// To iterate over all pages, use the `BuiltinUsersListAllPages` method, instead.
+//
+// Parameters:
+//	- `limit`: Maximum number of items returned by a single call
+//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
+//	- `sortBy`
+func (s *SystemService) BuiltinUsersList(limit int, pageToken string, sortBy NameSortMode) (*UserBuiltinResultsPage, error) {
+	// Create the url.
+	path := "/users_builtin"
+	uri := resolveRelative(s.client.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"limit":      strconv.Itoa(limit),
+		"page_token": pageToken,
+		"sort_by":    string(sortBy),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+	// Send the request.
+	resp, err := s.client.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body UserBuiltinResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// BuiltinUsersListAllPages: List the built-in system users
+//
+// This method is a wrapper around the `BuiltinUsersList` method.
+// This method returns all the pages at once.
+//
+// Parameters:
+//	- `sortBy`
+func (s *SystemService) BuiltinUsersListAllPages(sortBy NameSortMode) (*[]UserBuiltin, error) {
+
+	var allPages []UserBuiltin
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := s.BuiltinUsersList(limit, pageToken, sortBy)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == pageToken {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+} // BuiltinUsersGetUser: Fetch a specific built-in system user
 //
 // Parameters:
 //	- `userName`: The built-in user's unique name.
-func (s *UsersService) Get(userName string) (*User, error) {
+func (s *SystemService) BuiltinUsersGetUser(userName string) (*UserBuiltin, error) {
 	// Create the url.
-	path := "/users/{{.user_name}}"
+	path := "/users_builtin/{{.user_name}}"
 	uri := resolveRelative(s.client.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
@@ -5046,7 +5507,7 @@ func (s *UsersService) Get(userName string) (*User, error) {
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body User
+	var body UserBuiltin
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}

@@ -740,11 +740,87 @@ const (
 type IpNet struct {
 }
 
+// IpPool is identity-related metadata that's included in nearly all public API objects
+type IpPool struct {
+	// Description is human-readable free-form text about a resource
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// ID is unique, immutable, system-controlled identifier for each resource
+	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Name is unique, mutable, user-controlled identifier for each resource
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
+	// TimeCreated is timestamp when this resource was created
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	// TimeModified is timestamp when this resource was last modified
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+}
+
+// IpPoolCreate is create-time parameters for an IP Pool.
+//
+// See [`IpPool`](omicron_nexus::external_api::views::IpPool)
+type IpPoolCreate struct {
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
+}
+
+// IpPoolRange is the type definition for a IpPoolRange.
+type IpPoolRange struct {
+	ID          string     `json:"id,omitempty" yaml:"id,omitempty"`
+	Range       IpRange    `json:"range,omitempty" yaml:"range,omitempty"`
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+}
+
+// IpPoolRangeResultsPage is a single page of results
+type IpPoolRangeResultsPage struct {
+	// Items is list of items on this page of results
+	Items []IpPoolRange `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// IpPoolResultsPage is a single page of results
+type IpPoolResultsPage struct {
+	// Items is list of items on this page of results
+	Items []IpPool `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// IpPoolUpdate is parameters for updating an IP Pool
+type IpPoolUpdate struct {
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Name        string `json:"name,omitempty" yaml:"name,omitempty"`
+}
+
+// IpRange is the type definition for a IpRange.
+
+// IpRange is the type definition for a IpRange.
+
+// IpRange is the type definition for a IpRange.
+type IpRange struct {
+}
+
 // IPv4Net is an IPv4 subnet, including prefix and subnet mask
 type IPv4Net string
 
+// IPv4Range is a non-decreasing IPv4 address range, inclusive of both ends.
+//
+// The first address must be less than or equal to the last address.
+type IPv4Range struct {
+	First string `json:"first,omitempty" yaml:"first,omitempty"`
+	Last  string `json:"last,omitempty" yaml:"last,omitempty"`
+}
+
 // IPv6Net is an IPv6 subnet, including prefix and subnet mask
 type IPv6Net string
+
+// IPv6Range is a non-decreasing IPv6 address range, inclusive of both ends.
+//
+// The first address must be less than or equal to the last address.
+type IPv6Range struct {
+	First string `json:"first,omitempty" yaml:"first,omitempty"`
+	Last  string `json:"last,omitempty" yaml:"last,omitempty"`
+}
 
 // L4PortRange is an inclusive-inclusive range of IP ports. The second port may be omitted to represent a single port
 type L4PortRange string
@@ -971,12 +1047,8 @@ type ProjectUpdate struct {
 
 // Rack is client view of an [`Rack`]
 type Rack struct {
-	// Description is human-readable free-form text about a resource
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// ID is unique, immutable, system-controlled identifier for each resource
 	ID string `json:"id,omitempty" yaml:"id,omitempty"`
-	// Name is unique, mutable, user-controlled identifier for each resource
-	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
@@ -1443,12 +1515,8 @@ type SiloRoleRoleAssignment struct {
 
 // Sled is client view of an [`Sled`]
 type Sled struct {
-	// Description is human-readable free-form text about a resource
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// ID is unique, immutable, system-controlled identifier for each resource
-	ID string `json:"id,omitempty" yaml:"id,omitempty"`
-	// Name is unique, mutable, user-controlled identifier for each resource
-	Name           string `json:"name,omitempty" yaml:"name,omitempty"`
+	ID             string `json:"id,omitempty" yaml:"id,omitempty"`
 	ServiceAddress string `json:"service_address,omitempty" yaml:"service_address,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
@@ -1566,6 +1634,11 @@ type TimeseriesSchemaResultsPage struct {
 
 // User is client view of a [`User`]
 type User struct {
+	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+}
+
+// UserBuiltin is client view of a [`UserBuiltin`]
+type UserBuiltin struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// ID is unique, immutable, system-controlled identifier for each resource
@@ -1576,6 +1649,14 @@ type User struct {
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+}
+
+// UserBuiltinResultsPage is a single page of results
+type UserBuiltinResultsPage struct {
+	// Items is list of items on this page of results
+	Items []UserBuiltin `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
 // UserResultsPage is a single page of results
