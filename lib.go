@@ -74,7 +74,7 @@ func NewClient(token, userAgent, host string) (*Client, error) {
 	client.Snapshots = &SnapshotsService{client}
 	client.Subnets = &SubnetsService{client}
 	client.Updates = &UpdatesService{client}
-	client.Users = &UsersService{client}
+	//client.Users = &UsersService{client}
 	client.VPCs = &VPCsService{client}
 
 	return client, nil

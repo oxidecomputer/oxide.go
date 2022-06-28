@@ -27,6 +27,8 @@ type Client struct {
 	Imagesglobal *ImagesglobalService
 	// Instances: Virtual machine instances are the basic unit of computation. These operations are used for provisioning, controlling, and destroying instances.
 	Instances *InstancesService
+	// IpPools: IP Pools contain external IP addresses that can be assigned to virtual machine Instances.
+	IpPools *IpPoolsService
 	// Login: Authentication endpoints
 	Login *LoginService
 	// Metrics: Metrics provide insight into the operation of the Oxide deployment. These include telemetry on hardware and software components that can be used to understand the current state as well as to diagnose issues.
@@ -57,10 +59,10 @@ type Client struct {
 	Sshkeys *SshkeysService
 	// Subnets: This tag should be moved into a generic network tag
 	Subnets *SubnetsService
+	// System: Internal system information
+	System *SystemService
 	// Updates: This tag should be moved into a operations tag
 	Updates *UpdatesService
-	// Users: This tag should be moved into an IAM tag
-	Users *UsersService
 	// VPCs: A Virtual Private Cloud (VPC) is an isolated network environment that should probaby be moved into a more generic networking tag
 	VPCs *VPCsService
 }
@@ -82,6 +84,9 @@ type ImagesglobalService service
 
 // InstancesService: Virtual machine instances are the basic unit of computation. These operations are used for provisioning, controlling, and destroying instances.
 type InstancesService service
+
+// IpPoolsService: IP Pools contain external IP addresses that can be assigned to virtual machine Instances.
+type IpPoolsService service
 
 // LoginService: Authentication endpoints
 type LoginService service
@@ -128,11 +133,11 @@ type SshkeysService service
 // SubnetsService: This tag should be moved into a generic network tag
 type SubnetsService service
 
+// SystemService: Internal system information
+type SystemService service
+
 // UpdatesService: This tag should be moved into a operations tag
 type UpdatesService service
-
-// UsersService: This tag should be moved into an IAM tag
-type UsersService service
 
 // VPCsService: A Virtual Private Cloud (VPC) is an isolated network environment that should probaby be moved into a more generic networking tag
 type VPCsService service
