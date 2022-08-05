@@ -19,6 +19,8 @@ type Client struct {
 	Disks *DisksService
 	// Firewall: Firewall operation controls the flow of network data into a VPC
 	Firewall *FirewallService
+	// Hardware: These operations pertain to hardware inventory and management. Racks are the unit of expansion of an Oxide deployment. Racks are in turn composed of sleds, switches, power supplies, and a cabled backplane.
+	Hardware *HardwareService
 	// Hidden: TODO operations that will not ship to customers
 	Hidden *HiddenService
 	// Images: Images are read-only Virtual Disks that may be used to boot Virtual Machines
@@ -39,8 +41,6 @@ type Client struct {
 	Policy *PolicyService
 	// Projects: Projects are a grouping of associated resources such as instances and disks within an organization for purposes of billing and access control.
 	Projects *ProjectsService
-	// Racks: These operations pertain to hardware inventory and management. Racks are the unit of expansion of an Oxide deployment. Racks are in turn composed of sleds, switches, power supplies, and a cabled backplane.
-	Racks *RacksService
 	// Roles: Roles are a component of Identity and Access Management (IAM) that allow a user or agent account access to additional permissions.
 	Roles *RolesService
 	// Routers: Routers direct the flow of network traffic into, out of, and within a VPC via routes.
@@ -49,14 +49,12 @@ type Client struct {
 	Routes *RoutesService
 	// Sagas: Sagas are the abstraction used to represent multi-step operations within the Oxide deployment. These operations can be used to query saga status and report errors.
 	Sagas *SagasService
+	// Session: Information pertaining to the current session.
+	Session *SessionService
 	// Silos: Silos represent a logical partition of users and resources.
 	Silos *SilosService
-	// Sleds: This tag should be moved into hardware
-	Sleds *SledsService
 	// Snapshots: Snapshots of Virtual Disks at a particular point in time.
 	Snapshots *SnapshotsService
-	// Sshkeys: Public SSH keys for an individual user
-	Sshkeys *SshkeysService
 	// Subnets: This tag should be moved into a generic network tag
 	Subnets *SubnetsService
 	// System: Internal system information
@@ -72,6 +70,9 @@ type DisksService service
 
 // FirewallService: Firewall operation controls the flow of network data into a VPC
 type FirewallService service
+
+// HardwareService: These operations pertain to hardware inventory and management. Racks are the unit of expansion of an Oxide deployment. Racks are in turn composed of sleds, switches, power supplies, and a cabled backplane.
+type HardwareService service
 
 // HiddenService: TODO operations that will not ship to customers
 type HiddenService service
@@ -103,9 +104,6 @@ type PolicyService service
 // ProjectsService: Projects are a grouping of associated resources such as instances and disks within an organization for purposes of billing and access control.
 type ProjectsService service
 
-// RacksService: These operations pertain to hardware inventory and management. Racks are the unit of expansion of an Oxide deployment. Racks are in turn composed of sleds, switches, power supplies, and a cabled backplane.
-type RacksService service
-
 // RolesService: Roles are a component of Identity and Access Management (IAM) that allow a user or agent account access to additional permissions.
 type RolesService service
 
@@ -118,17 +116,14 @@ type RoutesService service
 // SagasService: Sagas are the abstraction used to represent multi-step operations within the Oxide deployment. These operations can be used to query saga status and report errors.
 type SagasService service
 
+// SessionService: Information pertaining to the current session.
+type SessionService service
+
 // SilosService: Silos represent a logical partition of users and resources.
 type SilosService service
 
-// SledsService: This tag should be moved into hardware
-type SledsService service
-
 // SnapshotsService: Snapshots of Virtual Disks at a particular point in time.
 type SnapshotsService service
-
-// SshkeysService: Public SSH keys for an individual user
-type SshkeysService service
 
 // SubnetsService: This tag should be moved into a generic network tag
 type SubnetsService service

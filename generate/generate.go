@@ -85,6 +85,11 @@ func generateTypes(doc *openapi3.T) {
 			continue
 		}
 
+		if name == "DatumType" {
+			fmt.Printf("[WARN] TODO: skipping type for %q, since it is a duplicate\n", name)
+			continue
+		}
+
 		writeSchemaType(f, name, s.Value, "")
 	}
 
@@ -690,6 +695,8 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 				fmt.Fprintf(f, "	%q: %s,\n", name, n)
 			} else if t == "int" {
 				fmt.Fprintf(f, "	%q: strconv.Itoa(%s),\n", name, n)
+			} else if t == "*time.Time" {
+				fmt.Fprintf(f, "	%q: %s.String(),\n", name, n)
 			} else {
 				fmt.Fprintf(f, "	%q: string(%s),\n", name, n)
 			}

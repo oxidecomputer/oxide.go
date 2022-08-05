@@ -4,6 +4,114 @@ package oxide
 
 import "time"
 
+// BinRangedoubleRangeTo is a range unbounded below and exclusively above, `..end`.
+type BinRangedoubleRangeTo struct {
+	End  float64            `json:"end,omitempty" yaml:"end,omitempty"`
+	Type BinRangedoubleType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// BinRangedoubleType is the type definition for a BinRangedoubleType.
+type BinRangedoubleType string
+
+const (
+	// BinRangedoubleTypeRangeTo represents the BinRangedoubleType `"range_to"`.
+	BinRangedoubleTypeRangeTo BinRangedoubleType = "range_to"
+)
+
+// BinRangedoubleRange is a range bounded inclusively below and exclusively above, `start..end`.
+type BinRangedoubleRange struct {
+	End   float64            `json:"end,omitempty" yaml:"end,omitempty"`
+	Start float64            `json:"start,omitempty" yaml:"start,omitempty"`
+	Type  BinRangedoubleType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+const (
+	// BinRangedoubleTypeRange represents the BinRangedoubleType `"range"`.
+	BinRangedoubleTypeRange BinRangedoubleType = "range"
+)
+
+// BinRangedoubleRangeFrom is a range bounded inclusively below and unbounded above, `start..`.
+type BinRangedoubleRangeFrom struct {
+	Start float64            `json:"start,omitempty" yaml:"start,omitempty"`
+	Type  BinRangedoubleType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+const (
+	// BinRangedoubleTypeRangeFrom represents the BinRangedoubleType `"range_from"`.
+	BinRangedoubleTypeRangeFrom BinRangedoubleType = "range_from"
+)
+
+// BinRangedouble is a type storing a range over `T`.
+//
+// This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those cover `(..end)`, `(start..end)`, and `(start..)` respectively.
+type BinRangedouble struct {
+	End   float64 `json:"end,omitempty" yaml:"end,omitempty"`
+	Type  string  `json:"type,omitempty" yaml:"type,omitempty"`
+	Start float64 `json:"start,omitempty" yaml:"start,omitempty"`
+}
+
+// BinRangeint64RangeTo is a range unbounded below and exclusively above, `..end`.
+type BinRangeint64RangeTo struct {
+	End  int               `json:"end,omitempty" yaml:"end,omitempty"`
+	Type BinRangeint64Type `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// BinRangeint64Type is the type definition for a BinRangeint64Type.
+type BinRangeint64Type string
+
+const (
+	// BinRangeint64TypeRangeTo represents the BinRangeint64Type `"range_to"`.
+	BinRangeint64TypeRangeTo BinRangeint64Type = "range_to"
+)
+
+// BinRangeint64Range is a range bounded inclusively below and exclusively above, `start..end`.
+type BinRangeint64Range struct {
+	End   int               `json:"end,omitempty" yaml:"end,omitempty"`
+	Start int               `json:"start,omitempty" yaml:"start,omitempty"`
+	Type  BinRangeint64Type `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+const (
+	// BinRangeint64TypeRange represents the BinRangeint64Type `"range"`.
+	BinRangeint64TypeRange BinRangeint64Type = "range"
+)
+
+// BinRangeint64RangeFrom is a range bounded inclusively below and unbounded above, `start..`.
+type BinRangeint64RangeFrom struct {
+	Start int               `json:"start,omitempty" yaml:"start,omitempty"`
+	Type  BinRangeint64Type `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+const (
+	// BinRangeint64TypeRangeFrom represents the BinRangeint64Type `"range_from"`.
+	BinRangeint64TypeRangeFrom BinRangeint64Type = "range_from"
+)
+
+// BinRangeint64 is a type storing a range over `T`.
+//
+// This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those cover `(..end)`, `(start..end)`, and `(start..)` respectively.
+type BinRangeint64 struct {
+	End   int    `json:"end,omitempty" yaml:"end,omitempty"`
+	Type  string `json:"type,omitempty" yaml:"type,omitempty"`
+	Start int    `json:"start,omitempty" yaml:"start,omitempty"`
+}
+
+// Bindouble is type storing bin edges and a count of samples within it.
+type Bindouble struct {
+	// Count is the total count of samples in this bin.
+	Count int `json:"count,omitempty" yaml:"count,omitempty"`
+	// Range is the range of the support covered by this bin.
+	Range BinRangedouble `json:"range,omitempty" yaml:"range,omitempty"`
+}
+
+// Binint64 is type storing bin edges and a count of samples within it.
+type Binint64 struct {
+	// Count is the total count of samples in this bin.
+	Count int `json:"count,omitempty" yaml:"count,omitempty"`
+	// Range is the range of the support covered by this bin.
+	Range BinRangeint64 `json:"range,omitempty" yaml:"range,omitempty"`
+}
+
 type BlockSize int64
 
 // ByteCount is a count of bytes, typically used either for memory or storage capacity
@@ -11,29 +119,165 @@ type BlockSize int64
 // The maximum supported byte count is [`i64::MAX`].  This makes it somewhat inconvenient to define constructors: a u32 constructor can be infallible, but an i64 constructor can fail (if the value is negative) and a u64 constructor can fail (if the value is larger than i64::MAX).  We provide all of these for consumers' convenience.
 type ByteCount int64
 
-// DatumType is the type of an individual datum of a metric.
+// Cumulativedouble is a cumulative or counter data type.
+type Cumulativedouble struct {
+	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+	Value     float64    `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// Cumulativeint64 is a cumulative or counter data type.
+type Cumulativeint64 struct {
+	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+	Value     int        `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// DatumBool is the type definition for a DatumBool.
+type DatumBool struct {
+	Datum bool      `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// DatumType is the type definition for a DatumType.
 type DatumType string
 
 const (
 	// DatumTypeBool represents the DatumType `"bool"`.
 	DatumTypeBool DatumType = "bool"
+)
+
+// DatumI64 is the type definition for a DatumI64.
+type DatumI64 struct {
+	Datum int       `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+const (
 	// DatumTypeI64 represents the DatumType `"i64"`.
 	DatumTypeI64 DatumType = "i64"
+)
+
+// DatumF64 is the type definition for a DatumF64.
+type DatumF64 struct {
+	Datum float64   `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+const (
 	// DatumTypeF64 represents the DatumType `"f64"`.
 	DatumTypeF64 DatumType = "f64"
+)
+
+// DatumString is the type definition for a DatumString.
+type DatumString struct {
+	Datum string    `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+const (
 	// DatumTypeString represents the DatumType `"string"`.
 	DatumTypeString DatumType = "string"
+)
+
+// DatumBytes is the type definition for a DatumBytes.
+type DatumBytes struct {
+	Datum []string  `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+const (
 	// DatumTypeBytes represents the DatumType `"bytes"`.
 	DatumTypeBytes DatumType = "bytes"
+)
+
+// DatumCumulativeI64 is the type definition for a DatumCumulativeI64.
+type DatumCumulativeI64 struct {
+	// Datum is a cumulative or counter data type.
+	Datum Cumulativeint64 `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Type  DatumType       `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+const (
 	// DatumTypeCumulativeI64 represents the DatumType `"cumulative_i64"`.
 	DatumTypeCumulativeI64 DatumType = "cumulative_i64"
+)
+
+// DatumCumulativeF64 is the type definition for a DatumCumulativeF64.
+type DatumCumulativeF64 struct {
+	// Datum is a cumulative or counter data type.
+	Datum Cumulativedouble `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Type  DatumType        `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+const (
 	// DatumTypeCumulativeF64 represents the DatumType `"cumulative_f64"`.
 	DatumTypeCumulativeF64 DatumType = "cumulative_f64"
+)
+
+// DatumHistogramI64 is the type definition for a DatumHistogramI64.
+type DatumHistogramI64 struct {
+	// Datum is a simple type for managing a histogram metric.
+	//
+	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+	//
+	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
+	//
+	// Example ------- ```rust use oximeter::histogram::{BinRange, Histogram};
+	//
+	// let edges = [0i64, 10, 20]; let mut hist = Histogram::new(&edges).unwrap(); assert_eq!(hist.n_bins(), 4); // One additional bin for the range (20..) assert_eq!(hist.n_samples(), 0); hist.sample(4); hist.sample(100); assert_eq!(hist.n_samples(), 2);
+	//
+	// let data = hist.iter().collect::<Vec<_>>(); assert_eq!(data[0].range, BinRange::range(i64::MIN, 0)); // An additional bin for `..0` assert_eq!(data[0].count, 0); // Nothing is in this bin
+	//
+	// assert_eq!(data[1].range, BinRange::range(0, 10)); // The range `0..10` assert_eq!(data[1].count, 1); // 4 is sampled into this bin ```
+	//
+	// Notes -----
+	//
+	// Histograms may be constructed either from their left bin edges, or from a sequence of ranges. In either case, the left-most bin may be converted upon construction. In particular, if the left-most value is not equal to the minimum of the support, a new bin will be added from the minimum to that provided value. If the left-most value _is_ the support's minimum, because the provided bin was unbounded below, such as `(..0)`, then that bin will be converted into one bounded below, `(MIN..0)` in this case.
+	//
+	// The short of this is that, most of the time, it shouldn't matter. If one specifies the extremes of the support as their bins, be aware that the left-most may be converted from a `BinRange::RangeTo` into a `BinRange::Range`. In other words, the first bin of a histogram is _always_ a `Bin::Range` or a `Bin::RangeFrom` after construction. In fact, every bin is one of those variants, the `BinRange::RangeTo` is only provided as a convenience during construction.
+	Datum Histogramint64 `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Type  DatumType      `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+const (
 	// DatumTypeHistogramI64 represents the DatumType `"histogram_i64"`.
 	DatumTypeHistogramI64 DatumType = "histogram_i64"
+)
+
+// DatumHistogramF64 is the type definition for a DatumHistogramF64.
+type DatumHistogramF64 struct {
+	// Datum is a simple type for managing a histogram metric.
+	//
+	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+	//
+	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
+	//
+	// Example ------- ```rust use oximeter::histogram::{BinRange, Histogram};
+	//
+	// let edges = [0i64, 10, 20]; let mut hist = Histogram::new(&edges).unwrap(); assert_eq!(hist.n_bins(), 4); // One additional bin for the range (20..) assert_eq!(hist.n_samples(), 0); hist.sample(4); hist.sample(100); assert_eq!(hist.n_samples(), 2);
+	//
+	// let data = hist.iter().collect::<Vec<_>>(); assert_eq!(data[0].range, BinRange::range(i64::MIN, 0)); // An additional bin for `..0` assert_eq!(data[0].count, 0); // Nothing is in this bin
+	//
+	// assert_eq!(data[1].range, BinRange::range(0, 10)); // The range `0..10` assert_eq!(data[1].count, 1); // 4 is sampled into this bin ```
+	//
+	// Notes -----
+	//
+	// Histograms may be constructed either from their left bin edges, or from a sequence of ranges. In either case, the left-most bin may be converted upon construction. In particular, if the left-most value is not equal to the minimum of the support, a new bin will be added from the minimum to that provided value. If the left-most value _is_ the support's minimum, because the provided bin was unbounded below, such as `(..0)`, then that bin will be converted into one bounded below, `(MIN..0)` in this case.
+	//
+	// The short of this is that, most of the time, it shouldn't matter. If one specifies the extremes of the support as their bins, be aware that the left-most may be converted from a `BinRange::RangeTo` into a `BinRange::Range`. In other words, the first bin of a histogram is _always_ a `Bin::Range` or a `Bin::RangeFrom` after construction. In fact, every bin is one of those variants, the `BinRange::RangeTo` is only provided as a convenience during construction.
+	Datum Histogramdouble `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Type  DatumType       `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+const (
 	// DatumTypeHistogramF64 represents the DatumType `"histogram_f64"`.
 	DatumTypeHistogramF64 DatumType = "histogram_f64"
 )
+
+// Datum is a `Datum` is a single sampled data point from a metric.
+type Datum struct {
+	Datum bool   `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Type  string `json:"type,omitempty" yaml:"type,omitempty"`
+}
 
 // DerEncodedKeyPair is the type definition for a DerEncodedKeyPair.
 type DerEncodedKeyPair struct {
@@ -41,6 +285,23 @@ type DerEncodedKeyPair struct {
 	PrivateKey string `json:"private_key,omitempty" yaml:"private_key,omitempty"`
 	// PublicCert is request signing public certificate (base64 encoded der file)
 	PublicCert string `json:"public_cert,omitempty" yaml:"public_cert,omitempty"`
+}
+
+// DeviceAccessTokenRequest is the type definition for a DeviceAccessTokenRequest.
+type DeviceAccessTokenRequest struct {
+	ClientID   string `json:"client_id,omitempty" yaml:"client_id,omitempty"`
+	DeviceCode string `json:"device_code,omitempty" yaml:"device_code,omitempty"`
+	GrantType  string `json:"grant_type,omitempty" yaml:"grant_type,omitempty"`
+}
+
+// DeviceAuthRequest is the type definition for a DeviceAuthRequest.
+type DeviceAuthRequest struct {
+	ClientID string `json:"client_id,omitempty" yaml:"client_id,omitempty"`
+}
+
+// DeviceAuthVerify is the type definition for a DeviceAuthVerify.
+type DeviceAuthVerify struct {
+	UserCode string `json:"user_code,omitempty" yaml:"user_code,omitempty"`
 }
 
 // DigestSha256 is the type definition for a DigestSha256.
@@ -96,7 +357,7 @@ type DiskCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// DiskSource is initial source for this disk
 	DiskSource DiskSource `json:"disk_source,omitempty" yaml:"disk_source,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// Size is total size of the Disk in bytes
 	Size ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
@@ -104,9 +365,27 @@ type DiskCreate struct {
 
 // DiskIdentifier is parameters for the [`Disk`](omicron_common::api::external::Disk) to be attached or detached to an instance
 type DiskIdentifier struct {
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 }
+
+// DiskMetricName is the type definition for a DiskMetricName.
+type DiskMetricName string
+
+const (
+	// DiskMetricNameActivated represents the DiskMetricName `"activated"`.
+	DiskMetricNameActivated DiskMetricName = "activated"
+	// DiskMetricNameFlush represents the DiskMetricName `"flush"`.
+	DiskMetricNameFlush DiskMetricName = "flush"
+	// DiskMetricNameRead represents the DiskMetricName `"read"`.
+	DiskMetricNameRead DiskMetricName = "read"
+	// DiskMetricNameReadBytes represents the DiskMetricName `"read_bytes"`.
+	DiskMetricNameReadBytes DiskMetricName = "read_bytes"
+	// DiskMetricNameWrite represents the DiskMetricName `"write"`.
+	DiskMetricNameWrite DiskMetricName = "write"
+	// DiskMetricNameWriteBytes represents the DiskMetricName `"write_bytes"`.
+	DiskMetricNameWriteBytes DiskMetricName = "write_bytes"
+)
 
 // DiskResultsPage is a single page of results
 type DiskResultsPage struct {
@@ -269,6 +548,41 @@ type Error struct {
 	RequestID string `json:"request_id,omitempty" yaml:"request_id,omitempty"`
 }
 
+// ExternalIp is the type definition for a ExternalIp.
+type ExternalIp struct {
+	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
+	// Kind is the kind of an external IP address for an instance
+	Kind IpKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+}
+
+// ExternalIpCreateEphemeral is an IP address providing both inbound and outbound access. The address is automatically-assigned from the provided IP Pool, or all available pools if not specified.
+type ExternalIpCreateEphemeral struct {
+	PoolName string               `json:"pool_name,omitempty" yaml:"pool_name,omitempty"`
+	Type     ExternalIpCreateType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// ExternalIpCreateType is the type definition for a ExternalIpCreateType.
+type ExternalIpCreateType string
+
+const (
+	// ExternalIpCreateTypeEphemeral represents the ExternalIpCreateType `"ephemeral"`.
+	ExternalIpCreateTypeEphemeral ExternalIpCreateType = "ephemeral"
+)
+
+// ExternalIpCreate is parameters for creating an external IP address for instances.
+type ExternalIpCreate struct {
+	PoolName string `json:"pool_name,omitempty" yaml:"pool_name,omitempty"`
+	Type     string `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// ExternalIpResultsPage is a single page of results
+type ExternalIpResultsPage struct {
+	// Items is list of items on this page of results
+	Items []ExternalIp `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
 // FieldSchema is the name and type information for a field of a timeseries schema.
 type FieldSchema struct {
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
@@ -360,14 +674,14 @@ type GlobalImage struct {
 	Version string `json:"version,omitempty" yaml:"version,omitempty"`
 }
 
-// GlobalImageCreate is create-time parameters for an [`GlobalImage`](omicron_common::api::external::GlobalImage)
+// GlobalImageCreate is create-time parameters for an [`GlobalImage`](crate::external_api::views::GlobalImage)
 type GlobalImageCreate struct {
 	// BlockSize is block size in bytes
 	BlockSize   BlockSize `json:"block_size,omitempty" yaml:"block_size,omitempty"`
 	Description string    `json:"description,omitempty" yaml:"description,omitempty"`
 	// Distribution is oS image distribution
 	Distribution Distribution `json:"distribution,omitempty" yaml:"distribution,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// Source is the source of the image's contents.
 	Source ImageSource `json:"source,omitempty" yaml:"source,omitempty"`
@@ -379,6 +693,56 @@ type GlobalImageResultsPage struct {
 	Items []GlobalImage `json:"items,omitempty" yaml:"items,omitempty"`
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// Histogramdouble is a simple type for managing a histogram metric.
+//
+// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+//
+// Note that any gaps, unsorted bins, or non-finite values will result in an error.
+//
+// Example ------- ```rust use oximeter::histogram::{BinRange, Histogram};
+//
+// let edges = [0i64, 10, 20]; let mut hist = Histogram::new(&edges).unwrap(); assert_eq!(hist.n_bins(), 4); // One additional bin for the range (20..) assert_eq!(hist.n_samples(), 0); hist.sample(4); hist.sample(100); assert_eq!(hist.n_samples(), 2);
+//
+// let data = hist.iter().collect::<Vec<_>>(); assert_eq!(data[0].range, BinRange::range(i64::MIN, 0)); // An additional bin for `..0` assert_eq!(data[0].count, 0); // Nothing is in this bin
+//
+// assert_eq!(data[1].range, BinRange::range(0, 10)); // The range `0..10` assert_eq!(data[1].count, 1); // 4 is sampled into this bin ```
+//
+// Notes -----
+//
+// Histograms may be constructed either from their left bin edges, or from a sequence of ranges. In either case, the left-most bin may be converted upon construction. In particular, if the left-most value is not equal to the minimum of the support, a new bin will be added from the minimum to that provided value. If the left-most value _is_ the support's minimum, because the provided bin was unbounded below, such as `(..0)`, then that bin will be converted into one bounded below, `(MIN..0)` in this case.
+//
+// The short of this is that, most of the time, it shouldn't matter. If one specifies the extremes of the support as their bins, be aware that the left-most may be converted from a `BinRange::RangeTo` into a `BinRange::Range`. In other words, the first bin of a histogram is _always_ a `Bin::Range` or a `Bin::RangeFrom` after construction. In fact, every bin is one of those variants, the `BinRange::RangeTo` is only provided as a convenience during construction.
+type Histogramdouble struct {
+	Bins      []Bindouble `json:"bins,omitempty" yaml:"bins,omitempty"`
+	NSamples  int         `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
+	StartTime *time.Time  `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+}
+
+// Histogramint64 is a simple type for managing a histogram metric.
+//
+// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+//
+// Note that any gaps, unsorted bins, or non-finite values will result in an error.
+//
+// Example ------- ```rust use oximeter::histogram::{BinRange, Histogram};
+//
+// let edges = [0i64, 10, 20]; let mut hist = Histogram::new(&edges).unwrap(); assert_eq!(hist.n_bins(), 4); // One additional bin for the range (20..) assert_eq!(hist.n_samples(), 0); hist.sample(4); hist.sample(100); assert_eq!(hist.n_samples(), 2);
+//
+// let data = hist.iter().collect::<Vec<_>>(); assert_eq!(data[0].range, BinRange::range(i64::MIN, 0)); // An additional bin for `..0` assert_eq!(data[0].count, 0); // Nothing is in this bin
+//
+// assert_eq!(data[1].range, BinRange::range(0, 10)); // The range `0..10` assert_eq!(data[1].count, 1); // 4 is sampled into this bin ```
+//
+// Notes -----
+//
+// Histograms may be constructed either from their left bin edges, or from a sequence of ranges. In either case, the left-most bin may be converted upon construction. In particular, if the left-most value is not equal to the minimum of the support, a new bin will be added from the minimum to that provided value. If the left-most value _is_ the support's minimum, because the provided bin was unbounded below, such as `(..0)`, then that bin will be converted into one bounded below, `(MIN..0)` in this case.
+//
+// The short of this is that, most of the time, it shouldn't matter. If one specifies the extremes of the support as their bins, be aware that the left-most may be converted from a `BinRange::RangeTo` into a `BinRange::Range`. In other words, the first bin of a histogram is _always_ a `Bin::Range` or a `Bin::RangeFrom` after construction. In fact, every bin is one of those variants, the `BinRange::RangeTo` is only provided as a convenience during construction.
+type Histogramint64 struct {
+	Bins      []Binint64 `json:"bins,omitempty" yaml:"bins,omitempty"`
+	NSamples  int        `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
+	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
 }
 
 // IdSortMode is supported set of sort modes for scanning by id only.
@@ -429,6 +793,8 @@ type IdentityType string
 const (
 	// IdentityTypeSiloUser represents the IdentityType `"silo_user"`.
 	IdentityTypeSiloUser IdentityType = "silo_user"
+	// IdentityTypeSiloGroup represents the IdentityType `"silo_group"`.
+	IdentityTypeSiloGroup IdentityType = "silo_group"
 )
 
 // IdpMetadataSourceUrl is the type definition for a IdpMetadataSourceUrl.
@@ -489,12 +855,12 @@ type Image struct {
 	Version string `json:"version,omitempty" yaml:"version,omitempty"`
 }
 
-// ImageCreate is create-time parameters for an [`Image`](omicron_common::api::external::Image)
+// ImageCreate is create-time parameters for an [`Image`](crate::external_api::views::Image)
 type ImageCreate struct {
 	// BlockSize is block size in bytes
 	BlockSize   BlockSize `json:"block_size,omitempty" yaml:"block_size,omitempty"`
 	Description string    `json:"description,omitempty" yaml:"description,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// Source is the source of the image's contents.
 	Source ImageSource `json:"source,omitempty" yaml:"source,omitempty"`
@@ -584,13 +950,17 @@ type InstanceCPUCount int64
 type InstanceCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Disks is the disks to be created or attached for this instance.
-	Disks    []InstanceDiskAttachment `json:"disks,omitempty" yaml:"disks,omitempty"`
-	Hostname string                   `json:"hostname,omitempty" yaml:"hostname,omitempty"`
+	Disks []InstanceDiskAttachment `json:"disks,omitempty" yaml:"disks,omitempty"`
+	// ExternalIps is the external IP addresses provided to this instance.
+	//
+	// By default, all instances have outbound connectivity, but no inbound connectivity. These external addresses can be used to provide a fixed, known IP address for making inbound connections to the instance.
+	ExternalIps []ExternalIpCreate `json:"external_ips,omitempty" yaml:"external_ips,omitempty"`
+	Hostname    string             `json:"hostname,omitempty" yaml:"hostname,omitempty"`
 	// Memory is a count of bytes, typically used either for memory or storage capacity
 	//
 	// The maximum supported byte count is [`i64::MAX`].  This makes it somewhat inconvenient to define constructors: a u32 constructor can be infallible, but an i64 constructor can fail (if the value is negative) and a u64 constructor can fail (if the value is larger than i64::MAX).  We provide all of these for consumers' convenience.
 	Memory ByteCount `json:"memory,omitempty" yaml:"memory,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// NCPUs is the number of CPUs in an Instance
 	NCPUs InstanceCPUCount `json:"ncpus,omitempty" yaml:"ncpus,omitempty"`
@@ -605,7 +975,7 @@ type InstanceDiskAttachmentCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// DiskSource is initial source for this disk
 	DiskSource DiskSource `json:"disk_source,omitempty" yaml:"disk_source,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// Size is total size of the Disk in bytes
 	Size ByteCount                  `json:"size,omitempty" yaml:"size,omitempty"`
@@ -732,6 +1102,16 @@ const (
 	InstanceStateDestroyed InstanceState = "destroyed"
 )
 
+// IpKind is the kind of an external IP address for an instance
+type IpKind string
+
+const (
+	// IpKindEphemeral represents the IpKind `"ephemeral"`.
+	IpKindEphemeral IpKind = "ephemeral"
+	// IpKindFloating represents the IpKind `"floating"`.
+	IpKindFloating IpKind = "floating"
+)
+
 // IpNet is the type definition for a IpNet.
 
 // IpNet is the type definition for a IpNet.
@@ -747,7 +1127,8 @@ type IpPool struct {
 	// ID is unique, immutable, system-controlled identifier for each resource
 	ID string `json:"id,omitempty" yaml:"id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
-	Name string `json:"name,omitempty" yaml:"name,omitempty"`
+	Name      string `json:"name,omitempty" yaml:"name,omitempty"`
+	ProjectID string `json:"project_id,omitempty" yaml:"project_id,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
@@ -756,11 +1137,15 @@ type IpPool struct {
 
 // IpPoolCreate is create-time parameters for an IP Pool.
 //
-// See [`IpPool`](omicron_nexus::external_api::views::IpPool)
+// See [`IpPool`](crate::external_api::views::IpPool)
 type IpPoolCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
+	// Organization is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	Organization string `json:"organization,omitempty" yaml:"organization,omitempty"`
+	// Project is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	Project string `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
 // IpPoolRange is the type definition for a IpPoolRange.
@@ -828,7 +1213,22 @@ type L4PortRange string
 // MacAddr is a Media Access Control address, in EUI-48 format
 type MacAddr string
 
-// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+// Measurement is a `Measurement` is a timestamped datum from a single metric
+type Measurement struct {
+	// Datum is a `Datum` is a single sampled data point from a metric.
+	Datum     Datum      `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Timestamp *time.Time `json:"timestamp,omitempty" yaml:"timestamp,omitempty"`
+}
+
+// MeasurementResultsPage is a single page of results
+type MeasurementResultsPage struct {
+	// Items is list of items on this page of results
+	Items []Measurement `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 type Name string
 
 // NameOrIdSortMode is supported set of sort modes for scanning by name or id
@@ -884,7 +1284,7 @@ type NetworkInterfaceCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Ip is the IP address for the interface. One will be auto-assigned if not provided.
 	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// SubnetName is the VPC Subnet in which to create the interface.
 	SubnetName string `json:"subnet_name,omitempty" yaml:"subnet_name,omitempty"`
@@ -914,6 +1314,11 @@ type NetworkInterfaceUpdate struct {
 	Name        string `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
+// NodeName is unique name for a saga [`Node`]
+//
+// Each node requires a string name that's unique within its DAG.  The name is used to identify its output.  Nodes that depend on a given node (either directly or indirectly) can access the node's output using its name.
+type NodeName string
+
 // Organization is client view of an [`Organization`]
 type Organization struct {
 	// Description is human-readable free-form text about a resource
@@ -931,7 +1336,7 @@ type Organization struct {
 // OrganizationCreate is create-time parameters for an [`Organization`](crate::external_api::views::Organization)
 type OrganizationCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
@@ -997,7 +1402,7 @@ type Project struct {
 // ProjectCreate is create-time parameters for a [`Project`](crate::external_api::views::Project)
 type ProjectCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
@@ -1109,7 +1514,7 @@ const (
 // RouteDestinationVPC is route applies to traffic destined for the given VPC.
 type RouteDestinationVPC struct {
 	Type RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
@@ -1121,7 +1526,7 @@ const (
 // RouteDestinationSubnet is route applies to traffic
 type RouteDestinationSubnet struct {
 	Type RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
@@ -1155,7 +1560,7 @@ const (
 // RouteTargetVPC is forward traffic to a VPC
 type RouteTargetVPC struct {
 	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
@@ -1167,7 +1572,7 @@ const (
 // RouteTargetSubnet is forward traffic to a VPC Subnet
 type RouteTargetSubnet struct {
 	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
@@ -1179,7 +1584,7 @@ const (
 // RouteTargetInstance is forward traffic to a specific instance
 type RouteTargetInstance struct {
 	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
@@ -1191,7 +1596,7 @@ const (
 // RouteTargetInternetGateway is forward traffic to an internet gateway
 type RouteTargetInternetGateway struct {
 	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
@@ -1237,7 +1642,7 @@ type RouteCreate struct {
 	//
 	// When traffic is to be sent to a destination that is within a given `RouteDestination`, the corresponding [`RouterRoute`] applies, and traffic will be forward to the [`RouteTarget`] for that rule.
 	Destination RouteDestination `json:"destination,omitempty" yaml:"destination,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// Target is a `RouteTarget` describes the possible locations that traffic matching a route destination can be sent.
 	Target RouteTarget `json:"target,omitempty" yaml:"target,omitempty"`
@@ -1382,8 +1787,11 @@ const (
 
 // SagaStateFailed is the type definition for a SagaStateFailed.
 type SagaStateFailed struct {
-	ErrorInfo     SagaErrorInfo  `json:"error_info,omitempty" yaml:"error_info,omitempty"`
-	ErrorNodeName string         `json:"error_node_name,omitempty" yaml:"error_node_name,omitempty"`
+	ErrorInfo SagaErrorInfo `json:"error_info,omitempty" yaml:"error_info,omitempty"`
+	// ErrorNodeName is unique name for a saga [`Node`]
+	//
+	// Each node requires a string name that's unique within its DAG.  The name is used to identify its output.  Nodes that depend on a given node (either directly or indirectly) can access the node's output using its name.
+	ErrorNodeName NodeName       `json:"error_node_name,omitempty" yaml:"error_node_name,omitempty"`
 	State         SagaStateState `json:"state,omitempty" yaml:"state,omitempty"`
 }
 
@@ -1396,7 +1804,7 @@ const (
 type SagaState struct {
 	State         string        `json:"state,omitempty" yaml:"state,omitempty"`
 	ErrorInfo     SagaErrorInfo `json:"error_info,omitempty" yaml:"error_info,omitempty"`
-	ErrorNodeName string        `json:"error_node_name,omitempty" yaml:"error_node_name,omitempty"`
+	ErrorNodeName NodeName      `json:"error_node_name,omitempty" yaml:"error_node_name,omitempty"`
 }
 
 // SamlIdentityProvider is identity-related metadata that's included in nearly all public API objects
@@ -1430,11 +1838,13 @@ type SamlIdentityProviderCreate struct {
 	// AcsUrl is service provider endpoint where the response will be sent
 	AcsUrl      string `json:"acs_url,omitempty" yaml:"acs_url,omitempty"`
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// GroupAttributeName is if set, SAML attributes with this name will be considered to denote a user's group membership, where the attribute value(s) should be a comma-separated list of group names.
+	GroupAttributeName string `json:"group_attribute_name,omitempty" yaml:"group_attribute_name,omitempty"`
 	// IdpEntityID is idp's entity id
 	IdpEntityID string `json:"idp_entity_id,omitempty" yaml:"idp_entity_id,omitempty"`
 	// IdpMetadataSource is the source of an identity provider metadata descriptor
 	IdpMetadataSource IdpMetadataSource `json:"idp_metadata_source,omitempty" yaml:"idp_metadata_source,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// SigningKeypair is optional request signing key pair
 	SigningKeypair DerEncodedKeyPair `json:"signing_keypair,omitempty" yaml:"signing_keypair,omitempty"`
@@ -1444,11 +1854,6 @@ type SamlIdentityProviderCreate struct {
 	SpClientID string `json:"sp_client_id,omitempty" yaml:"sp_client_id,omitempty"`
 	// TechnicalContactEmail is customer's technical contact for saml configuration
 	TechnicalContactEmail string `json:"technical_contact_email,omitempty" yaml:"technical_contact_email,omitempty"`
-}
-
-// SessionUser is client view of currently authed user.
-type SessionUser struct {
-	ID string `json:"id,omitempty" yaml:"id,omitempty"`
 }
 
 // Silo is client view of a ['Silo']
@@ -1465,14 +1870,22 @@ type Silo struct {
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+	// UserProvisionType is user provision type
+	UserProvisionType UserProvisionType `json:"user_provision_type,omitempty" yaml:"user_provision_type,omitempty"`
 }
 
 // SiloCreate is create-time parameters for a [`Silo`](crate::external_api::views::Silo)
 type SiloCreate struct {
-	Description  string `json:"description,omitempty" yaml:"description,omitempty"`
-	Discoverable bool   `json:"discoverable,omitempty" yaml:"discoverable,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	// AdminGroupName is if set, this group will be created during Silo creation and granted the "Silo Admin" role. Identity providers can assert that users belong to this group and those users can log in and further initialize the Silo.
+	//
+	// Note that if configuring a SAML based identity provider, group_attribute_name must be set for users to be considered part of a group. See [`SamlIdentityProviderCreate`] for more information.
+	AdminGroupName string `json:"admin_group_name,omitempty" yaml:"admin_group_name,omitempty"`
+	Description    string `json:"description,omitempty" yaml:"description,omitempty"`
+	Discoverable   bool   `json:"discoverable,omitempty" yaml:"discoverable,omitempty"`
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
+	// UserProvisionType is how users will be provisioned in a silo during authentication.
+	UserProvisionType UserProvisionType `json:"user_provision_type,omitempty" yaml:"user_provision_type,omitempty"`
 }
 
 // SiloResultsPage is a single page of results
@@ -1552,12 +1965,12 @@ type Snapshot struct {
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
 }
 
-// SnapshotCreate is create-time parameters for a [`Snapshot`](omicron_common::api::external::Snapshot)
+// SnapshotCreate is create-time parameters for a [`Snapshot`](crate::external_api::views::Snapshot)
 type SnapshotCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Disk is the name of the disk to be snapshotted
 	Disk string `json:"disk,omitempty" yaml:"disk,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
@@ -1595,7 +2008,7 @@ type SshKey struct {
 // SshKeyCreate is create-time parameters for an [`SshKey`](crate::external_api::views::SshKey)
 type SshKeyCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// PublicKey is sSH public key, e.g., `"ssh-ed25519 AAAAC3NzaC..."`
 	PublicKey string `json:"public_key,omitempty" yaml:"public_key,omitempty"`
@@ -1634,7 +2047,9 @@ type TimeseriesSchemaResultsPage struct {
 
 // User is client view of a [`User`]
 type User struct {
-	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	// DisplayName is human-readable name that can identify the user
+	DisplayName string `json:"display_name,omitempty" yaml:"display_name,omitempty"`
+	ID          string `json:"id,omitempty" yaml:"id,omitempty"`
 }
 
 // UserBuiltin is client view of a [`UserBuiltin`]
@@ -1658,6 +2073,16 @@ type UserBuiltinResultsPage struct {
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
+
+// UserProvisionType is how users will be provisioned in a silo during authentication.
+type UserProvisionType string
+
+const (
+	// UserProvisionTypeFixed represents the UserProvisionType `"fixed"`.
+	UserProvisionTypeFixed UserProvisionType = "fixed"
+	// UserProvisionTypeJit represents the UserProvisionType `"jit"`.
+	UserProvisionTypeJit UserProvisionType = "jit"
+)
 
 // UserResultsPage is a single page of results
 type UserResultsPage struct {
@@ -1692,13 +2117,13 @@ type VPC struct {
 // VPCCreate is create-time parameters for a [`Vpc`](crate::external_api::views::Vpc)
 type VPCCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// DnsName is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	// DnsName is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	DnsName string `json:"dns_name,omitempty" yaml:"dns_name,omitempty"`
 	// IPv6Prefix is the IPv6 prefix for this VPC.
 	//
 	// All IPv6 subnets created from this VPC must be taken from this range, which sould be a Unique Local Address in the range `fd00::/48`. The default VPC Subnet will have the first `/64` range from this prefix.
 	IPv6Prefix IPv6Net `json:"ipv6_prefix,omitempty" yaml:"ipv6_prefix,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
@@ -1763,7 +2188,7 @@ type FirewallRuleFilter struct {
 // FirewallRuleHostFilterVPC is the rule applies to traffic from/to all instances in the VPC
 type FirewallRuleHostFilterVPC struct {
 	Type FirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
@@ -1778,7 +2203,7 @@ const (
 // FirewallRuleHostFilterSubnet is the rule applies to traffic from/to all instances in the VPC Subnet
 type FirewallRuleHostFilterSubnet struct {
 	Type FirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
@@ -1790,7 +2215,7 @@ const (
 // FirewallRuleHostFilterInstance is the rule applies to traffic from/to this specific instance
 type FirewallRuleHostFilterInstance struct {
 	Type FirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
@@ -1852,7 +2277,7 @@ const (
 // FirewallRuleTargetVPC is the rule applies to all instances in the VPC
 type FirewallRuleTargetVPC struct {
 	Type FirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
@@ -1867,7 +2292,7 @@ const (
 // FirewallRuleTargetSubnet is the rule applies to all instances in the VPC Subnet
 type FirewallRuleTargetSubnet struct {
 	Type FirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
@@ -1879,7 +2304,7 @@ const (
 // FirewallRuleTargetInstance is the rule applies to this specific instance
 type FirewallRuleTargetInstance struct {
 	Type FirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
@@ -1941,7 +2366,7 @@ type FirewallRuleUpdateParams struct {
 	Rules []FirewallRuleUpdate `json:"rules,omitempty" yaml:"rules,omitempty"`
 }
 
-// FirewallRules is collection of a [`Vpc`]'s firewall rules
+// FirewallRules is collection of a Vpc's firewall rules
 type FirewallRules struct {
 	Rules []FirewallRule `json:"rules,omitempty" yaml:"rules,omitempty"`
 }
@@ -1974,7 +2399,7 @@ type Router struct {
 // RouterCreate is create-time parameters for a [`VpcRouter`](crate::external_api::views::VpcRouter)
 type RouterCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
@@ -2033,7 +2458,7 @@ type SubnetCreate struct {
 	//
 	// It must be allocated from the RFC 4193 Unique Local Address range, with the prefix equal to the parent VPC's prefix. A random `/64` block will be assigned if one is not provided. It must not overlap with any existing subnet in the VPC.
 	IPv6Block IPv6Net `json:"ipv6_block,omitempty" yaml:"ipv6_block,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
@@ -2058,6 +2483,20 @@ type VPCUpdate struct {
 	Name        string `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
+// BinRangedoubleTypes is the collection of all BinRangedoubleType values.
+var BinRangedoubleTypes = []BinRangedoubleType{
+	BinRangedoubleTypeRange,
+	BinRangedoubleTypeRangeFrom,
+	BinRangedoubleTypeRangeTo,
+}
+
+// BinRangeint64Types is the collection of all BinRangeint64Type values.
+var BinRangeint64Types = []BinRangeint64Type{
+	BinRangeint64TypeRange,
+	BinRangeint64TypeRangeFrom,
+	BinRangeint64TypeRangeTo,
+}
+
 // DatumTypes is the collection of all DatumType values.
 var DatumTypes = []DatumType{
 	DatumTypeBool,
@@ -2074,6 +2513,16 @@ var DatumTypes = []DatumType{
 // DigestTypes is the collection of all DigestType values.
 var DigestTypes = []DigestType{
 	DigestTypeSha256,
+}
+
+// DiskMetricNames is the collection of all DiskMetricName values.
+var DiskMetricNames = []DiskMetricName{
+	DiskMetricNameActivated,
+	DiskMetricNameFlush,
+	DiskMetricNameRead,
+	DiskMetricNameReadBytes,
+	DiskMetricNameWrite,
+	DiskMetricNameWriteBytes,
 }
 
 // DiskSourceTypes is the collection of all DiskSourceType values.
@@ -2093,6 +2542,11 @@ var DiskStateStates = []DiskStateState{
 	DiskStateStateDetached,
 	DiskStateStateDetaching,
 	DiskStateStateFaulted,
+}
+
+// ExternalIpCreateTypes is the collection of all ExternalIpCreateType values.
+var ExternalIpCreateTypes = []ExternalIpCreateType{
+	ExternalIpCreateTypeEphemeral,
 }
 
 // FieldSources is the collection of all FieldSource values.
@@ -2172,6 +2626,7 @@ var IdentityProviderTypes = []IdentityProviderType{
 
 // IdentityTypes is the collection of all IdentityType values.
 var IdentityTypes = []IdentityType{
+	IdentityTypeSiloGroup,
 	IdentityTypeSiloUser,
 }
 
@@ -2213,6 +2668,12 @@ var InstanceStates = []InstanceState{
 	InstanceStateStarting,
 	InstanceStateStopped,
 	InstanceStateStopping,
+}
+
+// IpKinds is the collection of all IpKind values.
+var IpKinds = []IpKind{
+	IpKindEphemeral,
+	IpKindFloating,
 }
 
 // NameOrIdSortModes is the collection of all NameOrIdSortMode values.
@@ -2293,4 +2754,10 @@ var SiloRoles = []SiloRole{
 	SiloRoleAdmin,
 	SiloRoleCollaborator,
 	SiloRoleViewer,
+}
+
+// UserProvisionTypes is the collection of all UserProvisionType values.
+var UserProvisionTypes = []UserProvisionType{
+	UserProvisionTypeFixed,
+	UserProvisionTypeJit,
 }

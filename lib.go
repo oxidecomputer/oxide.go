@@ -61,13 +61,14 @@ func NewClient(token, userAgent, host string) (*Client, error) {
 	client.Projects = &ProjectsService{client}
 	client.Organizations = &OrganizationsService{client}
 	client.Firewall = &FirewallService{client}
+	client.Hardware = &HardwareService{client}
 	client.Hidden = &HiddenService{client}
 	client.Images = &ImagesService{client}
 	client.Instances = &InstancesService{client}
 	client.Metrics = &MetricsService{client}
-	client.Racks = &RacksService{client}
+	// client.Racks = &RacksService{client}
 	client.Roles = &RolesService{client}
-	client.Sleds = &SledsService{client}
+	// client.Sleds = &SledsService{client}
 	client.Routers = &RoutersService{client}
 	client.Routes = &RoutesService{client}
 	client.Sagas = &SagasService{client}
