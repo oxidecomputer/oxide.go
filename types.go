@@ -289,14 +289,14 @@ type DerEncodedKeyPair struct {
 
 // DeviceAccessTokenRequest is the type definition for a DeviceAccessTokenRequest.
 type DeviceAccessTokenRequest struct {
-	ClientID   string `json:"client_id,omitempty" yaml:"client_id,omitempty"`
+	ClientId   string `json:"client_id,omitempty" yaml:"client_id,omitempty"`
 	DeviceCode string `json:"device_code,omitempty" yaml:"device_code,omitempty"`
 	GrantType  string `json:"grant_type,omitempty" yaml:"grant_type,omitempty"`
 }
 
 // DeviceAuthRequest is the type definition for a DeviceAuthRequest.
 type DeviceAuthRequest struct {
-	ClientID string `json:"client_id,omitempty" yaml:"client_id,omitempty"`
+	ClientId string `json:"client_id,omitempty" yaml:"client_id,omitempty"`
 }
 
 // DeviceAuthVerify is the type definition for a DeviceAuthVerify.
@@ -333,17 +333,17 @@ type Disk struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	DevicePath  string `json:"device_path,omitempty" yaml:"device_path,omitempty"`
-	// ID is unique, immutable, system-controlled identifier for each resource
-	ID      string `json:"id,omitempty" yaml:"id,omitempty"`
-	ImageID string `json:"image_id,omitempty" yaml:"image_id,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id      string `json:"id,omitempty" yaml:"id,omitempty"`
+	ImageId string `json:"image_id,omitempty" yaml:"image_id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name      string `json:"name,omitempty" yaml:"name,omitempty"`
-	ProjectID string `json:"project_id,omitempty" yaml:"project_id,omitempty"`
+	ProjectId string `json:"project_id,omitempty" yaml:"project_id,omitempty"`
 	// Size is a count of bytes, typically used either for memory or storage capacity
 	//
 	// The maximum supported byte count is [`i64::MAX`].  This makes it somewhat inconvenient to define constructors: a u32 constructor can be infallible, but an i64 constructor can fail (if the value is negative) and a u64 constructor can fail (if the value is larger than i64::MAX).  We provide all of these for consumers' convenience.
 	Size       ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
-	SnapshotID string    `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
+	SnapshotId string    `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
 	// State is state of a Disk (primarily: attached or not)
 	State DiskState `json:"state,omitempty" yaml:"state,omitempty"`
 	// TimeCreated is timestamp when this resource was created
@@ -412,7 +412,7 @@ const (
 
 // DiskSourceSnapshot is create a disk from a disk snapshot
 type DiskSourceSnapshot struct {
-	SnapshotID string         `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
+	SnapshotId string         `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
 	Type       DiskSourceType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -423,7 +423,7 @@ const (
 
 // DiskSourceImage is create a disk from a project image
 type DiskSourceImage struct {
-	ImageID string         `json:"image_id,omitempty" yaml:"image_id,omitempty"`
+	ImageId string         `json:"image_id,omitempty" yaml:"image_id,omitempty"`
 	Type    DiskSourceType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -434,7 +434,7 @@ const (
 
 // DiskSourceGlobalImage is create a disk from a global image
 type DiskSourceGlobalImage struct {
-	ImageID string         `json:"image_id,omitempty" yaml:"image_id,omitempty"`
+	ImageId string         `json:"image_id,omitempty" yaml:"image_id,omitempty"`
 	Type    DiskSourceType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -447,8 +447,8 @@ const (
 type DiskSource struct {
 	BlockSize  BlockSize `json:"block_size,omitempty" yaml:"block_size,omitempty"`
 	Type       string    `json:"type,omitempty" yaml:"type,omitempty"`
-	SnapshotID string    `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
-	ImageID    string    `json:"image_id,omitempty" yaml:"image_id,omitempty"`
+	SnapshotId string    `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
+	ImageId    string    `json:"image_id,omitempty" yaml:"image_id,omitempty"`
 }
 
 // DiskStateCreating is disk is being initialized
@@ -545,7 +545,7 @@ type Distribution struct {
 type Error struct {
 	ErrorCode string `json:"error_code,omitempty" yaml:"error_code,omitempty"`
 	Message   string `json:"message,omitempty" yaml:"message,omitempty"`
-	RequestID string `json:"request_id,omitempty" yaml:"request_id,omitempty"`
+	RequestId string `json:"request_id,omitempty" yaml:"request_id,omitempty"`
 }
 
 // ExternalIp is the type definition for a ExternalIp.
@@ -642,7 +642,7 @@ type FleetRolePolicy struct {
 //
 // The resource is not part of this structure.  Rather, [`RoleAssignment`]s are put into a [`Policy`] and that Policy is applied to a particular resource.
 type FleetRoleRoleAssignment struct {
-	IdentityID string `json:"identity_id,omitempty" yaml:"identity_id,omitempty"`
+	IdentityId string `json:"identity_id,omitempty" yaml:"identity_id,omitempty"`
 	// IdentityType is describes what kind of identity is described by an id
 	IdentityType IdentityType `json:"identity_type,omitempty" yaml:"identity_type,omitempty"`
 	RoleName     FleetRole    `json:"role_name,omitempty" yaml:"role_name,omitempty"`
@@ -658,8 +658,8 @@ type GlobalImage struct {
 	Digest Digest `json:"digest,omitempty" yaml:"digest,omitempty"`
 	// Distribution is image distribution
 	Distribution string `json:"distribution,omitempty" yaml:"distribution,omitempty"`
-	// ID is unique, immutable, system-controlled identifier for each resource
-	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// Size is total size in bytes
@@ -759,8 +759,8 @@ const (
 type IdentityProvider struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// ID is unique, immutable, system-controlled identifier for each resource
-	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// ProviderType is identity provider type
@@ -837,12 +837,12 @@ type Image struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Digest is hash of the image contents, if applicable
 	Digest Digest `json:"digest,omitempty" yaml:"digest,omitempty"`
-	// ID is unique, immutable, system-controlled identifier for each resource
-	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
-	// ProjectID is the project the disk belongs to
-	ProjectID string `json:"project_id,omitempty" yaml:"project_id,omitempty"`
+	// ProjectId is the project the disk belongs to
+	ProjectId string `json:"project_id,omitempty" yaml:"project_id,omitempty"`
 	// Size is total size in bytes
 	Size ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
 	// TimeCreated is timestamp when this resource was created
@@ -890,7 +890,7 @@ const (
 
 // ImageSourceSnapshot is the type definition for a ImageSourceSnapshot.
 type ImageSourceSnapshot struct {
-	ID   string          `json:"id,omitempty" yaml:"id,omitempty"`
+	Id   string          `json:"id,omitempty" yaml:"id,omitempty"`
 	Type ImageSourceType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -913,7 +913,7 @@ const (
 type ImageSource struct {
 	Type string `json:"type,omitempty" yaml:"type,omitempty"`
 	Url  string `json:"url,omitempty" yaml:"url,omitempty"`
-	ID   string `json:"id,omitempty" yaml:"id,omitempty"`
+	Id   string `json:"id,omitempty" yaml:"id,omitempty"`
 }
 
 // Instance is client view of an [`Instance`]
@@ -922,16 +922,16 @@ type Instance struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Hostname is rFC1035-compliant hostname for the Instance.
 	Hostname string `json:"hostname,omitempty" yaml:"hostname,omitempty"`
-	// ID is unique, immutable, system-controlled identifier for each resource
-	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 	// Memory is memory allocated for this Instance
 	Memory ByteCount `json:"memory,omitempty" yaml:"memory,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
-	// NCPUs is number of CPUs allocated for this Instance
-	NCPUs InstanceCPUCount `json:"ncpus,omitempty" yaml:"ncpus,omitempty"`
-	// ProjectID is id for the project containing this Instance
-	ProjectID string `json:"project_id,omitempty" yaml:"project_id,omitempty"`
+	// Ncpus is number of CPUs allocated for this Instance
+	Ncpus InstanceCpuCount `json:"ncpus,omitempty" yaml:"ncpus,omitempty"`
+	// ProjectId is id for the project containing this Instance
+	ProjectId string `json:"project_id,omitempty" yaml:"project_id,omitempty"`
 	// RunState is running state of an Instance (primarily: booted or stopped)
 	//
 	// This typically reflects whether it's starting, running, stopping, or stopped, but also includes states related to the Instance's lifecycle
@@ -943,8 +943,8 @@ type Instance struct {
 	TimeRunStateUpdated *time.Time `json:"time_run_state_updated,omitempty" yaml:"time_run_state_updated,omitempty"`
 }
 
-// InstanceCPUCount is the number of CPUs in an Instance
-type InstanceCPUCount int64
+// InstanceCpuCount is the number of CPUs in an Instance
+type InstanceCpuCount int64
 
 // InstanceCreate is create-time parameters for an [`Instance`](omicron_common::api::external::Instance)
 type InstanceCreate struct {
@@ -962,8 +962,8 @@ type InstanceCreate struct {
 	Memory ByteCount `json:"memory,omitempty" yaml:"memory,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
-	// NCPUs is the number of CPUs in an Instance
-	NCPUs InstanceCPUCount `json:"ncpus,omitempty" yaml:"ncpus,omitempty"`
+	// Ncpus is the number of CPUs in an Instance
+	Ncpus InstanceCpuCount `json:"ncpus,omitempty" yaml:"ncpus,omitempty"`
 	// NetworkInterfaces is the network interfaces to be created for this instance.
 	NetworkInterfaces InstanceNetworkInterfaceAttachment `json:"network_interfaces,omitempty" yaml:"network_interfaces,omitempty"`
 	// UserData is user data for instance initialization systems (such as cloud-init). Must be a Base64-encoded string, as specified in RFC 4648 § 4 (+ and / characters with padding). Maximum 32 KiB unencoded data.
@@ -1013,7 +1013,7 @@ type InstanceDiskAttachment struct {
 
 // InstanceMigrate is migration parameters for an [`Instance`](omicron_common::api::external::Instance)
 type InstanceMigrate struct {
-	DstSledID string `json:"dst_sled_id,omitempty" yaml:"dst_sled_id,omitempty"`
+	DstSledId string `json:"dst_sled_id,omitempty" yaml:"dst_sled_id,omitempty"`
 }
 
 // InstanceNetworkInterfaceAttachmentCreate is create one or more `NetworkInterface`s for the `Instance`.
@@ -1124,11 +1124,11 @@ type IpNet struct {
 type IpPool struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// ID is unique, immutable, system-controlled identifier for each resource
-	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name      string `json:"name,omitempty" yaml:"name,omitempty"`
-	ProjectID string `json:"project_id,omitempty" yaml:"project_id,omitempty"`
+	ProjectId string `json:"project_id,omitempty" yaml:"project_id,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
@@ -1150,7 +1150,7 @@ type IpPoolCreate struct {
 
 // IpPoolRange is the type definition for a IpPoolRange.
 type IpPoolRange struct {
-	ID          string     `json:"id,omitempty" yaml:"id,omitempty"`
+	Id          string     `json:"id,omitempty" yaml:"id,omitempty"`
 	Range       IpRange    `json:"range,omitempty" yaml:"range,omitempty"`
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 }
@@ -1185,24 +1185,24 @@ type IpPoolUpdate struct {
 type IpRange struct {
 }
 
-// IPv4Net is an IPv4 subnet, including prefix and subnet mask
-type IPv4Net string
+// Ipv4Net is an IPv4 subnet, including prefix and subnet mask
+type Ipv4Net string
 
-// IPv4Range is a non-decreasing IPv4 address range, inclusive of both ends.
+// Ipv4Range is a non-decreasing IPv4 address range, inclusive of both ends.
 //
 // The first address must be less than or equal to the last address.
-type IPv4Range struct {
+type Ipv4Range struct {
 	First string `json:"first,omitempty" yaml:"first,omitempty"`
 	Last  string `json:"last,omitempty" yaml:"last,omitempty"`
 }
 
-// IPv6Net is an IPv6 subnet, including prefix and subnet mask
-type IPv6Net string
+// Ipv6Net is an IPv6 subnet, including prefix and subnet mask
+type Ipv6Net string
 
-// IPv6Range is a non-decreasing IPv6 address range, inclusive of both ends.
+// Ipv6Range is a non-decreasing IPv6 address range, inclusive of both ends.
 //
 // The first address must be less than or equal to the last address.
-type IPv6Range struct {
+type Ipv6Range struct {
 	First string `json:"first,omitempty" yaml:"first,omitempty"`
 	Last  string `json:"last,omitempty" yaml:"last,omitempty"`
 }
@@ -1257,10 +1257,10 @@ const (
 type NetworkInterface struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// ID is unique, immutable, system-controlled identifier for each resource
-	ID string `json:"id,omitempty" yaml:"id,omitempty"`
-	// InstanceID is the Instance to which the interface belongs.
-	InstanceID string `json:"instance_id,omitempty" yaml:"instance_id,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// InstanceId is the Instance to which the interface belongs.
+	InstanceId string `json:"instance_id,omitempty" yaml:"instance_id,omitempty"`
 	// Ip is the IP address assigned to this interface.
 	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
 	// Mac is the MAC address assigned to this interface.
@@ -1269,14 +1269,14 @@ type NetworkInterface struct {
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// Primary is true if this interface is the primary for the instance to which it's attached.
 	Primary bool `json:"primary,omitempty" yaml:"primary,omitempty"`
-	// SubnetID is the subnet to which the interface belongs.
-	SubnetID string `json:"subnet_id,omitempty" yaml:"subnet_id,omitempty"`
+	// SubnetId is the subnet to which the interface belongs.
+	SubnetId string `json:"subnet_id,omitempty" yaml:"subnet_id,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
-	// VPCId is the VPC to which the interface belongs.
-	VPCId string `json:"vpc_id,omitempty" yaml:"vpc_id,omitempty"`
+	// VpcId is the VPC to which the interface belongs.
+	VpcId string `json:"vpc_id,omitempty" yaml:"vpc_id,omitempty"`
 }
 
 // NetworkInterfaceCreate is create-time parameters for a [`NetworkInterface`](omicron_common::api::external::NetworkInterface)
@@ -1288,8 +1288,8 @@ type NetworkInterfaceCreate struct {
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// SubnetName is the VPC Subnet in which to create the interface.
 	SubnetName string `json:"subnet_name,omitempty" yaml:"subnet_name,omitempty"`
-	// VPCName is the VPC in which to create the interface.
-	VPCName string `json:"vpc_name,omitempty" yaml:"vpc_name,omitempty"`
+	// VpcName is the VPC in which to create the interface.
+	VpcName string `json:"vpc_name,omitempty" yaml:"vpc_name,omitempty"`
 }
 
 // NetworkInterfaceResultsPage is a single page of results
@@ -1323,8 +1323,8 @@ type NodeName string
 type Organization struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// ID is unique, immutable, system-controlled identifier for each resource
-	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// TimeCreated is timestamp when this resource was created
@@ -1372,7 +1372,7 @@ type OrganizationRolePolicy struct {
 //
 // The resource is not part of this structure.  Rather, [`RoleAssignment`]s are put into a [`Policy`] and that Policy is applied to a particular resource.
 type OrganizationRoleRoleAssignment struct {
-	IdentityID string `json:"identity_id,omitempty" yaml:"identity_id,omitempty"`
+	IdentityId string `json:"identity_id,omitempty" yaml:"identity_id,omitempty"`
 	// IdentityType is describes what kind of identity is described by an id
 	IdentityType IdentityType     `json:"identity_type,omitempty" yaml:"identity_type,omitempty"`
 	RoleName     OrganizationRole `json:"role_name,omitempty" yaml:"role_name,omitempty"`
@@ -1388,11 +1388,11 @@ type OrganizationUpdate struct {
 type Project struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// ID is unique, immutable, system-controlled identifier for each resource
-	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name           string `json:"name,omitempty" yaml:"name,omitempty"`
-	OrganizationID string `json:"organization_id,omitempty" yaml:"organization_id,omitempty"`
+	OrganizationId string `json:"organization_id,omitempty" yaml:"organization_id,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
@@ -1438,7 +1438,7 @@ type ProjectRolePolicy struct {
 //
 // The resource is not part of this structure.  Rather, [`RoleAssignment`]s are put into a [`Policy`] and that Policy is applied to a particular resource.
 type ProjectRoleRoleAssignment struct {
-	IdentityID string `json:"identity_id,omitempty" yaml:"identity_id,omitempty"`
+	IdentityId string `json:"identity_id,omitempty" yaml:"identity_id,omitempty"`
 	// IdentityType is describes what kind of identity is described by an id
 	IdentityType IdentityType `json:"identity_type,omitempty" yaml:"identity_type,omitempty"`
 	RoleName     ProjectRole  `json:"role_name,omitempty" yaml:"role_name,omitempty"`
@@ -1452,8 +1452,8 @@ type ProjectUpdate struct {
 
 // Rack is client view of an [`Rack`]
 type Rack struct {
-	// ID is unique, immutable, system-controlled identifier for each resource
-	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
@@ -1511,8 +1511,8 @@ const (
 	RouteDestinationTypeIpNet RouteDestinationType = "ip_net"
 )
 
-// RouteDestinationVPC is route applies to traffic destined for the given VPC.
-type RouteDestinationVPC struct {
+// RouteDestinationVpc is route applies to traffic destined for the given VPC.
+type RouteDestinationVpc struct {
 	Type RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
@@ -1557,8 +1557,8 @@ const (
 	RouteTargetTypeIp RouteTargetType = "ip"
 )
 
-// RouteTargetVPC is forward traffic to a VPC
-type RouteTargetVPC struct {
+// RouteTargetVpc is forward traffic to a VPC
+type RouteTargetVpc struct {
 	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
@@ -1611,18 +1611,18 @@ type RouteTarget struct {
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-// Route is a route defines a rule that governs where traffic should be sent based on its destination.
-type Route struct {
+// RouterRoute is a route defines a rule that governs where traffic should be sent based on its destination.
+type RouterRoute struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Destination is a `RouteDestination` is used to match traffic with a routing rule, on the destination of that traffic.
 	//
 	// When traffic is to be sent to a destination that is within a given `RouteDestination`, the corresponding [`RouterRoute`] applies, and traffic will be forward to the [`RouteTarget`] for that rule.
 	Destination RouteDestination `json:"destination,omitempty" yaml:"destination,omitempty"`
-	// ID is unique, immutable, system-controlled identifier for each resource
-	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 	// Kind is describes the kind of router. Set at creation. `read-only`
-	Kind RouteKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+	Kind RouterRouteKind `json:"kind,omitempty" yaml:"kind,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// Target is a `RouteTarget` describes the possible locations that traffic matching a route destination can be sent.
@@ -1631,12 +1631,12 @@ type Route struct {
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
-	// RouterId is the VPC Router to which the route belongs.
-	RouterId string `json:"vpc_router_id,omitempty" yaml:"vpc_router_id,omitempty"`
+	// VpcRouterId is the VPC Router to which the route belongs.
+	VpcRouterId string `json:"vpc_router_id,omitempty" yaml:"vpc_router_id,omitempty"`
 }
 
-// RouteCreate is create-time parameters for a [`RouterRoute`]
-type RouteCreate struct {
+// RouterRouteCreateParams is create-time parameters for a [`RouterRoute`]
+type RouterRouteCreateParams struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Destination is a `RouteDestination` is used to match traffic with a routing rule, on the destination of that traffic.
 	//
@@ -1648,32 +1648,32 @@ type RouteCreate struct {
 	Target RouteTarget `json:"target,omitempty" yaml:"target,omitempty"`
 }
 
-// RouteKind is the classification of a [`RouterRoute`] as defined by the system. The kind determines certain attributes such as if the route is modifiable and describes how or where the route was created.
+// RouterRouteKind is the classification of a [`RouterRoute`] as defined by the system. The kind determines certain attributes such as if the route is modifiable and describes how or where the route was created.
 //
 // See [RFD-21](https://rfd.shared.oxide.computer/rfd/0021#concept-router) for more context
-type RouteKind string
+type RouterRouteKind string
 
 const (
-	// RouteKindDefault represents the RouteKind `"default"`.
-	RouteKindDefault RouteKind = "default"
-	// RouteKindVpcSubnet represents the RouteKind `"vpc_subnet"`.
-	RouteKindVpcSubnet RouteKind = "vpc_subnet"
-	// RouteKindVpcPeering represents the RouteKind `"vpc_peering"`.
-	RouteKindVpcPeering RouteKind = "vpc_peering"
-	// RouteKindCustom represents the RouteKind `"custom"`.
-	RouteKindCustom RouteKind = "custom"
+	// RouterRouteKindDefault represents the RouterRouteKind `"default"`.
+	RouterRouteKindDefault RouterRouteKind = "default"
+	// RouterRouteKindVpcSubnet represents the RouterRouteKind `"vpc_subnet"`.
+	RouterRouteKindVpcSubnet RouterRouteKind = "vpc_subnet"
+	// RouterRouteKindVpcPeering represents the RouterRouteKind `"vpc_peering"`.
+	RouterRouteKindVpcPeering RouterRouteKind = "vpc_peering"
+	// RouterRouteKindCustom represents the RouterRouteKind `"custom"`.
+	RouterRouteKindCustom RouterRouteKind = "custom"
 )
 
-// RouteResultsPage is a single page of results
-type RouteResultsPage struct {
+// RouterRouteResultsPage is a single page of results
+type RouterRouteResultsPage struct {
 	// Items is list of items on this page of results
-	Items []Route `json:"items,omitempty" yaml:"items,omitempty"`
+	Items []RouterRoute `json:"items,omitempty" yaml:"items,omitempty"`
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// RouteUpdate is updateable properties of a [`RouterRoute`]
-type RouteUpdate struct {
+// RouterRouteUpdateParams is updateable properties of a [`RouterRoute`]
+type RouterRouteUpdateParams struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Destination is a `RouteDestination` is used to match traffic with a routing rule, on the destination of that traffic.
 	//
@@ -1686,7 +1686,7 @@ type RouteUpdate struct {
 
 // Saga is the type definition for a Saga.
 type Saga struct {
-	ID    string    `json:"id,omitempty" yaml:"id,omitempty"`
+	Id    string    `json:"id,omitempty" yaml:"id,omitempty"`
 	State SagaState `json:"state,omitempty" yaml:"state,omitempty"`
 }
 
@@ -1813,18 +1813,18 @@ type SamlIdentityProvider struct {
 	AcsUrl string `json:"acs_url,omitempty" yaml:"acs_url,omitempty"`
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// ID is unique, immutable, system-controlled identifier for each resource
-	ID string `json:"id,omitempty" yaml:"id,omitempty"`
-	// IdpEntityID is idp's entity id
-	IdpEntityID string `json:"idp_entity_id,omitempty" yaml:"idp_entity_id,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// IdpEntityId is idp's entity id
+	IdpEntityId string `json:"idp_entity_id,omitempty" yaml:"idp_entity_id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// PublicCert is optional request signing public certificate (base64 encoded der file)
 	PublicCert string `json:"public_cert,omitempty" yaml:"public_cert,omitempty"`
 	// SloUrl is service provider endpoint where the idp should send log out requests
 	SloUrl string `json:"slo_url,omitempty" yaml:"slo_url,omitempty"`
-	// SpClientID is sp's client id
-	SpClientID string `json:"sp_client_id,omitempty" yaml:"sp_client_id,omitempty"`
+	// SpClientId is sp's client id
+	SpClientId string `json:"sp_client_id,omitempty" yaml:"sp_client_id,omitempty"`
 	// TechnicalContactEmail is customer's technical contact for saml configuration
 	TechnicalContactEmail string `json:"technical_contact_email,omitempty" yaml:"technical_contact_email,omitempty"`
 	// TimeCreated is timestamp when this resource was created
@@ -1840,8 +1840,8 @@ type SamlIdentityProviderCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// GroupAttributeName is if set, SAML attributes with this name will be considered to denote a user's group membership, where the attribute value(s) should be a comma-separated list of group names.
 	GroupAttributeName string `json:"group_attribute_name,omitempty" yaml:"group_attribute_name,omitempty"`
-	// IdpEntityID is idp's entity id
-	IdpEntityID string `json:"idp_entity_id,omitempty" yaml:"idp_entity_id,omitempty"`
+	// IdpEntityId is idp's entity id
+	IdpEntityId string `json:"idp_entity_id,omitempty" yaml:"idp_entity_id,omitempty"`
 	// IdpMetadataSource is the source of an identity provider metadata descriptor
 	IdpMetadataSource IdpMetadataSource `json:"idp_metadata_source,omitempty" yaml:"idp_metadata_source,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
@@ -1850,8 +1850,8 @@ type SamlIdentityProviderCreate struct {
 	SigningKeypair DerEncodedKeyPair `json:"signing_keypair,omitempty" yaml:"signing_keypair,omitempty"`
 	// SloUrl is service provider endpoint where the idp should send log out requests
 	SloUrl string `json:"slo_url,omitempty" yaml:"slo_url,omitempty"`
-	// SpClientID is sp's client id
-	SpClientID string `json:"sp_client_id,omitempty" yaml:"sp_client_id,omitempty"`
+	// SpClientId is sp's client id
+	SpClientId string `json:"sp_client_id,omitempty" yaml:"sp_client_id,omitempty"`
 	// TechnicalContactEmail is customer's technical contact for saml configuration
 	TechnicalContactEmail string `json:"technical_contact_email,omitempty" yaml:"technical_contact_email,omitempty"`
 }
@@ -1862,8 +1862,8 @@ type Silo struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Discoverable is a silo where discoverable is false can be retrieved only by its id - it will not be part of the "list all silos" output.
 	Discoverable bool `json:"discoverable,omitempty" yaml:"discoverable,omitempty"`
-	// ID is unique, immutable, system-controlled identifier for each resource
-	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// TimeCreated is timestamp when this resource was created
@@ -1920,7 +1920,7 @@ type SiloRolePolicy struct {
 //
 // The resource is not part of this structure.  Rather, [`RoleAssignment`]s are put into a [`Policy`] and that Policy is applied to a particular resource.
 type SiloRoleRoleAssignment struct {
-	IdentityID string `json:"identity_id,omitempty" yaml:"identity_id,omitempty"`
+	IdentityId string `json:"identity_id,omitempty" yaml:"identity_id,omitempty"`
 	// IdentityType is describes what kind of identity is described by an id
 	IdentityType IdentityType `json:"identity_type,omitempty" yaml:"identity_type,omitempty"`
 	RoleName     SiloRole     `json:"role_name,omitempty" yaml:"role_name,omitempty"`
@@ -1928,8 +1928,8 @@ type SiloRoleRoleAssignment struct {
 
 // Sled is client view of an [`Sled`]
 type Sled struct {
-	// ID is unique, immutable, system-controlled identifier for each resource
-	ID             string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id             string `json:"id,omitempty" yaml:"id,omitempty"`
 	ServiceAddress string `json:"service_address,omitempty" yaml:"service_address,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
@@ -1949,12 +1949,12 @@ type SledResultsPage struct {
 type Snapshot struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	DiskID      string `json:"disk_id,omitempty" yaml:"disk_id,omitempty"`
-	// ID is unique, immutable, system-controlled identifier for each resource
-	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	DiskId      string `json:"disk_id,omitempty" yaml:"disk_id,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name      string `json:"name,omitempty" yaml:"name,omitempty"`
-	ProjectID string `json:"project_id,omitempty" yaml:"project_id,omitempty"`
+	ProjectId string `json:"project_id,omitempty" yaml:"project_id,omitempty"`
 	// Size is a count of bytes, typically used either for memory or storage capacity
 	//
 	// The maximum supported byte count is [`i64::MAX`].  This makes it somewhat inconvenient to define constructors: a u32 constructor can be infallible, but an i64 constructor can fail (if the value is negative) and a u64 constructor can fail (if the value is larger than i64::MAX).  We provide all of these for consumers' convenience.
@@ -1991,14 +1991,14 @@ type SpoofLoginBody struct {
 type SshKey struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// ID is unique, immutable, system-controlled identifier for each resource
-	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// PublicKey is sSH public key, e.g., `"ssh-ed25519 AAAAC3NzaC..."`
 	PublicKey string `json:"public_key,omitempty" yaml:"public_key,omitempty"`
-	// SiloUserID is the user to whom this key belongs
-	SiloUserID string `json:"silo_user_id,omitempty" yaml:"silo_user_id,omitempty"`
+	// SiloUserId is the user to whom this key belongs
+	SiloUserId string `json:"silo_user_id,omitempty" yaml:"silo_user_id,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
@@ -2049,15 +2049,15 @@ type TimeseriesSchemaResultsPage struct {
 type User struct {
 	// DisplayName is human-readable name that can identify the user
 	DisplayName string `json:"display_name,omitempty" yaml:"display_name,omitempty"`
-	ID          string `json:"id,omitempty" yaml:"id,omitempty"`
+	Id          string `json:"id,omitempty" yaml:"id,omitempty"`
 }
 
 // UserBuiltin is client view of a [`UserBuiltin`]
 type UserBuiltin struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// ID is unique, immutable, system-controlled identifier for each resource
-	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// TimeCreated is timestamp when this resource was created
@@ -2092,392 +2092,392 @@ type UserResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// VPC is client view of a [`Vpc`]
-type VPC struct {
+// Vpc is client view of a [`Vpc`]
+type Vpc struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// DnsName is the name used for the VPC in DNS.
 	DnsName string `json:"dns_name,omitempty" yaml:"dns_name,omitempty"`
-	// ID is unique, immutable, system-controlled identifier for each resource
-	ID string `json:"id,omitempty" yaml:"id,omitempty"`
-	// IPv6Prefix is the unique local IPv6 address range for subnets in this VPC
-	IPv6Prefix IPv6Net `json:"ipv6_prefix,omitempty" yaml:"ipv6_prefix,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Ipv6Prefix is the unique local IPv6 address range for subnets in this VPC
+	Ipv6Prefix Ipv6Net `json:"ipv6_prefix,omitempty" yaml:"ipv6_prefix,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
-	// ProjectID is id for the project containing this VPC
-	ProjectID string `json:"project_id,omitempty" yaml:"project_id,omitempty"`
-	// SystemRouterID is id for the system router where subnet default routes are registered
-	SystemRouterID string `json:"system_router_id,omitempty" yaml:"system_router_id,omitempty"`
+	// ProjectId is id for the project containing this VPC
+	ProjectId string `json:"project_id,omitempty" yaml:"project_id,omitempty"`
+	// SystemRouterId is id for the system router where subnet default routes are registered
+	SystemRouterId string `json:"system_router_id,omitempty" yaml:"system_router_id,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
 }
 
-// VPCCreate is create-time parameters for a [`Vpc`](crate::external_api::views::Vpc)
-type VPCCreate struct {
+// VpcCreate is create-time parameters for a [`Vpc`](crate::external_api::views::Vpc)
+type VpcCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// DnsName is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	DnsName string `json:"dns_name,omitempty" yaml:"dns_name,omitempty"`
-	// IPv6Prefix is the IPv6 prefix for this VPC.
+	// Ipv6Prefix is the IPv6 prefix for this VPC.
 	//
 	// All IPv6 subnets created from this VPC must be taken from this range, which sould be a Unique Local Address in the range `fd00::/48`. The default VPC Subnet will have the first `/64` range from this prefix.
-	IPv6Prefix IPv6Net `json:"ipv6_prefix,omitempty" yaml:"ipv6_prefix,omitempty"`
+	Ipv6Prefix Ipv6Net `json:"ipv6_prefix,omitempty" yaml:"ipv6_prefix,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
-// FirewallRule is a single rule in a VPC firewall
-type FirewallRule struct {
+// VpcFirewallRule is a single rule in a VPC firewall
+type VpcFirewallRule struct {
 	// Action is whether traffic matching the rule should be allowed or dropped
-	Action FirewallRuleAction `json:"action,omitempty" yaml:"action,omitempty"`
+	Action VpcFirewallRuleAction `json:"action,omitempty" yaml:"action,omitempty"`
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Direction is whether this rule is for incoming or outgoing traffic
-	Direction FirewallRuleDirection `json:"direction,omitempty" yaml:"direction,omitempty"`
+	Direction VpcFirewallRuleDirection `json:"direction,omitempty" yaml:"direction,omitempty"`
 	// Filters is reductions on the scope of the rule
-	Filters FirewallRuleFilter `json:"filters,omitempty" yaml:"filters,omitempty"`
-	// ID is unique, immutable, system-controlled identifier for each resource
-	ID string `json:"id,omitempty" yaml:"id,omitempty"`
+	Filters VpcFirewallRuleFilter `json:"filters,omitempty" yaml:"filters,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// Priority is the relative priority of this rule
 	Priority int `json:"priority,omitempty" yaml:"priority,omitempty"`
 	// Status is whether this rule is in effect
-	Status FirewallRuleStatus `json:"status,omitempty" yaml:"status,omitempty"`
+	Status VpcFirewallRuleStatus `json:"status,omitempty" yaml:"status,omitempty"`
 	// Targets is list of sets of instances that the rule applies to
-	Targets []FirewallRuleTarget `json:"targets,omitempty" yaml:"targets,omitempty"`
+	Targets []VpcFirewallRuleTarget `json:"targets,omitempty" yaml:"targets,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
-	// VPCId is the VPC to which this rule belongs
-	VPCId string `json:"vpc_id,omitempty" yaml:"vpc_id,omitempty"`
+	// VpcId is the VPC to which this rule belongs
+	VpcId string `json:"vpc_id,omitempty" yaml:"vpc_id,omitempty"`
 }
 
-// FirewallRuleAction is the type definition for a FirewallRuleAction.
-type FirewallRuleAction string
+// VpcFirewallRuleAction is the type definition for a VpcFirewallRuleAction.
+type VpcFirewallRuleAction string
 
 const (
-	// FirewallRuleActionAllow represents the FirewallRuleAction `"allow"`.
-	FirewallRuleActionAllow FirewallRuleAction = "allow"
-	// FirewallRuleActionDeny represents the FirewallRuleAction `"deny"`.
-	FirewallRuleActionDeny FirewallRuleAction = "deny"
+	// VpcFirewallRuleActionAllow represents the VpcFirewallRuleAction `"allow"`.
+	VpcFirewallRuleActionAllow VpcFirewallRuleAction = "allow"
+	// VpcFirewallRuleActionDeny represents the VpcFirewallRuleAction `"deny"`.
+	VpcFirewallRuleActionDeny VpcFirewallRuleAction = "deny"
 )
 
-// FirewallRuleDirection is the type definition for a FirewallRuleDirection.
-type FirewallRuleDirection string
+// VpcFirewallRuleDirection is the type definition for a VpcFirewallRuleDirection.
+type VpcFirewallRuleDirection string
 
 const (
-	// FirewallRuleDirectionInbound represents the FirewallRuleDirection `"inbound"`.
-	FirewallRuleDirectionInbound FirewallRuleDirection = "inbound"
-	// FirewallRuleDirectionOutbound represents the FirewallRuleDirection `"outbound"`.
-	FirewallRuleDirectionOutbound FirewallRuleDirection = "outbound"
+	// VpcFirewallRuleDirectionInbound represents the VpcFirewallRuleDirection `"inbound"`.
+	VpcFirewallRuleDirectionInbound VpcFirewallRuleDirection = "inbound"
+	// VpcFirewallRuleDirectionOutbound represents the VpcFirewallRuleDirection `"outbound"`.
+	VpcFirewallRuleDirectionOutbound VpcFirewallRuleDirection = "outbound"
 )
 
-// FirewallRuleFilter is filter for a firewall rule. A given packet must match every field that is present for the rule to apply to it. A packet matches a field if any entry in that field matches the packet.
-type FirewallRuleFilter struct {
+// VpcFirewallRuleFilter is filter for a firewall rule. A given packet must match every field that is present for the rule to apply to it. A packet matches a field if any entry in that field matches the packet.
+type VpcFirewallRuleFilter struct {
 	// Hosts is if present, the sources (if incoming) or destinations (if outgoing) this rule applies to.
-	Hosts []FirewallRuleHostFilter `json:"hosts,omitempty" yaml:"hosts,omitempty"`
+	Hosts []VpcFirewallRuleHostFilter `json:"hosts,omitempty" yaml:"hosts,omitempty"`
 	// Ports is if present, the destination ports this rule applies to.
 	Ports []L4PortRange `json:"ports,omitempty" yaml:"ports,omitempty"`
 	// Protocols is if present, the networking protocols this rule applies to.
-	Protocols []FirewallRuleProtocol `json:"protocols,omitempty" yaml:"protocols,omitempty"`
+	Protocols []VpcFirewallRuleProtocol `json:"protocols,omitempty" yaml:"protocols,omitempty"`
 }
 
-// FirewallRuleHostFilterVPC is the rule applies to traffic from/to all instances in the VPC
-type FirewallRuleHostFilterVPC struct {
-	Type FirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
+// VpcFirewallRuleHostFilterVpc is the rule applies to traffic from/to all instances in the VPC
+type VpcFirewallRuleHostFilterVpc struct {
+	Type VpcFirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-// FirewallRuleHostFilterType is the type definition for a FirewallRuleHostFilterType.
-type FirewallRuleHostFilterType string
+// VpcFirewallRuleHostFilterType is the type definition for a VpcFirewallRuleHostFilterType.
+type VpcFirewallRuleHostFilterType string
 
 const (
-	// FirewallRuleHostFilterTypeVpc represents the FirewallRuleHostFilterType `"vpc"`.
-	FirewallRuleHostFilterTypeVpc FirewallRuleHostFilterType = "vpc"
+	// VpcFirewallRuleHostFilterTypeVpc represents the VpcFirewallRuleHostFilterType `"vpc"`.
+	VpcFirewallRuleHostFilterTypeVpc VpcFirewallRuleHostFilterType = "vpc"
 )
 
-// FirewallRuleHostFilterSubnet is the rule applies to traffic from/to all instances in the VPC Subnet
-type FirewallRuleHostFilterSubnet struct {
-	Type FirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
-	Value string `json:"value,omitempty" yaml:"value,omitempty"`
-}
-
-const (
-	// FirewallRuleHostFilterTypeSubnet represents the FirewallRuleHostFilterType `"subnet"`.
-	FirewallRuleHostFilterTypeSubnet FirewallRuleHostFilterType = "subnet"
-)
-
-// FirewallRuleHostFilterInstance is the rule applies to traffic from/to this specific instance
-type FirewallRuleHostFilterInstance struct {
-	Type FirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
+// VpcFirewallRuleHostFilterSubnet is the rule applies to traffic from/to all instances in the VPC Subnet
+type VpcFirewallRuleHostFilterSubnet struct {
+	Type VpcFirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 const (
-	// FirewallRuleHostFilterTypeInstance represents the FirewallRuleHostFilterType `"instance"`.
-	FirewallRuleHostFilterTypeInstance FirewallRuleHostFilterType = "instance"
+	// VpcFirewallRuleHostFilterTypeSubnet represents the VpcFirewallRuleHostFilterType `"subnet"`.
+	VpcFirewallRuleHostFilterTypeSubnet VpcFirewallRuleHostFilterType = "subnet"
 )
 
-// FirewallRuleHostFilterIp is the rule applies to traffic from/to a specific IP address
-type FirewallRuleHostFilterIp struct {
-	Type  FirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
-	Value string                     `json:"value,omitempty" yaml:"value,omitempty"`
+// VpcFirewallRuleHostFilterInstance is the rule applies to traffic from/to this specific instance
+type VpcFirewallRuleHostFilterInstance struct {
+	Type VpcFirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 const (
-	// FirewallRuleHostFilterTypeIp represents the FirewallRuleHostFilterType `"ip"`.
-	FirewallRuleHostFilterTypeIp FirewallRuleHostFilterType = "ip"
+	// VpcFirewallRuleHostFilterTypeInstance represents the VpcFirewallRuleHostFilterType `"instance"`.
+	VpcFirewallRuleHostFilterTypeInstance VpcFirewallRuleHostFilterType = "instance"
 )
 
-// FirewallRuleHostFilterIpNet is the rule applies to traffic from/to a specific IP subnet
-type FirewallRuleHostFilterIpNet struct {
-	Type  FirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
-	Value IpNet                      `json:"value,omitempty" yaml:"value,omitempty"`
+// VpcFirewallRuleHostFilterIp is the rule applies to traffic from/to a specific IP address
+type VpcFirewallRuleHostFilterIp struct {
+	Type  VpcFirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value string                        `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 const (
-	// FirewallRuleHostFilterTypeIpNet represents the FirewallRuleHostFilterType `"ip_net"`.
-	FirewallRuleHostFilterTypeIpNet FirewallRuleHostFilterType = "ip_net"
+	// VpcFirewallRuleHostFilterTypeIp represents the VpcFirewallRuleHostFilterType `"ip"`.
+	VpcFirewallRuleHostFilterTypeIp VpcFirewallRuleHostFilterType = "ip"
 )
 
-// FirewallRuleHostFilter is the `VpcFirewallRuleHostFilter` is used to filter traffic on the basis of its source or destination host.
-type FirewallRuleHostFilter struct {
+// VpcFirewallRuleHostFilterIpNet is the rule applies to traffic from/to a specific IP subnet
+type VpcFirewallRuleHostFilterIpNet struct {
+	Type  VpcFirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value IpNet                         `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+const (
+	// VpcFirewallRuleHostFilterTypeIpNet represents the VpcFirewallRuleHostFilterType `"ip_net"`.
+	VpcFirewallRuleHostFilterTypeIpNet VpcFirewallRuleHostFilterType = "ip_net"
+)
+
+// VpcFirewallRuleHostFilter is the `VpcFirewallRuleHostFilter` is used to filter traffic on the basis of its source or destination host.
+type VpcFirewallRuleHostFilter struct {
 	Type  string `json:"type,omitempty" yaml:"type,omitempty"`
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-// FirewallRuleProtocol is the protocols that may be specified in a firewall rule's filter
-type FirewallRuleProtocol string
+// VpcFirewallRuleProtocol is the protocols that may be specified in a firewall rule's filter
+type VpcFirewallRuleProtocol string
 
 const (
-	// FirewallRuleProtocolTCP represents the FirewallRuleProtocol `"TCP"`.
-	FirewallRuleProtocolTCP FirewallRuleProtocol = "TCP"
-	// FirewallRuleProtocolUDP represents the FirewallRuleProtocol `"UDP"`.
-	FirewallRuleProtocolUDP FirewallRuleProtocol = "UDP"
-	// FirewallRuleProtocolICMP represents the FirewallRuleProtocol `"ICMP"`.
-	FirewallRuleProtocolICMP FirewallRuleProtocol = "ICMP"
+	// VpcFirewallRuleProtocolTCP represents the VpcFirewallRuleProtocol `"TCP"`.
+	VpcFirewallRuleProtocolTCP VpcFirewallRuleProtocol = "TCP"
+	// VpcFirewallRuleProtocolUDP represents the VpcFirewallRuleProtocol `"UDP"`.
+	VpcFirewallRuleProtocolUDP VpcFirewallRuleProtocol = "UDP"
+	// VpcFirewallRuleProtocolICMP represents the VpcFirewallRuleProtocol `"ICMP"`.
+	VpcFirewallRuleProtocolICMP VpcFirewallRuleProtocol = "ICMP"
 )
 
-// FirewallRuleStatus is the type definition for a FirewallRuleStatus.
-type FirewallRuleStatus string
+// VpcFirewallRuleStatus is the type definition for a VpcFirewallRuleStatus.
+type VpcFirewallRuleStatus string
 
 const (
-	// FirewallRuleStatusDisabled represents the FirewallRuleStatus `"disabled"`.
-	FirewallRuleStatusDisabled FirewallRuleStatus = "disabled"
-	// FirewallRuleStatusEnabled represents the FirewallRuleStatus `"enabled"`.
-	FirewallRuleStatusEnabled FirewallRuleStatus = "enabled"
+	// VpcFirewallRuleStatusDisabled represents the VpcFirewallRuleStatus `"disabled"`.
+	VpcFirewallRuleStatusDisabled VpcFirewallRuleStatus = "disabled"
+	// VpcFirewallRuleStatusEnabled represents the VpcFirewallRuleStatus `"enabled"`.
+	VpcFirewallRuleStatusEnabled VpcFirewallRuleStatus = "enabled"
 )
 
-// FirewallRuleTargetVPC is the rule applies to all instances in the VPC
-type FirewallRuleTargetVPC struct {
-	Type FirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
+// VpcFirewallRuleTargetVpc is the rule applies to all instances in the VPC
+type VpcFirewallRuleTargetVpc struct {
+	Type VpcFirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-// FirewallRuleTargetType is the type definition for a FirewallRuleTargetType.
-type FirewallRuleTargetType string
+// VpcFirewallRuleTargetType is the type definition for a VpcFirewallRuleTargetType.
+type VpcFirewallRuleTargetType string
 
 const (
-	// FirewallRuleTargetTypeVpc represents the FirewallRuleTargetType `"vpc"`.
-	FirewallRuleTargetTypeVpc FirewallRuleTargetType = "vpc"
+	// VpcFirewallRuleTargetTypeVpc represents the VpcFirewallRuleTargetType `"vpc"`.
+	VpcFirewallRuleTargetTypeVpc VpcFirewallRuleTargetType = "vpc"
 )
 
-// FirewallRuleTargetSubnet is the rule applies to all instances in the VPC Subnet
-type FirewallRuleTargetSubnet struct {
-	Type FirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
-	Value string `json:"value,omitempty" yaml:"value,omitempty"`
-}
-
-const (
-	// FirewallRuleTargetTypeSubnet represents the FirewallRuleTargetType `"subnet"`.
-	FirewallRuleTargetTypeSubnet FirewallRuleTargetType = "subnet"
-)
-
-// FirewallRuleTargetInstance is the rule applies to this specific instance
-type FirewallRuleTargetInstance struct {
-	Type FirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
+// VpcFirewallRuleTargetSubnet is the rule applies to all instances in the VPC Subnet
+type VpcFirewallRuleTargetSubnet struct {
+	Type VpcFirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 const (
-	// FirewallRuleTargetTypeInstance represents the FirewallRuleTargetType `"instance"`.
-	FirewallRuleTargetTypeInstance FirewallRuleTargetType = "instance"
+	// VpcFirewallRuleTargetTypeSubnet represents the VpcFirewallRuleTargetType `"subnet"`.
+	VpcFirewallRuleTargetTypeSubnet VpcFirewallRuleTargetType = "subnet"
 )
 
-// FirewallRuleTargetIp is the rule applies to a specific IP address
-type FirewallRuleTargetIp struct {
-	Type  FirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
-	Value string                 `json:"value,omitempty" yaml:"value,omitempty"`
+// VpcFirewallRuleTargetInstance is the rule applies to this specific instance
+type VpcFirewallRuleTargetInstance struct {
+	Type VpcFirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 const (
-	// FirewallRuleTargetTypeIp represents the FirewallRuleTargetType `"ip"`.
-	FirewallRuleTargetTypeIp FirewallRuleTargetType = "ip"
+	// VpcFirewallRuleTargetTypeInstance represents the VpcFirewallRuleTargetType `"instance"`.
+	VpcFirewallRuleTargetTypeInstance VpcFirewallRuleTargetType = "instance"
 )
 
-// FirewallRuleTargetIpNet is the rule applies to a specific IP subnet
-type FirewallRuleTargetIpNet struct {
-	Type  FirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
-	Value IpNet                  `json:"value,omitempty" yaml:"value,omitempty"`
+// VpcFirewallRuleTargetIp is the rule applies to a specific IP address
+type VpcFirewallRuleTargetIp struct {
+	Type  VpcFirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value string                    `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 const (
-	// FirewallRuleTargetTypeIpNet represents the FirewallRuleTargetType `"ip_net"`.
-	FirewallRuleTargetTypeIpNet FirewallRuleTargetType = "ip_net"
+	// VpcFirewallRuleTargetTypeIp represents the VpcFirewallRuleTargetType `"ip"`.
+	VpcFirewallRuleTargetTypeIp VpcFirewallRuleTargetType = "ip"
 )
 
-// FirewallRuleTarget is a `VpcFirewallRuleTarget` is used to specify the set of [`Instance`]s to which a firewall rule applies.
-type FirewallRuleTarget struct {
+// VpcFirewallRuleTargetIpNet is the rule applies to a specific IP subnet
+type VpcFirewallRuleTargetIpNet struct {
+	Type  VpcFirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value IpNet                     `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+const (
+	// VpcFirewallRuleTargetTypeIpNet represents the VpcFirewallRuleTargetType `"ip_net"`.
+	VpcFirewallRuleTargetTypeIpNet VpcFirewallRuleTargetType = "ip_net"
+)
+
+// VpcFirewallRuleTarget is a `VpcFirewallRuleTarget` is used to specify the set of [`Instance`]s to which a firewall rule applies.
+type VpcFirewallRuleTarget struct {
 	Type  string `json:"type,omitempty" yaml:"type,omitempty"`
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-// FirewallRuleUpdate is a single rule in a VPC firewall
-type FirewallRuleUpdate struct {
+// VpcFirewallRuleUpdate is a single rule in a VPC firewall
+type VpcFirewallRuleUpdate struct {
 	// Action is whether traffic matching the rule should be allowed or dropped
-	Action FirewallRuleAction `json:"action,omitempty" yaml:"action,omitempty"`
+	Action VpcFirewallRuleAction `json:"action,omitempty" yaml:"action,omitempty"`
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Direction is whether this rule is for incoming or outgoing traffic
-	Direction FirewallRuleDirection `json:"direction,omitempty" yaml:"direction,omitempty"`
+	Direction VpcFirewallRuleDirection `json:"direction,omitempty" yaml:"direction,omitempty"`
 	// Filters is reductions on the scope of the rule
-	Filters FirewallRuleFilter `json:"filters,omitempty" yaml:"filters,omitempty"`
+	Filters VpcFirewallRuleFilter `json:"filters,omitempty" yaml:"filters,omitempty"`
 	// Name is name of the rule, unique to this VPC
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// Priority is the relative priority of this rule
 	Priority int `json:"priority,omitempty" yaml:"priority,omitempty"`
 	// Status is whether this rule is in effect
-	Status FirewallRuleStatus `json:"status,omitempty" yaml:"status,omitempty"`
+	Status VpcFirewallRuleStatus `json:"status,omitempty" yaml:"status,omitempty"`
 	// Targets is list of sets of instances that the rule applies to
-	Targets []FirewallRuleTarget `json:"targets,omitempty" yaml:"targets,omitempty"`
+	Targets []VpcFirewallRuleTarget `json:"targets,omitempty" yaml:"targets,omitempty"`
 }
 
-// FirewallRuleUpdateParams is updateable properties of a `Vpc`'s firewall Note that VpcFirewallRules are implicitly created along with a Vpc, so there is no explicit creation.
-type FirewallRuleUpdateParams struct {
-	Rules []FirewallRuleUpdate `json:"rules,omitempty" yaml:"rules,omitempty"`
+// VpcFirewallRuleUpdateParams is updateable properties of a `Vpc`'s firewall Note that VpcFirewallRules are implicitly created along with a Vpc, so there is no explicit creation.
+type VpcFirewallRuleUpdateParams struct {
+	Rules []VpcFirewallRuleUpdate `json:"rules,omitempty" yaml:"rules,omitempty"`
 }
 
-// FirewallRules is collection of a Vpc's firewall rules
-type FirewallRules struct {
-	Rules []FirewallRule `json:"rules,omitempty" yaml:"rules,omitempty"`
+// VpcFirewallRules is collection of a Vpc's firewall rules
+type VpcFirewallRules struct {
+	Rules []VpcFirewallRule `json:"rules,omitempty" yaml:"rules,omitempty"`
 }
 
-// VPCResultsPage is a single page of results
-type VPCResultsPage struct {
+// VpcResultsPage is a single page of results
+type VpcResultsPage struct {
 	// Items is list of items on this page of results
-	Items []VPC `json:"items,omitempty" yaml:"items,omitempty"`
+	Items []Vpc `json:"items,omitempty" yaml:"items,omitempty"`
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// Router is a VPC router defines a series of rules that indicate where traffic should be sent depending on its destination.
-type Router struct {
+// VpcRouter is a VPC router defines a series of rules that indicate where traffic should be sent depending on its destination.
+type VpcRouter struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// ID is unique, immutable, system-controlled identifier for each resource
-	ID   string     `json:"id,omitempty" yaml:"id,omitempty"`
-	Kind RouterKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id   string        `json:"id,omitempty" yaml:"id,omitempty"`
+	Kind VpcRouterKind `json:"kind,omitempty" yaml:"kind,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
-	// VPCId is the VPC to which the router belongs.
-	VPCId string `json:"vpc_id,omitempty" yaml:"vpc_id,omitempty"`
+	// VpcId is the VPC to which the router belongs.
+	VpcId string `json:"vpc_id,omitempty" yaml:"vpc_id,omitempty"`
 }
 
-// RouterCreate is create-time parameters for a [`VpcRouter`](crate::external_api::views::VpcRouter)
-type RouterCreate struct {
+// VpcRouterCreate is create-time parameters for a [`VpcRouter`](crate::external_api::views::VpcRouter)
+type VpcRouterCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
-// RouterKind is the type definition for a RouterKind.
-type RouterKind string
+// VpcRouterKind is the type definition for a VpcRouterKind.
+type VpcRouterKind string
 
 const (
-	// RouterKindSystem represents the RouterKind `"system"`.
-	RouterKindSystem RouterKind = "system"
-	// RouterKindCustom represents the RouterKind `"custom"`.
-	RouterKindCustom RouterKind = "custom"
+	// VpcRouterKindSystem represents the VpcRouterKind `"system"`.
+	VpcRouterKindSystem VpcRouterKind = "system"
+	// VpcRouterKindCustom represents the VpcRouterKind `"custom"`.
+	VpcRouterKindCustom VpcRouterKind = "custom"
 )
 
-// RouterResultsPage is a single page of results
-type RouterResultsPage struct {
+// VpcRouterResultsPage is a single page of results
+type VpcRouterResultsPage struct {
 	// Items is list of items on this page of results
-	Items []Router `json:"items,omitempty" yaml:"items,omitempty"`
+	Items []VpcRouter `json:"items,omitempty" yaml:"items,omitempty"`
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// RouterUpdate is updateable properties of a [`VpcRouter`](crate::external_api::views::VpcRouter)
-type RouterUpdate struct {
+// VpcRouterUpdate is updateable properties of a [`VpcRouter`](crate::external_api::views::VpcRouter)
+type VpcRouterUpdate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	Name        string `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
-// Subnet is a VPC subnet represents a logical grouping for instances that allows network traffic between them, within a IPv4 subnetwork or optionall an IPv6 subnetwork.
-type Subnet struct {
+// VpcSubnet is a VPC subnet represents a logical grouping for instances that allows network traffic between them, within a IPv4 subnetwork or optionall an IPv6 subnetwork.
+type VpcSubnet struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// ID is unique, immutable, system-controlled identifier for each resource
-	ID string `json:"id,omitempty" yaml:"id,omitempty"`
-	// IPv4Block is the IPv4 subnet CIDR block.
-	IPv4Block IPv4Net `json:"ipv4_block,omitempty" yaml:"ipv4_block,omitempty"`
-	// IPv6Block is the IPv6 subnet CIDR block.
-	IPv6Block IPv6Net `json:"ipv6_block,omitempty" yaml:"ipv6_block,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Ipv4Block is the IPv4 subnet CIDR block.
+	Ipv4Block Ipv4Net `json:"ipv4_block,omitempty" yaml:"ipv4_block,omitempty"`
+	// Ipv6Block is the IPv6 subnet CIDR block.
+	Ipv6Block Ipv6Net `json:"ipv6_block,omitempty" yaml:"ipv6_block,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
-	// VPCId is the VPC to which the subnet belongs.
-	VPCId string `json:"vpc_id,omitempty" yaml:"vpc_id,omitempty"`
+	// VpcId is the VPC to which the subnet belongs.
+	VpcId string `json:"vpc_id,omitempty" yaml:"vpc_id,omitempty"`
 }
 
-// SubnetCreate is create-time parameters for a [`VpcSubnet`](crate::external_api::views::VpcSubnet)
-type SubnetCreate struct {
+// VpcSubnetCreate is create-time parameters for a [`VpcSubnet`](crate::external_api::views::VpcSubnet)
+type VpcSubnetCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// IPv4Block is the IPv4 address range for this subnet.
+	// Ipv4Block is the IPv4 address range for this subnet.
 	//
 	// It must be allocated from an RFC 1918 private address range, and must not overlap with any other existing subnet in the VPC.
-	IPv4Block IPv4Net `json:"ipv4_block,omitempty" yaml:"ipv4_block,omitempty"`
-	// IPv6Block is the IPv6 address range for this subnet.
+	Ipv4Block Ipv4Net `json:"ipv4_block,omitempty" yaml:"ipv4_block,omitempty"`
+	// Ipv6Block is the IPv6 address range for this subnet.
 	//
 	// It must be allocated from the RFC 4193 Unique Local Address range, with the prefix equal to the parent VPC's prefix. A random `/64` block will be assigned if one is not provided. It must not overlap with any existing subnet in the VPC.
-	IPv6Block IPv6Net `json:"ipv6_block,omitempty" yaml:"ipv6_block,omitempty"`
+	Ipv6Block Ipv6Net `json:"ipv6_block,omitempty" yaml:"ipv6_block,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
-// SubnetResultsPage is a single page of results
-type SubnetResultsPage struct {
+// VpcSubnetResultsPage is a single page of results
+type VpcSubnetResultsPage struct {
 	// Items is list of items on this page of results
-	Items []Subnet `json:"items,omitempty" yaml:"items,omitempty"`
+	Items []VpcSubnet `json:"items,omitempty" yaml:"items,omitempty"`
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// SubnetUpdate is updateable properties of a [`VpcSubnet`](crate::external_api::views::VpcSubnet)
-type SubnetUpdate struct {
+// VpcSubnetUpdate is updateable properties of a [`VpcSubnet`](crate::external_api::views::VpcSubnet)
+type VpcSubnetUpdate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	Name        string `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
-// VPCUpdate is updateable properties of a [`Vpc`](crate::external_api::views::Vpc)
-type VPCUpdate struct {
+// VpcUpdate is updateable properties of a [`Vpc`](crate::external_api::views::Vpc)
+type VpcUpdate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	DnsName     string `json:"dns_name,omitempty" yaml:"dns_name,omitempty"`
 	Name        string `json:"name,omitempty" yaml:"name,omitempty"`
@@ -2562,49 +2562,6 @@ var FieldTypes = []FieldType{
 	FieldTypeIpAddr,
 	FieldTypeString,
 	FieldTypeUuid,
-}
-
-// FirewallRuleActions is the collection of all FirewallRuleAction values.
-var FirewallRuleActions = []FirewallRuleAction{
-	FirewallRuleActionAllow,
-	FirewallRuleActionDeny,
-}
-
-// FirewallRuleDirections is the collection of all FirewallRuleDirection values.
-var FirewallRuleDirections = []FirewallRuleDirection{
-	FirewallRuleDirectionInbound,
-	FirewallRuleDirectionOutbound,
-}
-
-// FirewallRuleHostFilterTypes is the collection of all FirewallRuleHostFilterType values.
-var FirewallRuleHostFilterTypes = []FirewallRuleHostFilterType{
-	FirewallRuleHostFilterTypeInstance,
-	FirewallRuleHostFilterTypeIp,
-	FirewallRuleHostFilterTypeIpNet,
-	FirewallRuleHostFilterTypeSubnet,
-	FirewallRuleHostFilterTypeVpc,
-}
-
-// FirewallRuleProtocols is the collection of all FirewallRuleProtocol values.
-var FirewallRuleProtocols = []FirewallRuleProtocol{
-	FirewallRuleProtocolICMP,
-	FirewallRuleProtocolTCP,
-	FirewallRuleProtocolUDP,
-}
-
-// FirewallRuleStatuses is the collection of all FirewallRuleStatus values.
-var FirewallRuleStatuses = []FirewallRuleStatus{
-	FirewallRuleStatusDisabled,
-	FirewallRuleStatusEnabled,
-}
-
-// FirewallRuleTargetTypes is the collection of all FirewallRuleTargetType values.
-var FirewallRuleTargetTypes = []FirewallRuleTargetType{
-	FirewallRuleTargetTypeInstance,
-	FirewallRuleTargetTypeIp,
-	FirewallRuleTargetTypeIpNet,
-	FirewallRuleTargetTypeSubnet,
-	FirewallRuleTargetTypeVpc,
 }
 
 // FleetRoles is the collection of all FleetRole values.
@@ -2710,14 +2667,6 @@ var RouteDestinationTypes = []RouteDestinationType{
 	RouteDestinationTypeVpc,
 }
 
-// RouteKinds is the collection of all RouteKind values.
-var RouteKinds = []RouteKind{
-	RouteKindCustom,
-	RouteKindDefault,
-	RouteKindVpcPeering,
-	RouteKindVpcSubnet,
-}
-
 // RouteTargetTypes is the collection of all RouteTargetType values.
 var RouteTargetTypes = []RouteTargetType{
 	RouteTargetTypeInstance,
@@ -2727,10 +2676,12 @@ var RouteTargetTypes = []RouteTargetType{
 	RouteTargetTypeVpc,
 }
 
-// RouterKinds is the collection of all RouterKind values.
-var RouterKinds = []RouterKind{
-	RouterKindCustom,
-	RouterKindSystem,
+// RouterRouteKinds is the collection of all RouterRouteKind values.
+var RouterRouteKinds = []RouterRouteKind{
+	RouterRouteKindCustom,
+	RouterRouteKindDefault,
+	RouterRouteKindVpcPeering,
+	RouterRouteKindVpcSubnet,
 }
 
 // SagaErrorInfoErrors is the collection of all SagaErrorInfoError values.
@@ -2760,4 +2711,53 @@ var SiloRoles = []SiloRole{
 var UserProvisionTypes = []UserProvisionType{
 	UserProvisionTypeFixed,
 	UserProvisionTypeJit,
+}
+
+// VpcFirewallRuleActions is the collection of all VpcFirewallRuleAction values.
+var VpcFirewallRuleActions = []VpcFirewallRuleAction{
+	VpcFirewallRuleActionAllow,
+	VpcFirewallRuleActionDeny,
+}
+
+// VpcFirewallRuleDirections is the collection of all VpcFirewallRuleDirection values.
+var VpcFirewallRuleDirections = []VpcFirewallRuleDirection{
+	VpcFirewallRuleDirectionInbound,
+	VpcFirewallRuleDirectionOutbound,
+}
+
+// VpcFirewallRuleHostFilterTypes is the collection of all VpcFirewallRuleHostFilterType values.
+var VpcFirewallRuleHostFilterTypes = []VpcFirewallRuleHostFilterType{
+	VpcFirewallRuleHostFilterTypeInstance,
+	VpcFirewallRuleHostFilterTypeIp,
+	VpcFirewallRuleHostFilterTypeIpNet,
+	VpcFirewallRuleHostFilterTypeSubnet,
+	VpcFirewallRuleHostFilterTypeVpc,
+}
+
+// VpcFirewallRuleProtocols is the collection of all VpcFirewallRuleProtocol values.
+var VpcFirewallRuleProtocols = []VpcFirewallRuleProtocol{
+	VpcFirewallRuleProtocolICMP,
+	VpcFirewallRuleProtocolTCP,
+	VpcFirewallRuleProtocolUDP,
+}
+
+// VpcFirewallRuleStatuses is the collection of all VpcFirewallRuleStatus values.
+var VpcFirewallRuleStatuses = []VpcFirewallRuleStatus{
+	VpcFirewallRuleStatusDisabled,
+	VpcFirewallRuleStatusEnabled,
+}
+
+// VpcFirewallRuleTargetTypes is the collection of all VpcFirewallRuleTargetType values.
+var VpcFirewallRuleTargetTypes = []VpcFirewallRuleTargetType{
+	VpcFirewallRuleTargetTypeInstance,
+	VpcFirewallRuleTargetTypeIp,
+	VpcFirewallRuleTargetTypeIpNet,
+	VpcFirewallRuleTargetTypeSubnet,
+	VpcFirewallRuleTargetTypeVpc,
+}
+
+// VpcRouterKinds is the collection of all VpcRouterKind values.
+var VpcRouterKinds = []VpcRouterKind{
+	VpcRouterKindCustom,
+	VpcRouterKindSystem,
 }
