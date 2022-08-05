@@ -13,11 +13,11 @@ import (
 	"time"
 )
 
-// ViewByID: Fetch a disk by id
+// DiskViewById: Fetch a disk by id
 //
 // Parameters:
 //	- `id`
-func (s *DisksService) ViewByID(id string) (*Disk, error) {
+func (s *DisksService) DiskViewById(id string) (*Disk, error) {
 	// Create the url.
 	path := "/by-id/disks/{{.id}}"
 	uri := resolveRelative(s.client.server, path)
@@ -54,11 +54,11 @@ func (s *DisksService) ViewByID(id string) (*Disk, error) {
 	return &body, nil
 }
 
-// GlobalGlobalViewByID: Fetch a global image by id
+// ImageGlobalViewById: Fetch a global image by id
 //
 // Parameters:
 //	- `id`
-func (s *ImagesService) GlobalGlobalViewByID(id string) (*GlobalImage, error) {
+func (s *ImagesService) ImageGlobalViewById(id string) (*GlobalImage, error) {
 	// Create the url.
 	path := "/by-id/global-images/{{.id}}"
 	uri := resolveRelative(s.client.server, path)
@@ -95,11 +95,11 @@ func (s *ImagesService) GlobalGlobalViewByID(id string) (*GlobalImage, error) {
 	return &body, nil
 }
 
-// ViewByID: Fetch an image by id
+// ImageViewById: Fetch an image by id
 //
 // Parameters:
 //	- `id`
-func (s *ImagesService) ViewByID(id string) (*Image, error) {
+func (s *ImagesService) ImageViewById(id string) (*Image, error) {
 	// Create the url.
 	path := "/by-id/images/{{.id}}"
 	uri := resolveRelative(s.client.server, path)
@@ -136,11 +136,11 @@ func (s *ImagesService) ViewByID(id string) (*Image, error) {
 	return &body, nil
 }
 
-// ViewByID: Fetch an instance by id
+// InstanceViewById: Fetch an instance by id
 //
 // Parameters:
 //	- `id`
-func (s *InstancesService) ViewByID(id string) (*Instance, error) {
+func (s *InstancesService) InstanceViewById(id string) (*Instance, error) {
 	// Create the url.
 	path := "/by-id/instances/{{.id}}"
 	uri := resolveRelative(s.client.server, path)
@@ -177,11 +177,11 @@ func (s *InstancesService) ViewByID(id string) (*Instance, error) {
 	return &body, nil
 }
 
-// NetworkInterfaceViewByID: Fetch a network interface by id
+// InstanceNetworkInterfaceViewById: Fetch a network interface by id
 //
 // Parameters:
 //	- `id`
-func (s *InstancesService) NetworkInterfaceViewByID(id string) (*NetworkInterface, error) {
+func (s *InstancesService) InstanceNetworkInterfaceViewById(id string) (*NetworkInterface, error) {
 	// Create the url.
 	path := "/by-id/network-interfaces/{{.id}}"
 	uri := resolveRelative(s.client.server, path)
@@ -218,11 +218,11 @@ func (s *InstancesService) NetworkInterfaceViewByID(id string) (*NetworkInterfac
 	return &body, nil
 }
 
-// ViewByID: Fetch an organization by id
+// OrganizationViewById: Fetch an organization by id
 //
 // Parameters:
 //	- `id`
-func (s *OrganizationsService) ViewByID(id string) (*Organization, error) {
+func (s *OrganizationsService) OrganizationViewById(id string) (*Organization, error) {
 	// Create the url.
 	path := "/by-id/organizations/{{.id}}"
 	uri := resolveRelative(s.client.server, path)
@@ -259,11 +259,11 @@ func (s *OrganizationsService) ViewByID(id string) (*Organization, error) {
 	return &body, nil
 }
 
-// ViewByID: Fetch a project by id
+// ProjectViewById: Fetch a project by id
 //
 // Parameters:
 //	- `id`
-func (s *ProjectsService) ViewByID(id string) (*Project, error) {
+func (s *ProjectsService) ProjectViewById(id string) (*Project, error) {
 	// Create the url.
 	path := "/by-id/projects/{{.id}}"
 	uri := resolveRelative(s.client.server, path)
@@ -300,11 +300,11 @@ func (s *ProjectsService) ViewByID(id string) (*Project, error) {
 	return &body, nil
 }
 
-// ViewByID: Fetch a snapshot by id
+// SnapshotViewById: Fetch a snapshot by id
 //
 // Parameters:
 //	- `id`
-func (s *SnapshotsService) ViewByID(id string) (*Snapshot, error) {
+func (s *SnapshotsService) SnapshotViewById(id string) (*Snapshot, error) {
 	// Create the url.
 	path := "/by-id/snapshots/{{.id}}"
 	uri := resolveRelative(s.client.server, path)
@@ -341,11 +341,11 @@ func (s *SnapshotsService) ViewByID(id string) (*Snapshot, error) {
 	return &body, nil
 }
 
-// RouteViewById: Fetch a route by id
+// VpcRouterRouteViewById: Fetch a route by id
 //
 // Parameters:
 //	- `id`
-func (s *VPCsService) RouteViewById(id string) (*Route, error) {
+func (s *VPCsService) VpcRouterRouteViewById(id string) (*RouterRoute, error) {
 	// Create the url.
 	path := "/by-id/vpc-router-routes/{{.id}}"
 	uri := resolveRelative(s.client.server, path)
@@ -374,7 +374,7 @@ func (s *VPCsService) RouteViewById(id string) (*Route, error) {
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body Route
+	var body RouterRoute
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -382,11 +382,11 @@ func (s *VPCsService) RouteViewById(id string) (*Route, error) {
 	return &body, nil
 }
 
-// RouterViewById: Get a router by id
+// VpcRouterViewById: Get a router by id
 //
 // Parameters:
 //	- `id`
-func (s *VPCsService) RouterViewById(id string) (*Router, error) {
+func (s *VPCsService) VpcRouterViewById(id string) (*VpcRouter, error) {
 	// Create the url.
 	path := "/by-id/vpc-routers/{{.id}}"
 	uri := resolveRelative(s.client.server, path)
@@ -415,7 +415,7 @@ func (s *VPCsService) RouterViewById(id string) (*Router, error) {
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body Router
+	var body VpcRouter
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -423,11 +423,11 @@ func (s *VPCsService) RouterViewById(id string) (*Router, error) {
 	return &body, nil
 }
 
-// SubnetViewById: Fetch a subnet by id
+// VpcSubnetViewById: Fetch a subnet by id
 //
 // Parameters:
 //	- `id`
-func (s *VPCsService) SubnetViewById(id string) (*Subnet, error) {
+func (s *VPCsService) VpcSubnetViewById(id string) (*VpcSubnet, error) {
 	// Create the url.
 	path := "/by-id/vpc-subnets/{{.id}}"
 	uri := resolveRelative(s.client.server, path)
@@ -456,7 +456,7 @@ func (s *VPCsService) SubnetViewById(id string) (*Subnet, error) {
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body Subnet
+	var body VpcSubnet
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -464,11 +464,11 @@ func (s *VPCsService) SubnetViewById(id string) (*Subnet, error) {
 	return &body, nil
 }
 
-// VPCViewById: Fetch a VPC
+// VpcViewById: Fetch a VPC
 //
 // Parameters:
 //	- `id`
-func (s *VPCsService) VPCViewById(id string) (*VPC, error) {
+func (s *VPCsService) VpcViewById(id string) (*Vpc, error) {
 	// Create the url.
 	path := "/by-id/vpcs/{{.id}}"
 	uri := resolveRelative(s.client.server, path)
@@ -497,7 +497,7 @@ func (s *VPCsService) VPCViewById(id string) (*VPC, error) {
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body VPC
+	var body Vpc
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -581,7 +581,7 @@ func (s *HardwareService) RackListAllPages(sortBy IdSortMode) (*[]Rack, error) {
 //
 // Parameters:
 //	- `rackId`: The rack's unique ID.
-func (s *HardwareService) RackView(rackID string) (*Rack, error) {
+func (s *HardwareService) RackView(rackId string) (*Rack, error) {
 	// Create the url.
 	path := "/hardware/racks/{{.rack_id}}"
 	uri := resolveRelative(s.client.server, path)
@@ -592,7 +592,7 @@ func (s *HardwareService) RackView(rackID string) (*Rack, error) {
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"rack_id": rackID,
+		"rack_id": rackId,
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -694,7 +694,7 @@ func (s *HardwareService) SledListAllPages(sortBy IdSortMode) (*[]Sled, error) {
 //
 // Parameters:
 //	- `sledId`: The sled's unique ID.
-func (s *HardwareService) SledView(sledID string) (*Sled, error) {
+func (s *HardwareService) SledView(sledId string) (*Sled, error) {
 	// Create the url.
 	path := "/hardware/sleds/{{.sled_id}}"
 	uri := resolveRelative(s.client.server, path)
@@ -705,7 +705,7 @@ func (s *HardwareService) SledView(sledID string) (*Sled, error) {
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"sled_id": sledID,
+		"sled_id": sledId,
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -731,17 +731,17 @@ func (s *HardwareService) SledView(sledID string) (*Sled, error) {
 	return &body, nil
 }
 
-// GlobalGlobalList: List global images
+// ImageGlobalList: List global images
 //
 // Returns a list of all the global images. Global images are returned sorted by creation date, with the most recent images appearing first.
 //
-// To iterate over all pages, use the `GlobalGlobalListAllPages` method, instead.
+// To iterate over all pages, use the `ImageGlobalListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `sortBy`
-func (s *ImagesService) GlobalGlobalList(limit int, pageToken string, sortBy NameSortMode) (*GlobalImageResultsPage, error) {
+func (s *ImagesService) ImageGlobalList(limit int, pageToken string, sortBy NameSortMode) (*GlobalImageResultsPage, error) {
 	// Create the url.
 	path := "/images"
 	uri := resolveRelative(s.client.server, path)
@@ -780,22 +780,22 @@ func (s *ImagesService) GlobalGlobalList(limit int, pageToken string, sortBy Nam
 	return &body, nil
 }
 
-// GlobalGlobalListAllPages: List global images
+// ImageGlobalListAllPages: List global images
 //
 // Returns a list of all the global images. Global images are returned sorted by creation date, with the most recent images appearing first.
 //
-// This method is a wrapper around the `GlobalGlobalList` method.
+// This method is a wrapper around the `ImageGlobalList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
 //	- `sortBy`
-func (s *ImagesService) GlobalGlobalListAllPages(sortBy NameSortMode) (*[]GlobalImage, error) {
+func (s *ImagesService) ImageGlobalListAllPages(sortBy NameSortMode) (*[]GlobalImage, error) {
 
 	var allPages []GlobalImage
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.GlobalGlobalList(limit, pageToken, sortBy)
+		page, err := s.ImageGlobalList(limit, pageToken, sortBy)
 		if err != nil {
 			return nil, err
 		}
@@ -807,10 +807,10 @@ func (s *ImagesService) GlobalGlobalListAllPages(sortBy NameSortMode) (*[]Global
 	}
 
 	return &allPages, nil
-} // GlobalGlobalCreate: Create a global image
+} // ImageGlobalCreate: Create a global image
 //
 // Create a new global image. This image can then be used by any user as a base for instances.
-func (s *ImagesService) GlobalGlobalCreate(j *GlobalImageCreate) (*GlobalImage, error) {
+func (s *ImagesService) ImageGlobalCreate(j *GlobalImageCreate) (*GlobalImage, error) {
 	// Create the url.
 	path := "/images"
 	uri := resolveRelative(s.client.server, path)
@@ -846,13 +846,13 @@ func (s *ImagesService) GlobalGlobalCreate(j *GlobalImageCreate) (*GlobalImage, 
 	return &body, nil
 }
 
-// GlobalGlobalView: Fetch a global image
+// ImageGlobalView: Fetch a global image
 //
 // Returns the details of a specific global image.
 //
 // Parameters:
 //	- `imageName`
-func (s *ImagesService) GlobalGlobalView(imageName string) (*GlobalImage, error) {
+func (s *ImagesService) ImageGlobalView(imageName string) (*GlobalImage, error) {
 	// Create the url.
 	path := "/images/{{.image_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -889,13 +889,13 @@ func (s *ImagesService) GlobalGlobalView(imageName string) (*GlobalImage, error)
 	return &body, nil
 }
 
-// GlobalGlobalDelete: Delete a global image
+// ImageGlobalDelete: Delete a global image
 //
 // Permanently delete a global image. This operation cannot be undone. Any instances using the global image will continue to run, however new instances can not be created with this image.
 //
 // Parameters:
 //	- `imageName`
-func (s *ImagesService) GlobalGlobalDelete(imageName string) error {
+func (s *ImagesService) ImageGlobalDelete(imageName string) error {
 	// Create the url.
 	path := "/images/{{.image_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -924,15 +924,15 @@ func (s *ImagesService) GlobalGlobalDelete(imageName string) error {
 	return nil
 }
 
-// List: List IP pools
+// IpPoolList: List IP pools
 //
-// To iterate over all pages, use the `ListAllPages` method, instead.
+// To iterate over all pages, use the `IpPoolListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `sortBy`
-func (s *IpPoolsService) List(limit int, pageToken string, sortBy NameOrIdSortMode) (*IpPoolResultsPage, error) {
+func (s *IpPoolsService) IpPoolList(limit int, pageToken string, sortBy NameOrIdSortMode) (*IpPoolResultsPage, error) {
 	// Create the url.
 	path := "/ip-pools"
 	uri := resolveRelative(s.client.server, path)
@@ -971,20 +971,20 @@ func (s *IpPoolsService) List(limit int, pageToken string, sortBy NameOrIdSortMo
 	return &body, nil
 }
 
-// ListAllPages: List IP pools
+// IpPoolListAllPages: List IP pools
 //
-// This method is a wrapper around the `List` method.
+// This method is a wrapper around the `IpPoolList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
 //	- `sortBy`
-func (s *IpPoolsService) ListAllPages(sortBy NameOrIdSortMode) (*[]IpPool, error) {
+func (s *IpPoolsService) IpPoolListAllPages(sortBy NameOrIdSortMode) (*[]IpPool, error) {
 
 	var allPages []IpPool
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.List(limit, pageToken, sortBy)
+		page, err := s.IpPoolList(limit, pageToken, sortBy)
 		if err != nil {
 			return nil, err
 		}
@@ -996,8 +996,8 @@ func (s *IpPoolsService) ListAllPages(sortBy NameOrIdSortMode) (*[]IpPool, error
 	}
 
 	return &allPages, nil
-} // Create: Create an IP pool
-func (s *IpPoolsService) Create(j *IpPoolCreate) (*IpPool, error) {
+} // IpPoolCreate: Create an IP pool
+func (s *IpPoolsService) IpPoolCreate(j *IpPoolCreate) (*IpPool, error) {
 	// Create the url.
 	path := "/ip-pools"
 	uri := resolveRelative(s.client.server, path)
@@ -1033,11 +1033,11 @@ func (s *IpPoolsService) Create(j *IpPoolCreate) (*IpPool, error) {
 	return &body, nil
 }
 
-// ServiceView: Fetch an IP pool used for Oxide services.
+// IpPoolServiceView: Fetch an IP pool used for Oxide services.
 //
 // Parameters:
 //	- `rackId`
-func (s *IpPoolsService) ServiceView(rackID string) (*IpPool, error) {
+func (s *IpPoolsService) IpPoolServiceView(rackId string) (*IpPool, error) {
 	// Create the url.
 	path := "/ip-pools-service/{{.rack_id}}"
 	uri := resolveRelative(s.client.server, path)
@@ -1048,7 +1048,7 @@ func (s *IpPoolsService) ServiceView(rackID string) (*IpPool, error) {
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"rack_id": rackID,
+		"rack_id": rackId,
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1074,17 +1074,17 @@ func (s *IpPoolsService) ServiceView(rackID string) (*IpPool, error) {
 	return &body, nil
 }
 
-// ServiceRangeList: List ranges for an IP pool used for Oxide services.
+// IpPoolServiceRangeList: List ranges for an IP pool used for Oxide services.
 //
 // Ranges are ordered by their first address.
 //
-// To iterate over all pages, use the `ServiceRangeListAllPages` method, instead.
+// To iterate over all pages, use the `IpPoolServiceRangeListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `rackId`
-func (s *IpPoolsService) ServiceRangeList(rackID string, limit int, pageToken string) (*IpPoolRangeResultsPage, error) {
+func (s *IpPoolsService) IpPoolServiceRangeList(rackId string, limit int, pageToken string) (*IpPoolRangeResultsPage, error) {
 	// Create the url.
 	path := "/ip-pools-service/{{.rack_id}}/ranges"
 	uri := resolveRelative(s.client.server, path)
@@ -1097,7 +1097,7 @@ func (s *IpPoolsService) ServiceRangeList(rackID string, limit int, pageToken st
 	if err := expandURL(req.URL, map[string]string{
 		"limit":      strconv.Itoa(limit),
 		"page_token": pageToken,
-		"rack_id":    rackID,
+		"rack_id":    rackId,
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1123,22 +1123,22 @@ func (s *IpPoolsService) ServiceRangeList(rackID string, limit int, pageToken st
 	return &body, nil
 }
 
-// ServiceRangeListAllPages: List ranges for an IP pool used for Oxide services.
+// IpPoolServiceRangeListAllPages: List ranges for an IP pool used for Oxide services.
 //
 // Ranges are ordered by their first address.
 //
-// This method is a wrapper around the `ServiceRangeList` method.
+// This method is a wrapper around the `IpPoolServiceRangeList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
 //	- `rackId`
-func (s *IpPoolsService) ServiceRangeListAllPages(rackID string) (*[]IpPoolRange, error) {
+func (s *IpPoolsService) IpPoolServiceRangeListAllPages(rackId string) (*[]IpPoolRange, error) {
 
 	var allPages []IpPoolRange
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.ServiceRangeList(rackID, limit, pageToken)
+		page, err := s.IpPoolServiceRangeList(rackId, limit, pageToken)
 		if err != nil {
 			return nil, err
 		}
@@ -1150,11 +1150,11 @@ func (s *IpPoolsService) ServiceRangeListAllPages(rackID string) (*[]IpPoolRange
 	}
 
 	return &allPages, nil
-} // ServiceRangeAdd: Add a range to an IP pool used for Oxide services.
+} // IpPoolServiceRangeAdd: Add a range to an IP pool used for Oxide services.
 //
 // Parameters:
 //	- `rackId`
-func (s *IpPoolsService) ServiceRangeAdd(rackID string, j *IpRange) (*IpPoolRange, error) {
+func (s *IpPoolsService) IpPoolServiceRangeAdd(rackId string, j *IpRange) (*IpPoolRange, error) {
 	// Create the url.
 	path := "/ip-pools-service/{{.rack_id}}/ranges/add"
 	uri := resolveRelative(s.client.server, path)
@@ -1170,7 +1170,7 @@ func (s *IpPoolsService) ServiceRangeAdd(rackID string, j *IpRange) (*IpPoolRang
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"rack_id": rackID,
+		"rack_id": rackId,
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1196,11 +1196,11 @@ func (s *IpPoolsService) ServiceRangeAdd(rackID string, j *IpRange) (*IpPoolRang
 	return &body, nil
 }
 
-// ServiceRangeRemove: Remove a range from an IP pool used for Oxide services.
+// IpPoolServiceRangeRemove: Remove a range from an IP pool used for Oxide services.
 //
 // Parameters:
 //	- `rackId`
-func (s *IpPoolsService) ServiceRangeRemove(rackID string, j *IpRange) error {
+func (s *IpPoolsService) IpPoolServiceRangeRemove(rackId string, j *IpRange) error {
 	// Create the url.
 	path := "/ip-pools-service/{{.rack_id}}/ranges/remove"
 	uri := resolveRelative(s.client.server, path)
@@ -1216,7 +1216,7 @@ func (s *IpPoolsService) ServiceRangeRemove(rackID string, j *IpRange) error {
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"rack_id": rackID,
+		"rack_id": rackId,
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1234,11 +1234,11 @@ func (s *IpPoolsService) ServiceRangeRemove(rackID string, j *IpRange) error {
 	return nil
 }
 
-// View: Fetch an IP pool
+// IpPoolView: Fetch an IP pool
 //
 // Parameters:
 //	- `poolName`
-func (s *IpPoolsService) View(poolName string) (*IpPool, error) {
+func (s *IpPoolsService) IpPoolView(poolName string) (*IpPool, error) {
 	// Create the url.
 	path := "/ip-pools/{{.pool_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -1275,11 +1275,11 @@ func (s *IpPoolsService) View(poolName string) (*IpPool, error) {
 	return &body, nil
 }
 
-// Update: Update an IP Pool
+// IpPoolUpdate: Update an IP Pool
 //
 // Parameters:
 //	- `poolName`
-func (s *IpPoolsService) Update(poolName string, j *IpPoolUpdate) (*IpPool, error) {
+func (s *IpPoolsService) IpPoolUpdate(poolName string, j *IpPoolUpdate) (*IpPool, error) {
 	// Create the url.
 	path := "/ip-pools/{{.pool_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -1321,11 +1321,11 @@ func (s *IpPoolsService) Update(poolName string, j *IpPoolUpdate) (*IpPool, erro
 	return &body, nil
 }
 
-// Delete: Delete an IP Pool
+// IpPoolDelete: Delete an IP Pool
 //
 // Parameters:
 //	- `poolName`
-func (s *IpPoolsService) Delete(poolName string) error {
+func (s *IpPoolsService) IpPoolDelete(poolName string) error {
 	// Create the url.
 	path := "/ip-pools/{{.pool_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -1354,17 +1354,17 @@ func (s *IpPoolsService) Delete(poolName string) error {
 	return nil
 }
 
-// RangeList: List ranges for an IP pool
+// IpPoolRangeList: List ranges for an IP pool
 //
 // Ranges are ordered by their first address.
 //
-// To iterate over all pages, use the `RangeListAllPages` method, instead.
+// To iterate over all pages, use the `IpPoolRangeListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `poolName`
-func (s *IpPoolsService) RangeList(poolName string, limit int, pageToken string) (*IpPoolRangeResultsPage, error) {
+func (s *IpPoolsService) IpPoolRangeList(poolName string, limit int, pageToken string) (*IpPoolRangeResultsPage, error) {
 	// Create the url.
 	path := "/ip-pools/{{.pool_name}}/ranges"
 	uri := resolveRelative(s.client.server, path)
@@ -1403,22 +1403,22 @@ func (s *IpPoolsService) RangeList(poolName string, limit int, pageToken string)
 	return &body, nil
 }
 
-// RangeListAllPages: List ranges for an IP pool
+// IpPoolRangeListAllPages: List ranges for an IP pool
 //
 // Ranges are ordered by their first address.
 //
-// This method is a wrapper around the `RangeList` method.
+// This method is a wrapper around the `IpPoolRangeList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
 //	- `poolName`
-func (s *IpPoolsService) RangeListAllPages(poolName string) (*[]IpPoolRange, error) {
+func (s *IpPoolsService) IpPoolRangeListAllPages(poolName string) (*[]IpPoolRange, error) {
 
 	var allPages []IpPoolRange
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.RangeList(poolName, limit, pageToken)
+		page, err := s.IpPoolRangeList(poolName, limit, pageToken)
 		if err != nil {
 			return nil, err
 		}
@@ -1430,11 +1430,11 @@ func (s *IpPoolsService) RangeListAllPages(poolName string) (*[]IpPoolRange, err
 	}
 
 	return &allPages, nil
-} // RangeAdd: Add a range to an IP pool
+} // IpPoolRangeAdd: Add a range to an IP pool
 //
 // Parameters:
 //	- `poolName`
-func (s *IpPoolsService) RangeAdd(poolName string, j *IpRange) (*IpPoolRange, error) {
+func (s *IpPoolsService) IpPoolRangeAdd(poolName string, j *IpRange) (*IpPoolRange, error) {
 	// Create the url.
 	path := "/ip-pools/{{.pool_name}}/ranges/add"
 	uri := resolveRelative(s.client.server, path)
@@ -1476,11 +1476,11 @@ func (s *IpPoolsService) RangeAdd(poolName string, j *IpRange) (*IpPoolRange, er
 	return &body, nil
 }
 
-// RangeRemove: Remove a range from an IP pool
+// IpPoolRangeRemove: Remove a range from an IP pool
 //
 // Parameters:
 //	- `poolName`
-func (s *IpPoolsService) RangeRemove(poolName string, j *IpRange) error {
+func (s *IpPoolsService) IpPoolRangeRemove(poolName string, j *IpRange) error {
 	// Create the url.
 	path := "/ip-pools/{{.pool_name}}/ranges/remove"
 	uri := resolveRelative(s.client.server, path)
@@ -1588,15 +1588,15 @@ func (s *LoginService) ConsumeCredentials(providerName string, siloName string, 
 	return nil
 }
 
-// List: List organizations
+// OrganizationList: List organizations
 //
-// To iterate over all pages, use the `ListAllPages` method, instead.
+// To iterate over all pages, use the `OrganizationListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `sortBy`
-func (s *OrganizationsService) List(limit int, pageToken string, sortBy NameOrIdSortMode) (*OrganizationResultsPage, error) {
+func (s *OrganizationsService) OrganizationList(limit int, pageToken string, sortBy NameOrIdSortMode) (*OrganizationResultsPage, error) {
 	// Create the url.
 	path := "/organizations"
 	uri := resolveRelative(s.client.server, path)
@@ -1635,20 +1635,20 @@ func (s *OrganizationsService) List(limit int, pageToken string, sortBy NameOrId
 	return &body, nil
 }
 
-// ListAllPages: List organizations
+// OrganizationListAllPages: List organizations
 //
-// This method is a wrapper around the `List` method.
+// This method is a wrapper around the `OrganizationList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
 //	- `sortBy`
-func (s *OrganizationsService) ListAllPages(sortBy NameOrIdSortMode) (*[]Organization, error) {
+func (s *OrganizationsService) OrganizationListAllPages(sortBy NameOrIdSortMode) (*[]Organization, error) {
 
 	var allPages []Organization
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.List(limit, pageToken, sortBy)
+		page, err := s.OrganizationList(limit, pageToken, sortBy)
 		if err != nil {
 			return nil, err
 		}
@@ -1660,8 +1660,8 @@ func (s *OrganizationsService) ListAllPages(sortBy NameOrIdSortMode) (*[]Organiz
 	}
 
 	return &allPages, nil
-} // Create: Create an organization
-func (s *OrganizationsService) Create(j *OrganizationCreate) (*Organization, error) {
+} // OrganizationCreate: Create an organization
+func (s *OrganizationsService) OrganizationCreate(j *OrganizationCreate) (*Organization, error) {
 	// Create the url.
 	path := "/organizations"
 	uri := resolveRelative(s.client.server, path)
@@ -1697,11 +1697,11 @@ func (s *OrganizationsService) Create(j *OrganizationCreate) (*Organization, err
 	return &body, nil
 }
 
-// View: Fetch an organization
+// OrganizationView: Fetch an organization
 //
 // Parameters:
 //	- `organizationName`: The organization's unique name.
-func (s *OrganizationsService) View(organizationName string) (*Organization, error) {
+func (s *OrganizationsService) OrganizationView(organizationName string) (*Organization, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -1738,11 +1738,11 @@ func (s *OrganizationsService) View(organizationName string) (*Organization, err
 	return &body, nil
 }
 
-// Update: Update an organization
+// OrganizationUpdate: Update an organization
 //
 // Parameters:
 //	- `organizationName`: The organization's unique name.
-func (s *OrganizationsService) Update(organizationName string, j *OrganizationUpdate) (*Organization, error) {
+func (s *OrganizationsService) OrganizationUpdate(organizationName string, j *OrganizationUpdate) (*Organization, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -1784,11 +1784,11 @@ func (s *OrganizationsService) Update(organizationName string, j *OrganizationUp
 	return &body, nil
 }
 
-// Delete: Delete an organization
+// OrganizationDelete: Delete an organization
 //
 // Parameters:
 //	- `organizationName`: The organization's unique name.
-func (s *OrganizationsService) Delete(organizationName string) error {
+func (s *OrganizationsService) OrganizationDelete(organizationName string) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -1817,11 +1817,11 @@ func (s *OrganizationsService) Delete(organizationName string) error {
 	return nil
 }
 
-// PolicyView: Fetch an organization's IAM policy
+// OrganizationPolicyView: Fetch an organization's IAM policy
 //
 // Parameters:
 //	- `organizationName`: The organization's unique name.
-func (s *OrganizationsService) PolicyView(organizationName string) (*OrganizationRolePolicy, error) {
+func (s *OrganizationsService) OrganizationPolicyView(organizationName string) (*OrganizationRolePolicy, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/policy"
 	uri := resolveRelative(s.client.server, path)
@@ -1858,11 +1858,11 @@ func (s *OrganizationsService) PolicyView(organizationName string) (*Organizatio
 	return &body, nil
 }
 
-// PolicyUpdate: Update an organization's IAM policy
+// OrganizationPolicyUpdate: Update an organization's IAM policy
 //
 // Parameters:
 //	- `organizationName`: The organization's unique name.
-func (s *OrganizationsService) PolicyUpdate(organizationName string, j *OrganizationRolePolicy) (*OrganizationRolePolicy, error) {
+func (s *OrganizationsService) OrganizationPolicyUpdate(organizationName string, j *OrganizationRolePolicy) (*OrganizationRolePolicy, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/policy"
 	uri := resolveRelative(s.client.server, path)
@@ -1904,16 +1904,16 @@ func (s *OrganizationsService) PolicyUpdate(organizationName string, j *Organiza
 	return &body, nil
 }
 
-// List: List projects
+// ProjectList: List projects
 //
-// To iterate over all pages, use the `ListAllPages` method, instead.
+// To iterate over all pages, use the `ProjectListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
 //	- `organizationName`: The organization's unique name.
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `sortBy`
-func (s *ProjectsService) List(limit int, pageToken string, sortBy NameOrIdSortMode, organizationName string) (*ProjectResultsPage, error) {
+func (s *ProjectsService) ProjectList(limit int, pageToken string, sortBy NameOrIdSortMode, organizationName string) (*ProjectResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects"
 	uri := resolveRelative(s.client.server, path)
@@ -1953,21 +1953,21 @@ func (s *ProjectsService) List(limit int, pageToken string, sortBy NameOrIdSortM
 	return &body, nil
 }
 
-// ListAllPages: List projects
+// ProjectListAllPages: List projects
 //
-// This method is a wrapper around the `List` method.
+// This method is a wrapper around the `ProjectList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
 //	- `organizationName`: The organization's unique name.
 //	- `sortBy`
-func (s *ProjectsService) ListAllPages(sortBy NameOrIdSortMode, organizationName string) (*[]Project, error) {
+func (s *ProjectsService) ProjectListAllPages(sortBy NameOrIdSortMode, organizationName string) (*[]Project, error) {
 
 	var allPages []Project
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.List(limit, pageToken, sortBy, organizationName)
+		page, err := s.ProjectList(limit, pageToken, sortBy, organizationName)
 		if err != nil {
 			return nil, err
 		}
@@ -1979,11 +1979,11 @@ func (s *ProjectsService) ListAllPages(sortBy NameOrIdSortMode, organizationName
 	}
 
 	return &allPages, nil
-} // Create: Create a project
+} // ProjectCreate: Create a project
 //
 // Parameters:
 //	- `organizationName`: The organization's unique name.
-func (s *ProjectsService) Create(organizationName string, j *ProjectCreate) (*Project, error) {
+func (s *ProjectsService) ProjectCreate(organizationName string, j *ProjectCreate) (*Project, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects"
 	uri := resolveRelative(s.client.server, path)
@@ -2025,12 +2025,12 @@ func (s *ProjectsService) Create(organizationName string, j *ProjectCreate) (*Pr
 	return &body, nil
 }
 
-// View: Fetch a project
+// ProjectView: Fetch a project
 //
 // Parameters:
 //	- `organizationName`: The organization's unique name.
 //	- `projectName`: The project's unique name within the organization.
-func (s *ProjectsService) View(organizationName string, projectName string) (*Project, error) {
+func (s *ProjectsService) ProjectView(organizationName string, projectName string) (*Project, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -2068,12 +2068,12 @@ func (s *ProjectsService) View(organizationName string, projectName string) (*Pr
 	return &body, nil
 }
 
-// Update: Update a project
+// ProjectUpdate: Update a project
 //
 // Parameters:
 //	- `organizationName`: The organization's unique name.
 //	- `projectName`: The project's unique name within the organization.
-func (s *ProjectsService) Update(organizationName string, projectName string, j *ProjectUpdate) (*Project, error) {
+func (s *ProjectsService) ProjectUpdate(organizationName string, projectName string, j *ProjectUpdate) (*Project, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -2116,12 +2116,12 @@ func (s *ProjectsService) Update(organizationName string, projectName string, j 
 	return &body, nil
 }
 
-// Delete: Delete a project
+// ProjectDelete: Delete a project
 //
 // Parameters:
 //	- `organizationName`: The organization's unique name.
 //	- `projectName`: The project's unique name within the organization.
-func (s *ProjectsService) Delete(organizationName string, projectName string) error {
+func (s *ProjectsService) ProjectDelete(organizationName string, projectName string) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -2151,9 +2151,9 @@ func (s *ProjectsService) Delete(organizationName string, projectName string) er
 	return nil
 }
 
-// List: List disks
+// DiskList: List disks
 //
-// To iterate over all pages, use the `ListAllPages` method, instead.
+// To iterate over all pages, use the `DiskListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
@@ -2161,7 +2161,7 @@ func (s *ProjectsService) Delete(organizationName string, projectName string) er
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `projectName`: The project's unique name within the organization.
 //	- `sortBy`
-func (s *DisksService) List(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string) (*DiskResultsPage, error) {
+func (s *DisksService) DiskList(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string) (*DiskResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/disks"
 	uri := resolveRelative(s.client.server, path)
@@ -2202,22 +2202,22 @@ func (s *DisksService) List(limit int, pageToken string, sortBy NameSortMode, or
 	return &body, nil
 }
 
-// ListAllPages: List disks
+// DiskListAllPages: List disks
 //
-// This method is a wrapper around the `List` method.
+// This method is a wrapper around the `DiskList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
 //	- `organizationName`: The organization's unique name.
 //	- `projectName`: The project's unique name within the organization.
 //	- `sortBy`
-func (s *DisksService) ListAllPages(sortBy NameSortMode, organizationName string, projectName string) (*[]Disk, error) {
+func (s *DisksService) DiskListAllPages(sortBy NameSortMode, organizationName string, projectName string) (*[]Disk, error) {
 
 	var allPages []Disk
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.List(limit, pageToken, sortBy, organizationName, projectName)
+		page, err := s.DiskList(limit, pageToken, sortBy, organizationName, projectName)
 		if err != nil {
 			return nil, err
 		}
@@ -2229,12 +2229,12 @@ func (s *DisksService) ListAllPages(sortBy NameSortMode, organizationName string
 	}
 
 	return &allPages, nil
-} // Create: Create a disk
+} // DiskCreate: Create a disk
 //
 // Parameters:
 //	- `organizationName`: The organization's unique name.
 //	- `projectName`: The project's unique name within the organization.
-func (s *DisksService) Create(organizationName string, projectName string, j *DiskCreate) (*Disk, error) {
+func (s *DisksService) DiskCreate(organizationName string, projectName string, j *DiskCreate) (*Disk, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/disks"
 	uri := resolveRelative(s.client.server, path)
@@ -2277,13 +2277,13 @@ func (s *DisksService) Create(organizationName string, projectName string, j *Di
 	return &body, nil
 }
 
-// View: Fetch a disk
+// DiskView: Fetch a disk
 //
 // Parameters:
 //	- `diskName`
 //	- `organizationName`
 //	- `projectName`
-func (s *DisksService) View(diskName string, organizationName string, projectName string) (*Disk, error) {
+func (s *DisksService) DiskView(diskName string, organizationName string, projectName string) (*Disk, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/disks/{{.disk_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -2322,13 +2322,13 @@ func (s *DisksService) View(diskName string, organizationName string, projectNam
 	return &body, nil
 }
 
-// Delete: Delete a disk
+// DiskDelete: Delete a disk
 //
 // Parameters:
 //	- `diskName`
 //	- `organizationName`
 //	- `projectName`
-func (s *DisksService) Delete(diskName string, organizationName string, projectName string) error {
+func (s *DisksService) DiskDelete(diskName string, organizationName string, projectName string) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/disks/{{.disk_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -2359,9 +2359,9 @@ func (s *DisksService) Delete(diskName string, organizationName string, projectN
 	return nil
 }
 
-// MetricsList: Fetch disk metrics
+// DiskMetricsList: Fetch disk metrics
 //
-// To iterate over all pages, use the `MetricsListAllPages` method, instead.
+// To iterate over all pages, use the `DiskMetricsListAllPages` method, instead.
 //
 // Parameters:
 //	- `diskName`
@@ -2372,7 +2372,7 @@ func (s *DisksService) Delete(diskName string, organizationName string, projectN
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `projectName`
 //	- `startTime`: An inclusive start time of metrics.
-func (s *DisksService) MetricsList(diskName string, metricName DiskMetricName, organizationName string, projectName string, endTime *time.Time, limit int, pageToken string, startTime *time.Time) (*MeasurementResultsPage, error) {
+func (s *DisksService) DiskMetricsList(diskName string, metricName DiskMetricName, organizationName string, projectName string, endTime *time.Time, limit int, pageToken string, startTime *time.Time) (*MeasurementResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/disks/{{.disk_name}}/metrics/{{.metric_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -2416,9 +2416,9 @@ func (s *DisksService) MetricsList(diskName string, metricName DiskMetricName, o
 	return &body, nil
 }
 
-// MetricsListAllPages: Fetch disk metrics
+// DiskMetricsListAllPages: Fetch disk metrics
 //
-// This method is a wrapper around the `MetricsList` method.
+// This method is a wrapper around the `DiskMetricsList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
@@ -2428,13 +2428,13 @@ func (s *DisksService) MetricsList(diskName string, metricName DiskMetricName, o
 //	- `organizationName`
 //	- `projectName`
 //	- `startTime`: An inclusive start time of metrics.
-func (s *DisksService) MetricsListAllPages(diskName string, metricName DiskMetricName, organizationName string, projectName string, endTime *time.Time, startTime *time.Time) (*[]Measurement, error) {
+func (s *DisksService) DiskMetricsListAllPages(diskName string, metricName DiskMetricName, organizationName string, projectName string, endTime *time.Time, startTime *time.Time) (*[]Measurement, error) {
 
 	var allPages []Measurement
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.MetricsList(diskName, metricName, organizationName, projectName, endTime, limit, pageToken, startTime)
+		page, err := s.DiskMetricsList(diskName, metricName, organizationName, projectName, endTime, limit, pageToken, startTime)
 		if err != nil {
 			return nil, err
 		}
@@ -2446,11 +2446,11 @@ func (s *DisksService) MetricsListAllPages(diskName string, metricName DiskMetri
 	}
 
 	return &allPages, nil
-} // List: List images
+} // ImageList: List images
 //
 // List images in a project. The images are returned sorted by creation date, with the most recent images appearing first.
 //
-// To iterate over all pages, use the `ListAllPages` method, instead.
+// To iterate over all pages, use the `ImageListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
@@ -2458,7 +2458,7 @@ func (s *DisksService) MetricsListAllPages(diskName string, metricName DiskMetri
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `projectName`: The project's unique name within the organization.
 //	- `sortBy`
-func (s *ImagesService) List(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string) (*ImageResultsPage, error) {
+func (s *ImagesService) ImageList(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string) (*ImageResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/images"
 	uri := resolveRelative(s.client.server, path)
@@ -2499,24 +2499,24 @@ func (s *ImagesService) List(limit int, pageToken string, sortBy NameSortMode, o
 	return &body, nil
 }
 
-// ListAllPages: List images
+// ImageListAllPages: List images
 //
 // List images in a project. The images are returned sorted by creation date, with the most recent images appearing first.
 //
-// This method is a wrapper around the `List` method.
+// This method is a wrapper around the `ImageList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
 //	- `organizationName`: The organization's unique name.
 //	- `projectName`: The project's unique name within the organization.
 //	- `sortBy`
-func (s *ImagesService) ListAllPages(sortBy NameSortMode, organizationName string, projectName string) (*[]Image, error) {
+func (s *ImagesService) ImageListAllPages(sortBy NameSortMode, organizationName string, projectName string) (*[]Image, error) {
 
 	var allPages []Image
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.List(limit, pageToken, sortBy, organizationName, projectName)
+		page, err := s.ImageList(limit, pageToken, sortBy, organizationName, projectName)
 		if err != nil {
 			return nil, err
 		}
@@ -2528,14 +2528,14 @@ func (s *ImagesService) ListAllPages(sortBy NameSortMode, organizationName strin
 	}
 
 	return &allPages, nil
-} // Create: Create an image
+} // ImageCreate: Create an image
 //
 // Create a new image in a project.
 //
 // Parameters:
 //	- `organizationName`: The organization's unique name.
 //	- `projectName`: The project's unique name within the organization.
-func (s *ImagesService) Create(organizationName string, projectName string, j *ImageCreate) (*Image, error) {
+func (s *ImagesService) ImageCreate(organizationName string, projectName string, j *ImageCreate) (*Image, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/images"
 	uri := resolveRelative(s.client.server, path)
@@ -2578,7 +2578,7 @@ func (s *ImagesService) Create(organizationName string, projectName string, j *I
 	return &body, nil
 }
 
-// View: Fetch an image
+// ImageView: Fetch an image
 //
 // Fetch the details for a specific image in a project.
 //
@@ -2586,7 +2586,7 @@ func (s *ImagesService) Create(organizationName string, projectName string, j *I
 //	- `imageName`
 //	- `organizationName`
 //	- `projectName`
-func (s *ImagesService) View(imageName string, organizationName string, projectName string) (*Image, error) {
+func (s *ImagesService) ImageView(imageName string, organizationName string, projectName string) (*Image, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/images/{{.image_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -2625,7 +2625,7 @@ func (s *ImagesService) View(imageName string, organizationName string, projectN
 	return &body, nil
 }
 
-// Delete: Delete an image
+// ImageDelete: Delete an image
 //
 // Permanently delete an image from a project. This operation cannot be undone. Any instances in the project using the image will continue to run, however new instances can not be created with this image.
 //
@@ -2633,7 +2633,7 @@ func (s *ImagesService) View(imageName string, organizationName string, projectN
 //	- `imageName`
 //	- `organizationName`
 //	- `projectName`
-func (s *ImagesService) Delete(imageName string, organizationName string, projectName string) error {
+func (s *ImagesService) ImageDelete(imageName string, organizationName string, projectName string) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/images/{{.image_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -2664,9 +2664,9 @@ func (s *ImagesService) Delete(imageName string, organizationName string, projec
 	return nil
 }
 
-// List: List instances
+// InstanceList: List instances
 //
-// To iterate over all pages, use the `ListAllPages` method, instead.
+// To iterate over all pages, use the `InstanceListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
@@ -2674,7 +2674,7 @@ func (s *ImagesService) Delete(imageName string, organizationName string, projec
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `projectName`: The project's unique name within the organization.
 //	- `sortBy`
-func (s *InstancesService) List(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string) (*InstanceResultsPage, error) {
+func (s *InstancesService) InstanceList(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string) (*InstanceResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances"
 	uri := resolveRelative(s.client.server, path)
@@ -2715,22 +2715,22 @@ func (s *InstancesService) List(limit int, pageToken string, sortBy NameSortMode
 	return &body, nil
 }
 
-// ListAllPages: List instances
+// InstanceListAllPages: List instances
 //
-// This method is a wrapper around the `List` method.
+// This method is a wrapper around the `InstanceList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
 //	- `organizationName`: The organization's unique name.
 //	- `projectName`: The project's unique name within the organization.
 //	- `sortBy`
-func (s *InstancesService) ListAllPages(sortBy NameSortMode, organizationName string, projectName string) (*[]Instance, error) {
+func (s *InstancesService) InstanceListAllPages(sortBy NameSortMode, organizationName string, projectName string) (*[]Instance, error) {
 
 	var allPages []Instance
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.List(limit, pageToken, sortBy, organizationName, projectName)
+		page, err := s.InstanceList(limit, pageToken, sortBy, organizationName, projectName)
 		if err != nil {
 			return nil, err
 		}
@@ -2742,12 +2742,12 @@ func (s *InstancesService) ListAllPages(sortBy NameSortMode, organizationName st
 	}
 
 	return &allPages, nil
-} // Create: Create an instance
+} // InstanceCreate: Create an instance
 //
 // Parameters:
 //	- `organizationName`: The organization's unique name.
 //	- `projectName`: The project's unique name within the organization.
-func (s *InstancesService) Create(organizationName string, projectName string, j *InstanceCreate) (*Instance, error) {
+func (s *InstancesService) InstanceCreate(organizationName string, projectName string, j *InstanceCreate) (*Instance, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances"
 	uri := resolveRelative(s.client.server, path)
@@ -2790,13 +2790,13 @@ func (s *InstancesService) Create(organizationName string, projectName string, j
 	return &body, nil
 }
 
-// View: Fetch an instance
+// InstanceView: Fetch an instance
 //
 // Parameters:
 //	- `instanceName`
 //	- `organizationName`
 //	- `projectName`
-func (s *InstancesService) View(instanceName string, organizationName string, projectName string) (*Instance, error) {
+func (s *InstancesService) InstanceView(instanceName string, organizationName string, projectName string) (*Instance, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -2835,13 +2835,13 @@ func (s *InstancesService) View(instanceName string, organizationName string, pr
 	return &body, nil
 }
 
-// Delete: Delete an instance
+// InstanceDelete: Delete an instance
 //
 // Parameters:
 //	- `instanceName`
 //	- `organizationName`
 //	- `projectName`
-func (s *InstancesService) Delete(instanceName string, organizationName string, projectName string) error {
+func (s *InstancesService) InstanceDelete(instanceName string, organizationName string, projectName string) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -2872,9 +2872,9 @@ func (s *InstancesService) Delete(instanceName string, organizationName string, 
 	return nil
 }
 
-// DiskList: List an instance's disks
+// InstanceDiskList: List an instance's disks
 //
-// To iterate over all pages, use the `DiskListAllPages` method, instead.
+// To iterate over all pages, use the `InstanceDiskListAllPages` method, instead.
 //
 // Parameters:
 //	- `instanceName`
@@ -2883,7 +2883,7 @@ func (s *InstancesService) Delete(instanceName string, organizationName string, 
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `projectName`
 //	- `sortBy`
-func (s *InstancesService) DiskList(limit int, pageToken string, sortBy NameSortMode, instanceName string, organizationName string, projectName string) (*DiskResultsPage, error) {
+func (s *InstancesService) InstanceDiskList(limit int, pageToken string, sortBy NameSortMode, instanceName string, organizationName string, projectName string) (*DiskResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/disks"
 	uri := resolveRelative(s.client.server, path)
@@ -2925,9 +2925,9 @@ func (s *InstancesService) DiskList(limit int, pageToken string, sortBy NameSort
 	return &body, nil
 }
 
-// DiskListAllPages: List an instance's disks
+// InstanceDiskListAllPages: List an instance's disks
 //
-// This method is a wrapper around the `DiskList` method.
+// This method is a wrapper around the `InstanceDiskList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
@@ -2935,13 +2935,13 @@ func (s *InstancesService) DiskList(limit int, pageToken string, sortBy NameSort
 //	- `organizationName`
 //	- `projectName`
 //	- `sortBy`
-func (s *InstancesService) DiskListAllPages(sortBy NameSortMode, instanceName string, organizationName string, projectName string) (*[]Disk, error) {
+func (s *InstancesService) InstanceDiskListAllPages(sortBy NameSortMode, instanceName string, organizationName string, projectName string) (*[]Disk, error) {
 
 	var allPages []Disk
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.DiskList(limit, pageToken, sortBy, instanceName, organizationName, projectName)
+		page, err := s.InstanceDiskList(limit, pageToken, sortBy, instanceName, organizationName, projectName)
 		if err != nil {
 			return nil, err
 		}
@@ -2953,13 +2953,13 @@ func (s *InstancesService) DiskListAllPages(sortBy NameSortMode, instanceName st
 	}
 
 	return &allPages, nil
-} // DiskAttach: Attach a disk to an instance
+} // InstanceDiskAttach: Attach a disk to an instance
 //
 // Parameters:
 //	- `instanceName`
 //	- `organizationName`
 //	- `projectName`
-func (s *InstancesService) DiskAttach(instanceName string, organizationName string, projectName string, j *DiskIdentifier) (*Disk, error) {
+func (s *InstancesService) InstanceDiskAttach(instanceName string, organizationName string, projectName string, j *DiskIdentifier) (*Disk, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/disks/attach"
 	uri := resolveRelative(s.client.server, path)
@@ -3003,13 +3003,13 @@ func (s *InstancesService) DiskAttach(instanceName string, organizationName stri
 	return &body, nil
 }
 
-// DiskDetach: Detach a disk from an instance
+// InstanceDiskDetach: Detach a disk from an instance
 //
 // Parameters:
 //	- `instanceName`
 //	- `organizationName`
 //	- `projectName`
-func (s *InstancesService) DiskDetach(instanceName string, organizationName string, projectName string, j *DiskIdentifier) (*Disk, error) {
+func (s *InstancesService) InstanceDiskDetach(instanceName string, organizationName string, projectName string, j *DiskIdentifier) (*Disk, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/disks/detach"
 	uri := resolveRelative(s.client.server, path)
@@ -3053,13 +3053,13 @@ func (s *InstancesService) DiskDetach(instanceName string, organizationName stri
 	return &body, nil
 }
 
-// ExternalIpList: List external IP addresses
+// InstanceExternalIpList: List external IP addresses
 //
 // Parameters:
 //	- `instanceName`
 //	- `organizationName`
 //	- `projectName`
-func (s *InstancesService) ExternalIpList(instanceName string, organizationName string, projectName string) (*ExternalIpResultsPage, error) {
+func (s *InstancesService) InstanceExternalIpList(instanceName string, organizationName string, projectName string) (*ExternalIpResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/external-ips"
 	uri := resolveRelative(s.client.server, path)
@@ -3098,13 +3098,13 @@ func (s *InstancesService) ExternalIpList(instanceName string, organizationName 
 	return &body, nil
 }
 
-// Migrate: Migrate an instance
+// InstanceMigrate: Migrate an instance
 //
 // Parameters:
 //	- `instanceName`
 //	- `organizationName`
 //	- `projectName`
-func (s *InstancesService) Migrate(instanceName string, organizationName string, projectName string, j *InstanceMigrate) (*Instance, error) {
+func (s *InstancesService) InstanceMigrate(instanceName string, organizationName string, projectName string, j *InstanceMigrate) (*Instance, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/migrate"
 	uri := resolveRelative(s.client.server, path)
@@ -3148,9 +3148,9 @@ func (s *InstancesService) Migrate(instanceName string, organizationName string,
 	return &body, nil
 }
 
-// NetworkInterfaceList: List network interfaces
+// InstanceNetworkInterfaceList: List network interfaces
 //
-// To iterate over all pages, use the `NetworkInterfaceListAllPages` method, instead.
+// To iterate over all pages, use the `InstanceNetworkInterfaceListAllPages` method, instead.
 //
 // Parameters:
 //	- `instanceName`
@@ -3159,7 +3159,7 @@ func (s *InstancesService) Migrate(instanceName string, organizationName string,
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `projectName`
 //	- `sortBy`
-func (s *InstancesService) NetworkInterfaceList(limit int, pageToken string, sortBy NameSortMode, instanceName string, organizationName string, projectName string) (*NetworkInterfaceResultsPage, error) {
+func (s *InstancesService) InstanceNetworkInterfaceList(limit int, pageToken string, sortBy NameSortMode, instanceName string, organizationName string, projectName string) (*NetworkInterfaceResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/network-interfaces"
 	uri := resolveRelative(s.client.server, path)
@@ -3201,9 +3201,9 @@ func (s *InstancesService) NetworkInterfaceList(limit int, pageToken string, sor
 	return &body, nil
 }
 
-// NetworkInterfaceListAllPages: List network interfaces
+// InstanceNetworkInterfaceListAllPages: List network interfaces
 //
-// This method is a wrapper around the `NetworkInterfaceList` method.
+// This method is a wrapper around the `InstanceNetworkInterfaceList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
@@ -3211,13 +3211,13 @@ func (s *InstancesService) NetworkInterfaceList(limit int, pageToken string, sor
 //	- `organizationName`
 //	- `projectName`
 //	- `sortBy`
-func (s *InstancesService) NetworkInterfaceListAllPages(sortBy NameSortMode, instanceName string, organizationName string, projectName string) (*[]NetworkInterface, error) {
+func (s *InstancesService) InstanceNetworkInterfaceListAllPages(sortBy NameSortMode, instanceName string, organizationName string, projectName string) (*[]NetworkInterface, error) {
 
 	var allPages []NetworkInterface
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.NetworkInterfaceList(limit, pageToken, sortBy, instanceName, organizationName, projectName)
+		page, err := s.InstanceNetworkInterfaceList(limit, pageToken, sortBy, instanceName, organizationName, projectName)
 		if err != nil {
 			return nil, err
 		}
@@ -3229,13 +3229,13 @@ func (s *InstancesService) NetworkInterfaceListAllPages(sortBy NameSortMode, ins
 	}
 
 	return &allPages, nil
-} // NetworkInterfaceCreate: Create a network interface
+} // InstanceNetworkInterfaceCreate: Create a network interface
 //
 // Parameters:
 //	- `instanceName`
 //	- `organizationName`
 //	- `projectName`
-func (s *InstancesService) NetworkInterfaceCreate(instanceName string, organizationName string, projectName string, j *NetworkInterfaceCreate) (*NetworkInterface, error) {
+func (s *InstancesService) InstanceNetworkInterfaceCreate(instanceName string, organizationName string, projectName string, j *NetworkInterfaceCreate) (*NetworkInterface, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/network-interfaces"
 	uri := resolveRelative(s.client.server, path)
@@ -3279,14 +3279,14 @@ func (s *InstancesService) NetworkInterfaceCreate(instanceName string, organizat
 	return &body, nil
 }
 
-// NetworkInterfaceView: Fetch a network interface
+// InstanceNetworkInterfaceView: Fetch a network interface
 //
 // Parameters:
 //	- `instanceName`
 //	- `interfaceName`
 //	- `organizationName`
 //	- `projectName`
-func (s *InstancesService) NetworkInterfaceView(instanceName string, interfaceName string, organizationName string, projectName string) (*NetworkInterface, error) {
+func (s *InstancesService) InstanceNetworkInterfaceView(instanceName string, interfaceName string, organizationName string, projectName string) (*NetworkInterface, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/network-interfaces/{{.interface_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -3326,14 +3326,14 @@ func (s *InstancesService) NetworkInterfaceView(instanceName string, interfaceNa
 	return &body, nil
 }
 
-// NetworkInterfaceUpdate: Update a network interface
+// InstanceNetworkInterfaceUpdate: Update a network interface
 //
 // Parameters:
 //	- `instanceName`
 //	- `interfaceName`
 //	- `organizationName`
 //	- `projectName`
-func (s *InstancesService) NetworkInterfaceUpdate(instanceName string, interfaceName string, organizationName string, projectName string, j *NetworkInterfaceUpdate) (*NetworkInterface, error) {
+func (s *InstancesService) InstanceNetworkInterfaceUpdate(instanceName string, interfaceName string, organizationName string, projectName string, j *NetworkInterfaceUpdate) (*NetworkInterface, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/network-interfaces/{{.interface_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -3378,7 +3378,7 @@ func (s *InstancesService) NetworkInterfaceUpdate(instanceName string, interface
 	return &body, nil
 }
 
-// NetworkInterfaceDelete: Delete a network interface
+// InstanceNetworkInterfaceDelete: Delete a network interface
 //
 // Note that the primary interface for an instance cannot be deleted if there are any secondary interfaces. A new primary interface must be designated first. The primary interface can be deleted if there are no secondary interfaces.
 //
@@ -3387,7 +3387,7 @@ func (s *InstancesService) NetworkInterfaceUpdate(instanceName string, interface
 //	- `interfaceName`
 //	- `organizationName`
 //	- `projectName`
-func (s *InstancesService) NetworkInterfaceDelete(instanceName string, interfaceName string, organizationName string, projectName string) error {
+func (s *InstancesService) InstanceNetworkInterfaceDelete(instanceName string, interfaceName string, organizationName string, projectName string) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/network-interfaces/{{.interface_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -3419,13 +3419,13 @@ func (s *InstancesService) NetworkInterfaceDelete(instanceName string, interface
 	return nil
 }
 
-// Reboot: Reboot an instance
+// InstanceReboot: Reboot an instance
 //
 // Parameters:
 //	- `instanceName`
 //	- `organizationName`
 //	- `projectName`
-func (s *InstancesService) Reboot(instanceName string, organizationName string, projectName string) (*Instance, error) {
+func (s *InstancesService) InstanceReboot(instanceName string, organizationName string, projectName string) (*Instance, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/reboot"
 	uri := resolveRelative(s.client.server, path)
@@ -3464,7 +3464,7 @@ func (s *InstancesService) Reboot(instanceName string, organizationName string, 
 	return &body, nil
 }
 
-// SerialConsole: Fetch an instance's serial console
+// InstanceSerialConsole: Fetch an instance's serial console
 //
 // Parameters:
 //	- `fromStart`: Character index in the serial buffer from which to read, counting the bytes output since instance start. If this is not provided, `most_recent` must be provided, and if this *is* provided, `most_recent` must *not* be provided.
@@ -3473,7 +3473,7 @@ func (s *InstancesService) Reboot(instanceName string, organizationName string, 
 //	- `mostRecent`: Character index in the serial buffer from which to read, counting *backward* from the most recently buffered data retrieved from the instance. (See note on `from_start` about mutual exclusivity)
 //	- `organizationName`
 //	- `projectName`
-func (s *InstancesService) SerialConsole(instanceName string, organizationName string, projectName string, fromStart int, maxBytes int, mostRecent int) (*InstanceSerialConsoleData, error) {
+func (s *InstancesService) InstanceSerialConsole(instanceName string, organizationName string, projectName string, fromStart int, maxBytes int, mostRecent int) (*InstanceSerialConsoleData, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/serial-console"
 	uri := resolveRelative(s.client.server, path)
@@ -3515,13 +3515,13 @@ func (s *InstancesService) SerialConsole(instanceName string, organizationName s
 	return &body, nil
 }
 
-// Start: Boot an instance
+// InstanceStart: Boot an instance
 //
 // Parameters:
 //	- `instanceName`
 //	- `organizationName`
 //	- `projectName`
-func (s *InstancesService) Start(instanceName string, organizationName string, projectName string) (*Instance, error) {
+func (s *InstancesService) InstanceStart(instanceName string, organizationName string, projectName string) (*Instance, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/start"
 	uri := resolveRelative(s.client.server, path)
@@ -3560,13 +3560,13 @@ func (s *InstancesService) Start(instanceName string, organizationName string, p
 	return &body, nil
 }
 
-// Stop: Halt an instance
+// InstanceStop: Halt an instance
 //
 // Parameters:
 //	- `instanceName`
 //	- `organizationName`
 //	- `projectName`
-func (s *InstancesService) Stop(instanceName string, organizationName string, projectName string) (*Instance, error) {
+func (s *InstancesService) InstanceStop(instanceName string, organizationName string, projectName string) (*Instance, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/stop"
 	uri := resolveRelative(s.client.server, path)
@@ -3605,12 +3605,12 @@ func (s *InstancesService) Stop(instanceName string, organizationName string, pr
 	return &body, nil
 }
 
-// PolicyView: Fetch a project's IAM policy
+// ProjectPolicyView: Fetch a project's IAM policy
 //
 // Parameters:
 //	- `organizationName`: The organization's unique name.
 //	- `projectName`: The project's unique name within the organization.
-func (s *ProjectsService) PolicyView(organizationName string, projectName string) (*ProjectRolePolicy, error) {
+func (s *ProjectsService) ProjectPolicyView(organizationName string, projectName string) (*ProjectRolePolicy, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/policy"
 	uri := resolveRelative(s.client.server, path)
@@ -3648,12 +3648,12 @@ func (s *ProjectsService) PolicyView(organizationName string, projectName string
 	return &body, nil
 }
 
-// PolicyUpdate: Update a project's IAM policy
+// ProjectPolicyUpdate: Update a project's IAM policy
 //
 // Parameters:
 //	- `organizationName`: The organization's unique name.
 //	- `projectName`: The project's unique name within the organization.
-func (s *ProjectsService) PolicyUpdate(organizationName string, projectName string, j *ProjectRolePolicy) (*ProjectRolePolicy, error) {
+func (s *ProjectsService) ProjectPolicyUpdate(organizationName string, projectName string, j *ProjectRolePolicy) (*ProjectRolePolicy, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/policy"
 	uri := resolveRelative(s.client.server, path)
@@ -3696,9 +3696,9 @@ func (s *ProjectsService) PolicyUpdate(organizationName string, projectName stri
 	return &body, nil
 }
 
-// List: List snapshots
+// SnapshotList: List snapshots
 //
-// To iterate over all pages, use the `ListAllPages` method, instead.
+// To iterate over all pages, use the `SnapshotListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
@@ -3706,7 +3706,7 @@ func (s *ProjectsService) PolicyUpdate(organizationName string, projectName stri
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `projectName`: The project's unique name within the organization.
 //	- `sortBy`
-func (s *SnapshotsService) List(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string) (*SnapshotResultsPage, error) {
+func (s *SnapshotsService) SnapshotList(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string) (*SnapshotResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/snapshots"
 	uri := resolveRelative(s.client.server, path)
@@ -3747,22 +3747,22 @@ func (s *SnapshotsService) List(limit int, pageToken string, sortBy NameSortMode
 	return &body, nil
 }
 
-// ListAllPages: List snapshots
+// SnapshotListAllPages: List snapshots
 //
-// This method is a wrapper around the `List` method.
+// This method is a wrapper around the `SnapshotList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
 //	- `organizationName`: The organization's unique name.
 //	- `projectName`: The project's unique name within the organization.
 //	- `sortBy`
-func (s *SnapshotsService) ListAllPages(sortBy NameSortMode, organizationName string, projectName string) (*[]Snapshot, error) {
+func (s *SnapshotsService) SnapshotListAllPages(sortBy NameSortMode, organizationName string, projectName string) (*[]Snapshot, error) {
 
 	var allPages []Snapshot
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.List(limit, pageToken, sortBy, organizationName, projectName)
+		page, err := s.SnapshotList(limit, pageToken, sortBy, organizationName, projectName)
 		if err != nil {
 			return nil, err
 		}
@@ -3774,14 +3774,14 @@ func (s *SnapshotsService) ListAllPages(sortBy NameSortMode, organizationName st
 	}
 
 	return &allPages, nil
-} // Create: Create a snapshot
+} // SnapshotCreate: Create a snapshot
 //
 // Creates a point-in-time snapshot from a disk.
 //
 // Parameters:
 //	- `organizationName`: The organization's unique name.
 //	- `projectName`: The project's unique name within the organization.
-func (s *SnapshotsService) Create(organizationName string, projectName string, j *SnapshotCreate) (*Snapshot, error) {
+func (s *SnapshotsService) SnapshotCreate(organizationName string, projectName string, j *SnapshotCreate) (*Snapshot, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/snapshots"
 	uri := resolveRelative(s.client.server, path)
@@ -3824,13 +3824,13 @@ func (s *SnapshotsService) Create(organizationName string, projectName string, j
 	return &body, nil
 }
 
-// View: Fetch a snapshot
+// SnapshotView: Fetch a snapshot
 //
 // Parameters:
 //	- `organizationName`
 //	- `projectName`
 //	- `snapshotName`
-func (s *SnapshotsService) View(organizationName string, projectName string, snapshotName string) (*Snapshot, error) {
+func (s *SnapshotsService) SnapshotView(organizationName string, projectName string, snapshotName string) (*Snapshot, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/snapshots/{{.snapshot_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -3869,13 +3869,13 @@ func (s *SnapshotsService) View(organizationName string, projectName string, sna
 	return &body, nil
 }
 
-// Delete: Delete a snapshot
+// SnapshotDelete: Delete a snapshot
 //
 // Parameters:
 //	- `organizationName`
 //	- `projectName`
 //	- `snapshotName`
-func (s *SnapshotsService) Delete(organizationName string, projectName string, snapshotName string) error {
+func (s *SnapshotsService) SnapshotDelete(organizationName string, projectName string, snapshotName string) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/snapshots/{{.snapshot_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -3906,9 +3906,9 @@ func (s *SnapshotsService) Delete(organizationName string, projectName string, s
 	return nil
 }
 
-// VPCList: List VPCs
+// VpcList: List VPCs
 //
-// To iterate over all pages, use the `VPCListAllPages` method, instead.
+// To iterate over all pages, use the `VpcListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
@@ -3916,7 +3916,7 @@ func (s *SnapshotsService) Delete(organizationName string, projectName string, s
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `projectName`: The project's unique name within the organization.
 //	- `sortBy`
-func (s *VPCsService) VPCList(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string) (*VPCResultsPage, error) {
+func (s *VPCsService) VpcList(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string) (*VpcResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs"
 	uri := resolveRelative(s.client.server, path)
@@ -3949,7 +3949,7 @@ func (s *VPCsService) VPCList(limit int, pageToken string, sortBy NameSortMode, 
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body VPCResultsPage
+	var body VpcResultsPage
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -3957,22 +3957,22 @@ func (s *VPCsService) VPCList(limit int, pageToken string, sortBy NameSortMode, 
 	return &body, nil
 }
 
-// VPCListAllPages: List VPCs
+// VpcListAllPages: List VPCs
 //
-// This method is a wrapper around the `VPCList` method.
+// This method is a wrapper around the `VpcList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
 //	- `organizationName`: The organization's unique name.
 //	- `projectName`: The project's unique name within the organization.
 //	- `sortBy`
-func (s *VPCsService) VPCListAllPages(sortBy NameSortMode, organizationName string, projectName string) (*[]VPC, error) {
+func (s *VPCsService) VpcListAllPages(sortBy NameSortMode, organizationName string, projectName string) (*[]Vpc, error) {
 
-	var allPages []VPC
+	var allPages []Vpc
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.VPCList(limit, pageToken, sortBy, organizationName, projectName)
+		page, err := s.VpcList(limit, pageToken, sortBy, organizationName, projectName)
 		if err != nil {
 			return nil, err
 		}
@@ -3984,12 +3984,12 @@ func (s *VPCsService) VPCListAllPages(sortBy NameSortMode, organizationName stri
 	}
 
 	return &allPages, nil
-} // VPCCreate: Create a VPC
+} // VpcCreate: Create a VPC
 //
 // Parameters:
 //	- `organizationName`: The organization's unique name.
 //	- `projectName`: The project's unique name within the organization.
-func (s *VPCsService) VPCCreate(organizationName string, projectName string, j *VPCCreate) (*VPC, error) {
+func (s *VPCsService) VpcCreate(organizationName string, projectName string, j *VpcCreate) (*Vpc, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs"
 	uri := resolveRelative(s.client.server, path)
@@ -4024,7 +4024,7 @@ func (s *VPCsService) VPCCreate(organizationName string, projectName string, j *
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body VPC
+	var body Vpc
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -4032,13 +4032,13 @@ func (s *VPCsService) VPCCreate(organizationName string, projectName string, j *
 	return &body, nil
 }
 
-// VPCView: Fetch a VPC
+// VpcView: Fetch a VPC
 //
 // Parameters:
 //	- `organizationName`
 //	- `projectName`
 //	- `vpcName`
-func (s *VPCsService) VPCView(organizationName string, projectName string, vpcName string) (*VPC, error) {
+func (s *VPCsService) VpcView(organizationName string, projectName string, vpcName string) (*Vpc, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -4069,7 +4069,7 @@ func (s *VPCsService) VPCView(organizationName string, projectName string, vpcNa
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body VPC
+	var body Vpc
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -4077,13 +4077,13 @@ func (s *VPCsService) VPCView(organizationName string, projectName string, vpcNa
 	return &body, nil
 }
 
-// VPCUpdate: Update a VPC
+// VpcUpdate: Update a VPC
 //
 // Parameters:
 //	- `organizationName`
 //	- `projectName`
 //	- `vpcName`
-func (s *VPCsService) VPCUpdate(organizationName string, projectName string, vpcName string, j *VPCUpdate) (*VPC, error) {
+func (s *VPCsService) VpcUpdate(organizationName string, projectName string, vpcName string, j *VpcUpdate) (*Vpc, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -4119,7 +4119,7 @@ func (s *VPCsService) VPCUpdate(organizationName string, projectName string, vpc
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body VPC
+	var body Vpc
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -4127,13 +4127,13 @@ func (s *VPCsService) VPCUpdate(organizationName string, projectName string, vpc
 	return &body, nil
 }
 
-// VPCDelete: Delete a VPC
+// VpcDelete: Delete a VPC
 //
 // Parameters:
 //	- `organizationName`
 //	- `projectName`
 //	- `vpcName`
-func (s *VPCsService) VPCDelete(organizationName string, projectName string, vpcName string) error {
+func (s *VPCsService) VpcDelete(organizationName string, projectName string, vpcName string) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -4164,13 +4164,13 @@ func (s *VPCsService) VPCDelete(organizationName string, projectName string, vpc
 	return nil
 }
 
-// FirewallRulesView: List firewall rules
+// VpcFirewallRulesView: List firewall rules
 //
 // Parameters:
 //	- `organizationName`
 //	- `projectName`
 //	- `vpcName`
-func (s *VPCsService) FirewallRulesView(organizationName string, projectName string, vpcName string) (*FirewallRules, error) {
+func (s *VPCsService) VpcFirewallRulesView(organizationName string, projectName string, vpcName string) (*VpcFirewallRules, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/firewall/rules"
 	uri := resolveRelative(s.client.server, path)
@@ -4201,7 +4201,7 @@ func (s *VPCsService) FirewallRulesView(organizationName string, projectName str
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body FirewallRules
+	var body VpcFirewallRules
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -4209,13 +4209,13 @@ func (s *VPCsService) FirewallRulesView(organizationName string, projectName str
 	return &body, nil
 }
 
-// FirewallRulesUpdate: Replace firewall rules
+// VpcFirewallRulesUpdate: Replace firewall rules
 //
 // Parameters:
 //	- `organizationName`
 //	- `projectName`
 //	- `vpcName`
-func (s *VPCsService) FirewallRulesUpdate(organizationName string, projectName string, vpcName string, j *FirewallRuleUpdateParams) (*FirewallRules, error) {
+func (s *VPCsService) VpcFirewallRulesUpdate(organizationName string, projectName string, vpcName string, j *VpcFirewallRuleUpdateParams) (*VpcFirewallRules, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/firewall/rules"
 	uri := resolveRelative(s.client.server, path)
@@ -4251,7 +4251,7 @@ func (s *VPCsService) FirewallRulesUpdate(organizationName string, projectName s
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body FirewallRules
+	var body VpcFirewallRules
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -4259,9 +4259,9 @@ func (s *VPCsService) FirewallRulesUpdate(organizationName string, projectName s
 	return &body, nil
 }
 
-// RouterList: List routers
+// VpcRouterList: List routers
 //
-// To iterate over all pages, use the `RouterListAllPages` method, instead.
+// To iterate over all pages, use the `VpcRouterListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
@@ -4270,7 +4270,7 @@ func (s *VPCsService) FirewallRulesUpdate(organizationName string, projectName s
 //	- `projectName`
 //	- `sortBy`
 //	- `vpcName`
-func (s *VPCsService) RouterList(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string, vpcName string) (*RouterResultsPage, error) {
+func (s *VPCsService) VpcRouterList(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string, vpcName string) (*VpcRouterResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers"
 	uri := resolveRelative(s.client.server, path)
@@ -4304,7 +4304,7 @@ func (s *VPCsService) RouterList(limit int, pageToken string, sortBy NameSortMod
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body RouterResultsPage
+	var body VpcRouterResultsPage
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -4312,9 +4312,9 @@ func (s *VPCsService) RouterList(limit int, pageToken string, sortBy NameSortMod
 	return &body, nil
 }
 
-// RouterListAllPages: List routers
+// VpcRouterListAllPages: List routers
 //
-// This method is a wrapper around the `RouterList` method.
+// This method is a wrapper around the `VpcRouterList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
@@ -4322,13 +4322,13 @@ func (s *VPCsService) RouterList(limit int, pageToken string, sortBy NameSortMod
 //	- `projectName`
 //	- `sortBy`
 //	- `vpcName`
-func (s *VPCsService) RouterListAllPages(sortBy NameSortMode, organizationName string, projectName string, vpcName string) (*[]Router, error) {
+func (s *VPCsService) VpcRouterListAllPages(sortBy NameSortMode, organizationName string, projectName string, vpcName string) (*[]VpcRouter, error) {
 
-	var allPages []Router
+	var allPages []VpcRouter
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.RouterList(limit, pageToken, sortBy, organizationName, projectName, vpcName)
+		page, err := s.VpcRouterList(limit, pageToken, sortBy, organizationName, projectName, vpcName)
 		if err != nil {
 			return nil, err
 		}
@@ -4340,13 +4340,13 @@ func (s *VPCsService) RouterListAllPages(sortBy NameSortMode, organizationName s
 	}
 
 	return &allPages, nil
-} // RouterCreate: Create a router
+} // VpcRouterCreate: Create a router
 //
 // Parameters:
 //	- `organizationName`
 //	- `projectName`
 //	- `vpcName`
-func (s *VPCsService) RouterCreate(organizationName string, projectName string, vpcName string, j *RouterCreate) (*Router, error) {
+func (s *VPCsService) VpcRouterCreate(organizationName string, projectName string, vpcName string, j *VpcRouterCreate) (*VpcRouter, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers"
 	uri := resolveRelative(s.client.server, path)
@@ -4382,7 +4382,7 @@ func (s *VPCsService) RouterCreate(organizationName string, projectName string, 
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body Router
+	var body VpcRouter
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -4390,14 +4390,14 @@ func (s *VPCsService) RouterCreate(organizationName string, projectName string, 
 	return &body, nil
 }
 
-// RouterView: Get a router
+// VpcRouterView: Get a router
 //
 // Parameters:
 //	- `organizationName`
 //	- `projectName`
 //	- `routerName`
 //	- `vpcName`
-func (s *VPCsService) RouterView(organizationName string, projectName string, routerName string, vpcName string) (*Router, error) {
+func (s *VPCsService) VpcRouterView(organizationName string, projectName string, routerName string, vpcName string) (*VpcRouter, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -4429,7 +4429,7 @@ func (s *VPCsService) RouterView(organizationName string, projectName string, ro
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body Router
+	var body VpcRouter
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -4437,14 +4437,14 @@ func (s *VPCsService) RouterView(organizationName string, projectName string, ro
 	return &body, nil
 }
 
-// RouterUpdate: Update a router
+// VpcRouterUpdate: Update a router
 //
 // Parameters:
 //	- `organizationName`
 //	- `projectName`
 //	- `routerName`
 //	- `vpcName`
-func (s *VPCsService) RouterUpdate(organizationName string, projectName string, routerName string, vpcName string, j *RouterUpdate) (*Router, error) {
+func (s *VPCsService) VpcRouterUpdate(organizationName string, projectName string, routerName string, vpcName string, j *VpcRouterUpdate) (*VpcRouter, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -4481,7 +4481,7 @@ func (s *VPCsService) RouterUpdate(organizationName string, projectName string, 
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body Router
+	var body VpcRouter
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -4489,14 +4489,14 @@ func (s *VPCsService) RouterUpdate(organizationName string, projectName string, 
 	return &body, nil
 }
 
-// RouterDelete: Delete a router
+// VpcRouterDelete: Delete a router
 //
 // Parameters:
 //	- `organizationName`
 //	- `projectName`
 //	- `routerName`
 //	- `vpcName`
-func (s *VPCsService) RouterDelete(organizationName string, projectName string, routerName string, vpcName string) error {
+func (s *VPCsService) VpcRouterDelete(organizationName string, projectName string, routerName string, vpcName string) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -4528,11 +4528,11 @@ func (s *VPCsService) RouterDelete(organizationName string, projectName string, 
 	return nil
 }
 
-// RouteList: List routes
+// VpcRouterRouteList: List routes
 //
 // List the routes associated with a router in a particular VPC.
 //
-// To iterate over all pages, use the `RouteListAllPages` method, instead.
+// To iterate over all pages, use the `VpcRouterRouteListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
@@ -4542,7 +4542,7 @@ func (s *VPCsService) RouterDelete(organizationName string, projectName string, 
 //	- `routerName`
 //	- `sortBy`
 //	- `vpcName`
-func (s *VPCsService) RouteList(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string, routerName string, vpcName string) (*RouteResultsPage, error) {
+func (s *VPCsService) VpcRouterRouteList(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string, routerName string, vpcName string) (*RouterRouteResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes"
 	uri := resolveRelative(s.client.server, path)
@@ -4577,7 +4577,7 @@ func (s *VPCsService) RouteList(limit int, pageToken string, sortBy NameSortMode
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body RouteResultsPage
+	var body RouterRouteResultsPage
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -4585,11 +4585,11 @@ func (s *VPCsService) RouteList(limit int, pageToken string, sortBy NameSortMode
 	return &body, nil
 }
 
-// RouteListAllPages: List routes
+// VpcRouterRouteListAllPages: List routes
 //
 // List the routes associated with a router in a particular VPC.
 //
-// This method is a wrapper around the `RouteList` method.
+// This method is a wrapper around the `VpcRouterRouteList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
@@ -4598,13 +4598,13 @@ func (s *VPCsService) RouteList(limit int, pageToken string, sortBy NameSortMode
 //	- `routerName`
 //	- `sortBy`
 //	- `vpcName`
-func (s *VPCsService) RouteListAllPages(sortBy NameSortMode, organizationName string, projectName string, routerName string, vpcName string) (*[]Route, error) {
+func (s *VPCsService) VpcRouterRouteListAllPages(sortBy NameSortMode, organizationName string, projectName string, routerName string, vpcName string) (*[]RouterRoute, error) {
 
-	var allPages []Route
+	var allPages []RouterRoute
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.RouteList(limit, pageToken, sortBy, organizationName, projectName, routerName, vpcName)
+		page, err := s.VpcRouterRouteList(limit, pageToken, sortBy, organizationName, projectName, routerName, vpcName)
 		if err != nil {
 			return nil, err
 		}
@@ -4616,14 +4616,14 @@ func (s *VPCsService) RouteListAllPages(sortBy NameSortMode, organizationName st
 	}
 
 	return &allPages, nil
-} // RouteCreate: Create a router
+} // VpcRouterRouteCreate: Create a router
 //
 // Parameters:
 //	- `organizationName`
 //	- `projectName`
 //	- `routerName`
 //	- `vpcName`
-func (s *VPCsService) RouteCreate(organizationName string, projectName string, routerName string, vpcName string, j *RouteCreate) (*Route, error) {
+func (s *VPCsService) VpcRouterRouteCreate(organizationName string, projectName string, routerName string, vpcName string, j *RouterRouteCreateParams) (*RouterRoute, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes"
 	uri := resolveRelative(s.client.server, path)
@@ -4660,7 +4660,7 @@ func (s *VPCsService) RouteCreate(organizationName string, projectName string, r
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body Route
+	var body RouterRoute
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -4668,7 +4668,7 @@ func (s *VPCsService) RouteCreate(organizationName string, projectName string, r
 	return &body, nil
 }
 
-// RouteView: Fetch a route
+// VpcRouterRouteView: Fetch a route
 //
 // Parameters:
 //	- `organizationName`
@@ -4676,7 +4676,7 @@ func (s *VPCsService) RouteCreate(organizationName string, projectName string, r
 //	- `routeName`
 //	- `routerName`
 //	- `vpcName`
-func (s *VPCsService) RouteView(organizationName string, projectName string, routeName string, routerName string, vpcName string) (*Route, error) {
+func (s *VPCsService) VpcRouterRouteView(organizationName string, projectName string, routeName string, routerName string, vpcName string) (*RouterRoute, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes/{{.route_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -4709,7 +4709,7 @@ func (s *VPCsService) RouteView(organizationName string, projectName string, rou
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body Route
+	var body RouterRoute
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -4717,7 +4717,7 @@ func (s *VPCsService) RouteView(organizationName string, projectName string, rou
 	return &body, nil
 }
 
-// RouteUpdate: Update a route
+// VpcRouterRouteUpdate: Update a route
 //
 // Parameters:
 //	- `organizationName`
@@ -4725,7 +4725,7 @@ func (s *VPCsService) RouteView(organizationName string, projectName string, rou
 //	- `routeName`
 //	- `routerName`
 //	- `vpcName`
-func (s *VPCsService) RouteUpdate(organizationName string, projectName string, routeName string, routerName string, vpcName string, j *RouteUpdate) (*Route, error) {
+func (s *VPCsService) VpcRouterRouteUpdate(organizationName string, projectName string, routeName string, routerName string, vpcName string, j *RouterRouteUpdateParams) (*RouterRoute, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes/{{.route_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -4763,7 +4763,7 @@ func (s *VPCsService) RouteUpdate(organizationName string, projectName string, r
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body Route
+	var body RouterRoute
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -4771,7 +4771,7 @@ func (s *VPCsService) RouteUpdate(organizationName string, projectName string, r
 	return &body, nil
 }
 
-// RouteDelete: Delete a route
+// VpcRouterRouteDelete: Delete a route
 //
 // Parameters:
 //	- `organizationName`
@@ -4779,7 +4779,7 @@ func (s *VPCsService) RouteUpdate(organizationName string, projectName string, r
 //	- `routeName`
 //	- `routerName`
 //	- `vpcName`
-func (s *VPCsService) RouteDelete(organizationName string, projectName string, routeName string, routerName string, vpcName string) error {
+func (s *VPCsService) VpcRouterRouteDelete(organizationName string, projectName string, routeName string, routerName string, vpcName string) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes/{{.route_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -4812,9 +4812,9 @@ func (s *VPCsService) RouteDelete(organizationName string, projectName string, r
 	return nil
 }
 
-// SubnetList: List subnets
+// VpcSubnetList: List subnets
 //
-// To iterate over all pages, use the `SubnetListAllPages` method, instead.
+// To iterate over all pages, use the `VpcSubnetListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
@@ -4823,7 +4823,7 @@ func (s *VPCsService) RouteDelete(organizationName string, projectName string, r
 //	- `projectName`
 //	- `sortBy`
 //	- `vpcName`
-func (s *VPCsService) SubnetList(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string, vpcName string) (*SubnetResultsPage, error) {
+func (s *VPCsService) VpcSubnetList(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string, vpcName string) (*VpcSubnetResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets"
 	uri := resolveRelative(s.client.server, path)
@@ -4857,7 +4857,7 @@ func (s *VPCsService) SubnetList(limit int, pageToken string, sortBy NameSortMod
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body SubnetResultsPage
+	var body VpcSubnetResultsPage
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -4865,9 +4865,9 @@ func (s *VPCsService) SubnetList(limit int, pageToken string, sortBy NameSortMod
 	return &body, nil
 }
 
-// SubnetListAllPages: List subnets
+// VpcSubnetListAllPages: List subnets
 //
-// This method is a wrapper around the `SubnetList` method.
+// This method is a wrapper around the `VpcSubnetList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
@@ -4875,13 +4875,13 @@ func (s *VPCsService) SubnetList(limit int, pageToken string, sortBy NameSortMod
 //	- `projectName`
 //	- `sortBy`
 //	- `vpcName`
-func (s *VPCsService) SubnetListAllPages(sortBy NameSortMode, organizationName string, projectName string, vpcName string) (*[]Subnet, error) {
+func (s *VPCsService) VpcSubnetListAllPages(sortBy NameSortMode, organizationName string, projectName string, vpcName string) (*[]VpcSubnet, error) {
 
-	var allPages []Subnet
+	var allPages []VpcSubnet
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.SubnetList(limit, pageToken, sortBy, organizationName, projectName, vpcName)
+		page, err := s.VpcSubnetList(limit, pageToken, sortBy, organizationName, projectName, vpcName)
 		if err != nil {
 			return nil, err
 		}
@@ -4893,13 +4893,13 @@ func (s *VPCsService) SubnetListAllPages(sortBy NameSortMode, organizationName s
 	}
 
 	return &allPages, nil
-} // SubnetCreate: Create a subnet
+} // VpcSubnetCreate: Create a subnet
 //
 // Parameters:
 //	- `organizationName`
 //	- `projectName`
 //	- `vpcName`
-func (s *VPCsService) SubnetCreate(organizationName string, projectName string, vpcName string, j *SubnetCreate) (*Subnet, error) {
+func (s *VPCsService) VpcSubnetCreate(organizationName string, projectName string, vpcName string, j *VpcSubnetCreate) (*VpcSubnet, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets"
 	uri := resolveRelative(s.client.server, path)
@@ -4935,7 +4935,7 @@ func (s *VPCsService) SubnetCreate(organizationName string, projectName string, 
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body Subnet
+	var body VpcSubnet
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -4943,14 +4943,14 @@ func (s *VPCsService) SubnetCreate(organizationName string, projectName string, 
 	return &body, nil
 }
 
-// SubnetView: Fetch a subnet
+// VpcSubnetView: Fetch a subnet
 //
 // Parameters:
 //	- `organizationName`
 //	- `projectName`
 //	- `subnetName`
 //	- `vpcName`
-func (s *VPCsService) SubnetView(organizationName string, projectName string, subnetName string, vpcName string) (*Subnet, error) {
+func (s *VPCsService) VpcSubnetView(organizationName string, projectName string, subnetName string, vpcName string) (*VpcSubnet, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets/{{.subnet_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -4982,7 +4982,7 @@ func (s *VPCsService) SubnetView(organizationName string, projectName string, su
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body Subnet
+	var body VpcSubnet
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -4990,14 +4990,14 @@ func (s *VPCsService) SubnetView(organizationName string, projectName string, su
 	return &body, nil
 }
 
-// SubnetUpdate: Update a subnet
+// VpcSubnetUpdate: Update a subnet
 //
 // Parameters:
 //	- `organizationName`
 //	- `projectName`
 //	- `subnetName`
 //	- `vpcName`
-func (s *VPCsService) SubnetUpdate(organizationName string, projectName string, subnetName string, vpcName string, j *SubnetUpdate) (*Subnet, error) {
+func (s *VPCsService) VpcSubnetUpdate(organizationName string, projectName string, subnetName string, vpcName string, j *VpcSubnetUpdate) (*VpcSubnet, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets/{{.subnet_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -5034,7 +5034,7 @@ func (s *VPCsService) SubnetUpdate(organizationName string, projectName string, 
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body Subnet
+	var body VpcSubnet
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -5042,14 +5042,14 @@ func (s *VPCsService) SubnetUpdate(organizationName string, projectName string, 
 	return &body, nil
 }
 
-// SubnetDelete: Delete a subnet
+// VpcSubnetDelete: Delete a subnet
 //
 // Parameters:
 //	- `organizationName`
 //	- `projectName`
 //	- `subnetName`
 //	- `vpcName`
-func (s *VPCsService) SubnetDelete(organizationName string, projectName string, subnetName string, vpcName string) error {
+func (s *VPCsService) VpcSubnetDelete(organizationName string, projectName string, subnetName string, vpcName string) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets/{{.subnet_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -5081,9 +5081,9 @@ func (s *VPCsService) SubnetDelete(organizationName string, projectName string, 
 	return nil
 }
 
-// SubnetListNetworkInterfaces: List network interfaces
+// VpcSubnetListNetworkInterfaces: List network interfaces
 //
-// To iterate over all pages, use the `SubnetListNetworkInterfacesAllPages` method, instead.
+// To iterate over all pages, use the `VpcSubnetListNetworkInterfacesAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
@@ -5093,7 +5093,7 @@ func (s *VPCsService) SubnetDelete(organizationName string, projectName string, 
 //	- `sortBy`
 //	- `subnetName`
 //	- `vpcName`
-func (s *VPCsService) SubnetListNetworkInterfaces(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string, subnetName string, vpcName string) (*NetworkInterfaceResultsPage, error) {
+func (s *VPCsService) VpcSubnetListNetworkInterfaces(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string, subnetName string, vpcName string) (*NetworkInterfaceResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets/{{.subnet_name}}/network-interfaces"
 	uri := resolveRelative(s.client.server, path)
@@ -5136,9 +5136,9 @@ func (s *VPCsService) SubnetListNetworkInterfaces(limit int, pageToken string, s
 	return &body, nil
 }
 
-// SubnetListNetworkInterfacesAllPages: List network interfaces
+// VpcSubnetListNetworkInterfacesAllPages: List network interfaces
 //
-// This method is a wrapper around the `SubnetListNetworkInterfaces` method.
+// This method is a wrapper around the `VpcSubnetListNetworkInterfaces` method.
 // This method returns all the pages at once.
 //
 // Parameters:
@@ -5147,13 +5147,13 @@ func (s *VPCsService) SubnetListNetworkInterfaces(limit int, pageToken string, s
 //	- `sortBy`
 //	- `subnetName`
 //	- `vpcName`
-func (s *VPCsService) SubnetListNetworkInterfacesAllPages(sortBy NameSortMode, organizationName string, projectName string, subnetName string, vpcName string) (*[]NetworkInterface, error) {
+func (s *VPCsService) VpcSubnetListNetworkInterfacesAllPages(sortBy NameSortMode, organizationName string, projectName string, subnetName string, vpcName string) (*[]NetworkInterface, error) {
 
 	var allPages []NetworkInterface
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.SubnetListNetworkInterfaces(limit, pageToken, sortBy, organizationName, projectName, subnetName, vpcName)
+		page, err := s.VpcSubnetListNetworkInterfaces(limit, pageToken, sortBy, organizationName, projectName, subnetName, vpcName)
 		if err != nil {
 			return nil, err
 		}
@@ -5165,8 +5165,8 @@ func (s *VPCsService) SubnetListNetworkInterfacesAllPages(sortBy NameSortMode, o
 	}
 
 	return &allPages, nil
-} // View: Fetch the top-level IAM policy
-func (s *PolicyService) View() (*FleetRolePolicy, error) {
+} // PolicyView: Fetch the top-level IAM policy
+func (s *PolicyService) PolicyView() (*FleetRolePolicy, error) {
 	// Create the url.
 	path := "/policy"
 	uri := resolveRelative(s.client.server, path)
@@ -5197,8 +5197,8 @@ func (s *PolicyService) View() (*FleetRolePolicy, error) {
 	return &body, nil
 }
 
-// Update: Update the top-level IAM policy
-func (s *PolicyService) Update(j *FleetRolePolicy) (*FleetRolePolicy, error) {
+// PolicyUpdate: Update the top-level IAM policy
+func (s *PolicyService) PolicyUpdate(j *FleetRolePolicy) (*FleetRolePolicy, error) {
 	// Create the url.
 	path := "/policy"
 	uri := resolveRelative(s.client.server, path)
@@ -5234,14 +5234,14 @@ func (s *PolicyService) Update(j *FleetRolePolicy) (*FleetRolePolicy, error) {
 	return &body, nil
 }
 
-// List: List built-in roles
+// RoleList: List built-in roles
 //
-// To iterate over all pages, use the `ListAllPages` method, instead.
+// To iterate over all pages, use the `RoleListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
-func (s *RolesService) List(limit int, pageToken string) (*RoleResultsPage, error) {
+func (s *RolesService) RoleList(limit int, pageToken string) (*RoleResultsPage, error) {
 	// Create the url.
 	path := "/roles"
 	uri := resolveRelative(s.client.server, path)
@@ -5279,17 +5279,17 @@ func (s *RolesService) List(limit int, pageToken string) (*RoleResultsPage, erro
 	return &body, nil
 }
 
-// ListAllPages: List built-in roles
+// RoleListAllPages: List built-in roles
 //
-// This method is a wrapper around the `List` method.
+// This method is a wrapper around the `RoleList` method.
 // This method returns all the pages at once.
-func (s *RolesService) ListAllPages() (*[]Role, error) {
+func (s *RolesService) RoleListAllPages() (*[]Role, error) {
 
 	var allPages []Role
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.List(limit, pageToken)
+		page, err := s.RoleList(limit, pageToken)
 		if err != nil {
 			return nil, err
 		}
@@ -5301,11 +5301,11 @@ func (s *RolesService) ListAllPages() (*[]Role, error) {
 	}
 
 	return &allPages, nil
-} // View: Fetch a built-in role
+} // RoleView: Fetch a built-in role
 //
 // Parameters:
 //	- `roleName`: The built-in role's unique name.
-func (s *RolesService) View(roleName string) (*Role, error) {
+func (s *RolesService) RoleView(roleName string) (*Role, error) {
 	// Create the url.
 	path := "/roles/{{.role_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -5342,15 +5342,15 @@ func (s *RolesService) View(roleName string) (*Role, error) {
 	return &body, nil
 }
 
-// List: List sagas
+// SagaList: List sagas
 //
-// To iterate over all pages, use the `ListAllPages` method, instead.
+// To iterate over all pages, use the `SagaListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `sortBy`
-func (s *SagasService) List(limit int, pageToken string, sortBy IdSortMode) (*SagaResultsPage, error) {
+func (s *SagasService) SagaList(limit int, pageToken string, sortBy IdSortMode) (*SagaResultsPage, error) {
 	// Create the url.
 	path := "/sagas"
 	uri := resolveRelative(s.client.server, path)
@@ -5389,20 +5389,20 @@ func (s *SagasService) List(limit int, pageToken string, sortBy IdSortMode) (*Sa
 	return &body, nil
 }
 
-// ListAllPages: List sagas
+// SagaListAllPages: List sagas
 //
-// This method is a wrapper around the `List` method.
+// This method is a wrapper around the `SagaList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
 //	- `sortBy`
-func (s *SagasService) ListAllPages(sortBy IdSortMode) (*[]Saga, error) {
+func (s *SagasService) SagaListAllPages(sortBy IdSortMode) (*[]Saga, error) {
 
 	var allPages []Saga
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.List(limit, pageToken, sortBy)
+		page, err := s.SagaList(limit, pageToken, sortBy)
 		if err != nil {
 			return nil, err
 		}
@@ -5414,11 +5414,11 @@ func (s *SagasService) ListAllPages(sortBy IdSortMode) (*[]Saga, error) {
 	}
 
 	return &allPages, nil
-} // View: Fetch a saga
+} // SagaView: Fetch a saga
 //
 // Parameters:
 //	- `sagaId`
-func (s *SagasService) View(sagaID string) (*Saga, error) {
+func (s *SagasService) SagaView(sagaId string) (*Saga, error) {
 	// Create the url.
 	path := "/sagas/{{.saga_id}}"
 	uri := resolveRelative(s.client.server, path)
@@ -5429,7 +5429,7 @@ func (s *SagasService) View(sagaID string) (*Saga, error) {
 	}
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"saga_id": sagaID,
+		"saga_id": sagaId,
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -5455,17 +5455,17 @@ func (s *SagasService) View(sagaID string) (*Saga, error) {
 	return &body, nil
 }
 
-// SshkeyList: List SSH public keys
+// SessionSshkeyList: List SSH public keys
 //
 // Lists SSH public keys for the currently authenticated user.
 //
-// To iterate over all pages, use the `SshkeyListAllPages` method, instead.
+// To iterate over all pages, use the `SessionSshkeyListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `sortBy`
-func (s *SessionService) SshkeyList(limit int, pageToken string, sortBy NameSortMode) (*SshKeyResultsPage, error) {
+func (s *SessionService) SessionSshkeyList(limit int, pageToken string, sortBy NameSortMode) (*SshKeyResultsPage, error) {
 	// Create the url.
 	path := "/session/me/sshkeys"
 	uri := resolveRelative(s.client.server, path)
@@ -5504,22 +5504,22 @@ func (s *SessionService) SshkeyList(limit int, pageToken string, sortBy NameSort
 	return &body, nil
 }
 
-// SshkeyListAllPages: List SSH public keys
+// SessionSshkeyListAllPages: List SSH public keys
 //
 // Lists SSH public keys for the currently authenticated user.
 //
-// This method is a wrapper around the `SshkeyList` method.
+// This method is a wrapper around the `SessionSshkeyList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
 //	- `sortBy`
-func (s *SessionService) SshkeyListAllPages(sortBy NameSortMode) (*[]SshKey, error) {
+func (s *SessionService) SessionSshkeyListAllPages(sortBy NameSortMode) (*[]SshKey, error) {
 
 	var allPages []SshKey
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.SshkeyList(limit, pageToken, sortBy)
+		page, err := s.SessionSshkeyList(limit, pageToken, sortBy)
 		if err != nil {
 			return nil, err
 		}
@@ -5531,10 +5531,10 @@ func (s *SessionService) SshkeyListAllPages(sortBy NameSortMode) (*[]SshKey, err
 	}
 
 	return &allPages, nil
-} // SshkeyCreate: Create an SSH public key
+} // SessionSshkeyCreate: Create an SSH public key
 //
 // Create an SSH public key for the currently authenticated user.
-func (s *SessionService) SshkeyCreate(j *SshKeyCreate) (*SshKey, error) {
+func (s *SessionService) SessionSshkeyCreate(j *SshKeyCreate) (*SshKey, error) {
 	// Create the url.
 	path := "/session/me/sshkeys"
 	uri := resolveRelative(s.client.server, path)
@@ -5570,13 +5570,13 @@ func (s *SessionService) SshkeyCreate(j *SshKeyCreate) (*SshKey, error) {
 	return &body, nil
 }
 
-// SshkeyView: Fetch an SSH public key
+// SessionSshkeyView: Fetch an SSH public key
 //
 // Fetch an SSH public key associated with the currently authenticated user.
 //
 // Parameters:
 //	- `sshKeyName`
-func (s *SessionService) SshkeyView(sshKeyName string) (*SshKey, error) {
+func (s *SessionService) SessionSshkeyView(sshKeyName string) (*SshKey, error) {
 	// Create the url.
 	path := "/session/me/sshkeys/{{.ssh_key_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -5613,13 +5613,13 @@ func (s *SessionService) SshkeyView(sshKeyName string) (*SshKey, error) {
 	return &body, nil
 }
 
-// SshkeyDelete: Delete an SSH public key
+// SessionSshkeyDelete: Delete an SSH public key
 //
 // Delete an SSH public key associated with the currently authenticated user.
 //
 // Parameters:
 //	- `sshKeyName`
-func (s *SessionService) SshkeyDelete(sshKeyName string) error {
+func (s *SessionService) SessionSshkeyDelete(sshKeyName string) error {
 	// Create the url.
 	path := "/session/me/sshkeys/{{.ssh_key_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -5648,17 +5648,17 @@ func (s *SessionService) SshkeyDelete(sshKeyName string) error {
 	return nil
 }
 
-// List: List silos
+// SiloList: List silos
 //
 // Lists silos that are discoverable based on the current permissions.
 //
-// To iterate over all pages, use the `ListAllPages` method, instead.
+// To iterate over all pages, use the `SiloListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `sortBy`
-func (s *SilosService) List(limit int, pageToken string, sortBy NameOrIdSortMode) (*SiloResultsPage, error) {
+func (s *SilosService) SiloList(limit int, pageToken string, sortBy NameOrIdSortMode) (*SiloResultsPage, error) {
 	// Create the url.
 	path := "/silos"
 	uri := resolveRelative(s.client.server, path)
@@ -5697,22 +5697,22 @@ func (s *SilosService) List(limit int, pageToken string, sortBy NameOrIdSortMode
 	return &body, nil
 }
 
-// ListAllPages: List silos
+// SiloListAllPages: List silos
 //
 // Lists silos that are discoverable based on the current permissions.
 //
-// This method is a wrapper around the `List` method.
+// This method is a wrapper around the `SiloList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
 //	- `sortBy`
-func (s *SilosService) ListAllPages(sortBy NameOrIdSortMode) (*[]Silo, error) {
+func (s *SilosService) SiloListAllPages(sortBy NameOrIdSortMode) (*[]Silo, error) {
 
 	var allPages []Silo
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.List(limit, pageToken, sortBy)
+		page, err := s.SiloList(limit, pageToken, sortBy)
 		if err != nil {
 			return nil, err
 		}
@@ -5724,8 +5724,8 @@ func (s *SilosService) ListAllPages(sortBy NameOrIdSortMode) (*[]Silo, error) {
 	}
 
 	return &allPages, nil
-} // Create: Create a silo
-func (s *SilosService) Create(j *SiloCreate) (*Silo, error) {
+} // SiloCreate: Create a silo
+func (s *SilosService) SiloCreate(j *SiloCreate) (*Silo, error) {
 	// Create the url.
 	path := "/silos"
 	uri := resolveRelative(s.client.server, path)
@@ -5761,13 +5761,13 @@ func (s *SilosService) Create(j *SiloCreate) (*Silo, error) {
 	return &body, nil
 }
 
-// View: Fetch a silo
+// SiloView: Fetch a silo
 //
 // Fetch a silo by name.
 //
 // Parameters:
 //	- `siloName`: The silo's unique name.
-func (s *SilosService) View(siloName string) (*Silo, error) {
+func (s *SilosService) SiloView(siloName string) (*Silo, error) {
 	// Create the url.
 	path := "/silos/{{.silo_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -5804,13 +5804,13 @@ func (s *SilosService) View(siloName string) (*Silo, error) {
 	return &body, nil
 }
 
-// Delete: Delete a silo
+// SiloDelete: Delete a silo
 //
 // Delete a silo by name.
 //
 // Parameters:
 //	- `siloName`: The silo's unique name.
-func (s *SilosService) Delete(siloName string) error {
+func (s *SilosService) SiloDelete(siloName string) error {
 	// Create the url.
 	path := "/silos/{{.silo_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -5839,16 +5839,16 @@ func (s *SilosService) Delete(siloName string) error {
 	return nil
 }
 
-// IdentityProviderList: List a silo's IDPs
+// SiloIdentityProviderList: List a silo's IDPs
 //
-// To iterate over all pages, use the `IdentityProviderListAllPages` method, instead.
+// To iterate over all pages, use the `SiloIdentityProviderListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `siloName`: The silo's unique name.
 //	- `sortBy`
-func (s *SilosService) IdentityProviderList(siloName string, limit int, pageToken string, sortBy NameSortMode) (*IdentityProviderResultsPage, error) {
+func (s *SilosService) SiloIdentityProviderList(siloName string, limit int, pageToken string, sortBy NameSortMode) (*IdentityProviderResultsPage, error) {
 	// Create the url.
 	path := "/silos/{{.silo_name}}/identity-providers"
 	uri := resolveRelative(s.client.server, path)
@@ -5888,21 +5888,21 @@ func (s *SilosService) IdentityProviderList(siloName string, limit int, pageToke
 	return &body, nil
 }
 
-// IdentityProviderListAllPages: List a silo's IDPs
+// SiloIdentityProviderListAllPages: List a silo's IDPs
 //
-// This method is a wrapper around the `IdentityProviderList` method.
+// This method is a wrapper around the `SiloIdentityProviderList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
 //	- `siloName`: The silo's unique name.
 //	- `sortBy`
-func (s *SilosService) IdentityProviderListAllPages(siloName string, sortBy NameSortMode) (*[]IdentityProvider, error) {
+func (s *SilosService) SiloIdentityProviderListAllPages(siloName string, sortBy NameSortMode) (*[]IdentityProvider, error) {
 
 	var allPages []IdentityProvider
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.IdentityProviderList(siloName, limit, pageToken, sortBy)
+		page, err := s.SiloIdentityProviderList(siloName, limit, pageToken, sortBy)
 		if err != nil {
 			return nil, err
 		}
@@ -5914,11 +5914,11 @@ func (s *SilosService) IdentityProviderListAllPages(siloName string, sortBy Name
 	}
 
 	return &allPages, nil
-} // PolicyView: Fetch a silo's IAM policy
+} // SiloPolicyView: Fetch a silo's IAM policy
 //
 // Parameters:
 //	- `siloName`: The silo's unique name.
-func (s *SilosService) PolicyView(siloName string) (*SiloRolePolicy, error) {
+func (s *SilosService) SiloPolicyView(siloName string) (*SiloRolePolicy, error) {
 	// Create the url.
 	path := "/silos/{{.silo_name}}/policy"
 	uri := resolveRelative(s.client.server, path)
@@ -5955,11 +5955,11 @@ func (s *SilosService) PolicyView(siloName string) (*SiloRolePolicy, error) {
 	return &body, nil
 }
 
-// PolicyUpdate: Update a silo's IAM policy
+// SiloPolicyUpdate: Update a silo's IAM policy
 //
 // Parameters:
 //	- `siloName`: The silo's unique name.
-func (s *SilosService) PolicyUpdate(siloName string, j *SiloRolePolicy) (*SiloRolePolicy, error) {
+func (s *SilosService) SiloPolicyUpdate(siloName string, j *SiloRolePolicy) (*SiloRolePolicy, error) {
 	// Create the url.
 	path := "/silos/{{.silo_name}}/policy"
 	uri := resolveRelative(s.client.server, path)
@@ -6001,11 +6001,11 @@ func (s *SilosService) PolicyUpdate(siloName string, j *SiloRolePolicy) (*SiloRo
 	return &body, nil
 }
 
-// IdentityProviderCreate: Create a SAML IDP
+// SiloIdentityProviderCreate: Create a SAML IDP
 //
 // Parameters:
 //	- `siloName`: The silo's unique name.
-func (s *SilosService) IdentityProviderCreate(siloName string, j *SamlIdentityProviderCreate) (*SamlIdentityProvider, error) {
+func (s *SilosService) SiloIdentityProviderCreate(siloName string, j *SamlIdentityProviderCreate) (*SamlIdentityProvider, error) {
 	// Create the url.
 	path := "/silos/{{.silo_name}}/saml-identity-providers"
 	uri := resolveRelative(s.client.server, path)
@@ -6047,12 +6047,12 @@ func (s *SilosService) IdentityProviderCreate(siloName string, j *SamlIdentityPr
 	return &body, nil
 }
 
-// IdentityProviderView: Fetch a SAML IDP
+// SiloIdentityProviderView: Fetch a SAML IDP
 //
 // Parameters:
 //	- `providerName`: The SAML identity provider's name
 //	- `siloName`: The silo's unique name.
-func (s *SilosService) IdentityProviderView(providerName string, siloName string) (*SamlIdentityProvider, error) {
+func (s *SilosService) SiloIdentityProviderView(providerName string, siloName string) (*SamlIdentityProvider, error) {
 	// Create the url.
 	path := "/silos/{{.silo_name}}/saml-identity-providers/{{.provider_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -6090,15 +6090,15 @@ func (s *SilosService) IdentityProviderView(providerName string, siloName string
 	return &body, nil
 }
 
-// UserList: List built-in users
+// SystemUserList: List built-in users
 //
-// To iterate over all pages, use the `UserListAllPages` method, instead.
+// To iterate over all pages, use the `SystemUserListAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `sortBy`
-func (s *SystemService) UserList(limit int, pageToken string, sortBy NameSortMode) (*UserBuiltinResultsPage, error) {
+func (s *SystemService) SystemUserList(limit int, pageToken string, sortBy NameSortMode) (*UserBuiltinResultsPage, error) {
 	// Create the url.
 	path := "/system/user"
 	uri := resolveRelative(s.client.server, path)
@@ -6137,20 +6137,20 @@ func (s *SystemService) UserList(limit int, pageToken string, sortBy NameSortMod
 	return &body, nil
 }
 
-// UserListAllPages: List built-in users
+// SystemUserListAllPages: List built-in users
 //
-// This method is a wrapper around the `UserList` method.
+// This method is a wrapper around the `SystemUserList` method.
 // This method returns all the pages at once.
 //
 // Parameters:
 //	- `sortBy`
-func (s *SystemService) UserListAllPages(sortBy NameSortMode) (*[]UserBuiltin, error) {
+func (s *SystemService) SystemUserListAllPages(sortBy NameSortMode) (*[]UserBuiltin, error) {
 
 	var allPages []UserBuiltin
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.UserList(limit, pageToken, sortBy)
+		page, err := s.SystemUserList(limit, pageToken, sortBy)
 		if err != nil {
 			return nil, err
 		}
@@ -6162,11 +6162,11 @@ func (s *SystemService) UserListAllPages(sortBy NameSortMode) (*[]UserBuiltin, e
 	}
 
 	return &allPages, nil
-} // UserView: Fetch a built-in user
+} // SystemUserView: Fetch a built-in user
 //
 // Parameters:
 //	- `userName`: The built-in user's unique name.
-func (s *SystemService) UserView(userName string) (*UserBuiltin, error) {
+func (s *SystemService) SystemUserView(userName string) (*UserBuiltin, error) {
 	// Create the url.
 	path := "/system/user/{{.user_name}}"
 	uri := resolveRelative(s.client.server, path)
@@ -6203,14 +6203,14 @@ func (s *SystemService) UserView(userName string) (*UserBuiltin, error) {
 	return &body, nil
 }
 
-// TimeseriesSchemaList: List timeseries schema
+// TimeseriesSchemaGet: List timeseries schema
 //
-// To iterate over all pages, use the `TimeseriesSchemaListAllPages` method, instead.
+// To iterate over all pages, use the `TimeseriesSchemaGetAllPages` method, instead.
 //
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
-func (s *MetricsService) TimeseriesSchemaList(limit int, pageToken string) (*TimeseriesSchemaResultsPage, error) {
+func (s *MetricsService) TimeseriesSchemaGet(limit int, pageToken string) (*TimeseriesSchemaResultsPage, error) {
 	// Create the url.
 	path := "/timeseries/schema"
 	uri := resolveRelative(s.client.server, path)
@@ -6248,17 +6248,17 @@ func (s *MetricsService) TimeseriesSchemaList(limit int, pageToken string) (*Tim
 	return &body, nil
 }
 
-// TimeseriesSchemaListAllPages: List timeseries schema
+// TimeseriesSchemaGetAllPages: List timeseries schema
 //
-// This method is a wrapper around the `TimeseriesSchemaList` method.
+// This method is a wrapper around the `TimeseriesSchemaGet` method.
 // This method returns all the pages at once.
-func (s *MetricsService) TimeseriesSchemaListAllPages() (*[]TimeseriesSchema, error) {
+func (s *MetricsService) TimeseriesSchemaGetAllPages() (*[]TimeseriesSchema, error) {
 
 	var allPages []TimeseriesSchema
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.TimeseriesSchemaList(limit, pageToken)
+		page, err := s.TimeseriesSchemaGet(limit, pageToken)
 		if err != nil {
 			return nil, err
 		}
@@ -6270,8 +6270,8 @@ func (s *MetricsService) TimeseriesSchemaListAllPages() (*[]TimeseriesSchema, er
 	}
 
 	return &allPages, nil
-} // Refresh: Refresh update data
-func (s *UpdatesService) Refresh() error {
+} // UpdatesRefresh: Refresh update data
+func (s *UpdatesService) UpdatesRefresh() error {
 	// Create the url.
 	path := "/updates/refresh"
 	uri := resolveRelative(s.client.server, path)
