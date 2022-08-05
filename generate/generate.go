@@ -85,6 +85,11 @@ func generateTypes(doc *openapi3.T) {
 			continue
 		}
 
+		if name == "DatumType" {
+			fmt.Printf("[WARN] TODO: skipping type for %q, since it is a duplicate\n", name)
+			continue
+		}
+
 		writeSchemaType(f, name, s.Value, "")
 	}
 
@@ -690,6 +695,8 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 				fmt.Fprintf(f, "	%q: %s,\n", name, n)
 			} else if t == "int" {
 				fmt.Fprintf(f, "	%q: strconv.Itoa(%s),\n", name, n)
+			} else if t == "*time.Time" {
+				fmt.Fprintf(f, "	%q: %s.String(),\n", name, n)
 			} else {
 				fmt.Fprintf(f, "	%q: string(%s),\n", name, n)
 			}
@@ -808,6 +815,10 @@ func getSuccessResponseType(o *openapi3.Operation, isGetAllPages bool) (string, 
 // The additional parameter is only used as a suffix for the type name.
 // This is mostly for oneOf types.
 func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName string) {
+	//	if name == "DatumType" {
+	//		fmt.Printf("[WARN] TODO: Skipping %q\n", name)
+	//		return
+	//	}
 	otype := s.Type
 	fmt.Printf("writing type for schema %q -> %s\n", name, otype)
 
