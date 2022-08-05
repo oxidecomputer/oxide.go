@@ -815,10 +815,6 @@ func getSuccessResponseType(o *openapi3.Operation, isGetAllPages bool) (string, 
 // The additional parameter is only used as a suffix for the type name.
 // This is mostly for oneOf types.
 func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName string) {
-	//	if name == "DatumType" {
-	//		fmt.Printf("[WARN] TODO: Skipping %q\n", name)
-	//		return
-	//	}
 	otype := s.Type
 	fmt.Printf("writing type for schema %q -> %s\n", name, otype)
 
