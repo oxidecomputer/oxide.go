@@ -160,9 +160,7 @@ type Client struct {
 
 	for _, tag := range doc.Tags {
 		name := strcase.ToCamel(tag.Name)
-		if name == "Vpcs" {
-			name = "VPCs"
-		}
+
 		if tag.Description != "" {
 			fmt.Fprintf(f, "// %s: %s\n", name, tag.Description)
 		}
@@ -174,9 +172,6 @@ type Client struct {
 
 	for _, tag := range doc.Tags {
 		name := strcase.ToCamel(tag.Name)
-		if name == "Vpcs" {
-			name = "VPCs"
-		}
 		if tag.Description != "" {
 			fmt.Fprintf(f, "// %sService: %s\n", name, tag.Description)
 		}
@@ -233,131 +228,14 @@ func openGeneratedFile(filename string) *os.File {
 	return f
 }
 
-// TODO: Remove
-
-//func cleanFnName(name string, tag string, path string) string {
-//	name = printProperty(name)
-
-//	if name == "Login" {
-//		return name
-//	}
-//
-//	global := strings.HasSuffix(tag, GLOBAL_SUFFIX)
-//	tag = strings.TrimSuffix(tag, GLOBAL_SUFFIX)
-//
-//	name = strings.ReplaceAll(name, strcase.ToCamel(tag), "")
-//
-//	if strings.HasSuffix(tag, "s") {
-//		tag = strings.TrimSuffix(tag, "s")
-//		name = strings.ReplaceAll(name, strcase.ToCamel(tag), "")
-//	}
-//
-//	name = strings.TrimPrefix(name, "Organization")
-//	name = strings.TrimPrefix(name, "Project")
-//
-//	name = strings.ReplaceAll(name, "Vpc", "VPC")
-//
-//	if strings.HasSuffix(name, "Get") && !strings.HasSuffix(path, "}") {
-//		name = fmt.Sprintf("%sList", strings.TrimSuffix(name, "Get"))
-//	}
-//
-//	if strings.HasSuffix(name, "Post") {
-//		name = fmt.Sprintf("%sCreate", strings.TrimSuffix(name, "Post"))
-//	}
-//
-//	if strings.HasPrefix(name, "s") {
-//		name = strings.TrimPrefix(name, "s")
-//	}
-//
-//	if name == "RacksGetRack" {
-//		name = "GetRack"
-//	}
-//
-//	if name == "SledsGetSled" {
-//		name = "GetSled"
-//	}
-//
-//	if strings.HasPrefix(name, "Hardware") {
-//		name = strings.TrimPrefix(name, "Hardware")
-//	}
-//
-//	// Routes paths wind up weird so clean them up.
-//	if strings.HasPrefix(name, "rs") {
-//		name = strings.TrimPrefix(name, "rs")
-//	}
-//
-//	if global {
-//		name = fmt.Sprintf("Global%s", name)
-//	}
-
-//	return name
-//}
-
 // printProperty converts an object's property name to a valid Go identifier.
 func printProperty(p string) string {
 	c := strcase.ToCamel(p)
-	//	if c == "Id" {
-	//		c = "ID"
-	//	} else if c == "Ncpus" {
-	//		c = "NCPUs"
-	//	} else if c == "IpAddress" {
-	//		c = "IPAddress"
-	//	} else if c == "UserId" {
-	//		c = "UserID"
-	//	} else if strings.Contains(c, "IdSortMode") {
-	//		strings.ReplaceAll(c, "IdSortMode", "IDSortMode")
-	//	} else if strings.HasPrefix(c, "Cpu") {
-	//		c = strings.Replace(c, "Cpu", "CPU", 1)
-	//	} else if strings.HasPrefix(c, "Vpc") {
-	//		c = strings.Replace(c, "Vpc", "VPC", 1)
-	//	} else if strings.HasPrefix(c, "Vpn") {
-	//		c = strings.Replace(c, "Vpn", "VPN", 1)
-	//	} else if strings.HasPrefix(c, "Ipv4") {
-	//		c = strings.Replace(c, "Ipv4", "IPv4", 1)
-	//	} else if strings.HasPrefix(c, "Ipv6") {
-	//		c = strings.Replace(c, "Ipv6", "IPv6", 1)
-	//	} else if strings.HasSuffix(c, "Id") {
-	//		c = strings.TrimSuffix(c, "Id") + "ID"
-	//	} else if strings.Contains(c, "Cpu") {
-	//		c = strings.ReplaceAll(c, "Cpu", "CPU")
-	//	} else if strings.HasPrefix(c, "SubnetsIps") {
-	//		c = strings.ReplaceAll(c, "SubnetsIps", "SubnetsIPs")
-	//	}
-	//
-	//	// Before we remove the tag from the name, we want to remove any lingering "Vpc" strings.
-	//	c = strings.Replace(c, "VPCFirewallRule", "FirewallRule", -1)
-	//	c = strings.Replace(c, "VPCRouter", "Router", -1)
-	//	c = strings.Replace(c, "VPCSubnet", "Subnet", -1)
-	//	c = strings.Replace(c, "RouterRoute", "Route", -1)
-	//
-	//	if strings.HasSuffix(c, "Params") && c != "Params" && !strings.HasPrefix(c, "FirewallRule") {
-	//		c = strings.TrimSuffix(c, "Params")
-	//	}
-
 	return c
 }
 
 func printPropertyLower(p string) string {
 	s := strcase.ToLowerCamel(printProperty(p))
-
-	if strings.HasPrefix(s, "vPC") {
-		s = "vpc" + strings.TrimPrefix(s, "vPC")
-	} else if strings.HasPrefix(s, "cPU") {
-		s = "cpu" + strings.TrimPrefix(s, "cPU")
-	} else if strings.HasPrefix(s, "iPv4") {
-		s = "ipv4" + strings.TrimPrefix(s, "iPv4")
-	} else if strings.HasPrefix(s, "iPv6") {
-		s = "ipv6" + strings.TrimPrefix(s, "iPv6")
-	}
-
-	if s == "iD" {
-		s = "id"
-	} else if s == "iPAddress" {
-		s = "ipAddress"
-	} else if s == "iDSortMode" {
-		s = "idSortMode"
-	}
-
 	return s
 }
 
@@ -464,10 +342,6 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 	}
 
 	fnName := printProperty(o.OperationID)
-
-	if tag == "Vpcs" {
-		tag = "VPCs"
-	}
 
 	pageResult := false
 
