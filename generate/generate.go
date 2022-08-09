@@ -466,26 +466,25 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 	fmt.Fprintf(f, description.String())
 
 	docInfo := map[string]string{
-		"example":     fmt.Sprintf("%s", description.String()),
+		"example": fmt.Sprintf("%s", description.String()),
+		// TODO: Fix this link
 		"libDocsLink": fmt.Sprintf("https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#%sService.%s", tag, fnName),
 	}
 
 	// Write the method.
 	if respType != "" && respType != "ConsumeCredentialsResponse" && respType != "LoginResponse" {
-		fmt.Fprintf(f, "func (s *%sService) %s(%s) (*%s, error) {\n",
-			tag,
+		fmt.Fprintf(f, "func (c *Client) %s(%s) (*%s, error) {\n",
 			fnName,
 			paramsString,
 			respType)
-		docInfo["example"] += fmt.Sprintf("%s, err := client.%s.%s(%s)", strcase.ToLowerCamel(respType), tag, fnName, docParamsString)
+		docInfo["example"] += fmt.Sprintf("%s, err := client.%s(%s)", strcase.ToLowerCamel(respType), fnName, docParamsString)
 	} else {
-		fmt.Fprintf(f, "func (s *%sService) %s(%s) (error) {\n",
-			tag,
+		fmt.Fprintf(f, "func (c *Client) %s(%s) (error) {\n",
 			fnName,
 			paramsString)
-		docInfo["example"] += fmt.Sprintf(`if err := client.%s.%s(%s); err != nil {
+		docInfo["example"] += fmt.Sprintf(`if err := client.%s(%s); err != nil {
 		 	panic(err)
-		 }`, tag, fnName, docParamsString)
+		 }`, fnName, docParamsString)
 	}
 
 	if len(pagedRespType) > 0 {
@@ -495,7 +494,7 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 			pageToken := ""
 			limit := 100
 			for {
-				page, err := s.%s(%s)
+				page, err := c.%s(%s)
 				if err != nil {
 					return nil, err
 				}
@@ -516,7 +515,7 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 	// Create the url.
 	fmt.Fprintln(f, "// Create the url.")
 	fmt.Fprintf(f, "path := %q\n", cleanPath(path))
-	fmt.Fprintln(f, "uri := resolveRelative(s.client.server, path)")
+	fmt.Fprintln(f, "uri := resolveRelative(c.server, path)")
 
 	if o.RequestBody != nil {
 		for mt := range o.RequestBody.Value.Content {
@@ -588,7 +587,7 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 
 	// Send the request.
 	fmt.Fprintln(f, "// Send the request.")
-	fmt.Fprintln(f, "resp, err := s.client.client.Do(req)")
+	fmt.Fprintln(f, "resp, err := c.client.Do(req)")
 	fmt.Fprintln(f, "if err != nil {")
 	if respType != "" && respType != "ConsumeCredentialsResponse" && respType != "LoginResponse" {
 		fmt.Fprintln(f, `return nil, fmt.Errorf("error sending request: %v", err)`)
