@@ -156,27 +156,7 @@ type Client struct {
 
 	// token is the API token used for authentication.
 	token string
-`)
-
-	for _, tag := range doc.Tags {
-		name := strcase.ToCamel(tag.Name)
-
-		if tag.Description != "" {
-			fmt.Fprintf(f, "// %s: %s\n", name, tag.Description)
-		}
-		fmt.Fprintf(f, "%s\t*%sService\n", name, name)
-	}
-
-	// Close the struct.
-	fmt.Fprintf(f, "}\n\n")
-
-	for _, tag := range doc.Tags {
-		name := strcase.ToCamel(tag.Name)
-		if tag.Description != "" {
-			fmt.Fprintf(f, "// %sService: %s\n", name, tag.Description)
-		}
-		fmt.Fprintf(f, "type %sService service\n\n", name)
-	}
+}`)
 }
 
 // Generate the paths.go file.
