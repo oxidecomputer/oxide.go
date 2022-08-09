@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-//go:generate go run generate/generate.go
+//go:generate go run ../internal/generate/generate.go
 
 // TokenEnvVar is the environment variable that contains the token.
 const TokenEnvVar = "OXIDE_TOKEN"
