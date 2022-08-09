@@ -17,10 +17,10 @@ import (
 //
 // Parameters:
 //	- `id`
-func (s *DisksService) DiskViewById(id string) (*Disk, error) {
+func (c *Client) DiskViewById(id string) (*Disk, error) {
 	// Create the url.
 	path := "/by-id/disks/{{.id}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -33,7 +33,7 @@ func (s *DisksService) DiskViewById(id string) (*Disk, error) {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -58,10 +58,10 @@ func (s *DisksService) DiskViewById(id string) (*Disk, error) {
 //
 // Parameters:
 //	- `id`
-func (s *ImagesService) ImageGlobalViewById(id string) (*GlobalImage, error) {
+func (c *Client) ImageGlobalViewById(id string) (*GlobalImage, error) {
 	// Create the url.
 	path := "/by-id/global-images/{{.id}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -74,7 +74,7 @@ func (s *ImagesService) ImageGlobalViewById(id string) (*GlobalImage, error) {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -99,10 +99,10 @@ func (s *ImagesService) ImageGlobalViewById(id string) (*GlobalImage, error) {
 //
 // Parameters:
 //	- `id`
-func (s *ImagesService) ImageViewById(id string) (*Image, error) {
+func (c *Client) ImageViewById(id string) (*Image, error) {
 	// Create the url.
 	path := "/by-id/images/{{.id}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -115,7 +115,7 @@ func (s *ImagesService) ImageViewById(id string) (*Image, error) {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -140,10 +140,10 @@ func (s *ImagesService) ImageViewById(id string) (*Image, error) {
 //
 // Parameters:
 //	- `id`
-func (s *InstancesService) InstanceViewById(id string) (*Instance, error) {
+func (c *Client) InstanceViewById(id string) (*Instance, error) {
 	// Create the url.
 	path := "/by-id/instances/{{.id}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -156,7 +156,7 @@ func (s *InstancesService) InstanceViewById(id string) (*Instance, error) {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -181,10 +181,10 @@ func (s *InstancesService) InstanceViewById(id string) (*Instance, error) {
 //
 // Parameters:
 //	- `id`
-func (s *InstancesService) InstanceNetworkInterfaceViewById(id string) (*NetworkInterface, error) {
+func (c *Client) InstanceNetworkInterfaceViewById(id string) (*NetworkInterface, error) {
 	// Create the url.
 	path := "/by-id/network-interfaces/{{.id}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -197,7 +197,7 @@ func (s *InstancesService) InstanceNetworkInterfaceViewById(id string) (*Network
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -222,10 +222,10 @@ func (s *InstancesService) InstanceNetworkInterfaceViewById(id string) (*Network
 //
 // Parameters:
 //	- `id`
-func (s *OrganizationsService) OrganizationViewById(id string) (*Organization, error) {
+func (c *Client) OrganizationViewById(id string) (*Organization, error) {
 	// Create the url.
 	path := "/by-id/organizations/{{.id}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -238,7 +238,7 @@ func (s *OrganizationsService) OrganizationViewById(id string) (*Organization, e
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -263,10 +263,10 @@ func (s *OrganizationsService) OrganizationViewById(id string) (*Organization, e
 //
 // Parameters:
 //	- `id`
-func (s *ProjectsService) ProjectViewById(id string) (*Project, error) {
+func (c *Client) ProjectViewById(id string) (*Project, error) {
 	// Create the url.
 	path := "/by-id/projects/{{.id}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -279,7 +279,7 @@ func (s *ProjectsService) ProjectViewById(id string) (*Project, error) {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -304,10 +304,10 @@ func (s *ProjectsService) ProjectViewById(id string) (*Project, error) {
 //
 // Parameters:
 //	- `id`
-func (s *SnapshotsService) SnapshotViewById(id string) (*Snapshot, error) {
+func (c *Client) SnapshotViewById(id string) (*Snapshot, error) {
 	// Create the url.
 	path := "/by-id/snapshots/{{.id}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -320,7 +320,7 @@ func (s *SnapshotsService) SnapshotViewById(id string) (*Snapshot, error) {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -345,10 +345,10 @@ func (s *SnapshotsService) SnapshotViewById(id string) (*Snapshot, error) {
 //
 // Parameters:
 //	- `id`
-func (s *VpcsService) VpcRouterRouteViewById(id string) (*RouterRoute, error) {
+func (c *Client) VpcRouterRouteViewById(id string) (*RouterRoute, error) {
 	// Create the url.
 	path := "/by-id/vpc-router-routes/{{.id}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -361,7 +361,7 @@ func (s *VpcsService) VpcRouterRouteViewById(id string) (*RouterRoute, error) {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -386,10 +386,10 @@ func (s *VpcsService) VpcRouterRouteViewById(id string) (*RouterRoute, error) {
 //
 // Parameters:
 //	- `id`
-func (s *VpcsService) VpcRouterViewById(id string) (*VpcRouter, error) {
+func (c *Client) VpcRouterViewById(id string) (*VpcRouter, error) {
 	// Create the url.
 	path := "/by-id/vpc-routers/{{.id}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -402,7 +402,7 @@ func (s *VpcsService) VpcRouterViewById(id string) (*VpcRouter, error) {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -427,10 +427,10 @@ func (s *VpcsService) VpcRouterViewById(id string) (*VpcRouter, error) {
 //
 // Parameters:
 //	- `id`
-func (s *VpcsService) VpcSubnetViewById(id string) (*VpcSubnet, error) {
+func (c *Client) VpcSubnetViewById(id string) (*VpcSubnet, error) {
 	// Create the url.
 	path := "/by-id/vpc-subnets/{{.id}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -443,7 +443,7 @@ func (s *VpcsService) VpcSubnetViewById(id string) (*VpcSubnet, error) {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -468,10 +468,10 @@ func (s *VpcsService) VpcSubnetViewById(id string) (*VpcSubnet, error) {
 //
 // Parameters:
 //	- `id`
-func (s *VpcsService) VpcViewById(id string) (*Vpc, error) {
+func (c *Client) VpcViewById(id string) (*Vpc, error) {
 	// Create the url.
 	path := "/by-id/vpcs/{{.id}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -484,7 +484,7 @@ func (s *VpcsService) VpcViewById(id string) (*Vpc, error) {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -513,10 +513,10 @@ func (s *VpcsService) VpcViewById(id string) (*Vpc, error) {
 //	- `limit`: Maximum number of items returned by a single call
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `sortBy`
-func (s *HardwareService) RackList(limit int, pageToken string, sortBy IdSortMode) (*RackResultsPage, error) {
+func (c *Client) RackList(limit int, pageToken string, sortBy IdSortMode) (*RackResultsPage, error) {
 	// Create the url.
 	path := "/hardware/racks"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -531,7 +531,7 @@ func (s *HardwareService) RackList(limit int, pageToken string, sortBy IdSortMod
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -559,13 +559,13 @@ func (s *HardwareService) RackList(limit int, pageToken string, sortBy IdSortMod
 //
 // Parameters:
 //	- `sortBy`
-func (s *HardwareService) RackListAllPages(sortBy IdSortMode) (*[]Rack, error) {
+func (c *Client) RackListAllPages(sortBy IdSortMode) (*[]Rack, error) {
 
 	var allPages []Rack
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.RackList(limit, pageToken, sortBy)
+		page, err := c.RackList(limit, pageToken, sortBy)
 		if err != nil {
 			return nil, err
 		}
@@ -581,10 +581,10 @@ func (s *HardwareService) RackListAllPages(sortBy IdSortMode) (*[]Rack, error) {
 //
 // Parameters:
 //	- `rackId`: The rack's unique ID.
-func (s *HardwareService) RackView(rackId string) (*Rack, error) {
+func (c *Client) RackView(rackId string) (*Rack, error) {
 	// Create the url.
 	path := "/hardware/racks/{{.rack_id}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -597,7 +597,7 @@ func (s *HardwareService) RackView(rackId string) (*Rack, error) {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -626,10 +626,10 @@ func (s *HardwareService) RackView(rackId string) (*Rack, error) {
 //	- `limit`: Maximum number of items returned by a single call
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `sortBy`
-func (s *HardwareService) SledList(limit int, pageToken string, sortBy IdSortMode) (*SledResultsPage, error) {
+func (c *Client) SledList(limit int, pageToken string, sortBy IdSortMode) (*SledResultsPage, error) {
 	// Create the url.
 	path := "/hardware/sleds"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -644,7 +644,7 @@ func (s *HardwareService) SledList(limit int, pageToken string, sortBy IdSortMod
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -672,13 +672,13 @@ func (s *HardwareService) SledList(limit int, pageToken string, sortBy IdSortMod
 //
 // Parameters:
 //	- `sortBy`
-func (s *HardwareService) SledListAllPages(sortBy IdSortMode) (*[]Sled, error) {
+func (c *Client) SledListAllPages(sortBy IdSortMode) (*[]Sled, error) {
 
 	var allPages []Sled
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.SledList(limit, pageToken, sortBy)
+		page, err := c.SledList(limit, pageToken, sortBy)
 		if err != nil {
 			return nil, err
 		}
@@ -694,10 +694,10 @@ func (s *HardwareService) SledListAllPages(sortBy IdSortMode) (*[]Sled, error) {
 //
 // Parameters:
 //	- `sledId`: The sled's unique ID.
-func (s *HardwareService) SledView(sledId string) (*Sled, error) {
+func (c *Client) SledView(sledId string) (*Sled, error) {
 	// Create the url.
 	path := "/hardware/sleds/{{.sled_id}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -710,7 +710,7 @@ func (s *HardwareService) SledView(sledId string) (*Sled, error) {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -741,10 +741,10 @@ func (s *HardwareService) SledView(sledId string) (*Sled, error) {
 //	- `limit`: Maximum number of items returned by a single call
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `sortBy`
-func (s *ImagesService) ImageGlobalList(limit int, pageToken string, sortBy NameSortMode) (*GlobalImageResultsPage, error) {
+func (c *Client) ImageGlobalList(limit int, pageToken string, sortBy NameSortMode) (*GlobalImageResultsPage, error) {
 	// Create the url.
 	path := "/images"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -759,7 +759,7 @@ func (s *ImagesService) ImageGlobalList(limit int, pageToken string, sortBy Name
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -789,13 +789,13 @@ func (s *ImagesService) ImageGlobalList(limit int, pageToken string, sortBy Name
 //
 // Parameters:
 //	- `sortBy`
-func (s *ImagesService) ImageGlobalListAllPages(sortBy NameSortMode) (*[]GlobalImage, error) {
+func (c *Client) ImageGlobalListAllPages(sortBy NameSortMode) (*[]GlobalImage, error) {
 
 	var allPages []GlobalImage
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.ImageGlobalList(limit, pageToken, sortBy)
+		page, err := c.ImageGlobalList(limit, pageToken, sortBy)
 		if err != nil {
 			return nil, err
 		}
@@ -810,10 +810,10 @@ func (s *ImagesService) ImageGlobalListAllPages(sortBy NameSortMode) (*[]GlobalI
 } // ImageGlobalCreate: Create a global image
 //
 // Create a new global image. This image can then be used by any user as a base for instances.
-func (s *ImagesService) ImageGlobalCreate(j *GlobalImageCreate) (*GlobalImage, error) {
+func (c *Client) ImageGlobalCreate(j *GlobalImageCreate) (*GlobalImage, error) {
 	// Create the url.
 	path := "/images"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -825,7 +825,7 @@ func (s *ImagesService) ImageGlobalCreate(j *GlobalImageCreate) (*GlobalImage, e
 		return nil, fmt.Errorf("error creating request: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -852,10 +852,10 @@ func (s *ImagesService) ImageGlobalCreate(j *GlobalImageCreate) (*GlobalImage, e
 //
 // Parameters:
 //	- `imageName`
-func (s *ImagesService) ImageGlobalView(imageName string) (*GlobalImage, error) {
+func (c *Client) ImageGlobalView(imageName string) (*GlobalImage, error) {
 	// Create the url.
 	path := "/images/{{.image_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -868,7 +868,7 @@ func (s *ImagesService) ImageGlobalView(imageName string) (*GlobalImage, error) 
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -895,10 +895,10 @@ func (s *ImagesService) ImageGlobalView(imageName string) (*GlobalImage, error) 
 //
 // Parameters:
 //	- `imageName`
-func (s *ImagesService) ImageGlobalDelete(imageName string) error {
+func (c *Client) ImageGlobalDelete(imageName string) error {
 	// Create the url.
 	path := "/images/{{.image_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("DELETE", uri, nil)
 	if err != nil {
@@ -911,7 +911,7 @@ func (s *ImagesService) ImageGlobalDelete(imageName string) error {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return fmt.Errorf("error sending request: %v", err)
 	}
@@ -932,10 +932,10 @@ func (s *ImagesService) ImageGlobalDelete(imageName string) error {
 //	- `limit`: Maximum number of items returned by a single call
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `sortBy`
-func (s *IpPoolsService) IpPoolList(limit int, pageToken string, sortBy NameOrIdSortMode) (*IpPoolResultsPage, error) {
+func (c *Client) IpPoolList(limit int, pageToken string, sortBy NameOrIdSortMode) (*IpPoolResultsPage, error) {
 	// Create the url.
 	path := "/ip-pools"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -950,7 +950,7 @@ func (s *IpPoolsService) IpPoolList(limit int, pageToken string, sortBy NameOrId
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -978,13 +978,13 @@ func (s *IpPoolsService) IpPoolList(limit int, pageToken string, sortBy NameOrId
 //
 // Parameters:
 //	- `sortBy`
-func (s *IpPoolsService) IpPoolListAllPages(sortBy NameOrIdSortMode) (*[]IpPool, error) {
+func (c *Client) IpPoolListAllPages(sortBy NameOrIdSortMode) (*[]IpPool, error) {
 
 	var allPages []IpPool
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.IpPoolList(limit, pageToken, sortBy)
+		page, err := c.IpPoolList(limit, pageToken, sortBy)
 		if err != nil {
 			return nil, err
 		}
@@ -997,10 +997,10 @@ func (s *IpPoolsService) IpPoolListAllPages(sortBy NameOrIdSortMode) (*[]IpPool,
 
 	return &allPages, nil
 } // IpPoolCreate: Create an IP pool
-func (s *IpPoolsService) IpPoolCreate(j *IpPoolCreate) (*IpPool, error) {
+func (c *Client) IpPoolCreate(j *IpPoolCreate) (*IpPool, error) {
 	// Create the url.
 	path := "/ip-pools"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -1012,7 +1012,7 @@ func (s *IpPoolsService) IpPoolCreate(j *IpPoolCreate) (*IpPool, error) {
 		return nil, fmt.Errorf("error creating request: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -1037,10 +1037,10 @@ func (s *IpPoolsService) IpPoolCreate(j *IpPoolCreate) (*IpPool, error) {
 //
 // Parameters:
 //	- `rackId`
-func (s *IpPoolsService) IpPoolServiceView(rackId string) (*IpPool, error) {
+func (c *Client) IpPoolServiceView(rackId string) (*IpPool, error) {
 	// Create the url.
 	path := "/ip-pools-service/{{.rack_id}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -1053,7 +1053,7 @@ func (s *IpPoolsService) IpPoolServiceView(rackId string) (*IpPool, error) {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -1084,10 +1084,10 @@ func (s *IpPoolsService) IpPoolServiceView(rackId string) (*IpPool, error) {
 //	- `limit`: Maximum number of items returned by a single call
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `rackId`
-func (s *IpPoolsService) IpPoolServiceRangeList(rackId string, limit int, pageToken string) (*IpPoolRangeResultsPage, error) {
+func (c *Client) IpPoolServiceRangeList(rackId string, limit int, pageToken string) (*IpPoolRangeResultsPage, error) {
 	// Create the url.
 	path := "/ip-pools-service/{{.rack_id}}/ranges"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -1102,7 +1102,7 @@ func (s *IpPoolsService) IpPoolServiceRangeList(rackId string, limit int, pageTo
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -1132,13 +1132,13 @@ func (s *IpPoolsService) IpPoolServiceRangeList(rackId string, limit int, pageTo
 //
 // Parameters:
 //	- `rackId`
-func (s *IpPoolsService) IpPoolServiceRangeListAllPages(rackId string) (*[]IpPoolRange, error) {
+func (c *Client) IpPoolServiceRangeListAllPages(rackId string) (*[]IpPoolRange, error) {
 
 	var allPages []IpPoolRange
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.IpPoolServiceRangeList(rackId, limit, pageToken)
+		page, err := c.IpPoolServiceRangeList(rackId, limit, pageToken)
 		if err != nil {
 			return nil, err
 		}
@@ -1154,10 +1154,10 @@ func (s *IpPoolsService) IpPoolServiceRangeListAllPages(rackId string) (*[]IpPoo
 //
 // Parameters:
 //	- `rackId`
-func (s *IpPoolsService) IpPoolServiceRangeAdd(rackId string, j *IpRange) (*IpPoolRange, error) {
+func (c *Client) IpPoolServiceRangeAdd(rackId string, j *IpRange) (*IpPoolRange, error) {
 	// Create the url.
 	path := "/ip-pools-service/{{.rack_id}}/ranges/add"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -1175,7 +1175,7 @@ func (s *IpPoolsService) IpPoolServiceRangeAdd(rackId string, j *IpRange) (*IpPo
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -1200,10 +1200,10 @@ func (s *IpPoolsService) IpPoolServiceRangeAdd(rackId string, j *IpRange) (*IpPo
 //
 // Parameters:
 //	- `rackId`
-func (s *IpPoolsService) IpPoolServiceRangeRemove(rackId string, j *IpRange) error {
+func (c *Client) IpPoolServiceRangeRemove(rackId string, j *IpRange) error {
 	// Create the url.
 	path := "/ip-pools-service/{{.rack_id}}/ranges/remove"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -1221,7 +1221,7 @@ func (s *IpPoolsService) IpPoolServiceRangeRemove(rackId string, j *IpRange) err
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return fmt.Errorf("error sending request: %v", err)
 	}
@@ -1238,10 +1238,10 @@ func (s *IpPoolsService) IpPoolServiceRangeRemove(rackId string, j *IpRange) err
 //
 // Parameters:
 //	- `poolName`
-func (s *IpPoolsService) IpPoolView(poolName string) (*IpPool, error) {
+func (c *Client) IpPoolView(poolName string) (*IpPool, error) {
 	// Create the url.
 	path := "/ip-pools/{{.pool_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -1254,7 +1254,7 @@ func (s *IpPoolsService) IpPoolView(poolName string) (*IpPool, error) {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -1279,10 +1279,10 @@ func (s *IpPoolsService) IpPoolView(poolName string) (*IpPool, error) {
 //
 // Parameters:
 //	- `poolName`
-func (s *IpPoolsService) IpPoolUpdate(poolName string, j *IpPoolUpdate) (*IpPool, error) {
+func (c *Client) IpPoolUpdate(poolName string, j *IpPoolUpdate) (*IpPool, error) {
 	// Create the url.
 	path := "/ip-pools/{{.pool_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -1300,7 +1300,7 @@ func (s *IpPoolsService) IpPoolUpdate(poolName string, j *IpPoolUpdate) (*IpPool
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -1325,10 +1325,10 @@ func (s *IpPoolsService) IpPoolUpdate(poolName string, j *IpPoolUpdate) (*IpPool
 //
 // Parameters:
 //	- `poolName`
-func (s *IpPoolsService) IpPoolDelete(poolName string) error {
+func (c *Client) IpPoolDelete(poolName string) error {
 	// Create the url.
 	path := "/ip-pools/{{.pool_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("DELETE", uri, nil)
 	if err != nil {
@@ -1341,7 +1341,7 @@ func (s *IpPoolsService) IpPoolDelete(poolName string) error {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return fmt.Errorf("error sending request: %v", err)
 	}
@@ -1364,10 +1364,10 @@ func (s *IpPoolsService) IpPoolDelete(poolName string) error {
 //	- `limit`: Maximum number of items returned by a single call
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `poolName`
-func (s *IpPoolsService) IpPoolRangeList(poolName string, limit int, pageToken string) (*IpPoolRangeResultsPage, error) {
+func (c *Client) IpPoolRangeList(poolName string, limit int, pageToken string) (*IpPoolRangeResultsPage, error) {
 	// Create the url.
 	path := "/ip-pools/{{.pool_name}}/ranges"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -1382,7 +1382,7 @@ func (s *IpPoolsService) IpPoolRangeList(poolName string, limit int, pageToken s
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -1412,13 +1412,13 @@ func (s *IpPoolsService) IpPoolRangeList(poolName string, limit int, pageToken s
 //
 // Parameters:
 //	- `poolName`
-func (s *IpPoolsService) IpPoolRangeListAllPages(poolName string) (*[]IpPoolRange, error) {
+func (c *Client) IpPoolRangeListAllPages(poolName string) (*[]IpPoolRange, error) {
 
 	var allPages []IpPoolRange
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.IpPoolRangeList(poolName, limit, pageToken)
+		page, err := c.IpPoolRangeList(poolName, limit, pageToken)
 		if err != nil {
 			return nil, err
 		}
@@ -1434,10 +1434,10 @@ func (s *IpPoolsService) IpPoolRangeListAllPages(poolName string) (*[]IpPoolRang
 //
 // Parameters:
 //	- `poolName`
-func (s *IpPoolsService) IpPoolRangeAdd(poolName string, j *IpRange) (*IpPoolRange, error) {
+func (c *Client) IpPoolRangeAdd(poolName string, j *IpRange) (*IpPoolRange, error) {
 	// Create the url.
 	path := "/ip-pools/{{.pool_name}}/ranges/add"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -1455,7 +1455,7 @@ func (s *IpPoolsService) IpPoolRangeAdd(poolName string, j *IpRange) (*IpPoolRan
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -1480,10 +1480,10 @@ func (s *IpPoolsService) IpPoolRangeAdd(poolName string, j *IpRange) (*IpPoolRan
 //
 // Parameters:
 //	- `poolName`
-func (s *IpPoolsService) IpPoolRangeRemove(poolName string, j *IpRange) error {
+func (c *Client) IpPoolRangeRemove(poolName string, j *IpRange) error {
 	// Create the url.
 	path := "/ip-pools/{{.pool_name}}/ranges/remove"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -1501,7 +1501,7 @@ func (s *IpPoolsService) IpPoolRangeRemove(poolName string, j *IpRange) error {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return fmt.Errorf("error sending request: %v", err)
 	}
@@ -1521,10 +1521,10 @@ func (s *IpPoolsService) IpPoolRangeRemove(poolName string, j *IpRange) error {
 // Parameters:
 //	- `providerName`
 //	- `siloName`
-func (s *LoginService) Login(providerName string, siloName string) error {
+func (c *Client) Login(providerName string, siloName string) error {
 	// Create the url.
 	path := "/login/{{.silo_name}}/{{.provider_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -1538,7 +1538,7 @@ func (s *LoginService) Login(providerName string, siloName string) error {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return fmt.Errorf("error sending request: %v", err)
 	}
@@ -1558,10 +1558,10 @@ func (s *LoginService) Login(providerName string, siloName string) error {
 // Parameters:
 //	- `providerName`
 //	- `siloName`
-func (s *LoginService) ConsumeCredentials(providerName string, siloName string, b io.Reader) error {
+func (c *Client) ConsumeCredentials(providerName string, siloName string, b io.Reader) error {
 	// Create the url.
 	path := "/login/{{.silo_name}}/{{.provider_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("POST", uri, b)
 	if err != nil {
@@ -1575,7 +1575,7 @@ func (s *LoginService) ConsumeCredentials(providerName string, siloName string, 
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return fmt.Errorf("error sending request: %v", err)
 	}
@@ -1596,10 +1596,10 @@ func (s *LoginService) ConsumeCredentials(providerName string, siloName string, 
 //	- `limit`: Maximum number of items returned by a single call
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `sortBy`
-func (s *OrganizationsService) OrganizationList(limit int, pageToken string, sortBy NameOrIdSortMode) (*OrganizationResultsPage, error) {
+func (c *Client) OrganizationList(limit int, pageToken string, sortBy NameOrIdSortMode) (*OrganizationResultsPage, error) {
 	// Create the url.
 	path := "/organizations"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -1614,7 +1614,7 @@ func (s *OrganizationsService) OrganizationList(limit int, pageToken string, sor
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -1642,13 +1642,13 @@ func (s *OrganizationsService) OrganizationList(limit int, pageToken string, sor
 //
 // Parameters:
 //	- `sortBy`
-func (s *OrganizationsService) OrganizationListAllPages(sortBy NameOrIdSortMode) (*[]Organization, error) {
+func (c *Client) OrganizationListAllPages(sortBy NameOrIdSortMode) (*[]Organization, error) {
 
 	var allPages []Organization
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.OrganizationList(limit, pageToken, sortBy)
+		page, err := c.OrganizationList(limit, pageToken, sortBy)
 		if err != nil {
 			return nil, err
 		}
@@ -1661,10 +1661,10 @@ func (s *OrganizationsService) OrganizationListAllPages(sortBy NameOrIdSortMode)
 
 	return &allPages, nil
 } // OrganizationCreate: Create an organization
-func (s *OrganizationsService) OrganizationCreate(j *OrganizationCreate) (*Organization, error) {
+func (c *Client) OrganizationCreate(j *OrganizationCreate) (*Organization, error) {
 	// Create the url.
 	path := "/organizations"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -1676,7 +1676,7 @@ func (s *OrganizationsService) OrganizationCreate(j *OrganizationCreate) (*Organ
 		return nil, fmt.Errorf("error creating request: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -1701,10 +1701,10 @@ func (s *OrganizationsService) OrganizationCreate(j *OrganizationCreate) (*Organ
 //
 // Parameters:
 //	- `organizationName`: The organization's unique name.
-func (s *OrganizationsService) OrganizationView(organizationName string) (*Organization, error) {
+func (c *Client) OrganizationView(organizationName string) (*Organization, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -1717,7 +1717,7 @@ func (s *OrganizationsService) OrganizationView(organizationName string) (*Organ
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -1742,10 +1742,10 @@ func (s *OrganizationsService) OrganizationView(organizationName string) (*Organ
 //
 // Parameters:
 //	- `organizationName`: The organization's unique name.
-func (s *OrganizationsService) OrganizationUpdate(organizationName string, j *OrganizationUpdate) (*Organization, error) {
+func (c *Client) OrganizationUpdate(organizationName string, j *OrganizationUpdate) (*Organization, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -1763,7 +1763,7 @@ func (s *OrganizationsService) OrganizationUpdate(organizationName string, j *Or
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -1788,10 +1788,10 @@ func (s *OrganizationsService) OrganizationUpdate(organizationName string, j *Or
 //
 // Parameters:
 //	- `organizationName`: The organization's unique name.
-func (s *OrganizationsService) OrganizationDelete(organizationName string) error {
+func (c *Client) OrganizationDelete(organizationName string) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("DELETE", uri, nil)
 	if err != nil {
@@ -1804,7 +1804,7 @@ func (s *OrganizationsService) OrganizationDelete(organizationName string) error
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return fmt.Errorf("error sending request: %v", err)
 	}
@@ -1821,10 +1821,10 @@ func (s *OrganizationsService) OrganizationDelete(organizationName string) error
 //
 // Parameters:
 //	- `organizationName`: The organization's unique name.
-func (s *OrganizationsService) OrganizationPolicyView(organizationName string) (*OrganizationRolePolicy, error) {
+func (c *Client) OrganizationPolicyView(organizationName string) (*OrganizationRolePolicy, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/policy"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -1837,7 +1837,7 @@ func (s *OrganizationsService) OrganizationPolicyView(organizationName string) (
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -1862,10 +1862,10 @@ func (s *OrganizationsService) OrganizationPolicyView(organizationName string) (
 //
 // Parameters:
 //	- `organizationName`: The organization's unique name.
-func (s *OrganizationsService) OrganizationPolicyUpdate(organizationName string, j *OrganizationRolePolicy) (*OrganizationRolePolicy, error) {
+func (c *Client) OrganizationPolicyUpdate(organizationName string, j *OrganizationRolePolicy) (*OrganizationRolePolicy, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/policy"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -1883,7 +1883,7 @@ func (s *OrganizationsService) OrganizationPolicyUpdate(organizationName string,
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -1913,10 +1913,10 @@ func (s *OrganizationsService) OrganizationPolicyUpdate(organizationName string,
 //	- `organizationName`: The organization's unique name.
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `sortBy`
-func (s *ProjectsService) ProjectList(limit int, pageToken string, sortBy NameOrIdSortMode, organizationName string) (*ProjectResultsPage, error) {
+func (c *Client) ProjectList(limit int, pageToken string, sortBy NameOrIdSortMode, organizationName string) (*ProjectResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -1932,7 +1932,7 @@ func (s *ProjectsService) ProjectList(limit int, pageToken string, sortBy NameOr
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -1961,13 +1961,13 @@ func (s *ProjectsService) ProjectList(limit int, pageToken string, sortBy NameOr
 // Parameters:
 //	- `organizationName`: The organization's unique name.
 //	- `sortBy`
-func (s *ProjectsService) ProjectListAllPages(sortBy NameOrIdSortMode, organizationName string) (*[]Project, error) {
+func (c *Client) ProjectListAllPages(sortBy NameOrIdSortMode, organizationName string) (*[]Project, error) {
 
 	var allPages []Project
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.ProjectList(limit, pageToken, sortBy, organizationName)
+		page, err := c.ProjectList(limit, pageToken, sortBy, organizationName)
 		if err != nil {
 			return nil, err
 		}
@@ -1983,10 +1983,10 @@ func (s *ProjectsService) ProjectListAllPages(sortBy NameOrIdSortMode, organizat
 //
 // Parameters:
 //	- `organizationName`: The organization's unique name.
-func (s *ProjectsService) ProjectCreate(organizationName string, j *ProjectCreate) (*Project, error) {
+func (c *Client) ProjectCreate(organizationName string, j *ProjectCreate) (*Project, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -2004,7 +2004,7 @@ func (s *ProjectsService) ProjectCreate(organizationName string, j *ProjectCreat
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -2030,10 +2030,10 @@ func (s *ProjectsService) ProjectCreate(organizationName string, j *ProjectCreat
 // Parameters:
 //	- `organizationName`: The organization's unique name.
 //	- `projectName`: The project's unique name within the organization.
-func (s *ProjectsService) ProjectView(organizationName string, projectName string) (*Project, error) {
+func (c *Client) ProjectView(organizationName string, projectName string) (*Project, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -2047,7 +2047,7 @@ func (s *ProjectsService) ProjectView(organizationName string, projectName strin
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -2073,10 +2073,10 @@ func (s *ProjectsService) ProjectView(organizationName string, projectName strin
 // Parameters:
 //	- `organizationName`: The organization's unique name.
 //	- `projectName`: The project's unique name within the organization.
-func (s *ProjectsService) ProjectUpdate(organizationName string, projectName string, j *ProjectUpdate) (*Project, error) {
+func (c *Client) ProjectUpdate(organizationName string, projectName string, j *ProjectUpdate) (*Project, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -2095,7 +2095,7 @@ func (s *ProjectsService) ProjectUpdate(organizationName string, projectName str
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -2121,10 +2121,10 @@ func (s *ProjectsService) ProjectUpdate(organizationName string, projectName str
 // Parameters:
 //	- `organizationName`: The organization's unique name.
 //	- `projectName`: The project's unique name within the organization.
-func (s *ProjectsService) ProjectDelete(organizationName string, projectName string) error {
+func (c *Client) ProjectDelete(organizationName string, projectName string) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("DELETE", uri, nil)
 	if err != nil {
@@ -2138,7 +2138,7 @@ func (s *ProjectsService) ProjectDelete(organizationName string, projectName str
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return fmt.Errorf("error sending request: %v", err)
 	}
@@ -2161,10 +2161,10 @@ func (s *ProjectsService) ProjectDelete(organizationName string, projectName str
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `projectName`: The project's unique name within the organization.
 //	- `sortBy`
-func (s *DisksService) DiskList(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string) (*DiskResultsPage, error) {
+func (c *Client) DiskList(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string) (*DiskResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/disks"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -2181,7 +2181,7 @@ func (s *DisksService) DiskList(limit int, pageToken string, sortBy NameSortMode
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -2211,13 +2211,13 @@ func (s *DisksService) DiskList(limit int, pageToken string, sortBy NameSortMode
 //	- `organizationName`: The organization's unique name.
 //	- `projectName`: The project's unique name within the organization.
 //	- `sortBy`
-func (s *DisksService) DiskListAllPages(sortBy NameSortMode, organizationName string, projectName string) (*[]Disk, error) {
+func (c *Client) DiskListAllPages(sortBy NameSortMode, organizationName string, projectName string) (*[]Disk, error) {
 
 	var allPages []Disk
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.DiskList(limit, pageToken, sortBy, organizationName, projectName)
+		page, err := c.DiskList(limit, pageToken, sortBy, organizationName, projectName)
 		if err != nil {
 			return nil, err
 		}
@@ -2234,10 +2234,10 @@ func (s *DisksService) DiskListAllPages(sortBy NameSortMode, organizationName st
 // Parameters:
 //	- `organizationName`: The organization's unique name.
 //	- `projectName`: The project's unique name within the organization.
-func (s *DisksService) DiskCreate(organizationName string, projectName string, j *DiskCreate) (*Disk, error) {
+func (c *Client) DiskCreate(organizationName string, projectName string, j *DiskCreate) (*Disk, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/disks"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -2256,7 +2256,7 @@ func (s *DisksService) DiskCreate(organizationName string, projectName string, j
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -2283,10 +2283,10 @@ func (s *DisksService) DiskCreate(organizationName string, projectName string, j
 //	- `diskName`
 //	- `organizationName`
 //	- `projectName`
-func (s *DisksService) DiskView(diskName string, organizationName string, projectName string) (*Disk, error) {
+func (c *Client) DiskView(diskName string, organizationName string, projectName string) (*Disk, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/disks/{{.disk_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -2301,7 +2301,7 @@ func (s *DisksService) DiskView(diskName string, organizationName string, projec
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -2328,10 +2328,10 @@ func (s *DisksService) DiskView(diskName string, organizationName string, projec
 //	- `diskName`
 //	- `organizationName`
 //	- `projectName`
-func (s *DisksService) DiskDelete(diskName string, organizationName string, projectName string) error {
+func (c *Client) DiskDelete(diskName string, organizationName string, projectName string) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/disks/{{.disk_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("DELETE", uri, nil)
 	if err != nil {
@@ -2346,7 +2346,7 @@ func (s *DisksService) DiskDelete(diskName string, organizationName string, proj
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return fmt.Errorf("error sending request: %v", err)
 	}
@@ -2372,10 +2372,10 @@ func (s *DisksService) DiskDelete(diskName string, organizationName string, proj
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `projectName`
 //	- `startTime`: An inclusive start time of metrics.
-func (s *DisksService) DiskMetricsList(diskName string, metricName DiskMetricName, organizationName string, projectName string, endTime *time.Time, limit int, pageToken string, startTime *time.Time) (*MeasurementResultsPage, error) {
+func (c *Client) DiskMetricsList(diskName string, metricName DiskMetricName, organizationName string, projectName string, endTime *time.Time, limit int, pageToken string, startTime *time.Time) (*MeasurementResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/disks/{{.disk_name}}/metrics/{{.metric_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -2395,7 +2395,7 @@ func (s *DisksService) DiskMetricsList(diskName string, metricName DiskMetricNam
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -2428,13 +2428,13 @@ func (s *DisksService) DiskMetricsList(diskName string, metricName DiskMetricNam
 //	- `organizationName`
 //	- `projectName`
 //	- `startTime`: An inclusive start time of metrics.
-func (s *DisksService) DiskMetricsListAllPages(diskName string, metricName DiskMetricName, organizationName string, projectName string, endTime *time.Time, startTime *time.Time) (*[]Measurement, error) {
+func (c *Client) DiskMetricsListAllPages(diskName string, metricName DiskMetricName, organizationName string, projectName string, endTime *time.Time, startTime *time.Time) (*[]Measurement, error) {
 
 	var allPages []Measurement
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.DiskMetricsList(diskName, metricName, organizationName, projectName, endTime, limit, pageToken, startTime)
+		page, err := c.DiskMetricsList(diskName, metricName, organizationName, projectName, endTime, limit, pageToken, startTime)
 		if err != nil {
 			return nil, err
 		}
@@ -2458,10 +2458,10 @@ func (s *DisksService) DiskMetricsListAllPages(diskName string, metricName DiskM
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `projectName`: The project's unique name within the organization.
 //	- `sortBy`
-func (s *ImagesService) ImageList(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string) (*ImageResultsPage, error) {
+func (c *Client) ImageList(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string) (*ImageResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/images"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -2478,7 +2478,7 @@ func (s *ImagesService) ImageList(limit int, pageToken string, sortBy NameSortMo
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -2510,13 +2510,13 @@ func (s *ImagesService) ImageList(limit int, pageToken string, sortBy NameSortMo
 //	- `organizationName`: The organization's unique name.
 //	- `projectName`: The project's unique name within the organization.
 //	- `sortBy`
-func (s *ImagesService) ImageListAllPages(sortBy NameSortMode, organizationName string, projectName string) (*[]Image, error) {
+func (c *Client) ImageListAllPages(sortBy NameSortMode, organizationName string, projectName string) (*[]Image, error) {
 
 	var allPages []Image
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.ImageList(limit, pageToken, sortBy, organizationName, projectName)
+		page, err := c.ImageList(limit, pageToken, sortBy, organizationName, projectName)
 		if err != nil {
 			return nil, err
 		}
@@ -2535,10 +2535,10 @@ func (s *ImagesService) ImageListAllPages(sortBy NameSortMode, organizationName 
 // Parameters:
 //	- `organizationName`: The organization's unique name.
 //	- `projectName`: The project's unique name within the organization.
-func (s *ImagesService) ImageCreate(organizationName string, projectName string, j *ImageCreate) (*Image, error) {
+func (c *Client) ImageCreate(organizationName string, projectName string, j *ImageCreate) (*Image, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/images"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -2557,7 +2557,7 @@ func (s *ImagesService) ImageCreate(organizationName string, projectName string,
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -2586,10 +2586,10 @@ func (s *ImagesService) ImageCreate(organizationName string, projectName string,
 //	- `imageName`
 //	- `organizationName`
 //	- `projectName`
-func (s *ImagesService) ImageView(imageName string, organizationName string, projectName string) (*Image, error) {
+func (c *Client) ImageView(imageName string, organizationName string, projectName string) (*Image, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/images/{{.image_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -2604,7 +2604,7 @@ func (s *ImagesService) ImageView(imageName string, organizationName string, pro
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -2633,10 +2633,10 @@ func (s *ImagesService) ImageView(imageName string, organizationName string, pro
 //	- `imageName`
 //	- `organizationName`
 //	- `projectName`
-func (s *ImagesService) ImageDelete(imageName string, organizationName string, projectName string) error {
+func (c *Client) ImageDelete(imageName string, organizationName string, projectName string) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/images/{{.image_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("DELETE", uri, nil)
 	if err != nil {
@@ -2651,7 +2651,7 @@ func (s *ImagesService) ImageDelete(imageName string, organizationName string, p
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return fmt.Errorf("error sending request: %v", err)
 	}
@@ -2674,10 +2674,10 @@ func (s *ImagesService) ImageDelete(imageName string, organizationName string, p
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `projectName`: The project's unique name within the organization.
 //	- `sortBy`
-func (s *InstancesService) InstanceList(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string) (*InstanceResultsPage, error) {
+func (c *Client) InstanceList(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string) (*InstanceResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -2694,7 +2694,7 @@ func (s *InstancesService) InstanceList(limit int, pageToken string, sortBy Name
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -2724,13 +2724,13 @@ func (s *InstancesService) InstanceList(limit int, pageToken string, sortBy Name
 //	- `organizationName`: The organization's unique name.
 //	- `projectName`: The project's unique name within the organization.
 //	- `sortBy`
-func (s *InstancesService) InstanceListAllPages(sortBy NameSortMode, organizationName string, projectName string) (*[]Instance, error) {
+func (c *Client) InstanceListAllPages(sortBy NameSortMode, organizationName string, projectName string) (*[]Instance, error) {
 
 	var allPages []Instance
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.InstanceList(limit, pageToken, sortBy, organizationName, projectName)
+		page, err := c.InstanceList(limit, pageToken, sortBy, organizationName, projectName)
 		if err != nil {
 			return nil, err
 		}
@@ -2747,10 +2747,10 @@ func (s *InstancesService) InstanceListAllPages(sortBy NameSortMode, organizatio
 // Parameters:
 //	- `organizationName`: The organization's unique name.
 //	- `projectName`: The project's unique name within the organization.
-func (s *InstancesService) InstanceCreate(organizationName string, projectName string, j *InstanceCreate) (*Instance, error) {
+func (c *Client) InstanceCreate(organizationName string, projectName string, j *InstanceCreate) (*Instance, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -2769,7 +2769,7 @@ func (s *InstancesService) InstanceCreate(organizationName string, projectName s
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -2796,10 +2796,10 @@ func (s *InstancesService) InstanceCreate(organizationName string, projectName s
 //	- `instanceName`
 //	- `organizationName`
 //	- `projectName`
-func (s *InstancesService) InstanceView(instanceName string, organizationName string, projectName string) (*Instance, error) {
+func (c *Client) InstanceView(instanceName string, organizationName string, projectName string) (*Instance, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -2814,7 +2814,7 @@ func (s *InstancesService) InstanceView(instanceName string, organizationName st
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -2841,10 +2841,10 @@ func (s *InstancesService) InstanceView(instanceName string, organizationName st
 //	- `instanceName`
 //	- `organizationName`
 //	- `projectName`
-func (s *InstancesService) InstanceDelete(instanceName string, organizationName string, projectName string) error {
+func (c *Client) InstanceDelete(instanceName string, organizationName string, projectName string) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("DELETE", uri, nil)
 	if err != nil {
@@ -2859,7 +2859,7 @@ func (s *InstancesService) InstanceDelete(instanceName string, organizationName 
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return fmt.Errorf("error sending request: %v", err)
 	}
@@ -2883,10 +2883,10 @@ func (s *InstancesService) InstanceDelete(instanceName string, organizationName 
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `projectName`
 //	- `sortBy`
-func (s *InstancesService) InstanceDiskList(limit int, pageToken string, sortBy NameSortMode, instanceName string, organizationName string, projectName string) (*DiskResultsPage, error) {
+func (c *Client) InstanceDiskList(limit int, pageToken string, sortBy NameSortMode, instanceName string, organizationName string, projectName string) (*DiskResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/disks"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -2904,7 +2904,7 @@ func (s *InstancesService) InstanceDiskList(limit int, pageToken string, sortBy 
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -2935,13 +2935,13 @@ func (s *InstancesService) InstanceDiskList(limit int, pageToken string, sortBy 
 //	- `organizationName`
 //	- `projectName`
 //	- `sortBy`
-func (s *InstancesService) InstanceDiskListAllPages(sortBy NameSortMode, instanceName string, organizationName string, projectName string) (*[]Disk, error) {
+func (c *Client) InstanceDiskListAllPages(sortBy NameSortMode, instanceName string, organizationName string, projectName string) (*[]Disk, error) {
 
 	var allPages []Disk
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.InstanceDiskList(limit, pageToken, sortBy, instanceName, organizationName, projectName)
+		page, err := c.InstanceDiskList(limit, pageToken, sortBy, instanceName, organizationName, projectName)
 		if err != nil {
 			return nil, err
 		}
@@ -2959,10 +2959,10 @@ func (s *InstancesService) InstanceDiskListAllPages(sortBy NameSortMode, instanc
 //	- `instanceName`
 //	- `organizationName`
 //	- `projectName`
-func (s *InstancesService) InstanceDiskAttach(instanceName string, organizationName string, projectName string, j *DiskIdentifier) (*Disk, error) {
+func (c *Client) InstanceDiskAttach(instanceName string, organizationName string, projectName string, j *DiskIdentifier) (*Disk, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/disks/attach"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -2982,7 +2982,7 @@ func (s *InstancesService) InstanceDiskAttach(instanceName string, organizationN
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -3009,10 +3009,10 @@ func (s *InstancesService) InstanceDiskAttach(instanceName string, organizationN
 //	- `instanceName`
 //	- `organizationName`
 //	- `projectName`
-func (s *InstancesService) InstanceDiskDetach(instanceName string, organizationName string, projectName string, j *DiskIdentifier) (*Disk, error) {
+func (c *Client) InstanceDiskDetach(instanceName string, organizationName string, projectName string, j *DiskIdentifier) (*Disk, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/disks/detach"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -3032,7 +3032,7 @@ func (s *InstancesService) InstanceDiskDetach(instanceName string, organizationN
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -3059,10 +3059,10 @@ func (s *InstancesService) InstanceDiskDetach(instanceName string, organizationN
 //	- `instanceName`
 //	- `organizationName`
 //	- `projectName`
-func (s *InstancesService) InstanceExternalIpList(instanceName string, organizationName string, projectName string) (*ExternalIpResultsPage, error) {
+func (c *Client) InstanceExternalIpList(instanceName string, organizationName string, projectName string) (*ExternalIpResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/external-ips"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -3077,7 +3077,7 @@ func (s *InstancesService) InstanceExternalIpList(instanceName string, organizat
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -3104,10 +3104,10 @@ func (s *InstancesService) InstanceExternalIpList(instanceName string, organizat
 //	- `instanceName`
 //	- `organizationName`
 //	- `projectName`
-func (s *InstancesService) InstanceMigrate(instanceName string, organizationName string, projectName string, j *InstanceMigrate) (*Instance, error) {
+func (c *Client) InstanceMigrate(instanceName string, organizationName string, projectName string, j *InstanceMigrate) (*Instance, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/migrate"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -3127,7 +3127,7 @@ func (s *InstancesService) InstanceMigrate(instanceName string, organizationName
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -3159,10 +3159,10 @@ func (s *InstancesService) InstanceMigrate(instanceName string, organizationName
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `projectName`
 //	- `sortBy`
-func (s *InstancesService) InstanceNetworkInterfaceList(limit int, pageToken string, sortBy NameSortMode, instanceName string, organizationName string, projectName string) (*NetworkInterfaceResultsPage, error) {
+func (c *Client) InstanceNetworkInterfaceList(limit int, pageToken string, sortBy NameSortMode, instanceName string, organizationName string, projectName string) (*NetworkInterfaceResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/network-interfaces"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -3180,7 +3180,7 @@ func (s *InstancesService) InstanceNetworkInterfaceList(limit int, pageToken str
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -3211,13 +3211,13 @@ func (s *InstancesService) InstanceNetworkInterfaceList(limit int, pageToken str
 //	- `organizationName`
 //	- `projectName`
 //	- `sortBy`
-func (s *InstancesService) InstanceNetworkInterfaceListAllPages(sortBy NameSortMode, instanceName string, organizationName string, projectName string) (*[]NetworkInterface, error) {
+func (c *Client) InstanceNetworkInterfaceListAllPages(sortBy NameSortMode, instanceName string, organizationName string, projectName string) (*[]NetworkInterface, error) {
 
 	var allPages []NetworkInterface
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.InstanceNetworkInterfaceList(limit, pageToken, sortBy, instanceName, organizationName, projectName)
+		page, err := c.InstanceNetworkInterfaceList(limit, pageToken, sortBy, instanceName, organizationName, projectName)
 		if err != nil {
 			return nil, err
 		}
@@ -3235,10 +3235,10 @@ func (s *InstancesService) InstanceNetworkInterfaceListAllPages(sortBy NameSortM
 //	- `instanceName`
 //	- `organizationName`
 //	- `projectName`
-func (s *InstancesService) InstanceNetworkInterfaceCreate(instanceName string, organizationName string, projectName string, j *NetworkInterfaceCreate) (*NetworkInterface, error) {
+func (c *Client) InstanceNetworkInterfaceCreate(instanceName string, organizationName string, projectName string, j *NetworkInterfaceCreate) (*NetworkInterface, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/network-interfaces"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -3258,7 +3258,7 @@ func (s *InstancesService) InstanceNetworkInterfaceCreate(instanceName string, o
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -3286,10 +3286,10 @@ func (s *InstancesService) InstanceNetworkInterfaceCreate(instanceName string, o
 //	- `interfaceName`
 //	- `organizationName`
 //	- `projectName`
-func (s *InstancesService) InstanceNetworkInterfaceView(instanceName string, interfaceName string, organizationName string, projectName string) (*NetworkInterface, error) {
+func (c *Client) InstanceNetworkInterfaceView(instanceName string, interfaceName string, organizationName string, projectName string) (*NetworkInterface, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/network-interfaces/{{.interface_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -3305,7 +3305,7 @@ func (s *InstancesService) InstanceNetworkInterfaceView(instanceName string, int
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -3333,10 +3333,10 @@ func (s *InstancesService) InstanceNetworkInterfaceView(instanceName string, int
 //	- `interfaceName`
 //	- `organizationName`
 //	- `projectName`
-func (s *InstancesService) InstanceNetworkInterfaceUpdate(instanceName string, interfaceName string, organizationName string, projectName string, j *NetworkInterfaceUpdate) (*NetworkInterface, error) {
+func (c *Client) InstanceNetworkInterfaceUpdate(instanceName string, interfaceName string, organizationName string, projectName string, j *NetworkInterfaceUpdate) (*NetworkInterface, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/network-interfaces/{{.interface_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -3357,7 +3357,7 @@ func (s *InstancesService) InstanceNetworkInterfaceUpdate(instanceName string, i
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -3387,10 +3387,10 @@ func (s *InstancesService) InstanceNetworkInterfaceUpdate(instanceName string, i
 //	- `interfaceName`
 //	- `organizationName`
 //	- `projectName`
-func (s *InstancesService) InstanceNetworkInterfaceDelete(instanceName string, interfaceName string, organizationName string, projectName string) error {
+func (c *Client) InstanceNetworkInterfaceDelete(instanceName string, interfaceName string, organizationName string, projectName string) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/network-interfaces/{{.interface_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("DELETE", uri, nil)
 	if err != nil {
@@ -3406,7 +3406,7 @@ func (s *InstancesService) InstanceNetworkInterfaceDelete(instanceName string, i
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return fmt.Errorf("error sending request: %v", err)
 	}
@@ -3425,10 +3425,10 @@ func (s *InstancesService) InstanceNetworkInterfaceDelete(instanceName string, i
 //	- `instanceName`
 //	- `organizationName`
 //	- `projectName`
-func (s *InstancesService) InstanceReboot(instanceName string, organizationName string, projectName string) (*Instance, error) {
+func (c *Client) InstanceReboot(instanceName string, organizationName string, projectName string) (*Instance, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/reboot"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("POST", uri, nil)
 	if err != nil {
@@ -3443,7 +3443,7 @@ func (s *InstancesService) InstanceReboot(instanceName string, organizationName 
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -3473,10 +3473,10 @@ func (s *InstancesService) InstanceReboot(instanceName string, organizationName 
 //	- `mostRecent`: Character index in the serial buffer from which to read, counting *backward* from the most recently buffered data retrieved from the instance. (See note on `from_start` about mutual exclusivity)
 //	- `organizationName`
 //	- `projectName`
-func (s *InstancesService) InstanceSerialConsole(instanceName string, organizationName string, projectName string, fromStart int, maxBytes int, mostRecent int) (*InstanceSerialConsoleData, error) {
+func (c *Client) InstanceSerialConsole(instanceName string, organizationName string, projectName string, fromStart int, maxBytes int, mostRecent int) (*InstanceSerialConsoleData, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/serial-console"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -3494,7 +3494,7 @@ func (s *InstancesService) InstanceSerialConsole(instanceName string, organizati
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -3521,10 +3521,10 @@ func (s *InstancesService) InstanceSerialConsole(instanceName string, organizati
 //	- `instanceName`
 //	- `organizationName`
 //	- `projectName`
-func (s *InstancesService) InstanceStart(instanceName string, organizationName string, projectName string) (*Instance, error) {
+func (c *Client) InstanceStart(instanceName string, organizationName string, projectName string) (*Instance, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/start"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("POST", uri, nil)
 	if err != nil {
@@ -3539,7 +3539,7 @@ func (s *InstancesService) InstanceStart(instanceName string, organizationName s
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -3566,10 +3566,10 @@ func (s *InstancesService) InstanceStart(instanceName string, organizationName s
 //	- `instanceName`
 //	- `organizationName`
 //	- `projectName`
-func (s *InstancesService) InstanceStop(instanceName string, organizationName string, projectName string) (*Instance, error) {
+func (c *Client) InstanceStop(instanceName string, organizationName string, projectName string) (*Instance, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/stop"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("POST", uri, nil)
 	if err != nil {
@@ -3584,7 +3584,7 @@ func (s *InstancesService) InstanceStop(instanceName string, organizationName st
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -3610,10 +3610,10 @@ func (s *InstancesService) InstanceStop(instanceName string, organizationName st
 // Parameters:
 //	- `organizationName`: The organization's unique name.
 //	- `projectName`: The project's unique name within the organization.
-func (s *ProjectsService) ProjectPolicyView(organizationName string, projectName string) (*ProjectRolePolicy, error) {
+func (c *Client) ProjectPolicyView(organizationName string, projectName string) (*ProjectRolePolicy, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/policy"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -3627,7 +3627,7 @@ func (s *ProjectsService) ProjectPolicyView(organizationName string, projectName
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -3653,10 +3653,10 @@ func (s *ProjectsService) ProjectPolicyView(organizationName string, projectName
 // Parameters:
 //	- `organizationName`: The organization's unique name.
 //	- `projectName`: The project's unique name within the organization.
-func (s *ProjectsService) ProjectPolicyUpdate(organizationName string, projectName string, j *ProjectRolePolicy) (*ProjectRolePolicy, error) {
+func (c *Client) ProjectPolicyUpdate(organizationName string, projectName string, j *ProjectRolePolicy) (*ProjectRolePolicy, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/policy"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -3675,7 +3675,7 @@ func (s *ProjectsService) ProjectPolicyUpdate(organizationName string, projectNa
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -3706,10 +3706,10 @@ func (s *ProjectsService) ProjectPolicyUpdate(organizationName string, projectNa
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `projectName`: The project's unique name within the organization.
 //	- `sortBy`
-func (s *SnapshotsService) SnapshotList(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string) (*SnapshotResultsPage, error) {
+func (c *Client) SnapshotList(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string) (*SnapshotResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/snapshots"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -3726,7 +3726,7 @@ func (s *SnapshotsService) SnapshotList(limit int, pageToken string, sortBy Name
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -3756,13 +3756,13 @@ func (s *SnapshotsService) SnapshotList(limit int, pageToken string, sortBy Name
 //	- `organizationName`: The organization's unique name.
 //	- `projectName`: The project's unique name within the organization.
 //	- `sortBy`
-func (s *SnapshotsService) SnapshotListAllPages(sortBy NameSortMode, organizationName string, projectName string) (*[]Snapshot, error) {
+func (c *Client) SnapshotListAllPages(sortBy NameSortMode, organizationName string, projectName string) (*[]Snapshot, error) {
 
 	var allPages []Snapshot
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.SnapshotList(limit, pageToken, sortBy, organizationName, projectName)
+		page, err := c.SnapshotList(limit, pageToken, sortBy, organizationName, projectName)
 		if err != nil {
 			return nil, err
 		}
@@ -3781,10 +3781,10 @@ func (s *SnapshotsService) SnapshotListAllPages(sortBy NameSortMode, organizatio
 // Parameters:
 //	- `organizationName`: The organization's unique name.
 //	- `projectName`: The project's unique name within the organization.
-func (s *SnapshotsService) SnapshotCreate(organizationName string, projectName string, j *SnapshotCreate) (*Snapshot, error) {
+func (c *Client) SnapshotCreate(organizationName string, projectName string, j *SnapshotCreate) (*Snapshot, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/snapshots"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -3803,7 +3803,7 @@ func (s *SnapshotsService) SnapshotCreate(organizationName string, projectName s
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -3830,10 +3830,10 @@ func (s *SnapshotsService) SnapshotCreate(organizationName string, projectName s
 //	- `organizationName`
 //	- `projectName`
 //	- `snapshotName`
-func (s *SnapshotsService) SnapshotView(organizationName string, projectName string, snapshotName string) (*Snapshot, error) {
+func (c *Client) SnapshotView(organizationName string, projectName string, snapshotName string) (*Snapshot, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/snapshots/{{.snapshot_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -3848,7 +3848,7 @@ func (s *SnapshotsService) SnapshotView(organizationName string, projectName str
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -3875,10 +3875,10 @@ func (s *SnapshotsService) SnapshotView(organizationName string, projectName str
 //	- `organizationName`
 //	- `projectName`
 //	- `snapshotName`
-func (s *SnapshotsService) SnapshotDelete(organizationName string, projectName string, snapshotName string) error {
+func (c *Client) SnapshotDelete(organizationName string, projectName string, snapshotName string) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/snapshots/{{.snapshot_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("DELETE", uri, nil)
 	if err != nil {
@@ -3893,7 +3893,7 @@ func (s *SnapshotsService) SnapshotDelete(organizationName string, projectName s
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return fmt.Errorf("error sending request: %v", err)
 	}
@@ -3916,10 +3916,10 @@ func (s *SnapshotsService) SnapshotDelete(organizationName string, projectName s
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `projectName`: The project's unique name within the organization.
 //	- `sortBy`
-func (s *VpcsService) VpcList(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string) (*VpcResultsPage, error) {
+func (c *Client) VpcList(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string) (*VpcResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -3936,7 +3936,7 @@ func (s *VpcsService) VpcList(limit int, pageToken string, sortBy NameSortMode, 
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -3966,13 +3966,13 @@ func (s *VpcsService) VpcList(limit int, pageToken string, sortBy NameSortMode, 
 //	- `organizationName`: The organization's unique name.
 //	- `projectName`: The project's unique name within the organization.
 //	- `sortBy`
-func (s *VpcsService) VpcListAllPages(sortBy NameSortMode, organizationName string, projectName string) (*[]Vpc, error) {
+func (c *Client) VpcListAllPages(sortBy NameSortMode, organizationName string, projectName string) (*[]Vpc, error) {
 
 	var allPages []Vpc
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.VpcList(limit, pageToken, sortBy, organizationName, projectName)
+		page, err := c.VpcList(limit, pageToken, sortBy, organizationName, projectName)
 		if err != nil {
 			return nil, err
 		}
@@ -3989,10 +3989,10 @@ func (s *VpcsService) VpcListAllPages(sortBy NameSortMode, organizationName stri
 // Parameters:
 //	- `organizationName`: The organization's unique name.
 //	- `projectName`: The project's unique name within the organization.
-func (s *VpcsService) VpcCreate(organizationName string, projectName string, j *VpcCreate) (*Vpc, error) {
+func (c *Client) VpcCreate(organizationName string, projectName string, j *VpcCreate) (*Vpc, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -4011,7 +4011,7 @@ func (s *VpcsService) VpcCreate(organizationName string, projectName string, j *
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -4038,10 +4038,10 @@ func (s *VpcsService) VpcCreate(organizationName string, projectName string, j *
 //	- `organizationName`
 //	- `projectName`
 //	- `vpcName`
-func (s *VpcsService) VpcView(organizationName string, projectName string, vpcName string) (*Vpc, error) {
+func (c *Client) VpcView(organizationName string, projectName string, vpcName string) (*Vpc, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -4056,7 +4056,7 @@ func (s *VpcsService) VpcView(organizationName string, projectName string, vpcNa
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -4083,10 +4083,10 @@ func (s *VpcsService) VpcView(organizationName string, projectName string, vpcNa
 //	- `organizationName`
 //	- `projectName`
 //	- `vpcName`
-func (s *VpcsService) VpcUpdate(organizationName string, projectName string, vpcName string, j *VpcUpdate) (*Vpc, error) {
+func (c *Client) VpcUpdate(organizationName string, projectName string, vpcName string, j *VpcUpdate) (*Vpc, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -4106,7 +4106,7 @@ func (s *VpcsService) VpcUpdate(organizationName string, projectName string, vpc
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -4133,10 +4133,10 @@ func (s *VpcsService) VpcUpdate(organizationName string, projectName string, vpc
 //	- `organizationName`
 //	- `projectName`
 //	- `vpcName`
-func (s *VpcsService) VpcDelete(organizationName string, projectName string, vpcName string) error {
+func (c *Client) VpcDelete(organizationName string, projectName string, vpcName string) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("DELETE", uri, nil)
 	if err != nil {
@@ -4151,7 +4151,7 @@ func (s *VpcsService) VpcDelete(organizationName string, projectName string, vpc
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return fmt.Errorf("error sending request: %v", err)
 	}
@@ -4170,10 +4170,10 @@ func (s *VpcsService) VpcDelete(organizationName string, projectName string, vpc
 //	- `organizationName`
 //	- `projectName`
 //	- `vpcName`
-func (s *VpcsService) VpcFirewallRulesView(organizationName string, projectName string, vpcName string) (*VpcFirewallRules, error) {
+func (c *Client) VpcFirewallRulesView(organizationName string, projectName string, vpcName string) (*VpcFirewallRules, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/firewall/rules"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -4188,7 +4188,7 @@ func (s *VpcsService) VpcFirewallRulesView(organizationName string, projectName 
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -4215,10 +4215,10 @@ func (s *VpcsService) VpcFirewallRulesView(organizationName string, projectName 
 //	- `organizationName`
 //	- `projectName`
 //	- `vpcName`
-func (s *VpcsService) VpcFirewallRulesUpdate(organizationName string, projectName string, vpcName string, j *VpcFirewallRuleUpdateParams) (*VpcFirewallRules, error) {
+func (c *Client) VpcFirewallRulesUpdate(organizationName string, projectName string, vpcName string, j *VpcFirewallRuleUpdateParams) (*VpcFirewallRules, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/firewall/rules"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -4238,7 +4238,7 @@ func (s *VpcsService) VpcFirewallRulesUpdate(organizationName string, projectNam
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -4270,10 +4270,10 @@ func (s *VpcsService) VpcFirewallRulesUpdate(organizationName string, projectNam
 //	- `projectName`
 //	- `sortBy`
 //	- `vpcName`
-func (s *VpcsService) VpcRouterList(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string, vpcName string) (*VpcRouterResultsPage, error) {
+func (c *Client) VpcRouterList(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string, vpcName string) (*VpcRouterResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -4291,7 +4291,7 @@ func (s *VpcsService) VpcRouterList(limit int, pageToken string, sortBy NameSort
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -4322,13 +4322,13 @@ func (s *VpcsService) VpcRouterList(limit int, pageToken string, sortBy NameSort
 //	- `projectName`
 //	- `sortBy`
 //	- `vpcName`
-func (s *VpcsService) VpcRouterListAllPages(sortBy NameSortMode, organizationName string, projectName string, vpcName string) (*[]VpcRouter, error) {
+func (c *Client) VpcRouterListAllPages(sortBy NameSortMode, organizationName string, projectName string, vpcName string) (*[]VpcRouter, error) {
 
 	var allPages []VpcRouter
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.VpcRouterList(limit, pageToken, sortBy, organizationName, projectName, vpcName)
+		page, err := c.VpcRouterList(limit, pageToken, sortBy, organizationName, projectName, vpcName)
 		if err != nil {
 			return nil, err
 		}
@@ -4346,10 +4346,10 @@ func (s *VpcsService) VpcRouterListAllPages(sortBy NameSortMode, organizationNam
 //	- `organizationName`
 //	- `projectName`
 //	- `vpcName`
-func (s *VpcsService) VpcRouterCreate(organizationName string, projectName string, vpcName string, j *VpcRouterCreate) (*VpcRouter, error) {
+func (c *Client) VpcRouterCreate(organizationName string, projectName string, vpcName string, j *VpcRouterCreate) (*VpcRouter, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -4369,7 +4369,7 @@ func (s *VpcsService) VpcRouterCreate(organizationName string, projectName strin
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -4397,10 +4397,10 @@ func (s *VpcsService) VpcRouterCreate(organizationName string, projectName strin
 //	- `projectName`
 //	- `routerName`
 //	- `vpcName`
-func (s *VpcsService) VpcRouterView(organizationName string, projectName string, routerName string, vpcName string) (*VpcRouter, error) {
+func (c *Client) VpcRouterView(organizationName string, projectName string, routerName string, vpcName string) (*VpcRouter, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -4416,7 +4416,7 @@ func (s *VpcsService) VpcRouterView(organizationName string, projectName string,
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -4444,10 +4444,10 @@ func (s *VpcsService) VpcRouterView(organizationName string, projectName string,
 //	- `projectName`
 //	- `routerName`
 //	- `vpcName`
-func (s *VpcsService) VpcRouterUpdate(organizationName string, projectName string, routerName string, vpcName string, j *VpcRouterUpdate) (*VpcRouter, error) {
+func (c *Client) VpcRouterUpdate(organizationName string, projectName string, routerName string, vpcName string, j *VpcRouterUpdate) (*VpcRouter, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -4468,7 +4468,7 @@ func (s *VpcsService) VpcRouterUpdate(organizationName string, projectName strin
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -4496,10 +4496,10 @@ func (s *VpcsService) VpcRouterUpdate(organizationName string, projectName strin
 //	- `projectName`
 //	- `routerName`
 //	- `vpcName`
-func (s *VpcsService) VpcRouterDelete(organizationName string, projectName string, routerName string, vpcName string) error {
+func (c *Client) VpcRouterDelete(organizationName string, projectName string, routerName string, vpcName string) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("DELETE", uri, nil)
 	if err != nil {
@@ -4515,7 +4515,7 @@ func (s *VpcsService) VpcRouterDelete(organizationName string, projectName strin
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return fmt.Errorf("error sending request: %v", err)
 	}
@@ -4542,10 +4542,10 @@ func (s *VpcsService) VpcRouterDelete(organizationName string, projectName strin
 //	- `routerName`
 //	- `sortBy`
 //	- `vpcName`
-func (s *VpcsService) VpcRouterRouteList(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string, routerName string, vpcName string) (*RouterRouteResultsPage, error) {
+func (c *Client) VpcRouterRouteList(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string, routerName string, vpcName string) (*RouterRouteResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -4564,7 +4564,7 @@ func (s *VpcsService) VpcRouterRouteList(limit int, pageToken string, sortBy Nam
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -4598,13 +4598,13 @@ func (s *VpcsService) VpcRouterRouteList(limit int, pageToken string, sortBy Nam
 //	- `routerName`
 //	- `sortBy`
 //	- `vpcName`
-func (s *VpcsService) VpcRouterRouteListAllPages(sortBy NameSortMode, organizationName string, projectName string, routerName string, vpcName string) (*[]RouterRoute, error) {
+func (c *Client) VpcRouterRouteListAllPages(sortBy NameSortMode, organizationName string, projectName string, routerName string, vpcName string) (*[]RouterRoute, error) {
 
 	var allPages []RouterRoute
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.VpcRouterRouteList(limit, pageToken, sortBy, organizationName, projectName, routerName, vpcName)
+		page, err := c.VpcRouterRouteList(limit, pageToken, sortBy, organizationName, projectName, routerName, vpcName)
 		if err != nil {
 			return nil, err
 		}
@@ -4623,10 +4623,10 @@ func (s *VpcsService) VpcRouterRouteListAllPages(sortBy NameSortMode, organizati
 //	- `projectName`
 //	- `routerName`
 //	- `vpcName`
-func (s *VpcsService) VpcRouterRouteCreate(organizationName string, projectName string, routerName string, vpcName string, j *RouterRouteCreateParams) (*RouterRoute, error) {
+func (c *Client) VpcRouterRouteCreate(organizationName string, projectName string, routerName string, vpcName string, j *RouterRouteCreateParams) (*RouterRoute, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -4647,7 +4647,7 @@ func (s *VpcsService) VpcRouterRouteCreate(organizationName string, projectName 
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -4676,10 +4676,10 @@ func (s *VpcsService) VpcRouterRouteCreate(organizationName string, projectName 
 //	- `routeName`
 //	- `routerName`
 //	- `vpcName`
-func (s *VpcsService) VpcRouterRouteView(organizationName string, projectName string, routeName string, routerName string, vpcName string) (*RouterRoute, error) {
+func (c *Client) VpcRouterRouteView(organizationName string, projectName string, routeName string, routerName string, vpcName string) (*RouterRoute, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes/{{.route_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -4696,7 +4696,7 @@ func (s *VpcsService) VpcRouterRouteView(organizationName string, projectName st
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -4725,10 +4725,10 @@ func (s *VpcsService) VpcRouterRouteView(organizationName string, projectName st
 //	- `routeName`
 //	- `routerName`
 //	- `vpcName`
-func (s *VpcsService) VpcRouterRouteUpdate(organizationName string, projectName string, routeName string, routerName string, vpcName string, j *RouterRouteUpdateParams) (*RouterRoute, error) {
+func (c *Client) VpcRouterRouteUpdate(organizationName string, projectName string, routeName string, routerName string, vpcName string, j *RouterRouteUpdateParams) (*RouterRoute, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes/{{.route_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -4750,7 +4750,7 @@ func (s *VpcsService) VpcRouterRouteUpdate(organizationName string, projectName 
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -4779,10 +4779,10 @@ func (s *VpcsService) VpcRouterRouteUpdate(organizationName string, projectName 
 //	- `routeName`
 //	- `routerName`
 //	- `vpcName`
-func (s *VpcsService) VpcRouterRouteDelete(organizationName string, projectName string, routeName string, routerName string, vpcName string) error {
+func (c *Client) VpcRouterRouteDelete(organizationName string, projectName string, routeName string, routerName string, vpcName string) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes/{{.route_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("DELETE", uri, nil)
 	if err != nil {
@@ -4799,7 +4799,7 @@ func (s *VpcsService) VpcRouterRouteDelete(organizationName string, projectName 
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return fmt.Errorf("error sending request: %v", err)
 	}
@@ -4823,10 +4823,10 @@ func (s *VpcsService) VpcRouterRouteDelete(organizationName string, projectName 
 //	- `projectName`
 //	- `sortBy`
 //	- `vpcName`
-func (s *VpcsService) VpcSubnetList(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string, vpcName string) (*VpcSubnetResultsPage, error) {
+func (c *Client) VpcSubnetList(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string, vpcName string) (*VpcSubnetResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -4844,7 +4844,7 @@ func (s *VpcsService) VpcSubnetList(limit int, pageToken string, sortBy NameSort
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -4875,13 +4875,13 @@ func (s *VpcsService) VpcSubnetList(limit int, pageToken string, sortBy NameSort
 //	- `projectName`
 //	- `sortBy`
 //	- `vpcName`
-func (s *VpcsService) VpcSubnetListAllPages(sortBy NameSortMode, organizationName string, projectName string, vpcName string) (*[]VpcSubnet, error) {
+func (c *Client) VpcSubnetListAllPages(sortBy NameSortMode, organizationName string, projectName string, vpcName string) (*[]VpcSubnet, error) {
 
 	var allPages []VpcSubnet
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.VpcSubnetList(limit, pageToken, sortBy, organizationName, projectName, vpcName)
+		page, err := c.VpcSubnetList(limit, pageToken, sortBy, organizationName, projectName, vpcName)
 		if err != nil {
 			return nil, err
 		}
@@ -4899,10 +4899,10 @@ func (s *VpcsService) VpcSubnetListAllPages(sortBy NameSortMode, organizationNam
 //	- `organizationName`
 //	- `projectName`
 //	- `vpcName`
-func (s *VpcsService) VpcSubnetCreate(organizationName string, projectName string, vpcName string, j *VpcSubnetCreate) (*VpcSubnet, error) {
+func (c *Client) VpcSubnetCreate(organizationName string, projectName string, vpcName string, j *VpcSubnetCreate) (*VpcSubnet, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -4922,7 +4922,7 @@ func (s *VpcsService) VpcSubnetCreate(organizationName string, projectName strin
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -4950,10 +4950,10 @@ func (s *VpcsService) VpcSubnetCreate(organizationName string, projectName strin
 //	- `projectName`
 //	- `subnetName`
 //	- `vpcName`
-func (s *VpcsService) VpcSubnetView(organizationName string, projectName string, subnetName string, vpcName string) (*VpcSubnet, error) {
+func (c *Client) VpcSubnetView(organizationName string, projectName string, subnetName string, vpcName string) (*VpcSubnet, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets/{{.subnet_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -4969,7 +4969,7 @@ func (s *VpcsService) VpcSubnetView(organizationName string, projectName string,
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -4997,10 +4997,10 @@ func (s *VpcsService) VpcSubnetView(organizationName string, projectName string,
 //	- `projectName`
 //	- `subnetName`
 //	- `vpcName`
-func (s *VpcsService) VpcSubnetUpdate(organizationName string, projectName string, subnetName string, vpcName string, j *VpcSubnetUpdate) (*VpcSubnet, error) {
+func (c *Client) VpcSubnetUpdate(organizationName string, projectName string, subnetName string, vpcName string, j *VpcSubnetUpdate) (*VpcSubnet, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets/{{.subnet_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -5021,7 +5021,7 @@ func (s *VpcsService) VpcSubnetUpdate(organizationName string, projectName strin
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -5049,10 +5049,10 @@ func (s *VpcsService) VpcSubnetUpdate(organizationName string, projectName strin
 //	- `projectName`
 //	- `subnetName`
 //	- `vpcName`
-func (s *VpcsService) VpcSubnetDelete(organizationName string, projectName string, subnetName string, vpcName string) error {
+func (c *Client) VpcSubnetDelete(organizationName string, projectName string, subnetName string, vpcName string) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets/{{.subnet_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("DELETE", uri, nil)
 	if err != nil {
@@ -5068,7 +5068,7 @@ func (s *VpcsService) VpcSubnetDelete(organizationName string, projectName strin
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return fmt.Errorf("error sending request: %v", err)
 	}
@@ -5093,10 +5093,10 @@ func (s *VpcsService) VpcSubnetDelete(organizationName string, projectName strin
 //	- `sortBy`
 //	- `subnetName`
 //	- `vpcName`
-func (s *VpcsService) VpcSubnetListNetworkInterfaces(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string, subnetName string, vpcName string) (*NetworkInterfaceResultsPage, error) {
+func (c *Client) VpcSubnetListNetworkInterfaces(limit int, pageToken string, sortBy NameSortMode, organizationName string, projectName string, subnetName string, vpcName string) (*NetworkInterfaceResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets/{{.subnet_name}}/network-interfaces"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -5115,7 +5115,7 @@ func (s *VpcsService) VpcSubnetListNetworkInterfaces(limit int, pageToken string
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -5147,13 +5147,13 @@ func (s *VpcsService) VpcSubnetListNetworkInterfaces(limit int, pageToken string
 //	- `sortBy`
 //	- `subnetName`
 //	- `vpcName`
-func (s *VpcsService) VpcSubnetListNetworkInterfacesAllPages(sortBy NameSortMode, organizationName string, projectName string, subnetName string, vpcName string) (*[]NetworkInterface, error) {
+func (c *Client) VpcSubnetListNetworkInterfacesAllPages(sortBy NameSortMode, organizationName string, projectName string, subnetName string, vpcName string) (*[]NetworkInterface, error) {
 
 	var allPages []NetworkInterface
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.VpcSubnetListNetworkInterfaces(limit, pageToken, sortBy, organizationName, projectName, subnetName, vpcName)
+		page, err := c.VpcSubnetListNetworkInterfaces(limit, pageToken, sortBy, organizationName, projectName, subnetName, vpcName)
 		if err != nil {
 			return nil, err
 		}
@@ -5166,17 +5166,17 @@ func (s *VpcsService) VpcSubnetListNetworkInterfacesAllPages(sortBy NameSortMode
 
 	return &allPages, nil
 } // PolicyView: Fetch the top-level IAM policy
-func (s *PolicyService) PolicyView() (*FleetRolePolicy, error) {
+func (c *Client) PolicyView() (*FleetRolePolicy, error) {
 	// Create the url.
 	path := "/policy"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -5198,10 +5198,10 @@ func (s *PolicyService) PolicyView() (*FleetRolePolicy, error) {
 }
 
 // PolicyUpdate: Update the top-level IAM policy
-func (s *PolicyService) PolicyUpdate(j *FleetRolePolicy) (*FleetRolePolicy, error) {
+func (c *Client) PolicyUpdate(j *FleetRolePolicy) (*FleetRolePolicy, error) {
 	// Create the url.
 	path := "/policy"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -5213,7 +5213,7 @@ func (s *PolicyService) PolicyUpdate(j *FleetRolePolicy) (*FleetRolePolicy, erro
 		return nil, fmt.Errorf("error creating request: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -5241,10 +5241,10 @@ func (s *PolicyService) PolicyUpdate(j *FleetRolePolicy) (*FleetRolePolicy, erro
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
-func (s *RolesService) RoleList(limit int, pageToken string) (*RoleResultsPage, error) {
+func (c *Client) RoleList(limit int, pageToken string) (*RoleResultsPage, error) {
 	// Create the url.
 	path := "/roles"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -5258,7 +5258,7 @@ func (s *RolesService) RoleList(limit int, pageToken string) (*RoleResultsPage, 
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -5283,13 +5283,13 @@ func (s *RolesService) RoleList(limit int, pageToken string) (*RoleResultsPage, 
 //
 // This method is a wrapper around the `RoleList` method.
 // This method returns all the pages at once.
-func (s *RolesService) RoleListAllPages() (*[]Role, error) {
+func (c *Client) RoleListAllPages() (*[]Role, error) {
 
 	var allPages []Role
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.RoleList(limit, pageToken)
+		page, err := c.RoleList(limit, pageToken)
 		if err != nil {
 			return nil, err
 		}
@@ -5305,10 +5305,10 @@ func (s *RolesService) RoleListAllPages() (*[]Role, error) {
 //
 // Parameters:
 //	- `roleName`: The built-in role's unique name.
-func (s *RolesService) RoleView(roleName string) (*Role, error) {
+func (c *Client) RoleView(roleName string) (*Role, error) {
 	// Create the url.
 	path := "/roles/{{.role_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -5321,7 +5321,7 @@ func (s *RolesService) RoleView(roleName string) (*Role, error) {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -5350,10 +5350,10 @@ func (s *RolesService) RoleView(roleName string) (*Role, error) {
 //	- `limit`: Maximum number of items returned by a single call
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `sortBy`
-func (s *SagasService) SagaList(limit int, pageToken string, sortBy IdSortMode) (*SagaResultsPage, error) {
+func (c *Client) SagaList(limit int, pageToken string, sortBy IdSortMode) (*SagaResultsPage, error) {
 	// Create the url.
 	path := "/sagas"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -5368,7 +5368,7 @@ func (s *SagasService) SagaList(limit int, pageToken string, sortBy IdSortMode) 
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -5396,13 +5396,13 @@ func (s *SagasService) SagaList(limit int, pageToken string, sortBy IdSortMode) 
 //
 // Parameters:
 //	- `sortBy`
-func (s *SagasService) SagaListAllPages(sortBy IdSortMode) (*[]Saga, error) {
+func (c *Client) SagaListAllPages(sortBy IdSortMode) (*[]Saga, error) {
 
 	var allPages []Saga
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.SagaList(limit, pageToken, sortBy)
+		page, err := c.SagaList(limit, pageToken, sortBy)
 		if err != nil {
 			return nil, err
 		}
@@ -5418,10 +5418,10 @@ func (s *SagasService) SagaListAllPages(sortBy IdSortMode) (*[]Saga, error) {
 //
 // Parameters:
 //	- `sagaId`
-func (s *SagasService) SagaView(sagaId string) (*Saga, error) {
+func (c *Client) SagaView(sagaId string) (*Saga, error) {
 	// Create the url.
 	path := "/sagas/{{.saga_id}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -5434,7 +5434,7 @@ func (s *SagasService) SagaView(sagaId string) (*Saga, error) {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -5465,10 +5465,10 @@ func (s *SagasService) SagaView(sagaId string) (*Saga, error) {
 //	- `limit`: Maximum number of items returned by a single call
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `sortBy`
-func (s *SessionService) SessionSshkeyList(limit int, pageToken string, sortBy NameSortMode) (*SshKeyResultsPage, error) {
+func (c *Client) SessionSshkeyList(limit int, pageToken string, sortBy NameSortMode) (*SshKeyResultsPage, error) {
 	// Create the url.
 	path := "/session/me/sshkeys"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -5483,7 +5483,7 @@ func (s *SessionService) SessionSshkeyList(limit int, pageToken string, sortBy N
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -5513,13 +5513,13 @@ func (s *SessionService) SessionSshkeyList(limit int, pageToken string, sortBy N
 //
 // Parameters:
 //	- `sortBy`
-func (s *SessionService) SessionSshkeyListAllPages(sortBy NameSortMode) (*[]SshKey, error) {
+func (c *Client) SessionSshkeyListAllPages(sortBy NameSortMode) (*[]SshKey, error) {
 
 	var allPages []SshKey
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.SessionSshkeyList(limit, pageToken, sortBy)
+		page, err := c.SessionSshkeyList(limit, pageToken, sortBy)
 		if err != nil {
 			return nil, err
 		}
@@ -5534,10 +5534,10 @@ func (s *SessionService) SessionSshkeyListAllPages(sortBy NameSortMode) (*[]SshK
 } // SessionSshkeyCreate: Create an SSH public key
 //
 // Create an SSH public key for the currently authenticated user.
-func (s *SessionService) SessionSshkeyCreate(j *SshKeyCreate) (*SshKey, error) {
+func (c *Client) SessionSshkeyCreate(j *SshKeyCreate) (*SshKey, error) {
 	// Create the url.
 	path := "/session/me/sshkeys"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -5549,7 +5549,7 @@ func (s *SessionService) SessionSshkeyCreate(j *SshKeyCreate) (*SshKey, error) {
 		return nil, fmt.Errorf("error creating request: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -5576,10 +5576,10 @@ func (s *SessionService) SessionSshkeyCreate(j *SshKeyCreate) (*SshKey, error) {
 //
 // Parameters:
 //	- `sshKeyName`
-func (s *SessionService) SessionSshkeyView(sshKeyName string) (*SshKey, error) {
+func (c *Client) SessionSshkeyView(sshKeyName string) (*SshKey, error) {
 	// Create the url.
 	path := "/session/me/sshkeys/{{.ssh_key_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -5592,7 +5592,7 @@ func (s *SessionService) SessionSshkeyView(sshKeyName string) (*SshKey, error) {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -5619,10 +5619,10 @@ func (s *SessionService) SessionSshkeyView(sshKeyName string) (*SshKey, error) {
 //
 // Parameters:
 //	- `sshKeyName`
-func (s *SessionService) SessionSshkeyDelete(sshKeyName string) error {
+func (c *Client) SessionSshkeyDelete(sshKeyName string) error {
 	// Create the url.
 	path := "/session/me/sshkeys/{{.ssh_key_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("DELETE", uri, nil)
 	if err != nil {
@@ -5635,7 +5635,7 @@ func (s *SessionService) SessionSshkeyDelete(sshKeyName string) error {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return fmt.Errorf("error sending request: %v", err)
 	}
@@ -5658,10 +5658,10 @@ func (s *SessionService) SessionSshkeyDelete(sshKeyName string) error {
 //	- `limit`: Maximum number of items returned by a single call
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `sortBy`
-func (s *SilosService) SiloList(limit int, pageToken string, sortBy NameOrIdSortMode) (*SiloResultsPage, error) {
+func (c *Client) SiloList(limit int, pageToken string, sortBy NameOrIdSortMode) (*SiloResultsPage, error) {
 	// Create the url.
 	path := "/silos"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -5676,7 +5676,7 @@ func (s *SilosService) SiloList(limit int, pageToken string, sortBy NameOrIdSort
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -5706,13 +5706,13 @@ func (s *SilosService) SiloList(limit int, pageToken string, sortBy NameOrIdSort
 //
 // Parameters:
 //	- `sortBy`
-func (s *SilosService) SiloListAllPages(sortBy NameOrIdSortMode) (*[]Silo, error) {
+func (c *Client) SiloListAllPages(sortBy NameOrIdSortMode) (*[]Silo, error) {
 
 	var allPages []Silo
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.SiloList(limit, pageToken, sortBy)
+		page, err := c.SiloList(limit, pageToken, sortBy)
 		if err != nil {
 			return nil, err
 		}
@@ -5725,10 +5725,10 @@ func (s *SilosService) SiloListAllPages(sortBy NameOrIdSortMode) (*[]Silo, error
 
 	return &allPages, nil
 } // SiloCreate: Create a silo
-func (s *SilosService) SiloCreate(j *SiloCreate) (*Silo, error) {
+func (c *Client) SiloCreate(j *SiloCreate) (*Silo, error) {
 	// Create the url.
 	path := "/silos"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -5740,7 +5740,7 @@ func (s *SilosService) SiloCreate(j *SiloCreate) (*Silo, error) {
 		return nil, fmt.Errorf("error creating request: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -5767,10 +5767,10 @@ func (s *SilosService) SiloCreate(j *SiloCreate) (*Silo, error) {
 //
 // Parameters:
 //	- `siloName`: The silo's unique name.
-func (s *SilosService) SiloView(siloName string) (*Silo, error) {
+func (c *Client) SiloView(siloName string) (*Silo, error) {
 	// Create the url.
 	path := "/silos/{{.silo_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -5783,7 +5783,7 @@ func (s *SilosService) SiloView(siloName string) (*Silo, error) {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -5810,10 +5810,10 @@ func (s *SilosService) SiloView(siloName string) (*Silo, error) {
 //
 // Parameters:
 //	- `siloName`: The silo's unique name.
-func (s *SilosService) SiloDelete(siloName string) error {
+func (c *Client) SiloDelete(siloName string) error {
 	// Create the url.
 	path := "/silos/{{.silo_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("DELETE", uri, nil)
 	if err != nil {
@@ -5826,7 +5826,7 @@ func (s *SilosService) SiloDelete(siloName string) error {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return fmt.Errorf("error sending request: %v", err)
 	}
@@ -5848,10 +5848,10 @@ func (s *SilosService) SiloDelete(siloName string) error {
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `siloName`: The silo's unique name.
 //	- `sortBy`
-func (s *SilosService) SiloIdentityProviderList(siloName string, limit int, pageToken string, sortBy NameSortMode) (*IdentityProviderResultsPage, error) {
+func (c *Client) SiloIdentityProviderList(siloName string, limit int, pageToken string, sortBy NameSortMode) (*IdentityProviderResultsPage, error) {
 	// Create the url.
 	path := "/silos/{{.silo_name}}/identity-providers"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -5867,7 +5867,7 @@ func (s *SilosService) SiloIdentityProviderList(siloName string, limit int, page
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -5896,13 +5896,13 @@ func (s *SilosService) SiloIdentityProviderList(siloName string, limit int, page
 // Parameters:
 //	- `siloName`: The silo's unique name.
 //	- `sortBy`
-func (s *SilosService) SiloIdentityProviderListAllPages(siloName string, sortBy NameSortMode) (*[]IdentityProvider, error) {
+func (c *Client) SiloIdentityProviderListAllPages(siloName string, sortBy NameSortMode) (*[]IdentityProvider, error) {
 
 	var allPages []IdentityProvider
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.SiloIdentityProviderList(siloName, limit, pageToken, sortBy)
+		page, err := c.SiloIdentityProviderList(siloName, limit, pageToken, sortBy)
 		if err != nil {
 			return nil, err
 		}
@@ -5918,10 +5918,10 @@ func (s *SilosService) SiloIdentityProviderListAllPages(siloName string, sortBy 
 //
 // Parameters:
 //	- `siloName`: The silo's unique name.
-func (s *SilosService) SiloPolicyView(siloName string) (*SiloRolePolicy, error) {
+func (c *Client) SiloPolicyView(siloName string) (*SiloRolePolicy, error) {
 	// Create the url.
 	path := "/silos/{{.silo_name}}/policy"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -5934,7 +5934,7 @@ func (s *SilosService) SiloPolicyView(siloName string) (*SiloRolePolicy, error) 
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -5959,10 +5959,10 @@ func (s *SilosService) SiloPolicyView(siloName string) (*SiloRolePolicy, error) 
 //
 // Parameters:
 //	- `siloName`: The silo's unique name.
-func (s *SilosService) SiloPolicyUpdate(siloName string, j *SiloRolePolicy) (*SiloRolePolicy, error) {
+func (c *Client) SiloPolicyUpdate(siloName string, j *SiloRolePolicy) (*SiloRolePolicy, error) {
 	// Create the url.
 	path := "/silos/{{.silo_name}}/policy"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -5980,7 +5980,7 @@ func (s *SilosService) SiloPolicyUpdate(siloName string, j *SiloRolePolicy) (*Si
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -6005,10 +6005,10 @@ func (s *SilosService) SiloPolicyUpdate(siloName string, j *SiloRolePolicy) (*Si
 //
 // Parameters:
 //	- `siloName`: The silo's unique name.
-func (s *SilosService) SiloIdentityProviderCreate(siloName string, j *SamlIdentityProviderCreate) (*SamlIdentityProvider, error) {
+func (c *Client) SiloIdentityProviderCreate(siloName string, j *SamlIdentityProviderCreate) (*SamlIdentityProvider, error) {
 	// Create the url.
 	path := "/silos/{{.silo_name}}/saml-identity-providers"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(j); err != nil {
@@ -6026,7 +6026,7 @@ func (s *SilosService) SiloIdentityProviderCreate(siloName string, j *SamlIdenti
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -6052,10 +6052,10 @@ func (s *SilosService) SiloIdentityProviderCreate(siloName string, j *SamlIdenti
 // Parameters:
 //	- `providerName`: The SAML identity provider's name
 //	- `siloName`: The silo's unique name.
-func (s *SilosService) SiloIdentityProviderView(providerName string, siloName string) (*SamlIdentityProvider, error) {
+func (c *Client) SiloIdentityProviderView(providerName string, siloName string) (*SamlIdentityProvider, error) {
 	// Create the url.
 	path := "/silos/{{.silo_name}}/saml-identity-providers/{{.provider_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -6069,7 +6069,7 @@ func (s *SilosService) SiloIdentityProviderView(providerName string, siloName st
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -6098,10 +6098,10 @@ func (s *SilosService) SiloIdentityProviderView(providerName string, siloName st
 //	- `limit`: Maximum number of items returned by a single call
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `sortBy`
-func (s *SystemService) SystemUserList(limit int, pageToken string, sortBy NameSortMode) (*UserBuiltinResultsPage, error) {
+func (c *Client) SystemUserList(limit int, pageToken string, sortBy NameSortMode) (*UserBuiltinResultsPage, error) {
 	// Create the url.
 	path := "/system/user"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -6116,7 +6116,7 @@ func (s *SystemService) SystemUserList(limit int, pageToken string, sortBy NameS
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -6144,13 +6144,13 @@ func (s *SystemService) SystemUserList(limit int, pageToken string, sortBy NameS
 //
 // Parameters:
 //	- `sortBy`
-func (s *SystemService) SystemUserListAllPages(sortBy NameSortMode) (*[]UserBuiltin, error) {
+func (c *Client) SystemUserListAllPages(sortBy NameSortMode) (*[]UserBuiltin, error) {
 
 	var allPages []UserBuiltin
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.SystemUserList(limit, pageToken, sortBy)
+		page, err := c.SystemUserList(limit, pageToken, sortBy)
 		if err != nil {
 			return nil, err
 		}
@@ -6166,10 +6166,10 @@ func (s *SystemService) SystemUserListAllPages(sortBy NameSortMode) (*[]UserBuil
 //
 // Parameters:
 //	- `userName`: The built-in user's unique name.
-func (s *SystemService) SystemUserView(userName string) (*UserBuiltin, error) {
+func (c *Client) SystemUserView(userName string) (*UserBuiltin, error) {
 	// Create the url.
 	path := "/system/user/{{.user_name}}"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -6182,7 +6182,7 @@ func (s *SystemService) SystemUserView(userName string) (*UserBuiltin, error) {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -6210,10 +6210,10 @@ func (s *SystemService) SystemUserView(userName string) (*UserBuiltin, error) {
 // Parameters:
 //	- `limit`: Maximum number of items returned by a single call
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
-func (s *MetricsService) TimeseriesSchemaGet(limit int, pageToken string) (*TimeseriesSchemaResultsPage, error) {
+func (c *Client) TimeseriesSchemaGet(limit int, pageToken string) (*TimeseriesSchemaResultsPage, error) {
 	// Create the url.
 	path := "/timeseries/schema"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -6227,7 +6227,7 @@ func (s *MetricsService) TimeseriesSchemaGet(limit int, pageToken string) (*Time
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -6252,13 +6252,13 @@ func (s *MetricsService) TimeseriesSchemaGet(limit int, pageToken string) (*Time
 //
 // This method is a wrapper around the `TimeseriesSchemaGet` method.
 // This method returns all the pages at once.
-func (s *MetricsService) TimeseriesSchemaGetAllPages() (*[]TimeseriesSchema, error) {
+func (c *Client) TimeseriesSchemaGetAllPages() (*[]TimeseriesSchema, error) {
 
 	var allPages []TimeseriesSchema
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.TimeseriesSchemaGet(limit, pageToken)
+		page, err := c.TimeseriesSchemaGet(limit, pageToken)
 		if err != nil {
 			return nil, err
 		}
@@ -6271,17 +6271,17 @@ func (s *MetricsService) TimeseriesSchemaGetAllPages() (*[]TimeseriesSchema, err
 
 	return &allPages, nil
 } // UpdatesRefresh: Refresh update data
-func (s *UpdatesService) UpdatesRefresh() error {
+func (c *Client) UpdatesRefresh() error {
 	// Create the url.
 	path := "/updates/refresh"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("POST", uri, nil)
 	if err != nil {
 		return fmt.Errorf("error creating request: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return fmt.Errorf("error sending request: %v", err)
 	}
@@ -6302,10 +6302,10 @@ func (s *UpdatesService) UpdatesRefresh() error {
 //	- `limit`: Maximum number of items returned by a single call
 //	- `pageToken`: Token returned by previous call to retrieve the subsequent page
 //	- `sortBy`
-func (s *SilosService) UserList(limit int, pageToken string, sortBy IdSortMode) (*UserResultsPage, error) {
+func (c *Client) UserList(limit int, pageToken string, sortBy IdSortMode) (*UserResultsPage, error) {
 	// Create the url.
 	path := "/users"
-	uri := resolveRelative(s.client.server, path)
+	uri := resolveRelative(c.server, path)
 	// Create the request.
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
@@ -6320,7 +6320,7 @@ func (s *SilosService) UserList(limit int, pageToken string, sortBy IdSortMode) 
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 	// Send the request.
-	resp, err := s.client.client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %v", err)
 	}
@@ -6348,13 +6348,13 @@ func (s *SilosService) UserList(limit int, pageToken string, sortBy IdSortMode) 
 //
 // Parameters:
 //	- `sortBy`
-func (s *SilosService) UserListAllPages(sortBy IdSortMode) (*[]User, error) {
+func (c *Client) UserListAllPages(sortBy IdSortMode) (*[]User, error) {
 
 	var allPages []User
 	pageToken := ""
 	limit := 100
 	for {
-		page, err := s.UserList(limit, pageToken, sortBy)
+		page, err := c.UserList(limit, pageToken, sortBy)
 		if err != nil {
 			return nil, err
 		}

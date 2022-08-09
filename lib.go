@@ -18,10 +18,6 @@ const TokenEnvVar = "OXIDE_TOKEN"
 // HostEnvVar is the environment variable that contains the host.
 const HostEnvVar = "OXIDE_HOST"
 
-type service struct {
-	client *Client
-}
-
 // NewClient creates a new client for the Oxide API.
 // You need to pass in your API token to create the client.
 func NewClient(token, userAgent, host string) (*Client, error) {
@@ -55,25 +51,6 @@ func NewClient(token, userAgent, host string) (*Client, error) {
 		// We want a longer timeout since some of the files might take a bit.
 		Timeout: 600 * time.Second,
 	}
-
-	// TODO: generate all of these
-	client.Disks = &DisksService{client}
-	client.Projects = &ProjectsService{client}
-	client.Organizations = &OrganizationsService{client}
-	client.Firewall = &FirewallService{client}
-	client.Hardware = &HardwareService{client}
-	client.Hidden = &HiddenService{client}
-	client.Images = &ImagesService{client}
-	client.Instances = &InstancesService{client}
-	client.Metrics = &MetricsService{client}
-	client.Roles = &RolesService{client}
-	client.Routers = &RoutersService{client}
-	client.Routes = &RoutesService{client}
-	client.Sagas = &SagasService{client}
-	client.Snapshots = &SnapshotsService{client}
-	client.Subnets = &SubnetsService{client}
-	client.Updates = &UpdatesService{client}
-	client.Vpcs = &VpcsService{client}
 
 	return client, nil
 }
