@@ -18,9 +18,9 @@ generate:
 	go get github.com/getkin/kin-openapi/openapi3
 	go get github.com/iancoleman/strcase
 	go install golang.org/x/tools/cmd/goimports@latest
-	go generate
-	goimports -w *.go
-	gofmt -s -w *.go
+	go generate ./...
+	goimports -w oxide/*.go
+	gofmt -s -w oxide/*.go
 	go mod tidy
 
 .PHONY: build
@@ -30,7 +30,7 @@ $(NAME): $(wildcard *.go) $(wildcard */*.go)
 	@echo "+ $@"
 	$(GO) build -tags "$(BUILDTAGS)" ${GO_LDFLAGS} -o $(NAME) .
 
-all: generate clean build fmt lint test staticcheck vet install ## Runs a clean, build, fmt, lint, test, staticcheck, vet and install.
+all: generate clean fmt lint test staticcheck vet ## Runs a clean, fmt, lint, test, staticcheck, and vet.
 
 .PHONY: fmt
 fmt: ## Verifies all files have been `gofmt`ed.
@@ -84,7 +84,6 @@ install: ## Installs the executable or package.
 .PHONY: clean
 clean: ## Cleanup any build binaries or packages.
 	@echo "+ $@"
-	$(RM) $(NAME)
 	$(RM) -r $(BUILDDIR)
 
 .PHONY: tag

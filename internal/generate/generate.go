@@ -22,15 +22,13 @@ import (
 
 var EnumStringTypes map[string][]string = map[string][]string{}
 
-const GLOBAL_SUFFIX = ":global"
-
 func main() {
 	wd, err := os.Getwd()
 	if err != nil {
 		fmt.Printf("error getting current working directory: %v\n", err)
 		os.Exit(1)
 	}
-	p := filepath.Join(wd, "VERSION_OMICRON.txt")
+	p := filepath.Join(filepath.Dir(wd), "VERSION_OMICRON.txt")
 	omicronVersion, err := ioutil.ReadFile(p)
 	if err != nil {
 		log.Fatal(err)
@@ -313,8 +311,7 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 		fmt.Printf("[WARN] TODO: skipping operation %q, since it has no tag\n", o.OperationID)
 		return
 	}
-	ogTag := o.Tags[0]
-	tag := strcase.ToCamel(strings.ReplaceAll(ogTag, GLOBAL_SUFFIX, ""))
+	tag := strcase.ToCamel(o.Tags[0])
 
 	if tag == "Hidden" {
 		// return early.
