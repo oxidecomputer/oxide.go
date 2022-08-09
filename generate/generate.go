@@ -445,26 +445,16 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 	// Write the description to the file.
 	fmt.Fprintf(f, description.String())
 
-	docInfo := map[string]string{
-		"example": fmt.Sprintf("%s", description.String()),
-		// TODO: Fix this link
-		"libDocsLink": fmt.Sprintf("https://pkg.go.dev/github.com/oxidecomputer/oxide.go/#%sService.%s", tag, fnName),
-	}
-
 	// Write the method.
 	if respType != "" && respType != "ConsumeCredentialsResponse" && respType != "LoginResponse" {
 		fmt.Fprintf(f, "func (c *Client) %s(%s) (*%s, error) {\n",
 			fnName,
 			paramsString,
 			respType)
-		docInfo["example"] += fmt.Sprintf("%s, err := client.%s(%s)", strcase.ToLowerCamel(respType), fnName, docParamsString)
 	} else {
 		fmt.Fprintf(f, "func (c *Client) %s(%s) (error) {\n",
 			fnName,
 			paramsString)
-		docInfo["example"] += fmt.Sprintf(`if err := client.%s(%s); err != nil {
-		 	panic(err)
-		 }`, fnName, docParamsString)
 	}
 
 	if len(pagedRespType) > 0 {
