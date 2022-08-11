@@ -19,8 +19,11 @@ func enumStringTypes() map[string][]string {
 }
 
 // Generate the types.go file.
-func generateTypes(doc *openapi3.T) {
-	f := openGeneratedFile("../../oxide/types.go")
+func generateTypes(doc *openapi3.T) error {
+	f, err := openGeneratedFile("../../oxide/types.go")
+	if err != nil {
+		return err
+	}
 	defer f.Close()
 
 	// Iterate over all the schema components in the spec and write the types.
@@ -67,6 +70,8 @@ func generateTypes(doc *openapi3.T) {
 		// Close the enum values.
 		fmt.Fprintf(f, "}\n")
 	}
+
+	return nil
 }
 
 // writeSchemaType writes a type definition for the given schema.

@@ -14,8 +14,11 @@ import (
 )
 
 // Generate the paths.go file.
-func generatePaths(doc *openapi3.T) {
-	f := openGeneratedFile("../../oxide/paths.go")
+func generatePaths(doc *openapi3.T) error {
+	f, err := openGeneratedFile("../../oxide/paths.go")
+	if err != nil {
+		return err
+	}
 	defer f.Close()
 
 	// Iterate over all the paths in the spec and write the types.
@@ -32,53 +35,76 @@ func generatePaths(doc *openapi3.T) {
 			continue
 		}
 
-		writePath(doc, f, path, p)
+		if err := writePath(doc, f, path, p); err != nil {
+			return err
+		}
 	}
+
+	return nil
 }
 
 // writePath writes the given path as an http request to the given file.
-func writePath(doc *openapi3.T, f *os.File, path string, p *openapi3.PathItem) {
+func writePath(doc *openapi3.T, f *os.File, path string, p *openapi3.PathItem) error {
 	if p.Get != nil {
-		writeMethod(doc, f, http.MethodGet, path, p.Get, false)
+		if err := writeMethod(doc, f, http.MethodGet, path, p.Get, false); err != nil {
+			return err
+		}
 	}
 
 	if p.Post != nil {
-		writeMethod(doc, f, http.MethodPost, path, p.Post, false)
+		if err := writeMethod(doc, f, http.MethodPost, path, p.Post, false); err != nil {
+			return err
+		}
 	}
 
 	if p.Put != nil {
-		writeMethod(doc, f, http.MethodPut, path, p.Put, false)
+		if err := writeMethod(doc, f, http.MethodPut, path, p.Put, false); err != nil {
+			return err
+		}
 	}
 
 	if p.Delete != nil {
-		writeMethod(doc, f, http.MethodDelete, path, p.Delete, false)
+		if err := writeMethod(doc, f, http.MethodDelete, path, p.Delete, false); err != nil {
+			return err
+		}
 	}
 
 	if p.Patch != nil {
-		writeMethod(doc, f, http.MethodPatch, path, p.Patch, false)
+		if err := writeMethod(doc, f, http.MethodPatch, path, p.Patch, false); err != nil {
+			return err
+		}
 	}
 
 	if p.Head != nil {
-		writeMethod(doc, f, http.MethodHead, path, p.Head, false)
+		if err := writeMethod(doc, f, http.MethodHead, path, p.Head, false); err != nil {
+			return err
+		}
 	}
 
 	if p.Options != nil {
-		writeMethod(doc, f, http.MethodOptions, path, p.Options, false)
+		if err := writeMethod(doc, f, http.MethodOptions, path, p.Options, false); err != nil {
+			return err
+		}
 	}
+
+	return nil
 }
 
-func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *openapi3.Operation, isGetAllPages bool) {
-	respType, pagedRespType := getSuccessResponseType(o, isGetAllPages)
+func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *openapi3.Operation, isGetAllPages bool) error {
+	respType, pagedRespType, err := getSuccessResponseType(o, isGetAllPages)
+	if err != nil {
+		return err
+	}
 
 	if len(o.Tags) == 0 {
 		fmt.Printf("[WARN] TODO: skipping operation %q, since it has no tag\n", o.OperationID)
-		return
+		return nil
 	}
 	tag := strcase.ToCamel(o.Tags[0])
 
 	if tag == "Hidden" {
 		// return early.
-		return
+		return nil
 	}
 
 	fnName := printProperty(o.OperationID)
@@ -239,7 +265,7 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 		}`, pagedRespType, ogFnName, ogDocParamsString)
 
 		// Return early.
-		return
+		return nil
 	}
 
 	// Create the url.
@@ -374,9 +400,11 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 		// Run the method again with get all pages.
 		writeMethod(doc, f, method, path, o, true)
 	}
+
+	return nil
 }
 
-func getSuccessResponseType(o *openapi3.Operation, isGetAllPages bool) (string, string) {
+func getSuccessResponseType(o *openapi3.Operation, isGetAllPages bool) (string, string, error) {
 	for name, response := range o.Responses {
 		if name == "default" {
 			name = "200"
@@ -384,8 +412,7 @@ func getSuccessResponseType(o *openapi3.Operation, isGetAllPages bool) (string, 
 
 		statusCode, err := strconv.Atoi(strings.ReplaceAll(name, "XX", "00"))
 		if err != nil {
-			fmt.Printf("error converting %q to an integer: %v\n", name, err)
-			os.Exit(1)
+			return "", "", fmt.Errorf("error converting %q to an integer: %v", name, err)
 		}
 
 		if statusCode < 200 || statusCode >= 300 {
@@ -409,14 +436,14 @@ func getSuccessResponseType(o *openapi3.Operation, isGetAllPages bool) (string, 
 				}
 			}
 			if content.Schema.Ref != "" {
-				return getReferenceSchema(content.Schema), getAllPagesType
+				return getReferenceSchema(content.Schema), getAllPagesType, nil
 			}
 
-			return fmt.Sprintf("%sResponse", strcase.ToCamel(o.OperationID)), getAllPagesType
+			return fmt.Sprintf("%sResponse", strcase.ToCamel(o.OperationID)), getAllPagesType, nil
 		}
 	}
 
-	return "", ""
+	return "", "", nil
 }
 
 // cleanPath returns the path as a function we can use for a go template.

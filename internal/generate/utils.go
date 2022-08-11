@@ -11,22 +11,20 @@ import (
 	"github.com/iancoleman/strcase"
 )
 
-func openGeneratedFile(filename string) *os.File {
+func openGeneratedFile(filename string) (*os.File, error) {
 	// Get the current working directory.
 	cwd, err := os.Getwd()
 	if err != nil {
-		fmt.Printf("error getting current working directory: %v\n", err)
-		os.Exit(1)
+		return nil, fmt.Errorf("error getting current working directory: %v", err)
 	}
 
 	p := filepath.Join(cwd, filename)
 
-	// Create the types.go file.
+	// Create the generated files.
 	// Open the file for writing.
 	f, err := os.OpenFile(p, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
 	if err != nil {
-		fmt.Printf("error creating %q: %v\n", p, err)
-		os.Exit(1)
+		return nil, fmt.Errorf("error creating %q: %v", p, err)
 	}
 
 	// Add the header to the package.
@@ -34,7 +32,7 @@ func openGeneratedFile(filename string) *os.File {
 	fmt.Fprintln(f, "package oxide")
 	fmt.Fprintln(f, "")
 
-	return f
+	return f, nil
 }
 
 func isLocalEnum(v *openapi3.SchemaRef) bool {

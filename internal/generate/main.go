@@ -47,16 +47,24 @@ func generateSDK() error {
 	}
 
 	// Generate the client.go file.
-	generateClient(doc)
+	if err := generateClient(doc); err != nil {
+		return err
+	}
 
 	// Generate the types.go file.
-	generateTypes(doc)
+	if err := generateTypes(doc); err != nil {
+		return err
+	}
 
 	// Generate the responses.go file.
-	generateResponses(doc)
+	if err := generateResponses(doc); err != nil {
+		return err
+	}
 
 	// Generate the paths.go file.
-	generatePaths(doc)
+	if err := generatePaths(doc); err != nil {
+		return err
+	}
 
 	return nil
 }
