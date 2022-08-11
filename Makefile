@@ -30,7 +30,7 @@ $(NAME): $(wildcard *.go) $(wildcard */*.go)
 	@echo "+ $@"
 	$(GO) build -tags "$(BUILDTAGS)" ${GO_LDFLAGS} -o $(NAME) .
 
-all: generate clean fmt lint test staticcheck vet ## Runs a clean, fmt, lint, test, staticcheck, and vet.
+all: generate fmt lint test staticcheck vet ## Runs a fmt, lint, test, staticcheck, and vet.
 
 .PHONY: fmt
 fmt: ## Verifies all files have been `gofmt`ed.
@@ -80,11 +80,6 @@ cover: ## Runs go test with coverage.
 install: ## Installs the executable or package.
 	@echo "+ $@"
 	$(GO) install -a -tags "$(BUILDTAGS)" ${GO_LDFLAGS} .
-
-.PHONY: clean
-clean: ## Cleanup any build binaries or packages.
-	@echo "+ $@"
-	$(RM) -r $(BUILDDIR)
 
 .PHONY: tag
 tag: ## Create a new git tag to prepare to build a release.

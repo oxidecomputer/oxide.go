@@ -1,12 +1,9 @@
-//go:build ignore
-
 package main
 
 import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -20,18 +17,19 @@ import (
 	"github.com/iancoleman/strcase"
 )
 
-var EnumStringTypes map[string][]string = map[string][]string{}
+// TODO: Find a better way to deal with enum types
+var collectEnumStringTypes = enumStringTypes()
 
-func main() {
+func generateSDK() error {
 	wd, err := os.Getwd()
 	if err != nil {
-		fmt.Printf("error getting current working directory: %v\n", err)
-		os.Exit(1)
+		return fmt.Errorf("error getting current working directory: %v", err)
+
 	}
-	p := filepath.Join(filepath.Dir(wd), "VERSION_OMICRON.txt")
+	p := filepath.Join(filepath.Dir(wd), "../VERSION_OMICRON.txt")
 	omicronVersion, err := ioutil.ReadFile(p)
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("error retrieving Omicron version: %v", err)
 	}
 	ov := string(omicronVersion)
 
@@ -40,15 +38,13 @@ func main() {
 	uri := fmt.Sprintf("https://raw.githubusercontent.com/oxidecomputer/omicron/%s/openapi/nexus.json", ov)
 	u, err := url.Parse(uri)
 	if err != nil {
-		fmt.Printf("error parsing url %q: %v\n", uri, err)
-		os.Exit(1)
+		return fmt.Errorf("error parsing url %q: %v", uri, err)
 	}
 
 	// Load the open API spec from the URI.
 	doc, err := openapi3.NewLoader().LoadFromURI(u)
 	if err != nil {
-		fmt.Printf("error loading openAPI spec from %q: %v\n", uri, err)
-		os.Exit(1)
+		return fmt.Errorf("error loading openAPI spec from %q: %v", uri, err)
 	}
 
 	// Generate the client.go file.
@@ -62,11 +58,13 @@ func main() {
 
 	// Generate the paths.go file.
 	generatePaths(doc)
+
+	return nil
 }
 
 // Generate the types.go file.
 func generateTypes(doc *openapi3.T) {
-	f := openGeneratedFile("types.go")
+	f := openGeneratedFile("../../oxide/types.go")
 	defer f.Close()
 
 	// Iterate over all the schema components in the spec and write the types.
@@ -94,12 +92,12 @@ func generateTypes(doc *openapi3.T) {
 	// Iterate over all the enum types and add in the slices.
 	// We want to ensure we keep the order so the diffs don't look like shit.
 	keys = make([]string, 0)
-	for k := range EnumStringTypes {
+	for k := range collectEnumStringTypes {
 		keys = append(keys, k)
 	}
 	sort.Strings(keys)
 	for _, name := range keys {
-		enums := EnumStringTypes[name]
+		enums := collectEnumStringTypes[name]
 		// Make the enum a collection of the values.
 		// Add a description.
 		fmt.Fprintf(f, "// %s is the collection of all %s values.\n", makePlural(name), makeSingular(name))
@@ -117,7 +115,7 @@ func generateTypes(doc *openapi3.T) {
 
 // Generate the responses.go file.
 func generateResponses(doc *openapi3.T) {
-	f := openGeneratedFile("responses.go")
+	f := openGeneratedFile("../../oxide/responses.go")
 	defer f.Close()
 
 	// Iterate over all the responses in the spec and write the types.
@@ -140,7 +138,7 @@ func generateResponses(doc *openapi3.T) {
 
 // Generate the client.go file.
 func generateClient(doc *openapi3.T) {
-	f := openGeneratedFile("client.go")
+	f := openGeneratedFile("../../oxide/client.go")
 	defer f.Close()
 
 	fmt.Fprintf(f, `// Client which conforms to the OpenAPI3 specification for this service.
@@ -159,7 +157,7 @@ type Client struct {
 
 // Generate the paths.go file.
 func generatePaths(doc *openapi3.T) {
-	f := openGeneratedFile("paths.go")
+	f := openGeneratedFile("../../oxide/paths.go")
 	defer f.Close()
 
 	// Iterate over all the paths in the spec and write the types.
@@ -495,9 +493,11 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 			fmt.Fprintln(f, "b := new(bytes.Buffer)")
 			fmt.Fprintln(f, "if err := json.NewEncoder(b).Encode(j); err != nil {")
 			if respType != "" {
-				fmt.Fprintln(f, `return nil, fmt.Errorf("encoding json body request failed: %v", err)`)
+				r := `return nil, fmt.Errorf("encoding json body request failed: %v", err)`
+				fmt.Fprintln(f, r)
 			} else {
-				fmt.Fprintln(f, `return fmt.Errorf("encoding json body request failed: %v", err)`)
+				r := `return fmt.Errorf("encoding json body request failed: %v", err)`
+				fmt.Fprintln(f, r)
 			}
 			fmt.Fprintln(f, "}")
 			reqBodyParam = "b"
@@ -512,9 +512,11 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 	fmt.Fprintf(f, "req, err := http.NewRequest(%q, uri, %s)\n", method, reqBodyParam)
 	fmt.Fprintln(f, "if err != nil {")
 	if respType != "" && respType != "ConsumeCredentialsResponse" && respType != "LoginResponse" {
-		fmt.Fprintln(f, `return nil, fmt.Errorf("error creating request: %v", err)`)
+		r := `return nil, fmt.Errorf("error creating request: %v", err)`
+		fmt.Fprintln(f, r)
 	} else {
-		fmt.Fprintln(f, `return fmt.Errorf("error creating request: %v", err)`)
+		r := `return fmt.Errorf("error creating request: %v", err)`
+		fmt.Fprintln(f, r)
 	}
 	fmt.Fprintln(f, "}")
 
@@ -545,9 +547,11 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 		}
 		fmt.Fprintln(f, "}); err != nil {")
 		if respType != "" && respType != "ConsumeCredentialsResponse" && respType != "LoginResponse" {
-			fmt.Fprintln(f, `return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)`)
+			r := `return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)`
+			fmt.Fprintln(f, r)
 		} else {
-			fmt.Fprintln(f, `return fmt.Errorf("expanding URL with parameters failed: %v", err)`)
+			r := `return fmt.Errorf("expanding URL with parameters failed: %v", err)`
+			fmt.Fprintln(f, r)
 		}
 		fmt.Fprintln(f, "}")
 	}
@@ -557,9 +561,11 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 	fmt.Fprintln(f, "resp, err := c.client.Do(req)")
 	fmt.Fprintln(f, "if err != nil {")
 	if respType != "" && respType != "ConsumeCredentialsResponse" && respType != "LoginResponse" {
-		fmt.Fprintln(f, `return nil, fmt.Errorf("error sending request: %v", err)`)
+		r := `return nil, fmt.Errorf("error sending request: %v", err)`
+		fmt.Fprintln(f, r)
 	} else {
-		fmt.Fprintln(f, `return fmt.Errorf("error sending request: %v", err)`)
+		r := `return fmt.Errorf("error sending request: %v", err)`
+		fmt.Fprintln(f, r)
 	}
 	fmt.Fprintln(f, "}")
 	fmt.Fprintln(f, "defer resp.Body.Close()")
@@ -583,7 +589,8 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 
 		fmt.Fprintf(f, "var body %s\n", respType)
 		fmt.Fprintln(f, "if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {")
-		fmt.Fprintln(f, `return nil, fmt.Errorf("error decoding response body: %v", err)`)
+		r := `return nil, fmt.Errorf("error decoding response body: %v", err)`
+		fmt.Fprintln(f, r)
 		fmt.Fprintln(f, "}")
 
 		// Return the response.
@@ -672,14 +679,14 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 		// If this is an enum, write the enum type.
 		if len(s.Enum) > 0 {
 			// Make sure we don't redeclare the enum type.
-			if _, ok := EnumStringTypes[makeSingular(typeName)]; !ok {
+			if _, ok := collectEnumStringTypes[makeSingular(typeName)]; !ok {
 				// Write the type description.
 				writeSchemaTypeDescription(makeSingular(typeName), s, f)
 
 				// Write the enum type.
 				fmt.Fprintf(f, "type %s string\n", makeSingular(typeName))
 
-				EnumStringTypes[makeSingular(typeName)] = []string{}
+				collectEnumStringTypes[makeSingular(typeName)] = []string{}
 			}
 
 			// Define the enum values.
@@ -696,7 +703,7 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 				fmt.Fprintf(f, "\t%s %s = %q\n", strcase.ToCamel(fmt.Sprintf("%s_%s", makeSingular(name), enum)), makeSingular(name), enum)
 
 				// Add the enum type to the list of enum types.
-				EnumStringTypes[makeSingular(typeName)] = append(EnumStringTypes[makeSingular(typeName)], enum)
+				collectEnumStringTypes[makeSingular(typeName)] = append(collectEnumStringTypes[makeSingular(typeName)], enum)
 			}
 			// Close the enum values.
 			fmt.Fprintf(f, ")\n")
