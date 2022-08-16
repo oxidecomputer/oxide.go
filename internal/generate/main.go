@@ -46,11 +46,6 @@ func generateSDK() error {
 		return fmt.Errorf("error loading openAPI spec from %q: %v", uri, err)
 	}
 
-	// Generate the client.go file.
-	if err := generateClient(doc); err != nil {
-		return err
-	}
-
 	// Generate the types.go file.
 	if err := generateTypes(doc); err != nil {
 		return err
