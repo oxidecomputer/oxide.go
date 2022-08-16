@@ -20,15 +20,41 @@ func main() {
 }
 
 func generateSDK() error {
+	file := "../VERSION_OMICRON"
+
+	spec, err := loadApiFromFile(file)
+	if err != nil {
+		return err
+	}
+
+	// Generate the types.go file.
+	if err := generateTypes(spec); err != nil {
+		return err
+	}
+
+	// Generate the responses.go file.
+	if err := generateResponses(spec); err != nil {
+		return err
+	}
+
+	// Generate the paths.go file.
+	if err := generatePaths(spec); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func loadApiFromFile(file string) (*openapi3.T, error) {
 	wd, err := os.Getwd()
 	if err != nil {
-		return fmt.Errorf("error getting current working directory: %v", err)
+		return nil, fmt.Errorf("error getting current working directory: %v", err)
 
 	}
-	p := filepath.Join(filepath.Dir(wd), "../VERSION_OMICRON.txt")
+	p := filepath.Join(filepath.Dir(wd), file)
 	omicronVersion, err := ioutil.ReadFile(p)
 	if err != nil {
-		return fmt.Errorf("error retrieving Omicron version: %v", err)
+		return nil, fmt.Errorf("error retrieving Omicron version: %v", err)
 	}
 	ov := string(omicronVersion)
 
@@ -37,29 +63,14 @@ func generateSDK() error {
 	uri := fmt.Sprintf("https://raw.githubusercontent.com/oxidecomputer/omicron/%s/openapi/nexus.json", ov)
 	u, err := url.Parse(uri)
 	if err != nil {
-		return fmt.Errorf("error parsing url %q: %v", uri, err)
+		return nil, fmt.Errorf("error parsing url %q: %v", uri, err)
 	}
 
 	// Load the open API spec from the URI.
 	doc, err := openapi3.NewLoader().LoadFromURI(u)
 	if err != nil {
-		return fmt.Errorf("error loading openAPI spec from %q: %v", uri, err)
+		return nil, fmt.Errorf("error loading openAPI spec from %q: %v", uri, err)
 	}
 
-	// Generate the types.go file.
-	if err := generateTypes(doc); err != nil {
-		return err
-	}
-
-	// Generate the responses.go file.
-	if err := generateResponses(doc); err != nil {
-		return err
-	}
-
-	// Generate the paths.go file.
-	if err := generatePaths(doc); err != nil {
-		return err
-	}
-
-	return nil
+	return doc, nil
 }
