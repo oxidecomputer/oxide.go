@@ -16,6 +16,19 @@ const TokenEnvVar = "OXIDE_TOKEN"
 // HostEnvVar is the environment variable that contains the host.
 const HostEnvVar = "OXIDE_HOST"
 
+// Client which conforms to the OpenAPI3 specification for this service.
+type Client struct {
+	// The endpoint of the server conforming to this interface, with scheme,
+	// https://api.oxide.computer for example.
+	server string
+
+	// Client is the *http.Client for performing requests.
+	client *http.Client
+
+	// token is the API token used for authentication.
+	token string
+}
+
 // NewClient creates a new client for the Oxide API.
 // You need to pass in your API token to create the client.
 func NewClient(token, userAgent, host string) (*Client, error) {

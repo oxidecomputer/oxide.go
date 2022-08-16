@@ -275,6 +275,7 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 
 	if o.RequestBody != nil {
 		for mt := range o.RequestBody.Value.Content {
+			// TODO: Handle other content types
 			if mt != "application/json" {
 				break
 			}

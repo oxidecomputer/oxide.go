@@ -11,14 +11,14 @@ type expandTest struct {
 	want       string
 }
 
-const DefaultServerURL = "https://example.com"
+const testServerURL = "https://example.com"
 
 var expandTests = []expandTest{
 	// no expansions
 	{
 		"",
 		map[string]string{},
-		DefaultServerURL,
+		testServerURL,
 	},
 	// multiple expansions, no escaping
 	{
@@ -27,13 +27,13 @@ var expandTests = []expandTest{
 			"srcFormat":    "step",
 			"outputFormat": "obj",
 		},
-		DefaultServerURL + "/file/convert/step/obj",
+		testServerURL + "/file/convert/step/obj",
 	},
 }
 
 func TestExpandURL(t *testing.T) {
 	for i, test := range expandTests {
-		uri := resolveRelative(DefaultServerURL, test.in)
+		uri := resolveRelative(testServerURL, test.in)
 		u, err := url.Parse(uri)
 		if err != nil {
 			t.Fatalf("parsing url %q failed: %v", test.in, err)
