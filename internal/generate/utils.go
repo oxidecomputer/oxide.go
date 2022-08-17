@@ -98,16 +98,6 @@ func makePlural(s string) string {
 	return singular + "s"
 }
 
-func contains(s []string, str string) bool {
-	for _, v := range s {
-		if v == str {
-			return true
-		}
-	}
-
-	return false
-}
-
 func trimStringFromSpace(s string) string {
 	if idx := strings.Index(s, " "); idx != -1 {
 		return s[:idx]

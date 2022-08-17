@@ -131,7 +131,7 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 		params[p.Value.Name] = p.Value
 		paramsString += fmt.Sprintf("%s %s, ", paramName, printType(p.Value.Name, p.Value.Schema))
 		if index == len(o.Parameters)-1 {
-			docParamsString += fmt.Sprintf("%s", paramName)
+			docParamsString += paramName
 		} else {
 			docParamsString += fmt.Sprintf("%s, ", paramName)
 		}
@@ -181,7 +181,6 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 	ogDocParamsString := docParamsString
 	if len(pagedRespType) > 0 {
 		fnName += "AllPages"
-		docParamsString = strings.TrimSpace(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(docParamsString, "pageToken", ""), "limit", ""), ", ,", ""))
 		paramsString = strings.TrimSpace(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(paramsString, "pageToken string", ""), "limit int", ""), ", ,", ""))
 		delete(params, "page_token")
 		delete(params, "limit")
@@ -229,7 +228,7 @@ func writeMethod(doc *openapi3.T, f *os.File, method string, path string, o *ope
 	}
 
 	// Write the description to the file.
-	fmt.Fprintf(f, description.String())
+	fmt.Fprint(f, description.String())
 
 	// Write the method.
 	if respType != "" && respType != "ConsumeCredentialsResponse" && respType != "LoginResponse" {

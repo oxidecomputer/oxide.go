@@ -183,9 +183,6 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 		}
 	} else {
 		if s.OneOf != nil {
-			// We want to convert these to a different data type to be more idiomatic.
-			// But first, we need to make sure we have a type for each one.
-			var oneOfTypes []string
 			var properties []string
 			for _, v := range s.OneOf {
 				// We want to iterate over the properties of the embedded object
@@ -227,12 +224,7 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 					}
 				}
 
-				// Basically all of these will have one type embedded in them that is a
-				// string and the type, since these come from a Rust sum type.
-				oneOfType := fmt.Sprintf("%s%s", name, typeName)
 				writeSchemaType(f, name, v.Value, typeName)
-				// Add it to our array.
-				oneOfTypes = append(oneOfTypes, oneOfType)
 			}
 
 			// Now let's create the global oneOf type.
@@ -241,7 +233,7 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 			fmt.Fprintf(f, "type %s struct {\n", typeName)
 			// Iterate over the properties and write the types, if we need to.
 			for _, p := range properties {
-				fmt.Fprintf(f, p)
+				fmt.Fprint(f, p)
 			}
 			// Close the struct.
 			fmt.Fprintf(f, "}\n")
