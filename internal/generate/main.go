@@ -20,15 +20,14 @@ func main() {
 }
 
 func generateSDK() error {
-	file := "../VERSION_OMICRON"
-
-	spec, err := loadApiFromFile(file)
+	versionFile := "../VERSION_OMICRON"
+	spec, err := loadAPIFromFile(versionFile)
 	if err != nil {
 		return err
 	}
 
-	// Generate the types.go file.
-	if err := generateTypes(spec); err != nil {
+	typesFile := "../../oxide/types.go"
+	if err := generateTypes(typesFile, spec); err != nil {
 		return err
 	}
 
@@ -45,7 +44,7 @@ func generateSDK() error {
 	return nil
 }
 
-func loadApiFromFile(file string) (*openapi3.T, error) {
+func loadAPIFromFile(file string) (*openapi3.T, error) {
 	wd, err := os.Getwd()
 	if err != nil {
 		return nil, fmt.Errorf("error getting current working directory: %v", err)

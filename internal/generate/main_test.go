@@ -32,7 +32,7 @@ func Test_loadAPI(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := loadApiFromFile(tt.args.file)
+			got, err := loadAPIFromFile(tt.args.file)
 			if err != nil {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return

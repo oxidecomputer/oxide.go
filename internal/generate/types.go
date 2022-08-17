@@ -18,9 +18,9 @@ func enumStringTypes() map[string][]string {
 	return map[string][]string{}
 }
 
-// Generate the types.go file.
-func generateTypes(doc *openapi3.T) error {
-	f, err := openGeneratedFile("../../oxide/types.go")
+// Generate the types file.
+func generateTypes(file string, spec *openapi3.T) error {
+	f, err := openGeneratedFile(file)
 	if err != nil {
 		return err
 	}
@@ -29,12 +29,12 @@ func generateTypes(doc *openapi3.T) error {
 	// Iterate over all the schema components in the spec and write the types.
 	// We want to ensure we keep the order so the diffs don't look like shit.
 	keys := make([]string, 0)
-	for k := range doc.Components.Schemas {
+	for k := range spec.Components.Schemas {
 		keys = append(keys, k)
 	}
 	sort.Strings(keys)
 	for _, name := range keys {
-		s := doc.Components.Schemas[name]
+		s := spec.Components.Schemas[name]
 		if s.Ref != "" {
 			fmt.Printf("[WARN] TODO: skipping type for %q, since it is a reference\n", name)
 			continue
@@ -183,9 +183,6 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 		}
 	} else {
 		if s.OneOf != nil {
-			// We want to convert these to a different data type to be more idiomatic.
-			// But first, we need to make sure we have a type for each one.
-			var oneOfTypes []string
 			var properties []string
 			for _, v := range s.OneOf {
 				// We want to iterate over the properties of the embedded object
@@ -227,12 +224,7 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 					}
 				}
 
-				// Basically all of these will have one type embedded in them that is a
-				// string and the type, since these come from a Rust sum type.
-				oneOfType := fmt.Sprintf("%s%s", name, typeName)
 				writeSchemaType(f, name, v.Value, typeName)
-				// Add it to our array.
-				oneOfTypes = append(oneOfTypes, oneOfType)
 			}
 
 			// Now let's create the global oneOf type.
@@ -241,7 +233,7 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 			fmt.Fprintf(f, "type %s struct {\n", typeName)
 			// Iterate over the properties and write the types, if we need to.
 			for _, p := range properties {
-				fmt.Fprintf(f, p)
+				fmt.Fprint(f, p)
 			}
 			// Close the struct.
 			fmt.Fprintf(f, "}\n")
