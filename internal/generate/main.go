@@ -31,13 +31,13 @@ func generateSDK() error {
 		return err
 	}
 
-	// Generate the responses.go file.
-	if err := generateResponses(spec); err != nil {
+	responsesFile := "../../oxide/responses.go"
+	if err := generateResponses(responsesFile, spec); err != nil {
 		return err
 	}
 
-	// Generate the paths.go file.
-	if err := generatePaths(spec); err != nil {
+	pathsFile := "../../oxide/paths.go"
+	if err := generatePaths(pathsFile, spec); err != nil {
 		return err
 	}
 
