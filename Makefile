@@ -35,7 +35,7 @@ all: generate fmt lint test staticcheck vet ## Runs a fmt, lint, test, staticche
 .PHONY: fmt
 fmt: ## Verifies all files have been `gofmt`ed.
 	@echo "+ $@"
-	@if [[ ! -z "$(shell gofmt -s -l . | grep -v '.pb.go:' | grep -v '.twirp.go:' | grep -v vendor | tee /dev/stderr)" ]]; then \
+	@if [[ ! -z "$(shell gofmt -s -l . | grep -v '.pb.go:' | grep -v '.twirp.go:' | grep -v vendor | grep -v internal/generate/test_generated | grep -v internal/generate/test_utils | tee /dev/stderr)" ]]; then \
 		exit 1; \
 	fi
 

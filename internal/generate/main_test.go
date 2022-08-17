@@ -32,12 +32,28 @@ func Test_loadAPI(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := loadApiFromFile(tt.args.file)
+			got, err := loadAPIFromFile(tt.args.file)
 			if err != nil {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 			assert.NotNil(t, got)
+		})
+	}
+}
+
+func Test_generateSDK(t *testing.T) {
+	tests := []struct {
+		name    string
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := generateSDK(); (err != nil) != tt.wantErr {
+				t.Errorf("generateSDK() error = %v, wantErr %v", err, tt.wantErr)
+			}
 		})
 	}
 }

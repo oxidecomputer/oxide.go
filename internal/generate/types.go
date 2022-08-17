@@ -18,9 +18,9 @@ func enumStringTypes() map[string][]string {
 	return map[string][]string{}
 }
 
-// Generate the types.go file.
-func generateTypes(doc *openapi3.T) error {
-	f, err := openGeneratedFile("../../oxide/types.go")
+// Generate the types file.
+func generateTypes(file string, spec *openapi3.T) error {
+	f, err := openGeneratedFile(file)
 	if err != nil {
 		return err
 	}
@@ -29,12 +29,12 @@ func generateTypes(doc *openapi3.T) error {
 	// Iterate over all the schema components in the spec and write the types.
 	// We want to ensure we keep the order so the diffs don't look like shit.
 	keys := make([]string, 0)
-	for k := range doc.Components.Schemas {
+	for k := range spec.Components.Schemas {
 		keys = append(keys, k)
 	}
 	sort.Strings(keys)
 	for _, name := range keys {
-		s := doc.Components.Schemas[name]
+		s := spec.Components.Schemas[name]
 		if s.Ref != "" {
 			fmt.Printf("[WARN] TODO: skipping type for %q, since it is a reference\n", name)
 			continue

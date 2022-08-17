@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -192,4 +194,21 @@ func printType(property string, r *openapi3.SchemaRef) string {
 
 	fmt.Printf("[WARN] TODO: skipping type %q for %q, marking as interface{}\n", t, property)
 	return "interface{}"
+}
+
+func compareFiles(expected, actual string) error {
+	f1, err := ioutil.ReadFile(expected)
+	if err != nil {
+		return err
+	}
+
+	f2, err := ioutil.ReadFile(actual)
+	if err != nil {
+		return err
+	}
+
+	if !bytes.Equal(f1, f2) {
+		return fmt.Errorf("%v is not equal to %v", expected, actual)
+	}
+	return nil
 }
