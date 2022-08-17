@@ -29,7 +29,6 @@ var successSpec = &openapi3.T{
 				}},
 			}},
 			"DiskSource": &openapi3.SchemaRef{Value: &openapi3.Schema{
-				//	Type: "object",
 				OneOf: openapi3.SchemaRefs{
 					&openapi3.SchemaRef{
 						Value: &openapi3.Schema{
@@ -59,15 +58,6 @@ var successSpec = &openapi3.T{
 							},
 						},
 					},
-					//		&openapi3.SchemaRef{
-					//			Value: &openapi3.Schema{
-					//				Description: "Create a disk from a project image",
-					//				Type:        "object",
-					//				Properties: openapi3.Schemas{"image_id": &openapi3.SchemaRef{
-					//					Value: &openapi3.Schema{Type: "string", Enum: []interface{}{"image"}},
-					//				}},
-					//			},
-					//		},
 				},
 			}},
 		},
