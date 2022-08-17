@@ -74,6 +74,30 @@ func generateTypes(file string, spec *openapi3.T) error {
 	return nil
 }
 
+func getObjectType(s *openapi3.Schema) string {
+	if s.Type != "" && len(s.Enum) <= 0 {
+		return s.Type
+	}
+
+	if s.Type == "string" && len(s.Enum) > 0 {
+		return "string_enum"
+	}
+
+	if s.OneOf != nil {
+		return "one_of"
+	}
+
+	if s.AllOf != nil {
+		return "all_of"
+	}
+
+	if s.AnyOf != nil {
+		return "any_of"
+	}
+
+	return ""
+}
+
 // writeSchemaType writes a type definition for the given schema.
 // The additional parameter is only used as a suffix for the type name.
 // This is mostly for oneOf types.
@@ -89,9 +113,8 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 		writeSchemaTypeDescription(typeName, s, f)
 	}
 
-	// if normal types check by otype
-	if otype == "string" {
-		// If this is an enum, write the enum type.
+	switch otype {
+	case "string":
 		if len(s.Enum) > 0 {
 			// Make sure we don't redeclare the enum type.
 			if _, ok := collectEnumStringTypes[makeSingular(typeName)]; !ok {
@@ -126,15 +149,15 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 		} else {
 			fmt.Fprintf(f, "type %s string\n", name)
 		}
-	} else if otype == "integer" {
+	case "integer":
 		fmt.Fprintf(f, "type %s int64\n", name)
-	} else if otype == "number" {
+	case "number":
 		fmt.Fprintf(f, "type %s float64\n", name)
-	} else if otype == "boolean" {
+	case "boolean":
 		fmt.Fprintf(f, "type %s bool\n", name)
-	} else if otype == "array" {
+	case "array":
 		fmt.Fprintf(f, "type %s []%s\n", name, s.Items.Value.Type)
-	} else if otype == "object" {
+	case "object":
 		fmt.Fprintf(f, "type %s struct {\n", typeName)
 		// We want to ensure we keep the order so the diffs don't look like shit.
 		keys := make([]string, 0)
@@ -233,9 +256,11 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 		// Close the struct.
 		fmt.Fprintf(f, "}\n")
 
-	} else if s.AnyOf != nil {
+	}
+	if s.AnyOf != nil {
 		fmt.Printf("[WARN] TODO: skipping type for %q, since it is a ANYOF\n", name)
-	} else if s.AllOf != nil {
+	}
+	if s.AllOf != nil {
 		fmt.Printf("[WARN] TODO: skipping type for %q, since it is a ALLOF\n", name)
 	}
 
