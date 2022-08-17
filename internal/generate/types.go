@@ -89,6 +89,7 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 		writeSchemaTypeDescription(typeName, s, f)
 	}
 
+	// if normal types check by otype
 	if otype == "string" {
 		// If this is an enum, write the enum type.
 		if len(s.Enum) > 0 {
@@ -134,7 +135,6 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 	} else if otype == "array" {
 		fmt.Fprintf(f, "type %s []%s\n", name, s.Items.Value.Type)
 	} else if otype == "object" {
-		recursive := false
 		fmt.Fprintf(f, "type %s struct {\n", typeName)
 		// We want to ensure we keep the order so the diffs don't look like shit.
 		keys := make([]string, 0)
@@ -148,12 +148,10 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 			typeName := printType(k, v)
 
 			if isLocalEnum(v) {
-				recursive = true
 				typeName = fmt.Sprintf("%s%s", name, printProperty(k))
 			}
 
 			if isLocalObject(v) {
-				recursive = true
 				fmt.Printf("[WARN] TODO: skipping object for %q -> %#v\n", name, v)
 				typeName = fmt.Sprintf("%s%s", name, printProperty(k))
 			}
@@ -166,86 +164,82 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 
 		fmt.Fprintf(f, "}\n")
 
-		if recursive {
-			// Add a newline at the end of the type.
-			fmt.Fprintln(f, "")
-
-			// Iterate over the properties and write the types, if we need to.
-			for k, v := range s.Properties {
-				if isLocalEnum(v) {
-					writeSchemaType(f, fmt.Sprintf("%s%s", name, printProperty(k)), v.Value, "")
-				}
-
-				if isLocalObject(v) {
-					writeSchemaType(f, fmt.Sprintf("%s%s", name, printProperty(k)), v.Value, "")
-				}
-			}
-		}
-	} else {
-		if s.OneOf != nil {
-			var properties []string
-			for _, v := range s.OneOf {
-				// We want to iterate over the properties of the embedded object
-				// and find the type that is a string.
-				var typeName string
-
-				// Iterate over all the schema components in the spec and write the types.
-				// We want to ensure we keep the order so the diffs don't look like shit.
-				keys := make([]string, 0)
-				for k := range v.Value.Properties {
-					keys = append(keys, k)
-				}
-				sort.Strings(keys)
-				for _, prop := range keys {
-					p := v.Value.Properties[prop]
-					// We want to collect all the unique properties to create our global oneOf type.
-					propertyName := printType(prop, p)
-
-					propertyString := fmt.Sprintf("\t%s %s `json:\"%s,omitempty\" yaml:\"%s,omitempty\"`\n", printProperty(prop), propertyName, prop, prop)
-					if !containsMatchFirstWord(properties, propertyString) {
-						properties = append(properties, propertyString)
-					}
-
-					if p.Value.Type == "string" {
-						if p.Value.Enum != nil {
-							// We want to get the enum value.
-							// Make sure there is only one.
-							if len(p.Value.Enum) != 1 {
-								fmt.Printf("[WARN] TODO: oneOf for %q -> %q enum %#v\n", name, prop, p.Value.Enum)
-								continue
-							}
-
-							typeName = printProperty(p.Value.Enum[0].(string))
-						}
-					}
-
-					if len(typeName) == 0 && len(keys) == 1 && v.Value.Required != nil && len(v.Value.Required) == 1 {
-						typeName = printProperty(v.Value.Required[0])
-					}
-				}
-
-				writeSchemaType(f, name, v.Value, typeName)
+		// Iterate over the properties and write the types, if we need to.
+		for k, v := range s.Properties {
+			if isLocalEnum(v) {
+				writeSchemaType(f, fmt.Sprintf("%s%s", name, printProperty(k)), v.Value, "")
 			}
 
-			// Now let's create the global oneOf type.
-			// Write the type description.
-			writeSchemaTypeDescription(typeName, s, f)
-			fmt.Fprintf(f, "type %s struct {\n", typeName)
-			// Iterate over the properties and write the types, if we need to.
-			for _, p := range properties {
-				fmt.Fprint(f, p)
+			if isLocalObject(v) {
+				writeSchemaType(f, fmt.Sprintf("%s%s", name, printProperty(k)), v.Value, "")
 			}
-			// Close the struct.
-			fmt.Fprintf(f, "}\n")
-
-		} else if s.AnyOf != nil {
-			fmt.Printf("[WARN] TODO: skipping type for %q, since it is a ANYOF\n", name)
-		} else if s.AllOf != nil {
-			fmt.Printf("[WARN] TODO: skipping type for %q, since it is a ALLOF\n", name)
 		}
 	}
 
-	// Add a newline at the end of the type.
+	// when OneOf, AnyOf or AllOf do differently
+	if s.OneOf != nil {
+		var properties []string
+		for _, v := range s.OneOf {
+			// We want to iterate over the properties of the embedded object
+			// and find the type that is a string.
+			var typeName string
+
+			// Iterate over all the schema components in the spec and write the types.
+			// We want to ensure we keep the order so the diffs don't look like shit.
+			keys := make([]string, 0)
+			for k := range v.Value.Properties {
+				keys = append(keys, k)
+			}
+			sort.Strings(keys)
+			for _, prop := range keys {
+				p := v.Value.Properties[prop]
+				// We want to collect all the unique properties to create our global oneOf type.
+				propertyName := printType(prop, p)
+
+				propertyString := fmt.Sprintf("\t%s %s `json:\"%s,omitempty\" yaml:\"%s,omitempty\"`\n", printProperty(prop), propertyName, prop, prop)
+				if !containsMatchFirstWord(properties, propertyString) {
+					properties = append(properties, propertyString)
+				}
+
+				if p.Value.Type == "string" {
+					if p.Value.Enum != nil {
+						// We want to get the enum value.
+						// Make sure there is only one.
+						if len(p.Value.Enum) != 1 {
+							fmt.Printf("[WARN] TODO: oneOf for %q -> %q enum %#v\n", name, prop, p.Value.Enum)
+							continue
+						}
+
+						typeName = printProperty(p.Value.Enum[0].(string))
+					}
+				}
+
+				if len(typeName) == 0 && len(keys) == 1 && v.Value.Required != nil && len(v.Value.Required) == 1 {
+					typeName = printProperty(v.Value.Required[0])
+				}
+			}
+
+			writeSchemaType(f, name, v.Value, typeName)
+		}
+
+		// Now let's create the global oneOf type.
+		// Write the type description.
+		writeSchemaTypeDescription(typeName, s, f)
+		fmt.Fprintf(f, "type %s struct {\n", typeName)
+		// Iterate over the properties and write the types, if we need to.
+		for _, p := range properties {
+			fmt.Fprint(f, p)
+		}
+		// Close the struct.
+		fmt.Fprintf(f, "}\n")
+
+	} else if s.AnyOf != nil {
+		fmt.Printf("[WARN] TODO: skipping type for %q, since it is a ANYOF\n", name)
+	} else if s.AllOf != nil {
+		fmt.Printf("[WARN] TODO: skipping type for %q, since it is a ALLOF\n", name)
+	}
+
+	// Add a newline at the end of the type for all of them.
 	fmt.Fprintln(f, "")
 }
 
