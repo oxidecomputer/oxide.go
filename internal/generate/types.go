@@ -81,22 +81,27 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 	fmt.Printf("writing type for schema %q -> %s\n", name, s.Type)
 
 	name = printProperty(name)
-	typeName := strings.TrimSpace(fmt.Sprintf("%s%s", name, printProperty(additionalName)))
+	typeName := printProperty(name)
+	if additionalName != "" {
+		typeName = fmt.Sprintf("%s%s", name, printProperty(additionalName))
+	}
 
 	switch ot := getObjectType(s); ot {
 	case "string":
 		writeSchemaTypeDescription(typeName, s, f)
 		fmt.Fprintf(f, "type %s string\n", name)
 	case "string_enum":
+		singularTypename := makeSingular(typeName)
+		singularName := makeSingular(name)
 		// Make sure we don't redeclare the enum type.
-		if _, ok := collectEnumStringTypes[makeSingular(typeName)]; !ok {
+		if _, ok := collectEnumStringTypes[singularTypename]; !ok {
 			// Write the type description.
-			writeSchemaTypeDescription(makeSingular(typeName), s, f)
+			writeSchemaTypeDescription(singularTypename, s, f)
 
 			// Write the enum type.
-			fmt.Fprintf(f, "type %s string\n", makeSingular(typeName))
+			fmt.Fprintf(f, "type %s string\n", singularTypename)
 
-			collectEnumStringTypes[makeSingular(typeName)] = []string{}
+			collectEnumStringTypes[singularTypename] = []string{}
 		}
 
 		// Define the enum values.
@@ -109,11 +114,12 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 				continue
 			}
 			// Write the description of the constant.
-			fmt.Fprintf(f, "// %s represents the %s `%q`.\n", strcase.ToCamel(fmt.Sprintf("%s_%s", makeSingular(name), enum)), makeSingular(name), enum)
-			fmt.Fprintf(f, "\t%s %s = %q\n", strcase.ToCamel(fmt.Sprintf("%s_%s", makeSingular(name), enum)), makeSingular(name), enum)
+			stringType := fmt.Sprintf("%s_%s", singularName, enum)
+			fmt.Fprintf(f, "// %s represents the %s `%q`.\n", strcase.ToCamel(stringType), singularName, enum)
+			fmt.Fprintf(f, "\t%s %s = %q\n", strcase.ToCamel(stringType), singularName, enum)
 
 			// Add the enum type to the list of enum types.
-			collectEnumStringTypes[makeSingular(typeName)] = append(collectEnumStringTypes[makeSingular(typeName)], enum)
+			collectEnumStringTypes[singularTypename] = append(collectEnumStringTypes[singularTypename], enum)
 		}
 		// Close the enum values.
 		fmt.Fprintf(f, ")\n")
@@ -171,8 +177,6 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 			}
 		}
 	case "one_of":
-		// TODO: Revisit if it makes sense to add this text or the current one
-		// writeSchemaTypeDescription(typeName, s, f)
 		var properties []string
 		for _, v := range s.OneOf {
 			// We want to iterate over the properties of the embedded object
@@ -196,21 +200,15 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 					properties = append(properties, propertyString)
 				}
 
-				if p.Value.Type == "string" {
-					if p.Value.Enum != nil {
-						// We want to get the enum value.
-						// Make sure there is only one.
-						if len(p.Value.Enum) != 1 {
-							fmt.Printf("[WARN] TODO: oneOf for %q -> %q enum %#v\n", name, prop, p.Value.Enum)
-							continue
-						}
-
-						typeName = printProperty(p.Value.Enum[0].(string))
+				if p.Value.Enum != nil {
+					// We want to get the enum value.
+					// Make sure there is only one.
+					if len(p.Value.Enum) != 1 {
+						fmt.Printf("[WARN] TODO: oneOf for %q -> %q enum %#v\n", name, prop, p.Value.Enum)
+						continue
 					}
-				}
 
-				if len(typeName) == 0 && len(keys) == 1 && v.Value.Required != nil && len(v.Value.Required) == 1 {
-					typeName = printProperty(v.Value.Required[0])
+					typeName = printProperty(p.Value.Enum[0].(string))
 				}
 			}
 
