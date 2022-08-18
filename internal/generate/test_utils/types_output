@@ -17,7 +17,6 @@ type DiskSourceSnapshot struct {
 	SnapshotId string `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
 	Type DiskSourceType `json:"type,omitempty" yaml:"type,omitempty"`
 }
-
 // DiskSourceType is the type definition for a DiskSourceType.
 type DiskSourceType string
 const (
@@ -31,7 +30,6 @@ type DiskSourceImage struct {
 	ImageId string `json:"image_id,omitempty" yaml:"image_id,omitempty"`
 	Type DiskSourceType `json:"type,omitempty" yaml:"type,omitempty"`
 }
-
 const (
 // DiskSourceTypeImage represents the DiskSourceType `"image"`.
 	DiskSourceTypeImage DiskSourceType = "image"

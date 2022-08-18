@@ -112,6 +112,7 @@ type Binint64 struct {
 	Range BinRangeint64 `json:"range,omitempty" yaml:"range,omitempty"`
 }
 
+// BlockSize is the type definition for a BlockSize.
 type BlockSize int64
 
 // ByteCount is a count of bytes, typically used either for memory or storage capacity
@@ -1113,10 +1114,6 @@ const (
 )
 
 // IpNet is the type definition for a IpNet.
-
-// IpNet is the type definition for a IpNet.
-
-// IpNet is the type definition for a IpNet.
 type IpNet struct {
 }
 
@@ -1176,10 +1173,6 @@ type IpPoolUpdate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	Name        string `json:"name,omitempty" yaml:"name,omitempty"`
 }
-
-// IpRange is the type definition for a IpRange.
-
-// IpRange is the type definition for a IpRange.
 
 // IpRange is the type definition for a IpRange.
 type IpRange struct {

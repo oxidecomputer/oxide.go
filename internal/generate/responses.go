@@ -48,19 +48,6 @@ func writeResponseTypeDescription(name string, r *openapi3.Response, f *os.File)
 	}
 }
 
-func getReferenceSchema(v *openapi3.SchemaRef) string {
-	if v.Ref != "" {
-		ref := strings.TrimPrefix(v.Ref, "#/components/schemas/")
-		if len(v.Value.Enum) > 0 {
-			return printProperty(makeSingular(ref))
-		}
-
-		return printProperty(ref)
-	}
-
-	return ""
-}
-
 // writeResponseType writes a type definition for the given response.
 func writeResponseType(f *os.File, name string, r *openapi3.Response) {
 	// Write the type definition.

@@ -47,29 +47,19 @@ func isLocalObject(v *openapi3.SchemaRef) bool {
 
 // formatStringType converts a string schema to a valid Go type.
 func formatStringType(t *openapi3.Schema) string {
-	if t.Format == "date-time" {
-		return "*time.Time"
-	} else if t.Format == "date" {
-		return "*time.Time"
-	} else if t.Format == "time" {
-		return "*time.Time"
-	} else if t.Format == "email" {
-		return "string"
-	} else if t.Format == "hostname" {
-		return "string"
-	} else if t.Format == "ipv4" {
-		return "string"
-	} else if t.Format == "ipv6" {
-		return "string"
-	} else if t.Format == "uri" {
-		return "string"
-	} else if t.Format == "uuid" {
-		return "string"
-	} else if t.Format == "uuid3" {
-		return "string"
+	var format string
+	switch t.Format {
+	case "date-time":
+		format = "*time.Time"
+	case "date":
+		format = "*time.Time"
+	case "time":
+		format = "*time.Time"
+	default:
+		format = "string"
 	}
 
-	return "string"
+	return format
 }
 
 // toLowerFirstLetter returns the given string with the first letter converted to lower case.
@@ -132,13 +122,11 @@ func printPropertyLower(p string) string {
 
 // printType converts a schema type to a valid Go type.
 func printType(property string, r *openapi3.SchemaRef) string {
-	s := r.Value
-	t := s.Type
-
-	// If we have a reference, just use that.
+	// Use reference as it is the type
 	if r.Ref != "" {
 		ref := getReferenceSchema(r)
 		// Just use the type of the reference.
+		// TODO: Find out why singling out Name is necessary
 		if ref == "Name" {
 			return "string"
 		}
@@ -146,44 +134,55 @@ func printType(property string, r *openapi3.SchemaRef) string {
 		return ref
 	}
 
-	// See if we have an allOf.
-	if s.AllOf != nil {
-		if len(s.AllOf) > 1 {
+	// TODO: Handle AllOf
+	if r.Value.AllOf != nil {
+		if len(r.Value.AllOf) > 1 {
 			fmt.Printf("[WARN] TODO: allOf for %q has more than 1 item\n", property)
 			return "TODO"
 		}
 
-		return printType(property, s.AllOf[0])
+		return printType(property, r.Value.AllOf[0])
 	}
 
-	if t == "string" {
-		reference := getReferenceSchema(r)
-		if reference != "" {
-			return reference
-		}
-
-		return formatStringType(s)
-	} else if t == "integer" {
-		return "int"
-	} else if t == "number" {
-		return "float64"
-	} else if t == "boolean" {
-		return "bool"
-	} else if t == "array" {
-		reference := getReferenceSchema(s.Items)
+	var schemaType string
+	switch r.Value.Type {
+	case "string":
+		schemaType = formatStringType(r.Value)
+	case "integer":
+		schemaType = "int"
+	case "number":
+		schemaType = "float64"
+	case "boolean":
+		schemaType = "bool"
+	case "array":
+		reference := getReferenceSchema(r.Value.Items)
 		if reference != "" {
 			return fmt.Sprintf("[]%s", reference)
 		}
-
 		// TODO: handle if it is not a reference.
-		return "[]string"
-	} else if t == "object" {
+		schemaType = "[]string"
+	case "object":
 		// Most likely this is a local object, we will handle it.
-		return strcase.ToCamel(property)
+		schemaType = strcase.ToCamel(property)
+	default:
+		fmt.Printf("[WARN] TODO: handle type %q for %q, marking as interface{} for now\n", r.Value.Type, property)
+		schemaType = "interface{}"
 	}
 
-	fmt.Printf("[WARN] TODO: skipping type %q for %q, marking as interface{}\n", t, property)
-	return "interface{}"
+	return schemaType
+}
+
+func getReferenceSchema(v *openapi3.SchemaRef) string {
+	if v.Ref != "" {
+		ref := strings.TrimPrefix(v.Ref, "#/components/schemas/")
+		if len(v.Value.Enum) > 0 {
+			return printProperty(makeSingular(ref))
+		}
+
+		return printProperty(ref)
+	}
+
+	return ""
 }
 
 func compareFiles(expected, actual string) error {
