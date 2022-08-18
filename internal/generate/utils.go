@@ -109,17 +109,6 @@ func isPageParam(s string) bool {
 	return s == "nextPage" || s == "pageToken" || s == "limit"
 }
 
-// printProperty converts an object's property name to a valid Go identifier.
-func printProperty(p string) string {
-	c := strcase.ToCamel(p)
-	return c
-}
-
-func printPropertyLower(p string) string {
-	s := strcase.ToLowerCamel(printProperty(p))
-	return s
-}
-
 // printType converts a schema type to a valid Go type.
 func printType(property string, r *openapi3.SchemaRef) string {
 	// Use reference as it is the type
@@ -176,10 +165,10 @@ func getReferenceSchema(v *openapi3.SchemaRef) string {
 	if v.Ref != "" {
 		ref := strings.TrimPrefix(v.Ref, "#/components/schemas/")
 		if len(v.Value.Enum) > 0 {
-			return printProperty(makeSingular(ref))
+			return strcase.ToCamel(makeSingular(ref))
 		}
 
-		return printProperty(ref)
+		return strcase.ToCamel(ref)
 	}
 
 	return ""

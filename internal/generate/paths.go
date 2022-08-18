@@ -107,7 +107,7 @@ func writeMethod(spec *openapi3.T, f *os.File, method string, path string, o *op
 		return nil
 	}
 
-	fnName := printProperty(o.OperationID)
+	fnName := strcase.ToCamel(o.OperationID)
 
 	pageResult := false
 
@@ -121,7 +121,7 @@ func writeMethod(spec *openapi3.T, f *os.File, method string, path string, o *op
 			continue
 		}
 
-		paramName := printPropertyLower(p.Value.Name)
+		paramName := strcase.ToLowerCamel(p.Value.Name)
 
 		// Check if we have a page result.
 		if isPageParam(paramName) && method == http.MethodGet {
@@ -325,7 +325,7 @@ func writeMethod(spec *openapi3.T, f *os.File, method string, path string, o *op
 		for _, name := range keys {
 			p := params[name]
 			t := printType(name, p.Schema)
-			n := printPropertyLower(name)
+			n := strcase.ToLowerCamel(name)
 			if t == "string" {
 				fmt.Fprintf(f, "	%q: %s,\n", name, n)
 			} else if t == "int" {

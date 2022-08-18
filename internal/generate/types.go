@@ -80,10 +80,10 @@ func generateTypes(file string, spec *openapi3.T) error {
 func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName string) {
 	fmt.Printf("writing type for schema %q -> %s\n", name, s.Type)
 
-	name = printProperty(name)
-	typeName := printProperty(name)
+	name = strcase.ToCamel(name)
+	typeName := strcase.ToCamel(name)
 	if additionalName != "" {
-		typeName = fmt.Sprintf("%s%s", name, printProperty(additionalName))
+		typeName = fmt.Sprintf("%s%s", name, strcase.ToCamel(additionalName))
 	}
 
 	switch ot := getObjectType(s); ot {
@@ -150,18 +150,18 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 			typeName := printType(k, v)
 
 			if isLocalEnum(v) {
-				typeName = fmt.Sprintf("%s%s", name, printProperty(k))
+				typeName = fmt.Sprintf("%s%s", name, strcase.ToCamel(k))
 			}
 
 			if isLocalObject(v) {
 				fmt.Printf("[WARN] TODO: skipping object for %q -> %#v\n", name, v)
-				typeName = fmt.Sprintf("%s%s", name, printProperty(k))
+				typeName = fmt.Sprintf("%s%s", name, strcase.ToCamel(k))
 			}
 
 			if v.Value.Description != "" {
-				fmt.Fprintf(f, "\t// %s is %s\n", printProperty(k), toLowerFirstLetter(strings.ReplaceAll(v.Value.Description, "\n", "\n// ")))
+				fmt.Fprintf(f, "\t// %s is %s\n", strcase.ToCamel(k), toLowerFirstLetter(strings.ReplaceAll(v.Value.Description, "\n", "\n// ")))
 			}
-			fmt.Fprintf(f, "\t%s %s `json:\"%s,omitempty\" yaml:\"%s,omitempty\"`\n", printProperty(k), typeName, k, k)
+			fmt.Fprintf(f, "\t%s %s `json:\"%s,omitempty\" yaml:\"%s,omitempty\"`\n", strcase.ToCamel(k), typeName, k, k)
 		}
 
 		fmt.Fprintf(f, "}\n")
@@ -169,11 +169,11 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 		// Iterate over the properties and write the types, if we need to.
 		for k, v := range s.Properties {
 			if isLocalEnum(v) {
-				writeSchemaType(f, fmt.Sprintf("%s%s", name, printProperty(k)), v.Value, "")
+				writeSchemaType(f, fmt.Sprintf("%s%s", name, strcase.ToCamel(k)), v.Value, "")
 			}
 
 			if isLocalObject(v) {
-				writeSchemaType(f, fmt.Sprintf("%s%s", name, printProperty(k)), v.Value, "")
+				writeSchemaType(f, fmt.Sprintf("%s%s", name, strcase.ToCamel(k)), v.Value, "")
 			}
 		}
 	case "one_of":
@@ -195,7 +195,7 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 				// We want to collect all the unique properties to create our global oneOf type.
 				propertyName := printType(prop, p)
 
-				propertyString := fmt.Sprintf("\t%s %s `json:\"%s,omitempty\" yaml:\"%s,omitempty\"`\n", printProperty(prop), propertyName, prop, prop)
+				propertyString := fmt.Sprintf("\t%s %s `json:\"%s,omitempty\" yaml:\"%s,omitempty\"`\n", strcase.ToCamel(prop), propertyName, prop, prop)
 				if !containsMatchFirstWord(properties, propertyString) {
 					properties = append(properties, propertyString)
 				}
@@ -208,7 +208,7 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 						continue
 					}
 
-					typeName = printProperty(p.Value.Enum[0].(string))
+					typeName = strcase.ToCamel(p.Value.Enum[0].(string))
 				}
 			}
 
