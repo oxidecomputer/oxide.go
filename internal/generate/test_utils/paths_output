@@ -131,7 +131,7 @@ return &body, nil
 //
 // Parameters:
 //	- `poolName`
-func (c *Client) IpPoolView(poolName string, ) (*IpPool, error) {
+func (c *Client) IpPoolView(poolName Name, ) (*IpPool, error) {
 // Create the url.
 path := "/ip-pools{{.pool_name}}"
 uri := resolveRelative(c.server, path)
@@ -142,7 +142,7 @@ return nil, fmt.Errorf("error creating request: %v", err)
 }
 // Add the parameters to the url.
 if err := expandURL(req.URL, map[string]string{
-	"pool_name": poolName,
+	"pool_name": string(poolName),
 }); err != nil {
 return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 }
@@ -172,7 +172,7 @@ return &body, nil
 //
 // Parameters:
 //	- `poolName`
-func (c *Client) IpPoolUpdate(poolName string, j *IpPoolUpdate) (*IpPool, error) {
+func (c *Client) IpPoolUpdate(poolName Name, j *IpPoolUpdate) (*IpPool, error) {
 // Create the url.
 path := "/ip-pools{{.pool_name}}"
 uri := resolveRelative(c.server, path)
@@ -188,7 +188,7 @@ return nil, fmt.Errorf("error creating request: %v", err)
 }
 // Add the parameters to the url.
 if err := expandURL(req.URL, map[string]string{
-	"pool_name": poolName,
+	"pool_name": string(poolName),
 }); err != nil {
 return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 }
@@ -218,7 +218,7 @@ return &body, nil
 //
 // Parameters:
 //	- `poolName`
-func (c *Client) IpPoolDelete(poolName string, ) (error) {
+func (c *Client) IpPoolDelete(poolName Name, ) (error) {
 // Create the url.
 path := "/ip-pools{{.pool_name}}"
 uri := resolveRelative(c.server, path)
@@ -229,7 +229,7 @@ return fmt.Errorf("error creating request: %v", err)
 }
 // Add the parameters to the url.
 if err := expandURL(req.URL, map[string]string{
-	"pool_name": poolName,
+	"pool_name": string(poolName),
 }); err != nil {
 return fmt.Errorf("expanding URL with parameters failed: %v", err)
 }

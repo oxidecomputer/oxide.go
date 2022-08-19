@@ -113,14 +113,7 @@ func isPageParam(s string) bool {
 func printType(property string, r *openapi3.SchemaRef) string {
 	// Use reference as it is the type
 	if r.Ref != "" {
-		ref := getReferenceSchema(r)
-		// Just use the type of the reference.
-		// TODO: Find out why singling out Name is necessary
-		if ref == "Name" {
-			return "string"
-		}
-
-		return ref
+		return getReferenceSchema(r)
 	}
 
 	// TODO: Handle AllOf
