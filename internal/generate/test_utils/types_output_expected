@@ -9,7 +9,7 @@ type DiskCreate struct {
 
 // DiskIdentifier is parameters for the [`Disk`](omicron_common::api::external::Disk) to be attached or detached to an instance
 type DiskIdentifier struct {
-	Name string `json:"name,omitempty" yaml:"name,omitempty"`
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
 // DiskSourceSnapshot is create a disk from a disk snapshot
