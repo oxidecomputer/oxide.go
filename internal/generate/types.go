@@ -18,6 +18,24 @@ func enumStringTypes() map[string][]string {
 	return map[string][]string{}
 }
 
+// TODO: use these two structs to build each type
+
+// TypeTemplate holds the information of a type struct
+type TypeTemplate struct {
+	Description string
+	Name        string
+	// Type describes the type of the type (e.g. struct, int64, string)
+	Type   string
+	Fields []TypeFields
+}
+
+// TypeFields holds the information for each type field
+type TypeFields struct {
+	Name              string
+	Type              string
+	SerializationInfo string
+}
+
 // Generate the types file.
 func generateTypes(file string, spec *openapi3.T) error {
 	f, err := openGeneratedFile(file)
@@ -137,35 +155,10 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 		fmt.Fprintf(f, "type %s []%s\n", name, s.Items.Value.Type)
 	case "object":
 		writeSchemaTypeDescription(typeName, s, f)
-		fmt.Fprintf(f, "type %s struct {\n", typeName)
-		// We want to ensure we keep the order so the diffs don't look like shit.
-		keys := make([]string, 0)
-		for k := range s.Properties {
-			keys = append(keys, k)
-		}
-		sort.Strings(keys)
-		for _, k := range keys {
-			v := s.Properties[k]
-			// Check if we need to generate a type for this type.
-			typeName := printType(k, v)
-
-			if isLocalEnum(v) {
-				typeName = fmt.Sprintf("%s%s", name, strcase.ToCamel(k))
-			}
-
-			if isLocalObject(v) {
-				fmt.Printf("[WARN] TODO: skipping object for %q -> %#v\n", name, v)
-				typeName = fmt.Sprintf("%s%s", name, strcase.ToCamel(k))
-			}
-
-			if v.Value.Description != "" {
-				fmt.Fprintf(f, "\t// %s is %s\n", strcase.ToCamel(k), toLowerFirstLetter(strings.ReplaceAll(v.Value.Description, "\n", "\n// ")))
-			}
-			fmt.Fprintf(f, "\t%s %s `json:\"%s,omitempty\" yaml:\"%s,omitempty\"`\n", strcase.ToCamel(k), typeName, k, k)
-		}
-
-		fmt.Fprintf(f, "}\n")
-
+		typeObj := createTypeObject(s.Properties, name, typeName)
+		fmt.Fprint(f, typeObj)
+		// TODO: Handle these differently. The output of these
+		// is generally not structs, but constants, variables and string types
 		// Iterate over the properties and write the types, if we need to.
 		for k, v := range s.Properties {
 			if isLocalEnum(v) {
@@ -193,7 +186,7 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 			for _, prop := range keys {
 				p := v.Value.Properties[prop]
 				// We want to collect all the unique properties to create our global oneOf type.
-				propertyName := printType(prop, p)
+				propertyName := convertToValidGoType(prop, p)
 
 				propertyString := fmt.Sprintf("\t%s %s `json:\"%s,omitempty\" yaml:\"%s,omitempty\"`\n", strcase.ToCamel(prop), propertyName, prop, prop)
 				if !containsMatchFirstWord(properties, propertyString) {
@@ -234,6 +227,40 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 	}
 
 	fmt.Fprintln(f, "")
+}
+
+// TODO: use the TypeTemplate struct to build these
+func createTypeObject(schemas map[string]*openapi3.SchemaRef, name, typeName string) string {
+	var typeObj string
+	typeObj = fmt.Sprintf("type %s struct {\n", typeName)
+	// We want to ensure we keep the order so the diffs don't look like shit.
+	keys := make([]string, 0)
+	for k := range schemas {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	for _, k := range keys {
+		v := schemas[k]
+		// Check if we need to generate a type for this type.
+		typeName := convertToValidGoType(k, v)
+
+		if isLocalEnum(v) {
+			typeName = fmt.Sprintf("%s%s", name, strcase.ToCamel(k))
+		}
+
+		if isLocalObject(v) {
+			fmt.Printf("[WARN] TODO: skipping object for %q -> %#v\n", name, v)
+			typeName = fmt.Sprintf("%s%s", name, strcase.ToCamel(k))
+		}
+
+		if v.Value.Description != "" {
+			typeObj = typeObj + fmt.Sprintf("\t// %s is %s\n", strcase.ToCamel(k), toLowerFirstLetter(strings.ReplaceAll(v.Value.Description, "\n", "\n// ")))
+		}
+		typeObj = typeObj + fmt.Sprintf("\t%s %s `json:\"%s,omitempty\" yaml:\"%s,omitempty\"`\n", strcase.ToCamel(k), typeName, k, k)
+
+	}
+
+	return typeObj + "}\n"
 }
 
 func getObjectType(s *openapi3.Schema) string {

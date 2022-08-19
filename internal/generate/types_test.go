@@ -97,3 +97,38 @@ func Test_generateTypes(t *testing.T) {
 		})
 	}
 }
+
+func Test_createTypeObject(t *testing.T) {
+	typesSpec := map[string]*openapi3.SchemaRef{
+		"snapshot_id": {
+			Value: &openapi3.Schema{Type: "string", Format: "uuid"},
+		},
+		"type": {
+			Value: &openapi3.Schema{Type: "string", Enum: []interface{}{"snapshot"}},
+		},
+	}
+
+	type args struct {
+		s        map[string]*openapi3.SchemaRef
+		name     string
+		typeName string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "success",
+			args: args{typesSpec, "DiskSource", "DiskSourceSnapshot"},
+			want: "type DiskSourceSnapshot struct {\n\tSnapshotId string `json:\"snapshot_id,omitempty\" yaml:\"snapshot_id,omitempty\"`\n\tType DiskSourceType `json:\"type,omitempty\" yaml:\"type,omitempty\"`\n}\n",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := createTypeObject(tt.args.s, tt.args.name, tt.args.typeName); got != tt.want {
+				assert.Equal(t, tt.want, got)
+			}
+		})
+	}
+}

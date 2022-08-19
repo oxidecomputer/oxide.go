@@ -109,8 +109,8 @@ func isPageParam(s string) bool {
 	return s == "nextPage" || s == "pageToken" || s == "limit"
 }
 
-// printType converts a schema type to a valid Go type.
-func printType(property string, r *openapi3.SchemaRef) string {
+// convertToValidGoType converts a schema type to a valid Go type.
+func convertToValidGoType(property string, r *openapi3.SchemaRef) string {
 	// Use reference as it is the type
 	if r.Ref != "" {
 		return getReferenceSchema(r)
@@ -123,7 +123,7 @@ func printType(property string, r *openapi3.SchemaRef) string {
 			return "TODO"
 		}
 
-		return printType(property, r.Value.AllOf[0])
+		return convertToValidGoType(property, r.Value.AllOf[0])
 	}
 
 	var schemaType string

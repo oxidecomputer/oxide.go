@@ -129,7 +129,7 @@ func writeMethod(spec *openapi3.T, f *os.File, method string, path string, o *op
 		}
 
 		params[p.Value.Name] = p.Value
-		paramsString += fmt.Sprintf("%s %s, ", paramName, printType(p.Value.Name, p.Value.Schema))
+		paramsString += fmt.Sprintf("%s %s, ", paramName, convertToValidGoType(p.Value.Name, p.Value.Schema))
 		if index == len(o.Parameters)-1 {
 			docParamsString += paramName
 		} else {
@@ -162,7 +162,7 @@ func writeMethod(spec *openapi3.T, f *os.File, method string, path string, o *op
 				break
 			}
 
-			typeName := printType("", r.Schema)
+			typeName := convertToValidGoType("", r.Schema)
 
 			paramsString += "j *" + typeName
 
@@ -324,7 +324,7 @@ func writeMethod(spec *openapi3.T, f *os.File, method string, path string, o *op
 		sort.Strings(keys)
 		for _, name := range keys {
 			p := params[name]
-			t := printType(name, p.Schema)
+			t := convertToValidGoType(name, p.Schema)
 			n := strcase.ToLowerCamel(name)
 			if t == "string" {
 				fmt.Fprintf(f, "	%q: %s,\n", name, n)
@@ -430,7 +430,7 @@ func getSuccessResponseType(o *openapi3.Operation, isGetAllPages bool) (string, 
 			if isGetAllPages {
 
 				if items, ok := content.Schema.Value.Properties["items"]; ok {
-					getAllPagesType = printType("", items)
+					getAllPagesType = convertToValidGoType("", items)
 				} else {
 					fmt.Printf("[WARN] TODO: skipping response for %q, since it is a get all pages response and has no `items` property:\n%#v\n", o.OperationID, content.Schema.Value.Properties)
 				}
