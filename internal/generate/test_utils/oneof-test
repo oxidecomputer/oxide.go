@@ -1,0 +1,25 @@
+// ImageSourceUrl is the type definition for a ImageSourceUrl.
+type ImageSourceUrl struct {
+	Type ImageSourceType `json:"type,omitempty" yaml:"type,omitempty"`
+	Url string `json:"url,omitempty" yaml:"url,omitempty"`
+}
+// ImageSourceType is the type definition for a ImageSourceType.
+type ImageSourceType string
+const (
+// ImageSourceTypeUrl represents the ImageSourceType `"url"`.
+	ImageSourceTypeUrl ImageSourceType = "url"
+)
+
+
+// ImageSourceSnapshot is the type definition for a ImageSourceSnapshot.
+type ImageSourceSnapshot struct {
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	Type ImageSourceType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+const (
+// ImageSourceTypeSnapshot represents the ImageSourceType `"snapshot"`.
+	ImageSourceTypeSnapshot ImageSourceType = "snapshot"
+)
+
+
+// ImageSource is the source of the underlying image.
