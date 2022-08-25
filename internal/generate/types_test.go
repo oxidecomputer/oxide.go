@@ -127,9 +127,8 @@ func Test_createTypeObject(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := createTypeObject(tt.args.s, tt.args.name, tt.args.typeName); got != tt.want {
-				assert.Equal(t, tt.want, got)
-			}
+			got := createTypeObject(tt.args.s, tt.args.name, tt.args.typeName)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
