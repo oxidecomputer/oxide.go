@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"testing"
 
 	"github.com/getkin/kin-openapi/openapi3"
@@ -160,6 +161,74 @@ func Test_createStringEnum(t *testing.T) {
 			got, got1 := createStringEnum(tt.args.s, tt.args.stringEnums, tt.args.name, tt.args.typeName)
 			assert.Equal(t, tt.want, got)
 			assert.Equal(t, tt.want1, got1)
+		})
+	}
+}
+
+func Test_createOneOf(t *testing.T) {
+	typeSpec := &openapi3.Schema{
+		Description: "The source of the underlying image.",
+		OneOf: openapi3.SchemaRefs{
+			&openapi3.SchemaRef{
+				Value: &openapi3.Schema{
+					Type: "object",
+					Properties: map[string]*openapi3.SchemaRef{
+						"type": {
+							Value: &openapi3.Schema{Type: "string", Enum: []interface{}{"url"}},
+						},
+						"url": {
+							Value: &openapi3.Schema{Type: "string"},
+						},
+					},
+					Required: []string{"type", "url"},
+				},
+			},
+			&openapi3.SchemaRef{
+				Value: &openapi3.Schema{
+					Type: "object",
+					Properties: map[string]*openapi3.SchemaRef{
+						"id": {
+							Value: &openapi3.Schema{Type: "string", Format: "uuid"},
+						},
+						"type": {
+							Value: &openapi3.Schema{Type: "string", Enum: []interface{}{"snapshot"}},
+						},
+					},
+					Required: []string{"id", "type"},
+				},
+			},
+		},
+	}
+
+	// TODO: When function is further refactored there will be no need to print out anything here.
+	file, err := os.Create("test_utils/oneof-test")
+	if err != nil {
+		t.Errorf("unable to create file for testing: %v", err)
+	}
+	defer file.Close()
+
+	type args struct {
+		f        *os.File
+		s        *openapi3.Schema
+		name     string
+		typeName string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "success",
+			args: args{file, typeSpec, "ImageSource", "ImageSource"},
+			want: "type ImageSource struct {\n\tType string `json:\"type,omitempty\" yaml:\"type,omitempty\"`\n\tUrl string `json:\"url,omitempty\" yaml:\"url,omitempty\"`\n\tId string `json:\"id,omitempty\" yaml:\"id,omitempty\"`\n}\n",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := createOneOf(tt.args.f, tt.args.s, tt.args.name, tt.args.typeName)
+			assert.Equal(t, tt.want, got)
+
 		})
 	}
 }

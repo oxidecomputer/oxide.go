@@ -141,54 +141,8 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 			}
 		}
 	case "one_of":
-		var properties []string
-		for _, v := range s.OneOf {
-			// We want to iterate over the properties of the embedded object
-			// and find the type that is a string.
-			var typeName string
-
-			// Iterate over all the schema components in the spec and write the types.
-			// We want to ensure we keep the order so the diffs don't look like shit.
-			keys := make([]string, 0)
-			for k := range v.Value.Properties {
-				keys = append(keys, k)
-			}
-			sort.Strings(keys)
-			for _, prop := range keys {
-				p := v.Value.Properties[prop]
-				// We want to collect all the unique properties to create our global oneOf type.
-				propertyName := convertToValidGoType(prop, p)
-
-				propertyString := fmt.Sprintf("\t%s %s `json:\"%s,omitempty\" yaml:\"%s,omitempty\"`\n", strcase.ToCamel(prop), propertyName, prop, prop)
-				if !containsMatchFirstWord(properties, propertyString) {
-					properties = append(properties, propertyString)
-				}
-
-				if p.Value.Enum != nil {
-					// We want to get the enum value.
-					// Make sure there is only one.
-					if len(p.Value.Enum) != 1 {
-						fmt.Printf("[WARN] TODO: oneOf for %q -> %q enum %#v\n", name, prop, p.Value.Enum)
-						continue
-					}
-
-					typeName = strcase.ToCamel(p.Value.Enum[0].(string))
-				}
-			}
-
-			writeSchemaType(f, name, v.Value, typeName)
-		}
-
-		// Now let's create the global oneOf type.
-		// Write the type description.
-		writeSchemaTypeDescription(typeName, s, f)
-		fmt.Fprintf(f, "type %s struct {\n", typeName)
-		// Iterate over the properties and write the types, if we need to.
-		for _, p := range properties {
-			fmt.Fprint(f, p)
-		}
-		// Close the struct.
-		fmt.Fprintf(f, "}\n")
+		typeOneOf := createOneOf(f, s, name, typeName)
+		fmt.Fprint(f, typeOneOf)
 	case "any_of":
 		fmt.Printf("[WARN] TODO: skipping type for %q, since it is a ANYOF\n", name)
 	case "all_of":
@@ -268,6 +222,59 @@ func createStringEnum(s *openapi3.Schema, stringEnums map[string][]string, name,
 	}
 	// Close the enum values.
 	return strEnum + ")\n", stringEnums
+}
+
+func createOneOf(f *os.File, s *openapi3.Schema, name, typeName string) string {
+	var strOneOf string
+	var properties []string
+	for _, v := range s.OneOf {
+		// We want to iterate over the properties of the embedded object
+		// and find the type that is a string.
+		var typeName string
+
+		// Iterate over all the schema components in the spec and write the types.
+		// We want to ensure we keep the order so the diffs don't look like shit.
+		keys := make([]string, 0)
+		for k := range v.Value.Properties {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for _, prop := range keys {
+			p := v.Value.Properties[prop]
+			// We want to collect all the unique properties to create our global oneOf type.
+			propertyName := convertToValidGoType(prop, p)
+
+			propertyString := fmt.Sprintf("\t%s %s `json:\"%s,omitempty\" yaml:\"%s,omitempty\"`\n", strcase.ToCamel(prop), propertyName, prop, prop)
+			if !containsMatchFirstWord(properties, propertyString) {
+				properties = append(properties, propertyString)
+			}
+
+			if p.Value.Enum != nil {
+				// We want to get the enum value.
+				// Make sure there is only one.
+				if len(p.Value.Enum) != 1 {
+					fmt.Printf("[WARN] TODO: oneOf for %q -> %q enum %#v\n", name, prop, p.Value.Enum)
+					continue
+				}
+
+				typeName = strcase.ToCamel(p.Value.Enum[0].(string))
+			}
+		}
+
+		// TODO: Do not print out things in the middle of the function
+		writeSchemaType(f, name, v.Value, typeName)
+	}
+
+	// Now let's create the global oneOf type.
+	// Write the type description.
+	writeSchemaTypeDescription(typeName, s, f)
+	strOneOf = fmt.Sprintf("type %s struct {\n", typeName)
+	// Iterate over the properties and write the types, if we need to.
+	for _, p := range properties {
+		strOneOf = strOneOf + p
+	}
+	// Close the struct.
+	return strOneOf + "}\n"
 }
 
 func getObjectType(s *openapi3.Schema) string {
