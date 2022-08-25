@@ -132,3 +132,34 @@ func Test_createTypeObject(t *testing.T) {
 		})
 	}
 }
+
+func Test_createStringEnum(t *testing.T) {
+	typesSpec := &openapi3.Schema{Enum: []interface{}{"admin", "collaborator", "viewer"}}
+	enums := map[string][]string{}
+	type args struct {
+		s           *openapi3.Schema
+		stringEnums map[string][]string
+		name        string
+		typeName    string
+	}
+	tests := []struct {
+		name  string
+		args  args
+		want  string
+		want1 map[string][]string
+	}{
+		{
+			name:  "success",
+			args:  args{typesSpec, enums, "FleetRole", "FleetRole"},
+			want:  "// FleetRole is the type definition for a FleetRole.\ntype FleetRole string\nconst (\n// FleetRoleAdmin represents the FleetRole `\"admin\"`.\n\tFleetRoleAdmin FleetRole = \"admin\"\n// FleetRoleCollaborator represents the FleetRole `\"collaborator\"`.\n\tFleetRoleCollaborator FleetRole = \"collaborator\"\n// FleetRoleViewer represents the FleetRole `\"viewer\"`.\n\tFleetRoleViewer FleetRole = \"viewer\"\n)\n",
+			want1: map[string][]string{"FleetRole": {"admin", "collaborator", "viewer"}},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, got1 := createStringEnum(tt.args.s, tt.args.stringEnums, tt.args.name, tt.args.typeName)
+			assert.Equal(t, tt.want, got)
+			assert.Equal(t, tt.want1, got1)
+		})
+	}
+}

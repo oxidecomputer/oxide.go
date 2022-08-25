@@ -109,38 +109,9 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 		writeSchemaTypeDescription(typeName, s, f)
 		fmt.Fprintf(f, "type %s string\n", name)
 	case "string_enum":
-		singularTypename := makeSingular(typeName)
-		singularName := makeSingular(name)
-		// Make sure we don't redeclare the enum type.
-		if _, ok := collectEnumStringTypes[singularTypename]; !ok {
-			// Write the type description.
-			writeSchemaTypeDescription(singularTypename, s, f)
-
-			// Write the enum type.
-			fmt.Fprintf(f, "type %s string\n", singularTypename)
-
-			collectEnumStringTypes[singularTypename] = []string{}
-		}
-
-		// Define the enum values.
-		fmt.Fprintf(f, "const (\n")
-		for _, v := range s.Enum {
-			// Most likely, the enum values are strings.
-			enum, ok := v.(string)
-			if !ok {
-				fmt.Printf("[WARN] TODO: enum value is not a string for %q -> %#v\n", name, v)
-				continue
-			}
-			// Write the description of the constant.
-			stringType := fmt.Sprintf("%s_%s", singularName, enum)
-			fmt.Fprintf(f, "// %s represents the %s `%q`.\n", strcase.ToCamel(stringType), singularName, enum)
-			fmt.Fprintf(f, "\t%s %s = %q\n", strcase.ToCamel(stringType), singularName, enum)
-
-			// Add the enum type to the list of enum types.
-			collectEnumStringTypes[singularTypename] = append(collectEnumStringTypes[singularTypename], enum)
-		}
-		// Close the enum values.
-		fmt.Fprintf(f, ")\n")
+		strEnum, enums := createStringEnum(s, collectEnumStringTypes, name, typeName)
+		collectEnumStringTypes = enums
+		fmt.Fprint(f, strEnum)
 	case "integer":
 		writeSchemaTypeDescription(typeName, s, f)
 		fmt.Fprintf(f, "type %s int64\n", name)
@@ -263,6 +234,42 @@ func createTypeObject(schemas map[string]*openapi3.SchemaRef, name, typeName str
 	return typeObj + "}\n"
 }
 
+func createStringEnum(s *openapi3.Schema, stringEnums map[string][]string, name, typeName string) (string, map[string][]string) {
+	var strEnum string
+	singularTypename := makeSingular(typeName)
+	singularName := makeSingular(name)
+	// Make sure we don't redeclare the enum type.
+	if _, ok := stringEnums[singularTypename]; !ok {
+		strEnum = schemaTypeDescription(singularTypename, s)
+
+		// Write the enum type.
+		strEnum = strEnum + fmt.Sprintf("type %s string\n", singularTypename)
+
+		stringEnums[singularTypename] = []string{}
+	}
+
+	// Define the enum values.
+	strEnum = strEnum + "const (\n"
+	for _, v := range s.Enum {
+		// Most likely, the enum values are strings.
+		enum, ok := v.(string)
+		if !ok {
+			fmt.Printf("[WARN] TODO: enum value is not a string for %q -> %#v\n", name, v)
+			continue
+		}
+		// Write the description of the constant.
+		stringType := fmt.Sprintf("%s_%s", singularName, enum)
+		strEnum = strEnum + fmt.Sprintf("// %s represents the %s `%q`.\n", strcase.ToCamel(stringType), singularName, enum)
+		strEnum = strEnum + fmt.Sprintf("\t%s %s = %q\n", strcase.ToCamel(stringType), singularName, enum)
+
+		// Add the enum type to the list of enum types.
+		//collectEnumStringTypes[singularTypename] = append(collectEnumStringTypes[singularTypename], enum)
+		stringEnums[singularTypename] = append(stringEnums[singularTypename], enum)
+	}
+	// Close the enum values.
+	return strEnum + ")\n", stringEnums
+}
+
 func getObjectType(s *openapi3.Schema) string {
 	if s.Type == "string" && len(s.Enum) > 0 {
 		return "string_enum"
@@ -288,6 +295,7 @@ func getObjectType(s *openapi3.Schema) string {
 	return ""
 }
 
+// TODO: Remove this function when it's not being used anywhere any more
 // writeSchemaTypeDescription writes the description of the given type.
 func writeSchemaTypeDescription(name string, s *openapi3.Schema, f *os.File) {
 	if s.Description != "" {
@@ -295,4 +303,13 @@ func writeSchemaTypeDescription(name string, s *openapi3.Schema, f *os.File) {
 	} else {
 		fmt.Fprintf(f, "// %s is the type definition for a %s.\n", name, name)
 	}
+}
+
+// schemaTypeDescription returns the description of the given type.
+func schemaTypeDescription(name string, s *openapi3.Schema) string {
+	if s.Description != "" {
+		return fmt.Sprintf("// %s is %s\n", name, toLowerFirstLetter(strings.ReplaceAll(s.Description, "\n", "\n// ")))
+	}
+	return fmt.Sprintf("// %s is the type definition for a %s.\n", name, name)
+
 }
