@@ -304,16 +304,6 @@ func getObjectType(s *openapi3.Schema) string {
 	return ""
 }
 
-// TODO: Remove this function when it's not being used anywhere any more
-// writeSchemaTypeDescription writes the description of the given type.
-//func writeSchemaTypeDescription(name string, s *openapi3.Schema, f *os.File) {
-//	if s.Description != "" {
-//		fmt.Fprintf(f, "// %s is %s\n", name, toLowerFirstLetter(strings.ReplaceAll(s.Description, "\n", "\n// ")))
-//	} else {
-//		fmt.Fprintf(f, "// %s is the type definition for a %s.\n", name, name)
-//	}
-//}
-
 // schemaTypeDescription returns the description of the given type.
 func schemaTypeDescription(name string, s *openapi3.Schema) string {
 	if s.Description != "" {
