@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"sort"
 	"strings"
 
@@ -63,7 +62,7 @@ func generateTypes(file string, spec *openapi3.T) error {
 			continue
 		}
 
-		writeSchemaType(f, name, s.Value, "")
+		fmt.Fprint(f, writeSchemaType(name, s.Value, ""))
 	}
 
 	// Iterate over all the enum types and add in the slices.
@@ -95,9 +94,10 @@ func generateTypes(file string, spec *openapi3.T) error {
 // writeSchemaType writes a type definition for the given schema.
 // The additional parameter is only used as a suffix for the type name.
 // This is mostly for oneOf types.
-func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName string) {
+func writeSchemaType(name string, s *openapi3.Schema, additionalName string) string {
 	fmt.Printf("writing type for schema %q -> %s\n", name, s.Type)
 
+	var typeStr string
 	name = strcase.ToCamel(name)
 	typeName := strcase.ToCamel(name)
 	if additionalName != "" {
@@ -106,43 +106,45 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 
 	switch ot := getObjectType(s); ot {
 	case "string":
-		writeSchemaTypeDescription(typeName, s, f)
-		fmt.Fprintf(f, "type %s string\n", name)
+		typeStr = schemaTypeDescription(typeName, s)
+		typeStr = typeStr + fmt.Sprintf("type %s string\n", name)
 	case "string_enum":
 		strEnum, enums := createStringEnum(s, collectEnumStringTypes, name, typeName)
 		collectEnumStringTypes = enums
-		fmt.Fprint(f, strEnum)
+		typeStr = fmt.Sprint(strEnum)
 	case "integer":
-		writeSchemaTypeDescription(typeName, s, f)
-		fmt.Fprintf(f, "type %s int64\n", name)
+		typeStr = schemaTypeDescription(typeName, s)
+		typeStr = typeStr + fmt.Sprintf("type %s int64\n", name)
 	case "number":
-		writeSchemaTypeDescription(typeName, s, f)
-		fmt.Fprintf(f, "type %s float64\n", name)
+		typeStr = schemaTypeDescription(typeName, s)
+		typeStr = typeStr + fmt.Sprintf("type %s float64\n", name)
 	case "boolean":
-		writeSchemaTypeDescription(typeName, s, f)
-		fmt.Fprintf(f, "type %s bool\n", name)
+		typeStr = schemaTypeDescription(typeName, s)
+		typeStr = typeStr + fmt.Sprintf("type %s bool\n", name)
 	case "array":
-		writeSchemaTypeDescription(typeName, s, f)
-		fmt.Fprintf(f, "type %s []%s\n", name, s.Items.Value.Type)
+		typeStr = schemaTypeDescription(typeName, s)
+		typeStr = typeStr + fmt.Sprintf("type %s []%s\n", name, s.Items.Value.Type)
 	case "object":
-		writeSchemaTypeDescription(typeName, s, f)
+		typeStr = schemaTypeDescription(typeName, s)
 		typeObj := createTypeObject(s.Properties, name, typeName)
-		fmt.Fprint(f, typeObj)
+		typeStr = typeStr + fmt.Sprint(typeObj)
 		// TODO: Handle these differently. The output of these
 		// is generally not structs, but constants, variables and string types
 		// Iterate over the properties and write the types, if we need to.
 		for k, v := range s.Properties {
 			if isLocalEnum(v) {
-				writeSchemaType(f, fmt.Sprintf("%s%s", name, strcase.ToCamel(k)), v.Value, "")
+				e := writeSchemaType(fmt.Sprintf("%s%s", name, strcase.ToCamel(k)), v.Value, "")
+				typeStr = typeStr + fmt.Sprint(e)
 			}
 
 			if isLocalObject(v) {
-				writeSchemaType(f, fmt.Sprintf("%s%s", name, strcase.ToCamel(k)), v.Value, "")
+				obj := writeSchemaType(fmt.Sprintf("%s%s", name, strcase.ToCamel(k)), v.Value, "")
+				typeStr = typeStr + fmt.Sprint(obj)
 			}
 		}
 	case "one_of":
-		typeOneOf := createOneOf(f, s, name, typeName)
-		fmt.Fprint(f, typeOneOf)
+		typeOneOf := createOneOf(s, name, typeName)
+		typeStr = fmt.Sprint(typeOneOf)
 	case "any_of":
 		fmt.Printf("[WARN] TODO: skipping type for %q, since it is a ANYOF\n", name)
 	case "all_of":
@@ -151,7 +153,7 @@ func writeSchemaType(f *os.File, name string, s *openapi3.Schema, additionalName
 		fmt.Printf("[WARN] TODO: skipping type for %q, since it is an unknown type\n", name)
 	}
 
-	fmt.Fprintln(f, "")
+	return typeStr + fmt.Sprintln("")
 }
 
 // TODO: use the TypeTemplate struct to build these
@@ -224,7 +226,7 @@ func createStringEnum(s *openapi3.Schema, stringEnums map[string][]string, name,
 	return strEnum + ")\n", stringEnums
 }
 
-func createOneOf(f *os.File, s *openapi3.Schema, name, typeName string) string {
+func createOneOf(s *openapi3.Schema, name, typeName string) string {
 	var strOneOf string
 	var properties []string
 	for _, v := range s.OneOf {
@@ -262,13 +264,13 @@ func createOneOf(f *os.File, s *openapi3.Schema, name, typeName string) string {
 		}
 
 		// TODO: Do not print out things in the middle of the function
-		writeSchemaType(f, name, v.Value, typeName)
+		strOneOf = strOneOf + writeSchemaType(name, v.Value, typeName)
 	}
 
 	// Now let's create the global oneOf type.
 	// Write the type description.
-	writeSchemaTypeDescription(typeName, s, f)
-	strOneOf = fmt.Sprintf("type %s struct {\n", typeName)
+	strOneOf = strOneOf + schemaTypeDescription(typeName, s)
+	strOneOf = strOneOf + fmt.Sprintf("type %s struct {\n", typeName)
 	// Iterate over the properties and write the types, if we need to.
 	for _, p := range properties {
 		strOneOf = strOneOf + p
@@ -300,16 +302,6 @@ func getObjectType(s *openapi3.Schema) string {
 	}
 
 	return ""
-}
-
-// TODO: Remove this function when it's not being used anywhere any more
-// writeSchemaTypeDescription writes the description of the given type.
-func writeSchemaTypeDescription(name string, s *openapi3.Schema, f *os.File) {
-	if s.Description != "" {
-		fmt.Fprintf(f, "// %s is %s\n", name, toLowerFirstLetter(strings.ReplaceAll(s.Description, "\n", "\n// ")))
-	} else {
-		fmt.Fprintf(f, "// %s is the type definition for a %s.\n", name, name)
-	}
 }
 
 // schemaTypeDescription returns the description of the given type.

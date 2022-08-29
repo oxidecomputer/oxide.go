@@ -66,6 +66,7 @@ func writeResponseType(f *os.File, name string, r *openapi3.Response) {
 			continue
 		}
 
-		writeSchemaType(f, name, s.Value, "")
+		// TODO: bubble up printing like types
+		fmt.Fprint(f, writeSchemaType(name, s.Value, ""))
 	}
 }

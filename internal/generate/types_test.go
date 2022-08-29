@@ -220,12 +220,12 @@ func Test_createOneOf(t *testing.T) {
 		{
 			name: "success",
 			args: args{file, typeSpec, "ImageSource", "ImageSource"},
-			want: "type ImageSource struct {\n\tType string `json:\"type,omitempty\" yaml:\"type,omitempty\"`\n\tUrl string `json:\"url,omitempty\" yaml:\"url,omitempty\"`\n\tId string `json:\"id,omitempty\" yaml:\"id,omitempty\"`\n}\n",
+			want: "// ImageSourceUrl is the type definition for a ImageSourceUrl.\ntype ImageSourceUrl struct {\n\tType ImageSourceType `json:\"type,omitempty\" yaml:\"type,omitempty\"`\n\tUrl string `json:\"url,omitempty\" yaml:\"url,omitempty\"`\n}\n// ImageSourceType is the type definition for a ImageSourceType.\ntype ImageSourceType string\nconst (\n// ImageSourceTypeUrl represents the ImageSourceType `\"url\"`.\n\tImageSourceTypeUrl ImageSourceType = \"url\"\n)\n\n\n// ImageSourceSnapshot is the type definition for a ImageSourceSnapshot.\ntype ImageSourceSnapshot struct {\n\tId string `json:\"id,omitempty\" yaml:\"id,omitempty\"`\n\tType ImageSourceType `json:\"type,omitempty\" yaml:\"type,omitempty\"`\n}\nconst (\n// ImageSourceTypeSnapshot represents the ImageSourceType `\"snapshot\"`.\n\tImageSourceTypeSnapshot ImageSourceType = \"snapshot\"\n)\n\n\n// ImageSource is the source of the underlying image.\ntype ImageSource struct {\n\tType string `json:\"type,omitempty\" yaml:\"type,omitempty\"`\n\tUrl string `json:\"url,omitempty\" yaml:\"url,omitempty\"`\n\tId string `json:\"id,omitempty\" yaml:\"id,omitempty\"`\n}\n",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := createOneOf(tt.args.f, tt.args.s, tt.args.name, tt.args.typeName)
+			got := createOneOf(tt.args.s, tt.args.name, tt.args.typeName)
 			assert.Equal(t, tt.want, got)
 
 		})
