@@ -220,7 +220,7 @@ func Test_createOneOf(t *testing.T) {
 		{
 			name: "success",
 			args: args{file, typeSpec, "ImageSource", "ImageSource"},
-			want: "type ImageSource struct {\n\tType string `json:\"type,omitempty\" yaml:\"type,omitempty\"`\n\tUrl string `json:\"url,omitempty\" yaml:\"url,omitempty\"`\n\tId string `json:\"id,omitempty\" yaml:\"id,omitempty\"`\n}\n",
+			want: "// ImageSource is the source of the underlying image.\ntype ImageSource struct {\n\tType string `json:\"type,omitempty\" yaml:\"type,omitempty\"`\n\tUrl string `json:\"url,omitempty\" yaml:\"url,omitempty\"`\n\tId string `json:\"id,omitempty\" yaml:\"id,omitempty\"`\n}\n",
 		},
 	}
 	for _, tt := range tests {

@@ -267,8 +267,8 @@ func createOneOf(f *os.File, s *openapi3.Schema, name, typeName string) string {
 
 	// Now let's create the global oneOf type.
 	// Write the type description.
-	writeSchemaTypeDescription(typeName, s, f)
-	strOneOf = fmt.Sprintf("type %s struct {\n", typeName)
+	strOneOf = schemaTypeDescription(typeName, s)
+	strOneOf = strOneOf + fmt.Sprintf("type %s struct {\n", typeName)
 	// Iterate over the properties and write the types, if we need to.
 	for _, p := range properties {
 		strOneOf = strOneOf + p

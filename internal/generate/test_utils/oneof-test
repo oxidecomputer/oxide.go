@@ -22,4 +22,3 @@ const (
 )
 
 
-// ImageSource is the source of the underlying image.
