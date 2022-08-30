@@ -5,6 +5,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/iancoleman/strcase"
 )
@@ -35,6 +36,7 @@ type TypeTemplate struct {
 
 // TypeFields holds the information for each type field
 type TypeFields struct {
+	Description       string
 	Name              string
 	Type              string
 	SerializationInfo string
@@ -73,14 +75,14 @@ func generateTypes(file string, spec *openapi3.T) error {
 		formattedType, typeTpl := writeSchemaType(name, s.Value, "")
 
 		// TODO: Eventually remove this check because no empty structs will be saved
-		if typeTpl.Description != "" {
-			typeCollect = append(typeCollect, typeTpl)
-		}
+		//	if typeTpl[0].Description != "" {
+		typeCollect = append(typeCollect, typeTpl...)
+		//	}
 		fmt.Fprint(f, formattedType)
 	}
 
 	// TODO: Remove, this is only for development
-	fmt.Printf("%#v", typeCollect)
+	spew.Dump(typeCollect)
 
 	// TODO: Currently enums are set as variables like this example:
 	//
@@ -101,6 +103,7 @@ func generateTypes(file string, spec *openapi3.T) error {
 	}
 	sort.Strings(keys)
 	for _, name := range keys {
+		// TODO: Remove once all types are constructed through structs
 		enums := collectEnumStringTypes[name]
 		// Make the enum a collection of the values.
 		// Add a description.
@@ -122,7 +125,7 @@ func generateTypes(file string, spec *openapi3.T) error {
 // writeSchemaType writes a type definition for the given schema.
 // The additional parameter is only used as a suffix for the type name.
 // This is mostly for oneOf types.
-func writeSchemaType(name string, s *openapi3.Schema, additionalName string) (string, TypeTemplate) {
+func writeSchemaType(name string, s *openapi3.Schema, additionalName string) (string, []TypeTemplate) {
 	fmt.Printf("writing type for schema %q -> %s\n", name, s.Type)
 
 	name = strcase.ToCamel(name)
@@ -131,61 +134,73 @@ func writeSchemaType(name string, s *openapi3.Schema, additionalName string) (st
 		typeName = fmt.Sprintf("%s%s", name, strcase.ToCamel(additionalName))
 	}
 
-	typeTpl := TypeTemplate{Name: name}
+	types := []TypeTemplate{}
+	var typeTpl = TypeTemplate{}
 	var typeStr string
 
 	switch ot := getObjectType(s); ot {
 	case "string":
 		typeTpl.Description = schemaTypeDescription(typeName, s)
 		typeTpl.Type = "string"
+		typeTpl.Name = name
 
 		// TODO: Remove this line once all types are constructed with the structs
-		typeStr = typeStr + schemaTypeDescription(typeName, s) + fmt.Sprintf("type %s string\n", name)
+		typeStr = typeStr + schemaTypeDescriptionDeprecated(typeName, s) + fmt.Sprintf("type %s string\n", name)
 	case "string_enum":
 		strEnum, enums := createStringEnum(s, collectEnumStringTypes, name, typeName)
+		// spew.Dump(enums)
 		// TODO: Handle string enums with TypeTemplate
 		collectEnumStringTypes = enums
 		typeStr = fmt.Sprint(strEnum)
 	case "integer":
 		typeTpl.Description = schemaTypeDescription(typeName, s)
 		typeTpl.Type = "int64"
+		typeTpl.Name = name
 
 		// TODO: Remove this line once all types are constructed with the structs
-		typeStr = typeStr + schemaTypeDescription(typeName, s) + fmt.Sprintf("type %s int64\n", name)
+		typeStr = typeStr + schemaTypeDescriptionDeprecated(typeName, s) + fmt.Sprintf("type %s int64\n", name)
 	case "number":
 		typeTpl.Description = schemaTypeDescription(typeName, s)
 		typeTpl.Type = "float64"
+		typeTpl.Name = name
 
 		// TODO: Remove this line once all types are constructed with the structs
-		typeStr = typeStr + schemaTypeDescription(typeName, s) + fmt.Sprintf("type %s float64\n", name)
+		typeStr = typeStr + schemaTypeDescriptionDeprecated(typeName, s) + fmt.Sprintf("type %s float64\n", name)
 	case "boolean":
 		typeTpl.Description = schemaTypeDescription(typeName, s)
 		typeTpl.Type = "bool"
+		typeTpl.Name = name
 
 		// TODO: Remove this line once all types are constructed with the structs
-		typeStr = typeStr + schemaTypeDescription(typeName, s) + fmt.Sprintf("type %s bool\n", name)
+		typeStr = typeStr + schemaTypeDescriptionDeprecated(typeName, s) + fmt.Sprintf("type %s bool\n", name)
 	case "array":
 		// TODO: Handle arrays with TypeTemplate
 		// TODO: Remove this line once all types are constructed with the structs
-		typeStr = typeStr + schemaTypeDescription(typeName, s) + fmt.Sprintf("type %s []%s\n", name, s.Items.Value.Type)
+		typeStr = typeStr + schemaTypeDescriptionDeprecated(typeName, s) + fmt.Sprintf("type %s []%s\n", name, s.Items.Value.Type)
 	case "object":
-		typeStr = schemaTypeDescription(typeName, s)
-		typeObj := createTypeObject(s.Properties, name, typeName)
-		typeStr = typeStr + fmt.Sprint(typeObj)
+		typeObj, tt := createTypeObject(s.Properties, name, typeName, schemaTypeDescription(typeName, s))
+		typeTpl = tt
+
+		// TODO: Remove this line once all types are constructed with the structs
+		typeStr = typeStr + schemaTypeDescriptionDeprecated(typeName, s) + fmt.Sprint(typeObj)
 		// TODO: Handle these differently. The output of these
 		// is generally not structs, but constants, variables and string types
 		// Iterate over the properties and write the types, if we need to.
 		for k, v := range s.Properties {
 			if isLocalEnum(v) {
 				// TODO: Ignore the TypeTemplate for now
-				e, _ := writeSchemaType(fmt.Sprintf("%s%s", name, strcase.ToCamel(k)), v.Value, "")
+				e, tt := writeSchemaType(fmt.Sprintf("%s%s", name, strcase.ToCamel(k)), v.Value, "")
+				// TODO: tt doesn't actually contain anything yet as it's mostly enums that I haven't configured yet
+				// spew.Dump(tt)
+				types = append(types, tt...)
 				typeStr = typeStr + fmt.Sprint(e)
 			}
 
 			// TODO: So far this code is never hit with the current openapi spec
 			if isLocalObject(v) {
 				// TODO: Ignore the TypeTemplate for now
-				obj, _ := writeSchemaType(fmt.Sprintf("%s%s", name, strcase.ToCamel(k)), v.Value, "")
+				obj, tt := writeSchemaType(fmt.Sprintf("%s%s", name, strcase.ToCamel(k)), v.Value, "")
+				types = append(types, tt...)
 				typeStr = typeStr + fmt.Sprint(obj)
 			}
 		}
@@ -201,18 +216,35 @@ func writeSchemaType(name string, s *openapi3.Schema, additionalName string) (st
 	}
 
 	typeStr = typeStr + fmt.Sprintln("")
-	return typeStr, typeTpl
+
+	// TODO: Remove this check once all types are constructed through structs
+	if typeTpl.Description != "" {
+		types = append(types, typeTpl)
+	}
+
+	if len(types) > 0 {
+		return typeStr, types
+	}
+
+	return typeStr, nil
 }
 
 // TODO: use the TypeTemplate struct to build these
-func createTypeObject(schemas map[string]*openapi3.SchemaRef, name, typeName string) string {
+func createTypeObject(schemas map[string]*openapi3.SchemaRef, name, typeName, description string) (string, TypeTemplate) {
 	var typeObj string
 	typeObj = fmt.Sprintf("type %s struct {\n", typeName)
+	typeTpl := TypeTemplate{
+		Description: description,
+		Name:        typeName,
+		Type:        "struct",
+	}
+
 	// We want to ensure we keep the order so the diffs don't look like shit.
 	keys := make([]string, 0)
 	for k := range schemas {
 		keys = append(keys, k)
 	}
+	fields := []TypeFields{}
 	sort.Strings(keys)
 	for _, k := range keys {
 		v := schemas[k]
@@ -223,19 +255,37 @@ func createTypeObject(schemas map[string]*openapi3.SchemaRef, name, typeName str
 			typeName = fmt.Sprintf("%s%s", name, strcase.ToCamel(k))
 		}
 
+		// TODO: So far this code is never hit with the current openapi spec
 		if isLocalObject(v) {
-			fmt.Printf("[WARN] TODO: skipping object for %q -> %#v\n", name, v)
 			typeName = fmt.Sprintf("%s%s", name, strcase.ToCamel(k))
 		}
 
+		field := TypeFields{}
 		if v.Value.Description != "" {
+			desc := fmt.Sprintf("// %s is %s", strcase.ToCamel(k), toLowerFirstLetter(strings.ReplaceAll(v.Value.Description, "\n", "\n// ")))
+			field.Description = desc
+
 			typeObj = typeObj + fmt.Sprintf("\t// %s is %s\n", strcase.ToCamel(k), toLowerFirstLetter(strings.ReplaceAll(v.Value.Description, "\n", "\n// ")))
 		}
+
+		field.Name = strcase.ToCamel(k)
+		field.Type = typeName
+
+		serInfo := fmt.Sprintf("`json:\"%s,omitempty\" yaml:\"%s,omitempty\"`", k, k)
+		field.SerializationInfo = serInfo
+
+		// TODO: Remove this once all types are constructed with structs
 		typeObj = typeObj + fmt.Sprintf("\t%s %s `json:\"%s,omitempty\" yaml:\"%s,omitempty\"`\n", strcase.ToCamel(k), typeName, k, k)
+
+		fields = append(fields, field)
 
 	}
 
-	return typeObj + "}\n"
+	typeTpl.Fields = fields
+
+	// TODO: Remove this once all types are constructed with structs
+	typeObj = typeObj + "}\n"
+	return typeObj, typeTpl
 }
 
 func createStringEnum(s *openapi3.Schema, stringEnums map[string][]string, name, typeName string) (string, map[string][]string) {
@@ -244,7 +294,7 @@ func createStringEnum(s *openapi3.Schema, stringEnums map[string][]string, name,
 	singularName := makeSingular(name)
 	// Make sure we don't redeclare the enum type.
 	if _, ok := stringEnums[singularTypename]; !ok {
-		strEnum = schemaTypeDescription(singularTypename, s)
+		strEnum = schemaTypeDescriptionDeprecated(singularTypename, s)
 
 		// Write the enum type.
 		strEnum = strEnum + fmt.Sprintf("type %s string\n", singularTypename)
@@ -319,7 +369,7 @@ func createOneOf(s *openapi3.Schema, name, typeName string) string {
 
 	// Now let's create the global oneOf type.
 	// Write the type description.
-	strOneOf = strOneOf + schemaTypeDescription(typeName, s)
+	strOneOf = strOneOf + schemaTypeDescriptionDeprecated(typeName, s)
 	strOneOf = strOneOf + fmt.Sprintf("type %s struct {\n", typeName)
 	// Iterate over the properties and write the types, if we need to.
 	for _, p := range properties {
@@ -356,6 +406,16 @@ func getObjectType(s *openapi3.Schema) string {
 
 // schemaTypeDescription returns the description of the given type.
 func schemaTypeDescription(name string, s *openapi3.Schema) string {
+	if s.Description != "" {
+		return fmt.Sprintf("// %s is %s", name, toLowerFirstLetter(strings.ReplaceAll(s.Description, "\n", "\n// ")))
+	}
+	return fmt.Sprintf("// %s is the type definition for a %s.", name, name)
+
+}
+
+// TODO: Delete once all types are constructed by the structs
+// schemaTypeDescription returns the description of the given type.
+func schemaTypeDescriptionDeprecated(name string, s *openapi3.Schema) string {
 	if s.Description != "" {
 		return fmt.Sprintf("// %s is %s\n", name, toLowerFirstLetter(strings.ReplaceAll(s.Description, "\n", "\n// ")))
 	}

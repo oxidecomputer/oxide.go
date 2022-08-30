@@ -1,7 +1,6 @@
 package main
 
 import (
-	"os"
 	"testing"
 
 	"github.com/getkin/kin-openapi/openapi3"
@@ -115,20 +114,40 @@ func Test_createTypeObject(t *testing.T) {
 		typeName string
 	}
 	tests := []struct {
-		name string
-		args args
-		want string
+		name  string
+		args  args
+		want  string
+		want2 TypeTemplate
 	}{
 		{
 			name: "success",
 			args: args{typesSpec, "DiskSource", "DiskSourceSnapshot"},
 			want: "type DiskSourceSnapshot struct {\n\tSnapshotId string `json:\"snapshot_id,omitempty\" yaml:\"snapshot_id,omitempty\"`\n\tType DiskSourceType `json:\"type,omitempty\" yaml:\"type,omitempty\"`\n}\n",
+			want2: TypeTemplate{
+				Description: "Create a disk from a disk snapshot",
+				Name:        "DiskSourceSnapshot",
+				Type:        "struct", Fields: []TypeFields{
+					{
+						Description:       "",
+						Name:              "SnapshotId",
+						Type:              "string",
+						SerializationInfo: "`json:\"snapshot_id,omitempty\" yaml:\"snapshot_id,omitempty\"`",
+					},
+					{
+						Description:       "",
+						Name:              "Type",
+						Type:              "DiskSourceType",
+						SerializationInfo: "`json:\"type,omitempty\" yaml:\"type,omitempty\"`",
+					},
+				},
+			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := createTypeObject(tt.args.s, tt.args.name, tt.args.typeName)
+			got, typeTpl := createTypeObject(tt.args.s, tt.args.name, tt.args.typeName, "Create a disk from a disk snapshot")
 			assert.Equal(t, tt.want, got)
+			assert.Equal(t, tt.want2, typeTpl)
 		})
 	}
 }
@@ -199,15 +218,7 @@ func Test_createOneOf(t *testing.T) {
 		},
 	}
 
-	// TODO: When function is further refactored there will be no need to print out anything here.
-	file, err := os.Create("test_utils/oneof-test")
-	if err != nil {
-		t.Errorf("unable to create file for testing: %v", err)
-	}
-	defer file.Close()
-
 	type args struct {
-		f        *os.File
 		s        *openapi3.Schema
 		name     string
 		typeName string
@@ -219,7 +230,7 @@ func Test_createOneOf(t *testing.T) {
 	}{
 		{
 			name: "success",
-			args: args{file, typeSpec, "ImageSource", "ImageSource"},
+			args: args{typeSpec, "ImageSource", "ImageSource"},
 			want: "// ImageSourceUrl is the type definition for a ImageSourceUrl.\ntype ImageSourceUrl struct {\n\tType ImageSourceType `json:\"type,omitempty\" yaml:\"type,omitempty\"`\n\tUrl string `json:\"url,omitempty\" yaml:\"url,omitempty\"`\n}\n// ImageSourceType is the type definition for a ImageSourceType.\ntype ImageSourceType string\nconst (\n// ImageSourceTypeUrl represents the ImageSourceType `\"url\"`.\n\tImageSourceTypeUrl ImageSourceType = \"url\"\n)\n\n\n// ImageSourceSnapshot is the type definition for a ImageSourceSnapshot.\ntype ImageSourceSnapshot struct {\n\tId string `json:\"id,omitempty\" yaml:\"id,omitempty\"`\n\tType ImageSourceType `json:\"type,omitempty\" yaml:\"type,omitempty\"`\n}\nconst (\n// ImageSourceTypeSnapshot represents the ImageSourceType `\"snapshot\"`.\n\tImageSourceTypeSnapshot ImageSourceType = \"snapshot\"\n)\n\n\n// ImageSource is the source of the underlying image.\ntype ImageSource struct {\n\tType string `json:\"type,omitempty\" yaml:\"type,omitempty\"`\n\tUrl string `json:\"url,omitempty\" yaml:\"url,omitempty\"`\n\tId string `json:\"id,omitempty\" yaml:\"id,omitempty\"`\n}\n",
 		},
 	}
