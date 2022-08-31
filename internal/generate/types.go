@@ -74,10 +74,9 @@ func generateTypes(file string, spec *openapi3.T) error {
 
 		formattedType, typeTpl := writeSchemaType(name, s.Value, "")
 
-		// TODO: Eventually remove this check because no empty structs will be saved
-		//	if typeTpl[0].Description != "" {
 		typeCollect = append(typeCollect, typeTpl...)
-		//	}
+
+		// TODO: Remove when all types are constructed through structs
 		fmt.Fprint(f, formattedType)
 	}
 
@@ -205,7 +204,11 @@ func writeSchemaType(name string, s *openapi3.Schema, additionalName string) (st
 			}
 		}
 	case "one_of":
-		typeOneOf := createOneOf(s, name, typeName)
+		typeOneOf, tt := createOneOf(s, name, typeName)
+		types = append(types, tt...)
+
+		spew.Dump(types)
+		// TODO: Remove once all types are constructed with structs
 		typeStr = fmt.Sprint(typeOneOf)
 	case "any_of":
 		fmt.Printf("[WARN] TODO: skipping type for %q, since it is a ANYOF\n", name)
@@ -217,10 +220,7 @@ func writeSchemaType(name string, s *openapi3.Schema, additionalName string) (st
 
 	typeStr = typeStr + fmt.Sprintln("")
 
-	// TODO: Remove this check once all types are constructed through structs
-	if typeTpl.Description != "" {
-		types = append(types, typeTpl)
-	}
+	types = append(types, typeTpl)
 
 	if len(types) > 0 {
 		return typeStr, types
@@ -324,13 +324,15 @@ func createStringEnum(s *openapi3.Schema, stringEnums map[string][]string, name,
 	return strEnum + ")\n", stringEnums
 }
 
-func createOneOf(s *openapi3.Schema, name, typeName string) string {
+func createOneOf(s *openapi3.Schema, name, typeName string) (string, []TypeTemplate) {
 	var strOneOf string
 	var properties []string
+	typeTpls := []TypeTemplate{}
+	fields := []TypeFields{}
 	for _, v := range s.OneOf {
 		// We want to iterate over the properties of the embedded object
 		// and find the type that is a string.
-		var typeName string
+		var typeName2 string
 
 		// Iterate over all the schema components in the spec and write the types.
 		// We want to ensure we keep the order so the diffs don't look like shit.
@@ -345,7 +347,20 @@ func createOneOf(s *openapi3.Schema, name, typeName string) string {
 			propertyName := convertToValidGoType(prop, p)
 
 			propertyString := fmt.Sprintf("\t%s %s `json:\"%s,omitempty\" yaml:\"%s,omitempty\"`\n", strcase.ToCamel(prop), propertyName, prop, prop)
+			// Avoids duplication for every enum
 			if !containsMatchFirstWord(properties, propertyString) {
+				// Construct TypeFields
+				field := TypeFields{
+					// Perhaps not?
+					// Description:       p.Value.Description,
+					Name:              strcase.ToCamel(prop),
+					Type:              propertyName,
+					SerializationInfo: fmt.Sprintf("`json:\"%s,omitempty\" yaml:\"%s,omitempty\"`", prop, prop),
+				}
+
+				fields = append(fields, field)
+
+				// TODO: Remove when all types are constructed through structs
 				properties = append(properties, propertyString)
 			}
 
@@ -357,15 +372,24 @@ func createOneOf(s *openapi3.Schema, name, typeName string) string {
 					continue
 				}
 
-				typeName = strcase.ToCamel(p.Value.Enum[0].(string))
+				typeName2 = strcase.ToCamel(p.Value.Enum[0].(string))
 			}
 		}
 
-		// TODO: Ignore the TypeTemplate for now
 		// TODO: This is the only place that has an "additional name" at the end
-		t, _ := writeSchemaType(name, v.Value, typeName)
+		t, tt := writeSchemaType(name, v.Value, typeName2)
+		typeTpls = append(typeTpls, tt...)
 		strOneOf = strOneOf + t
 	}
+
+	typeTpl := TypeTemplate{
+		Description: schemaTypeDescription(typeName, s),
+		Name:        typeName,
+		Type:        "struct",
+		Fields:      fields,
+	}
+
+	typeTpls = append(typeTpls, typeTpl)
 
 	// Now let's create the global oneOf type.
 	// Write the type description.
@@ -376,7 +400,7 @@ func createOneOf(s *openapi3.Schema, name, typeName string) string {
 		strOneOf = strOneOf + p
 	}
 	// Close the struct.
-	return strOneOf + "}\n"
+	return strOneOf + "}\n", typeTpls
 }
 
 func getObjectType(s *openapi3.Schema) string {
