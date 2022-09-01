@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/davecgh/go-spew v1.1.1
-	github.com/getkin/kin-openapi v0.99.0
+	github.com/getkin/kin-openapi v0.100.0
 	github.com/iancoleman/strcase v0.2.0
 	github.com/stretchr/testify v1.8.0
 )

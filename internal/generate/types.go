@@ -91,10 +91,6 @@ func generateTypes(file string, spec *openapi3.T) error {
 		fmt.Fprint(f, formattedType)
 	}
 
-	// TODO: Remove, this is only for development
-	spew.Dump(typeCollect)
-	spew.Dump(enumCollect)
-
 	// TODO: Currently enums are set as variables like this example:
 	//
 	// var BinRangedoubleTypes = []BinRangedoubleType{
@@ -116,6 +112,8 @@ func generateTypes(file string, spec *openapi3.T) error {
 	for _, name := range keys {
 		// TODO: Remove once all types are constructed through structs
 		enums := collectEnumStringTypes[name]
+
+		// TODO: Remove everything that is printed to file from here once all code is generated from the templates
 		// Make the enum a collection of the values.
 		// Add a description.
 		fmt.Fprintf(f, "// %s is the collection of all %s values.\n", makePlural(name), makeSingular(name))
@@ -128,7 +126,28 @@ func generateTypes(file string, spec *openapi3.T) error {
 		}
 		// Close the enum values.
 		fmt.Fprintf(f, "}\n")
+
+		var enumItems string
+		sort.Strings(enums)
+		for _, enum := range enums {
+			// Most likely, the enum values are strings.
+			enumItems = enumItems + fmt.Sprintf("%s, ", strcase.ToCamel(fmt.Sprintf("%s_%s", makeSingular(name), enum)))
+		}
+		enumVar := fmt.Sprintf("[]%s{", makeSingular(name)) + enumItems + "}"
+
+		enumTpl := EnumTemplate{
+			Description: fmt.Sprintf("// %s is the collection of all %s values.", makePlural(name), makeSingular(name)),
+			Name:        makePlural(name),
+			ValueType:   "var",
+			Value:       enumVar,
+		}
+
+		enumCollect = append(enumCollect, enumTpl)
 	}
+
+	// TODO: Remove, this is only for development
+	spew.Dump(typeCollect)
+	spew.Dump(enumCollect)
 
 	return nil
 }
@@ -162,8 +181,6 @@ func writeSchemaType(name string, s *openapi3.Schema, additionalName string) (st
 		strEnum, enums, tt, et := createStringEnum(s, collectEnumStringTypes, name, typeName)
 		types = append(types, tt...)
 		enumTypes = append(enumTypes, et...)
-		// spew.Dump(enums)
-		// TODO: Handle string enums with TypeTemplate
 		collectEnumStringTypes = enums
 		typeStr = fmt.Sprint(strEnum)
 	case "integer":
@@ -191,7 +208,6 @@ func writeSchemaType(name string, s *openapi3.Schema, additionalName string) (st
 		typeTpl.Description = schemaTypeDescription(typeName, s)
 		typeTpl.Type = fmt.Sprintf("[]%s", s.Items.Value.Type)
 		typeTpl.Name = name
-		// spew.Dump(typeTpl)
 
 		// TODO: Remove this line once all types are constructed with the structs
 		typeStr = typeStr + schemaTypeDescriptionDeprecated(typeName, s) + fmt.Sprintf("type %s []%s\n", name, s.Items.Value.Type)
@@ -208,8 +224,6 @@ func writeSchemaType(name string, s *openapi3.Schema, additionalName string) (st
 			if isLocalEnum(v) {
 				// TODO: Ignore the TypeTemplate for now
 				e, tt, et := writeSchemaType(fmt.Sprintf("%s%s", name, strcase.ToCamel(k)), v.Value, "")
-				// TODO: tt doesn't actually contain anything yet as it's mostly enums that I haven't configured yet
-				// spew.Dump(tt)
 				types = append(types, tt...)
 				enumTypes = append(enumTypes, et...)
 				typeStr = typeStr + fmt.Sprint(e)
@@ -228,7 +242,7 @@ func writeSchemaType(name string, s *openapi3.Schema, additionalName string) (st
 		typeOneOf, tt, et := createOneOf(s, name, typeName)
 		types = append(types, tt...)
 		enumTypes = append(enumTypes, et...)
-		// spew.Dump(types)
+
 		// TODO: Remove once all types are constructed with structs
 		typeStr = fmt.Sprint(typeOneOf)
 	case "any_of":
