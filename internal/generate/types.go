@@ -401,7 +401,7 @@ func createOneOf(s *openapi3.Schema, name, typeName string) (string, []TypeTempl
 			if !containsMatchFirstWord(properties, propertyString) {
 				// Construct TypeFields
 				field := TypeFields{
-					Description:       schemaTypeDescription(strcase.ToCamel(prop), p.Value), //p.Value.Description, // bug here
+					Description:       schemaTypeDescription(strcase.ToCamel(prop), p.Value),
 					Name:              strcase.ToCamel(prop),
 					Type:              propertyName,
 					SerializationInfo: fmt.Sprintf("`json:\"%s,omitempty\" yaml:\"%s,omitempty\"`", prop, prop),
