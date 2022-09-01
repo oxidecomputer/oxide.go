@@ -59,3 +59,49 @@ func Test_generateResponses(t *testing.T) {
 		})
 	}
 }
+
+func Test_writeResponseType(t *testing.T) {
+	desc := "Error"
+	respType := openapi3.Response{
+		Description: &desc,
+		Content: openapi3.Content{
+			"application/json": &openapi3.MediaType{
+				Schema: &openapi3.SchemaRef{
+					Ref:   "#/components/schemas/Error",
+					Value: &openapi3.Schema{},
+				},
+			},
+		},
+	}
+	type args struct {
+		name string
+		r    *openapi3.Response
+	}
+	tests := []struct {
+		name  string
+		args  args
+		want  string
+		want2 []TypeTemplate
+		want3 []EnumTemplate
+	}{
+		{
+			name: "success",
+			args: args{"Error", &respType},
+			want: "// ErrorResponse is the response given when error\ntype ErrorResponse Error\n",
+			want2: []TypeTemplate{
+				{
+					Description: "// ErrorResponse is the response given when error\n", Name: "ErrorResponse", Type: "Error",
+				},
+			},
+			want3: []EnumTemplate{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, typeTpls, enumTpls := writeResponseType(tt.args.name, tt.args.r)
+			assert.Equal(t, tt.want, got)
+			assert.Equal(t, tt.want2, typeTpls)
+			assert.Equal(t, tt.want3, enumTpls)
+		})
+	}
+}
