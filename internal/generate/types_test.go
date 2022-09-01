@@ -299,3 +299,21 @@ func Test_createOneOf(t *testing.T) {
 		})
 	}
 }
+
+func Test_printType(t *testing.T) {
+	tests := []struct {
+		name    string
+		wantErr error
+	}{
+		{
+			name: "success",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := printType(); err != nil {
+				assert.Equal(t, tt.wantErr, err)
+			}
+		})
+	}
+}
