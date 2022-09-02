@@ -186,7 +186,8 @@ func writeMethod(spec *openapi3.T, f *os.File, method string, path string, o *op
 		delete(params, "limit")
 	}
 
-	fmt.Printf("writing method %q for path %q -> %q\n", method, path, fnName)
+	// TODO: Is this really necessary?
+	// fmt.Printf("writing method %q for path %q -> %q\n", method, path, fnName)
 
 	var description bytes.Buffer
 	// Write the description for the method.

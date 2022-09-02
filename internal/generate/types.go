@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"sort"
 	"strings"
 
@@ -16,10 +17,6 @@ var collectEnumStringTypes = enumStringTypes()
 func enumStringTypes() map[string][]string {
 	return map[string][]string{}
 }
-
-// TODO: use these two structs to build each type
-
-//type Types []TypeTemplate
 
 // TypeTemplate holds the information of a type struct
 type TypeTemplate struct {
@@ -57,21 +54,28 @@ func generateTypes(file string, spec *openapi3.T) error {
 	}
 	defer f.Close()
 
-	// Start an empty collection of types
-	typeCollect := []TypeTemplate{}
+	typeCollection, enumCollection := constructTypes(spec.Components.Schemas)
 
-	// Start an empty collection of enum types
-	enumCollect := []EnumTemplate{}
+	enumCollection = append(enumCollection, constructEnums(collectEnumStringTypes)...)
 
-	// Iterate over all the schema components in the spec and write the types.
-	// We want to ensure we keep the order so the diffs don't look like shit.
+	writeTypes(f, typeCollection, enumCollection)
+
+	return nil
+}
+
+// constructTypes takes the types collected from several parts of the spec and constructs
+// the templates
+func constructTypes(schemas openapi3.Schemas) ([]TypeTemplate, []EnumTemplate) {
+	typeCollection := make([]TypeTemplate, 0)
+	enumCollection := make([]EnumTemplate, 0)
+
 	keys := make([]string, 0)
-	for k := range spec.Components.Schemas {
+	for k := range schemas {
 		keys = append(keys, k)
 	}
 	sort.Strings(keys)
 	for _, name := range keys {
-		s := spec.Components.Schemas[name]
+		s := schemas[name]
 		if s.Ref != "" {
 			fmt.Printf("[WARN] TODO: skipping type for %q, since it is a reference\n", name)
 			continue
@@ -82,11 +86,17 @@ func generateTypes(file string, spec *openapi3.T) error {
 			continue
 		}
 
-		typeTpl, enumTpl := writeSchemaType(name, s.Value, "")
-		typeCollect = append(typeCollect, typeTpl...)
-		enumCollect = append(enumCollect, enumTpl...)
+		typeTpl, enumTpl := populateTypeTemplates(name, s.Value, "")
+		typeCollection = append(typeCollection, typeTpl...)
+		enumCollection = append(enumCollection, enumTpl...)
 	}
 
+	return typeCollection, enumCollection
+}
+
+// constructEnums takes the enums collected from several parts of the spec and constructs
+// the templates
+func constructEnums(enumStrCollection map[string][]string) []EnumTemplate {
 	// TODO: Currently enums are set as variables like this example:
 	//
 	// var BinRangedoubleTypes = []BinRangedoubleType{
@@ -97,17 +107,19 @@ func generateTypes(file string, spec *openapi3.T) error {
 	// This approach can be problematic for several reasons
 	// The most obvious being that the variable can change its value at any moment
 	// The approach to handle enums should be changed.
-	//
+
+	enumCollection := make([]EnumTemplate, 0)
+
 	// Iterate over all the enum types and add in the slices.
 	// We want to ensure we keep the order so the diffs don't look like shit.
-	keys = make([]string, 0)
-	for k := range collectEnumStringTypes {
+	keys := make([]string, 0)
+	for k := range enumStrCollection {
 		keys = append(keys, k)
 	}
 	sort.Strings(keys)
 	for _, name := range keys {
 		// TODO: Remove once all types are constructed through structs
-		enums := collectEnumStringTypes[name]
+		enums := enumStrCollection[name]
 
 		var enumItems string
 		sort.Strings(enums)
@@ -124,12 +136,19 @@ func generateTypes(file string, spec *openapi3.T) error {
 			Value:       enumVar,
 		}
 
-		enumCollect = append(enumCollect, enumTpl)
+		enumCollection = append(enumCollection, enumTpl)
 	}
 
-	// New code to print to file
-	for _, tt := range typeCollect {
-		if tt.Name == "" {
+	return enumCollection
+}
+
+// writeTypes iterates over the templates, constructs the different types and writes to file
+func writeTypes(f *os.File, typeCollection []TypeTemplate, enumCollection []EnumTemplate) {
+	for _, tt := range typeCollection {
+		// If an empty template manages to get through, ignore it.
+		// if there is a weirdly constructed template, then let it get through
+		// so it's evident to us.
+		if tt.Name == "" && tt.Type == "" && tt.Description == "" {
 			continue
 		}
 
@@ -139,7 +158,7 @@ func generateTypes(file string, spec *openapi3.T) error {
 			fmt.Fprint(f, " {\n")
 			for _, ft := range tt.Fields {
 				if ft.Description != "" {
-					// Double check about the "//"
+					// TODO: Double check about the "//"
 					fmt.Fprintf(f, "\t%s\n", ft.Description)
 				}
 				fmt.Fprintf(f, "\t%s %s %s\n", ft.Name, ft.Type, ft.SerializationInfo)
@@ -149,7 +168,7 @@ func generateTypes(file string, spec *openapi3.T) error {
 		fmt.Fprint(f, "\n")
 	}
 
-	for _, et := range enumCollect {
+	for _, et := range enumCollection {
 		if et.Name == "" {
 			continue
 		}
@@ -157,29 +176,26 @@ func generateTypes(file string, spec *openapi3.T) error {
 		fmt.Fprintf(f, "%s\n", et.Description)
 		fmt.Fprintf(f, "%s %s %s\n\n", et.ValueType, et.Name, et.Value)
 	}
-
-	return nil
 }
 
-// writeSchemaType writes a type definition for the given schema.
+// populateTypeTemplates populates the template of a type definition for the given schema.
 // The additional parameter is only used as a suffix for the type name.
 // This is mostly for oneOf types.
-func writeSchemaType(name string, s *openapi3.Schema, additionalName string) ([]TypeTemplate, []EnumTemplate) {
-	fmt.Printf("writing type for schema %q -> %s\n", name, s.Type)
-
+func populateTypeTemplates(name string, s *openapi3.Schema, additionalName string) ([]TypeTemplate, []EnumTemplate) {
 	name = strcase.ToCamel(name)
 	typeName := strcase.ToCamel(name)
+
 	if additionalName != "" {
 		typeName = fmt.Sprintf("%s%s", name, strcase.ToCamel(additionalName))
 	}
 
-	types := []TypeTemplate{}
-	enumTypes := []EnumTemplate{}
-	var typeTpl = TypeTemplate{}
+	types := make([]TypeTemplate, 0)
+	enumTypes := make([]EnumTemplate, 0)
+	typeTpl := TypeTemplate{}
 
 	switch ot := getObjectType(s); ot {
 	case "string":
-		typeTpl.Description = schemaTypeDescription(typeName, s)
+		typeTpl.Description = formatTypeDescription(typeName, s)
 		typeTpl.Type = "string"
 		typeTpl.Name = name
 	case "string_enum":
@@ -188,38 +204,35 @@ func writeSchemaType(name string, s *openapi3.Schema, additionalName string) ([]
 		enumTypes = append(enumTypes, et...)
 		collectEnumStringTypes = enums
 	case "integer":
-		typeTpl.Description = schemaTypeDescription(typeName, s)
+		typeTpl.Description = formatTypeDescription(typeName, s)
 		typeTpl.Type = "int64"
 		typeTpl.Name = name
 	case "number":
-		typeTpl.Description = schemaTypeDescription(typeName, s)
+		typeTpl.Description = formatTypeDescription(typeName, s)
 		typeTpl.Type = "float64"
 		typeTpl.Name = name
 	case "boolean":
-		typeTpl.Description = schemaTypeDescription(typeName, s)
+		typeTpl.Description = formatTypeDescription(typeName, s)
 		typeTpl.Type = "bool"
 		typeTpl.Name = name
 	case "array":
-		typeTpl.Description = schemaTypeDescription(typeName, s)
+		typeTpl.Description = formatTypeDescription(typeName, s)
 		typeTpl.Type = fmt.Sprintf("[]%s", s.Items.Value.Type)
 		typeTpl.Name = name
 	case "object":
-		tt := createTypeObject(s.Properties, name, typeName, schemaTypeDescription(typeName, s))
-		typeTpl = tt
+		typeTpl = createTypeObject(s.Properties, name, typeName, formatTypeDescription(typeName, s))
 
-		// TODO: Handle these differently. The output of these
-		// is generally not structs, but constants, variables and string types
 		// Iterate over the properties and write the types, if we need to.
 		for k, v := range s.Properties {
 			if isLocalEnum(v) {
-				tt, et := writeSchemaType(fmt.Sprintf("%s%s", name, strcase.ToCamel(k)), v.Value, "")
+				tt, et := populateTypeTemplates(fmt.Sprintf("%s%s", name, strcase.ToCamel(k)), v.Value, "")
 				types = append(types, tt...)
 				enumTypes = append(enumTypes, et...)
 			}
 
 			// TODO: So far this code is never hit with the current openapi spec
 			if isLocalObject(v) {
-				tt, et := writeSchemaType(fmt.Sprintf("%s%s", name, strcase.ToCamel(k)), v.Value, "")
+				tt, et := populateTypeTemplates(fmt.Sprintf("%s%s", name, strcase.ToCamel(k)), v.Value, "")
 				types = append(types, tt...)
 				enumTypes = append(enumTypes, et...)
 			}
@@ -236,12 +249,14 @@ func writeSchemaType(name string, s *openapi3.Schema, additionalName string) ([]
 		fmt.Printf("[WARN] TODO: skipping type for %q, since it is an unknown type\n", name)
 	}
 
-	types = append(types, typeTpl)
+	// enums are handled separately, so an empty template would be returned
+	if typeTpl.Name != "" {
+		types = append(types, typeTpl)
+	}
 
 	return types, enumTypes
 }
 
-// TODO: use the TypeTemplate struct to build these
 func createTypeObject(schemas map[string]*openapi3.SchemaRef, name, typeName, description string) TypeTemplate {
 	typeTpl := TypeTemplate{
 		Description: description,
@@ -291,11 +306,12 @@ func createTypeObject(schemas map[string]*openapi3.SchemaRef, name, typeName, de
 func createStringEnum(s *openapi3.Schema, stringEnums map[string][]string, name, typeName string) (map[string][]string, []TypeTemplate, []EnumTemplate) {
 	singularTypename := makeSingular(typeName)
 	singularName := makeSingular(name)
-	typeTpls := []TypeTemplate{}
+	typeTpls := make([]TypeTemplate, 0)
+
 	// Make sure we don't redeclare the enum type.
 	if _, ok := stringEnums[singularTypename]; !ok {
 		typeTpl := TypeTemplate{
-			Description: schemaTypeDescription(singularName, s),
+			Description: formatTypeDescription(singularName, s),
 			Name:        singularTypename,
 			Type:        "string",
 		}
@@ -305,21 +321,20 @@ func createStringEnum(s *openapi3.Schema, stringEnums map[string][]string, name,
 		stringEnums[singularTypename] = []string{}
 	}
 
-	// Define the enum values.
-	enumTpls := []EnumTemplate{}
+	enumTpls := make([]EnumTemplate, 0)
 	for _, v := range s.Enum {
+		// TODO: Handle different enum types more gracefully
 		// Most likely, the enum values are strings.
 		enum, ok := v.(string)
 		if !ok {
 			fmt.Printf("[WARN] TODO: enum value is not a string for %q -> %#v\n", name, v)
 			continue
 		}
-		// Write the description of the constant.
-		stringType := fmt.Sprintf("%s_%s", singularName, enum)
+		snakeCaseTypeName := fmt.Sprintf("%s_%s", singularName, enum)
 
 		enumTpl := EnumTemplate{
-			Description: fmt.Sprintf("// %s represents the %s `%q`.", strcase.ToCamel(stringType), singularName, enum),
-			Name:        strcase.ToCamel(stringType),
+			Description: fmt.Sprintf("// %s represents the %s `%q`.", strcase.ToCamel(snakeCaseTypeName), singularName, enum),
+			Name:        strcase.ToCamel(snakeCaseTypeName),
 			ValueType:   "const",
 			Value:       fmt.Sprintf("%s = %q", singularName, enum),
 		}
@@ -335,13 +350,13 @@ func createStringEnum(s *openapi3.Schema, stringEnums map[string][]string, name,
 
 func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []EnumTemplate) {
 	var properties []string
-	enumTpls := []EnumTemplate{}
-	typeTpls := []TypeTemplate{}
-	fields := []TypeFields{}
+	enumTpls := make([]EnumTemplate, 0)
+	typeTpls := make([]TypeTemplate, 0)
+	fields := make([]TypeFields, 0)
 	for _, v := range s.OneOf {
 		// We want to iterate over the properties of the embedded object
 		// and find the type that is a string.
-		var typeName2 string
+		var additionalName string
 
 		// Iterate over all the schema components in the spec and write the types.
 		// We want to ensure we keep the order so the diffs don't look like shit.
@@ -360,7 +375,7 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 			if !containsMatchFirstWord(properties, propertyString) {
 				// Construct TypeFields
 				field := TypeFields{
-					Description:       schemaTypeDescription(strcase.ToCamel(prop), p.Value),
+					Description:       formatTypeDescription(strcase.ToCamel(prop), p.Value),
 					Name:              strcase.ToCamel(prop),
 					Type:              propertyName,
 					SerializationInfo: fmt.Sprintf("`json:\"%s,omitempty\" yaml:\"%s,omitempty\"`", prop, prop),
@@ -379,18 +394,18 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 					continue
 				}
 
-				typeName2 = strcase.ToCamel(p.Value.Enum[0].(string))
+				additionalName = strcase.ToCamel(p.Value.Enum[0].(string))
 			}
 		}
 
 		// TODO: This is the only place that has an "additional name" at the end
-		tt, et := writeSchemaType(name, v.Value, typeName2)
+		tt, et := populateTypeTemplates(name, v.Value, additionalName)
 		typeTpls = append(typeTpls, tt...)
 		enumTpls = append(enumTpls, et...)
 	}
 
 	typeTpl := TypeTemplate{
-		Description: schemaTypeDescription(typeName, s),
+		Description: formatTypeDescription(typeName, s),
 		Name:        typeName,
 		Type:        "struct",
 		Fields:      fields,
@@ -401,11 +416,11 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 }
 
 func getObjectType(s *openapi3.Schema) string {
+	// TODO: Support enums of other types
 	if s.Type == "string" && len(s.Enum) > 0 {
 		return "string_enum"
 	}
 
-	// TODO: Support enums of other types
 	if s.Type != "" {
 		return s.Type
 	}
@@ -425,11 +440,10 @@ func getObjectType(s *openapi3.Schema) string {
 	return ""
 }
 
-// schemaTypeDescription returns the description of the given type.
-func schemaTypeDescription(name string, s *openapi3.Schema) string {
+// formatTypeDescription returns the description of the given type.
+func formatTypeDescription(name string, s *openapi3.Schema) string {
 	if s.Description != "" {
 		return fmt.Sprintf("// %s is %s", name, toLowerFirstLetter(strings.ReplaceAll(s.Description, "\n", "\n// ")))
 	}
 	return fmt.Sprintf("// %s is the type definition for a %s.", name, name)
-
 }

@@ -241,9 +241,6 @@ func Test_createOneOf(t *testing.T) {
 					Description: "// ImageSourceType is the type definition for a ImageSourceType.", Name: "ImageSourceType", Type: "string",
 				},
 				{
-					Description: "", Name: "", Type: "",
-				},
-				{
 					Description: "// ImageSourceUrl is the type definition for a ImageSourceUrl.", Name: "ImageSourceUrl", Type: "struct", Fields: []TypeFields{
 						{
 							Description: "", Name: "Type", Type: "ImageSourceType", SerializationInfo: "`json:\"type,omitempty\" yaml:\"type,omitempty\"`",
@@ -252,9 +249,6 @@ func Test_createOneOf(t *testing.T) {
 							Description: "", Name: "Url", Type: "string", SerializationInfo: "`json:\"url,omitempty\" yaml:\"url,omitempty\"`",
 						},
 					},
-				},
-				{
-					Description: "", Name: "", Type: "",
 				},
 				{
 					Description: "// ImageSourceSnapshot is the type definition for a ImageSourceSnapshot.", Name: "ImageSourceSnapshot", Type: "struct", Fields: []TypeFields{

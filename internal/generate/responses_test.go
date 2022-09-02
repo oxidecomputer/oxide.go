@@ -60,7 +60,7 @@ func Test_generateResponses(t *testing.T) {
 	}
 }
 
-func Test_writeResponseType(t *testing.T) {
+func Test_populateResponseType(t *testing.T) {
 	desc := "Error"
 	respType := openapi3.Response{
 		Description: &desc,
@@ -96,7 +96,7 @@ func Test_writeResponseType(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, got1 := writeResponseType(tt.args.name, tt.args.r)
+			got, got1 := populateResponseType(tt.args.name, tt.args.r)
 			assert.Equal(t, tt.want, got)
 			assert.Equal(t, tt.want1, got1)
 		})

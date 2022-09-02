@@ -17,8 +17,8 @@ func generateResponses(file string, spec *openapi3.T) error {
 	}
 	defer f.Close()
 
-	typeCollect := []TypeTemplate{}
-	enumCollect := []EnumTemplate{}
+	typeCollection := []TypeTemplate{}
+	enumCollection := []EnumTemplate{}
 	// Iterate over all the responses in the spec and write the types.
 	// We want to ensure we keep the order so the diffs don't look like shit.
 	keys := make([]string, 0)
@@ -33,47 +33,18 @@ func generateResponses(file string, spec *openapi3.T) error {
 			continue
 		}
 
-		tt, et := writeResponseType(name, r.Value)
-		typeCollect = append(typeCollect, tt...)
-		enumCollect = append(enumCollect, et...)
+		tt, et := populateResponseType(name, r.Value)
+		typeCollection = append(typeCollection, tt...)
+		enumCollection = append(enumCollection, et...)
 	}
 
-	// New code to print to file
-	for _, tt := range typeCollect {
-		if tt.Name == "" {
-			continue
-		}
-
-		fmt.Fprintf(f, "%s\n", tt.Description)
-		fmt.Fprintf(f, "type %s %s", tt.Name, tt.Type)
-		if tt.Fields != nil {
-			fmt.Fprint(f, " {\n")
-			for _, ft := range tt.Fields {
-				if ft.Description != "" {
-					// Double check about the "//"
-					fmt.Fprintf(f, "\t%s\n", ft.Description)
-				}
-				fmt.Fprintf(f, "\t%s %s %s\n", ft.Name, ft.Type, ft.SerializationInfo)
-			}
-			fmt.Fprint(f, "}\n")
-		}
-		fmt.Fprint(f, "\n")
-	}
-
-	for _, et := range enumCollect {
-		if et.Name == "" {
-			continue
-		}
-
-		fmt.Fprintf(f, "%s\n", et.Description)
-		fmt.Fprintf(f, "%s %s %s\n", et.ValueType, et.Name, et.Value)
-	}
+	writeTypes(f, typeCollection, enumCollection)
 
 	return nil
 }
 
-// writeResponseTypeDescription writes the description of the given type.
-func writeResponseTypeDescription(name string, r *openapi3.Response) string {
+// formatResponseDescription writes the description of the given type.
+func formatResponseDescription(name string, r *openapi3.Response) string {
 	if r.Description != nil {
 		return fmt.Sprintf("// %s is the response given when %s", name, toLowerFirstLetter(
 			strings.ReplaceAll(*r.Description, "\n", "\n// ")))
@@ -82,8 +53,8 @@ func writeResponseTypeDescription(name string, r *openapi3.Response) string {
 	return fmt.Sprintf("// %s is the type definition for a %s response.\n", name, name)
 }
 
-// writeResponseType writes a type definition for the given response.
-func writeResponseType(name string, r *openapi3.Response) ([]TypeTemplate, []EnumTemplate) {
+// populateResponseType writes a type definition for the given response.
+func populateResponseType(name string, r *openapi3.Response) ([]TypeTemplate, []EnumTemplate) {
 	types := []TypeTemplate{}
 	enumTypes := []EnumTemplate{}
 	// Write the type definition.
@@ -96,7 +67,7 @@ func writeResponseType(name string, r *openapi3.Response) ([]TypeTemplate, []Enu
 		s := v.Schema
 		if s.Ref != "" {
 			typeTpl := TypeTemplate{
-				Description: writeResponseTypeDescription(name, r),
+				Description: formatResponseDescription(name, r),
 				Name:        name,
 				Type:        getReferenceSchema(s),
 			}
@@ -105,7 +76,7 @@ func writeResponseType(name string, r *openapi3.Response) ([]TypeTemplate, []Enu
 			continue
 		}
 
-		tt, et := writeSchemaType(name, s.Value, "")
+		tt, et := populateTypeTemplates(name, s.Value, "")
 		types = append(types, tt...)
 		enumTypes = append(enumTypes, et...)
 
