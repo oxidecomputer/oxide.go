@@ -17,8 +17,8 @@ func generateResponses(file string, spec *openapi3.T) error {
 	}
 	defer f.Close()
 
-	typeCollection := []TypeTemplate{}
-	enumCollection := []EnumTemplate{}
+	typeCollection := make([]TypeTemplate, 0)
+	enumCollection := make([]EnumTemplate, 0)
 	// Iterate over all the responses in the spec and write the types.
 	// We want to ensure we keep the order so the diffs don't look like shit.
 	keys := make([]string, 0)
@@ -43,6 +43,35 @@ func generateResponses(file string, spec *openapi3.T) error {
 	return nil
 }
 
+// populateResponseType writes a type definition for the given response.
+func populateResponseType(name string, r *openapi3.Response) ([]TypeTemplate, []EnumTemplate) {
+	types := make([]TypeTemplate, 0)
+	enumTypes := make([]EnumTemplate, 0)
+
+	for _, v := range r.Content {
+		respName := fmt.Sprintf("%sResponse", name)
+
+		s := v.Schema
+		if s.Ref != "" {
+			typeTpl := TypeTemplate{
+				Description: formatResponseDescription(respName, r),
+				Name:        respName,
+				Type:        getReferenceSchema(s),
+			}
+			types = append(types, typeTpl)
+
+			continue
+		}
+
+		tt, et := populateTypeTemplates(respName, s.Value, "")
+		types = append(types, tt...)
+		enumTypes = append(enumTypes, et...)
+
+	}
+
+	return types, enumTypes
+}
+
 // formatResponseDescription writes the description of the given type.
 func formatResponseDescription(name string, r *openapi3.Response) string {
 	if r.Description != nil {
@@ -51,33 +80,4 @@ func formatResponseDescription(name string, r *openapi3.Response) string {
 	}
 
 	return fmt.Sprintf("// %s is the type definition for a %s response.\n", name, name)
-}
-
-// populateResponseType writes a type definition for the given response.
-func populateResponseType(name string, r *openapi3.Response) ([]TypeTemplate, []EnumTemplate) {
-	types := []TypeTemplate{}
-	enumTypes := []EnumTemplate{}
-
-	for _, v := range r.Content {
-		name := fmt.Sprintf("%sResponse", name)
-
-		s := v.Schema
-		if s.Ref != "" {
-			typeTpl := TypeTemplate{
-				Description: formatResponseDescription(name, r),
-				Name:        name,
-				Type:        getReferenceSchema(s),
-			}
-			types = append(types, typeTpl)
-
-			continue
-		}
-
-		tt, et := populateTypeTemplates(name, s.Value, "")
-		types = append(types, tt...)
-		enumTypes = append(enumTypes, et...)
-
-	}
-
-	return types, enumTypes
 }
