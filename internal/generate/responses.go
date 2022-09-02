@@ -5,7 +5,6 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/getkin/kin-openapi/openapi3"
 )
 
@@ -18,8 +17,8 @@ func generateResponses(file string, spec *openapi3.T) error {
 	}
 	defer f.Close()
 
-	typeCollect := []TypeTemplate{}
-	enumCollect := []EnumTemplate{}
+	typeCollection := make([]TypeTemplate, 0)
+	enumCollection := make([]EnumTemplate, 0)
 	// Iterate over all the responses in the spec and write the types.
 	// We want to ensure we keep the order so the diffs don't look like shit.
 	keys := make([]string, 0)
@@ -34,67 +33,51 @@ func generateResponses(file string, spec *openapi3.T) error {
 			continue
 		}
 
-		resp, tt, et := writeResponseType(name, r.Value)
-		typeCollect = append(typeCollect, tt...)
-		enumCollect = append(enumCollect, et...)
-
-		fmt.Fprint(f, resp)
+		tt, et := populateResponseType(name, r.Value)
+		typeCollection = append(typeCollection, tt...)
+		enumCollection = append(enumCollection, et...)
 	}
 
-	// TODO: Remove, this is only for development
-	spew.Dump(typeCollect)
-	spew.Dump(enumCollect)
+	writeTypes(f, typeCollection, enumCollection)
 
 	return nil
 }
 
-// writeResponseTypeDescription writes the description of the given type.
-func writeResponseTypeDescription(name string, r *openapi3.Response) string {
-	if r.Description != nil {
-		return fmt.Sprintf("// %s is the response given when %s\n", name, toLowerFirstLetter(
-			strings.ReplaceAll(*r.Description, "\n", "\n// ")))
-	}
+// populateResponseType writes a type definition for the given response.
+func populateResponseType(name string, r *openapi3.Response) ([]TypeTemplate, []EnumTemplate) {
+	types := make([]TypeTemplate, 0)
+	enumTypes := make([]EnumTemplate, 0)
 
-	return fmt.Sprintf("// %s is the type definition for a %s response.\n", name, name)
-}
+	for _, v := range r.Content {
+		respName := fmt.Sprintf("%sResponse", name)
 
-// writeResponseType writes a type definition for the given response.
-func writeResponseType(name string, r *openapi3.Response) (string, []TypeTemplate, []EnumTemplate) {
-	var respStr string
-	types := []TypeTemplate{}
-	enumTypes := []EnumTemplate{}
-	// Write the type definition.
-	for k, v := range r.Content {
-		fmt.Printf("writing type for response %q -> `%s`\n", name, k)
-
-		name := fmt.Sprintf("%sResponse", name)
-
-		// Write the type description.
-		respStr = writeResponseTypeDescription(name, r)
-
-		// Print the type definition.
 		s := v.Schema
 		if s.Ref != "" {
 			typeTpl := TypeTemplate{
-				Description: writeResponseTypeDescription(name, r),
-				Name:        name,
+				Description: formatResponseDescription(respName, r),
+				Name:        respName,
 				Type:        getReferenceSchema(s),
 			}
 			types = append(types, typeTpl)
 
-			// TODO remove once all types are constructed through structs
-			respStr = respStr + fmt.Sprintf("type %s %s\n", name, getReferenceSchema(s))
 			continue
 		}
 
-		// TODO: Ignore the TypeTemplate for now
-		// TODO: bubble up printing like types
-		resposeType, tt, et := writeSchemaType(name, s.Value, "")
+		tt, et := populateTypeTemplates(respName, s.Value, "")
 		types = append(types, tt...)
 		enumTypes = append(enumTypes, et...)
 
-		respStr = respStr + resposeType
 	}
 
-	return respStr, types, enumTypes
+	return types, enumTypes
+}
+
+// formatResponseDescription writes the description of the given type.
+func formatResponseDescription(name string, r *openapi3.Response) string {
+	if r.Description != nil {
+		return fmt.Sprintf("// %s is the response given when %s", name, toLowerFirstLetter(
+			strings.ReplaceAll(*r.Description, "\n", "\n// ")))
+	}
+
+	return fmt.Sprintf("// %s is the type definition for a %s response.\n", name, name)
 }

@@ -60,7 +60,7 @@ func Test_generateResponses(t *testing.T) {
 	}
 }
 
-func Test_writeResponseType(t *testing.T) {
+func Test_populateResponseType(t *testing.T) {
 	desc := "Error"
 	respType := openapi3.Response{
 		Description: &desc,
@@ -80,28 +80,25 @@ func Test_writeResponseType(t *testing.T) {
 	tests := []struct {
 		name  string
 		args  args
-		want  string
-		want2 []TypeTemplate
-		want3 []EnumTemplate
+		want  []TypeTemplate
+		want1 []EnumTemplate
 	}{
 		{
 			name: "success",
 			args: args{"Error", &respType},
-			want: "// ErrorResponse is the response given when error\ntype ErrorResponse Error\n",
-			want2: []TypeTemplate{
+			want: []TypeTemplate{
 				{
-					Description: "// ErrorResponse is the response given when error\n", Name: "ErrorResponse", Type: "Error",
+					Description: "// ErrorResponse is the response given when error", Name: "ErrorResponse", Type: "Error",
 				},
 			},
-			want3: []EnumTemplate{},
+			want1: []EnumTemplate{},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, typeTpls, enumTpls := writeResponseType(tt.args.name, tt.args.r)
+			got, got1 := populateResponseType(tt.args.name, tt.args.r)
 			assert.Equal(t, tt.want, got)
-			assert.Equal(t, tt.want2, typeTpls)
-			assert.Equal(t, tt.want3, enumTpls)
+			assert.Equal(t, tt.want1, got1)
 		})
 	}
 }

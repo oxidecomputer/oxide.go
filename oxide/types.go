@@ -4,19 +4,14 @@ package oxide
 
 import "time"
 
+// BinRangedoubleType is the type definition for a BinRangedoubleType.
+type BinRangedoubleType string
+
 // BinRangedoubleRangeTo is a range unbounded below and exclusively above, `..end`.
 type BinRangedoubleRangeTo struct {
 	End  float64            `json:"end,omitempty" yaml:"end,omitempty"`
 	Type BinRangedoubleType `json:"type,omitempty" yaml:"type,omitempty"`
 }
-
-// BinRangedoubleType is the type definition for a BinRangedoubleType.
-type BinRangedoubleType string
-
-const (
-	// BinRangedoubleTypeRangeTo represents the BinRangedoubleType `"range_to"`.
-	BinRangedoubleTypeRangeTo BinRangedoubleType = "range_to"
-)
 
 // BinRangedoubleRange is a range bounded inclusively below and exclusively above, `start..end`.
 type BinRangedoubleRange struct {
@@ -25,44 +20,32 @@ type BinRangedoubleRange struct {
 	Type  BinRangedoubleType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
-const (
-	// BinRangedoubleTypeRange represents the BinRangedoubleType `"range"`.
-	BinRangedoubleTypeRange BinRangedoubleType = "range"
-)
-
 // BinRangedoubleRangeFrom is a range bounded inclusively below and unbounded above, `start..`.
 type BinRangedoubleRangeFrom struct {
 	Start float64            `json:"start,omitempty" yaml:"start,omitempty"`
 	Type  BinRangedoubleType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
-const (
-	// BinRangedoubleTypeRangeFrom represents the BinRangedoubleType `"range_from"`.
-	BinRangedoubleTypeRangeFrom BinRangedoubleType = "range_from"
-)
-
 // BinRangedouble is a type storing a range over `T`.
 //
 // This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangedouble struct {
-	End   float64 `json:"end,omitempty" yaml:"end,omitempty"`
-	Type  string  `json:"type,omitempty" yaml:"type,omitempty"`
+	// End is the type definition for a End.
+	End float64 `json:"end,omitempty" yaml:"end,omitempty"`
+	// Type is the type definition for a Type.
+	Type string `json:"type,omitempty" yaml:"type,omitempty"`
+	// Start is the type definition for a Start.
 	Start float64 `json:"start,omitempty" yaml:"start,omitempty"`
 }
+
+// BinRangeint64Type is the type definition for a BinRangeint64Type.
+type BinRangeint64Type string
 
 // BinRangeint64RangeTo is a range unbounded below and exclusively above, `..end`.
 type BinRangeint64RangeTo struct {
 	End  int               `json:"end,omitempty" yaml:"end,omitempty"`
 	Type BinRangeint64Type `json:"type,omitempty" yaml:"type,omitempty"`
 }
-
-// BinRangeint64Type is the type definition for a BinRangeint64Type.
-type BinRangeint64Type string
-
-const (
-	// BinRangeint64TypeRangeTo represents the BinRangeint64Type `"range_to"`.
-	BinRangeint64TypeRangeTo BinRangeint64Type = "range_to"
-)
 
 // BinRangeint64Range is a range bounded inclusively below and exclusively above, `start..end`.
 type BinRangeint64Range struct {
@@ -71,29 +54,22 @@ type BinRangeint64Range struct {
 	Type  BinRangeint64Type `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
-const (
-	// BinRangeint64TypeRange represents the BinRangeint64Type `"range"`.
-	BinRangeint64TypeRange BinRangeint64Type = "range"
-)
-
 // BinRangeint64RangeFrom is a range bounded inclusively below and unbounded above, `start..`.
 type BinRangeint64RangeFrom struct {
 	Start int               `json:"start,omitempty" yaml:"start,omitempty"`
 	Type  BinRangeint64Type `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
-const (
-	// BinRangeint64TypeRangeFrom represents the BinRangeint64Type `"range_from"`.
-	BinRangeint64TypeRangeFrom BinRangeint64Type = "range_from"
-)
-
 // BinRangeint64 is a type storing a range over `T`.
 //
 // This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeint64 struct {
-	End   int    `json:"end,omitempty" yaml:"end,omitempty"`
-	Type  string `json:"type,omitempty" yaml:"type,omitempty"`
-	Start int    `json:"start,omitempty" yaml:"start,omitempty"`
+	// End is the type definition for a End.
+	End int `json:"end,omitempty" yaml:"end,omitempty"`
+	// Type is the type definition for a Type.
+	Type string `json:"type,omitempty" yaml:"type,omitempty"`
+	// Start is the type definition for a Start.
+	Start int `json:"start,omitempty" yaml:"start,omitempty"`
 }
 
 // Bindouble is type storing bin edges and a count of samples within it.
@@ -132,19 +108,14 @@ type Cumulativeint64 struct {
 	Value     int        `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
+// DatumType is the type definition for a DatumType.
+type DatumType string
+
 // DatumBool is the type definition for a DatumBool.
 type DatumBool struct {
 	Datum bool      `json:"datum,omitempty" yaml:"datum,omitempty"`
 	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
 }
-
-// DatumType is the type definition for a DatumType.
-type DatumType string
-
-const (
-	// DatumTypeBool represents the DatumType `"bool"`.
-	DatumTypeBool DatumType = "bool"
-)
 
 // DatumI64 is the type definition for a DatumI64.
 type DatumI64 struct {
@@ -152,21 +123,11 @@ type DatumI64 struct {
 	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
-const (
-	// DatumTypeI64 represents the DatumType `"i64"`.
-	DatumTypeI64 DatumType = "i64"
-)
-
 // DatumF64 is the type definition for a DatumF64.
 type DatumF64 struct {
 	Datum float64   `json:"datum,omitempty" yaml:"datum,omitempty"`
 	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
 }
-
-const (
-	// DatumTypeF64 represents the DatumType `"f64"`.
-	DatumTypeF64 DatumType = "f64"
-)
 
 // DatumString is the type definition for a DatumString.
 type DatumString struct {
@@ -174,21 +135,11 @@ type DatumString struct {
 	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
-const (
-	// DatumTypeString represents the DatumType `"string"`.
-	DatumTypeString DatumType = "string"
-)
-
 // DatumBytes is the type definition for a DatumBytes.
 type DatumBytes struct {
 	Datum []string  `json:"datum,omitempty" yaml:"datum,omitempty"`
 	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
 }
-
-const (
-	// DatumTypeBytes represents the DatumType `"bytes"`.
-	DatumTypeBytes DatumType = "bytes"
-)
 
 // DatumCumulativeI64 is the type definition for a DatumCumulativeI64.
 type DatumCumulativeI64 struct {
@@ -197,22 +148,12 @@ type DatumCumulativeI64 struct {
 	Type  DatumType       `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
-const (
-	// DatumTypeCumulativeI64 represents the DatumType `"cumulative_i64"`.
-	DatumTypeCumulativeI64 DatumType = "cumulative_i64"
-)
-
 // DatumCumulativeF64 is the type definition for a DatumCumulativeF64.
 type DatumCumulativeF64 struct {
 	// Datum is a cumulative or counter data type.
 	Datum Cumulativedouble `json:"datum,omitempty" yaml:"datum,omitempty"`
 	Type  DatumType        `json:"type,omitempty" yaml:"type,omitempty"`
 }
-
-const (
-	// DatumTypeCumulativeF64 represents the DatumType `"cumulative_f64"`.
-	DatumTypeCumulativeF64 DatumType = "cumulative_f64"
-)
 
 // DatumHistogramI64 is the type definition for a DatumHistogramI64.
 type DatumHistogramI64 struct {
@@ -239,11 +180,6 @@ type DatumHistogramI64 struct {
 	Type  DatumType      `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
-const (
-	// DatumTypeHistogramI64 represents the DatumType `"histogram_i64"`.
-	DatumTypeHistogramI64 DatumType = "histogram_i64"
-)
-
 // DatumHistogramF64 is the type definition for a DatumHistogramF64.
 type DatumHistogramF64 struct {
 	// Datum is a simple type for managing a histogram metric.
@@ -269,15 +205,12 @@ type DatumHistogramF64 struct {
 	Type  DatumType       `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
-const (
-	// DatumTypeHistogramF64 represents the DatumType `"histogram_f64"`.
-	DatumTypeHistogramF64 DatumType = "histogram_f64"
-)
-
 // Datum is a `Datum` is a single sampled data point from a metric.
 type Datum struct {
-	Datum bool   `json:"datum,omitempty" yaml:"datum,omitempty"`
-	Type  string `json:"type,omitempty" yaml:"type,omitempty"`
+	// Datum is the type definition for a Datum.
+	Datum bool `json:"datum,omitempty" yaml:"datum,omitempty"`
+	// Type is the type definition for a Type.
+	Type string `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // DerEncodedKeyPair is the type definition for a DerEncodedKeyPair.
@@ -305,23 +238,20 @@ type DeviceAuthVerify struct {
 	UserCode string `json:"user_code,omitempty" yaml:"user_code,omitempty"`
 }
 
+// DigestType is the type definition for a DigestType.
+type DigestType string
+
 // DigestSha256 is the type definition for a DigestSha256.
 type DigestSha256 struct {
 	Type  DigestType `json:"type,omitempty" yaml:"type,omitempty"`
 	Value string     `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-// DigestType is the type definition for a DigestType.
-type DigestType string
-
-const (
-	// DigestTypeSha256 represents the DigestType `"sha256"`.
-	DigestTypeSha256 DigestType = "sha256"
-)
-
 // Digest is the type definition for a Digest.
 type Digest struct {
-	Type  string `json:"type,omitempty" yaml:"type,omitempty"`
+	// Type is the type definition for a Type.
+	Type string `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is the type definition for a Value.
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
@@ -373,21 +303,6 @@ type DiskIdentifier struct {
 // DiskMetricName is the type definition for a DiskMetricName.
 type DiskMetricName string
 
-const (
-	// DiskMetricNameActivated represents the DiskMetricName `"activated"`.
-	DiskMetricNameActivated DiskMetricName = "activated"
-	// DiskMetricNameFlush represents the DiskMetricName `"flush"`.
-	DiskMetricNameFlush DiskMetricName = "flush"
-	// DiskMetricNameRead represents the DiskMetricName `"read"`.
-	DiskMetricNameRead DiskMetricName = "read"
-	// DiskMetricNameReadBytes represents the DiskMetricName `"read_bytes"`.
-	DiskMetricNameReadBytes DiskMetricName = "read_bytes"
-	// DiskMetricNameWrite represents the DiskMetricName `"write"`.
-	DiskMetricNameWrite DiskMetricName = "write"
-	// DiskMetricNameWriteBytes represents the DiskMetricName `"write_bytes"`.
-	DiskMetricNameWriteBytes DiskMetricName = "write_bytes"
-)
-
 // DiskResultsPage is a single page of results
 type DiskResultsPage struct {
 	// Items is list of items on this page of results
@@ -396,6 +311,9 @@ type DiskResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+// DiskSourceType is the type definition for a DiskSourceType.
+type DiskSourceType string
+
 // DiskSourceBlank is create a blank disk
 type DiskSourceBlank struct {
 	// BlockSize is size of blocks for this Disk. valid values are: 512, 2048, or 4096
@@ -403,24 +321,11 @@ type DiskSourceBlank struct {
 	Type      DiskSourceType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
-// DiskSourceType is the type definition for a DiskSourceType.
-type DiskSourceType string
-
-const (
-	// DiskSourceTypeBlank represents the DiskSourceType `"blank"`.
-	DiskSourceTypeBlank DiskSourceType = "blank"
-)
-
 // DiskSourceSnapshot is create a disk from a disk snapshot
 type DiskSourceSnapshot struct {
 	SnapshotId string         `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
 	Type       DiskSourceType `json:"type,omitempty" yaml:"type,omitempty"`
 }
-
-const (
-	// DiskSourceTypeSnapshot represents the DiskSourceType `"snapshot"`.
-	DiskSourceTypeSnapshot DiskSourceType = "snapshot"
-)
 
 // DiskSourceImage is create a disk from a project image
 type DiskSourceImage struct {
@@ -428,52 +333,36 @@ type DiskSourceImage struct {
 	Type    DiskSourceType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
-const (
-	// DiskSourceTypeImage represents the DiskSourceType `"image"`.
-	DiskSourceTypeImage DiskSourceType = "image"
-)
-
 // DiskSourceGlobalImage is create a disk from a global image
 type DiskSourceGlobalImage struct {
 	ImageId string         `json:"image_id,omitempty" yaml:"image_id,omitempty"`
 	Type    DiskSourceType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
-const (
-	// DiskSourceTypeGlobalImage represents the DiskSourceType `"global_image"`.
-	DiskSourceTypeGlobalImage DiskSourceType = "global_image"
-)
-
 // DiskSource is different sources for a disk
 type DiskSource struct {
-	BlockSize  BlockSize `json:"block_size,omitempty" yaml:"block_size,omitempty"`
-	Type       string    `json:"type,omitempty" yaml:"type,omitempty"`
-	SnapshotId string    `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
-	ImageId    string    `json:"image_id,omitempty" yaml:"image_id,omitempty"`
+	// BlockSize is size of blocks for this Disk. valid values are: 512, 2048, or 4096
+	BlockSize BlockSize `json:"block_size,omitempty" yaml:"block_size,omitempty"`
+	// Type is the type definition for a Type.
+	Type string `json:"type,omitempty" yaml:"type,omitempty"`
+	// SnapshotId is the type definition for a SnapshotId.
+	SnapshotId string `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
+	// ImageId is the type definition for a ImageId.
+	ImageId string `json:"image_id,omitempty" yaml:"image_id,omitempty"`
 }
+
+// DiskStateState is the type definition for a DiskStateState.
+type DiskStateState string
 
 // DiskStateCreating is disk is being initialized
 type DiskStateCreating struct {
 	State DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
 }
 
-// DiskStateState is the type definition for a DiskStateState.
-type DiskStateState string
-
-const (
-	// DiskStateStateCreating represents the DiskStateState `"creating"`.
-	DiskStateStateCreating DiskStateState = "creating"
-)
-
 // DiskStateDetached is disk is ready but detached from any Instance
 type DiskStateDetached struct {
 	State DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
 }
-
-const (
-	// DiskStateStateDetached represents the DiskStateState `"detached"`.
-	DiskStateStateDetached DiskStateState = "detached"
-)
 
 // DiskStateAttaching is disk is being attached to the given Instance
 type DiskStateAttaching struct {
@@ -481,21 +370,11 @@ type DiskStateAttaching struct {
 	State    DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
 }
 
-const (
-	// DiskStateStateAttaching represents the DiskStateState `"attaching"`.
-	DiskStateStateAttaching DiskStateState = "attaching"
-)
-
 // DiskStateAttached is disk is attached to the given Instance
 type DiskStateAttached struct {
 	Instance string         `json:"instance,omitempty" yaml:"instance,omitempty"`
 	State    DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
 }
-
-const (
-	// DiskStateStateAttached represents the DiskStateState `"attached"`.
-	DiskStateStateAttached DiskStateState = "attached"
-)
 
 // DiskStateDetaching is disk is being detached from the given Instance
 type DiskStateDetaching struct {
@@ -503,34 +382,21 @@ type DiskStateDetaching struct {
 	State    DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
 }
 
-const (
-	// DiskStateStateDetaching represents the DiskStateState `"detaching"`.
-	DiskStateStateDetaching DiskStateState = "detaching"
-)
-
 // DiskStateDestroyed is disk has been destroyed
 type DiskStateDestroyed struct {
 	State DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
 }
-
-const (
-	// DiskStateStateDestroyed represents the DiskStateState `"destroyed"`.
-	DiskStateStateDestroyed DiskStateState = "destroyed"
-)
 
 // DiskStateFaulted is disk is unavailable
 type DiskStateFaulted struct {
 	State DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
 }
 
-const (
-	// DiskStateStateFaulted represents the DiskStateState `"faulted"`.
-	DiskStateStateFaulted DiskStateState = "faulted"
-)
-
 // DiskState is state of a Disk (primarily: attached or not)
 type DiskState struct {
-	State    string `json:"state,omitempty" yaml:"state,omitempty"`
+	// State is the type definition for a State.
+	State string `json:"state,omitempty" yaml:"state,omitempty"`
+	// Instance is the type definition for a Instance.
 	Instance string `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
 
@@ -556,24 +422,21 @@ type ExternalIp struct {
 	Kind IpKind `json:"kind,omitempty" yaml:"kind,omitempty"`
 }
 
+// ExternalIpCreateType is the type definition for a ExternalIpCreateType.
+type ExternalIpCreateType string
+
 // ExternalIpCreateEphemeral is an IP address providing both inbound and outbound access. The address is automatically-assigned from the provided IP Pool, or all available pools if not specified.
 type ExternalIpCreateEphemeral struct {
 	PoolName Name                 `json:"pool_name,omitempty" yaml:"pool_name,omitempty"`
 	Type     ExternalIpCreateType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
-// ExternalIpCreateType is the type definition for a ExternalIpCreateType.
-type ExternalIpCreateType string
-
-const (
-	// ExternalIpCreateTypeEphemeral represents the ExternalIpCreateType `"ephemeral"`.
-	ExternalIpCreateTypeEphemeral ExternalIpCreateType = "ephemeral"
-)
-
 // ExternalIpCreate is parameters for creating an external IP address for instances.
 type ExternalIpCreate struct {
-	PoolName Name   `json:"pool_name,omitempty" yaml:"pool_name,omitempty"`
-	Type     string `json:"type,omitempty" yaml:"type,omitempty"`
+	// PoolName is the type definition for a PoolName.
+	PoolName Name `json:"pool_name,omitempty" yaml:"pool_name,omitempty"`
+	// Type is the type definition for a Type.
+	Type string `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // ExternalIpResultsPage is a single page of results
@@ -596,40 +459,11 @@ type FieldSchema struct {
 // FieldSource is the source from which a field is derived, the target or metric.
 type FieldSource string
 
-const (
-	// FieldSourceTarget represents the FieldSource `"target"`.
-	FieldSourceTarget FieldSource = "target"
-	// FieldSourceMetric represents the FieldSource `"metric"`.
-	FieldSourceMetric FieldSource = "metric"
-)
-
 // FieldType is the `FieldType` identifies the data type of a target or metric field.
 type FieldType string
 
-const (
-	// FieldTypeString represents the FieldType `"string"`.
-	FieldTypeString FieldType = "string"
-	// FieldTypeI64 represents the FieldType `"i64"`.
-	FieldTypeI64 FieldType = "i64"
-	// FieldTypeIpAddr represents the FieldType `"ip_addr"`.
-	FieldTypeIpAddr FieldType = "ip_addr"
-	// FieldTypeUuid represents the FieldType `"uuid"`.
-	FieldTypeUuid FieldType = "uuid"
-	// FieldTypeBool represents the FieldType `"bool"`.
-	FieldTypeBool FieldType = "bool"
-)
-
 // FleetRole is the type definition for a FleetRole.
 type FleetRole string
-
-const (
-	// FleetRoleAdmin represents the FleetRole `"admin"`.
-	FleetRoleAdmin FleetRole = "admin"
-	// FleetRoleCollaborator represents the FleetRole `"collaborator"`.
-	FleetRoleCollaborator FleetRole = "collaborator"
-	// FleetRoleViewer represents the FleetRole `"viewer"`.
-	FleetRoleViewer FleetRole = "viewer"
-)
 
 // FleetRolePolicy is client view of a [`Policy`], which describes how this resource may be accessed
 //
@@ -751,11 +585,6 @@ type Histogramint64 struct {
 // Currently, we only support scanning in ascending order.
 type IdSortMode string
 
-const (
-	// IdSortModeIdAscending represents the IdSortMode `"id_ascending"`.
-	IdSortModeIdAscending IdSortMode = "id_ascending"
-)
-
 // IdentityProvider is client view of an [`IdentityProvider`]
 type IdentityProvider struct {
 	// Description is human-readable free-form text about a resource
@@ -783,20 +612,11 @@ type IdentityProviderResultsPage struct {
 // IdentityProviderType is the type definition for a IdentityProviderType.
 type IdentityProviderType string
 
-const (
-	// IdentityProviderTypeSaml represents the IdentityProviderType `"saml"`.
-	IdentityProviderTypeSaml IdentityProviderType = "saml"
-)
-
 // IdentityType is describes what kind of identity is described by an id
 type IdentityType string
 
-const (
-	// IdentityTypeSiloUser represents the IdentityType `"silo_user"`.
-	IdentityTypeSiloUser IdentityType = "silo_user"
-	// IdentityTypeSiloGroup represents the IdentityType `"silo_group"`.
-	IdentityTypeSiloGroup IdentityType = "silo_group"
-)
+// IdpMetadataSourceType is the type definition for a IdpMetadataSourceType.
+type IdpMetadataSourceType string
 
 // IdpMetadataSourceUrl is the type definition for a IdpMetadataSourceUrl.
 type IdpMetadataSourceUrl struct {
@@ -804,29 +624,19 @@ type IdpMetadataSourceUrl struct {
 	Url  string                `json:"url,omitempty" yaml:"url,omitempty"`
 }
 
-// IdpMetadataSourceType is the type definition for a IdpMetadataSourceType.
-type IdpMetadataSourceType string
-
-const (
-	// IdpMetadataSourceTypeUrl represents the IdpMetadataSourceType `"url"`.
-	IdpMetadataSourceTypeUrl IdpMetadataSourceType = "url"
-)
-
 // IdpMetadataSourceBase64EncodedXml is the type definition for a IdpMetadataSourceBase64EncodedXml.
 type IdpMetadataSourceBase64EncodedXml struct {
 	Data string                `json:"data,omitempty" yaml:"data,omitempty"`
 	Type IdpMetadataSourceType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
-const (
-	// IdpMetadataSourceTypeBase64EncodedXml represents the IdpMetadataSourceType `"base64_encoded_xml"`.
-	IdpMetadataSourceTypeBase64EncodedXml IdpMetadataSourceType = "base64_encoded_xml"
-)
-
 // IdpMetadataSource is the type definition for a IdpMetadataSource.
 type IdpMetadataSource struct {
+	// Type is the type definition for a Type.
 	Type string `json:"type,omitempty" yaml:"type,omitempty"`
-	Url  string `json:"url,omitempty" yaml:"url,omitempty"`
+	// Url is the type definition for a Url.
+	Url string `json:"url,omitempty" yaml:"url,omitempty"`
+	// Data is the type definition for a Data.
 	Data string `json:"data,omitempty" yaml:"data,omitempty"`
 }
 
@@ -875,19 +685,14 @@ type ImageResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+// ImageSourceType is the type definition for a ImageSourceType.
+type ImageSourceType string
+
 // ImageSourceUrl is the type definition for a ImageSourceUrl.
 type ImageSourceUrl struct {
 	Type ImageSourceType `json:"type,omitempty" yaml:"type,omitempty"`
 	Url  string          `json:"url,omitempty" yaml:"url,omitempty"`
 }
-
-// ImageSourceType is the type definition for a ImageSourceType.
-type ImageSourceType string
-
-const (
-	// ImageSourceTypeUrl represents the ImageSourceType `"url"`.
-	ImageSourceTypeUrl ImageSourceType = "url"
-)
 
 // ImageSourceSnapshot is the type definition for a ImageSourceSnapshot.
 type ImageSourceSnapshot struct {
@@ -895,26 +700,19 @@ type ImageSourceSnapshot struct {
 	Type ImageSourceType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
-const (
-	// ImageSourceTypeSnapshot represents the ImageSourceType `"snapshot"`.
-	ImageSourceTypeSnapshot ImageSourceType = "snapshot"
-)
-
 // ImageSourceYouCanBootAnythingAsLongAsItsAlpine is boot the Alpine ISO that ships with the Propolis zone. Intended for development purposes only.
 type ImageSourceYouCanBootAnythingAsLongAsItsAlpine struct {
 	Type ImageSourceType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
-const (
-	// ImageSourceTypeYouCanBootAnythingAsLongAsItsAlpine represents the ImageSourceType `"you_can_boot_anything_as_long_as_its_alpine"`.
-	ImageSourceTypeYouCanBootAnythingAsLongAsItsAlpine ImageSourceType = "you_can_boot_anything_as_long_as_its_alpine"
-)
-
 // ImageSource is the source of the underlying image.
 type ImageSource struct {
+	// Type is the type definition for a Type.
 	Type string `json:"type,omitempty" yaml:"type,omitempty"`
-	Url  string `json:"url,omitempty" yaml:"url,omitempty"`
-	Id   string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Url is the type definition for a Url.
+	Url string `json:"url,omitempty" yaml:"url,omitempty"`
+	// Id is the type definition for a Id.
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 }
 
 // Instance is client view of an [`Instance`]
@@ -971,6 +769,9 @@ type InstanceCreate struct {
 	UserData string `json:"user_data,omitempty" yaml:"user_data,omitempty"`
 }
 
+// InstanceDiskAttachmentType is the type definition for a InstanceDiskAttachmentType.
+type InstanceDiskAttachmentType string
+
 // InstanceDiskAttachmentCreate is during instance creation, create and attach disks
 type InstanceDiskAttachmentCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
@@ -983,14 +784,6 @@ type InstanceDiskAttachmentCreate struct {
 	Type InstanceDiskAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
-// InstanceDiskAttachmentType is the type definition for a InstanceDiskAttachmentType.
-type InstanceDiskAttachmentType string
-
-const (
-	// InstanceDiskAttachmentTypeCreate represents the InstanceDiskAttachmentType `"create"`.
-	InstanceDiskAttachmentTypeCreate InstanceDiskAttachmentType = "create"
-)
-
 // InstanceDiskAttachmentAttach is during instance creation, attach this disk
 type InstanceDiskAttachmentAttach struct {
 	// Name is a disk name to attach
@@ -998,24 +791,27 @@ type InstanceDiskAttachmentAttach struct {
 	Type InstanceDiskAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
-const (
-	// InstanceDiskAttachmentTypeAttach represents the InstanceDiskAttachmentType `"attach"`.
-	InstanceDiskAttachmentTypeAttach InstanceDiskAttachmentType = "attach"
-)
-
 // InstanceDiskAttachment is describe the instance's disks at creation time
 type InstanceDiskAttachment struct {
-	Description string     `json:"description,omitempty" yaml:"description,omitempty"`
-	DiskSource  DiskSource `json:"disk_source,omitempty" yaml:"disk_source,omitempty"`
-	Name        Name       `json:"name,omitempty" yaml:"name,omitempty"`
-	Size        ByteCount  `json:"size,omitempty" yaml:"size,omitempty"`
-	Type        string     `json:"type,omitempty" yaml:"type,omitempty"`
+	// Description is the type definition for a Description.
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// DiskSource is initial source for this disk
+	DiskSource DiskSource `json:"disk_source,omitempty" yaml:"disk_source,omitempty"`
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	// Size is total size of the Disk in bytes
+	Size ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
+	// Type is the type definition for a Type.
+	Type string `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // InstanceMigrate is migration parameters for an [`Instance`](omicron_common::api::external::Instance)
 type InstanceMigrate struct {
 	DstSledId string `json:"dst_sled_id,omitempty" yaml:"dst_sled_id,omitempty"`
 }
+
+// InstanceNetworkInterfaceAttachmentType is the type definition for a InstanceNetworkInterfaceAttachmentType.
+type InstanceNetworkInterfaceAttachmentType string
 
 // InstanceNetworkInterfaceAttachmentCreate is create one or more `NetworkInterface`s for the `Instance`.
 //
@@ -1025,38 +821,22 @@ type InstanceNetworkInterfaceAttachmentCreate struct {
 	Type   InstanceNetworkInterfaceAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
-// InstanceNetworkInterfaceAttachmentType is the type definition for a InstanceNetworkInterfaceAttachmentType.
-type InstanceNetworkInterfaceAttachmentType string
-
-const (
-	// InstanceNetworkInterfaceAttachmentTypeCreate represents the InstanceNetworkInterfaceAttachmentType `"create"`.
-	InstanceNetworkInterfaceAttachmentTypeCreate InstanceNetworkInterfaceAttachmentType = "create"
-)
-
 // InstanceNetworkInterfaceAttachmentDefault is the default networking configuration for an instance is to create a single primary interface with an automatically-assigned IP address. The IP will be pulled from the Project's default VPC / VPC Subnet.
 type InstanceNetworkInterfaceAttachmentDefault struct {
 	Type InstanceNetworkInterfaceAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
 }
-
-const (
-	// InstanceNetworkInterfaceAttachmentTypeDefault represents the InstanceNetworkInterfaceAttachmentType `"default"`.
-	InstanceNetworkInterfaceAttachmentTypeDefault InstanceNetworkInterfaceAttachmentType = "default"
-)
 
 // InstanceNetworkInterfaceAttachmentNone is no network interfaces at all will be created for the instance.
 type InstanceNetworkInterfaceAttachmentNone struct {
 	Type InstanceNetworkInterfaceAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
-const (
-	// InstanceNetworkInterfaceAttachmentTypeNone represents the InstanceNetworkInterfaceAttachmentType `"none"`.
-	InstanceNetworkInterfaceAttachmentTypeNone InstanceNetworkInterfaceAttachmentType = "none"
-)
-
 // InstanceNetworkInterfaceAttachment is describes an attachment of a `NetworkInterface` to an `Instance`, at the time the instance is created.
 type InstanceNetworkInterfaceAttachment struct {
+	// Params is the type definition for a Params.
 	Params []NetworkInterfaceCreate `json:"params,omitempty" yaml:"params,omitempty"`
-	Type   string                   `json:"type,omitempty" yaml:"type,omitempty"`
+	// Type is the type definition for a Type.
+	Type string `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // InstanceResultsPage is a single page of results
@@ -1080,38 +860,8 @@ type InstanceSerialConsoleData struct {
 // This typically reflects whether it's starting, running, stopping, or stopped, but also includes states related to the Instance's lifecycle
 type InstanceState string
 
-const (
-	// InstanceStateCreating represents the InstanceState `"creating"`.
-	InstanceStateCreating InstanceState = "creating"
-	// InstanceStateStarting represents the InstanceState `"starting"`.
-	InstanceStateStarting InstanceState = "starting"
-	// InstanceStateRunning represents the InstanceState `"running"`.
-	InstanceStateRunning InstanceState = "running"
-	// InstanceStateStopping represents the InstanceState `"stopping"`.
-	InstanceStateStopping InstanceState = "stopping"
-	// InstanceStateStopped represents the InstanceState `"stopped"`.
-	InstanceStateStopped InstanceState = "stopped"
-	// InstanceStateRebooting represents the InstanceState `"rebooting"`.
-	InstanceStateRebooting InstanceState = "rebooting"
-	// InstanceStateMigrating represents the InstanceState `"migrating"`.
-	InstanceStateMigrating InstanceState = "migrating"
-	// InstanceStateRepairing represents the InstanceState `"repairing"`.
-	InstanceStateRepairing InstanceState = "repairing"
-	// InstanceStateFailed represents the InstanceState `"failed"`.
-	InstanceStateFailed InstanceState = "failed"
-	// InstanceStateDestroyed represents the InstanceState `"destroyed"`.
-	InstanceStateDestroyed InstanceState = "destroyed"
-)
-
 // IpKind is the kind of an external IP address for an instance
 type IpKind string
-
-const (
-	// IpKindEphemeral represents the IpKind `"ephemeral"`.
-	IpKindEphemeral IpKind = "ephemeral"
-	// IpKindFloating represents the IpKind `"floating"`.
-	IpKindFloating IpKind = "floating"
-)
 
 // IpNet is the type definition for a IpNet.
 type IpNet struct {
@@ -1227,24 +977,10 @@ type Name string
 // NameOrIdSortMode is supported set of sort modes for scanning by name or id
 type NameOrIdSortMode string
 
-const (
-	// NameOrIdSortModeNameAscending represents the NameOrIdSortMode `"name_ascending"`.
-	NameOrIdSortModeNameAscending NameOrIdSortMode = "name_ascending"
-	// NameOrIdSortModeNameDescending represents the NameOrIdSortMode `"name_descending"`.
-	NameOrIdSortModeNameDescending NameOrIdSortMode = "name_descending"
-	// NameOrIdSortModeIdAscending represents the NameOrIdSortMode `"id_ascending"`.
-	NameOrIdSortModeIdAscending NameOrIdSortMode = "id_ascending"
-)
-
 // NameSortMode is supported set of sort modes for scanning by name only
 //
 // Currently, we only support scanning in ascending order.
 type NameSortMode string
-
-const (
-	// NameSortModeNameAscending represents the NameSortMode `"name_ascending"`.
-	NameSortModeNameAscending NameSortMode = "name_ascending"
-)
 
 // NetworkInterface is a `NetworkInterface` represents a virtual network interface device.
 type NetworkInterface struct {
@@ -1344,15 +1080,6 @@ type OrganizationResultsPage struct {
 // OrganizationRole is the type definition for a OrganizationRole.
 type OrganizationRole string
 
-const (
-	// OrganizationRoleAdmin represents the OrganizationRole `"admin"`.
-	OrganizationRoleAdmin OrganizationRole = "admin"
-	// OrganizationRoleCollaborator represents the OrganizationRole `"collaborator"`.
-	OrganizationRoleCollaborator OrganizationRole = "collaborator"
-	// OrganizationRoleViewer represents the OrganizationRole `"viewer"`.
-	OrganizationRoleViewer OrganizationRole = "viewer"
-)
-
 // OrganizationRolePolicy is client view of a [`Policy`], which describes how this resource may be accessed
 //
 // Note that the Policy only describes access granted explicitly for this resource.  The policies of parent resources can also cause a user to have access to this resource.
@@ -1409,15 +1136,6 @@ type ProjectResultsPage struct {
 
 // ProjectRole is the type definition for a ProjectRole.
 type ProjectRole string
-
-const (
-	// ProjectRoleAdmin represents the ProjectRole `"admin"`.
-	ProjectRoleAdmin ProjectRole = "admin"
-	// ProjectRoleCollaborator represents the ProjectRole `"collaborator"`.
-	ProjectRoleCollaborator ProjectRole = "collaborator"
-	// ProjectRoleViewer represents the ProjectRole `"viewer"`.
-	ProjectRoleViewer ProjectRole = "viewer"
-)
 
 // ProjectRolePolicy is client view of a [`Policy`], which describes how this resource may be accessed
 //
@@ -1479,30 +1197,20 @@ type RoleResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+// RouteDestinationType is the type definition for a RouteDestinationType.
+type RouteDestinationType string
+
 // RouteDestinationIp is route applies to traffic destined for a specific IP address
 type RouteDestinationIp struct {
 	Type  RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
 	Value string               `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-// RouteDestinationType is the type definition for a RouteDestinationType.
-type RouteDestinationType string
-
-const (
-	// RouteDestinationTypeIp represents the RouteDestinationType `"ip"`.
-	RouteDestinationTypeIp RouteDestinationType = "ip"
-)
-
 // RouteDestinationIpNet is route applies to traffic destined for a specific IP subnet
 type RouteDestinationIpNet struct {
 	Type  RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
 	Value IpNet                `json:"value,omitempty" yaml:"value,omitempty"`
 }
-
-const (
-	// RouteDestinationTypeIpNet represents the RouteDestinationType `"ip_net"`.
-	RouteDestinationTypeIpNet RouteDestinationType = "ip_net"
-)
 
 // RouteDestinationVpc is route applies to traffic destined for the given VPC.
 type RouteDestinationVpc struct {
@@ -1511,11 +1219,6 @@ type RouteDestinationVpc struct {
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-const (
-	// RouteDestinationTypeVpc represents the RouteDestinationType `"vpc"`.
-	RouteDestinationTypeVpc RouteDestinationType = "vpc"
-)
-
 // RouteDestinationSubnet is route applies to traffic
 type RouteDestinationSubnet struct {
 	Type RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
@@ -1523,32 +1226,24 @@ type RouteDestinationSubnet struct {
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-const (
-	// RouteDestinationTypeSubnet represents the RouteDestinationType `"subnet"`.
-	RouteDestinationTypeSubnet RouteDestinationType = "subnet"
-)
-
 // RouteDestination is a `RouteDestination` is used to match traffic with a routing rule, on the destination of that traffic.
 //
 // When traffic is to be sent to a destination that is within a given `RouteDestination`, the corresponding [`RouterRoute`] applies, and traffic will be forward to the [`RouteTarget`] for that rule.
 type RouteDestination struct {
-	Type  string `json:"type,omitempty" yaml:"type,omitempty"`
+	// Type is the type definition for a Type.
+	Type string `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is the type definition for a Value.
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
+
+// RouteTargetType is the type definition for a RouteTargetType.
+type RouteTargetType string
 
 // RouteTargetIp is forward traffic to a particular IP address.
 type RouteTargetIp struct {
 	Type  RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
 	Value string          `json:"value,omitempty" yaml:"value,omitempty"`
 }
-
-// RouteTargetType is the type definition for a RouteTargetType.
-type RouteTargetType string
-
-const (
-	// RouteTargetTypeIp represents the RouteTargetType `"ip"`.
-	RouteTargetTypeIp RouteTargetType = "ip"
-)
 
 // RouteTargetVpc is forward traffic to a VPC
 type RouteTargetVpc struct {
@@ -1557,22 +1252,12 @@ type RouteTargetVpc struct {
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-const (
-	// RouteTargetTypeVpc represents the RouteTargetType `"vpc"`.
-	RouteTargetTypeVpc RouteTargetType = "vpc"
-)
-
 // RouteTargetSubnet is forward traffic to a VPC Subnet
 type RouteTargetSubnet struct {
 	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
-
-const (
-	// RouteTargetTypeSubnet represents the RouteTargetType `"subnet"`.
-	RouteTargetTypeSubnet RouteTargetType = "subnet"
-)
 
 // RouteTargetInstance is forward traffic to a specific instance
 type RouteTargetInstance struct {
@@ -1581,11 +1266,6 @@ type RouteTargetInstance struct {
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-const (
-	// RouteTargetTypeInstance represents the RouteTargetType `"instance"`.
-	RouteTargetTypeInstance RouteTargetType = "instance"
-)
-
 // RouteTargetInternetGateway is forward traffic to an internet gateway
 type RouteTargetInternetGateway struct {
 	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
@@ -1593,14 +1273,11 @@ type RouteTargetInternetGateway struct {
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-const (
-	// RouteTargetTypeInternetGateway represents the RouteTargetType `"internet_gateway"`.
-	RouteTargetTypeInternetGateway RouteTargetType = "internet_gateway"
-)
-
 // RouteTarget is a `RouteTarget` describes the possible locations that traffic matching a route destination can be sent.
 type RouteTarget struct {
-	Type  string `json:"type,omitempty" yaml:"type,omitempty"`
+	// Type is the type definition for a Type.
+	Type string `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is the type definition for a Value.
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
@@ -1646,17 +1323,6 @@ type RouterRouteCreateParams struct {
 // See [RFD-21](https://rfd.shared.oxide.computer/rfd/0021#concept-router) for more context
 type RouterRouteKind string
 
-const (
-	// RouterRouteKindDefault represents the RouterRouteKind `"default"`.
-	RouterRouteKindDefault RouterRouteKind = "default"
-	// RouterRouteKindVpcSubnet represents the RouterRouteKind `"vpc_subnet"`.
-	RouterRouteKindVpcSubnet RouterRouteKind = "vpc_subnet"
-	// RouterRouteKindVpcPeering represents the RouterRouteKind `"vpc_peering"`.
-	RouterRouteKindVpcPeering RouterRouteKind = "vpc_peering"
-	// RouterRouteKindCustom represents the RouterRouteKind `"custom"`.
-	RouterRouteKindCustom RouterRouteKind = "custom"
-)
-
 // RouterRouteResultsPage is a single page of results
 type RouterRouteResultsPage struct {
 	// Items is list of items on this page of results
@@ -1683,19 +1349,14 @@ type Saga struct {
 	State SagaState `json:"state,omitempty" yaml:"state,omitempty"`
 }
 
+// SagaErrorInfoError is the type definition for a SagaErrorInfoError.
+type SagaErrorInfoError string
+
 // SagaErrorInfoActionFailed is the type definition for a SagaErrorInfoActionFailed.
 type SagaErrorInfoActionFailed struct {
 	Error       SagaErrorInfoError `json:"error,omitempty" yaml:"error,omitempty"`
 	SourceError interface{}        `json:"source_error,omitempty" yaml:"source_error,omitempty"`
 }
-
-// SagaErrorInfoError is the type definition for a SagaErrorInfoError.
-type SagaErrorInfoError string
-
-const (
-	// SagaErrorInfoErrorActionFailed represents the SagaErrorInfoError `"action_failed"`.
-	SagaErrorInfoErrorActionFailed SagaErrorInfoError = "action_failed"
-)
 
 // SagaErrorInfoDeserializeFailed is the type definition for a SagaErrorInfoDeserializeFailed.
 type SagaErrorInfoDeserializeFailed struct {
@@ -1703,20 +1364,10 @@ type SagaErrorInfoDeserializeFailed struct {
 	Message string             `json:"message,omitempty" yaml:"message,omitempty"`
 }
 
-const (
-	// SagaErrorInfoErrorDeserializeFailed represents the SagaErrorInfoError `"deserialize_failed"`.
-	SagaErrorInfoErrorDeserializeFailed SagaErrorInfoError = "deserialize_failed"
-)
-
 // SagaErrorInfoInjectedError is the type definition for a SagaErrorInfoInjectedError.
 type SagaErrorInfoInjectedError struct {
 	Error SagaErrorInfoError `json:"error,omitempty" yaml:"error,omitempty"`
 }
-
-const (
-	// SagaErrorInfoErrorInjectedError represents the SagaErrorInfoError `"injected_error"`.
-	SagaErrorInfoErrorInjectedError SagaErrorInfoError = "injected_error"
-)
 
 // SagaErrorInfoSerializeFailed is the type definition for a SagaErrorInfoSerializeFailed.
 type SagaErrorInfoSerializeFailed struct {
@@ -1724,27 +1375,20 @@ type SagaErrorInfoSerializeFailed struct {
 	Message string             `json:"message,omitempty" yaml:"message,omitempty"`
 }
 
-const (
-	// SagaErrorInfoErrorSerializeFailed represents the SagaErrorInfoError `"serialize_failed"`.
-	SagaErrorInfoErrorSerializeFailed SagaErrorInfoError = "serialize_failed"
-)
-
 // SagaErrorInfoSubsagaCreateFailed is the type definition for a SagaErrorInfoSubsagaCreateFailed.
 type SagaErrorInfoSubsagaCreateFailed struct {
 	Error   SagaErrorInfoError `json:"error,omitempty" yaml:"error,omitempty"`
 	Message string             `json:"message,omitempty" yaml:"message,omitempty"`
 }
 
-const (
-	// SagaErrorInfoErrorSubsagaCreateFailed represents the SagaErrorInfoError `"subsaga_create_failed"`.
-	SagaErrorInfoErrorSubsagaCreateFailed SagaErrorInfoError = "subsaga_create_failed"
-)
-
 // SagaErrorInfo is the type definition for a SagaErrorInfo.
 type SagaErrorInfo struct {
-	Error       string      `json:"error,omitempty" yaml:"error,omitempty"`
+	// Error is the type definition for a Error.
+	Error string `json:"error,omitempty" yaml:"error,omitempty"`
+	// SourceError is the type definition for a SourceError.
 	SourceError interface{} `json:"source_error,omitempty" yaml:"source_error,omitempty"`
-	Message     string      `json:"message,omitempty" yaml:"message,omitempty"`
+	// Message is the type definition for a Message.
+	Message string `json:"message,omitempty" yaml:"message,omitempty"`
 }
 
 // SagaResultsPage is a single page of results
@@ -1755,28 +1399,18 @@ type SagaResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+// SagaStateState is the type definition for a SagaStateState.
+type SagaStateState string
+
 // SagaStateRunning is the type definition for a SagaStateRunning.
 type SagaStateRunning struct {
 	State SagaStateState `json:"state,omitempty" yaml:"state,omitempty"`
 }
 
-// SagaStateState is the type definition for a SagaStateState.
-type SagaStateState string
-
-const (
-	// SagaStateStateRunning represents the SagaStateState `"running"`.
-	SagaStateStateRunning SagaStateState = "running"
-)
-
 // SagaStateSucceeded is the type definition for a SagaStateSucceeded.
 type SagaStateSucceeded struct {
 	State SagaStateState `json:"state,omitempty" yaml:"state,omitempty"`
 }
-
-const (
-	// SagaStateStateSucceeded represents the SagaStateState `"succeeded"`.
-	SagaStateStateSucceeded SagaStateState = "succeeded"
-)
 
 // SagaStateFailed is the type definition for a SagaStateFailed.
 type SagaStateFailed struct {
@@ -1788,16 +1422,16 @@ type SagaStateFailed struct {
 	State         SagaStateState `json:"state,omitempty" yaml:"state,omitempty"`
 }
 
-const (
-	// SagaStateStateFailed represents the SagaStateState `"failed"`.
-	SagaStateStateFailed SagaStateState = "failed"
-)
-
 // SagaState is the type definition for a SagaState.
 type SagaState struct {
-	State         string        `json:"state,omitempty" yaml:"state,omitempty"`
-	ErrorInfo     SagaErrorInfo `json:"error_info,omitempty" yaml:"error_info,omitempty"`
-	ErrorNodeName NodeName      `json:"error_node_name,omitempty" yaml:"error_node_name,omitempty"`
+	// State is the type definition for a State.
+	State string `json:"state,omitempty" yaml:"state,omitempty"`
+	// ErrorInfo is the type definition for a ErrorInfo.
+	ErrorInfo SagaErrorInfo `json:"error_info,omitempty" yaml:"error_info,omitempty"`
+	// ErrorNodeName is unique name for a saga [`Node`]
+	//
+	// Each node requires a string name that's unique within its DAG.  The name is used to identify its output.  Nodes that depend on a given node (either directly or indirectly) can access the node's output using its name.
+	ErrorNodeName NodeName `json:"error_node_name,omitempty" yaml:"error_node_name,omitempty"`
 }
 
 // SamlIdentityProvider is identity-related metadata that's included in nearly all public API objects
@@ -1891,15 +1525,6 @@ type SiloResultsPage struct {
 
 // SiloRole is the type definition for a SiloRole.
 type SiloRole string
-
-const (
-	// SiloRoleAdmin represents the SiloRole `"admin"`.
-	SiloRoleAdmin SiloRole = "admin"
-	// SiloRoleCollaborator represents the SiloRole `"collaborator"`.
-	SiloRoleCollaborator SiloRole = "collaborator"
-	// SiloRoleViewer represents the SiloRole `"viewer"`.
-	SiloRoleViewer SiloRole = "viewer"
-)
 
 // SiloRolePolicy is client view of a [`Policy`], which describes how this resource may be accessed
 //
@@ -2070,13 +1695,6 @@ type UserBuiltinResultsPage struct {
 // UserProvisionType is how users will be provisioned in a silo during authentication.
 type UserProvisionType string
 
-const (
-	// UserProvisionTypeFixed represents the UserProvisionType `"fixed"`.
-	UserProvisionTypeFixed UserProvisionType = "fixed"
-	// UserProvisionTypeJit represents the UserProvisionType `"jit"`.
-	UserProvisionTypeJit UserProvisionType = "jit"
-)
-
 // UserResultsPage is a single page of results
 type UserResultsPage struct {
 	// Items is list of items on this page of results
@@ -2151,22 +1769,8 @@ type VpcFirewallRule struct {
 // VpcFirewallRuleAction is the type definition for a VpcFirewallRuleAction.
 type VpcFirewallRuleAction string
 
-const (
-	// VpcFirewallRuleActionAllow represents the VpcFirewallRuleAction `"allow"`.
-	VpcFirewallRuleActionAllow VpcFirewallRuleAction = "allow"
-	// VpcFirewallRuleActionDeny represents the VpcFirewallRuleAction `"deny"`.
-	VpcFirewallRuleActionDeny VpcFirewallRuleAction = "deny"
-)
-
 // VpcFirewallRuleDirection is the type definition for a VpcFirewallRuleDirection.
 type VpcFirewallRuleDirection string
-
-const (
-	// VpcFirewallRuleDirectionInbound represents the VpcFirewallRuleDirection `"inbound"`.
-	VpcFirewallRuleDirectionInbound VpcFirewallRuleDirection = "inbound"
-	// VpcFirewallRuleDirectionOutbound represents the VpcFirewallRuleDirection `"outbound"`.
-	VpcFirewallRuleDirectionOutbound VpcFirewallRuleDirection = "outbound"
-)
 
 // VpcFirewallRuleFilter is filter for a firewall rule. A given packet must match every field that is present for the rule to apply to it. A packet matches a field if any entry in that field matches the packet.
 type VpcFirewallRuleFilter struct {
@@ -2178,20 +1782,15 @@ type VpcFirewallRuleFilter struct {
 	Protocols []VpcFirewallRuleProtocol `json:"protocols,omitempty" yaml:"protocols,omitempty"`
 }
 
+// VpcFirewallRuleHostFilterType is the type definition for a VpcFirewallRuleHostFilterType.
+type VpcFirewallRuleHostFilterType string
+
 // VpcFirewallRuleHostFilterVpc is the rule applies to traffic from/to all instances in the VPC
 type VpcFirewallRuleHostFilterVpc struct {
 	Type VpcFirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
-
-// VpcFirewallRuleHostFilterType is the type definition for a VpcFirewallRuleHostFilterType.
-type VpcFirewallRuleHostFilterType string
-
-const (
-	// VpcFirewallRuleHostFilterTypeVpc represents the VpcFirewallRuleHostFilterType `"vpc"`.
-	VpcFirewallRuleHostFilterTypeVpc VpcFirewallRuleHostFilterType = "vpc"
-)
 
 // VpcFirewallRuleHostFilterSubnet is the rule applies to traffic from/to all instances in the VPC Subnet
 type VpcFirewallRuleHostFilterSubnet struct {
@@ -2200,11 +1799,6 @@ type VpcFirewallRuleHostFilterSubnet struct {
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-const (
-	// VpcFirewallRuleHostFilterTypeSubnet represents the VpcFirewallRuleHostFilterType `"subnet"`.
-	VpcFirewallRuleHostFilterTypeSubnet VpcFirewallRuleHostFilterType = "subnet"
-)
-
 // VpcFirewallRuleHostFilterInstance is the rule applies to traffic from/to this specific instance
 type VpcFirewallRuleHostFilterInstance struct {
 	Type VpcFirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
@@ -2212,21 +1806,11 @@ type VpcFirewallRuleHostFilterInstance struct {
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-const (
-	// VpcFirewallRuleHostFilterTypeInstance represents the VpcFirewallRuleHostFilterType `"instance"`.
-	VpcFirewallRuleHostFilterTypeInstance VpcFirewallRuleHostFilterType = "instance"
-)
-
 // VpcFirewallRuleHostFilterIp is the rule applies to traffic from/to a specific IP address
 type VpcFirewallRuleHostFilterIp struct {
 	Type  VpcFirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
 	Value string                        `json:"value,omitempty" yaml:"value,omitempty"`
 }
-
-const (
-	// VpcFirewallRuleHostFilterTypeIp represents the VpcFirewallRuleHostFilterType `"ip"`.
-	VpcFirewallRuleHostFilterTypeIp VpcFirewallRuleHostFilterType = "ip"
-)
 
 // VpcFirewallRuleHostFilterIpNet is the rule applies to traffic from/to a specific IP subnet
 type VpcFirewallRuleHostFilterIpNet struct {
@@ -2234,38 +1818,22 @@ type VpcFirewallRuleHostFilterIpNet struct {
 	Value IpNet                         `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-const (
-	// VpcFirewallRuleHostFilterTypeIpNet represents the VpcFirewallRuleHostFilterType `"ip_net"`.
-	VpcFirewallRuleHostFilterTypeIpNet VpcFirewallRuleHostFilterType = "ip_net"
-)
-
 // VpcFirewallRuleHostFilter is the `VpcFirewallRuleHostFilter` is used to filter traffic on the basis of its source or destination host.
 type VpcFirewallRuleHostFilter struct {
-	Type  string `json:"type,omitempty" yaml:"type,omitempty"`
-	Value Name   `json:"value,omitempty" yaml:"value,omitempty"`
+	// Type is the type definition for a Type.
+	Type string `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // VpcFirewallRuleProtocol is the protocols that may be specified in a firewall rule's filter
 type VpcFirewallRuleProtocol string
 
-const (
-	// VpcFirewallRuleProtocolTCP represents the VpcFirewallRuleProtocol `"TCP"`.
-	VpcFirewallRuleProtocolTCP VpcFirewallRuleProtocol = "TCP"
-	// VpcFirewallRuleProtocolUDP represents the VpcFirewallRuleProtocol `"UDP"`.
-	VpcFirewallRuleProtocolUDP VpcFirewallRuleProtocol = "UDP"
-	// VpcFirewallRuleProtocolICMP represents the VpcFirewallRuleProtocol `"ICMP"`.
-	VpcFirewallRuleProtocolICMP VpcFirewallRuleProtocol = "ICMP"
-)
-
 // VpcFirewallRuleStatus is the type definition for a VpcFirewallRuleStatus.
 type VpcFirewallRuleStatus string
 
-const (
-	// VpcFirewallRuleStatusDisabled represents the VpcFirewallRuleStatus `"disabled"`.
-	VpcFirewallRuleStatusDisabled VpcFirewallRuleStatus = "disabled"
-	// VpcFirewallRuleStatusEnabled represents the VpcFirewallRuleStatus `"enabled"`.
-	VpcFirewallRuleStatusEnabled VpcFirewallRuleStatus = "enabled"
-)
+// VpcFirewallRuleTargetType is the type definition for a VpcFirewallRuleTargetType.
+type VpcFirewallRuleTargetType string
 
 // VpcFirewallRuleTargetVpc is the rule applies to all instances in the VPC
 type VpcFirewallRuleTargetVpc struct {
@@ -2274,25 +1842,12 @@ type VpcFirewallRuleTargetVpc struct {
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-// VpcFirewallRuleTargetType is the type definition for a VpcFirewallRuleTargetType.
-type VpcFirewallRuleTargetType string
-
-const (
-	// VpcFirewallRuleTargetTypeVpc represents the VpcFirewallRuleTargetType `"vpc"`.
-	VpcFirewallRuleTargetTypeVpc VpcFirewallRuleTargetType = "vpc"
-)
-
 // VpcFirewallRuleTargetSubnet is the rule applies to all instances in the VPC Subnet
 type VpcFirewallRuleTargetSubnet struct {
 	Type VpcFirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
-
-const (
-	// VpcFirewallRuleTargetTypeSubnet represents the VpcFirewallRuleTargetType `"subnet"`.
-	VpcFirewallRuleTargetTypeSubnet VpcFirewallRuleTargetType = "subnet"
-)
 
 // VpcFirewallRuleTargetInstance is the rule applies to this specific instance
 type VpcFirewallRuleTargetInstance struct {
@@ -2301,21 +1856,11 @@ type VpcFirewallRuleTargetInstance struct {
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-const (
-	// VpcFirewallRuleTargetTypeInstance represents the VpcFirewallRuleTargetType `"instance"`.
-	VpcFirewallRuleTargetTypeInstance VpcFirewallRuleTargetType = "instance"
-)
-
 // VpcFirewallRuleTargetIp is the rule applies to a specific IP address
 type VpcFirewallRuleTargetIp struct {
 	Type  VpcFirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
 	Value string                    `json:"value,omitempty" yaml:"value,omitempty"`
 }
-
-const (
-	// VpcFirewallRuleTargetTypeIp represents the VpcFirewallRuleTargetType `"ip"`.
-	VpcFirewallRuleTargetTypeIp VpcFirewallRuleTargetType = "ip"
-)
 
 // VpcFirewallRuleTargetIpNet is the rule applies to a specific IP subnet
 type VpcFirewallRuleTargetIpNet struct {
@@ -2323,15 +1868,12 @@ type VpcFirewallRuleTargetIpNet struct {
 	Value IpNet                     `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-const (
-	// VpcFirewallRuleTargetTypeIpNet represents the VpcFirewallRuleTargetType `"ip_net"`.
-	VpcFirewallRuleTargetTypeIpNet VpcFirewallRuleTargetType = "ip_net"
-)
-
 // VpcFirewallRuleTarget is a `VpcFirewallRuleTarget` is used to specify the set of [`Instance`]s to which a firewall rule applies.
 type VpcFirewallRuleTarget struct {
-	Type  string `json:"type,omitempty" yaml:"type,omitempty"`
-	Value Name   `json:"value,omitempty" yaml:"value,omitempty"`
+	// Type is the type definition for a Type.
+	Type string `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // VpcFirewallRuleUpdate is a single rule in a VPC firewall
@@ -2398,13 +1940,6 @@ type VpcRouterCreate struct {
 
 // VpcRouterKind is the type definition for a VpcRouterKind.
 type VpcRouterKind string
-
-const (
-	// VpcRouterKindSystem represents the VpcRouterKind `"system"`.
-	VpcRouterKindSystem VpcRouterKind = "system"
-	// VpcRouterKindCustom represents the VpcRouterKind `"custom"`.
-	VpcRouterKindCustom VpcRouterKind = "custom"
-)
 
 // VpcRouterResultsPage is a single page of results
 type VpcRouterResultsPage struct {
@@ -2475,6 +2010,387 @@ type VpcUpdate struct {
 	DnsName     Name   `json:"dns_name,omitempty" yaml:"dns_name,omitempty"`
 	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
 }
+
+// BinRangedoubleTypeRangeTo represents the BinRangedoubleType `"range_to"`.
+const BinRangedoubleTypeRangeTo BinRangedoubleType = "range_to"
+
+// BinRangedoubleTypeRange represents the BinRangedoubleType `"range"`.
+const BinRangedoubleTypeRange BinRangedoubleType = "range"
+
+// BinRangedoubleTypeRangeFrom represents the BinRangedoubleType `"range_from"`.
+const BinRangedoubleTypeRangeFrom BinRangedoubleType = "range_from"
+
+// BinRangeint64TypeRangeTo represents the BinRangeint64Type `"range_to"`.
+const BinRangeint64TypeRangeTo BinRangeint64Type = "range_to"
+
+// BinRangeint64TypeRange represents the BinRangeint64Type `"range"`.
+const BinRangeint64TypeRange BinRangeint64Type = "range"
+
+// BinRangeint64TypeRangeFrom represents the BinRangeint64Type `"range_from"`.
+const BinRangeint64TypeRangeFrom BinRangeint64Type = "range_from"
+
+// DatumTypeBool represents the DatumType `"bool"`.
+const DatumTypeBool DatumType = "bool"
+
+// DatumTypeI64 represents the DatumType `"i64"`.
+const DatumTypeI64 DatumType = "i64"
+
+// DatumTypeF64 represents the DatumType `"f64"`.
+const DatumTypeF64 DatumType = "f64"
+
+// DatumTypeString represents the DatumType `"string"`.
+const DatumTypeString DatumType = "string"
+
+// DatumTypeBytes represents the DatumType `"bytes"`.
+const DatumTypeBytes DatumType = "bytes"
+
+// DatumTypeCumulativeI64 represents the DatumType `"cumulative_i64"`.
+const DatumTypeCumulativeI64 DatumType = "cumulative_i64"
+
+// DatumTypeCumulativeF64 represents the DatumType `"cumulative_f64"`.
+const DatumTypeCumulativeF64 DatumType = "cumulative_f64"
+
+// DatumTypeHistogramI64 represents the DatumType `"histogram_i64"`.
+const DatumTypeHistogramI64 DatumType = "histogram_i64"
+
+// DatumTypeHistogramF64 represents the DatumType `"histogram_f64"`.
+const DatumTypeHistogramF64 DatumType = "histogram_f64"
+
+// DigestTypeSha256 represents the DigestType `"sha256"`.
+const DigestTypeSha256 DigestType = "sha256"
+
+// DiskMetricNameActivated represents the DiskMetricName `"activated"`.
+const DiskMetricNameActivated DiskMetricName = "activated"
+
+// DiskMetricNameFlush represents the DiskMetricName `"flush"`.
+const DiskMetricNameFlush DiskMetricName = "flush"
+
+// DiskMetricNameRead represents the DiskMetricName `"read"`.
+const DiskMetricNameRead DiskMetricName = "read"
+
+// DiskMetricNameReadBytes represents the DiskMetricName `"read_bytes"`.
+const DiskMetricNameReadBytes DiskMetricName = "read_bytes"
+
+// DiskMetricNameWrite represents the DiskMetricName `"write"`.
+const DiskMetricNameWrite DiskMetricName = "write"
+
+// DiskMetricNameWriteBytes represents the DiskMetricName `"write_bytes"`.
+const DiskMetricNameWriteBytes DiskMetricName = "write_bytes"
+
+// DiskSourceTypeBlank represents the DiskSourceType `"blank"`.
+const DiskSourceTypeBlank DiskSourceType = "blank"
+
+// DiskSourceTypeSnapshot represents the DiskSourceType `"snapshot"`.
+const DiskSourceTypeSnapshot DiskSourceType = "snapshot"
+
+// DiskSourceTypeImage represents the DiskSourceType `"image"`.
+const DiskSourceTypeImage DiskSourceType = "image"
+
+// DiskSourceTypeGlobalImage represents the DiskSourceType `"global_image"`.
+const DiskSourceTypeGlobalImage DiskSourceType = "global_image"
+
+// DiskStateStateCreating represents the DiskStateState `"creating"`.
+const DiskStateStateCreating DiskStateState = "creating"
+
+// DiskStateStateDetached represents the DiskStateState `"detached"`.
+const DiskStateStateDetached DiskStateState = "detached"
+
+// DiskStateStateAttaching represents the DiskStateState `"attaching"`.
+const DiskStateStateAttaching DiskStateState = "attaching"
+
+// DiskStateStateAttached represents the DiskStateState `"attached"`.
+const DiskStateStateAttached DiskStateState = "attached"
+
+// DiskStateStateDetaching represents the DiskStateState `"detaching"`.
+const DiskStateStateDetaching DiskStateState = "detaching"
+
+// DiskStateStateDestroyed represents the DiskStateState `"destroyed"`.
+const DiskStateStateDestroyed DiskStateState = "destroyed"
+
+// DiskStateStateFaulted represents the DiskStateState `"faulted"`.
+const DiskStateStateFaulted DiskStateState = "faulted"
+
+// ExternalIpCreateTypeEphemeral represents the ExternalIpCreateType `"ephemeral"`.
+const ExternalIpCreateTypeEphemeral ExternalIpCreateType = "ephemeral"
+
+// FieldSourceTarget represents the FieldSource `"target"`.
+const FieldSourceTarget FieldSource = "target"
+
+// FieldSourceMetric represents the FieldSource `"metric"`.
+const FieldSourceMetric FieldSource = "metric"
+
+// FieldTypeString represents the FieldType `"string"`.
+const FieldTypeString FieldType = "string"
+
+// FieldTypeI64 represents the FieldType `"i64"`.
+const FieldTypeI64 FieldType = "i64"
+
+// FieldTypeIpAddr represents the FieldType `"ip_addr"`.
+const FieldTypeIpAddr FieldType = "ip_addr"
+
+// FieldTypeUuid represents the FieldType `"uuid"`.
+const FieldTypeUuid FieldType = "uuid"
+
+// FieldTypeBool represents the FieldType `"bool"`.
+const FieldTypeBool FieldType = "bool"
+
+// FleetRoleAdmin represents the FleetRole `"admin"`.
+const FleetRoleAdmin FleetRole = "admin"
+
+// FleetRoleCollaborator represents the FleetRole `"collaborator"`.
+const FleetRoleCollaborator FleetRole = "collaborator"
+
+// FleetRoleViewer represents the FleetRole `"viewer"`.
+const FleetRoleViewer FleetRole = "viewer"
+
+// IdSortModeIdAscending represents the IdSortMode `"id_ascending"`.
+const IdSortModeIdAscending IdSortMode = "id_ascending"
+
+// IdentityProviderTypeSaml represents the IdentityProviderType `"saml"`.
+const IdentityProviderTypeSaml IdentityProviderType = "saml"
+
+// IdentityTypeSiloUser represents the IdentityType `"silo_user"`.
+const IdentityTypeSiloUser IdentityType = "silo_user"
+
+// IdentityTypeSiloGroup represents the IdentityType `"silo_group"`.
+const IdentityTypeSiloGroup IdentityType = "silo_group"
+
+// IdpMetadataSourceTypeUrl represents the IdpMetadataSourceType `"url"`.
+const IdpMetadataSourceTypeUrl IdpMetadataSourceType = "url"
+
+// IdpMetadataSourceTypeBase64EncodedXml represents the IdpMetadataSourceType `"base64_encoded_xml"`.
+const IdpMetadataSourceTypeBase64EncodedXml IdpMetadataSourceType = "base64_encoded_xml"
+
+// ImageSourceTypeUrl represents the ImageSourceType `"url"`.
+const ImageSourceTypeUrl ImageSourceType = "url"
+
+// ImageSourceTypeSnapshot represents the ImageSourceType `"snapshot"`.
+const ImageSourceTypeSnapshot ImageSourceType = "snapshot"
+
+// ImageSourceTypeYouCanBootAnythingAsLongAsItsAlpine represents the ImageSourceType `"you_can_boot_anything_as_long_as_its_alpine"`.
+const ImageSourceTypeYouCanBootAnythingAsLongAsItsAlpine ImageSourceType = "you_can_boot_anything_as_long_as_its_alpine"
+
+// InstanceDiskAttachmentTypeCreate represents the InstanceDiskAttachmentType `"create"`.
+const InstanceDiskAttachmentTypeCreate InstanceDiskAttachmentType = "create"
+
+// InstanceDiskAttachmentTypeAttach represents the InstanceDiskAttachmentType `"attach"`.
+const InstanceDiskAttachmentTypeAttach InstanceDiskAttachmentType = "attach"
+
+// InstanceNetworkInterfaceAttachmentTypeCreate represents the InstanceNetworkInterfaceAttachmentType `"create"`.
+const InstanceNetworkInterfaceAttachmentTypeCreate InstanceNetworkInterfaceAttachmentType = "create"
+
+// InstanceNetworkInterfaceAttachmentTypeDefault represents the InstanceNetworkInterfaceAttachmentType `"default"`.
+const InstanceNetworkInterfaceAttachmentTypeDefault InstanceNetworkInterfaceAttachmentType = "default"
+
+// InstanceNetworkInterfaceAttachmentTypeNone represents the InstanceNetworkInterfaceAttachmentType `"none"`.
+const InstanceNetworkInterfaceAttachmentTypeNone InstanceNetworkInterfaceAttachmentType = "none"
+
+// InstanceStateCreating represents the InstanceState `"creating"`.
+const InstanceStateCreating InstanceState = "creating"
+
+// InstanceStateStarting represents the InstanceState `"starting"`.
+const InstanceStateStarting InstanceState = "starting"
+
+// InstanceStateRunning represents the InstanceState `"running"`.
+const InstanceStateRunning InstanceState = "running"
+
+// InstanceStateStopping represents the InstanceState `"stopping"`.
+const InstanceStateStopping InstanceState = "stopping"
+
+// InstanceStateStopped represents the InstanceState `"stopped"`.
+const InstanceStateStopped InstanceState = "stopped"
+
+// InstanceStateRebooting represents the InstanceState `"rebooting"`.
+const InstanceStateRebooting InstanceState = "rebooting"
+
+// InstanceStateMigrating represents the InstanceState `"migrating"`.
+const InstanceStateMigrating InstanceState = "migrating"
+
+// InstanceStateRepairing represents the InstanceState `"repairing"`.
+const InstanceStateRepairing InstanceState = "repairing"
+
+// InstanceStateFailed represents the InstanceState `"failed"`.
+const InstanceStateFailed InstanceState = "failed"
+
+// InstanceStateDestroyed represents the InstanceState `"destroyed"`.
+const InstanceStateDestroyed InstanceState = "destroyed"
+
+// IpKindEphemeral represents the IpKind `"ephemeral"`.
+const IpKindEphemeral IpKind = "ephemeral"
+
+// IpKindFloating represents the IpKind `"floating"`.
+const IpKindFloating IpKind = "floating"
+
+// NameOrIdSortModeNameAscending represents the NameOrIdSortMode `"name_ascending"`.
+const NameOrIdSortModeNameAscending NameOrIdSortMode = "name_ascending"
+
+// NameOrIdSortModeNameDescending represents the NameOrIdSortMode `"name_descending"`.
+const NameOrIdSortModeNameDescending NameOrIdSortMode = "name_descending"
+
+// NameOrIdSortModeIdAscending represents the NameOrIdSortMode `"id_ascending"`.
+const NameOrIdSortModeIdAscending NameOrIdSortMode = "id_ascending"
+
+// NameSortModeNameAscending represents the NameSortMode `"name_ascending"`.
+const NameSortModeNameAscending NameSortMode = "name_ascending"
+
+// OrganizationRoleAdmin represents the OrganizationRole `"admin"`.
+const OrganizationRoleAdmin OrganizationRole = "admin"
+
+// OrganizationRoleCollaborator represents the OrganizationRole `"collaborator"`.
+const OrganizationRoleCollaborator OrganizationRole = "collaborator"
+
+// OrganizationRoleViewer represents the OrganizationRole `"viewer"`.
+const OrganizationRoleViewer OrganizationRole = "viewer"
+
+// ProjectRoleAdmin represents the ProjectRole `"admin"`.
+const ProjectRoleAdmin ProjectRole = "admin"
+
+// ProjectRoleCollaborator represents the ProjectRole `"collaborator"`.
+const ProjectRoleCollaborator ProjectRole = "collaborator"
+
+// ProjectRoleViewer represents the ProjectRole `"viewer"`.
+const ProjectRoleViewer ProjectRole = "viewer"
+
+// RouteDestinationTypeIp represents the RouteDestinationType `"ip"`.
+const RouteDestinationTypeIp RouteDestinationType = "ip"
+
+// RouteDestinationTypeIpNet represents the RouteDestinationType `"ip_net"`.
+const RouteDestinationTypeIpNet RouteDestinationType = "ip_net"
+
+// RouteDestinationTypeVpc represents the RouteDestinationType `"vpc"`.
+const RouteDestinationTypeVpc RouteDestinationType = "vpc"
+
+// RouteDestinationTypeSubnet represents the RouteDestinationType `"subnet"`.
+const RouteDestinationTypeSubnet RouteDestinationType = "subnet"
+
+// RouteTargetTypeIp represents the RouteTargetType `"ip"`.
+const RouteTargetTypeIp RouteTargetType = "ip"
+
+// RouteTargetTypeVpc represents the RouteTargetType `"vpc"`.
+const RouteTargetTypeVpc RouteTargetType = "vpc"
+
+// RouteTargetTypeSubnet represents the RouteTargetType `"subnet"`.
+const RouteTargetTypeSubnet RouteTargetType = "subnet"
+
+// RouteTargetTypeInstance represents the RouteTargetType `"instance"`.
+const RouteTargetTypeInstance RouteTargetType = "instance"
+
+// RouteTargetTypeInternetGateway represents the RouteTargetType `"internet_gateway"`.
+const RouteTargetTypeInternetGateway RouteTargetType = "internet_gateway"
+
+// RouterRouteKindDefault represents the RouterRouteKind `"default"`.
+const RouterRouteKindDefault RouterRouteKind = "default"
+
+// RouterRouteKindVpcSubnet represents the RouterRouteKind `"vpc_subnet"`.
+const RouterRouteKindVpcSubnet RouterRouteKind = "vpc_subnet"
+
+// RouterRouteKindVpcPeering represents the RouterRouteKind `"vpc_peering"`.
+const RouterRouteKindVpcPeering RouterRouteKind = "vpc_peering"
+
+// RouterRouteKindCustom represents the RouterRouteKind `"custom"`.
+const RouterRouteKindCustom RouterRouteKind = "custom"
+
+// SagaErrorInfoErrorActionFailed represents the SagaErrorInfoError `"action_failed"`.
+const SagaErrorInfoErrorActionFailed SagaErrorInfoError = "action_failed"
+
+// SagaErrorInfoErrorDeserializeFailed represents the SagaErrorInfoError `"deserialize_failed"`.
+const SagaErrorInfoErrorDeserializeFailed SagaErrorInfoError = "deserialize_failed"
+
+// SagaErrorInfoErrorInjectedError represents the SagaErrorInfoError `"injected_error"`.
+const SagaErrorInfoErrorInjectedError SagaErrorInfoError = "injected_error"
+
+// SagaErrorInfoErrorSerializeFailed represents the SagaErrorInfoError `"serialize_failed"`.
+const SagaErrorInfoErrorSerializeFailed SagaErrorInfoError = "serialize_failed"
+
+// SagaErrorInfoErrorSubsagaCreateFailed represents the SagaErrorInfoError `"subsaga_create_failed"`.
+const SagaErrorInfoErrorSubsagaCreateFailed SagaErrorInfoError = "subsaga_create_failed"
+
+// SagaStateStateRunning represents the SagaStateState `"running"`.
+const SagaStateStateRunning SagaStateState = "running"
+
+// SagaStateStateSucceeded represents the SagaStateState `"succeeded"`.
+const SagaStateStateSucceeded SagaStateState = "succeeded"
+
+// SagaStateStateFailed represents the SagaStateState `"failed"`.
+const SagaStateStateFailed SagaStateState = "failed"
+
+// SiloRoleAdmin represents the SiloRole `"admin"`.
+const SiloRoleAdmin SiloRole = "admin"
+
+// SiloRoleCollaborator represents the SiloRole `"collaborator"`.
+const SiloRoleCollaborator SiloRole = "collaborator"
+
+// SiloRoleViewer represents the SiloRole `"viewer"`.
+const SiloRoleViewer SiloRole = "viewer"
+
+// UserProvisionTypeFixed represents the UserProvisionType `"fixed"`.
+const UserProvisionTypeFixed UserProvisionType = "fixed"
+
+// UserProvisionTypeJit represents the UserProvisionType `"jit"`.
+const UserProvisionTypeJit UserProvisionType = "jit"
+
+// VpcFirewallRuleActionAllow represents the VpcFirewallRuleAction `"allow"`.
+const VpcFirewallRuleActionAllow VpcFirewallRuleAction = "allow"
+
+// VpcFirewallRuleActionDeny represents the VpcFirewallRuleAction `"deny"`.
+const VpcFirewallRuleActionDeny VpcFirewallRuleAction = "deny"
+
+// VpcFirewallRuleDirectionInbound represents the VpcFirewallRuleDirection `"inbound"`.
+const VpcFirewallRuleDirectionInbound VpcFirewallRuleDirection = "inbound"
+
+// VpcFirewallRuleDirectionOutbound represents the VpcFirewallRuleDirection `"outbound"`.
+const VpcFirewallRuleDirectionOutbound VpcFirewallRuleDirection = "outbound"
+
+// VpcFirewallRuleHostFilterTypeVpc represents the VpcFirewallRuleHostFilterType `"vpc"`.
+const VpcFirewallRuleHostFilterTypeVpc VpcFirewallRuleHostFilterType = "vpc"
+
+// VpcFirewallRuleHostFilterTypeSubnet represents the VpcFirewallRuleHostFilterType `"subnet"`.
+const VpcFirewallRuleHostFilterTypeSubnet VpcFirewallRuleHostFilterType = "subnet"
+
+// VpcFirewallRuleHostFilterTypeInstance represents the VpcFirewallRuleHostFilterType `"instance"`.
+const VpcFirewallRuleHostFilterTypeInstance VpcFirewallRuleHostFilterType = "instance"
+
+// VpcFirewallRuleHostFilterTypeIp represents the VpcFirewallRuleHostFilterType `"ip"`.
+const VpcFirewallRuleHostFilterTypeIp VpcFirewallRuleHostFilterType = "ip"
+
+// VpcFirewallRuleHostFilterTypeIpNet represents the VpcFirewallRuleHostFilterType `"ip_net"`.
+const VpcFirewallRuleHostFilterTypeIpNet VpcFirewallRuleHostFilterType = "ip_net"
+
+// VpcFirewallRuleProtocolTCP represents the VpcFirewallRuleProtocol `"TCP"`.
+const VpcFirewallRuleProtocolTCP VpcFirewallRuleProtocol = "TCP"
+
+// VpcFirewallRuleProtocolUDP represents the VpcFirewallRuleProtocol `"UDP"`.
+const VpcFirewallRuleProtocolUDP VpcFirewallRuleProtocol = "UDP"
+
+// VpcFirewallRuleProtocolICMP represents the VpcFirewallRuleProtocol `"ICMP"`.
+const VpcFirewallRuleProtocolICMP VpcFirewallRuleProtocol = "ICMP"
+
+// VpcFirewallRuleStatusDisabled represents the VpcFirewallRuleStatus `"disabled"`.
+const VpcFirewallRuleStatusDisabled VpcFirewallRuleStatus = "disabled"
+
+// VpcFirewallRuleStatusEnabled represents the VpcFirewallRuleStatus `"enabled"`.
+const VpcFirewallRuleStatusEnabled VpcFirewallRuleStatus = "enabled"
+
+// VpcFirewallRuleTargetTypeVpc represents the VpcFirewallRuleTargetType `"vpc"`.
+const VpcFirewallRuleTargetTypeVpc VpcFirewallRuleTargetType = "vpc"
+
+// VpcFirewallRuleTargetTypeSubnet represents the VpcFirewallRuleTargetType `"subnet"`.
+const VpcFirewallRuleTargetTypeSubnet VpcFirewallRuleTargetType = "subnet"
+
+// VpcFirewallRuleTargetTypeInstance represents the VpcFirewallRuleTargetType `"instance"`.
+const VpcFirewallRuleTargetTypeInstance VpcFirewallRuleTargetType = "instance"
+
+// VpcFirewallRuleTargetTypeIp represents the VpcFirewallRuleTargetType `"ip"`.
+const VpcFirewallRuleTargetTypeIp VpcFirewallRuleTargetType = "ip"
+
+// VpcFirewallRuleTargetTypeIpNet represents the VpcFirewallRuleTargetType `"ip_net"`.
+const VpcFirewallRuleTargetTypeIpNet VpcFirewallRuleTargetType = "ip_net"
+
+// VpcRouterKindSystem represents the VpcRouterKind `"system"`.
+const VpcRouterKindSystem VpcRouterKind = "system"
+
+// VpcRouterKindCustom represents the VpcRouterKind `"custom"`.
+const VpcRouterKindCustom VpcRouterKind = "custom"
 
 // BinRangedoubleTypes is the collection of all BinRangedoubleType values.
 var BinRangedoubleTypes = []BinRangedoubleType{
