@@ -114,16 +114,14 @@ func Test_createTypeObject(t *testing.T) {
 		typeName string
 	}
 	tests := []struct {
-		name  string
-		args  args
-		want  string
-		want2 TypeTemplate
+		name string
+		args args
+		want TypeTemplate
 	}{
 		{
 			name: "success",
 			args: args{typesSpec, "DiskSource", "DiskSourceSnapshot"},
-			want: "type DiskSourceSnapshot struct {\n\tSnapshotId string `json:\"snapshot_id,omitempty\" yaml:\"snapshot_id,omitempty\"`\n\tType DiskSourceType `json:\"type,omitempty\" yaml:\"type,omitempty\"`\n}\n",
-			want2: TypeTemplate{
+			want: TypeTemplate{
 				Description: "Create a disk from a disk snapshot",
 				Name:        "DiskSourceSnapshot",
 				Type:        "struct", Fields: []TypeFields{
@@ -145,9 +143,8 @@ func Test_createTypeObject(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, typeTpl := createTypeObject(tt.args.s, tt.args.name, tt.args.typeName, "Create a disk from a disk snapshot")
+			got := createTypeObject(tt.args.s, tt.args.name, tt.args.typeName, "Create a disk from a disk snapshot")
 			assert.Equal(t, tt.want, got)
-			assert.Equal(t, tt.want2, typeTpl)
 		})
 	}
 }
@@ -164,18 +161,16 @@ func Test_createStringEnum(t *testing.T) {
 	tests := []struct {
 		name  string
 		args  args
-		want  string
-		want1 map[string][]string
-		want2 []TypeTemplate
-		want3 []EnumTemplate
+		want  map[string][]string
+		want1 []TypeTemplate
+		want2 []EnumTemplate
 	}{
 		{
 			name:  "success",
 			args:  args{typesSpec, enums, "FleetRole", "FleetRole"},
-			want:  "// FleetRole is the type definition for a FleetRole.\ntype FleetRole string\nconst (\n// FleetRoleAdmin represents the FleetRole `\"admin\"`.\n\tFleetRoleAdmin FleetRole = \"admin\"\n// FleetRoleCollaborator represents the FleetRole `\"collaborator\"`.\n\tFleetRoleCollaborator FleetRole = \"collaborator\"\n// FleetRoleViewer represents the FleetRole `\"viewer\"`.\n\tFleetRoleViewer FleetRole = \"viewer\"\n)\n",
-			want1: map[string][]string{"FleetRole": {"admin", "collaborator", "viewer"}},
-			want2: []TypeTemplate{{Description: "// FleetRole is the type definition for a FleetRole.", Name: "FleetRole", Type: "string"}},
-			want3: []EnumTemplate{
+			want:  map[string][]string{"FleetRole": {"admin", "collaborator", "viewer"}},
+			want1: []TypeTemplate{{Description: "// FleetRole is the type definition for a FleetRole.", Name: "FleetRole", Type: "string"}},
+			want2: []EnumTemplate{
 				{Description: "// FleetRoleAdmin represents the FleetRole `\"admin\"`.", Name: "FleetRoleAdmin", ValueType: "const", Value: "FleetRole = \"admin\""},
 				{Description: "// FleetRoleCollaborator represents the FleetRole `\"collaborator\"`.", Name: "FleetRoleCollaborator", ValueType: "const", Value: "FleetRole = \"collaborator\""},
 				{Description: "// FleetRoleViewer represents the FleetRole `\"viewer\"`.", Name: "FleetRoleViewer", ValueType: "const", Value: "FleetRole = \"viewer\""},
@@ -184,11 +179,10 @@ func Test_createStringEnum(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, got1, got2, got3 := createStringEnum(tt.args.s, tt.args.stringEnums, tt.args.name, tt.args.typeName)
+			got, got1, got2 := createStringEnum(tt.args.s, tt.args.stringEnums, tt.args.name, tt.args.typeName)
 			assert.Equal(t, tt.want, got)
 			assert.Equal(t, tt.want1, got1)
 			assert.Equal(t, tt.want2, got2)
-			assert.Equal(t, tt.want3, got3)
 		})
 	}
 }
@@ -236,15 +230,13 @@ func Test_createOneOf(t *testing.T) {
 	tests := []struct {
 		name  string
 		args  args
-		want  string
-		want2 []TypeTemplate
-		want3 []EnumTemplate
+		want  []TypeTemplate
+		want1 []EnumTemplate
 	}{
 		{
 			name: "success",
 			args: args{typeSpec, "ImageSource", "ImageSource"},
-			want: "// ImageSourceUrl is the type definition for a ImageSourceUrl.\ntype ImageSourceUrl struct {\n\tType ImageSourceType `json:\"type,omitempty\" yaml:\"type,omitempty\"`\n\tUrl string `json:\"url,omitempty\" yaml:\"url,omitempty\"`\n}\n// ImageSourceType is the type definition for a ImageSourceType.\ntype ImageSourceType string\nconst (\n// ImageSourceTypeUrl represents the ImageSourceType `\"url\"`.\n\tImageSourceTypeUrl ImageSourceType = \"url\"\n)\n\n\n// ImageSourceSnapshot is the type definition for a ImageSourceSnapshot.\ntype ImageSourceSnapshot struct {\n\tId string `json:\"id,omitempty\" yaml:\"id,omitempty\"`\n\tType ImageSourceType `json:\"type,omitempty\" yaml:\"type,omitempty\"`\n}\nconst (\n// ImageSourceTypeSnapshot represents the ImageSourceType `\"snapshot\"`.\n\tImageSourceTypeSnapshot ImageSourceType = \"snapshot\"\n)\n\n\n// ImageSource is the source of the underlying image.\ntype ImageSource struct {\n\tType string `json:\"type,omitempty\" yaml:\"type,omitempty\"`\n\tUrl string `json:\"url,omitempty\" yaml:\"url,omitempty\"`\n\tId string `json:\"id,omitempty\" yaml:\"id,omitempty\"`\n}\n",
-			want2: []TypeTemplate{
+			want: []TypeTemplate{
 				{
 					Description: "// ImageSourceType is the type definition for a ImageSourceType.", Name: "ImageSourceType", Type: "string",
 				},
@@ -288,7 +280,7 @@ func Test_createOneOf(t *testing.T) {
 					},
 				},
 			},
-			want3: []EnumTemplate{
+			want1: []EnumTemplate{
 				{Description: "// ImageSourceTypeUrl represents the ImageSourceType `\"url\"`.", Name: "ImageSourceTypeUrl", ValueType: "const", Value: "ImageSourceType = \"url\""},
 				{Description: "// ImageSourceTypeSnapshot represents the ImageSourceType `\"snapshot\"`.", Name: "ImageSourceTypeSnapshot", ValueType: "const", Value: "ImageSourceType = \"snapshot\""},
 			},
@@ -296,10 +288,9 @@ func Test_createOneOf(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, typeTpls, enumTpls := createOneOf(tt.args.s, tt.args.name, tt.args.typeName)
+			got, got1 := createOneOf(tt.args.s, tt.args.name, tt.args.typeName)
 			assert.Equal(t, tt.want, got)
-			assert.Equal(t, tt.want2, typeTpls)
-			assert.Equal(t, tt.want3, enumTpls)
+			assert.Equal(t, tt.want1, got1)
 		})
 	}
 }
