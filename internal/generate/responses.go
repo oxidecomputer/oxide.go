@@ -57,13 +57,10 @@ func formatResponseDescription(name string, r *openapi3.Response) string {
 func populateResponseType(name string, r *openapi3.Response) ([]TypeTemplate, []EnumTemplate) {
 	types := []TypeTemplate{}
 	enumTypes := []EnumTemplate{}
-	// Write the type definition.
-	for k, v := range r.Content {
-		fmt.Printf("writing type for response %q -> `%s`\n", name, k)
 
+	for _, v := range r.Content {
 		name := fmt.Sprintf("%sResponse", name)
 
-		// Print the type definition.
 		s := v.Schema
 		if s.Ref != "" {
 			typeTpl := TypeTemplate{
