@@ -5,7 +5,6 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/iancoleman/strcase"
 )
@@ -83,12 +82,9 @@ func generateTypes(file string, spec *openapi3.T) error {
 			continue
 		}
 
-		formattedType, typeTpl, enumTpl := writeSchemaType(name, s.Value, "")
+		_, typeTpl, enumTpl := writeSchemaType(name, s.Value, "")
 		typeCollect = append(typeCollect, typeTpl...)
 		enumCollect = append(enumCollect, enumTpl...)
-
-		// TODO: Remove when all types are constructed through structs
-		fmt.Fprint(f, formattedType)
 	}
 
 	// TODO: Currently enums are set as variables like this example:
@@ -113,27 +109,13 @@ func generateTypes(file string, spec *openapi3.T) error {
 		// TODO: Remove once all types are constructed through structs
 		enums := collectEnumStringTypes[name]
 
-		// TODO: Remove everything that is printed to file from here once all code is generated from the templates
-		// Make the enum a collection of the values.
-		// Add a description.
-		fmt.Fprintf(f, "// %s is the collection of all %s values.\n", makePlural(name), makeSingular(name))
-		fmt.Fprintf(f, "var %s = []%s{\n", makePlural(name), makeSingular(name))
-		// We want to keep the values in the same order as the enum.
-		sort.Strings(enums)
-		for _, enum := range enums {
-			// Most likely, the enum values are strings.
-			fmt.Fprintf(f, "\t%s,\n", strcase.ToCamel(fmt.Sprintf("%s_%s", makeSingular(name), enum)))
-		}
-		// Close the enum values.
-		fmt.Fprintf(f, "}\n")
-
 		var enumItems string
 		sort.Strings(enums)
 		for _, enum := range enums {
 			// Most likely, the enum values are strings.
-			enumItems = enumItems + fmt.Sprintf("%s, ", strcase.ToCamel(fmt.Sprintf("%s_%s", makeSingular(name), enum)))
+			enumItems = enumItems + fmt.Sprintf("\t%s,\n", strcase.ToCamel(fmt.Sprintf("%s_%s", makeSingular(name), enum)))
 		}
-		enumVar := fmt.Sprintf("[]%s{", makeSingular(name)) + enumItems + "}"
+		enumVar := fmt.Sprintf("= []%s{\n", makeSingular(name)) + enumItems + "}"
 
 		enumTpl := EnumTemplate{
 			Description: fmt.Sprintf("// %s is the collection of all %s values.", makePlural(name), makeSingular(name)),
@@ -145,9 +127,36 @@ func generateTypes(file string, spec *openapi3.T) error {
 		enumCollect = append(enumCollect, enumTpl)
 	}
 
-	// TODO: Remove, this is only for development
-	spew.Dump(typeCollect)
-	spew.Dump(enumCollect)
+	// New code to print to file
+	for _, tt := range typeCollect {
+		if tt.Name == "" {
+			continue
+		}
+
+		fmt.Fprintf(f, "%s\n", tt.Description)
+		fmt.Fprintf(f, "type %s %s", tt.Name, tt.Type)
+		if tt.Fields != nil {
+			fmt.Fprint(f, " {\n")
+			for _, ft := range tt.Fields {
+				if ft.Description != "" {
+					// Double check about the "//"
+					fmt.Fprintf(f, "\t%s\n", ft.Description)
+				}
+				fmt.Fprintf(f, "\t%s %s %s\n", ft.Name, ft.Type, ft.SerializationInfo)
+			}
+			fmt.Fprint(f, "}\n")
+		}
+		fmt.Fprint(f, "\n")
+	}
+
+	for _, et := range enumCollect {
+		if et.Name == "" {
+			continue
+		}
+
+		fmt.Fprintf(f, "%s\n", et.Description)
+		fmt.Fprintf(f, "%s %s %s\n\n", et.ValueType, et.Name, et.Value)
+	}
 
 	return nil
 }
@@ -495,126 +504,4 @@ func schemaTypeDescriptionDeprecated(name string, s *openapi3.Schema) string {
 	}
 	return fmt.Sprintf("// %s is the type definition for a %s.\n", name, name)
 
-}
-
-// TODO: This function uses the structs to print. USE THIS INSTEAD OF THE OTHER STUFF
-func printType() error {
-	f, err := openGeneratedFile("./test_utils/type-tmp.go")
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-
-	versionFile := "../VERSION_OMICRON"
-	spec, err := loadAPIFromFile(versionFile)
-	if err != nil {
-		return err
-	}
-
-	// Start an empty collection of types
-	typeCollect := []TypeTemplate{}
-
-	// Start an empty collection of enum types
-	enumCollect := []EnumTemplate{}
-
-	// Iterate over all the schema components in the spec and write the types.
-	// We want to ensure we keep the order so the diffs don't look like shit.
-	keys := make([]string, 0)
-	for k := range spec.Components.Schemas {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-	for _, name := range keys {
-		s := spec.Components.Schemas[name]
-		if s.Ref != "" {
-			fmt.Printf("[WARN] TODO: skipping type for %q, since it is a reference\n", name)
-			continue
-		}
-
-		if name == "DatumType" {
-			fmt.Printf("[WARN] TODO: skipping type for %q, since it is a duplicate\n", name)
-			continue
-		}
-
-		_, typeTpl, enumTpl := writeSchemaType(name, s.Value, "")
-		typeCollect = append(typeCollect, typeTpl...)
-		enumCollect = append(enumCollect, enumTpl...)
-
-		// TODO: Remove when all types are constructed through structs
-		// fmt.Fprint(f, formattedType)
-	}
-
-	keys = make([]string, 0)
-	for k := range collectEnumStringTypes {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-	for _, name := range keys {
-		// TODO: Remove once all types are constructed through structs
-		enums := collectEnumStringTypes[name]
-
-		// TODO: Remove everything that is printed to file from here once all code is generated from the templates
-		// Make the enum a collection of the values.
-		// Add a description.
-		//	fmt.Fprintf(f, "// %s is the collection of all %s values.\n", makePlural(name), makeSingular(name))
-		//	fmt.Fprintf(f, "var %s = []%s{\n", makePlural(name), makeSingular(name))
-		// We want to keep the values in the same order as the enum.
-		//	sort.Strings(enums)
-		//	for _, enum := range enums {
-		// Most likely, the enum values are strings.
-		//		fmt.Fprintf(f, "\t%s,\n", strcase.ToCamel(fmt.Sprintf("%s_%s", makeSingular(name), enum)))
-		//	}
-		// Close the enum values.
-		//	fmt.Fprintf(f, "}\n")
-
-		var enumItems string
-		sort.Strings(enums)
-		for _, enum := range enums {
-			// Most likely, the enum values are strings.
-			enumItems = enumItems + fmt.Sprintf("%s,\n", strcase.ToCamel(fmt.Sprintf("%s_%s", makeSingular(name), enum)))
-		}
-		enumVar := fmt.Sprintf("= []%s{\n", makeSingular(name)) + enumItems + "}"
-
-		enumTpl := EnumTemplate{
-			Description: fmt.Sprintf("// %s is the collection of all %s values.", makePlural(name), makeSingular(name)),
-			Name:        makePlural(name),
-			ValueType:   "var",
-			Value:       enumVar,
-		}
-
-		enumCollect = append(enumCollect, enumTpl)
-	}
-
-	// New code to print to file
-	for _, tt := range typeCollect {
-		if tt.Name == "" {
-			continue
-		}
-
-		fmt.Fprintf(f, "%s\n", tt.Description)
-		fmt.Fprintf(f, "type %s %s", tt.Name, tt.Type)
-		if tt.Fields != nil {
-			fmt.Fprint(f, " {\n")
-			for _, ft := range tt.Fields {
-				if ft.Description != "" {
-					// Double check about the "//"
-					fmt.Fprintf(f, "\t%s\n", ft.Description)
-				}
-				fmt.Fprintf(f, "\t%s %s %s\n", ft.Name, ft.Type, ft.SerializationInfo)
-			}
-			fmt.Fprint(f, "}\n")
-		}
-		fmt.Fprint(f, "\n")
-	}
-
-	for _, et := range enumCollect {
-		if et.Name == "" {
-			continue
-		}
-
-		fmt.Fprintf(f, "%s\n", et.Description)
-		fmt.Fprintf(f, "%s %s %s\n", et.ValueType, et.Name, et.Value)
-	}
-
-	return nil
 }

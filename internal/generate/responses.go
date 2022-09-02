@@ -5,7 +5,6 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/getkin/kin-openapi/openapi3"
 )
 
@@ -34,16 +33,41 @@ func generateResponses(file string, spec *openapi3.T) error {
 			continue
 		}
 
-		resp, tt, et := writeResponseType(name, r.Value)
+		_, tt, et := writeResponseType(name, r.Value)
 		typeCollect = append(typeCollect, tt...)
 		enumCollect = append(enumCollect, et...)
-
-		fmt.Fprint(f, resp)
 	}
 
-	// TODO: Remove, this is only for development
-	spew.Dump(typeCollect)
-	spew.Dump(enumCollect)
+	// New code to print to file
+	for _, tt := range typeCollect {
+		if tt.Name == "" {
+			continue
+		}
+
+		fmt.Fprintf(f, "%s\n", tt.Description)
+		fmt.Fprintf(f, "type %s %s", tt.Name, tt.Type)
+		if tt.Fields != nil {
+			fmt.Fprint(f, " {\n")
+			for _, ft := range tt.Fields {
+				if ft.Description != "" {
+					// Double check about the "//"
+					fmt.Fprintf(f, "\t%s\n", ft.Description)
+				}
+				fmt.Fprintf(f, "\t%s %s %s\n", ft.Name, ft.Type, ft.SerializationInfo)
+			}
+			fmt.Fprint(f, "}\n")
+		}
+		fmt.Fprint(f, "\n")
+	}
+
+	for _, et := range enumCollect {
+		if et.Name == "" {
+			continue
+		}
+
+		fmt.Fprintf(f, "%s\n", et.Description)
+		fmt.Fprintf(f, "%s %s %s\n", et.ValueType, et.Name, et.Value)
+	}
 
 	return nil
 }
@@ -51,7 +75,7 @@ func generateResponses(file string, spec *openapi3.T) error {
 // writeResponseTypeDescription writes the description of the given type.
 func writeResponseTypeDescription(name string, r *openapi3.Response) string {
 	if r.Description != nil {
-		return fmt.Sprintf("// %s is the response given when %s\n", name, toLowerFirstLetter(
+		return fmt.Sprintf("// %s is the response given when %s", name, toLowerFirstLetter(
 			strings.ReplaceAll(*r.Description, "\n", "\n// ")))
 	}
 

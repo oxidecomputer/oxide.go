@@ -267,7 +267,8 @@ func Test_createOneOf(t *testing.T) {
 				{
 					Description: "// ImageSourceSnapshot is the type definition for a ImageSourceSnapshot.", Name: "ImageSourceSnapshot", Type: "struct", Fields: []TypeFields{
 						{
-							Description: "", Name: "Id", Type: "string", SerializationInfo: "`json:\"id,omitempty\" yaml:\"id,omitempty\"`"},
+							Description: "", Name: "Id", Type: "string", SerializationInfo: "`json:\"id,omitempty\" yaml:\"id,omitempty\"`",
+						},
 						{
 							Description: "", Name: "Type", Type: "ImageSourceType", SerializationInfo: "`json:\"type,omitempty\" yaml:\"type,omitempty\"`",
 						},
@@ -276,11 +277,14 @@ func Test_createOneOf(t *testing.T) {
 				{
 					Description: "// ImageSource is the source of the underlying image.", Name: "ImageSource", Type: "struct", Fields: []TypeFields{
 						{
-							Description: "", Name: "Type", Type: "string", SerializationInfo: "`json:\"type,omitempty\" yaml:\"type,omitempty\"`"},
+							Description: "// Type is the type definition for a Type.", Name: "Type", Type: "string", SerializationInfo: "`json:\"type,omitempty\" yaml:\"type,omitempty\"`",
+						},
 						{
-							Description: "", Name: "Url", Type: "string", SerializationInfo: "`json:\"url,omitempty\" yaml:\"url,omitempty\"`"},
+							Description: "// Url is the type definition for a Url.", Name: "Url", Type: "string", SerializationInfo: "`json:\"url,omitempty\" yaml:\"url,omitempty\"`",
+						},
 						{
-							Description: "", Name: "Id", Type: "string", SerializationInfo: "`json:\"id,omitempty\" yaml:\"id,omitempty\"`"},
+							Description: "// Id is the type definition for a Id.", Name: "Id", Type: "string", SerializationInfo: "`json:\"id,omitempty\" yaml:\"id,omitempty\"`",
+						},
 					},
 				},
 			},
@@ -296,24 +300,6 @@ func Test_createOneOf(t *testing.T) {
 			assert.Equal(t, tt.want, got)
 			assert.Equal(t, tt.want2, typeTpls)
 			assert.Equal(t, tt.want3, enumTpls)
-		})
-	}
-}
-
-func Test_printType(t *testing.T) {
-	tests := []struct {
-		name    string
-		wantErr error
-	}{
-		{
-			name: "success",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if err := printType(); err != nil {
-				assert.Equal(t, tt.wantErr, err)
-			}
 		})
 	}
 }

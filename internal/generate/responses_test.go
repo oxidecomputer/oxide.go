@@ -87,10 +87,10 @@ func Test_writeResponseType(t *testing.T) {
 		{
 			name: "success",
 			args: args{"Error", &respType},
-			want: "// ErrorResponse is the response given when error\ntype ErrorResponse Error\n",
+			want: "// ErrorResponse is the response given when errortype ErrorResponse Error\n",
 			want2: []TypeTemplate{
 				{
-					Description: "// ErrorResponse is the response given when error\n", Name: "ErrorResponse", Type: "Error",
+					Description: "// ErrorResponse is the response given when error", Name: "ErrorResponse", Type: "Error",
 				},
 			},
 			want3: []EnumTemplate{},

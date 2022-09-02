@@ -12,39 +12,39 @@ type DiskIdentifier struct {
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
+// DiskSourceType is the type definition for a DiskSourceType.
+type DiskSourceType string
 // DiskSourceSnapshot is create a disk from a disk snapshot
 type DiskSourceSnapshot struct {
 	SnapshotId string `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
 	Type DiskSourceType `json:"type,omitempty" yaml:"type,omitempty"`
 }
-// DiskSourceType is the type definition for a DiskSourceType.
-type DiskSourceType string
-const (
-// DiskSourceTypeSnapshot represents the DiskSourceType `"snapshot"`.
-	DiskSourceTypeSnapshot DiskSourceType = "snapshot"
-)
-
 
 // DiskSourceImage is create a disk from a project image
 type DiskSourceImage struct {
 	ImageId string `json:"image_id,omitempty" yaml:"image_id,omitempty"`
 	Type DiskSourceType `json:"type,omitempty" yaml:"type,omitempty"`
 }
-const (
-// DiskSourceTypeImage represents the DiskSourceType `"image"`.
-	DiskSourceTypeImage DiskSourceType = "image"
-)
-
 
 // DiskSource is the type definition for a DiskSource.
 type DiskSource struct {
+	// SnapshotId is the type definition for a SnapshotId.
 	SnapshotId string `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
+	// Type is the type definition for a Type.
 	Type string `json:"type,omitempty" yaml:"type,omitempty"`
+	// ImageId is the type definition for a ImageId.
 	ImageId string `json:"image_id,omitempty" yaml:"image_id,omitempty"`
 }
+
+// DiskSourceTypeSnapshot represents the DiskSourceType `"snapshot"`.
+const DiskSourceTypeSnapshot DiskSourceType = "snapshot"
+
+// DiskSourceTypeImage represents the DiskSourceType `"image"`.
+const DiskSourceTypeImage DiskSourceType = "image"
 
 // DiskSourceTypes is the collection of all DiskSourceType values.
 var DiskSourceTypes = []DiskSourceType{
 	DiskSourceTypeImage,
 	DiskSourceTypeSnapshot,
 }
+
