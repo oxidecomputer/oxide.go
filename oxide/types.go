@@ -2220,16 +2220,16 @@ const IpKindEphemeral IpKind = "ephemeral"
 const IpKindFloating IpKind = "floating"
 
 // IpNetIpv4Net represents the IpNet `"Ipv4Net"`.
-const IpNetIpv4Net IpNet = "Ipv4Net"
+const IpNetIpv4Net IpNet = "ipv4net"
 
 // IpNetIpv6Net represents the IpNet `"Ipv6Net"`.
-const IpNetIpv6Net IpNet = "Ipv6Net"
+const IpNetIpv6Net IpNet = "ipv6net"
 
 // IpRangeIpv4Range represents the IpRange `"Ipv4Range"`.
-const IpRangeIpv4Range IpRange = "Ipv4Range"
+const IpRangeIpv4Range IpRange = "ipv4range"
 
 // IpRangeIpv6Range represents the IpRange `"Ipv6Range"`.
-const IpRangeIpv6Range IpRange = "Ipv6Range"
+const IpRangeIpv6Range IpRange = "ipv6range"
 
 // NameOrIdSortModeNameAscending represents the NameOrIdSortMode `"name_ascending"`.
 const NameOrIdSortModeNameAscending NameOrIdSortMode = "name_ascending"

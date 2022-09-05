@@ -326,7 +326,7 @@ func Test_createAllOf(t *testing.T) {
 			},
 			want2: []EnumTemplate{
 				{
-					Description: "// IpRangeIpv4Range represents the IpRange `\"Ipv4Range\"`.", Name: "IpRangeIpv4Range", ValueType: "const", Value: "IpRange = \"Ipv4Range\"",
+					Description: "// IpRangeIpv4Range represents the IpRange `\"Ipv4Range\"`.", Name: "IpRangeIpv4Range", ValueType: "const", Value: "IpRange = \"ipv4range\"",
 				},
 			},
 		},

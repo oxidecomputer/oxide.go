@@ -382,7 +382,7 @@ func createAllOf(s *openapi3.Schema, stringEnums map[string][]string, name, type
 			Description: fmt.Sprintf("// %s represents the %s `%q`.", strcase.ToCamel(snakeCaseTypeName), singularName, enum),
 			Name:        strcase.ToCamel(snakeCaseTypeName),
 			ValueType:   "const",
-			Value:       fmt.Sprintf("%s = %q", singularName, enum),
+			Value:       fmt.Sprintf("%s = %q", singularName, strings.ToLower(enum)),
 		}
 
 		enumTpls = append(enumTpls, enumTpl)
