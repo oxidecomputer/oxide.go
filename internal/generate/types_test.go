@@ -288,3 +288,57 @@ func Test_createOneOf(t *testing.T) {
 		})
 	}
 }
+
+func Test_createAllOf(t *testing.T) {
+	typeSpecAllOf := &openapi3.Schema{
+		Title: "v4",
+		AllOf: openapi3.SchemaRefs{
+			&openapi3.SchemaRef{
+				Ref:   "#/components/schemas/Ipv4Range",
+				Value: &openapi3.Schema{Enum: []interface{}{}},
+			},
+		},
+	}
+
+	enums := map[string][]string{}
+
+	type args struct {
+		s           *openapi3.Schema
+		stringEnums map[string][]string
+		name        string
+		typeName    string
+	}
+	tests := []struct {
+		name  string
+		args  args
+		want  map[string][]string
+		want1 []TypeTemplate
+		want2 []EnumTemplate
+	}{
+		{
+			name: "success allOf",
+			args: args{typeSpecAllOf, enums, "IpRange", "IpRange"},
+			want: map[string][]string{"IpRange": {"Ipv4Range"}},
+			want1: []TypeTemplate{
+				{
+					Description: "// IpRange is the type definition for a IpRange.", Name: "IpRange", Type: "string",
+				},
+			},
+			want2: []EnumTemplate{
+				{
+					Description: "// IpRangeIpv4Range represents the IpRange `\"Ipv4Range\"`.", Name: "IpRangeIpv4Range", ValueType: "const", Value: "IpRange = \"ipv4range\"",
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Run(tt.name, func(t *testing.T) {
+				got, got1, got2 := createAllOf(tt.args.s, tt.args.stringEnums, tt.args.name, tt.args.typeName)
+				assert.Equal(t, tt.want, got)
+				assert.Equal(t, tt.want1, got1)
+				assert.Equal(t, tt.want2, got2)
+			})
+		})
+	}
+}
