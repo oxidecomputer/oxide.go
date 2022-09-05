@@ -244,7 +244,11 @@ func populateTypeTemplates(name string, s *openapi3.Schema, additionalName strin
 	case "any_of":
 		fmt.Printf("[WARN] TODO: skipping type for %q, since it is a ANYOF\n", name)
 	case "all_of":
-		fmt.Printf("[WARN] TODO: skipping type for %q, since it is a ALLOF\n", name)
+		// TODO: This approach works for the current usage of "allOf". Monitor to see if this changes
+		enums, tt, et := createAllOf(s, collectEnumStringTypes, name, typeName)
+		types = append(types, tt...)
+		enumTypes = append(enumTypes, et...)
+		collectEnumStringTypes = enums
 	default:
 		fmt.Printf("[WARN] TODO: skipping type for %q, since it is an unknown type\n", name)
 	}
@@ -348,6 +352,48 @@ func createStringEnum(s *openapi3.Schema, stringEnums map[string][]string, name,
 	return stringEnums, typeTpls, enumTpls
 }
 
+// TODO: For now AllOf values are treated as enums because that's how they are being used.
+// Keep an eye out to see if this changes
+func createAllOf(s *openapi3.Schema, stringEnums map[string][]string, name, typeName string) (map[string][]string, []TypeTemplate, []EnumTemplate) {
+	singularTypename := makeSingular(typeName)
+	singularName := makeSingular(name)
+	typeTpls := make([]TypeTemplate, 0)
+
+	// Make sure we don't redeclare the enum type.
+	if _, ok := stringEnums[singularTypename]; !ok {
+		typeTpl := TypeTemplate{
+			Description: formatTypeDescription(singularName, s),
+			Name:        singularTypename,
+			Type:        "string",
+		}
+
+		typeTpls = append(typeTpls, typeTpl)
+
+		stringEnums[singularTypename] = []string{}
+	}
+
+	enumTpls := make([]EnumTemplate, 0)
+	for _, v := range s.AllOf {
+		enum := getReferenceSchema(v)
+
+		snakeCaseTypeName := fmt.Sprintf("%s_%s", singularName, enum)
+
+		enumTpl := EnumTemplate{
+			Description: fmt.Sprintf("// %s represents the %s `%q`.", strcase.ToCamel(snakeCaseTypeName), singularName, enum),
+			Name:        strcase.ToCamel(snakeCaseTypeName),
+			ValueType:   "const",
+			Value:       fmt.Sprintf("%s = %q", singularName, enum),
+		}
+
+		enumTpls = append(enumTpls, enumTpl)
+
+		// Add the enum type to the list of enum types.
+		stringEnums[singularTypename] = append(stringEnums[singularTypename], enum)
+	}
+
+	return stringEnums, typeTpls, enumTpls
+}
+
 func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []EnumTemplate) {
 	var properties []string
 	enumTpls := make([]EnumTemplate, 0)
@@ -370,7 +416,7 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 			// We want to collect all the unique properties to create our global oneOf type.
 			propertyName := convertToValidGoType(prop, p)
 
-			propertyString := fmt.Sprintf("\t%s %s `json:\"%s,omitempty\" yaml:\"%s,omitempty\"`\n", strcase.ToCamel(prop), propertyName, prop, prop)
+			propertyString := strcase.ToCamel(prop)
 			// Avoids duplication for every enum
 			if !containsMatchFirstWord(properties, propertyString) {
 				// Construct TypeFields
@@ -382,7 +428,6 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 				}
 				fields = append(fields, field)
 
-				// TODO: Is this needed?
 				properties = append(properties, propertyString)
 			}
 
@@ -399,9 +444,17 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 		}
 
 		// TODO: This is the only place that has an "additional name" at the end
+		// TODO: This is where the "allOf" is being detected
 		tt, et := populateTypeTemplates(name, v.Value, additionalName)
 		typeTpls = append(typeTpls, tt...)
 		enumTpls = append(enumTpls, et...)
+	}
+
+	// TODO: For now AllOf values within a OneOf are treated as enums
+	// because that's how they are being used. Keep an eye out if this
+	// changes
+	if s.OneOf[0].Value.AllOf != nil {
+		return typeTpls, enumTpls
 	}
 
 	typeTpl := TypeTemplate{
