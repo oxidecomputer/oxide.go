@@ -46,65 +46,81 @@ func generatePaths(file string, spec *openapi3.T) error {
 // writePath writes the given path as an http request to the given file.
 func writePath(spec *openapi3.T, f *os.File, path string, p *openapi3.PathItem) error {
 	if p.Get != nil {
-		if err := writeMethod(spec, f, http.MethodGet, path, p.Get, false); err != nil {
+		str, err := writeMethod(spec, f, http.MethodGet, path, p.Get, false)
+		if err != nil {
 			return err
 		}
+		fmt.Fprint(f, str)
 	}
 
 	if p.Post != nil {
-		if err := writeMethod(spec, f, http.MethodPost, path, p.Post, false); err != nil {
+		str, err := writeMethod(spec, f, http.MethodPost, path, p.Post, false)
+		if err != nil {
 			return err
 		}
+		fmt.Fprint(f, str)
 	}
 
 	if p.Put != nil {
-		if err := writeMethod(spec, f, http.MethodPut, path, p.Put, false); err != nil {
+		str, err := writeMethod(spec, f, http.MethodPut, path, p.Put, false)
+		if err != nil {
 			return err
 		}
+		fmt.Fprint(f, str)
 	}
 
 	if p.Delete != nil {
-		if err := writeMethod(spec, f, http.MethodDelete, path, p.Delete, false); err != nil {
+		str, err := writeMethod(spec, f, http.MethodDelete, path, p.Delete, false)
+		if err != nil {
 			return err
 		}
+		fmt.Fprint(f, str)
 	}
 
 	if p.Patch != nil {
-		if err := writeMethod(spec, f, http.MethodPatch, path, p.Patch, false); err != nil {
+		str, err := writeMethod(spec, f, http.MethodPatch, path, p.Patch, false)
+		if err != nil {
 			return err
 		}
+		fmt.Fprint(f, str)
 	}
 
 	if p.Head != nil {
-		if err := writeMethod(spec, f, http.MethodHead, path, p.Head, false); err != nil {
+		str, err := writeMethod(spec, f, http.MethodHead, path, p.Head, false)
+		if err != nil {
 			return err
 		}
+		fmt.Fprint(f, str)
 	}
 
 	if p.Options != nil {
-		if err := writeMethod(spec, f, http.MethodOptions, path, p.Options, false); err != nil {
+		str, err := writeMethod(spec, f, http.MethodOptions, path, p.Options, false)
+		if err != nil {
 			return err
 		}
+		fmt.Fprint(f, str)
 	}
 
 	return nil
 }
 
-func writeMethod(spec *openapi3.T, f *os.File, method string, path string, o *openapi3.Operation, isGetAllPages bool) error {
+func writeMethod(spec *openapi3.T, f *os.File, method string, path string, o *openapi3.Operation, isGetAllPages bool) (string, error) {
+	var methodStr string
+
 	respType, pagedRespType, err := getSuccessResponseType(o, isGetAllPages)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	if len(o.Tags) == 0 {
 		fmt.Printf("[WARN] TODO: skipping operation %q, since it has no tag\n", o.OperationID)
-		return nil
+		return "", nil
 	}
 	tag := strcase.ToCamel(o.Tags[0])
 
 	if tag == "Hidden" {
 		// return early.
-		return nil
+		return "", nil
 	}
 
 	fnName := strcase.ToCamel(o.OperationID)
@@ -186,9 +202,6 @@ func writeMethod(spec *openapi3.T, f *os.File, method string, path string, o *op
 		delete(params, "limit")
 	}
 
-	// TODO: Is this really necessary?
-	// fmt.Printf("writing method %q for path %q -> %q\n", method, path, fnName)
-
 	var description bytes.Buffer
 	// Write the description for the method.
 	if o.Summary != "" {
@@ -229,23 +242,30 @@ func writeMethod(spec *openapi3.T, f *os.File, method string, path string, o *op
 	}
 
 	// Write the description to the file.
-	fmt.Fprint(f, description.String())
+	methodStr = methodStr + description.String()
+	//fmt.Fprint(f, description.String())
 
 	// Write the method.
 	if respType != "" && respType != "ConsumeCredentialsResponse" && respType != "LoginResponse" {
-		fmt.Fprintf(f, "func (c *Client) %s(%s) (*%s, error) {\n",
+		methodStr = methodStr + fmt.Sprintf("func (c *Client) %s(%s) (*%s, error) {\n",
 			fnName,
 			paramsString,
 			respType)
+		//		fmt.Fprintf(f, "func (c *Client) %s(%s) (*%s, error) {\n",
+		//			fnName,
+		//			paramsString,
+		//			respType)
 	} else {
-		fmt.Fprintf(f, "func (c *Client) %s(%s) (error) {\n",
+		methodStr = methodStr + fmt.Sprintf("func (c *Client) %s(%s) (error) {\n",
 			fnName,
 			paramsString)
+		//		fmt.Fprintf(f, "func (c *Client) %s(%s) (error) {\n",
+		//			fnName,
+		//			paramsString)
 	}
 
 	if len(pagedRespType) > 0 {
-		// We want to just recursively call the method for each page.
-		fmt.Fprintf(f, `
+		methodStr = methodStr + fmt.Sprintf(`
 			var allPages %s
 			pageToken := ""
 			limit := 100
@@ -264,14 +284,38 @@ func writeMethod(spec *openapi3.T, f *os.File, method string, path string, o *op
 			return &allPages, nil
 		}`, pagedRespType, ogFnName, ogDocParamsString)
 
+		// We want to just recursively call the method for each page.
+		//	fmt.Fprintf(f, `
+		//		var allPages %s
+		//		pageToken := ""
+		//		limit := 100
+		//		for {
+		//			page, err := c.%s(%s)
+		//			if err != nil {
+		//				return nil, err
+		//			}
+		//			allPages = append(allPages, page.Items...)
+		//			if  page.NextPage == "" || page.NextPage == pageToken {
+		//				break
+		//			}
+		//			pageToken = page.NextPage
+		//	}
+		//
+		//		return &allPages, nil
+		//	}`, pagedRespType, ogFnName, ogDocParamsString)
+
 		// Return early.
-		return nil
+		return methodStr, nil
 	}
 
 	// Create the url.
-	fmt.Fprintln(f, "// Create the url.")
-	fmt.Fprintf(f, "path := %q\n", cleanPath(path))
-	fmt.Fprintln(f, "uri := resolveRelative(c.server, path)")
+	methodStr = methodStr + fmt.Sprintln("// Create the url.")
+	methodStr = methodStr + fmt.Sprintf("path := %q\n", cleanPath(path))
+	methodStr = methodStr + fmt.Sprintln("uri := resolveRelative(c.server, path)")
+
+	//	fmt.Fprintln(f, "// Create the url.")
+	//	fmt.Fprintf(f, "path := %q\n", cleanPath(path))
+	//	fmt.Fprintln(f, "uri := resolveRelative(c.server, path)")
 
 	if o.RequestBody != nil {
 		for mt := range o.RequestBody.Value.Content {
@@ -281,17 +325,27 @@ func writeMethod(spec *openapi3.T, f *os.File, method string, path string, o *op
 			}
 
 			// We need to encode the request body as json.
-			fmt.Fprintln(f, "// Encode the request body as json.")
-			fmt.Fprintln(f, "b := new(bytes.Buffer)")
-			fmt.Fprintln(f, "if err := json.NewEncoder(b).Encode(j); err != nil {")
+			methodStr = methodStr + fmt.Sprintln("// Encode the request body as json.")
+			methodStr = methodStr + fmt.Sprintln("b := new(bytes.Buffer)")
+			methodStr = methodStr + fmt.Sprintln("if err := json.NewEncoder(b).Encode(j); err != nil {")
+
+			// fmt.Fprintln(f, "// Encode the request body as json.")
+			// fmt.Fprintln(f, "b := new(bytes.Buffer)")
+			// fmt.Fprintln(f, "if err := json.NewEncoder(b).Encode(j); err != nil {")
 			if respType != "" {
 				r := `return nil, fmt.Errorf("encoding json body request failed: %v", err)`
-				fmt.Fprintln(f, r)
+				methodStr = methodStr + fmt.Sprintln(r)
+
+				// fmt.Fprintln(f, r)
 			} else {
 				r := `return fmt.Errorf("encoding json body request failed: %v", err)`
-				fmt.Fprintln(f, r)
+				methodStr = methodStr + fmt.Sprintln(r)
+
+				// fmt.Fprintln(f, r)
 			}
-			fmt.Fprintln(f, "}")
+
+			methodStr = methodStr + fmt.Sprintln("}")
+			//fmt.Fprintln(f, "}")
 			reqBodyParam = "b"
 			break
 		}
@@ -299,23 +353,33 @@ func writeMethod(spec *openapi3.T, f *os.File, method string, path string, o *op
 	}
 
 	// Create the request.
-	fmt.Fprintln(f, "// Create the request.")
+	methodStr = methodStr + fmt.Sprintln("// Create the request.")
+	//fmt.Fprintln(f, "// Create the request.")
 
-	fmt.Fprintf(f, "req, err := http.NewRequest(%q, uri, %s)\n", method, reqBodyParam)
-	fmt.Fprintln(f, "if err != nil {")
+	methodStr = methodStr + fmt.Sprintf("req, err := http.NewRequest(%q, uri, %s)\n", method, reqBodyParam)
+	methodStr = methodStr + fmt.Sprintln("if err != nil {")
+	// fmt.Fprintf(f, "req, err := http.NewRequest(%q, uri, %s)\n", method, reqBodyParam)
+	// fmt.Fprintln(f, "if err != nil {")
+
 	if respType != "" && respType != "ConsumeCredentialsResponse" && respType != "LoginResponse" {
 		r := `return nil, fmt.Errorf("error creating request: %v", err)`
-		fmt.Fprintln(f, r)
+		methodStr = methodStr + fmt.Sprintln(r)
+		//		fmt.Fprintln(f, r)
 	} else {
 		r := `return fmt.Errorf("error creating request: %v", err)`
-		fmt.Fprintln(f, r)
+		methodStr = methodStr + fmt.Sprintln(r)
+		//		fmt.Fprintln(f, r)
 	}
-	fmt.Fprintln(f, "}")
+	methodStr = methodStr + fmt.Sprintln("}")
+	//	fmt.Fprintln(f, "}")
 
 	// Add the parameters to the url.
 	if len(params) > 0 {
-		fmt.Fprintln(f, "// Add the parameters to the url.")
-		fmt.Fprintln(f, "if err := expandURL(req.URL, map[string]string{")
+		methodStr = methodStr + fmt.Sprintln("// Add the parameters to the url.")
+		methodStr = methodStr + fmt.Sprintln("if err := expandURL(req.URL, map[string]string{")
+		// fmt.Fprintln(f, "// Add the parameters to the url.")
+		// fmt.Fprintln(f, "if err := expandURL(req.URL, map[string]string{")
+
 		// Iterate over all the paths in the spec and write the types.
 		// We want to ensure we keep the order so the diffs don't look like shit.
 		keys := make([]string, 0)
@@ -328,81 +392,122 @@ func writeMethod(spec *openapi3.T, f *os.File, method string, path string, o *op
 			t := convertToValidGoType(name, p.Schema)
 			n := strcase.ToLowerCamel(name)
 			if t == "string" {
-				fmt.Fprintf(f, "	%q: %s,\n", name, n)
+				methodStr = methodStr + fmt.Sprintf("	%q: %s,\n", name, n)
+				// fmt.Fprintf(f, "	%q: %s,\n", name, n)
 			} else if t == "int" {
-				fmt.Fprintf(f, "	%q: strconv.Itoa(%s),\n", name, n)
+				methodStr = methodStr + fmt.Sprintf("	%q: strconv.Itoa(%s),\n", name, n)
+				// fmt.Fprintf(f, "	%q: strconv.Itoa(%s),\n", name, n)
 			} else if t == "*time.Time" {
-				fmt.Fprintf(f, "	%q: %s.String(),\n", name, n)
+				methodStr = methodStr + fmt.Sprintf("	%q: %s.String(),\n", name, n)
+				// fmt.Fprintf(f, "	%q: %s.String(),\n", name, n)
 			} else {
-				fmt.Fprintf(f, "	%q: string(%s),\n", name, n)
+				methodStr = methodStr + fmt.Sprintf("	%q: string(%s),\n", name, n)
+				// fmt.Fprintf(f, "	%q: string(%s),\n", name, n)
 			}
 		}
-		fmt.Fprintln(f, "}); err != nil {")
+		methodStr = methodStr + fmt.Sprintln("}); err != nil {")
+		// fmt.Fprintln(f, "}); err != nil {")
 		if respType != "" && respType != "ConsumeCredentialsResponse" && respType != "LoginResponse" {
 			r := `return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)`
-			fmt.Fprintln(f, r)
+			methodStr = methodStr + fmt.Sprintln(r)
+			// fmt.Fprintln(f, r)
 		} else {
 			r := `return fmt.Errorf("expanding URL with parameters failed: %v", err)`
-			fmt.Fprintln(f, r)
+			methodStr = methodStr + fmt.Sprintln(r)
+			// fmt.Fprintln(f, r)
 		}
-		fmt.Fprintln(f, "}")
+		methodStr = methodStr + fmt.Sprintln("}")
+		//		fmt.Fprintln(f, "}")
 	}
 
 	// Send the request.
-	fmt.Fprintln(f, "// Send the request.")
-	fmt.Fprintln(f, "resp, err := c.client.Do(req)")
-	fmt.Fprintln(f, "if err != nil {")
+	methodStr = methodStr + fmt.Sprintln("// Send the request.")
+	methodStr = methodStr + fmt.Sprintln("resp, err := c.client.Do(req)")
+	methodStr = methodStr + fmt.Sprintln("if err != nil {")
+	// fmt.Fprintln(f, "// Send the request.")
+	// fmt.Fprintln(f, "resp, err := c.client.Do(req)")
+	// fmt.Fprintln(f, "if err != nil {")
+
 	if respType != "" && respType != "ConsumeCredentialsResponse" && respType != "LoginResponse" {
 		r := `return nil, fmt.Errorf("error sending request: %v", err)`
-		fmt.Fprintln(f, r)
+		methodStr = methodStr + fmt.Sprintln(r)
+		// fmt.Fprintln(f, r)
 	} else {
 		r := `return fmt.Errorf("error sending request: %v", err)`
-		fmt.Fprintln(f, r)
+		methodStr = methodStr + fmt.Sprintln(r)
+		// fmt.Fprintln(f, r)
 	}
-	fmt.Fprintln(f, "}")
-	fmt.Fprintln(f, "defer resp.Body.Close()")
+	methodStr = methodStr + fmt.Sprintln("}")
+	methodStr = methodStr + fmt.Sprintln("defer resp.Body.Close()")
+	//	fmt.Fprintln(f, "}")
+	//	fmt.Fprintln(f, "defer resp.Body.Close()")
 
 	// Check the response if there were any errors.
-	fmt.Fprintln(f, "// Check the response.")
-	fmt.Fprintln(f, "if err := checkResponse(resp); err != nil {")
+	methodStr = methodStr + fmt.Sprintln("// Check the response.")
+	methodStr = methodStr + fmt.Sprintln("if err := checkResponse(resp); err != nil {")
+	//	fmt.Fprintln(f, "// Check the response.")
+	//	fmt.Fprintln(f, "if err := checkResponse(resp); err != nil {")
 	if respType != "" && respType != "ConsumeCredentialsResponse" && respType != "LoginResponse" {
-		fmt.Fprintln(f, "return nil, err")
+		methodStr = methodStr + fmt.Sprintln("return nil, err")
+		// fmt.Fprintln(f, "return nil, err")
 	} else {
-		fmt.Fprintln(f, "return err")
+		methodStr = methodStr + fmt.Sprintln("return err")
+		// fmt.Fprintln(f, "return err")
 	}
-	fmt.Fprintln(f, "}")
+	methodStr = methodStr + fmt.Sprintln("}")
+	// fmt.Fprintln(f, "}")
 
 	if respType != "" && respType != "ConsumeCredentialsResponse" && respType != "LoginResponse" {
 		// Decode the body from the response.
-		fmt.Fprintln(f, "// Decode the body from the response.")
-		fmt.Fprintln(f, "if resp.Body == nil {")
-		fmt.Fprintln(f, `return nil, errors.New("request returned an empty body in the response")`)
-		fmt.Fprintln(f, "}")
+		methodStr = methodStr + fmt.Sprintln("// Decode the body from the response.")
+		methodStr = methodStr + fmt.Sprintln("if resp.Body == nil {")
+		methodStr = methodStr + fmt.Sprintln(`return nil, errors.New("request returned an empty body in the response")`)
+		methodStr = methodStr + fmt.Sprintln("}")
+		//fmt.Fprintln(f, "// Decode the body from the response.")
+		//fmt.Fprintln(f, "if resp.Body == nil {")
+		//fmt.Fprintln(f, `return nil, errors.New("request returned an empty body in the response")`)
+		//fmt.Fprintln(f, "}")
 
-		fmt.Fprintf(f, "var body %s\n", respType)
-		fmt.Fprintln(f, "if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {")
+		methodStr = methodStr + fmt.Sprintf("var body %s\n", respType)
+		methodStr = methodStr + fmt.Sprintln("if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {")
+		//		fmt.Fprintf(f, "var body %s\n", respType)
+		//		fmt.Fprintln(f, "if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {")
 		r := `return nil, fmt.Errorf("error decoding response body: %v", err)`
-		fmt.Fprintln(f, r)
-		fmt.Fprintln(f, "}")
+		methodStr = methodStr + fmt.Sprintln(r)
+		// fmt.Fprintln(f, r)
+
+		methodStr = methodStr + fmt.Sprintln("}")
+		//fmt.Fprintln(f, "}")
 
 		// Return the response.
-		fmt.Fprintln(f, "// Return the response.")
-		fmt.Fprintln(f, "return &body, nil")
+		methodStr = methodStr + fmt.Sprintln("// Return the response.")
+		methodStr = methodStr + fmt.Sprintln("return &body, nil")
+		//		fmt.Fprintln(f, "// Return the response.")
+		//		fmt.Fprintln(f, "return &body, nil")
 	} else {
-		fmt.Fprintln(f, "// Return.")
-		fmt.Fprintln(f, "return nil")
+		methodStr = methodStr + fmt.Sprintln("// Return.")
+		methodStr = methodStr + fmt.Sprintln("return nil")
+		// fmt.Fprintln(f, "// Return.")
+		// fmt.Fprintln(f, "return nil")
 	}
 
 	// Close the method.
-	fmt.Fprintln(f, "}")
-	fmt.Fprintln(f, "")
+	methodStr = methodStr + fmt.Sprintln("}")
+	methodStr = methodStr + fmt.Sprintln("")
+	//	fmt.Fprintln(f, "}")
+	//	fmt.Fprintln(f, "")
 
 	if pageResult && !isGetAllPages {
 		// Run the method again with get all pages.
-		writeMethod(spec, f, method, path, o, true)
+		str, err := writeMethod(spec, f, method, path, o, true)
+		if err != nil {
+			return "", err
+		}
+
+		methodStr = methodStr + str
 	}
 
-	return nil
+	return methodStr, nil
 }
 
 func getSuccessResponseType(o *openapi3.Operation, isGetAllPages bool) (string, string, error) {
