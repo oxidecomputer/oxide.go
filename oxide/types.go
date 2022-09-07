@@ -1032,13 +1032,13 @@ type NetworkInterfaceResultsPage struct {
 // Note that modifying IP addresses for an interface is not yet supported, a new interface must be created instead.
 type NetworkInterfaceUpdate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// MakePrimary is make a secondary interface the instance's primary interface.
+	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	// Primary is make a secondary interface the instance's primary interface.
 	//
 	// If applied to a secondary interface, that interface will become the primary on the next reboot of the instance. Note that this may have implications for routing between instances, as the new primary interface will be on a distinct subnet from the previous primary interface.
 	//
 	// Note that this can only be used to select a new primary interface for an instance. Requests to change the primary interface into a secondary will return an error.
-	MakePrimary bool `json:"make_primary,omitempty" yaml:"make_primary,omitempty"`
-	Name        Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Primary bool `json:"primary,omitempty" yaml:"primary,omitempty"`
 }
 
 // NodeName is unique name for a saga [`Node`]
@@ -1574,7 +1574,8 @@ type Snapshot struct {
 	// Size is a count of bytes, typically used either for memory or storage capacity
 	//
 	// The maximum supported byte count is [`i64::MAX`].  This makes it somewhat inconvenient to define constructors: a u32 constructor can be infallible, but an i64 constructor can fail (if the value is negative) and a u64 constructor can fail (if the value is larger than i64::MAX).  We provide all of these for consumers' convenience.
-	Size ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
+	Size  ByteCount     `json:"size,omitempty" yaml:"size,omitempty"`
+	State SnapshotState `json:"state,omitempty" yaml:"state,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
@@ -1597,6 +1598,9 @@ type SnapshotResultsPage struct {
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
+
+// SnapshotState is the type definition for a SnapshotState.
+type SnapshotState string
 
 // SpoofLoginBody is the type definition for a SpoofLoginBody.
 type SpoofLoginBody struct {
@@ -2333,6 +2337,18 @@ const SiloRoleCollaborator SiloRole = "collaborator"
 // SiloRoleViewer represents the SiloRole `"viewer"`.
 const SiloRoleViewer SiloRole = "viewer"
 
+// SnapshotStateCreating represents the SnapshotState `"creating"`.
+const SnapshotStateCreating SnapshotState = "creating"
+
+// SnapshotStateReady represents the SnapshotState `"ready"`.
+const SnapshotStateReady SnapshotState = "ready"
+
+// SnapshotStateFaulted represents the SnapshotState `"faulted"`.
+const SnapshotStateFaulted SnapshotState = "faulted"
+
+// SnapshotStateDestroyed represents the SnapshotState `"destroyed"`.
+const SnapshotStateDestroyed SnapshotState = "destroyed"
+
 // UserProvisionTypeFixed represents the UserProvisionType `"fixed"`.
 const UserProvisionTypeFixed UserProvisionType = "fixed"
 
@@ -2636,6 +2652,14 @@ var SiloRoles = []SiloRole{
 	SiloRoleAdmin,
 	SiloRoleCollaborator,
 	SiloRoleViewer,
+}
+
+// SnapshotStates is the collection of all SnapshotState values.
+var SnapshotStates = []SnapshotState{
+	SnapshotStateCreating,
+	SnapshotStateDestroyed,
+	SnapshotStateFaulted,
+	SnapshotStateReady,
 }
 
 // UserProvisionTypes is the collection of all UserProvisionType values.
