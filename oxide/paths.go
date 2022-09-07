@@ -5165,8 +5165,8 @@ func (c *Client) VpcSubnetListNetworkInterfacesAllPages(sortBy NameSortMode, org
 	}
 
 	return &allPages, nil
-} // PolicyView: Fetch the top-level IAM policy
-func (c *Client) PolicyView() (*FleetRolePolicy, error) {
+} // PolicyView: Fetch the current silo's IAM policy
+func (c *Client) PolicyView() (*SiloRolePolicy, error) {
 	// Create the url.
 	path := "/policy"
 	uri := resolveRelative(c.server, path)
@@ -5189,7 +5189,7 @@ func (c *Client) PolicyView() (*FleetRolePolicy, error) {
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body FleetRolePolicy
+	var body SiloRolePolicy
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -5197,8 +5197,8 @@ func (c *Client) PolicyView() (*FleetRolePolicy, error) {
 	return &body, nil
 }
 
-// PolicyUpdate: Update the top-level IAM policy
-func (c *Client) PolicyUpdate(j *FleetRolePolicy) (*FleetRolePolicy, error) {
+// PolicyUpdate: Update the current silo's IAM policy
+func (c *Client) PolicyUpdate(j *SiloRolePolicy) (*SiloRolePolicy, error) {
 	// Create the url.
 	path := "/policy"
 	uri := resolveRelative(c.server, path)
@@ -5226,7 +5226,7 @@ func (c *Client) PolicyUpdate(j *FleetRolePolicy) (*FleetRolePolicy, error) {
 	if resp.Body == nil {
 		return nil, errors.New("request returned an empty body in the response")
 	}
-	var body FleetRolePolicy
+	var body SiloRolePolicy
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -6083,6 +6083,75 @@ func (c *Client) SiloIdentityProviderView(providerName Name, siloName Name) (*Sa
 		return nil, errors.New("request returned an empty body in the response")
 	}
 	var body SamlIdentityProvider
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// SystemPolicyView: Fetch the top-level IAM policy
+func (c *Client) SystemPolicyView() (*FleetRolePolicy, error) {
+	// Create the url.
+	path := "/system/policy"
+	uri := resolveRelative(c.server, path)
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body FleetRolePolicy
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+	// Return the response.
+	return &body, nil
+}
+
+// SystemPolicyUpdate: Update the top-level IAM policy
+func (c *Client) SystemPolicyUpdate(j *FleetRolePolicy) (*FleetRolePolicy, error) {
+	// Create the url.
+	path := "/system/policy"
+	uri := resolveRelative(c.server, path)
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+	// Create the request.
+	req, err := http.NewRequest("PUT", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+	var body FleetRolePolicy
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
