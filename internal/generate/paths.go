@@ -1,18 +1,34 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
-	"html/template"
+	"math/rand"
 	"net/http"
 	"os"
 	"sort"
 	"strconv"
 	"strings"
+	"text/template"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/iancoleman/strcase"
 )
+
+type methodTemplate struct {
+	Description     string
+	HTTPMethod      string
+	FunctionName    string
+	WrappedFunction string
+	SignatureParams map[string]*openapi3.Parameter
+	Summary         string
+	PathParams      map[string]string
+	IsList          bool
+	IsListAll       bool
+	HasDescription  bool
+	HasParams       bool
+	HasResponseType bool
+	HasSummary      bool
+}
 
 // Generate the paths.go file.
 func generatePaths(file string, spec *openapi3.T) error {
@@ -111,12 +127,6 @@ func writePath(spec *openapi3.T, path string, p *openapi3.PathItem) (string, err
 func buildGetMethod(spec *openapi3.T, path string, o *openapi3.Operation, isGetAllPages bool) (string, error) {
 	var methodStr string
 
-	// Use little template testing function
-	// Only for development
-	// if err := writeToTplTmp(o); err != nil {
-	// 	return "", err
-	// }
-
 	respType, pagedRespType, err := getSuccessResponseType(o, isGetAllPages)
 	if err != nil {
 		return "", err
@@ -169,50 +179,23 @@ func buildGetMethod(spec *openapi3.T, path string, o *openapi3.Operation, isGetA
 
 	ogFnName := fnName
 	ogDocParamsString := docParamsString
-	if len(pagedRespType) > 0 {
+	if isGetAllPages {
 		fnName += "AllPages"
 		paramsString = strings.TrimSpace(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(paramsString, "pageToken string", ""), "limit int", ""), ", ,", ""))
 		delete(params, "page_token")
 		delete(params, "limit")
 	}
 
-	var description bytes.Buffer
-	// Write the description for the method.
-	if o.Summary != "" {
-		fmt.Fprintf(&description, "// %s: %s\n", fnName, o.Summary)
-	} else {
-		fmt.Fprintf(&description, "// %s\n", fnName)
-	}
-	if o.Description != "" {
-		fmt.Fprintln(&description, "//")
-		fmt.Fprintf(&description, "// %s\n", strings.ReplaceAll(o.Description, "\n", "\n// "))
-	}
-	if pageResult && !isGetAllPages {
-		fmt.Fprintf(&description, "//\n// To iterate over all pages, use the `%sAllPages` method, instead.\n", fnName)
-	}
-	if len(pagedRespType) > 0 {
-		fmt.Fprintf(&description, "//\n// This method is a wrapper around the `%s` method.\n", ogFnName)
-		fmt.Fprintf(&description, "// This method returns all the pages at once.\n")
-	}
-	if len(params) > 0 {
-		fmt.Fprintf(&description, "//\n// Parameters:\n")
-		keys := make([]string, 0)
-		for k := range params {
-			keys = append(keys, k)
-		}
-		sort.Strings(keys)
-		for _, name := range keys {
-			t := params[name]
-			if t.Description != "" {
-				fmt.Fprintf(&description, "//\t- `%s`: %s\n", strcase.ToLowerCamel(name), strings.ReplaceAll(t.Description, "\n", "\n//\t\t"))
-			} else {
-				fmt.Fprintf(&description, "//\t- `%s`\n", strcase.ToLowerCamel(name))
-			}
-		}
+	isList := pageResult && !isGetAllPages
+
+	// Use little template testing function
+	// Only for development
+	if err := descriptionTplWrite(fnName, o, params, isGetAllPages, isList); err != nil {
+		return "", err
 	}
 
 	// Write the description to the file.
-	methodStr = methodStr + description.String()
+	methodStr = methodStr + descriptionTpl(fnName, ogFnName, o, params, isGetAllPages, isList)
 
 	// Write the method.
 
@@ -230,7 +213,7 @@ func buildGetMethod(spec *openapi3.T, path string, o *openapi3.Operation, isGetA
 	}
 
 	// This only applies to "ListAll" methods
-	if len(pagedRespType) > 0 {
+	if isGetAllPages {
 		// We want to just recursively call the method for each page.
 		methodStr = methodStr + fmt.Sprintf(`
 			var allPages %s
@@ -465,41 +448,12 @@ func writeMethod(spec *openapi3.T, method string, path string, o *openapi3.Opera
 
 	}
 
-	var description bytes.Buffer
-	// Write the description for the method.
-	if o.Summary != "" {
-		fmt.Fprintf(&description, "// %s: %s\n", fnName, o.Summary)
-	} else {
-		fmt.Fprintf(&description, "// %s\n", fnName)
-	}
-	if o.Description != "" {
-		fmt.Fprintln(&description, "//")
-		fmt.Fprintf(&description, "// %s\n", strings.ReplaceAll(o.Description, "\n", "\n// "))
-	}
+	methodStr = methodStr + descriptionTpl(fnName, "", o, params, isGetAllPages, false)
 
-	if len(params) > 0 {
-		fmt.Fprintf(&description, "//\n// Parameters:\n")
-		keys := make([]string, 0)
-		for k := range params {
-			keys = append(keys, k)
-		}
-		sort.Strings(keys)
-		for _, name := range keys {
-			t := params[name]
-			if t.Description != "" {
-				fmt.Fprintf(&description, "//\t- `%s`: %s\n", strcase.ToLowerCamel(name), strings.ReplaceAll(t.Description, "\n", "\n//\t\t"))
-			} else {
-				fmt.Fprintf(&description, "//\t- `%s`\n", strcase.ToLowerCamel(name))
-			}
-		}
-	}
-
+	// TODO: Add this to the description template somehow
 	if reqBodyDescription != "" && reqBodyParam != "nil" {
-		fmt.Fprintf(&description, "//\t`%s`: %s\n", reqBodyParam, strings.ReplaceAll(reqBodyDescription, "\n", "\n// "))
+		methodStr = methodStr + fmt.Sprintf("//\t`%s`: %s\n", reqBodyParam, strings.ReplaceAll(reqBodyDescription, "\n", "\n// "))
 	}
-
-	// Write the description to the file.
-	methodStr = methodStr + description.String()
 
 	// Write the method.
 	if respType != "" && o.Responses.Default() == nil {
@@ -709,18 +663,80 @@ func cleanPath(path string) string {
 	return strings.Replace(path, "}", "}}", -1)
 }
 
-// Little temporary function that writes to a file using a template
-//lint:ignore U1000 This function is temporary while the refactoring of this file is happening
-func writeToTplTmp(o *openapi3.Operation) error {
-	// Testing using templates
-	config := map[string]string{
-		"id": o.OperationID,
+func descriptionTpl(fnName, ogFnName string, o *openapi3.Operation, params map[string]*openapi3.Parameter, isListAll, isList bool) string {
+	var description string
+
+	if o.Summary != "" {
+		description = description + fmt.Sprintf("// %s: %s\n", fnName, o.Summary)
+	} else {
+		description = description + fmt.Sprintf("// %s\n", fnName)
 	}
-	t, err := template.ParseFiles("./templates/test.tpl")
+	if o.Description != "" {
+		description = description + fmt.Sprintln("//")
+		description = description + fmt.Sprintf("// %s\n", strings.ReplaceAll(o.Description, "\n", "\n// "))
+	}
+
+	if isListAll {
+		description = description + fmt.Sprintf("//\n// This method is a wrapper around the `%s` method.\n", ogFnName)
+		description = description + "// This method returns all the pages at once.\n"
+	} else if isList {
+		description = description + fmt.Sprintf("//\n// To iterate over all pages, use the `%sAllPages` method, instead.\n", fnName)
+	}
+
+	if len(params) > 0 {
+		description = description + "//\n// Parameters:\n"
+		keys := make([]string, 0)
+		for k := range params {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for _, name := range keys {
+			t := params[name]
+			if t.Description != "" {
+				description = description + fmt.Sprintf("//\t- `%s`: %s\n", strcase.ToLowerCamel(name), strings.ReplaceAll(t.Description, "\n", "\n//\t\t"))
+			} else {
+				description = description + fmt.Sprintf("//\t- `%s`\n", strcase.ToLowerCamel(name))
+			}
+		}
+	}
+
+	return description
+}
+
+func descriptionTplWrite(fnName string, o *openapi3.Operation, params map[string]*openapi3.Parameter, isListAll, isList bool) error {
+	r := rand.Int()
+
+	config := methodTemplate{
+		Description: o.Description,
+		// HTTPMethod: ,
+		FunctionName: fnName,
+		// WrappedFunction: ,
+		SignatureParams: params,
+		Summary:         o.Summary,
+		// PathParams: ,
+		IsList:    isList,
+		IsListAll: isListAll,
+		// HasResponseType: ,
+	}
+
+	if len(params) > 0 {
+		config.HasParams = true
+	}
+
+	if o.Summary != "" {
+		config.HasSummary = true
+	}
+
+	if o.Description != "" {
+		config.HasDescription = true
+	}
+
+	t, err := template.ParseFiles("./templates/method.tpl")
 	if err != nil {
 		return err
 	}
-	f, err := os.Create("./test_utils/tpl_test")
+	file := "./test_utils/tpl_method" + fmt.Sprint(r)
+	f, err := os.Create(file)
 	if err != nil {
 		return err
 	}

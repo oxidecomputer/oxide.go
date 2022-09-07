@@ -1,1 +1,0 @@
-The operation ID is {{.id}}
