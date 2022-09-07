@@ -8,11 +8,8 @@ on:
       - "go.mod"
       - "go.sum"
   pull_request:
-    paths:
-      - "**.go"
-      - "go.mod"
-      - "go.sum"
-      - .github/workflows/build-test.yml
+    branches:
+      - main
 jobs:
   build-test:
     runs-on: ubuntu-latest
