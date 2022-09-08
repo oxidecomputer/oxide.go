@@ -578,6 +578,7 @@ func (c *Client) RackListAllPages(sortBy IdSortMode) (*[]Rack, error) {
 
 	return &allPages, nil
 } // RackView: Fetch a rack
+//
 // Parameters:
 //   - `rackId`: The rack's unique ID.
 func (c *Client) RackView(rackId string) (*Rack, error) {
@@ -690,6 +691,7 @@ func (c *Client) SledListAllPages(sortBy IdSortMode) (*[]Sled, error) {
 
 	return &allPages, nil
 } // SledView: Fetch a sled
+//
 // Parameters:
 //   - `sledId`: The sled's unique ID.
 func (c *Client) SledView(sledId string) (*Sled, error) {
@@ -806,6 +808,7 @@ func (c *Client) ImageGlobalListAllPages(sortBy NameSortMode) (*[]GlobalImage, e
 
 	return &allPages, nil
 } // ImageGlobalCreate: Create a global image
+//
 // Create a new global image. This image can then be used by any user as a base for instances.
 func (c *Client) ImageGlobalCreate(j *GlobalImageCreate) (*GlobalImage, error) {
 	// Create the url.
@@ -1148,6 +1151,7 @@ func (c *Client) IpPoolServiceRangeListAllPages(rackId string) (*[]IpPoolRange, 
 
 	return &allPages, nil
 } // IpPoolServiceRangeAdd: Add a range to an IP pool used for Oxide services.
+//
 // Parameters:
 //   - `rackId`
 func (c *Client) IpPoolServiceRangeAdd(rackId string, j *IpRange) (*IpPoolRange, error) {
@@ -1427,6 +1431,7 @@ func (c *Client) IpPoolRangeListAllPages(poolName Name) (*[]IpPoolRange, error) 
 
 	return &allPages, nil
 } // IpPoolRangeAdd: Add a range to an IP pool
+//
 // Parameters:
 //   - `poolName`
 func (c *Client) IpPoolRangeAdd(poolName Name, j *IpRange) (*IpPoolRange, error) {
@@ -1975,6 +1980,7 @@ func (c *Client) ProjectListAllPages(sortBy NameOrIdSortMode, organizationName N
 
 	return &allPages, nil
 } // ProjectCreate: Create a project
+//
 // Parameters:
 //   - `organizationName`: The organization's unique name.
 func (c *Client) ProjectCreate(organizationName Name, j *ProjectCreate) (*Project, error) {
@@ -2224,6 +2230,7 @@ func (c *Client) DiskListAllPages(sortBy NameSortMode, organizationName Name, pr
 
 	return &allPages, nil
 } // DiskCreate: Create a disk
+//
 // Parameters:
 //   - `organizationName`: The organization's unique name.
 //   - `projectName`: The project's unique name within the organization.
@@ -2440,6 +2447,7 @@ func (c *Client) DiskMetricsListAllPages(diskName Name, metricName DiskMetricNam
 
 	return &allPages, nil
 } // ImageList: List images
+//
 // List images in a project. The images are returned sorted by creation date, with the most recent images appearing first.
 //
 // To iterate over all pages, use the `ImageListAllPages` method, instead.
@@ -2521,6 +2529,7 @@ func (c *Client) ImageListAllPages(sortBy NameSortMode, organizationName Name, p
 
 	return &allPages, nil
 } // ImageCreate: Create an image
+//
 // Create a new image in a project.
 //
 // Parameters:
@@ -2734,6 +2743,7 @@ func (c *Client) InstanceListAllPages(sortBy NameSortMode, organizationName Name
 
 	return &allPages, nil
 } // InstanceCreate: Create an instance
+//
 // Parameters:
 //   - `organizationName`: The organization's unique name.
 //   - `projectName`: The project's unique name within the organization.
@@ -2944,6 +2954,7 @@ func (c *Client) InstanceDiskListAllPages(sortBy NameSortMode, instanceName Name
 
 	return &allPages, nil
 } // InstanceDiskAttach: Attach a disk to an instance
+//
 // Parameters:
 //   - `instanceName`
 //   - `organizationName`
@@ -3219,6 +3230,7 @@ func (c *Client) InstanceNetworkInterfaceListAllPages(sortBy NameSortMode, insta
 
 	return &allPages, nil
 } // InstanceNetworkInterfaceCreate: Create a network interface
+//
 // Parameters:
 //   - `instanceName`
 //   - `organizationName`
@@ -3763,6 +3775,7 @@ func (c *Client) SnapshotListAllPages(sortBy NameSortMode, organizationName Name
 
 	return &allPages, nil
 } // SnapshotCreate: Create a snapshot
+//
 // Creates a point-in-time snapshot from a disk.
 //
 // Parameters:
@@ -3972,6 +3985,7 @@ func (c *Client) VpcListAllPages(sortBy NameSortMode, organizationName Name, pro
 
 	return &allPages, nil
 } // VpcCreate: Create a VPC
+//
 // Parameters:
 //   - `organizationName`: The organization's unique name.
 //   - `projectName`: The project's unique name within the organization.
@@ -4327,6 +4341,7 @@ func (c *Client) VpcRouterListAllPages(sortBy NameSortMode, organizationName Nam
 
 	return &allPages, nil
 } // VpcRouterCreate: Create a router
+//
 // Parameters:
 //   - `organizationName`
 //   - `projectName`
@@ -4602,6 +4617,7 @@ func (c *Client) VpcRouterRouteListAllPages(sortBy NameSortMode, organizationNam
 
 	return &allPages, nil
 } // VpcRouterRouteCreate: Create a router
+//
 // Parameters:
 //   - `organizationName`
 //   - `projectName`
@@ -4878,6 +4894,7 @@ func (c *Client) VpcSubnetListAllPages(sortBy NameSortMode, organizationName Nam
 
 	return &allPages, nil
 } // VpcSubnetCreate: Create a subnet
+//
 // Parameters:
 //   - `organizationName`
 //   - `projectName`
@@ -5285,6 +5302,7 @@ func (c *Client) RoleListAllPages() (*[]Role, error) {
 
 	return &allPages, nil
 } // RoleView: Fetch a built-in role
+//
 // Parameters:
 //   - `roleName`: The built-in role's unique name.
 func (c *Client) RoleView(roleName string) (*Role, error) {
@@ -5397,6 +5415,7 @@ func (c *Client) SagaListAllPages(sortBy IdSortMode) (*[]Saga, error) {
 
 	return &allPages, nil
 } // SagaView: Fetch a saga
+//
 // Parameters:
 //   - `sagaId`
 func (c *Client) SagaView(sagaId string) (*Saga, error) {
@@ -5513,6 +5532,7 @@ func (c *Client) SessionSshkeyListAllPages(sortBy NameSortMode) (*[]SshKey, erro
 
 	return &allPages, nil
 } // SessionSshkeyCreate: Create an SSH public key
+//
 // Create an SSH public key for the currently authenticated user.
 func (c *Client) SessionSshkeyCreate(j *SshKeyCreate) (*SshKey, error) {
 	// Create the url.
@@ -5895,6 +5915,7 @@ func (c *Client) SiloIdentityProviderListAllPages(siloName Name, sortBy NameSort
 
 	return &allPages, nil
 } // SiloPolicyView: Fetch a silo's IAM policy
+//
 // Parameters:
 //   - `siloName`: The silo's unique name.
 func (c *Client) SiloPolicyView(siloName Name) (*SiloRolePolicy, error) {
@@ -6211,6 +6232,7 @@ func (c *Client) SystemUserListAllPages(sortBy NameSortMode) (*[]UserBuiltin, er
 
 	return &allPages, nil
 } // SystemUserView: Fetch a built-in user
+//
 // Parameters:
 //   - `userName`: The built-in user's unique name.
 func (c *Client) SystemUserView(userName Name) (*UserBuiltin, error) {

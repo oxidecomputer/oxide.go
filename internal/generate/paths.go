@@ -19,9 +19,13 @@ type methodTemplate struct {
 	HTTPMethod      string
 	FunctionName    string
 	WrappedFunction string
+	WrappedParams   string // temporary field
+	ResponseType    string
 	SignatureParams map[string]*openapi3.Parameter
 	Summary         string
+	Path            string
 	PathParams      map[string]string
+	ParamsString    string //temporary field
 	IsList          bool
 	IsListAll       bool
 	HasDescription  bool
@@ -190,7 +194,18 @@ func buildGetMethod(spec *openapi3.T, path string, o *openapi3.Operation, isGetA
 
 	// Use little template testing function
 	// Only for development
-	if err := descriptionTplWrite(fnName, o, params, isGetAllPages, isList); err != nil {
+	if err := descriptionTplWrite(
+		fnName,
+		ogFnName,
+		respType,
+		paramsString,
+		ogDocParamsString,
+		cleanPath(path),
+		o,
+		params,
+		isGetAllPages,
+		isList,
+	); err != nil {
 		return "", err
 	}
 
@@ -693,9 +708,9 @@ func descriptionTpl(fnName, ogFnName string, o *openapi3.Operation, params map[s
 		for _, name := range keys {
 			t := params[name]
 			if t.Description != "" {
-				description = description + fmt.Sprintf("//\t- `%s`: %s\n", strcase.ToLowerCamel(name), strings.ReplaceAll(t.Description, "\n", "\n//\t\t"))
+				description = description + fmt.Sprintf("//   - `%s`: %s\n", strcase.ToLowerCamel(name), strings.ReplaceAll(t.Description, "\n", "\n//      "))
 			} else {
-				description = description + fmt.Sprintf("//\t- `%s`\n", strcase.ToLowerCamel(name))
+				description = description + fmt.Sprintf("//   - `%s`\n", strcase.ToLowerCamel(name))
 			}
 		}
 	}
@@ -703,16 +718,20 @@ func descriptionTpl(fnName, ogFnName string, o *openapi3.Operation, params map[s
 	return description
 }
 
-func descriptionTplWrite(fnName string, o *openapi3.Operation, params map[string]*openapi3.Parameter, isListAll, isList bool) error {
+func descriptionTplWrite(fnName, wrappedFn, respType, pStr, wrappedParams, path string, o *openapi3.Operation, params map[string]*openapi3.Parameter, isListAll, isList bool) error {
 	r := rand.Int()
 
 	config := methodTemplate{
-		Description: o.Description,
-		// HTTPMethod: ,
-		FunctionName: fnName,
-		// WrappedFunction: ,
+		Description:     o.Description,
+		HTTPMethod:      "GET", // TODO: Set to a var
+		FunctionName:    fnName,
+		WrappedFunction: wrappedFn,
+		WrappedParams:   wrappedParams,
+		ResponseType:    respType,
 		SignatureParams: params,
 		Summary:         o.Summary,
+		ParamsString:    pStr,
+		Path:            path,
 		// PathParams: ,
 		IsList:    isList,
 		IsListAll: isListAll,
@@ -731,10 +750,21 @@ func descriptionTplWrite(fnName string, o *openapi3.Operation, params map[string
 		config.HasDescription = true
 	}
 
-	t, err := template.ParseFiles("./templates/method.tpl")
-	if err != nil {
-		return err
+	var t *template.Template
+	var err error
+
+	if config.IsListAll {
+		t, err = template.ParseFiles("./templates/listall_method.tpl", "./templates/description.tpl")
+		if err != nil {
+			return err
+		}
+	} else {
+		t, err = template.ParseFiles("./templates/resptype_method.tpl", "./templates/description.tpl")
+		if err != nil {
+			return err
+		}
 	}
+
 	file := "./test_utils/tpl_method" + fmt.Sprint(r)
 	f, err := os.Create(file)
 	if err != nil {
