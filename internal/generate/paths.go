@@ -19,9 +19,12 @@ type methodTemplate struct {
 	HTTPMethod      string
 	FunctionName    string
 	WrappedFunction string
+	WrappedParams   string // temporary field
+	ResponseType    string
 	SignatureParams map[string]*openapi3.Parameter
 	Summary         string
 	PathParams      map[string]string
+	ParamsString    string //temporary field
 	IsList          bool
 	IsListAll       bool
 	HasDescription  bool
@@ -190,7 +193,7 @@ func buildGetMethod(spec *openapi3.T, path string, o *openapi3.Operation, isGetA
 
 	// Use little template testing function
 	// Only for development
-	if err := descriptionTplWrite(fnName, o, params, isGetAllPages, isList); err != nil {
+	if err := descriptionTplWrite(fnName, ogFnName, respType, paramsString, ogDocParamsString, o, params, isGetAllPages, isList); err != nil {
 		return "", err
 	}
 
@@ -703,16 +706,19 @@ func descriptionTpl(fnName, ogFnName string, o *openapi3.Operation, params map[s
 	return description
 }
 
-func descriptionTplWrite(fnName string, o *openapi3.Operation, params map[string]*openapi3.Parameter, isListAll, isList bool) error {
+func descriptionTplWrite(fnName, wrappedFn, respType, pStr, wrappedParams string, o *openapi3.Operation, params map[string]*openapi3.Parameter, isListAll, isList bool) error {
 	r := rand.Int()
 
 	config := methodTemplate{
 		Description: o.Description,
 		// HTTPMethod: ,
-		FunctionName: fnName,
-		// WrappedFunction: ,
+		FunctionName:    fnName,
+		WrappedFunction: wrappedFn,
+		WrappedParams:   wrappedParams,
+		ResponseType:    respType,
 		SignatureParams: params,
 		Summary:         o.Summary,
+		ParamsString:    pStr,
 		// PathParams: ,
 		IsList:    isList,
 		IsListAll: isListAll,
@@ -731,10 +737,21 @@ func descriptionTplWrite(fnName string, o *openapi3.Operation, params map[string
 		config.HasDescription = true
 	}
 
-	t, err := template.ParseFiles("./templates/method.tpl")
-	if err != nil {
-		return err
+	var t *template.Template
+	var err error
+
+	if config.IsListAll {
+		t, err = template.ParseFiles("./templates/listall_method.tpl", "./templates/description.tpl")
+		if err != nil {
+			return err
+		}
+	} else {
+		t, err = template.ParseFiles("./templates/resptype_method.tpl", "./templates/description.tpl")
+		if err != nil {
+			return err
+		}
 	}
+
 	file := "./test_utils/tpl_method" + fmt.Sprint(r)
 	f, err := os.Create(file)
 	if err != nil {
