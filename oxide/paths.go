@@ -2724,7 +2724,8 @@ func (c *Client) InstanceList(limit int, pageToken string, sortBy NameSortMode, 
 //	- `organizationName`: The organization's unique name.
 //	- `projectName`: The project's unique name within the organization.
 //	- `sortBy`
-func (c *Client) InstanceListAllPages(sortBy NameSortMode, organizationName Name, projectName Name,) (*[]Instance, error) {
+func (c *Client) InstanceListAllPages(sortBy NameSortMode, organizationName Name, projectName Name) (*[]Instance, error) {
+
 	var allPages []Instance
 	pageToken := ""
 	limit := 100

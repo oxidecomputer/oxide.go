@@ -23,6 +23,7 @@ type methodTemplate struct {
 	ResponseType    string
 	SignatureParams map[string]*openapi3.Parameter
 	Summary         string
+	Path            string
 	PathParams      map[string]string
 	ParamsString    string //temporary field
 	IsList          bool
@@ -193,7 +194,18 @@ func buildGetMethod(spec *openapi3.T, path string, o *openapi3.Operation, isGetA
 
 	// Use little template testing function
 	// Only for development
-	if err := descriptionTplWrite(fnName, ogFnName, respType, paramsString, ogDocParamsString, o, params, isGetAllPages, isList); err != nil {
+	if err := descriptionTplWrite(
+		fnName,
+		ogFnName,
+		respType,
+		paramsString,
+		ogDocParamsString,
+		cleanPath(path),
+		o,
+		params,
+		isGetAllPages,
+		isList,
+	); err != nil {
 		return "", err
 	}
 
@@ -706,12 +718,12 @@ func descriptionTpl(fnName, ogFnName string, o *openapi3.Operation, params map[s
 	return description
 }
 
-func descriptionTplWrite(fnName, wrappedFn, respType, pStr, wrappedParams string, o *openapi3.Operation, params map[string]*openapi3.Parameter, isListAll, isList bool) error {
+func descriptionTplWrite(fnName, wrappedFn, respType, pStr, wrappedParams, path string, o *openapi3.Operation, params map[string]*openapi3.Parameter, isListAll, isList bool) error {
 	r := rand.Int()
 
 	config := methodTemplate{
-		Description: o.Description,
-		// HTTPMethod: ,
+		Description:     o.Description,
+		HTTPMethod:      "GET", // TODO: Set to a var
 		FunctionName:    fnName,
 		WrappedFunction: wrappedFn,
 		WrappedParams:   wrappedParams,
@@ -719,6 +731,7 @@ func descriptionTplWrite(fnName, wrappedFn, respType, pStr, wrappedParams string
 		SignatureParams: params,
 		Summary:         o.Summary,
 		ParamsString:    pStr,
+		Path:            path,
 		// PathParams: ,
 		IsList:    isList,
 		IsListAll: isListAll,
