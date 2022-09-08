@@ -708,9 +708,9 @@ func descriptionTpl(fnName, ogFnName string, o *openapi3.Operation, params map[s
 		for _, name := range keys {
 			t := params[name]
 			if t.Description != "" {
-				description = description + fmt.Sprintf("//\t- `%s`: %s\n", strcase.ToLowerCamel(name), strings.ReplaceAll(t.Description, "\n", "\n//\t\t"))
+				description = description + fmt.Sprintf("//   - `%s`: %s\n", strcase.ToLowerCamel(name), strings.ReplaceAll(t.Description, "\n", "\n//      "))
 			} else {
-				description = description + fmt.Sprintf("//\t- `%s`\n", strcase.ToLowerCamel(name))
+				description = description + fmt.Sprintf("//   - `%s`\n", strcase.ToLowerCamel(name))
 			}
 		}
 	}

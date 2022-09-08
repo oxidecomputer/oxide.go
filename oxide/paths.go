@@ -16,7 +16,7 @@ import (
 // DiskViewById: Fetch a disk by id
 //
 // Parameters:
-//	- `id`
+//   - `id`
 func (c *Client) DiskViewById(id string) (*Disk, error) {
 	// Create the url.
 	path := "/by-id/disks/{{.id}}"
@@ -57,7 +57,7 @@ func (c *Client) DiskViewById(id string) (*Disk, error) {
 // ImageGlobalViewById: Fetch a global image by id
 //
 // Parameters:
-//	- `id`
+//   - `id`
 func (c *Client) ImageGlobalViewById(id string) (*GlobalImage, error) {
 	// Create the url.
 	path := "/by-id/global-images/{{.id}}"
@@ -98,7 +98,7 @@ func (c *Client) ImageGlobalViewById(id string) (*GlobalImage, error) {
 // ImageViewById: Fetch an image by id
 //
 // Parameters:
-//	- `id`
+//   - `id`
 func (c *Client) ImageViewById(id string) (*Image, error) {
 	// Create the url.
 	path := "/by-id/images/{{.id}}"
@@ -139,7 +139,7 @@ func (c *Client) ImageViewById(id string) (*Image, error) {
 // InstanceViewById: Fetch an instance by id
 //
 // Parameters:
-//	- `id`
+//   - `id`
 func (c *Client) InstanceViewById(id string) (*Instance, error) {
 	// Create the url.
 	path := "/by-id/instances/{{.id}}"
@@ -180,7 +180,7 @@ func (c *Client) InstanceViewById(id string) (*Instance, error) {
 // InstanceNetworkInterfaceViewById: Fetch a network interface by id
 //
 // Parameters:
-//	- `id`
+//   - `id`
 func (c *Client) InstanceNetworkInterfaceViewById(id string) (*NetworkInterface, error) {
 	// Create the url.
 	path := "/by-id/network-interfaces/{{.id}}"
@@ -221,7 +221,7 @@ func (c *Client) InstanceNetworkInterfaceViewById(id string) (*NetworkInterface,
 // OrganizationViewById: Fetch an organization by id
 //
 // Parameters:
-//	- `id`
+//   - `id`
 func (c *Client) OrganizationViewById(id string) (*Organization, error) {
 	// Create the url.
 	path := "/by-id/organizations/{{.id}}"
@@ -262,7 +262,7 @@ func (c *Client) OrganizationViewById(id string) (*Organization, error) {
 // ProjectViewById: Fetch a project by id
 //
 // Parameters:
-//	- `id`
+//   - `id`
 func (c *Client) ProjectViewById(id string) (*Project, error) {
 	// Create the url.
 	path := "/by-id/projects/{{.id}}"
@@ -303,7 +303,7 @@ func (c *Client) ProjectViewById(id string) (*Project, error) {
 // SnapshotViewById: Fetch a snapshot by id
 //
 // Parameters:
-//	- `id`
+//   - `id`
 func (c *Client) SnapshotViewById(id string) (*Snapshot, error) {
 	// Create the url.
 	path := "/by-id/snapshots/{{.id}}"
@@ -344,7 +344,7 @@ func (c *Client) SnapshotViewById(id string) (*Snapshot, error) {
 // VpcRouterRouteViewById: Fetch a route by id
 //
 // Parameters:
-//	- `id`
+//   - `id`
 func (c *Client) VpcRouterRouteViewById(id string) (*RouterRoute, error) {
 	// Create the url.
 	path := "/by-id/vpc-router-routes/{{.id}}"
@@ -385,7 +385,7 @@ func (c *Client) VpcRouterRouteViewById(id string) (*RouterRoute, error) {
 // VpcRouterViewById: Get a router by id
 //
 // Parameters:
-//	- `id`
+//   - `id`
 func (c *Client) VpcRouterViewById(id string) (*VpcRouter, error) {
 	// Create the url.
 	path := "/by-id/vpc-routers/{{.id}}"
@@ -426,7 +426,7 @@ func (c *Client) VpcRouterViewById(id string) (*VpcRouter, error) {
 // VpcSubnetViewById: Fetch a subnet by id
 //
 // Parameters:
-//	- `id`
+//   - `id`
 func (c *Client) VpcSubnetViewById(id string) (*VpcSubnet, error) {
 	// Create the url.
 	path := "/by-id/vpc-subnets/{{.id}}"
@@ -467,7 +467,7 @@ func (c *Client) VpcSubnetViewById(id string) (*VpcSubnet, error) {
 // VpcViewById: Fetch a VPC
 //
 // Parameters:
-//	- `id`
+//   - `id`
 func (c *Client) VpcViewById(id string) (*Vpc, error) {
 	// Create the url.
 	path := "/by-id/vpcs/{{.id}}"
@@ -510,9 +510,9 @@ func (c *Client) VpcViewById(id string) (*Vpc, error) {
 // To iterate over all pages, use the `RackListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`: Maximum number of items returned by a single call
-//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
-//	- `sortBy`
+//   - `limit`: Maximum number of items returned by a single call
+//   - `pageToken`: Token returned by previous call to retrieve the subsequent page
+//   - `sortBy`
 func (c *Client) RackList(limit int, pageToken string, sortBy IdSortMode) (*RackResultsPage, error) {
 	// Create the url.
 	path := "/hardware/racks"
@@ -558,7 +558,7 @@ func (c *Client) RackList(limit int, pageToken string, sortBy IdSortMode) (*Rack
 // This method returns all the pages at once.
 //
 // Parameters:
-//	- `sortBy`
+//   - `sortBy`
 func (c *Client) RackListAllPages(sortBy IdSortMode) (*[]Rack, error) {
 
 	var allPages []Rack
@@ -580,7 +580,7 @@ func (c *Client) RackListAllPages(sortBy IdSortMode) (*[]Rack, error) {
 } // RackView: Fetch a rack
 //
 // Parameters:
-//	- `rackId`: The rack's unique ID.
+//   - `rackId`: The rack's unique ID.
 func (c *Client) RackView(rackId string) (*Rack, error) {
 	// Create the url.
 	path := "/hardware/racks/{{.rack_id}}"
@@ -623,9 +623,9 @@ func (c *Client) RackView(rackId string) (*Rack, error) {
 // To iterate over all pages, use the `SledListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`: Maximum number of items returned by a single call
-//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
-//	- `sortBy`
+//   - `limit`: Maximum number of items returned by a single call
+//   - `pageToken`: Token returned by previous call to retrieve the subsequent page
+//   - `sortBy`
 func (c *Client) SledList(limit int, pageToken string, sortBy IdSortMode) (*SledResultsPage, error) {
 	// Create the url.
 	path := "/hardware/sleds"
@@ -671,7 +671,7 @@ func (c *Client) SledList(limit int, pageToken string, sortBy IdSortMode) (*Sled
 // This method returns all the pages at once.
 //
 // Parameters:
-//	- `sortBy`
+//   - `sortBy`
 func (c *Client) SledListAllPages(sortBy IdSortMode) (*[]Sled, error) {
 
 	var allPages []Sled
@@ -693,7 +693,7 @@ func (c *Client) SledListAllPages(sortBy IdSortMode) (*[]Sled, error) {
 } // SledView: Fetch a sled
 //
 // Parameters:
-//	- `sledId`: The sled's unique ID.
+//   - `sledId`: The sled's unique ID.
 func (c *Client) SledView(sledId string) (*Sled, error) {
 	// Create the url.
 	path := "/hardware/sleds/{{.sled_id}}"
@@ -738,9 +738,9 @@ func (c *Client) SledView(sledId string) (*Sled, error) {
 // To iterate over all pages, use the `ImageGlobalListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`: Maximum number of items returned by a single call
-//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
-//	- `sortBy`
+//   - `limit`: Maximum number of items returned by a single call
+//   - `pageToken`: Token returned by previous call to retrieve the subsequent page
+//   - `sortBy`
 func (c *Client) ImageGlobalList(limit int, pageToken string, sortBy NameSortMode) (*GlobalImageResultsPage, error) {
 	// Create the url.
 	path := "/images"
@@ -788,7 +788,7 @@ func (c *Client) ImageGlobalList(limit int, pageToken string, sortBy NameSortMod
 // This method returns all the pages at once.
 //
 // Parameters:
-//	- `sortBy`
+//   - `sortBy`
 func (c *Client) ImageGlobalListAllPages(sortBy NameSortMode) (*[]GlobalImage, error) {
 
 	var allPages []GlobalImage
@@ -851,7 +851,7 @@ func (c *Client) ImageGlobalCreate(j *GlobalImageCreate) (*GlobalImage, error) {
 // Returns the details of a specific global image.
 //
 // Parameters:
-//	- `imageName`
+//   - `imageName`
 func (c *Client) ImageGlobalView(imageName Name) (*GlobalImage, error) {
 	// Create the url.
 	path := "/images/{{.image_name}}"
@@ -894,7 +894,7 @@ func (c *Client) ImageGlobalView(imageName Name) (*GlobalImage, error) {
 // Permanently delete a global image. This operation cannot be undone. Any instances using the global image will continue to run, however new instances can not be created with this image.
 //
 // Parameters:
-//	- `imageName`
+//   - `imageName`
 func (c *Client) ImageGlobalDelete(imageName Name) error {
 	// Create the url.
 	path := "/images/{{.image_name}}"
@@ -929,9 +929,9 @@ func (c *Client) ImageGlobalDelete(imageName Name) error {
 // To iterate over all pages, use the `IpPoolListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`: Maximum number of items returned by a single call
-//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
-//	- `sortBy`
+//   - `limit`: Maximum number of items returned by a single call
+//   - `pageToken`: Token returned by previous call to retrieve the subsequent page
+//   - `sortBy`
 func (c *Client) IpPoolList(limit int, pageToken string, sortBy NameOrIdSortMode) (*IpPoolResultsPage, error) {
 	// Create the url.
 	path := "/ip-pools"
@@ -977,7 +977,7 @@ func (c *Client) IpPoolList(limit int, pageToken string, sortBy NameOrIdSortMode
 // This method returns all the pages at once.
 //
 // Parameters:
-//	- `sortBy`
+//   - `sortBy`
 func (c *Client) IpPoolListAllPages(sortBy NameOrIdSortMode) (*[]IpPool, error) {
 
 	var allPages []IpPool
@@ -1036,7 +1036,7 @@ func (c *Client) IpPoolCreate(j *IpPoolCreate) (*IpPool, error) {
 // IpPoolServiceView: Fetch an IP pool used for Oxide services.
 //
 // Parameters:
-//	- `rackId`
+//   - `rackId`
 func (c *Client) IpPoolServiceView(rackId string) (*IpPool, error) {
 	// Create the url.
 	path := "/ip-pools-service/{{.rack_id}}"
@@ -1081,9 +1081,9 @@ func (c *Client) IpPoolServiceView(rackId string) (*IpPool, error) {
 // To iterate over all pages, use the `IpPoolServiceRangeListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`: Maximum number of items returned by a single call
-//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
-//	- `rackId`
+//   - `limit`: Maximum number of items returned by a single call
+//   - `pageToken`: Token returned by previous call to retrieve the subsequent page
+//   - `rackId`
 func (c *Client) IpPoolServiceRangeList(rackId string, limit int, pageToken string) (*IpPoolRangeResultsPage, error) {
 	// Create the url.
 	path := "/ip-pools-service/{{.rack_id}}/ranges"
@@ -1131,7 +1131,7 @@ func (c *Client) IpPoolServiceRangeList(rackId string, limit int, pageToken stri
 // This method returns all the pages at once.
 //
 // Parameters:
-//	- `rackId`
+//   - `rackId`
 func (c *Client) IpPoolServiceRangeListAllPages(rackId string) (*[]IpPoolRange, error) {
 
 	var allPages []IpPoolRange
@@ -1153,7 +1153,7 @@ func (c *Client) IpPoolServiceRangeListAllPages(rackId string) (*[]IpPoolRange, 
 } // IpPoolServiceRangeAdd: Add a range to an IP pool used for Oxide services.
 //
 // Parameters:
-//	- `rackId`
+//   - `rackId`
 func (c *Client) IpPoolServiceRangeAdd(rackId string, j *IpRange) (*IpPoolRange, error) {
 	// Create the url.
 	path := "/ip-pools-service/{{.rack_id}}/ranges/add"
@@ -1199,7 +1199,7 @@ func (c *Client) IpPoolServiceRangeAdd(rackId string, j *IpRange) (*IpPoolRange,
 // IpPoolServiceRangeRemove: Remove a range from an IP pool used for Oxide services.
 //
 // Parameters:
-//	- `rackId`
+//   - `rackId`
 func (c *Client) IpPoolServiceRangeRemove(rackId string, j *IpRange) error {
 	// Create the url.
 	path := "/ip-pools-service/{{.rack_id}}/ranges/remove"
@@ -1237,7 +1237,7 @@ func (c *Client) IpPoolServiceRangeRemove(rackId string, j *IpRange) error {
 // IpPoolView: Fetch an IP pool
 //
 // Parameters:
-//	- `poolName`
+//   - `poolName`
 func (c *Client) IpPoolView(poolName Name) (*IpPool, error) {
 	// Create the url.
 	path := "/ip-pools/{{.pool_name}}"
@@ -1278,7 +1278,7 @@ func (c *Client) IpPoolView(poolName Name) (*IpPool, error) {
 // IpPoolUpdate: Update an IP Pool
 //
 // Parameters:
-//	- `poolName`
+//   - `poolName`
 func (c *Client) IpPoolUpdate(poolName Name, j *IpPoolUpdate) (*IpPool, error) {
 	// Create the url.
 	path := "/ip-pools/{{.pool_name}}"
@@ -1324,7 +1324,7 @@ func (c *Client) IpPoolUpdate(poolName Name, j *IpPoolUpdate) (*IpPool, error) {
 // IpPoolDelete: Delete an IP Pool
 //
 // Parameters:
-//	- `poolName`
+//   - `poolName`
 func (c *Client) IpPoolDelete(poolName Name) error {
 	// Create the url.
 	path := "/ip-pools/{{.pool_name}}"
@@ -1361,9 +1361,9 @@ func (c *Client) IpPoolDelete(poolName Name) error {
 // To iterate over all pages, use the `IpPoolRangeListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`: Maximum number of items returned by a single call
-//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
-//	- `poolName`
+//   - `limit`: Maximum number of items returned by a single call
+//   - `pageToken`: Token returned by previous call to retrieve the subsequent page
+//   - `poolName`
 func (c *Client) IpPoolRangeList(poolName Name, limit int, pageToken string) (*IpPoolRangeResultsPage, error) {
 	// Create the url.
 	path := "/ip-pools/{{.pool_name}}/ranges"
@@ -1411,7 +1411,7 @@ func (c *Client) IpPoolRangeList(poolName Name, limit int, pageToken string) (*I
 // This method returns all the pages at once.
 //
 // Parameters:
-//	- `poolName`
+//   - `poolName`
 func (c *Client) IpPoolRangeListAllPages(poolName Name) (*[]IpPoolRange, error) {
 
 	var allPages []IpPoolRange
@@ -1433,7 +1433,7 @@ func (c *Client) IpPoolRangeListAllPages(poolName Name) (*[]IpPoolRange, error) 
 } // IpPoolRangeAdd: Add a range to an IP pool
 //
 // Parameters:
-//	- `poolName`
+//   - `poolName`
 func (c *Client) IpPoolRangeAdd(poolName Name, j *IpRange) (*IpPoolRange, error) {
 	// Create the url.
 	path := "/ip-pools/{{.pool_name}}/ranges/add"
@@ -1479,7 +1479,7 @@ func (c *Client) IpPoolRangeAdd(poolName Name, j *IpRange) (*IpPoolRange, error)
 // IpPoolRangeRemove: Remove a range from an IP pool
 //
 // Parameters:
-//	- `poolName`
+//   - `poolName`
 func (c *Client) IpPoolRangeRemove(poolName Name, j *IpRange) error {
 	// Create the url.
 	path := "/ip-pools/{{.pool_name}}/ranges/remove"
@@ -1519,8 +1519,8 @@ func (c *Client) IpPoolRangeRemove(poolName Name, j *IpRange) error {
 // Either display a page asking a user for their credentials, or redirect them to their identity provider.
 //
 // Parameters:
-//	- `providerName`
-//	- `siloName`
+//   - `providerName`
+//   - `siloName`
 func (c *Client) Login(providerName Name, siloName Name) error {
 	// Create the url.
 	path := "/login/{{.silo_name}}/{{.provider_name}}"
@@ -1556,8 +1556,8 @@ func (c *Client) Login(providerName Name, siloName Name) error {
 // Either receive a username and password, or some sort of identity provider data (like a SAMLResponse). Use these to set the user's session cookie.
 //
 // Parameters:
-//	- `providerName`
-//	- `siloName`
+//   - `providerName`
+//   - `siloName`
 func (c *Client) ConsumeCredentials(providerName Name, siloName Name, b io.Reader) error {
 	// Create the url.
 	path := "/login/{{.silo_name}}/{{.provider_name}}"
@@ -1593,9 +1593,9 @@ func (c *Client) ConsumeCredentials(providerName Name, siloName Name, b io.Reade
 // To iterate over all pages, use the `OrganizationListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`: Maximum number of items returned by a single call
-//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
-//	- `sortBy`
+//   - `limit`: Maximum number of items returned by a single call
+//   - `pageToken`: Token returned by previous call to retrieve the subsequent page
+//   - `sortBy`
 func (c *Client) OrganizationList(limit int, pageToken string, sortBy NameOrIdSortMode) (*OrganizationResultsPage, error) {
 	// Create the url.
 	path := "/organizations"
@@ -1641,7 +1641,7 @@ func (c *Client) OrganizationList(limit int, pageToken string, sortBy NameOrIdSo
 // This method returns all the pages at once.
 //
 // Parameters:
-//	- `sortBy`
+//   - `sortBy`
 func (c *Client) OrganizationListAllPages(sortBy NameOrIdSortMode) (*[]Organization, error) {
 
 	var allPages []Organization
@@ -1700,7 +1700,7 @@ func (c *Client) OrganizationCreate(j *OrganizationCreate) (*Organization, error
 // OrganizationView: Fetch an organization
 //
 // Parameters:
-//	- `organizationName`: The organization's unique name.
+//   - `organizationName`: The organization's unique name.
 func (c *Client) OrganizationView(organizationName Name) (*Organization, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}"
@@ -1741,7 +1741,7 @@ func (c *Client) OrganizationView(organizationName Name) (*Organization, error) 
 // OrganizationUpdate: Update an organization
 //
 // Parameters:
-//	- `organizationName`: The organization's unique name.
+//   - `organizationName`: The organization's unique name.
 func (c *Client) OrganizationUpdate(organizationName Name, j *OrganizationUpdate) (*Organization, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}"
@@ -1787,7 +1787,7 @@ func (c *Client) OrganizationUpdate(organizationName Name, j *OrganizationUpdate
 // OrganizationDelete: Delete an organization
 //
 // Parameters:
-//	- `organizationName`: The organization's unique name.
+//   - `organizationName`: The organization's unique name.
 func (c *Client) OrganizationDelete(organizationName Name) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}"
@@ -1820,7 +1820,7 @@ func (c *Client) OrganizationDelete(organizationName Name) error {
 // OrganizationPolicyView: Fetch an organization's IAM policy
 //
 // Parameters:
-//	- `organizationName`: The organization's unique name.
+//   - `organizationName`: The organization's unique name.
 func (c *Client) OrganizationPolicyView(organizationName Name) (*OrganizationRolePolicy, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/policy"
@@ -1861,7 +1861,7 @@ func (c *Client) OrganizationPolicyView(organizationName Name) (*OrganizationRol
 // OrganizationPolicyUpdate: Update an organization's IAM policy
 //
 // Parameters:
-//	- `organizationName`: The organization's unique name.
+//   - `organizationName`: The organization's unique name.
 func (c *Client) OrganizationPolicyUpdate(organizationName Name, j *OrganizationRolePolicy) (*OrganizationRolePolicy, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/policy"
@@ -1909,10 +1909,10 @@ func (c *Client) OrganizationPolicyUpdate(organizationName Name, j *Organization
 // To iterate over all pages, use the `ProjectListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`: Maximum number of items returned by a single call
-//	- `organizationName`: The organization's unique name.
-//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
-//	- `sortBy`
+//   - `limit`: Maximum number of items returned by a single call
+//   - `organizationName`: The organization's unique name.
+//   - `pageToken`: Token returned by previous call to retrieve the subsequent page
+//   - `sortBy`
 func (c *Client) ProjectList(limit int, pageToken string, sortBy NameOrIdSortMode, organizationName Name) (*ProjectResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects"
@@ -1959,8 +1959,8 @@ func (c *Client) ProjectList(limit int, pageToken string, sortBy NameOrIdSortMod
 // This method returns all the pages at once.
 //
 // Parameters:
-//	- `organizationName`: The organization's unique name.
-//	- `sortBy`
+//   - `organizationName`: The organization's unique name.
+//   - `sortBy`
 func (c *Client) ProjectListAllPages(sortBy NameOrIdSortMode, organizationName Name) (*[]Project, error) {
 
 	var allPages []Project
@@ -1982,7 +1982,7 @@ func (c *Client) ProjectListAllPages(sortBy NameOrIdSortMode, organizationName N
 } // ProjectCreate: Create a project
 //
 // Parameters:
-//	- `organizationName`: The organization's unique name.
+//   - `organizationName`: The organization's unique name.
 func (c *Client) ProjectCreate(organizationName Name, j *ProjectCreate) (*Project, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects"
@@ -2028,8 +2028,8 @@ func (c *Client) ProjectCreate(organizationName Name, j *ProjectCreate) (*Projec
 // ProjectView: Fetch a project
 //
 // Parameters:
-//	- `organizationName`: The organization's unique name.
-//	- `projectName`: The project's unique name within the organization.
+//   - `organizationName`: The organization's unique name.
+//   - `projectName`: The project's unique name within the organization.
 func (c *Client) ProjectView(organizationName Name, projectName Name) (*Project, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}"
@@ -2071,8 +2071,8 @@ func (c *Client) ProjectView(organizationName Name, projectName Name) (*Project,
 // ProjectUpdate: Update a project
 //
 // Parameters:
-//	- `organizationName`: The organization's unique name.
-//	- `projectName`: The project's unique name within the organization.
+//   - `organizationName`: The organization's unique name.
+//   - `projectName`: The project's unique name within the organization.
 func (c *Client) ProjectUpdate(organizationName Name, projectName Name, j *ProjectUpdate) (*Project, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}"
@@ -2119,8 +2119,8 @@ func (c *Client) ProjectUpdate(organizationName Name, projectName Name, j *Proje
 // ProjectDelete: Delete a project
 //
 // Parameters:
-//	- `organizationName`: The organization's unique name.
-//	- `projectName`: The project's unique name within the organization.
+//   - `organizationName`: The organization's unique name.
+//   - `projectName`: The project's unique name within the organization.
 func (c *Client) ProjectDelete(organizationName Name, projectName Name) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}"
@@ -2156,11 +2156,11 @@ func (c *Client) ProjectDelete(organizationName Name, projectName Name) error {
 // To iterate over all pages, use the `DiskListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`: Maximum number of items returned by a single call
-//	- `organizationName`: The organization's unique name.
-//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
-//	- `projectName`: The project's unique name within the organization.
-//	- `sortBy`
+//   - `limit`: Maximum number of items returned by a single call
+//   - `organizationName`: The organization's unique name.
+//   - `pageToken`: Token returned by previous call to retrieve the subsequent page
+//   - `projectName`: The project's unique name within the organization.
+//   - `sortBy`
 func (c *Client) DiskList(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name) (*DiskResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/disks"
@@ -2208,9 +2208,9 @@ func (c *Client) DiskList(limit int, pageToken string, sortBy NameSortMode, orga
 // This method returns all the pages at once.
 //
 // Parameters:
-//	- `organizationName`: The organization's unique name.
-//	- `projectName`: The project's unique name within the organization.
-//	- `sortBy`
+//   - `organizationName`: The organization's unique name.
+//   - `projectName`: The project's unique name within the organization.
+//   - `sortBy`
 func (c *Client) DiskListAllPages(sortBy NameSortMode, organizationName Name, projectName Name) (*[]Disk, error) {
 
 	var allPages []Disk
@@ -2232,8 +2232,8 @@ func (c *Client) DiskListAllPages(sortBy NameSortMode, organizationName Name, pr
 } // DiskCreate: Create a disk
 //
 // Parameters:
-//	- `organizationName`: The organization's unique name.
-//	- `projectName`: The project's unique name within the organization.
+//   - `organizationName`: The organization's unique name.
+//   - `projectName`: The project's unique name within the organization.
 func (c *Client) DiskCreate(organizationName Name, projectName Name, j *DiskCreate) (*Disk, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/disks"
@@ -2280,9 +2280,9 @@ func (c *Client) DiskCreate(organizationName Name, projectName Name, j *DiskCrea
 // DiskView: Fetch a disk
 //
 // Parameters:
-//	- `diskName`
-//	- `organizationName`
-//	- `projectName`
+//   - `diskName`
+//   - `organizationName`
+//   - `projectName`
 func (c *Client) DiskView(diskName Name, organizationName Name, projectName Name) (*Disk, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/disks/{{.disk_name}}"
@@ -2325,9 +2325,9 @@ func (c *Client) DiskView(diskName Name, organizationName Name, projectName Name
 // DiskDelete: Delete a disk
 //
 // Parameters:
-//	- `diskName`
-//	- `organizationName`
-//	- `projectName`
+//   - `diskName`
+//   - `organizationName`
+//   - `projectName`
 func (c *Client) DiskDelete(diskName Name, organizationName Name, projectName Name) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/disks/{{.disk_name}}"
@@ -2364,14 +2364,14 @@ func (c *Client) DiskDelete(diskName Name, organizationName Name, projectName Na
 // To iterate over all pages, use the `DiskMetricsListAllPages` method, instead.
 //
 // Parameters:
-//	- `diskName`
-//	- `endTime`: An exclusive end time of metrics.
-//	- `limit`: Maximum number of items returned by a single call
-//	- `metricName`
-//	- `organizationName`
-//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
-//	- `projectName`
-//	- `startTime`: An inclusive start time of metrics.
+//   - `diskName`
+//   - `endTime`: An exclusive end time of metrics.
+//   - `limit`: Maximum number of items returned by a single call
+//   - `metricName`
+//   - `organizationName`
+//   - `pageToken`: Token returned by previous call to retrieve the subsequent page
+//   - `projectName`
+//   - `startTime`: An inclusive start time of metrics.
 func (c *Client) DiskMetricsList(diskName Name, metricName DiskMetricName, organizationName Name, projectName Name, endTime *time.Time, limit int, pageToken string, startTime *time.Time) (*MeasurementResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/disks/{{.disk_name}}/metrics/{{.metric_name}}"
@@ -2422,12 +2422,12 @@ func (c *Client) DiskMetricsList(diskName Name, metricName DiskMetricName, organ
 // This method returns all the pages at once.
 //
 // Parameters:
-//	- `diskName`
-//	- `endTime`: An exclusive end time of metrics.
-//	- `metricName`
-//	- `organizationName`
-//	- `projectName`
-//	- `startTime`: An inclusive start time of metrics.
+//   - `diskName`
+//   - `endTime`: An exclusive end time of metrics.
+//   - `metricName`
+//   - `organizationName`
+//   - `projectName`
+//   - `startTime`: An inclusive start time of metrics.
 func (c *Client) DiskMetricsListAllPages(diskName Name, metricName DiskMetricName, organizationName Name, projectName Name, endTime *time.Time, startTime *time.Time) (*[]Measurement, error) {
 
 	var allPages []Measurement
@@ -2453,11 +2453,11 @@ func (c *Client) DiskMetricsListAllPages(diskName Name, metricName DiskMetricNam
 // To iterate over all pages, use the `ImageListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`: Maximum number of items returned by a single call
-//	- `organizationName`: The organization's unique name.
-//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
-//	- `projectName`: The project's unique name within the organization.
-//	- `sortBy`
+//   - `limit`: Maximum number of items returned by a single call
+//   - `organizationName`: The organization's unique name.
+//   - `pageToken`: Token returned by previous call to retrieve the subsequent page
+//   - `projectName`: The project's unique name within the organization.
+//   - `sortBy`
 func (c *Client) ImageList(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name) (*ImageResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/images"
@@ -2507,9 +2507,9 @@ func (c *Client) ImageList(limit int, pageToken string, sortBy NameSortMode, org
 // This method returns all the pages at once.
 //
 // Parameters:
-//	- `organizationName`: The organization's unique name.
-//	- `projectName`: The project's unique name within the organization.
-//	- `sortBy`
+//   - `organizationName`: The organization's unique name.
+//   - `projectName`: The project's unique name within the organization.
+//   - `sortBy`
 func (c *Client) ImageListAllPages(sortBy NameSortMode, organizationName Name, projectName Name) (*[]Image, error) {
 
 	var allPages []Image
@@ -2533,8 +2533,8 @@ func (c *Client) ImageListAllPages(sortBy NameSortMode, organizationName Name, p
 // Create a new image in a project.
 //
 // Parameters:
-//	- `organizationName`: The organization's unique name.
-//	- `projectName`: The project's unique name within the organization.
+//   - `organizationName`: The organization's unique name.
+//   - `projectName`: The project's unique name within the organization.
 func (c *Client) ImageCreate(organizationName Name, projectName Name, j *ImageCreate) (*Image, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/images"
@@ -2583,9 +2583,9 @@ func (c *Client) ImageCreate(organizationName Name, projectName Name, j *ImageCr
 // Fetch the details for a specific image in a project.
 //
 // Parameters:
-//	- `imageName`
-//	- `organizationName`
-//	- `projectName`
+//   - `imageName`
+//   - `organizationName`
+//   - `projectName`
 func (c *Client) ImageView(imageName Name, organizationName Name, projectName Name) (*Image, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/images/{{.image_name}}"
@@ -2630,9 +2630,9 @@ func (c *Client) ImageView(imageName Name, organizationName Name, projectName Na
 // Permanently delete an image from a project. This operation cannot be undone. Any instances in the project using the image will continue to run, however new instances can not be created with this image.
 //
 // Parameters:
-//	- `imageName`
-//	- `organizationName`
-//	- `projectName`
+//   - `imageName`
+//   - `organizationName`
+//   - `projectName`
 func (c *Client) ImageDelete(imageName Name, organizationName Name, projectName Name) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/images/{{.image_name}}"
@@ -2669,11 +2669,11 @@ func (c *Client) ImageDelete(imageName Name, organizationName Name, projectName 
 // To iterate over all pages, use the `InstanceListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`: Maximum number of items returned by a single call
-//	- `organizationName`: The organization's unique name.
-//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
-//	- `projectName`: The project's unique name within the organization.
-//	- `sortBy`
+//   - `limit`: Maximum number of items returned by a single call
+//   - `organizationName`: The organization's unique name.
+//   - `pageToken`: Token returned by previous call to retrieve the subsequent page
+//   - `projectName`: The project's unique name within the organization.
+//   - `sortBy`
 func (c *Client) InstanceList(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name) (*InstanceResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances"
@@ -2721,9 +2721,9 @@ func (c *Client) InstanceList(limit int, pageToken string, sortBy NameSortMode, 
 // This method returns all the pages at once.
 //
 // Parameters:
-//	- `organizationName`: The organization's unique name.
-//	- `projectName`: The project's unique name within the organization.
-//	- `sortBy`
+//   - `organizationName`: The organization's unique name.
+//   - `projectName`: The project's unique name within the organization.
+//   - `sortBy`
 func (c *Client) InstanceListAllPages(sortBy NameSortMode, organizationName Name, projectName Name) (*[]Instance, error) {
 
 	var allPages []Instance
@@ -2745,8 +2745,8 @@ func (c *Client) InstanceListAllPages(sortBy NameSortMode, organizationName Name
 } // InstanceCreate: Create an instance
 //
 // Parameters:
-//	- `organizationName`: The organization's unique name.
-//	- `projectName`: The project's unique name within the organization.
+//   - `organizationName`: The organization's unique name.
+//   - `projectName`: The project's unique name within the organization.
 func (c *Client) InstanceCreate(organizationName Name, projectName Name, j *InstanceCreate) (*Instance, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances"
@@ -2793,9 +2793,9 @@ func (c *Client) InstanceCreate(organizationName Name, projectName Name, j *Inst
 // InstanceView: Fetch an instance
 //
 // Parameters:
-//	- `instanceName`
-//	- `organizationName`
-//	- `projectName`
+//   - `instanceName`
+//   - `organizationName`
+//   - `projectName`
 func (c *Client) InstanceView(instanceName Name, organizationName Name, projectName Name) (*Instance, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}"
@@ -2838,9 +2838,9 @@ func (c *Client) InstanceView(instanceName Name, organizationName Name, projectN
 // InstanceDelete: Delete an instance
 //
 // Parameters:
-//	- `instanceName`
-//	- `organizationName`
-//	- `projectName`
+//   - `instanceName`
+//   - `organizationName`
+//   - `projectName`
 func (c *Client) InstanceDelete(instanceName Name, organizationName Name, projectName Name) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}"
@@ -2877,12 +2877,12 @@ func (c *Client) InstanceDelete(instanceName Name, organizationName Name, projec
 // To iterate over all pages, use the `InstanceDiskListAllPages` method, instead.
 //
 // Parameters:
-//	- `instanceName`
-//	- `limit`: Maximum number of items returned by a single call
-//	- `organizationName`
-//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
-//	- `projectName`
-//	- `sortBy`
+//   - `instanceName`
+//   - `limit`: Maximum number of items returned by a single call
+//   - `organizationName`
+//   - `pageToken`: Token returned by previous call to retrieve the subsequent page
+//   - `projectName`
+//   - `sortBy`
 func (c *Client) InstanceDiskList(limit int, pageToken string, sortBy NameSortMode, instanceName Name, organizationName Name, projectName Name) (*DiskResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/disks"
@@ -2931,10 +2931,10 @@ func (c *Client) InstanceDiskList(limit int, pageToken string, sortBy NameSortMo
 // This method returns all the pages at once.
 //
 // Parameters:
-//	- `instanceName`
-//	- `organizationName`
-//	- `projectName`
-//	- `sortBy`
+//   - `instanceName`
+//   - `organizationName`
+//   - `projectName`
+//   - `sortBy`
 func (c *Client) InstanceDiskListAllPages(sortBy NameSortMode, instanceName Name, organizationName Name, projectName Name) (*[]Disk, error) {
 
 	var allPages []Disk
@@ -2956,9 +2956,9 @@ func (c *Client) InstanceDiskListAllPages(sortBy NameSortMode, instanceName Name
 } // InstanceDiskAttach: Attach a disk to an instance
 //
 // Parameters:
-//	- `instanceName`
-//	- `organizationName`
-//	- `projectName`
+//   - `instanceName`
+//   - `organizationName`
+//   - `projectName`
 func (c *Client) InstanceDiskAttach(instanceName Name, organizationName Name, projectName Name, j *DiskIdentifier) (*Disk, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/disks/attach"
@@ -3006,9 +3006,9 @@ func (c *Client) InstanceDiskAttach(instanceName Name, organizationName Name, pr
 // InstanceDiskDetach: Detach a disk from an instance
 //
 // Parameters:
-//	- `instanceName`
-//	- `organizationName`
-//	- `projectName`
+//   - `instanceName`
+//   - `organizationName`
+//   - `projectName`
 func (c *Client) InstanceDiskDetach(instanceName Name, organizationName Name, projectName Name, j *DiskIdentifier) (*Disk, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/disks/detach"
@@ -3056,9 +3056,9 @@ func (c *Client) InstanceDiskDetach(instanceName Name, organizationName Name, pr
 // InstanceExternalIpList: List external IP addresses
 //
 // Parameters:
-//	- `instanceName`
-//	- `organizationName`
-//	- `projectName`
+//   - `instanceName`
+//   - `organizationName`
+//   - `projectName`
 func (c *Client) InstanceExternalIpList(instanceName Name, organizationName Name, projectName Name) (*ExternalIpResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/external-ips"
@@ -3101,9 +3101,9 @@ func (c *Client) InstanceExternalIpList(instanceName Name, organizationName Name
 // InstanceMigrate: Migrate an instance
 //
 // Parameters:
-//	- `instanceName`
-//	- `organizationName`
-//	- `projectName`
+//   - `instanceName`
+//   - `organizationName`
+//   - `projectName`
 func (c *Client) InstanceMigrate(instanceName Name, organizationName Name, projectName Name, j *InstanceMigrate) (*Instance, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/migrate"
@@ -3153,12 +3153,12 @@ func (c *Client) InstanceMigrate(instanceName Name, organizationName Name, proje
 // To iterate over all pages, use the `InstanceNetworkInterfaceListAllPages` method, instead.
 //
 // Parameters:
-//	- `instanceName`
-//	- `limit`: Maximum number of items returned by a single call
-//	- `organizationName`
-//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
-//	- `projectName`
-//	- `sortBy`
+//   - `instanceName`
+//   - `limit`: Maximum number of items returned by a single call
+//   - `organizationName`
+//   - `pageToken`: Token returned by previous call to retrieve the subsequent page
+//   - `projectName`
+//   - `sortBy`
 func (c *Client) InstanceNetworkInterfaceList(limit int, pageToken string, sortBy NameSortMode, instanceName Name, organizationName Name, projectName Name) (*NetworkInterfaceResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/network-interfaces"
@@ -3207,10 +3207,10 @@ func (c *Client) InstanceNetworkInterfaceList(limit int, pageToken string, sortB
 // This method returns all the pages at once.
 //
 // Parameters:
-//	- `instanceName`
-//	- `organizationName`
-//	- `projectName`
-//	- `sortBy`
+//   - `instanceName`
+//   - `organizationName`
+//   - `projectName`
+//   - `sortBy`
 func (c *Client) InstanceNetworkInterfaceListAllPages(sortBy NameSortMode, instanceName Name, organizationName Name, projectName Name) (*[]NetworkInterface, error) {
 
 	var allPages []NetworkInterface
@@ -3232,9 +3232,9 @@ func (c *Client) InstanceNetworkInterfaceListAllPages(sortBy NameSortMode, insta
 } // InstanceNetworkInterfaceCreate: Create a network interface
 //
 // Parameters:
-//	- `instanceName`
-//	- `organizationName`
-//	- `projectName`
+//   - `instanceName`
+//   - `organizationName`
+//   - `projectName`
 func (c *Client) InstanceNetworkInterfaceCreate(instanceName Name, organizationName Name, projectName Name, j *NetworkInterfaceCreate) (*NetworkInterface, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/network-interfaces"
@@ -3282,10 +3282,10 @@ func (c *Client) InstanceNetworkInterfaceCreate(instanceName Name, organizationN
 // InstanceNetworkInterfaceView: Fetch a network interface
 //
 // Parameters:
-//	- `instanceName`
-//	- `interfaceName`
-//	- `organizationName`
-//	- `projectName`
+//   - `instanceName`
+//   - `interfaceName`
+//   - `organizationName`
+//   - `projectName`
 func (c *Client) InstanceNetworkInterfaceView(instanceName Name, interfaceName Name, organizationName Name, projectName Name) (*NetworkInterface, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/network-interfaces/{{.interface_name}}"
@@ -3329,10 +3329,10 @@ func (c *Client) InstanceNetworkInterfaceView(instanceName Name, interfaceName N
 // InstanceNetworkInterfaceUpdate: Update a network interface
 //
 // Parameters:
-//	- `instanceName`
-//	- `interfaceName`
-//	- `organizationName`
-//	- `projectName`
+//   - `instanceName`
+//   - `interfaceName`
+//   - `organizationName`
+//   - `projectName`
 func (c *Client) InstanceNetworkInterfaceUpdate(instanceName Name, interfaceName Name, organizationName Name, projectName Name, j *NetworkInterfaceUpdate) (*NetworkInterface, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/network-interfaces/{{.interface_name}}"
@@ -3383,10 +3383,10 @@ func (c *Client) InstanceNetworkInterfaceUpdate(instanceName Name, interfaceName
 // Note that the primary interface for an instance cannot be deleted if there are any secondary interfaces. A new primary interface must be designated first. The primary interface can be deleted if there are no secondary interfaces.
 //
 // Parameters:
-//	- `instanceName`
-//	- `interfaceName`
-//	- `organizationName`
-//	- `projectName`
+//   - `instanceName`
+//   - `interfaceName`
+//   - `organizationName`
+//   - `projectName`
 func (c *Client) InstanceNetworkInterfaceDelete(instanceName Name, interfaceName Name, organizationName Name, projectName Name) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/network-interfaces/{{.interface_name}}"
@@ -3422,9 +3422,9 @@ func (c *Client) InstanceNetworkInterfaceDelete(instanceName Name, interfaceName
 // InstanceReboot: Reboot an instance
 //
 // Parameters:
-//	- `instanceName`
-//	- `organizationName`
-//	- `projectName`
+//   - `instanceName`
+//   - `organizationName`
+//   - `projectName`
 func (c *Client) InstanceReboot(instanceName Name, organizationName Name, projectName Name) (*Instance, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/reboot"
@@ -3467,12 +3467,12 @@ func (c *Client) InstanceReboot(instanceName Name, organizationName Name, projec
 // InstanceSerialConsole: Fetch an instance's serial console
 //
 // Parameters:
-//	- `fromStart`: Character index in the serial buffer from which to read, counting the bytes output since instance start. If this is not provided, `most_recent` must be provided, and if this *is* provided, `most_recent` must *not* be provided.
-//	- `instanceName`
-//	- `maxBytes`: Maximum number of bytes of buffered serial console contents to return. If the requested range runs to the end of the available buffer, the data returned will be shorter than `max_bytes`.
-//	- `mostRecent`: Character index in the serial buffer from which to read, counting *backward* from the most recently buffered data retrieved from the instance. (See note on `from_start` about mutual exclusivity)
-//	- `organizationName`
-//	- `projectName`
+//   - `fromStart`: Character index in the serial buffer from which to read, counting the bytes output since instance start. If this is not provided, `most_recent` must be provided, and if this *is* provided, `most_recent` must *not* be provided.
+//   - `instanceName`
+//   - `maxBytes`: Maximum number of bytes of buffered serial console contents to return. If the requested range runs to the end of the available buffer, the data returned will be shorter than `max_bytes`.
+//   - `mostRecent`: Character index in the serial buffer from which to read, counting *backward* from the most recently buffered data retrieved from the instance. (See note on `from_start` about mutual exclusivity)
+//   - `organizationName`
+//   - `projectName`
 func (c *Client) InstanceSerialConsole(instanceName Name, organizationName Name, projectName Name, fromStart int, maxBytes int, mostRecent int) (*InstanceSerialConsoleData, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/serial-console"
@@ -3518,9 +3518,9 @@ func (c *Client) InstanceSerialConsole(instanceName Name, organizationName Name,
 // InstanceStart: Boot an instance
 //
 // Parameters:
-//	- `instanceName`
-//	- `organizationName`
-//	- `projectName`
+//   - `instanceName`
+//   - `organizationName`
+//   - `projectName`
 func (c *Client) InstanceStart(instanceName Name, organizationName Name, projectName Name) (*Instance, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/start"
@@ -3563,9 +3563,9 @@ func (c *Client) InstanceStart(instanceName Name, organizationName Name, project
 // InstanceStop: Halt an instance
 //
 // Parameters:
-//	- `instanceName`
-//	- `organizationName`
-//	- `projectName`
+//   - `instanceName`
+//   - `organizationName`
+//   - `projectName`
 func (c *Client) InstanceStop(instanceName Name, organizationName Name, projectName Name) (*Instance, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/instances/{{.instance_name}}/stop"
@@ -3608,8 +3608,8 @@ func (c *Client) InstanceStop(instanceName Name, organizationName Name, projectN
 // ProjectPolicyView: Fetch a project's IAM policy
 //
 // Parameters:
-//	- `organizationName`: The organization's unique name.
-//	- `projectName`: The project's unique name within the organization.
+//   - `organizationName`: The organization's unique name.
+//   - `projectName`: The project's unique name within the organization.
 func (c *Client) ProjectPolicyView(organizationName Name, projectName Name) (*ProjectRolePolicy, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/policy"
@@ -3651,8 +3651,8 @@ func (c *Client) ProjectPolicyView(organizationName Name, projectName Name) (*Pr
 // ProjectPolicyUpdate: Update a project's IAM policy
 //
 // Parameters:
-//	- `organizationName`: The organization's unique name.
-//	- `projectName`: The project's unique name within the organization.
+//   - `organizationName`: The organization's unique name.
+//   - `projectName`: The project's unique name within the organization.
 func (c *Client) ProjectPolicyUpdate(organizationName Name, projectName Name, j *ProjectRolePolicy) (*ProjectRolePolicy, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/policy"
@@ -3701,11 +3701,11 @@ func (c *Client) ProjectPolicyUpdate(organizationName Name, projectName Name, j 
 // To iterate over all pages, use the `SnapshotListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`: Maximum number of items returned by a single call
-//	- `organizationName`: The organization's unique name.
-//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
-//	- `projectName`: The project's unique name within the organization.
-//	- `sortBy`
+//   - `limit`: Maximum number of items returned by a single call
+//   - `organizationName`: The organization's unique name.
+//   - `pageToken`: Token returned by previous call to retrieve the subsequent page
+//   - `projectName`: The project's unique name within the organization.
+//   - `sortBy`
 func (c *Client) SnapshotList(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name) (*SnapshotResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/snapshots"
@@ -3753,9 +3753,9 @@ func (c *Client) SnapshotList(limit int, pageToken string, sortBy NameSortMode, 
 // This method returns all the pages at once.
 //
 // Parameters:
-//	- `organizationName`: The organization's unique name.
-//	- `projectName`: The project's unique name within the organization.
-//	- `sortBy`
+//   - `organizationName`: The organization's unique name.
+//   - `projectName`: The project's unique name within the organization.
+//   - `sortBy`
 func (c *Client) SnapshotListAllPages(sortBy NameSortMode, organizationName Name, projectName Name) (*[]Snapshot, error) {
 
 	var allPages []Snapshot
@@ -3779,8 +3779,8 @@ func (c *Client) SnapshotListAllPages(sortBy NameSortMode, organizationName Name
 // Creates a point-in-time snapshot from a disk.
 //
 // Parameters:
-//	- `organizationName`: The organization's unique name.
-//	- `projectName`: The project's unique name within the organization.
+//   - `organizationName`: The organization's unique name.
+//   - `projectName`: The project's unique name within the organization.
 func (c *Client) SnapshotCreate(organizationName Name, projectName Name, j *SnapshotCreate) (*Snapshot, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/snapshots"
@@ -3827,9 +3827,9 @@ func (c *Client) SnapshotCreate(organizationName Name, projectName Name, j *Snap
 // SnapshotView: Fetch a snapshot
 //
 // Parameters:
-//	- `organizationName`
-//	- `projectName`
-//	- `snapshotName`
+//   - `organizationName`
+//   - `projectName`
+//   - `snapshotName`
 func (c *Client) SnapshotView(organizationName Name, projectName Name, snapshotName Name) (*Snapshot, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/snapshots/{{.snapshot_name}}"
@@ -3872,9 +3872,9 @@ func (c *Client) SnapshotView(organizationName Name, projectName Name, snapshotN
 // SnapshotDelete: Delete a snapshot
 //
 // Parameters:
-//	- `organizationName`
-//	- `projectName`
-//	- `snapshotName`
+//   - `organizationName`
+//   - `projectName`
+//   - `snapshotName`
 func (c *Client) SnapshotDelete(organizationName Name, projectName Name, snapshotName Name) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/snapshots/{{.snapshot_name}}"
@@ -3911,11 +3911,11 @@ func (c *Client) SnapshotDelete(organizationName Name, projectName Name, snapsho
 // To iterate over all pages, use the `VpcListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`: Maximum number of items returned by a single call
-//	- `organizationName`: The organization's unique name.
-//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
-//	- `projectName`: The project's unique name within the organization.
-//	- `sortBy`
+//   - `limit`: Maximum number of items returned by a single call
+//   - `organizationName`: The organization's unique name.
+//   - `pageToken`: Token returned by previous call to retrieve the subsequent page
+//   - `projectName`: The project's unique name within the organization.
+//   - `sortBy`
 func (c *Client) VpcList(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name) (*VpcResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs"
@@ -3963,9 +3963,9 @@ func (c *Client) VpcList(limit int, pageToken string, sortBy NameSortMode, organ
 // This method returns all the pages at once.
 //
 // Parameters:
-//	- `organizationName`: The organization's unique name.
-//	- `projectName`: The project's unique name within the organization.
-//	- `sortBy`
+//   - `organizationName`: The organization's unique name.
+//   - `projectName`: The project's unique name within the organization.
+//   - `sortBy`
 func (c *Client) VpcListAllPages(sortBy NameSortMode, organizationName Name, projectName Name) (*[]Vpc, error) {
 
 	var allPages []Vpc
@@ -3987,8 +3987,8 @@ func (c *Client) VpcListAllPages(sortBy NameSortMode, organizationName Name, pro
 } // VpcCreate: Create a VPC
 //
 // Parameters:
-//	- `organizationName`: The organization's unique name.
-//	- `projectName`: The project's unique name within the organization.
+//   - `organizationName`: The organization's unique name.
+//   - `projectName`: The project's unique name within the organization.
 func (c *Client) VpcCreate(organizationName Name, projectName Name, j *VpcCreate) (*Vpc, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs"
@@ -4035,9 +4035,9 @@ func (c *Client) VpcCreate(organizationName Name, projectName Name, j *VpcCreate
 // VpcView: Fetch a VPC
 //
 // Parameters:
-//	- `organizationName`
-//	- `projectName`
-//	- `vpcName`
+//   - `organizationName`
+//   - `projectName`
+//   - `vpcName`
 func (c *Client) VpcView(organizationName Name, projectName Name, vpcName Name) (*Vpc, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}"
@@ -4080,9 +4080,9 @@ func (c *Client) VpcView(organizationName Name, projectName Name, vpcName Name) 
 // VpcUpdate: Update a VPC
 //
 // Parameters:
-//	- `organizationName`
-//	- `projectName`
-//	- `vpcName`
+//   - `organizationName`
+//   - `projectName`
+//   - `vpcName`
 func (c *Client) VpcUpdate(organizationName Name, projectName Name, vpcName Name, j *VpcUpdate) (*Vpc, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}"
@@ -4130,9 +4130,9 @@ func (c *Client) VpcUpdate(organizationName Name, projectName Name, vpcName Name
 // VpcDelete: Delete a VPC
 //
 // Parameters:
-//	- `organizationName`
-//	- `projectName`
-//	- `vpcName`
+//   - `organizationName`
+//   - `projectName`
+//   - `vpcName`
 func (c *Client) VpcDelete(organizationName Name, projectName Name, vpcName Name) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}"
@@ -4167,9 +4167,9 @@ func (c *Client) VpcDelete(organizationName Name, projectName Name, vpcName Name
 // VpcFirewallRulesView: List firewall rules
 //
 // Parameters:
-//	- `organizationName`
-//	- `projectName`
-//	- `vpcName`
+//   - `organizationName`
+//   - `projectName`
+//   - `vpcName`
 func (c *Client) VpcFirewallRulesView(organizationName Name, projectName Name, vpcName Name) (*VpcFirewallRules, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/firewall/rules"
@@ -4212,9 +4212,9 @@ func (c *Client) VpcFirewallRulesView(organizationName Name, projectName Name, v
 // VpcFirewallRulesUpdate: Replace firewall rules
 //
 // Parameters:
-//	- `organizationName`
-//	- `projectName`
-//	- `vpcName`
+//   - `organizationName`
+//   - `projectName`
+//   - `vpcName`
 func (c *Client) VpcFirewallRulesUpdate(organizationName Name, projectName Name, vpcName Name, j *VpcFirewallRuleUpdateParams) (*VpcFirewallRules, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/firewall/rules"
@@ -4264,12 +4264,12 @@ func (c *Client) VpcFirewallRulesUpdate(organizationName Name, projectName Name,
 // To iterate over all pages, use the `VpcRouterListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`: Maximum number of items returned by a single call
-//	- `organizationName`
-//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
-//	- `projectName`
-//	- `sortBy`
-//	- `vpcName`
+//   - `limit`: Maximum number of items returned by a single call
+//   - `organizationName`
+//   - `pageToken`: Token returned by previous call to retrieve the subsequent page
+//   - `projectName`
+//   - `sortBy`
+//   - `vpcName`
 func (c *Client) VpcRouterList(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*VpcRouterResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers"
@@ -4318,10 +4318,10 @@ func (c *Client) VpcRouterList(limit int, pageToken string, sortBy NameSortMode,
 // This method returns all the pages at once.
 //
 // Parameters:
-//	- `organizationName`
-//	- `projectName`
-//	- `sortBy`
-//	- `vpcName`
+//   - `organizationName`
+//   - `projectName`
+//   - `sortBy`
+//   - `vpcName`
 func (c *Client) VpcRouterListAllPages(sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*[]VpcRouter, error) {
 
 	var allPages []VpcRouter
@@ -4343,9 +4343,9 @@ func (c *Client) VpcRouterListAllPages(sortBy NameSortMode, organizationName Nam
 } // VpcRouterCreate: Create a router
 //
 // Parameters:
-//	- `organizationName`
-//	- `projectName`
-//	- `vpcName`
+//   - `organizationName`
+//   - `projectName`
+//   - `vpcName`
 func (c *Client) VpcRouterCreate(organizationName Name, projectName Name, vpcName Name, j *VpcRouterCreate) (*VpcRouter, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers"
@@ -4393,10 +4393,10 @@ func (c *Client) VpcRouterCreate(organizationName Name, projectName Name, vpcNam
 // VpcRouterView: Get a router
 //
 // Parameters:
-//	- `organizationName`
-//	- `projectName`
-//	- `routerName`
-//	- `vpcName`
+//   - `organizationName`
+//   - `projectName`
+//   - `routerName`
+//   - `vpcName`
 func (c *Client) VpcRouterView(organizationName Name, projectName Name, routerName Name, vpcName Name) (*VpcRouter, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}"
@@ -4440,10 +4440,10 @@ func (c *Client) VpcRouterView(organizationName Name, projectName Name, routerNa
 // VpcRouterUpdate: Update a router
 //
 // Parameters:
-//	- `organizationName`
-//	- `projectName`
-//	- `routerName`
-//	- `vpcName`
+//   - `organizationName`
+//   - `projectName`
+//   - `routerName`
+//   - `vpcName`
 func (c *Client) VpcRouterUpdate(organizationName Name, projectName Name, routerName Name, vpcName Name, j *VpcRouterUpdate) (*VpcRouter, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}"
@@ -4492,10 +4492,10 @@ func (c *Client) VpcRouterUpdate(organizationName Name, projectName Name, router
 // VpcRouterDelete: Delete a router
 //
 // Parameters:
-//	- `organizationName`
-//	- `projectName`
-//	- `routerName`
-//	- `vpcName`
+//   - `organizationName`
+//   - `projectName`
+//   - `routerName`
+//   - `vpcName`
 func (c *Client) VpcRouterDelete(organizationName Name, projectName Name, routerName Name, vpcName Name) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}"
@@ -4535,13 +4535,13 @@ func (c *Client) VpcRouterDelete(organizationName Name, projectName Name, router
 // To iterate over all pages, use the `VpcRouterRouteListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`: Maximum number of items returned by a single call
-//	- `organizationName`
-//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
-//	- `projectName`
-//	- `routerName`
-//	- `sortBy`
-//	- `vpcName`
+//   - `limit`: Maximum number of items returned by a single call
+//   - `organizationName`
+//   - `pageToken`: Token returned by previous call to retrieve the subsequent page
+//   - `projectName`
+//   - `routerName`
+//   - `sortBy`
+//   - `vpcName`
 func (c *Client) VpcRouterRouteList(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, routerName Name, vpcName Name) (*RouterRouteResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes"
@@ -4593,11 +4593,11 @@ func (c *Client) VpcRouterRouteList(limit int, pageToken string, sortBy NameSort
 // This method returns all the pages at once.
 //
 // Parameters:
-//	- `organizationName`
-//	- `projectName`
-//	- `routerName`
-//	- `sortBy`
-//	- `vpcName`
+//   - `organizationName`
+//   - `projectName`
+//   - `routerName`
+//   - `sortBy`
+//   - `vpcName`
 func (c *Client) VpcRouterRouteListAllPages(sortBy NameSortMode, organizationName Name, projectName Name, routerName Name, vpcName Name) (*[]RouterRoute, error) {
 
 	var allPages []RouterRoute
@@ -4619,10 +4619,10 @@ func (c *Client) VpcRouterRouteListAllPages(sortBy NameSortMode, organizationNam
 } // VpcRouterRouteCreate: Create a router
 //
 // Parameters:
-//	- `organizationName`
-//	- `projectName`
-//	- `routerName`
-//	- `vpcName`
+//   - `organizationName`
+//   - `projectName`
+//   - `routerName`
+//   - `vpcName`
 func (c *Client) VpcRouterRouteCreate(organizationName Name, projectName Name, routerName Name, vpcName Name, j *RouterRouteCreateParams) (*RouterRoute, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes"
@@ -4671,11 +4671,11 @@ func (c *Client) VpcRouterRouteCreate(organizationName Name, projectName Name, r
 // VpcRouterRouteView: Fetch a route
 //
 // Parameters:
-//	- `organizationName`
-//	- `projectName`
-//	- `routeName`
-//	- `routerName`
-//	- `vpcName`
+//   - `organizationName`
+//   - `projectName`
+//   - `routeName`
+//   - `routerName`
+//   - `vpcName`
 func (c *Client) VpcRouterRouteView(organizationName Name, projectName Name, routeName Name, routerName Name, vpcName Name) (*RouterRoute, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes/{{.route_name}}"
@@ -4720,11 +4720,11 @@ func (c *Client) VpcRouterRouteView(organizationName Name, projectName Name, rou
 // VpcRouterRouteUpdate: Update a route
 //
 // Parameters:
-//	- `organizationName`
-//	- `projectName`
-//	- `routeName`
-//	- `routerName`
-//	- `vpcName`
+//   - `organizationName`
+//   - `projectName`
+//   - `routeName`
+//   - `routerName`
+//   - `vpcName`
 func (c *Client) VpcRouterRouteUpdate(organizationName Name, projectName Name, routeName Name, routerName Name, vpcName Name, j *RouterRouteUpdateParams) (*RouterRoute, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes/{{.route_name}}"
@@ -4774,11 +4774,11 @@ func (c *Client) VpcRouterRouteUpdate(organizationName Name, projectName Name, r
 // VpcRouterRouteDelete: Delete a route
 //
 // Parameters:
-//	- `organizationName`
-//	- `projectName`
-//	- `routeName`
-//	- `routerName`
-//	- `vpcName`
+//   - `organizationName`
+//   - `projectName`
+//   - `routeName`
+//   - `routerName`
+//   - `vpcName`
 func (c *Client) VpcRouterRouteDelete(organizationName Name, projectName Name, routeName Name, routerName Name, vpcName Name) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes/{{.route_name}}"
@@ -4817,12 +4817,12 @@ func (c *Client) VpcRouterRouteDelete(organizationName Name, projectName Name, r
 // To iterate over all pages, use the `VpcSubnetListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`: Maximum number of items returned by a single call
-//	- `organizationName`
-//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
-//	- `projectName`
-//	- `sortBy`
-//	- `vpcName`
+//   - `limit`: Maximum number of items returned by a single call
+//   - `organizationName`
+//   - `pageToken`: Token returned by previous call to retrieve the subsequent page
+//   - `projectName`
+//   - `sortBy`
+//   - `vpcName`
 func (c *Client) VpcSubnetList(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*VpcSubnetResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets"
@@ -4871,10 +4871,10 @@ func (c *Client) VpcSubnetList(limit int, pageToken string, sortBy NameSortMode,
 // This method returns all the pages at once.
 //
 // Parameters:
-//	- `organizationName`
-//	- `projectName`
-//	- `sortBy`
-//	- `vpcName`
+//   - `organizationName`
+//   - `projectName`
+//   - `sortBy`
+//   - `vpcName`
 func (c *Client) VpcSubnetListAllPages(sortBy NameSortMode, organizationName Name, projectName Name, vpcName Name) (*[]VpcSubnet, error) {
 
 	var allPages []VpcSubnet
@@ -4896,9 +4896,9 @@ func (c *Client) VpcSubnetListAllPages(sortBy NameSortMode, organizationName Nam
 } // VpcSubnetCreate: Create a subnet
 //
 // Parameters:
-//	- `organizationName`
-//	- `projectName`
-//	- `vpcName`
+//   - `organizationName`
+//   - `projectName`
+//   - `vpcName`
 func (c *Client) VpcSubnetCreate(organizationName Name, projectName Name, vpcName Name, j *VpcSubnetCreate) (*VpcSubnet, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets"
@@ -4946,10 +4946,10 @@ func (c *Client) VpcSubnetCreate(organizationName Name, projectName Name, vpcNam
 // VpcSubnetView: Fetch a subnet
 //
 // Parameters:
-//	- `organizationName`
-//	- `projectName`
-//	- `subnetName`
-//	- `vpcName`
+//   - `organizationName`
+//   - `projectName`
+//   - `subnetName`
+//   - `vpcName`
 func (c *Client) VpcSubnetView(organizationName Name, projectName Name, subnetName Name, vpcName Name) (*VpcSubnet, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets/{{.subnet_name}}"
@@ -4993,10 +4993,10 @@ func (c *Client) VpcSubnetView(organizationName Name, projectName Name, subnetNa
 // VpcSubnetUpdate: Update a subnet
 //
 // Parameters:
-//	- `organizationName`
-//	- `projectName`
-//	- `subnetName`
-//	- `vpcName`
+//   - `organizationName`
+//   - `projectName`
+//   - `subnetName`
+//   - `vpcName`
 func (c *Client) VpcSubnetUpdate(organizationName Name, projectName Name, subnetName Name, vpcName Name, j *VpcSubnetUpdate) (*VpcSubnet, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets/{{.subnet_name}}"
@@ -5045,10 +5045,10 @@ func (c *Client) VpcSubnetUpdate(organizationName Name, projectName Name, subnet
 // VpcSubnetDelete: Delete a subnet
 //
 // Parameters:
-//	- `organizationName`
-//	- `projectName`
-//	- `subnetName`
-//	- `vpcName`
+//   - `organizationName`
+//   - `projectName`
+//   - `subnetName`
+//   - `vpcName`
 func (c *Client) VpcSubnetDelete(organizationName Name, projectName Name, subnetName Name, vpcName Name) error {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets/{{.subnet_name}}"
@@ -5086,13 +5086,13 @@ func (c *Client) VpcSubnetDelete(organizationName Name, projectName Name, subnet
 // To iterate over all pages, use the `VpcSubnetListNetworkInterfacesAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`: Maximum number of items returned by a single call
-//	- `organizationName`
-//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
-//	- `projectName`
-//	- `sortBy`
-//	- `subnetName`
-//	- `vpcName`
+//   - `limit`: Maximum number of items returned by a single call
+//   - `organizationName`
+//   - `pageToken`: Token returned by previous call to retrieve the subsequent page
+//   - `projectName`
+//   - `sortBy`
+//   - `subnetName`
+//   - `vpcName`
 func (c *Client) VpcSubnetListNetworkInterfaces(limit int, pageToken string, sortBy NameSortMode, organizationName Name, projectName Name, subnetName Name, vpcName Name) (*NetworkInterfaceResultsPage, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/subnets/{{.subnet_name}}/network-interfaces"
@@ -5142,11 +5142,11 @@ func (c *Client) VpcSubnetListNetworkInterfaces(limit int, pageToken string, sor
 // This method returns all the pages at once.
 //
 // Parameters:
-//	- `organizationName`
-//	- `projectName`
-//	- `sortBy`
-//	- `subnetName`
-//	- `vpcName`
+//   - `organizationName`
+//   - `projectName`
+//   - `sortBy`
+//   - `subnetName`
+//   - `vpcName`
 func (c *Client) VpcSubnetListNetworkInterfacesAllPages(sortBy NameSortMode, organizationName Name, projectName Name, subnetName Name, vpcName Name) (*[]NetworkInterface, error) {
 
 	var allPages []NetworkInterface
@@ -5239,8 +5239,8 @@ func (c *Client) PolicyUpdate(j *SiloRolePolicy) (*SiloRolePolicy, error) {
 // To iterate over all pages, use the `RoleListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`: Maximum number of items returned by a single call
-//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
+//   - `limit`: Maximum number of items returned by a single call
+//   - `pageToken`: Token returned by previous call to retrieve the subsequent page
 func (c *Client) RoleList(limit int, pageToken string) (*RoleResultsPage, error) {
 	// Create the url.
 	path := "/roles"
@@ -5304,7 +5304,7 @@ func (c *Client) RoleListAllPages() (*[]Role, error) {
 } // RoleView: Fetch a built-in role
 //
 // Parameters:
-//	- `roleName`: The built-in role's unique name.
+//   - `roleName`: The built-in role's unique name.
 func (c *Client) RoleView(roleName string) (*Role, error) {
 	// Create the url.
 	path := "/roles/{{.role_name}}"
@@ -5347,9 +5347,9 @@ func (c *Client) RoleView(roleName string) (*Role, error) {
 // To iterate over all pages, use the `SagaListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`: Maximum number of items returned by a single call
-//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
-//	- `sortBy`
+//   - `limit`: Maximum number of items returned by a single call
+//   - `pageToken`: Token returned by previous call to retrieve the subsequent page
+//   - `sortBy`
 func (c *Client) SagaList(limit int, pageToken string, sortBy IdSortMode) (*SagaResultsPage, error) {
 	// Create the url.
 	path := "/sagas"
@@ -5395,7 +5395,7 @@ func (c *Client) SagaList(limit int, pageToken string, sortBy IdSortMode) (*Saga
 // This method returns all the pages at once.
 //
 // Parameters:
-//	- `sortBy`
+//   - `sortBy`
 func (c *Client) SagaListAllPages(sortBy IdSortMode) (*[]Saga, error) {
 
 	var allPages []Saga
@@ -5417,7 +5417,7 @@ func (c *Client) SagaListAllPages(sortBy IdSortMode) (*[]Saga, error) {
 } // SagaView: Fetch a saga
 //
 // Parameters:
-//	- `sagaId`
+//   - `sagaId`
 func (c *Client) SagaView(sagaId string) (*Saga, error) {
 	// Create the url.
 	path := "/sagas/{{.saga_id}}"
@@ -5462,9 +5462,9 @@ func (c *Client) SagaView(sagaId string) (*Saga, error) {
 // To iterate over all pages, use the `SessionSshkeyListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`: Maximum number of items returned by a single call
-//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
-//	- `sortBy`
+//   - `limit`: Maximum number of items returned by a single call
+//   - `pageToken`: Token returned by previous call to retrieve the subsequent page
+//   - `sortBy`
 func (c *Client) SessionSshkeyList(limit int, pageToken string, sortBy NameSortMode) (*SshKeyResultsPage, error) {
 	// Create the url.
 	path := "/session/me/sshkeys"
@@ -5512,7 +5512,7 @@ func (c *Client) SessionSshkeyList(limit int, pageToken string, sortBy NameSortM
 // This method returns all the pages at once.
 //
 // Parameters:
-//	- `sortBy`
+//   - `sortBy`
 func (c *Client) SessionSshkeyListAllPages(sortBy NameSortMode) (*[]SshKey, error) {
 
 	var allPages []SshKey
@@ -5575,7 +5575,7 @@ func (c *Client) SessionSshkeyCreate(j *SshKeyCreate) (*SshKey, error) {
 // Fetch an SSH public key associated with the currently authenticated user.
 //
 // Parameters:
-//	- `sshKeyName`
+//   - `sshKeyName`
 func (c *Client) SessionSshkeyView(sshKeyName Name) (*SshKey, error) {
 	// Create the url.
 	path := "/session/me/sshkeys/{{.ssh_key_name}}"
@@ -5618,7 +5618,7 @@ func (c *Client) SessionSshkeyView(sshKeyName Name) (*SshKey, error) {
 // Delete an SSH public key associated with the currently authenticated user.
 //
 // Parameters:
-//	- `sshKeyName`
+//   - `sshKeyName`
 func (c *Client) SessionSshkeyDelete(sshKeyName Name) error {
 	// Create the url.
 	path := "/session/me/sshkeys/{{.ssh_key_name}}"
@@ -5655,9 +5655,9 @@ func (c *Client) SessionSshkeyDelete(sshKeyName Name) error {
 // To iterate over all pages, use the `SiloListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`: Maximum number of items returned by a single call
-//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
-//	- `sortBy`
+//   - `limit`: Maximum number of items returned by a single call
+//   - `pageToken`: Token returned by previous call to retrieve the subsequent page
+//   - `sortBy`
 func (c *Client) SiloList(limit int, pageToken string, sortBy NameOrIdSortMode) (*SiloResultsPage, error) {
 	// Create the url.
 	path := "/silos"
@@ -5705,7 +5705,7 @@ func (c *Client) SiloList(limit int, pageToken string, sortBy NameOrIdSortMode) 
 // This method returns all the pages at once.
 //
 // Parameters:
-//	- `sortBy`
+//   - `sortBy`
 func (c *Client) SiloListAllPages(sortBy NameOrIdSortMode) (*[]Silo, error) {
 
 	var allPages []Silo
@@ -5766,7 +5766,7 @@ func (c *Client) SiloCreate(j *SiloCreate) (*Silo, error) {
 // Fetch a silo by name.
 //
 // Parameters:
-//	- `siloName`: The silo's unique name.
+//   - `siloName`: The silo's unique name.
 func (c *Client) SiloView(siloName Name) (*Silo, error) {
 	// Create the url.
 	path := "/silos/{{.silo_name}}"
@@ -5809,7 +5809,7 @@ func (c *Client) SiloView(siloName Name) (*Silo, error) {
 // Delete a silo by name.
 //
 // Parameters:
-//	- `siloName`: The silo's unique name.
+//   - `siloName`: The silo's unique name.
 func (c *Client) SiloDelete(siloName Name) error {
 	// Create the url.
 	path := "/silos/{{.silo_name}}"
@@ -5844,10 +5844,10 @@ func (c *Client) SiloDelete(siloName Name) error {
 // To iterate over all pages, use the `SiloIdentityProviderListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`: Maximum number of items returned by a single call
-//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
-//	- `siloName`: The silo's unique name.
-//	- `sortBy`
+//   - `limit`: Maximum number of items returned by a single call
+//   - `pageToken`: Token returned by previous call to retrieve the subsequent page
+//   - `siloName`: The silo's unique name.
+//   - `sortBy`
 func (c *Client) SiloIdentityProviderList(siloName Name, limit int, pageToken string, sortBy NameSortMode) (*IdentityProviderResultsPage, error) {
 	// Create the url.
 	path := "/silos/{{.silo_name}}/identity-providers"
@@ -5894,8 +5894,8 @@ func (c *Client) SiloIdentityProviderList(siloName Name, limit int, pageToken st
 // This method returns all the pages at once.
 //
 // Parameters:
-//	- `siloName`: The silo's unique name.
-//	- `sortBy`
+//   - `siloName`: The silo's unique name.
+//   - `sortBy`
 func (c *Client) SiloIdentityProviderListAllPages(siloName Name, sortBy NameSortMode) (*[]IdentityProvider, error) {
 
 	var allPages []IdentityProvider
@@ -5917,7 +5917,7 @@ func (c *Client) SiloIdentityProviderListAllPages(siloName Name, sortBy NameSort
 } // SiloPolicyView: Fetch a silo's IAM policy
 //
 // Parameters:
-//	- `siloName`: The silo's unique name.
+//   - `siloName`: The silo's unique name.
 func (c *Client) SiloPolicyView(siloName Name) (*SiloRolePolicy, error) {
 	// Create the url.
 	path := "/silos/{{.silo_name}}/policy"
@@ -5958,7 +5958,7 @@ func (c *Client) SiloPolicyView(siloName Name) (*SiloRolePolicy, error) {
 // SiloPolicyUpdate: Update a silo's IAM policy
 //
 // Parameters:
-//	- `siloName`: The silo's unique name.
+//   - `siloName`: The silo's unique name.
 func (c *Client) SiloPolicyUpdate(siloName Name, j *SiloRolePolicy) (*SiloRolePolicy, error) {
 	// Create the url.
 	path := "/silos/{{.silo_name}}/policy"
@@ -6004,7 +6004,7 @@ func (c *Client) SiloPolicyUpdate(siloName Name, j *SiloRolePolicy) (*SiloRolePo
 // SiloIdentityProviderCreate: Create a SAML IDP
 //
 // Parameters:
-//	- `siloName`: The silo's unique name.
+//   - `siloName`: The silo's unique name.
 func (c *Client) SiloIdentityProviderCreate(siloName Name, j *SamlIdentityProviderCreate) (*SamlIdentityProvider, error) {
 	// Create the url.
 	path := "/silos/{{.silo_name}}/saml-identity-providers"
@@ -6050,8 +6050,8 @@ func (c *Client) SiloIdentityProviderCreate(siloName Name, j *SamlIdentityProvid
 // SiloIdentityProviderView: Fetch a SAML IDP
 //
 // Parameters:
-//	- `providerName`: The SAML identity provider's name
-//	- `siloName`: The silo's unique name.
+//   - `providerName`: The SAML identity provider's name
+//   - `siloName`: The silo's unique name.
 func (c *Client) SiloIdentityProviderView(providerName Name, siloName Name) (*SamlIdentityProvider, error) {
 	// Create the url.
 	path := "/silos/{{.silo_name}}/saml-identity-providers/{{.provider_name}}"
@@ -6164,9 +6164,9 @@ func (c *Client) SystemPolicyUpdate(j *FleetRolePolicy) (*FleetRolePolicy, error
 // To iterate over all pages, use the `SystemUserListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`: Maximum number of items returned by a single call
-//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
-//	- `sortBy`
+//   - `limit`: Maximum number of items returned by a single call
+//   - `pageToken`: Token returned by previous call to retrieve the subsequent page
+//   - `sortBy`
 func (c *Client) SystemUserList(limit int, pageToken string, sortBy NameSortMode) (*UserBuiltinResultsPage, error) {
 	// Create the url.
 	path := "/system/user"
@@ -6212,7 +6212,7 @@ func (c *Client) SystemUserList(limit int, pageToken string, sortBy NameSortMode
 // This method returns all the pages at once.
 //
 // Parameters:
-//	- `sortBy`
+//   - `sortBy`
 func (c *Client) SystemUserListAllPages(sortBy NameSortMode) (*[]UserBuiltin, error) {
 
 	var allPages []UserBuiltin
@@ -6234,7 +6234,7 @@ func (c *Client) SystemUserListAllPages(sortBy NameSortMode) (*[]UserBuiltin, er
 } // SystemUserView: Fetch a built-in user
 //
 // Parameters:
-//	- `userName`: The built-in user's unique name.
+//   - `userName`: The built-in user's unique name.
 func (c *Client) SystemUserView(userName Name) (*UserBuiltin, error) {
 	// Create the url.
 	path := "/system/user/{{.user_name}}"
@@ -6277,8 +6277,8 @@ func (c *Client) SystemUserView(userName Name) (*UserBuiltin, error) {
 // To iterate over all pages, use the `TimeseriesSchemaGetAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`: Maximum number of items returned by a single call
-//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
+//   - `limit`: Maximum number of items returned by a single call
+//   - `pageToken`: Token returned by previous call to retrieve the subsequent page
 func (c *Client) TimeseriesSchemaGet(limit int, pageToken string) (*TimeseriesSchemaResultsPage, error) {
 	// Create the url.
 	path := "/timeseries/schema"
@@ -6368,9 +6368,9 @@ func (c *Client) UpdatesRefresh() error {
 // To iterate over all pages, use the `UserListAllPages` method, instead.
 //
 // Parameters:
-//	- `limit`: Maximum number of items returned by a single call
-//	- `pageToken`: Token returned by previous call to retrieve the subsequent page
-//	- `sortBy`
+//   - `limit`: Maximum number of items returned by a single call
+//   - `pageToken`: Token returned by previous call to retrieve the subsequent page
+//   - `sortBy`
 func (c *Client) UserList(limit int, pageToken string, sortBy IdSortMode) (*UserResultsPage, error) {
 	// Create the url.
 	path := "/users"
@@ -6416,7 +6416,7 @@ func (c *Client) UserList(limit int, pageToken string, sortBy IdSortMode) (*User
 // This method returns all the pages at once.
 //
 // Parameters:
-//	- `sortBy`
+//   - `sortBy`
 func (c *Client) UserListAllPages(sortBy IdSortMode) (*[]User, error) {
 
 	var allPages []User
