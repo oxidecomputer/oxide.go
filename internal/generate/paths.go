@@ -21,7 +21,7 @@ type methodTemplate struct {
 	WrappedFunction string
 	WrappedParams   string // temporary field
 	ResponseType    string
-	SignatureParams map[string]*openapi3.Parameter
+	SignatureParams map[string]string
 	Summary         string
 	Path            string
 	PathParams      map[string]string
@@ -742,6 +742,19 @@ func descriptionTpl(fnName, ogFnName string, o *openapi3.Operation, params map[s
 func descriptionTplWrite(fnName, wrappedFn, respType, pStr, wrappedParams, path, method string, o *openapi3.Operation, params map[string]*openapi3.Parameter, isListAll, isList, hasBody bool) error {
 	r := rand.Int()
 
+	sigParams := make(map[string]string)
+	if len(params) > 0 {
+		keys := make([]string, 0)
+		for k := range params {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for _, name := range keys {
+			t := params[name]
+			sigParams[strcase.ToLowerCamel(name)] = t.Description
+		}
+	}
+
 	config := methodTemplate{
 		Description:     o.Description,
 		HTTPMethod:      method,
@@ -749,7 +762,7 @@ func descriptionTplWrite(fnName, wrappedFn, respType, pStr, wrappedParams, path,
 		WrappedFunction: wrappedFn,
 		WrappedParams:   wrappedParams,
 		ResponseType:    respType,
-		SignatureParams: params,
+		SignatureParams: sigParams,
 		Summary:         o.Summary,
 		ParamsString:    pStr,
 		Path:            path,
