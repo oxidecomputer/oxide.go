@@ -19,7 +19,7 @@
     if err := expandURL(req.URL, map[string]string{ {{range .PathParams}}
         {{.}}{{end}}
     }); err != nil {
-        return fmt.Errorf("expanding URL with parameters failed: %v", err)
+        return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
     }{{end}}
 
     // Send the request.
