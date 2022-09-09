@@ -30,7 +30,7 @@ type methodTemplate struct {
 	IsListAll       bool
 	HasDescription  bool
 	HasParams       bool
-	HasResponseType bool
+	HasBody         bool
 	HasSummary      bool
 }
 
@@ -206,6 +206,7 @@ func buildGetMethod(spec *openapi3.T, path string, o *openapi3.Operation, isGetA
 		params,
 		isGetAllPages,
 		isList,
+		false, // For now we'll assume all get requests don't have a request body
 	); err != nil {
 		return "", err
 	}
@@ -478,6 +479,7 @@ func writeMethod(spec *openapi3.T, method string, path string, o *openapi3.Opera
 		params,
 		isGetAllPages,
 		false,
+		o.RequestBody != nil, // If request body is not nil then it has a request body
 	); err != nil {
 		return "", err
 	}
@@ -737,7 +739,7 @@ func descriptionTpl(fnName, ogFnName string, o *openapi3.Operation, params map[s
 	return description
 }
 
-func descriptionTplWrite(fnName, wrappedFn, respType, pStr, wrappedParams, path, method string, o *openapi3.Operation, params map[string]*openapi3.Parameter, isListAll, isList bool) error {
+func descriptionTplWrite(fnName, wrappedFn, respType, pStr, wrappedParams, path, method string, o *openapi3.Operation, params map[string]*openapi3.Parameter, isListAll, isList, hasBody bool) error {
 	r := rand.Int()
 
 	config := methodTemplate{
@@ -754,7 +756,7 @@ func descriptionTplWrite(fnName, wrappedFn, respType, pStr, wrappedParams, path,
 		// PathParams: ,
 		IsList:    isList,
 		IsListAll: isListAll,
-		// HasResponseType: ,
+		HasBody:   hasBody,
 	}
 
 	if len(params) > 0 {
@@ -777,12 +779,21 @@ func descriptionTplWrite(fnName, wrappedFn, respType, pStr, wrappedParams, path,
 		if err != nil {
 			return err
 		}
+	} else if config.ResponseType == "" && config.HasBody {
+		t, err = template.ParseFiles("./templates/no_resptype_body_method.tpl", "./templates/description.tpl")
+		if err != nil {
+			return err
+		}
 	} else if config.ResponseType == "" {
 		t, err = template.ParseFiles("./templates/no_resptype_method.tpl", "./templates/description.tpl")
 		if err != nil {
 			return err
 		}
-
+	} else if config.HasBody {
+		t, err = template.ParseFiles("./templates/resptype_body_method.tpl", "./templates/description.tpl")
+		if err != nil {
+			return err
+		}
 	} else {
 		t, err = template.ParseFiles("./templates/resptype_method.tpl", "./templates/description.tpl")
 		if err != nil {
