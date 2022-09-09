@@ -24,7 +24,7 @@ type methodTemplate struct {
 	SignatureParams map[string]string
 	Summary         string
 	Path            string
-	PathParams      map[string]string
+	PathParams      []string
 	ParamsString    string //temporary field
 	IsList          bool
 	IsListAll       bool
@@ -206,7 +206,7 @@ func buildGetMethod(spec *openapi3.T, path string, o *openapi3.Operation, isGetA
 		params,
 		isGetAllPages,
 		isList,
-		false, // For now we'll assume all get requests don't have a request body
+		o.RequestBody != nil, // If request body is not nil then it has a request body
 	); err != nil {
 		return "", err
 	}
@@ -755,6 +755,31 @@ func descriptionTplWrite(fnName, wrappedFn, respType, pStr, wrappedParams, path,
 		}
 	}
 
+	pathParams := []string{}
+	if len(params) > 0 {
+		// Iterate over all the paths in the spec and write the types.
+		// We want to ensure we keep the order so the diffs don't change.
+		keys := make([]string, 0)
+		for k := range params {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for _, name := range keys {
+			p := params[name]
+			t := convertToValidGoType(name, p.Schema)
+			n := strcase.ToLowerCamel(name)
+			if t == "string" {
+				pathParams = append(pathParams, fmt.Sprintf("%q: %s,", name, n))
+			} else if t == "int" {
+				pathParams = append(pathParams, fmt.Sprintf("%q: strconv.Itoa(%s),", name, n))
+			} else if t == "*time.Time" {
+				pathParams = append(pathParams, fmt.Sprintf("%q: %s.String(),", name, n))
+			} else {
+				pathParams = append(pathParams, fmt.Sprintf("%q: string(%s),", name, n))
+			}
+		}
+	}
+
 	config := methodTemplate{
 		Description:     o.Description,
 		HTTPMethod:      method,
@@ -766,10 +791,10 @@ func descriptionTplWrite(fnName, wrappedFn, respType, pStr, wrappedParams, path,
 		Summary:         o.Summary,
 		ParamsString:    pStr,
 		Path:            path,
-		// PathParams: ,
-		IsList:    isList,
-		IsListAll: isListAll,
-		HasBody:   hasBody,
+		PathParams:      pathParams,
+		IsList:          isList,
+		IsListAll:       isListAll,
+		HasBody:         hasBody,
 	}
 
 	if len(params) > 0 {
