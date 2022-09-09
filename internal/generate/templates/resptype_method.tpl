@@ -7,14 +7,14 @@
     req, err := http.NewRequest("{{.HTTPMethod}}", uri, nil)
     if err != nil {
         return nil, fmt.Errorf("error creating request: %v", err)
-    }
+    }{{if .HasParams}}
 
     // Add the parameters to the url.
-    if err := expandURL(req.URL, map[string]string{
-        // TODO: Add path parameters
+    if err := expandURL(req.URL, map[string]string{ {{range .PathParams}}
+        {{.}}{{end}}
     }); err != nil {
         return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-    }
+    }{{end}}
 
     // Send the request.
     resp, err := c.client.Do(req)

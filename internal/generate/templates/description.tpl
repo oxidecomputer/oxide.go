@@ -7,5 +7,6 @@
 // To iterate over all pages, use the `{{.FunctionName}}AllPages` method, instead.{{end}}{{if .HasParams}}
 //
 // Parameters
-{{range $k, $v := .SignatureParams}}// - `{{$k}}` {{$v.Description}}
-{{end}}{{end}}{{end}}
+{{range $k, $v := .SignatureParams}}// - `{{$k}}` {{$v}}
+{{end}}{{else}}
+{{end}}{{end}}

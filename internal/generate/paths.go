@@ -21,16 +21,16 @@ type methodTemplate struct {
 	WrappedFunction string
 	WrappedParams   string // temporary field
 	ResponseType    string
-	SignatureParams map[string]*openapi3.Parameter
+	SignatureParams map[string]string
 	Summary         string
 	Path            string
-	PathParams      map[string]string
+	PathParams      []string
 	ParamsString    string //temporary field
 	IsList          bool
 	IsListAll       bool
 	HasDescription  bool
 	HasParams       bool
-	HasResponseType bool
+	HasBody         bool
 	HasSummary      bool
 }
 
@@ -201,10 +201,12 @@ func buildGetMethod(spec *openapi3.T, path string, o *openapi3.Operation, isGetA
 		paramsString,
 		ogDocParamsString,
 		cleanPath(path),
+		"GET",
 		o,
 		params,
 		isGetAllPages,
 		isList,
+		o.RequestBody != nil, // If request body is not nil then it has a request body
 	); err != nil {
 		return "", err
 	}
@@ -463,6 +465,25 @@ func writeMethod(spec *openapi3.T, method string, path string, o *openapi3.Opera
 
 	}
 
+	// Use little template testing function
+	// Only for development
+	if err := descriptionTplWrite(
+		fnName,
+		"",
+		respType,
+		paramsString,
+		"",
+		cleanPath(path),
+		method,
+		o,
+		params,
+		isGetAllPages,
+		false,
+		o.RequestBody != nil, // If request body is not nil then it has a request body
+	); err != nil {
+		return "", err
+	}
+
 	methodStr = methodStr + descriptionTpl(fnName, "", o, params, isGetAllPages, false)
 
 	// TODO: Add this to the description template somehow
@@ -718,24 +739,62 @@ func descriptionTpl(fnName, ogFnName string, o *openapi3.Operation, params map[s
 	return description
 }
 
-func descriptionTplWrite(fnName, wrappedFn, respType, pStr, wrappedParams, path string, o *openapi3.Operation, params map[string]*openapi3.Parameter, isListAll, isList bool) error {
+func descriptionTplWrite(fnName, wrappedFn, respType, pStr, wrappedParams, path, method string, o *openapi3.Operation, params map[string]*openapi3.Parameter, isListAll, isList, hasBody bool) error {
 	r := rand.Int()
+
+	sigParams := make(map[string]string)
+	if len(params) > 0 {
+		keys := make([]string, 0)
+		for k := range params {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for _, name := range keys {
+			t := params[name]
+			sigParams[strcase.ToLowerCamel(name)] = t.Description
+		}
+	}
+
+	pathParams := []string{}
+	if len(params) > 0 {
+		// Iterate over all the paths in the spec and write the types.
+		// We want to ensure we keep the order so the diffs don't change.
+		keys := make([]string, 0)
+		for k := range params {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for _, name := range keys {
+			p := params[name]
+			t := convertToValidGoType(name, p.Schema)
+			n := strcase.ToLowerCamel(name)
+			if t == "string" {
+				pathParams = append(pathParams, fmt.Sprintf("%q: %s,", name, n))
+			} else if t == "int" {
+				pathParams = append(pathParams, fmt.Sprintf("%q: strconv.Itoa(%s),", name, n))
+			} else if t == "*time.Time" {
+				pathParams = append(pathParams, fmt.Sprintf("%q: %s.String(),", name, n))
+			} else {
+				pathParams = append(pathParams, fmt.Sprintf("%q: string(%s),", name, n))
+			}
+		}
+	}
 
 	config := methodTemplate{
 		Description:     o.Description,
-		HTTPMethod:      "GET", // TODO: Set to a var
+		HTTPMethod:      method,
 		FunctionName:    fnName,
 		WrappedFunction: wrappedFn,
 		WrappedParams:   wrappedParams,
 		ResponseType:    respType,
-		SignatureParams: params,
+		SignatureParams: sigParams,
 		Summary:         o.Summary,
 		ParamsString:    pStr,
 		Path:            path,
-		// PathParams: ,
-		IsList:    isList,
-		IsListAll: isListAll,
-		// HasResponseType: ,
+		PathParams:      pathParams,
+		IsList:          isList,
+		IsListAll:       isListAll,
+		HasBody:         hasBody,
 	}
 
 	if len(params) > 0 {
@@ -755,6 +814,21 @@ func descriptionTplWrite(fnName, wrappedFn, respType, pStr, wrappedParams, path 
 
 	if config.IsListAll {
 		t, err = template.ParseFiles("./templates/listall_method.tpl", "./templates/description.tpl")
+		if err != nil {
+			return err
+		}
+	} else if config.ResponseType == "" && config.HasBody {
+		t, err = template.ParseFiles("./templates/no_resptype_body_method.tpl", "./templates/description.tpl")
+		if err != nil {
+			return err
+		}
+	} else if config.ResponseType == "" {
+		t, err = template.ParseFiles("./templates/no_resptype_method.tpl", "./templates/description.tpl")
+		if err != nil {
+			return err
+		}
+	} else if config.HasBody {
+		t, err = template.ParseFiles("./templates/resptype_body_method.tpl", "./templates/description.tpl")
 		if err != nil {
 			return err
 		}
