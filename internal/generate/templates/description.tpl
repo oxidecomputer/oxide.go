@@ -8,4 +8,5 @@
 //
 // Parameters
 {{range $k, $v := .SignatureParams}}// - `{{$k}}` {{$v.Description}}
-{{end}}{{end}}{{end}}
+{{end}}{{else}}
+{{end}}{{end}}

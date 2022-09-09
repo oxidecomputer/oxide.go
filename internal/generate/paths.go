@@ -201,6 +201,7 @@ func buildGetMethod(spec *openapi3.T, path string, o *openapi3.Operation, isGetA
 		paramsString,
 		ogDocParamsString,
 		cleanPath(path),
+		"GET",
 		o,
 		params,
 		isGetAllPages,
@@ -463,6 +464,24 @@ func writeMethod(spec *openapi3.T, method string, path string, o *openapi3.Opera
 
 	}
 
+	// Use little template testing function
+	// Only for development
+	if err := descriptionTplWrite(
+		fnName,
+		"",
+		respType,
+		paramsString,
+		"",
+		cleanPath(path),
+		method,
+		o,
+		params,
+		isGetAllPages,
+		false,
+	); err != nil {
+		return "", err
+	}
+
 	methodStr = methodStr + descriptionTpl(fnName, "", o, params, isGetAllPages, false)
 
 	// TODO: Add this to the description template somehow
@@ -718,12 +737,12 @@ func descriptionTpl(fnName, ogFnName string, o *openapi3.Operation, params map[s
 	return description
 }
 
-func descriptionTplWrite(fnName, wrappedFn, respType, pStr, wrappedParams, path string, o *openapi3.Operation, params map[string]*openapi3.Parameter, isListAll, isList bool) error {
+func descriptionTplWrite(fnName, wrappedFn, respType, pStr, wrappedParams, path, method string, o *openapi3.Operation, params map[string]*openapi3.Parameter, isListAll, isList bool) error {
 	r := rand.Int()
 
 	config := methodTemplate{
 		Description:     o.Description,
-		HTTPMethod:      "GET", // TODO: Set to a var
+		HTTPMethod:      method,
 		FunctionName:    fnName,
 		WrappedFunction: wrappedFn,
 		WrappedParams:   wrappedParams,
@@ -758,6 +777,12 @@ func descriptionTplWrite(fnName, wrappedFn, respType, pStr, wrappedParams, path 
 		if err != nil {
 			return err
 		}
+	} else if config.ResponseType == "" {
+		t, err = template.ParseFiles("./templates/no_resptype_method.tpl", "./templates/description.tpl")
+		if err != nil {
+			return err
+		}
+
 	} else {
 		t, err = template.ParseFiles("./templates/resptype_method.tpl", "./templates/description.tpl")
 		if err != nil {
