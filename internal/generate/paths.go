@@ -63,7 +63,7 @@ func generatePaths(file string, spec *openapi3.T) error {
 			continue
 		}
 
-		err := writePath(f, spec, path, p)
+		err := buildPath(f, spec, path, p)
 		if err != nil {
 			return err
 		}
@@ -72,52 +72,52 @@ func generatePaths(file string, spec *openapi3.T) error {
 	return nil
 }
 
-// writePath writes the given path as an http request to the given file.
-func writePath(f *os.File, spec *openapi3.T, path string, p *openapi3.PathItem) error {
+// buildPath builds the given path as an http request to the given file.
+func buildPath(f *os.File, spec *openapi3.T, path string, p *openapi3.PathItem) error {
 	if p.Get != nil {
-		err := writeMethod(f, spec, http.MethodGet, path, p.Get, false)
+		err := buildMethod(f, spec, http.MethodGet, path, p.Get, false)
 		if err != nil {
 			return err
 		}
 	}
 
 	if p.Post != nil {
-		err := writeMethod(f, spec, http.MethodPost, path, p.Post, false)
+		err := buildMethod(f, spec, http.MethodPost, path, p.Post, false)
 		if err != nil {
 			return err
 		}
 	}
 
 	if p.Put != nil {
-		err := writeMethod(f, spec, http.MethodPut, path, p.Put, false)
+		err := buildMethod(f, spec, http.MethodPut, path, p.Put, false)
 		if err != nil {
 			return err
 		}
 	}
 
 	if p.Delete != nil {
-		err := writeMethod(f, spec, http.MethodDelete, path, p.Delete, false)
+		err := buildMethod(f, spec, http.MethodDelete, path, p.Delete, false)
 		if err != nil {
 			return err
 		}
 	}
 
 	if p.Patch != nil {
-		err := writeMethod(f, spec, http.MethodPatch, path, p.Patch, false)
+		err := buildMethod(f, spec, http.MethodPatch, path, p.Patch, false)
 		if err != nil {
 			return err
 		}
 	}
 
 	if p.Head != nil {
-		err := writeMethod(f, spec, http.MethodHead, path, p.Head, false)
+		err := buildMethod(f, spec, http.MethodHead, path, p.Head, false)
 		if err != nil {
 			return err
 		}
 	}
 
 	if p.Options != nil {
-		err := writeMethod(f, spec, http.MethodOptions, path, p.Options, false)
+		err := buildMethod(f, spec, http.MethodOptions, path, p.Options, false)
 		if err != nil {
 			return err
 		}
@@ -126,7 +126,7 @@ func writePath(f *os.File, spec *openapi3.T, path string, p *openapi3.PathItem) 
 	return nil
 }
 
-func writeMethod(f *os.File, spec *openapi3.T, method string, path string, o *openapi3.Operation, isGetAllPages bool) error {
+func buildMethod(f *os.File, spec *openapi3.T, method string, path string, o *openapi3.Operation, isGetAllPages bool) error {
 	respType, pagedRespType, err := getSuccessResponseType(o, isGetAllPages)
 	if err != nil {
 		return err
@@ -158,30 +158,53 @@ func writeMethod(f *os.File, spec *openapi3.T, method string, path string, o *op
 	// end ListAll specific code
 
 	pInfo = parseRequestBody(o.RequestBody, pInfo, methodName)
+	sigParams := buildSignatureParams(pInfo.parameters)
+	pathParams := buildPathParams(pInfo.parameters)
 
-	// Use little template testing function
-	// Only for development
-	if err := writeTpl(
-		f,
-		methodName,
-		ogmethodName,
-		respType,
-		pInfo.paramsString,
-		ogDocParamsString,
-		cleanPath(path),
-		method,
-		o,
-		pInfo.parameters,
-		isGetAllPages,
-		isList,
-		o.RequestBody != nil, // If request body is not nil then it has a request body
-	); err != nil {
+	config := methodTemplate{
+		Description:     o.Description,
+		HTTPMethod:      method,
+		FunctionName:    methodName,
+		WrappedFunction: ogmethodName,
+		WrappedParams:   ogDocParamsString,
+		ResponseType:    respType,
+		SignatureParams: sigParams,
+		Summary:         o.Summary,
+		ParamsString:    pInfo.paramsString,
+		Path:            cleanPath(path),
+		PathParams:      pathParams,
+		IsList:          isList,
+		IsListAll:       isGetAllPages,
+		HasBody:         o.RequestBody != nil,
+		IsAppJSON:       true,
+		HasParams:       len(pInfo.parameters) > 0,
+		HasSummary:      o.Summary != "",
+		HasDescription:  o.Description != "",
+	}
+
+	// TODO: Handle other content types
+	if o.RequestBody != nil {
+		for mt := range o.RequestBody.Value.Content {
+			if mt != "application/json" {
+				config.IsAppJSON = false
+				break
+			}
+		}
+	}
+
+	// Presence of a "default" response means there is no response type.
+	// No response should be returned in this case
+	if o.Responses.Default() != nil {
+		config.ResponseType = ""
+	}
+
+	if err := writeTpl(f, config); err != nil {
 		return err
 	}
 
 	if pInfo.isPageResult && !isGetAllPages {
 		// Run the method again with get all pages for ListAll methods.
-		err := writeMethod(f, spec, method, path, o, true)
+		err := buildMethod(f, spec, method, path, o, true)
 		if err != nil {
 			return err
 		}
@@ -238,57 +261,7 @@ func cleanPath(path string) string {
 	return strings.Replace(path, "}", "}}", -1)
 }
 
-func writeTpl(f *os.File, methodName, wrappedFn, respType, pStr, wrappedParams, path, method string, o *openapi3.Operation, params map[string]*openapi3.Parameter, isListAll, isList, hasBody bool) error {
-	sigParams := buildSignatureParams(params)
-
-	pathParams := buildPathParams(params)
-
-	config := methodTemplate{
-		Description:     o.Description,
-		HTTPMethod:      method,
-		FunctionName:    methodName,
-		WrappedFunction: wrappedFn,
-		WrappedParams:   wrappedParams,
-		ResponseType:    respType,
-		SignatureParams: sigParams,
-		Summary:         o.Summary,
-		ParamsString:    pStr,
-		Path:            path,
-		PathParams:      pathParams,
-		IsList:          isList,
-		IsListAll:       isListAll,
-		HasBody:         hasBody,
-		IsAppJSON:       true,
-	}
-
-	// TODO: Handle other content types
-	if o.RequestBody != nil {
-		for mt := range o.RequestBody.Value.Content {
-			if mt != "application/json" {
-				config.IsAppJSON = false
-				break
-			}
-		}
-	}
-
-	if len(params) > 0 {
-		config.HasParams = true
-	}
-
-	if o.Summary != "" {
-		config.HasSummary = true
-	}
-
-	if o.Description != "" {
-		config.HasDescription = true
-	}
-
-	// Presence of a "default" response means there is no response type.
-	// No response should be returned in this case
-	if o.Responses.Default() != nil {
-		config.ResponseType = ""
-	}
-
+func writeTpl(f *os.File, config methodTemplate) error {
 	var t *template.Template
 	var err error
 
