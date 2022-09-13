@@ -239,43 +239,9 @@ func cleanPath(path string) string {
 }
 
 func writeTpl(f *os.File, methodName, wrappedFn, respType, pStr, wrappedParams, path, method string, o *openapi3.Operation, params map[string]*openapi3.Parameter, isListAll, isList, hasBody bool) error {
-	sigParams := make(map[string]string)
-	if len(params) > 0 {
-		keys := make([]string, 0)
-		for k := range params {
-			keys = append(keys, k)
-		}
-		sort.Strings(keys)
-		for _, name := range keys {
-			t := params[name]
-			sigParams[strcase.ToLowerCamel(name)] = t.Description
-		}
-	}
+	sigParams := buildSignatureParams(params)
 
-	pathParams := make([]string, 0)
-	if len(params) > 0 {
-		// Iterate over all the paths in the spec and write the types.
-		// We want to ensure we keep the order so the diffs don't change.
-		keys := make([]string, 0)
-		for k := range params {
-			keys = append(keys, k)
-		}
-		sort.Strings(keys)
-		for _, name := range keys {
-			p := params[name]
-			t := convertToValidGoType(name, p.Schema)
-			n := strcase.ToLowerCamel(name)
-			if t == "string" {
-				pathParams = append(pathParams, fmt.Sprintf("%q: %s,", name, n))
-			} else if t == "int" {
-				pathParams = append(pathParams, fmt.Sprintf("%q: strconv.Itoa(%s),", name, n))
-			} else if t == "*time.Time" {
-				pathParams = append(pathParams, fmt.Sprintf("%q: %s.String(),", name, n))
-			} else {
-				pathParams = append(pathParams, fmt.Sprintf("%q: string(%s),", name, n))
-			}
-		}
-	}
+	pathParams := buildPathParams(params)
 
 	config := methodTemplate{
 		Description:     o.Description,
@@ -359,6 +325,50 @@ func writeTpl(f *os.File, methodName, wrappedFn, respType, pStr, wrappedParams, 
 	}
 
 	return nil
+}
+
+func buildSignatureParams(params map[string]*openapi3.Parameter) map[string]string {
+	sigParams := make(map[string]string)
+	if len(params) > 0 {
+		keys := make([]string, 0)
+		for k := range params {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for _, name := range keys {
+			t := params[name]
+			sigParams[strcase.ToLowerCamel(name)] = t.Description
+		}
+	}
+	return sigParams
+}
+
+func buildPathParams(params map[string]*openapi3.Parameter) []string {
+	pathParams := make([]string, 0)
+	if len(params) > 0 {
+		// Iterate over all the paths in the spec and write the types.
+		// We want to ensure we keep the order so the diffs don't change.
+		keys := make([]string, 0)
+		for k := range params {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for _, name := range keys {
+			p := params[name]
+			t := convertToValidGoType(name, p.Schema)
+			n := strcase.ToLowerCamel(name)
+			if t == "string" {
+				pathParams = append(pathParams, fmt.Sprintf("%q: %s,", name, n))
+			} else if t == "int" {
+				pathParams = append(pathParams, fmt.Sprintf("%q: strconv.Itoa(%s),", name, n))
+			} else if t == "*time.Time" {
+				pathParams = append(pathParams, fmt.Sprintf("%q: %s.String(),", name, n))
+			} else {
+				pathParams = append(pathParams, fmt.Sprintf("%q: string(%s),", name, n))
+			}
+		}
+	}
+	return pathParams
 }
 
 func parseParams(specParams openapi3.Parameters, method string) paramsInfo {
