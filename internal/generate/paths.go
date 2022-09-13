@@ -84,7 +84,7 @@ func generatePaths(file string, spec *openapi3.T) error {
 func writePath(spec *openapi3.T, path string, p *openapi3.PathItem) (string, error) {
 	var pathStr string
 	if p.Get != nil {
-		str, err := buildGetMethod(spec, path, p.Get, false)
+		str, err := writeMethod(spec, http.MethodGet, path, p.Get, false)
 		if err != nil {
 			return "", err
 		}
@@ -142,103 +142,8 @@ func writePath(spec *openapi3.T, path string, p *openapi3.PathItem) (string, err
 	return pathStr, nil
 }
 
-func buildGetMethod(spec *openapi3.T, path string, o *openapi3.Operation, isGetAllPages bool) (string, error) {
-	respType, pagedRespType, err := getSuccessResponseType(o, isGetAllPages)
-	if err != nil {
-		return "", err
-	}
-
-	if len(o.Tags) == 0 {
-		fmt.Printf("[WARN] TODO: skipping operation %q, since it has no tag\n", o.OperationID)
-		return "", nil
-	}
-	tag := strcase.ToCamel(o.Tags[0])
-
-	if tag == "Hidden" {
-		// return early.
-		return "", nil
-	}
-
-	fnName := strcase.ToCamel(o.OperationID)
-
-	pageResult := false
-
-	// Parse the parameters.
-	params := map[string]*openapi3.Parameter{}
-	paramsString := ""
-	docParamsString := ""
-	for index, p := range o.Parameters {
-		if p.Ref != "" {
-			fmt.Printf("[WARN] TODO: skipping parameter for %q, since it is a reference\n", p.Value.Name)
-			continue
-		}
-
-		paramName := strcase.ToLowerCamel(p.Value.Name)
-
-		// Check if we have a page result.
-		if isPageParam(paramName) {
-			pageResult = true
-		}
-
-		params[p.Value.Name] = p.Value
-		paramsString += fmt.Sprintf("%s %s, ", paramName, convertToValidGoType(p.Value.Name, p.Value.Schema))
-		if index == len(o.Parameters)-1 {
-			docParamsString += paramName
-		} else {
-			docParamsString += fmt.Sprintf("%s, ", paramName)
-		}
-	}
-
-	if pageResult && isGetAllPages && len(pagedRespType) > 0 {
-		respType = pagedRespType
-	}
-
-	ogFnName := fnName
-	ogDocParamsString := docParamsString
-	if isGetAllPages {
-		fnName += "AllPages"
-		paramsString = strings.TrimSpace(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(paramsString, "pageToken string", ""), "limit int", ""), ", ,", ""))
-		delete(params, "page_token")
-		delete(params, "limit")
-	}
-
-	isList := pageResult && !isGetAllPages
-
-	// Use little template testing function
-	// Only for development
-	tmpPath := cleanPath(path)
-	if err := descriptionTplWrite(
-		fnName,
-		ogFnName,
-		respType,
-		paramsString,
-		ogDocParamsString,
-		// TODO: Something weird happens with ip-pools path
-		tmpPath,
-		"GET",
-		o,
-		params,
-		isGetAllPages,
-		isList,
-		o.RequestBody != nil, // If request body is not nil then it has a request body
-
-	); err != nil {
-		return "", err
-	}
-
-	if pageResult && !isGetAllPages {
-		// Run the method again with get all pages.
-		_, err := buildGetMethod(spec, path, o, true)
-		if err != nil {
-			return "", err
-		}
-	}
-
-	return "", nil
-}
-
 func writeMethod(spec *openapi3.T, method string, path string, o *openapi3.Operation, isGetAllPages bool) (string, error) {
-	respType, _, err := getSuccessResponseType(o, isGetAllPages)
+	respType, pagedRespType, err := getSuccessResponseType(o, isGetAllPages)
 	if err != nil {
 		return "", err
 	}
@@ -284,6 +189,23 @@ func writeMethod(spec *openapi3.T, method string, path string, o *openapi3.Opera
 		}
 	}
 
+	// Beginning GET specific code
+	if pageResult && isGetAllPages && len(pagedRespType) > 0 {
+		respType = pagedRespType
+	}
+
+	ogFnName := fnName
+	ogDocParamsString := docParamsString
+	if isGetAllPages {
+		fnName += "AllPages"
+		paramsString = strings.TrimSpace(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(paramsString, "pageToken string", ""), "limit int", ""), ", ,", ""))
+		delete(params, "page_token")
+		delete(params, "limit")
+	}
+
+	isList := pageResult && !isGetAllPages
+	// end GET specific code
+
 	// Parse the request body.
 	reqBodyParam := "nil"
 	reqBodyDescription := ""
@@ -324,16 +246,16 @@ func writeMethod(spec *openapi3.T, method string, path string, o *openapi3.Opera
 	// Only for development
 	if err := descriptionTplWrite(
 		fnName,
-		"",
+		ogFnName,
 		respType,
 		paramsString,
-		"",
+		ogDocParamsString,
 		cleanPath(path),
 		method,
 		o,
 		params,
 		isGetAllPages,
-		false,
+		isList,
 		o.RequestBody != nil, // If request body is not nil then it has a request body
 	); err != nil {
 		return "", err
