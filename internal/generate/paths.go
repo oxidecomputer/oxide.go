@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
 	"net/http"
 	"os"
 	"sort"
@@ -34,6 +33,8 @@ type methodTemplate struct {
 	HasSummary      bool
 }
 
+var tmpGenFile *os.File
+
 // Generate the paths.go file.
 func generatePaths(file string, spec *openapi3.T) error {
 	f, err := openGeneratedFile(file)
@@ -41,6 +42,18 @@ func generatePaths(file string, spec *openapi3.T) error {
 		return err
 	}
 	defer f.Close()
+
+	// TODO: Remove when swap is over
+	// create temp file for swapping over generation to use templates
+	//r := rand.Int()
+	tmpFile := "./test_utils/tpl_method" //+ fmt.Sprint(r)
+	tf, err := os.OpenFile(tmpFile, os.O_WRONLY|os.O_APPEND, 0644)
+	if err != nil {
+		return err
+	}
+	defer tf.Close()
+	tmpGenFile = tf
+	// END of temp file
 
 	// Iterate over all the paths in the spec and write the types.
 	// We want to ensure we keep the order so the diffs don't look like shit.
@@ -194,13 +207,15 @@ func buildGetMethod(spec *openapi3.T, path string, o *openapi3.Operation, isGetA
 
 	// Use little template testing function
 	// Only for development
+	tmpPath := cleanPath(path)
 	if err := descriptionTplWrite(
 		fnName,
 		ogFnName,
 		respType,
 		paramsString,
 		ogDocParamsString,
-		cleanPath(path),
+		// TODO: Something weird happens with ip-pools path
+		tmpPath,
 		"GET",
 		o,
 		params,
@@ -740,7 +755,7 @@ func descriptionTpl(fnName, ogFnName string, o *openapi3.Operation, params map[s
 }
 
 func descriptionTplWrite(fnName, wrappedFn, respType, pStr, wrappedParams, path, method string, o *openapi3.Operation, params map[string]*openapi3.Parameter, isListAll, isList, hasBody bool) error {
-	r := rand.Int()
+	//r := rand.Int()
 
 	sigParams := make(map[string]string)
 	if len(params) > 0 {
@@ -839,13 +854,16 @@ func descriptionTplWrite(fnName, wrappedFn, respType, pStr, wrappedParams, path,
 		}
 	}
 
-	file := "./test_utils/tpl_method" + fmt.Sprint(r)
-	f, err := os.Create(file)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-	err = t.Execute(f, config)
+	// Prints out an extra final IPPools thing in the end I DONT KNWO WHYYYY?????
+
+	//	file := "./test_utils/tpl_method" + fmt.Sprint(r)
+	//	f, err := os.Create(file)
+	//	if err != nil {
+	//		return err
+	//	}
+	//	defer f.Close()
+	//	err = t.Execute(f, config)
+	err = t.Execute(tmpGenFile, config)
 	if err != nil {
 		return err
 	}
