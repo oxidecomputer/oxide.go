@@ -77,7 +77,7 @@ func generatePaths(file string, spec *openapi3.T) error {
 			continue
 		}
 
-		_, err := writePath(spec, path, p)
+		err := writePath(spec, path, p)
 		if err != nil {
 			return err
 		}
@@ -88,76 +88,68 @@ func generatePaths(file string, spec *openapi3.T) error {
 }
 
 // writePath writes the given path as an http request to the given file.
-func writePath(spec *openapi3.T, path string, p *openapi3.PathItem) (string, error) {
-	var pathStr string
+func writePath(spec *openapi3.T, path string, p *openapi3.PathItem) error {
 	if p.Get != nil {
-		str, err := writeMethod(spec, http.MethodGet, path, p.Get, false)
+		err := writeMethod(spec, http.MethodGet, path, p.Get, false)
 		if err != nil {
-			return "", err
+			return err
 		}
-		pathStr = pathStr + fmt.Sprint(str)
 	}
 
 	if p.Post != nil {
-		str, err := writeMethod(spec, http.MethodPost, path, p.Post, false)
+		err := writeMethod(spec, http.MethodPost, path, p.Post, false)
 		if err != nil {
-			return "", err
+			return err
 		}
-		pathStr = pathStr + fmt.Sprint(str)
 	}
 
 	if p.Put != nil {
-		str, err := writeMethod(spec, http.MethodPut, path, p.Put, false)
+		err := writeMethod(spec, http.MethodPut, path, p.Put, false)
 		if err != nil {
-			return "", err
+			return err
 		}
-		pathStr = pathStr + fmt.Sprint(str)
 	}
 
 	if p.Delete != nil {
-		str, err := writeMethod(spec, http.MethodDelete, path, p.Delete, false)
+		err := writeMethod(spec, http.MethodDelete, path, p.Delete, false)
 		if err != nil {
-			return "", err
+			return err
 		}
-		pathStr = pathStr + fmt.Sprint(str)
 	}
 
 	if p.Patch != nil {
-		str, err := writeMethod(spec, http.MethodPatch, path, p.Patch, false)
+		err := writeMethod(spec, http.MethodPatch, path, p.Patch, false)
 		if err != nil {
-			return "", err
+			return err
 		}
-		pathStr = pathStr + fmt.Sprint(str)
 	}
 
 	if p.Head != nil {
-		str, err := writeMethod(spec, http.MethodHead, path, p.Head, false)
+		err := writeMethod(spec, http.MethodHead, path, p.Head, false)
 		if err != nil {
-			return "", err
+			return err
 		}
-		pathStr = pathStr + fmt.Sprint(str)
 	}
 
 	if p.Options != nil {
-		str, err := writeMethod(spec, http.MethodOptions, path, p.Options, false)
+		err := writeMethod(spec, http.MethodOptions, path, p.Options, false)
 		if err != nil {
-			return "", err
+			return err
 		}
-		pathStr = pathStr + fmt.Sprint(str)
 	}
 
-	return pathStr, nil
+	return nil
 }
 
-func writeMethod(spec *openapi3.T, method string, path string, o *openapi3.Operation, isGetAllPages bool) (string, error) {
+func writeMethod(spec *openapi3.T, method string, path string, o *openapi3.Operation, isGetAllPages bool) error {
 	respType, pagedRespType, err := getSuccessResponseType(o, isGetAllPages)
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	if len(o.Tags) == 0 || o.Tags[0] == "hidden" {
 		fmt.Printf("[WARN] TODO: skipping operation %q, since it has no tag or is hidden\n", o.OperationID)
-		return "", nil
+		return nil
 	}
 
 	methodName := strcase.ToCamel(o.OperationID)
@@ -198,7 +190,7 @@ func writeMethod(spec *openapi3.T, method string, path string, o *openapi3.Opera
 		isList,
 		o.RequestBody != nil, // If request body is not nil then it has a request body
 	); err != nil {
-		return "", err
+		return err
 	}
 
 	// TODO: Add this to the description template somehow
@@ -208,13 +200,13 @@ func writeMethod(spec *openapi3.T, method string, path string, o *openapi3.Opera
 
 	if pInfo.isPageResult && !isGetAllPages {
 		// Run the method again with get all pages.
-		_, err := writeMethod(spec, method, path, o, true)
+		err := writeMethod(spec, method, path, o, true)
 		if err != nil {
-			return "", err
+			return err
 		}
 	}
 
-	return "", nil
+	return nil
 }
 
 func getSuccessResponseType(o *openapi3.Operation, isGetAllPages bool) (string, string, error) {
