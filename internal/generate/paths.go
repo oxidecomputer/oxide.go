@@ -74,8 +74,7 @@ func generatePaths(file string, spec *openapi3.T) error {
 		if err != nil {
 			return err
 		}
-		// TODO: Remove, this line prints out the whole thing
-		//	fmt.Fprint(f, str)
+		// TODO: Execute template here?
 	}
 
 	return nil
@@ -144,8 +143,6 @@ func writePath(spec *openapi3.T, path string, p *openapi3.PathItem) (string, err
 }
 
 func buildGetMethod(spec *openapi3.T, path string, o *openapi3.Operation, isGetAllPages bool) (string, error) {
-	var methodStr string
-
 	respType, pagedRespType, err := getSuccessResponseType(o, isGetAllPages)
 	if err != nil {
 		return "", err
@@ -229,178 +226,18 @@ func buildGetMethod(spec *openapi3.T, path string, o *openapi3.Operation, isGetA
 		return "", err
 	}
 
-	//	// Write the description to the file.
-	//	methodStr = methodStr + descriptionTpl(fnName, ogFnName, o, params, isGetAllPages, isList)
-	//
-	//	// Write the method.
-	//
-	//	// Presence of a "default" response means there is no response type.
-	//	// No response should be returned in this case
-	//	if respType != "" && o.Responses.Default() == nil {
-	//		methodStr = methodStr + fmt.Sprintf("func (c *Client) %s(%s) (*%s, error) {\n",
-	//			fnName,
-	//			paramsString,
-	//			respType)
-	//	} else {
-	//		methodStr = methodStr + fmt.Sprintf("func (c *Client) %s(%s) (error) {\n",
-	//			fnName,
-	//			paramsString)
-	//	}
-	//
-	//	// This only applies to "ListAll" methods
-	//	if isGetAllPages {
-	//		// We want to just recursively call the method for each page.
-	//		methodStr = methodStr + fmt.Sprintf(`
-	//			var allPages %s
-	//			pageToken := ""
-	//			limit := 100
-	//			for {
-	//				page, err := c.%s(%s)
-	//				if err != nil {
-	//					return nil, err
-	//				}
-	//				allPages = append(allPages, page.Items...)
-	//				if  page.NextPage == "" || page.NextPage == pageToken {
-	//					break
-	//				}
-	//				pageToken = page.NextPage
-	//			}
-	//
-	//			return &allPages, nil
-	//		}`, pagedRespType, ogFnName, ogDocParamsString)
-	//
-	//		// Return early.
-	//		return methodStr, nil
-	//	}
-	//
-	//	// Create the url.
-	//	methodStr = methodStr + fmt.Sprintln("// Create the url.")
-	//	methodStr = methodStr + fmt.Sprintf("path := %q\n", cleanPath(path))
-	//	methodStr = methodStr + fmt.Sprintln("uri := resolveRelative(c.server, path)")
-	//
-	//	// Create the request.
-	//	methodStr = methodStr + fmt.Sprintln("// Create the request.")
-	//	methodStr = methodStr + fmt.Sprintln("req, err := http.NewRequest(\"GET\", uri, nil)")
-	//	methodStr = methodStr + fmt.Sprintln("if err != nil {")
-	//
-	//	// Presence of a "default" response means there is no response type.
-	//	// No response should be returned in this case
-	//	if respType != "" && o.Responses.Default() == nil {
-	//		r := `return nil, fmt.Errorf("error creating request: %v", err)`
-	//		methodStr = methodStr + fmt.Sprintln(r)
-	//	} else {
-	//		r := `return fmt.Errorf("error creating request: %v", err)`
-	//		methodStr = methodStr + fmt.Sprintln(r)
-	//	}
-	//	methodStr = methodStr + fmt.Sprintln("}")
-	//
-	//	// Add the parameters to the url.
-	//	if len(params) > 0 {
-	//		methodStr = methodStr + fmt.Sprintln("// Add the parameters to the url.")
-	//		methodStr = methodStr + fmt.Sprintln("if err := expandURL(req.URL, map[string]string{")
-	//
-	//		// Iterate over all the paths in the spec and write the types.
-	//		// We want to ensure we keep the order so the diffs don't look like shit.
-	//		keys := make([]string, 0)
-	//		for k := range params {
-	//			keys = append(keys, k)
-	//		}
-	//		sort.Strings(keys)
-	//		for _, name := range keys {
-	//			p := params[name]
-	//			t := convertToValidGoType(name, p.Schema)
-	//			n := strcase.ToLowerCamel(name)
-	//			if t == "string" {
-	//				methodStr = methodStr + fmt.Sprintf("	%q: %s,\n", name, n)
-	//			} else if t == "int" {
-	//				methodStr = methodStr + fmt.Sprintf("	%q: strconv.Itoa(%s),\n", name, n)
-	//			} else if t == "*time.Time" {
-	//				methodStr = methodStr + fmt.Sprintf("	%q: %s.String(),\n", name, n)
-	//			} else {
-	//				methodStr = methodStr + fmt.Sprintf("	%q: string(%s),\n", name, n)
-	//			}
-	//		}
-	//		methodStr = methodStr + fmt.Sprintln("}); err != nil {")
-	//		// Presence of a "default" response means there is no response type.
-	//		// No response should be returned in this case
-	//		if respType != "" && o.Responses.Default() == nil {
-	//			r := `return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)`
-	//			methodStr = methodStr + fmt.Sprintln(r)
-	//		} else {
-	//			r := `return fmt.Errorf("expanding URL with parameters failed: %v", err)`
-	//			methodStr = methodStr + fmt.Sprintln(r)
-	//		}
-	//		methodStr = methodStr + fmt.Sprintln("}")
-	//	}
-	//
-	//	// Send the request.
-	//	methodStr = methodStr + fmt.Sprintln("// Send the request.")
-	//	methodStr = methodStr + fmt.Sprintln("resp, err := c.client.Do(req)")
-	//	methodStr = methodStr + fmt.Sprintln("if err != nil {")
-	//
-	//	if respType != "" && o.Responses.Default() == nil {
-	//		r := `return nil, fmt.Errorf("error sending request: %v", err)`
-	//		methodStr = methodStr + fmt.Sprintln(r)
-	//	} else {
-	//		r := `return fmt.Errorf("error sending request: %v", err)`
-	//		methodStr = methodStr + fmt.Sprintln(r)
-	//	}
-	//	methodStr = methodStr + fmt.Sprintln("}")
-	//	methodStr = methodStr + fmt.Sprintln("defer resp.Body.Close()")
-	//
-	//	// Check the response if there were any errors.
-	//	methodStr = methodStr + fmt.Sprintln("// Check the response.")
-	//	methodStr = methodStr + fmt.Sprintln("if err := checkResponse(resp); err != nil {")
-	//
-	//	if respType != "" && o.Responses.Default() == nil {
-	//		methodStr = methodStr + fmt.Sprintln("return nil, err")
-	//	} else {
-	//		methodStr = methodStr + fmt.Sprintln("return err")
-	//	}
-	//	methodStr = methodStr + fmt.Sprintln("}")
-	//
-	//	if respType != "" && o.Responses.Default() == nil {
-	//		// Decode the body from the response.
-	//		methodStr = methodStr + fmt.Sprintln("// Decode the body from the response.")
-	//		methodStr = methodStr + fmt.Sprintln("if resp.Body == nil {")
-	//		methodStr = methodStr + fmt.Sprintln(`return nil, errors.New("request returned an empty body in the response")`)
-	//		methodStr = methodStr + fmt.Sprintln("}")
-	//
-	//		methodStr = methodStr + fmt.Sprintf("var body %s\n", respType)
-	//		methodStr = methodStr + fmt.Sprintln("if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {")
-	//		r := `return nil, fmt.Errorf("error decoding response body: %v", err)`
-	//		methodStr = methodStr + fmt.Sprintln(r)
-	//
-	//		methodStr = methodStr + fmt.Sprintln("}")
-	//
-	//		// Return the response.
-	//		methodStr = methodStr + fmt.Sprintln("// Return the response.")
-	//		methodStr = methodStr + fmt.Sprintln("return &body, nil")
-	//	} else {
-	//		methodStr = methodStr + fmt.Sprintln("// Return.")
-	//		methodStr = methodStr + fmt.Sprintln("return nil")
-	//	}
-	//
-	//	// Close the method.
-	//	methodStr = methodStr + fmt.Sprintln("}")
-	//	methodStr = methodStr + fmt.Sprintln("")
-
 	if pageResult && !isGetAllPages {
 		// Run the method again with get all pages.
-		str, err := buildGetMethod(spec, path, o, true)
+		_, err := buildGetMethod(spec, path, o, true)
 		if err != nil {
 			return "", err
 		}
-
-		methodStr = methodStr + str
 	}
 
-	return methodStr, nil
+	return "", nil
 }
 
 func writeMethod(spec *openapi3.T, method string, path string, o *openapi3.Operation, isGetAllPages bool) (string, error) {
-	var methodStr string
-
 	respType, _, err := getSuccessResponseType(o, isGetAllPages)
 	if err != nil {
 		return "", err
@@ -502,172 +339,20 @@ func writeMethod(spec *openapi3.T, method string, path string, o *openapi3.Opera
 		return "", err
 	}
 
-	methodStr = methodStr + descriptionTpl(fnName, "", o, params, isGetAllPages, false)
-
 	// TODO: Add this to the description template somehow
 	if reqBodyDescription != "" && reqBodyParam != "nil" {
-		methodStr = methodStr + fmt.Sprintf("//\t`%s`: %s\n", reqBodyParam, strings.ReplaceAll(reqBodyDescription, "\n", "\n// "))
+		_ = fmt.Sprintf("//\t`%s`: %s\n", reqBodyParam, strings.ReplaceAll(reqBodyDescription, "\n", "\n// "))
 	}
-	//
-	//	// Write the method.
-	//	if respType != "" && o.Responses.Default() == nil {
-	//		methodStr = methodStr + fmt.Sprintf("func (c *Client) %s(%s) (*%s, error) {\n",
-	//			fnName,
-	//			paramsString,
-	//			respType)
-	//	} else {
-	//		methodStr = methodStr + fmt.Sprintf("func (c *Client) %s(%s) (error) {\n",
-	//			fnName,
-	//			paramsString)
-	//	}
-	//
-	//	// Create the url.
-	//	methodStr = methodStr + fmt.Sprintln("// Create the url.")
-	//	methodStr = methodStr + fmt.Sprintf("path := %q\n", cleanPath(path))
-	//	methodStr = methodStr + fmt.Sprintln("uri := resolveRelative(c.server, path)")
-	//
-	// TODO: Implement this in templates
-	if o.RequestBody != nil {
-		for mt := range o.RequestBody.Value.Content {
-			// TODO: Handle other content types
-			if mt != "application/json" {
-				break
-			}
-
-			// We need to encode the request body as json.
-			methodStr = methodStr + fmt.Sprintln("// Encode the request body as json.")
-			methodStr = methodStr + fmt.Sprintln("b := new(bytes.Buffer)")
-			methodStr = methodStr + fmt.Sprintln("if err := json.NewEncoder(b).Encode(j); err != nil {")
-
-			if respType != "" {
-				r := `return nil, fmt.Errorf("encoding json body request failed: %v", err)`
-				methodStr = methodStr + fmt.Sprintln(r)
-			} else {
-				r := `return fmt.Errorf("encoding json body request failed: %v", err)`
-				methodStr = methodStr + fmt.Sprintln(r)
-			}
-
-			methodStr = methodStr + fmt.Sprintln("}")
-
-			reqBodyParam = "b"
-			break
-		}
-	}
-	//
-	//	// Create the request.
-	//	methodStr = methodStr + fmt.Sprintln("// Create the request.")
-	//	methodStr = methodStr + fmt.Sprintf("req, err := http.NewRequest(%q, uri, %s)\n", method, reqBodyParam)
-	//	methodStr = methodStr + fmt.Sprintln("if err != nil {")
-	//
-	//	if respType != "" && o.Responses.Default() == nil {
-	//		r := `return nil, fmt.Errorf("error creating request: %v", err)`
-	//		methodStr = methodStr + fmt.Sprintln(r)
-	//	} else {
-	//		r := `return fmt.Errorf("error creating request: %v", err)`
-	//		methodStr = methodStr + fmt.Sprintln(r)
-	//	}
-	//	methodStr = methodStr + fmt.Sprintln("}")
-	//
-	//	// Add the parameters to the url.
-	//	if len(params) > 0 {
-	//		methodStr = methodStr + fmt.Sprintln("// Add the parameters to the url.")
-	//		methodStr = methodStr + fmt.Sprintln("if err := expandURL(req.URL, map[string]string{")
-	//
-	//		// Iterate over all the paths in the spec and write the types.
-	//		// We want to ensure we keep the order so the diffs don't look like shit.
-	//		keys := make([]string, 0)
-	//		for k := range params {
-	//			keys = append(keys, k)
-	//		}
-	//		sort.Strings(keys)
-	//		for _, name := range keys {
-	//			p := params[name]
-	//			t := convertToValidGoType(name, p.Schema)
-	//			n := strcase.ToLowerCamel(name)
-	//			if t == "string" {
-	//				methodStr = methodStr + fmt.Sprintf("	%q: %s,\n", name, n)
-	//			} else if t == "int" {
-	//				methodStr = methodStr + fmt.Sprintf("	%q: strconv.Itoa(%s),\n", name, n)
-	//			} else if t == "*time.Time" {
-	//				methodStr = methodStr + fmt.Sprintf("	%q: %s.String(),\n", name, n)
-	//			} else {
-	//				methodStr = methodStr + fmt.Sprintf("	%q: string(%s),\n", name, n)
-	//			}
-	//		}
-	//		methodStr = methodStr + fmt.Sprintln("}); err != nil {")
-	//		if respType != "" && o.Responses.Default() == nil {
-	//			r := `return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)`
-	//			methodStr = methodStr + fmt.Sprintln(r)
-	//		} else {
-	//			r := `return fmt.Errorf("expanding URL with parameters failed: %v", err)`
-	//			methodStr = methodStr + fmt.Sprintln(r)
-	//		}
-	//		methodStr = methodStr + fmt.Sprintln("}")
-	//	}
-	//
-	//	// Send the request.
-	//	methodStr = methodStr + fmt.Sprintln("// Send the request.")
-	//	methodStr = methodStr + fmt.Sprintln("resp, err := c.client.Do(req)")
-	//	methodStr = methodStr + fmt.Sprintln("if err != nil {")
-	//
-	//	if respType != "" && o.Responses.Default() == nil {
-	//		r := `return nil, fmt.Errorf("error sending request: %v", err)`
-	//		methodStr = methodStr + fmt.Sprintln(r)
-	//	} else {
-	//		r := `return fmt.Errorf("error sending request: %v", err)`
-	//		methodStr = methodStr + fmt.Sprintln(r)
-	//	}
-	//	methodStr = methodStr + fmt.Sprintln("}")
-	//	methodStr = methodStr + fmt.Sprintln("defer resp.Body.Close()")
-	//
-	//	// Check the response if there were any errors.
-	//	methodStr = methodStr + fmt.Sprintln("// Check the response.")
-	//	methodStr = methodStr + fmt.Sprintln("if err := checkResponse(resp); err != nil {")
-	//
-	//	if respType != "" && o.Responses.Default() == nil {
-	//		methodStr = methodStr + fmt.Sprintln("return nil, err")
-	//	} else {
-	//		methodStr = methodStr + fmt.Sprintln("return err")
-	//	}
-	//	methodStr = methodStr + fmt.Sprintln("}")
-	//
-	//	if respType != "" && o.Responses.Default() == nil {
-	//		// Decode the body from the response.
-	//		methodStr = methodStr + fmt.Sprintln("// Decode the body from the response.")
-	//		methodStr = methodStr + fmt.Sprintln("if resp.Body == nil {")
-	//		methodStr = methodStr + fmt.Sprintln(`return nil, errors.New("request returned an empty body in the response")`)
-	//		methodStr = methodStr + fmt.Sprintln("}")
-	//
-	//		methodStr = methodStr + fmt.Sprintf("var body %s\n", respType)
-	//		methodStr = methodStr + fmt.Sprintln("if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {")
-	//		r := `return nil, fmt.Errorf("error decoding response body: %v", err)`
-	//		methodStr = methodStr + fmt.Sprintln(r)
-	//
-	//		methodStr = methodStr + fmt.Sprintln("}")
-	//
-	//		// Return the response.
-	//		methodStr = methodStr + fmt.Sprintln("// Return the response.")
-	//		methodStr = methodStr + fmt.Sprintln("return &body, nil")
-	//	} else {
-	//		methodStr = methodStr + fmt.Sprintln("// Return.")
-	//		methodStr = methodStr + fmt.Sprintln("return nil")
-	//	}
-	//
-	//	// Close the method.
-	//	methodStr = methodStr + fmt.Sprintln("}")
-	//	methodStr = methodStr + fmt.Sprintln("")
 
 	if pageResult && !isGetAllPages {
 		// Run the method again with get all pages.
-		str, err := writeMethod(spec, method, path, o, true)
+		_, err := writeMethod(spec, method, path, o, true)
 		if err != nil {
 			return "", err
 		}
-
-		methodStr = methodStr + str
 	}
 
-	return methodStr, nil
+	return "", nil
 }
 
 func getSuccessResponseType(o *openapi3.Operation, isGetAllPages bool) (string, string, error) {
@@ -718,49 +403,7 @@ func cleanPath(path string) string {
 	return strings.Replace(path, "}", "}}", -1)
 }
 
-func descriptionTpl(fnName, ogFnName string, o *openapi3.Operation, params map[string]*openapi3.Parameter, isListAll, isList bool) string {
-	var description string
-
-	if o.Summary != "" {
-		description = description + fmt.Sprintf("// %s: %s\n", fnName, o.Summary)
-	} else {
-		description = description + fmt.Sprintf("// %s\n", fnName)
-	}
-	if o.Description != "" {
-		description = description + fmt.Sprintln("//")
-		description = description + fmt.Sprintf("// %s\n", strings.ReplaceAll(o.Description, "\n", "\n// "))
-	}
-
-	if isListAll {
-		description = description + fmt.Sprintf("//\n// This method is a wrapper around the `%s` method.\n", ogFnName)
-		description = description + "// This method returns all the pages at once.\n"
-	} else if isList {
-		description = description + fmt.Sprintf("//\n// To iterate over all pages, use the `%sAllPages` method, instead.\n", fnName)
-	}
-
-	if len(params) > 0 {
-		description = description + "//\n// Parameters:\n"
-		keys := make([]string, 0)
-		for k := range params {
-			keys = append(keys, k)
-		}
-		sort.Strings(keys)
-		for _, name := range keys {
-			t := params[name]
-			if t.Description != "" {
-				description = description + fmt.Sprintf("//   - `%s`: %s\n", strcase.ToLowerCamel(name), strings.ReplaceAll(t.Description, "\n", "\n//      "))
-			} else {
-				description = description + fmt.Sprintf("//   - `%s`\n", strcase.ToLowerCamel(name))
-			}
-		}
-	}
-
-	return description
-}
-
 func descriptionTplWrite(fnName, wrappedFn, respType, pStr, wrappedParams, path, method string, o *openapi3.Operation, params map[string]*openapi3.Parameter, isListAll, isList, hasBody bool) error {
-	//r := rand.Int()
-
 	sigParams := make(map[string]string)
 	if len(params) > 0 {
 		keys := make([]string, 0)
@@ -774,7 +417,7 @@ func descriptionTplWrite(fnName, wrappedFn, respType, pStr, wrappedParams, path,
 		}
 	}
 
-	pathParams := []string{}
+	pathParams := make([]string, 0)
 	if len(params) > 0 {
 		// Iterate over all the paths in the spec and write the types.
 		// We want to ensure we keep the order so the diffs don't change.
@@ -875,13 +518,6 @@ func descriptionTplWrite(fnName, wrappedFn, respType, pStr, wrappedParams, path,
 		}
 	}
 
-	//	file := "./test_utils/tpl_method" + fmt.Sprint(r)
-	//	f, err := os.Create(file)
-	//	if err != nil {
-	//		return err
-	//	}
-	//	defer f.Close()
-	//	err = t.Execute(f, config)
 	err = t.Execute(tmpGenFile, config)
 	if err != nil {
 		return err
