@@ -1,13 +1,13 @@
 {{template "description" .}}func (c *Client) {{.FunctionName}}({{.ParamsString}}) (*{{.ResponseType}}, error) {
     // Create the url.
     path := "{{.Path}}"
-    uri := resolveRelative(c.server, path)
+    uri := resolveRelative(c.server, path){{if .IsAppJSON}}
 
     // Encode the request body as json.
     b := new(bytes.Buffer)
     if err := json.NewEncoder(b).Encode(j); err != nil {
         return nil, fmt.Errorf("encoding json body request failed: %v", err)
-    }
+    }{{end}}
 
     // Create the request.
     req, err := http.NewRequest("{{.HTTPMethod}}", uri, b)

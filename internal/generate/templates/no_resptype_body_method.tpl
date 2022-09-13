@@ -1,13 +1,13 @@
 {{template "description" .}}func (c *Client) {{.FunctionName}}({{.ParamsString}}) error {
     // Create the url.
     path := "{{.Path}}"
-    uri := resolveRelative(c.server, path)
+    uri := resolveRelative(c.server, path){{if .IsAppJSON}}
 
     // Encode the request body as json.
     b := new(bytes.Buffer)
     if err := json.NewEncoder(b).Encode(j); err != nil {
         return fmt.Errorf("encoding json body request failed: %v", err)
-    }
+    }{{end}}
 
     // Create the request.
     req, err := http.NewRequest("{{.HTTPMethod}}", uri, b)
@@ -17,8 +17,8 @@
 
     // Add the parameters to the url.
     if err := expandURL(req.URL, map[string]string{ {{range .PathParams}}
-        {{.}}{{end}}}
-    ); err != nil {
+        {{.}}{{end}}
+    }); err != nil {
         return fmt.Errorf("expanding URL with parameters failed: %v", err)
     }{{end}}
 
