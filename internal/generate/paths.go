@@ -41,8 +41,6 @@ type paramsInfo struct {
 	isPageResult    bool
 }
 
-var tmpGenFile *os.File
-
 // Generate the paths.go file.
 func generatePaths(file string, spec *openapi3.T) error {
 	f, err := openGeneratedFile(file)
@@ -51,20 +49,8 @@ func generatePaths(file string, spec *openapi3.T) error {
 	}
 	defer f.Close()
 
-	// TODO: Remove when swap is over
-	// create temp file for swapping over generation to use templates
-	//r := rand.Int()
-	//	tmpFile := "./test_utils/tpl_method" //+ fmt.Sprint(r)
-	//	tf, err := os.OpenFile(tmpFile, os.O_WRONLY|os.O_APPEND, 0644)
-	//	if err != nil {
-	//		return err
-	//	}
-	//	defer tf.Close()
-	tmpGenFile = f
-	// END of temp file
-
 	// Iterate over all the paths in the spec and write the types.
-	// We want to ensure we keep the order so the diffs don't look like shit.
+	// We want to ensure we keep the order.
 	keys := make([]string, 0)
 	for k := range spec.Paths {
 		keys = append(keys, k)
@@ -77,62 +63,61 @@ func generatePaths(file string, spec *openapi3.T) error {
 			continue
 		}
 
-		err := writePath(spec, path, p)
+		err := writePath(f, spec, path, p)
 		if err != nil {
 			return err
 		}
-		// TODO: Execute template here?
 	}
 
 	return nil
 }
 
 // writePath writes the given path as an http request to the given file.
-func writePath(spec *openapi3.T, path string, p *openapi3.PathItem) error {
+func writePath(f *os.File, spec *openapi3.T, path string, p *openapi3.PathItem) error {
 	if p.Get != nil {
-		err := writeMethod(spec, http.MethodGet, path, p.Get, false)
+		err := writeMethod(f, spec, http.MethodGet, path, p.Get, false)
 		if err != nil {
 			return err
 		}
 	}
 
 	if p.Post != nil {
-		err := writeMethod(spec, http.MethodPost, path, p.Post, false)
+		err := writeMethod(f, spec, http.MethodPost, path, p.Post, false)
 		if err != nil {
 			return err
 		}
 	}
 
 	if p.Put != nil {
-		err := writeMethod(spec, http.MethodPut, path, p.Put, false)
+		err := writeMethod(f, spec, http.MethodPut, path, p.Put, false)
 		if err != nil {
 			return err
 		}
 	}
 
 	if p.Delete != nil {
-		err := writeMethod(spec, http.MethodDelete, path, p.Delete, false)
+		err := writeMethod(f, spec, http.MethodDelete, path, p.Delete, false)
 		if err != nil {
 			return err
 		}
 	}
 
 	if p.Patch != nil {
-		err := writeMethod(spec, http.MethodPatch, path, p.Patch, false)
+		err := writeMethod(f, spec, http.MethodPatch, path, p.Patch, false)
 		if err != nil {
 			return err
 		}
 	}
 
 	if p.Head != nil {
-		err := writeMethod(spec, http.MethodHead, path, p.Head, false)
+		err := writeMethod(f, spec, http.MethodHead, path, p.Head, false)
 		if err != nil {
 			return err
 		}
 	}
 
 	if p.Options != nil {
-		err := writeMethod(spec, http.MethodOptions, path, p.Options, false)
+		err := writeMethod(f, spec, http.MethodOptions, path, p.Options, false)
 		if err != nil {
 			return err
 		}
@@ -141,7 +126,7 @@ func writePath(spec *openapi3.T, path string, p *openapi3.PathItem) error {
 	return nil
 }
 
-func writeMethod(spec *openapi3.T, method string, path string, o *openapi3.Operation, isGetAllPages bool) error {
+func writeMethod(f *os.File, spec *openapi3.T, method string, path string, o *openapi3.Operation, isGetAllPages bool) error {
 	respType, pagedRespType, err := getSuccessResponseType(o, isGetAllPages)
 	if err != nil {
 		return err
@@ -172,11 +157,12 @@ func writeMethod(spec *openapi3.T, method string, path string, o *openapi3.Opera
 	isList := pInfo.isPageResult && !isGetAllPages
 	// end ListAll specific code
 
-	pInfo, reqBodyParam, reqBodyDescription := parseRequestBody(o.RequestBody, pInfo, methodName)
+	pInfo = parseRequestBody(o.RequestBody, pInfo, methodName)
 
 	// Use little template testing function
 	// Only for development
-	if err := descriptionTplWrite(
+	if err := writeTpl(
+		f,
 		methodName,
 		ogmethodName,
 		respType,
@@ -193,14 +179,9 @@ func writeMethod(spec *openapi3.T, method string, path string, o *openapi3.Opera
 		return err
 	}
 
-	// TODO: Add this to the description template somehow
-	if reqBodyDescription != "" && reqBodyParam != "nil" {
-		_ = fmt.Sprintf("//\t`%s`: %s\n", reqBodyParam, strings.ReplaceAll(reqBodyDescription, "\n", "\n// "))
-	}
-
 	if pInfo.isPageResult && !isGetAllPages {
-		// Run the method again with get all pages.
-		err := writeMethod(spec, method, path, o, true)
+		// Run the method again with get all pages for ListAll methods.
+		err := writeMethod(f, spec, method, path, o, true)
 		if err != nil {
 			return err
 		}
@@ -257,7 +238,7 @@ func cleanPath(path string) string {
 	return strings.Replace(path, "}", "}}", -1)
 }
 
-func descriptionTplWrite(methodName, wrappedFn, respType, pStr, wrappedParams, path, method string, o *openapi3.Operation, params map[string]*openapi3.Parameter, isListAll, isList, hasBody bool) error {
+func writeTpl(f *os.File, methodName, wrappedFn, respType, pStr, wrappedParams, path, method string, o *openapi3.Operation, params map[string]*openapi3.Parameter, isListAll, isList, hasBody bool) error {
 	sigParams := make(map[string]string)
 	if len(params) > 0 {
 		keys := make([]string, 0)
@@ -372,7 +353,7 @@ func descriptionTplWrite(methodName, wrappedFn, respType, pStr, wrappedParams, p
 		}
 	}
 
-	err = t.Execute(tmpGenFile, config)
+	err = t.Execute(f, config)
 	if err != nil {
 		return err
 	}
@@ -407,17 +388,10 @@ func parseParams(specParams openapi3.Parameters, method string) paramsInfo {
 	return pInfo
 }
 
-func parseRequestBody(reqBody *openapi3.RequestBodyRef, pInfo paramsInfo, methodName string) (paramsInfo, string, string) {
-	reqBodyParam := "nil"
-	reqBodyDescription := ""
+//func parseRequestBody(reqBody *openapi3.RequestBodyRef, pInfo paramsInfo, methodName string) (paramsInfo, string, string) {
+func parseRequestBody(reqBody *openapi3.RequestBodyRef, pInfo paramsInfo, methodName string) paramsInfo {
 	if reqBody == nil {
-		return pInfo, reqBodyParam, reqBodyDescription
-	}
-
-	//	reqBody := o.RequestBody
-
-	if reqBody.Value.Description != "" {
-		reqBodyDescription = reqBody.Value.Description
+		return pInfo
 	}
 
 	if reqBody.Ref != "" {
@@ -427,7 +401,6 @@ func parseRequestBody(reqBody *openapi3.RequestBodyRef, pInfo paramsInfo, method
 	for mt, r := range reqBody.Value.Content {
 		if mt != "application/json" {
 			pInfo.paramsString += "b io.Reader"
-			reqBodyParam = "b"
 			break
 		}
 
@@ -439,10 +412,8 @@ func parseRequestBody(reqBody *openapi3.RequestBodyRef, pInfo paramsInfo, method
 			pInfo.docParamsString += ", "
 		}
 		pInfo.docParamsString += "body"
-
-		reqBodyParam = "j"
 		break
 	}
 
-	return pInfo, reqBodyParam, reqBodyDescription
+	return pInfo
 }
