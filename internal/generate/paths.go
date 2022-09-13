@@ -34,6 +34,13 @@ type methodTemplate struct {
 	IsAppJSON       bool
 }
 
+type paramsInfo struct {
+	parameters      map[string]*openapi3.Parameter
+	paramsString    string
+	docParamsString string
+	isPageResult    bool
+}
+
 var tmpGenFile *os.File
 
 // Generate the paths.go file.
@@ -148,112 +155,45 @@ func writeMethod(spec *openapi3.T, method string, path string, o *openapi3.Opera
 		return "", err
 	}
 
-	if len(o.Tags) == 0 {
-		fmt.Printf("[WARN] TODO: skipping operation %q, since it has no tag\n", o.OperationID)
-		return "", nil
-	}
-	tag := strcase.ToCamel(o.Tags[0])
-
-	if tag == "Hidden" {
-		// return early.
+	if len(o.Tags) == 0 || o.Tags[0] == "hidden" {
+		fmt.Printf("[WARN] TODO: skipping operation %q, since it has no tag or is hidden\n", o.OperationID)
 		return "", nil
 	}
 
-	fnName := strcase.ToCamel(o.OperationID)
+	methodName := strcase.ToCamel(o.OperationID)
+	pInfo := parseParams(o.Parameters, method)
 
-	pageResult := false
-
-	// Parse the parameters.
-	params := map[string]*openapi3.Parameter{}
-	paramsString := ""
-	docParamsString := ""
-	for index, p := range o.Parameters {
-		if p.Ref != "" {
-			fmt.Printf("[WARN] TODO: skipping parameter for %q, since it is a reference\n", p.Value.Name)
-			continue
-		}
-
-		paramName := strcase.ToLowerCamel(p.Value.Name)
-
-		// Check if we have a page result.
-		if isPageParam(paramName) && method == http.MethodGet {
-			pageResult = true
-		}
-
-		params[p.Value.Name] = p.Value
-		paramsString += fmt.Sprintf("%s %s, ", paramName, convertToValidGoType(p.Value.Name, p.Value.Schema))
-		if index == len(o.Parameters)-1 {
-			docParamsString += paramName
-		} else {
-			docParamsString += fmt.Sprintf("%s, ", paramName)
-		}
-	}
-
-	// Beginning GET specific code
-	if pageResult && isGetAllPages && len(pagedRespType) > 0 {
+	// Adapt for ListAll methods
+	if pInfo.isPageResult && isGetAllPages && len(pagedRespType) > 0 {
 		respType = pagedRespType
 	}
 
-	ogFnName := fnName
-	ogDocParamsString := docParamsString
+	ogmethodName := methodName
+	ogDocParamsString := pInfo.docParamsString
 	if isGetAllPages {
-		fnName += "AllPages"
-		paramsString = strings.TrimSpace(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(paramsString, "pageToken string", ""), "limit int", ""), ", ,", ""))
-		delete(params, "page_token")
-		delete(params, "limit")
+		methodName += "AllPages"
+		pInfo.paramsString = strings.TrimSpace(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(pInfo.paramsString, "pageToken string", ""), "limit int", ""), ", ,", ""))
+		delete(pInfo.parameters, "page_token")
+		delete(pInfo.parameters, "limit")
 	}
 
-	isList := pageResult && !isGetAllPages
-	// end GET specific code
+	isList := pInfo.isPageResult && !isGetAllPages
+	// end ListAll specific code
 
-	// Parse the request body.
-	reqBodyParam := "nil"
-	reqBodyDescription := ""
-	if o.RequestBody != nil {
-		rb := o.RequestBody
-
-		if rb.Value.Description != "" {
-			reqBodyDescription = rb.Value.Description
-		}
-
-		if rb.Ref != "" {
-			fmt.Printf("[WARN] TODO: skipping request body for %q, since it is a reference: %q\n", path, rb.Ref)
-		}
-
-		for mt, r := range rb.Value.Content {
-			if mt != "application/json" {
-				paramsString += "b io.Reader"
-				reqBodyParam = "b"
-				break
-			}
-
-			typeName := convertToValidGoType("", r.Schema)
-
-			paramsString += "j *" + typeName
-
-			if len(docParamsString) > 0 {
-				docParamsString += ", "
-			}
-			docParamsString += "body"
-
-			reqBodyParam = "j"
-			break
-		}
-
-	}
+	pInfo, reqBodyParam, reqBodyDescription := parseRequestBody(o.RequestBody, pInfo, methodName)
 
 	// Use little template testing function
 	// Only for development
 	if err := descriptionTplWrite(
-		fnName,
-		ogFnName,
+		methodName,
+		ogmethodName,
 		respType,
-		paramsString,
+		pInfo.paramsString,
 		ogDocParamsString,
 		cleanPath(path),
 		method,
 		o,
-		params,
+		pInfo.parameters,
 		isGetAllPages,
 		isList,
 		o.RequestBody != nil, // If request body is not nil then it has a request body
@@ -266,7 +206,7 @@ func writeMethod(spec *openapi3.T, method string, path string, o *openapi3.Opera
 		_ = fmt.Sprintf("//\t`%s`: %s\n", reqBodyParam, strings.ReplaceAll(reqBodyDescription, "\n", "\n// "))
 	}
 
-	if pageResult && !isGetAllPages {
+	if pInfo.isPageResult && !isGetAllPages {
 		// Run the method again with get all pages.
 		_, err := writeMethod(spec, method, path, o, true)
 		if err != nil {
@@ -325,7 +265,7 @@ func cleanPath(path string) string {
 	return strings.Replace(path, "}", "}}", -1)
 }
 
-func descriptionTplWrite(fnName, wrappedFn, respType, pStr, wrappedParams, path, method string, o *openapi3.Operation, params map[string]*openapi3.Parameter, isListAll, isList, hasBody bool) error {
+func descriptionTplWrite(methodName, wrappedFn, respType, pStr, wrappedParams, path, method string, o *openapi3.Operation, params map[string]*openapi3.Parameter, isListAll, isList, hasBody bool) error {
 	sigParams := make(map[string]string)
 	if len(params) > 0 {
 		keys := make([]string, 0)
@@ -367,7 +307,7 @@ func descriptionTplWrite(fnName, wrappedFn, respType, pStr, wrappedParams, path,
 	config := methodTemplate{
 		Description:     o.Description,
 		HTTPMethod:      method,
-		FunctionName:    fnName,
+		FunctionName:    methodName,
 		WrappedFunction: wrappedFn,
 		WrappedParams:   wrappedParams,
 		ResponseType:    respType,
@@ -446,4 +386,71 @@ func descriptionTplWrite(fnName, wrappedFn, respType, pStr, wrappedParams, path,
 	}
 
 	return nil
+}
+
+func parseParams(specParams openapi3.Parameters, method string) paramsInfo {
+	pInfo := paramsInfo{parameters: make(map[string]*openapi3.Parameter, 0)}
+	for index, p := range specParams {
+		if p.Ref != "" {
+			fmt.Printf("[WARN] TODO: skipping parameter for %q, since it is a reference\n", p.Value.Name)
+			continue
+		}
+
+		paramName := strcase.ToLowerCamel(p.Value.Name)
+
+		// Check if we have a page result.
+		if isPageParam(paramName) && method == http.MethodGet {
+			pInfo.isPageResult = true
+		}
+
+		pInfo.parameters[p.Value.Name] = p.Value
+		pInfo.paramsString += fmt.Sprintf("%s %s, ", paramName, convertToValidGoType(p.Value.Name, p.Value.Schema))
+		if index == len(specParams)-1 {
+			pInfo.docParamsString += paramName
+		} else {
+			pInfo.docParamsString += fmt.Sprintf("%s, ", paramName)
+		}
+	}
+
+	return pInfo
+}
+
+func parseRequestBody(reqBody *openapi3.RequestBodyRef, pInfo paramsInfo, methodName string) (paramsInfo, string, string) {
+	reqBodyParam := "nil"
+	reqBodyDescription := ""
+	if reqBody == nil {
+		return pInfo, reqBodyParam, reqBodyDescription
+	}
+
+	//	reqBody := o.RequestBody
+
+	if reqBody.Value.Description != "" {
+		reqBodyDescription = reqBody.Value.Description
+	}
+
+	if reqBody.Ref != "" {
+		fmt.Printf("[WARN] TODO: skipping request body for %q, since it is a reference: %q\n", methodName, reqBody.Ref)
+	}
+
+	for mt, r := range reqBody.Value.Content {
+		if mt != "application/json" {
+			pInfo.paramsString += "b io.Reader"
+			reqBodyParam = "b"
+			break
+		}
+
+		typeName := convertToValidGoType("", r.Schema)
+
+		pInfo.paramsString += "j *" + typeName
+
+		if len(pInfo.docParamsString) > 0 {
+			pInfo.docParamsString += ", "
+		}
+		pInfo.docParamsString += "body"
+
+		reqBodyParam = "j"
+		break
+	}
+
+	return pInfo, reqBodyParam, reqBodyDescription
 }
