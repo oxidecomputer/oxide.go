@@ -6,45 +6,52 @@ package oxide
 //
 // To iterate over all pages, use the `IpPoolListAllPages` method, instead.
 //
-// Parameters:
-//   - `limit`
-//   - `pageToken`
+// Parameters
+// - `limit` 
+// - `pageToken` 
 func (c *Client) IpPoolList(limit int, pageToken string, ) (*IpPoolResultsPage, error) {
-// Create the url.
-path := "/ip-pools"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("GET", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"limit": strconv.Itoa(limit),
-	"page_token": pageToken,
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body IpPoolResultsPage
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+    // Create the url.
+    path := "/ip-pools"
+    uri := resolveRelative(c.server, path)
+
+    // Create the request.
+    req, err := http.NewRequest("GET", uri, nil)
+    if err != nil {
+        return nil, fmt.Errorf("error creating request: %v", err)
+    }
+
+    // Add the parameters to the url.
+    if err := expandURL(req.URL, map[string]string{ 
+        "limit": strconv.Itoa(limit),
+        "page_token": pageToken,
+    }); err != nil {
+        return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+    }
+
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
+
+    // Check the response.
+    if err := checkResponse(resp); err != nil {
+        return nil, err
+    }
+
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
+
+    var body IpPoolResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
+
+    // Return the response.
+    return &body, nil
 }
 
 // IpPoolListAllPages
@@ -52,177 +59,204 @@ return &body, nil
 // This method is a wrapper around the `IpPoolList` method.
 // This method returns all the pages at once.
 func (c *Client) IpPoolListAllPages() (*IpPoolResultsPage, error) {
+	var allPages IpPoolResultsPage
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.IpPoolList(limit, pageToken)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == pageToken {
+			break
+		}
+		pageToken = page.NextPage
+	}
 
-			var allPages 
-			pageToken := ""
-			limit := 100
-			for {
-				page, err := c.IpPoolList(limit, pageToken)
-				if err != nil {
-					return nil, err
-				}
-				allPages = append(allPages, page.Items...)
-				if  page.NextPage == "" || page.NextPage == pageToken {
-					break
-				}
-				pageToken = page.NextPage
-			}
+	return &allPages, nil
+}
 
-			return &allPages, nil
-		}// IpPoolCreate
+// IpPoolCreate
 func (c *Client) IpPoolCreate(j *IpPoolCreate) (*IpPool, error) {
-// Create the url.
-path := "/ip-pools"
-uri := resolveRelative(c.server, path)
-// Encode the request body as json.
-b := new(bytes.Buffer)
-if err := json.NewEncoder(b).Encode(j); err != nil {
-return nil, fmt.Errorf("encoding json body request failed: %v", err)
-}
-// Create the request.
-req, err := http.NewRequest("POST", uri, b)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body IpPool
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+    // Create the url.
+    path := "/ip-pools"
+    uri := resolveRelative(c.server, path)
+
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(j); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
+
+    // Create the request.
+    req, err := http.NewRequest("POST", uri, b)
+    if err != nil {
+        return nil, fmt.Errorf("error creating request: %v", err)
+    }
+
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
+
+    // Check the response.
+    if err := checkResponse(resp); err != nil {
+        return nil, err
+    }
+
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
+
+    var body IpPool
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
+
+    // Return the response.
+    return &body, nil
 }
 
 // IpPoolView
 //
-// Parameters:
-//   - `poolName`
+// Parameters
+// - `poolName` 
 func (c *Client) IpPoolView(poolName Name, ) (*IpPool, error) {
-// Create the url.
-path := "/ip-pools{{.pool_name}}"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("GET", uri, nil)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"pool_name": string(poolName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body IpPool
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+    // Create the url.
+    path := "/ip-pools{{.pool_name}}"
+    uri := resolveRelative(c.server, path)
+
+    // Create the request.
+    req, err := http.NewRequest("GET", uri, nil)
+    if err != nil {
+        return nil, fmt.Errorf("error creating request: %v", err)
+    }
+
+    // Add the parameters to the url.
+    if err := expandURL(req.URL, map[string]string{ 
+        "pool_name": string(poolName),
+    }); err != nil {
+        return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+    }
+
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
+
+    // Check the response.
+    if err := checkResponse(resp); err != nil {
+        return nil, err
+    }
+
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
+
+    var body IpPool
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
+
+    // Return the response.
+    return &body, nil
 }
 
 // IpPoolUpdate
 //
-// Parameters:
-//   - `poolName`
+// Parameters
+// - `poolName` 
 func (c *Client) IpPoolUpdate(poolName Name, j *IpPoolUpdate) (*IpPool, error) {
-// Create the url.
-path := "/ip-pools{{.pool_name}}"
-uri := resolveRelative(c.server, path)
-// Encode the request body as json.
-b := new(bytes.Buffer)
-if err := json.NewEncoder(b).Encode(j); err != nil {
-return nil, fmt.Errorf("encoding json body request failed: %v", err)
-}
-// Create the request.
-req, err := http.NewRequest("PUT", uri, b)
-if err != nil {
-return nil, fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"pool_name": string(poolName),
-}); err != nil {
-return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return nil, fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return nil, err
-}
-// Decode the body from the response.
-if resp.Body == nil {
-return nil, errors.New("request returned an empty body in the response")
-}
-var body IpPool
-if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-return nil, fmt.Errorf("error decoding response body: %v", err)
-}
-// Return the response.
-return &body, nil
+    // Create the url.
+    path := "/ip-pools{{.pool_name}}"
+    uri := resolveRelative(c.server, path)
+
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(j); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
+
+    // Create the request.
+    req, err := http.NewRequest("PUT", uri, b)
+    if err != nil {
+        return nil, fmt.Errorf("error creating request: %v", err)
+    }
+
+    // Add the parameters to the url.
+    if err := expandURL(req.URL, map[string]string{ 
+        "pool_name": string(poolName),
+    }); err != nil {
+        return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+    }
+
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
+
+    // Check the response.
+    if err := checkResponse(resp); err != nil {
+        return nil, err
+    }
+
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
+
+    var body IpPool
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
+
+    // Return the response.
+    return &body, nil
 }
 
 // IpPoolDelete
 //
-// Parameters:
-//   - `poolName`
-func (c *Client) IpPoolDelete(poolName Name, ) (error) {
-// Create the url.
-path := "/ip-pools{{.pool_name}}"
-uri := resolveRelative(c.server, path)
-// Create the request.
-req, err := http.NewRequest("DELETE", uri, nil)
-if err != nil {
-return fmt.Errorf("error creating request: %v", err)
-}
-// Add the parameters to the url.
-if err := expandURL(req.URL, map[string]string{
-	"pool_name": string(poolName),
-}); err != nil {
-return fmt.Errorf("expanding URL with parameters failed: %v", err)
-}
-// Send the request.
-resp, err := c.client.Do(req)
-if err != nil {
-return fmt.Errorf("error sending request: %v", err)
-}
-defer resp.Body.Close()
-// Check the response.
-if err := checkResponse(resp); err != nil {
-return err
-}
-// Return.
-return nil
+// Parameters
+// - `poolName` 
+func (c *Client) IpPoolDelete(poolName Name, ) error {
+    // Create the url.
+    path := "/ip-pools{{.pool_name}}"
+    uri := resolveRelative(c.server, path)
+
+    // Create the request.
+    req, err := http.NewRequest("DELETE", uri, nil)
+    if err != nil {
+        return fmt.Errorf("error creating request: %v", err)
+    }
+
+    // Add the parameters to the url.
+    if err := expandURL(req.URL, map[string]string{ 
+        "pool_name": string(poolName),
+    }); err != nil {
+        return fmt.Errorf("expanding URL with parameters failed: %v", err)
+    }
+
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
+
+    // Check the response.
+    if err := checkResponse(resp); err != nil {
+        return err
+    }
+
+    return nil
 }
 
