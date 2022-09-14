@@ -1,11 +1,10 @@
 # oxide.go
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/oxidecomputer/oxide.go.svg)](https://pkg.go.dev/github.com/oxidecomputer/oxide.go)
+
 _**IMPORTANT:** This SDK is under heavy development and will have constant breaking changes._
 
-The Go API client for administrating an Oxide rack.
-
-- [Go docs](https://pkg.go.dev/github.com/oxidecomputer/oxide.go)
-- [Oxide API Docs](https://docs.oxide.computer)
+The Go [API](https://docs.oxide.computer) client for administrating an Oxide rack.
 
 To contribute to this repository make sure you read the contributing [documentation](./CONTRIBUTING.md).
 
