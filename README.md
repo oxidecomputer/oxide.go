@@ -1,35 +1,53 @@
 # oxide.go
 
-The Golang API client for Oxide.
+_**IMPORTANT:** This SDK is under heavy development and will have constant breaking changes._
+
+The Go API client for administrating an Oxide rack.
 
 - [Go docs](https://pkg.go.dev/github.com/oxidecomputer/oxide.go)
-- [Oxide API Docs](https://docs.oxide.computer/api?lang=go)
+- [Oxide API Docs](https://docs.oxide.computer)
 
-## Generating
+To contribute to this repository make sure you read the contributing [documentation](./CONTRIBUTING.md).
 
-You can trigger a build with the GitHub action to generate the client. This will
-automatically update the client to the latest version based on the spec
-at [spec.json](spec.json).
+## Getting started
 
-Alternatively, if you wish to generate the client locally, run:
+Make sure you have installed [Go](https://go.dev/dl/) 1.17 or above.
 
-```bash
-$ make generate
+### Installation
+
+Use `go get` inside your module dependencies directory
+
+```console
+go get github.com/oxidecomputer/oxide.go@latest
 ```
 
-## Contributing
+### Usage example
 
-Please do not change the code directly since it is generated. PRs that change
-the code directly will be automatically closed by a bot.
+```Go
+package main
 
-### Releasing a new version
+import (
+	"fmt"
 
-1. Make sure the `VERSION.txt` has the new version you want to release.
-2. Make sure you have run `make all` and pushed any changes. The release
-   will fail if running `make all` causes any changes to the generated
-   code.
-3. Run `make tag` this is just an easy command for making a tag formatted
-   correctly with the version.
-4. Push the tag (the result of `make tag` gives instructions for this)
-5. Everything else is triggered from the tag push. Just make sure all the tests
-   pass on the `main` branch before making and pushing a new tag.
+	"github.com/oxidecomputer/oxide.go/oxide"
+)
+
+func main() {
+   client, err := oxide.NewClient("<auth token>", "<user-agent>", "<host>")
+	if err != nil {
+		panic(err)
+	}
+
+	resp, err := client.OrganizationCreate(
+		&oxide.OrganizationCreate{
+			Description: "sample org",
+			Name:        oxide.Name("sre"),
+		},
+	)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("%+v\n", resp)
+}
+```

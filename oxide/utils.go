@@ -19,7 +19,7 @@ func resolveRelative(basestr, relstr string) string {
 	return us
 }
 
-// expandURL subsitutes any {encoded} strings in the URL passed in using
+// expandURL substitutes any {encoded} strings in the URL passed in using
 // the map supplied.
 func expandURL(u *url.URL, expansions map[string]string) error {
 	t, err := template.New("url").Parse(u.Path)
