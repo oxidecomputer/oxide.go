@@ -10,7 +10,7 @@ To contribute to this repository make sure you read the contributing [documentat
 
 ## Getting started
 
-Make sure you have installed [Go](https://go.dev/dl/) 1.17 or above.
+Make sure you have installed [Go](https://go.dev/dl/) 1.18.x or above.
 
 ### Installation
 
