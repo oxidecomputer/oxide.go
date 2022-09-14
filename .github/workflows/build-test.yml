@@ -9,11 +9,6 @@ on:
       - "go.sum"
   pull_request:
     branches: main
-    paths:
-      - "**.go"
-      - .github/workflows/build-test.yml
-      - "go.mod"
-      - "go.sum"
 jobs:
   build-test:
     runs-on: ubuntu-latest
