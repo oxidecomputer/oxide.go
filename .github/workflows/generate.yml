@@ -6,7 +6,7 @@ on:
     paths:
       - "Makefile"
       - .github/workflows/generate.yml
-      - "VERSION.txt"
+      - "VERSION"
       - "VERSION_OMICRON"
   workflow_dispatch:
     inputs:
