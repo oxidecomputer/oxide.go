@@ -49,7 +49,7 @@ func generatePaths(file string, spec *openapi3.T) error {
 	}
 	defer f.Close()
 
-	// Iterate over all the paths in the spec and write the types.
+	// Iterate over all the paths in the spec and write the methods.
 	// We want to ensure we keep the order.
 	keys := make([]string, 0)
 	for k := range spec.Paths {
