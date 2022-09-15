@@ -589,262 +589,6 @@ func (c *Client) VpcViewById(id string) (*Vpc, error) {
 	return &body, nil
 }
 
-// RackList: List racks
-//
-// To iterate over all pages, use the `RackListAllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `sortBy`
-func (c *Client) RackList(limit int, pageToken string, sortBy IdSortMode) (*RackResultsPage, error) {
-	// Create the url.
-	path := "/hardware/racks"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"sort_by":    string(sortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body RackResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// RackListAllPages: List racks
-//
-// This method is a wrapper around the `RackList` method.
-// This method returns all the pages at once.
-//
-// Parameters
-// - `sortBy`
-func (c *Client) RackListAllPages(sortBy IdSortMode) (*[]Rack, error) {
-	var allPages []Rack
-	pageToken := ""
-	limit := 100
-	for {
-		page, err := c.RackList(limit, pageToken, sortBy)
-		if err != nil {
-			return nil, err
-		}
-		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
-			break
-		}
-		pageToken = page.NextPage
-	}
-
-	return &allPages, nil
-}
-
-// RackView: Fetch a rack
-//
-// Parameters
-// - `rackId` The rack's unique ID.
-func (c *Client) RackView(rackId string) (*Rack, error) {
-	// Create the url.
-	path := "/hardware/racks/{{.rack_id}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"rack_id": rackId,
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body Rack
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// SledList: List sleds
-//
-// To iterate over all pages, use the `SledListAllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `sortBy`
-func (c *Client) SledList(limit int, pageToken string, sortBy IdSortMode) (*SledResultsPage, error) {
-	// Create the url.
-	path := "/hardware/sleds"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"sort_by":    string(sortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body SledResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// SledListAllPages: List sleds
-//
-// This method is a wrapper around the `SledList` method.
-// This method returns all the pages at once.
-//
-// Parameters
-// - `sortBy`
-func (c *Client) SledListAllPages(sortBy IdSortMode) (*[]Sled, error) {
-	var allPages []Sled
-	pageToken := ""
-	limit := 100
-	for {
-		page, err := c.SledList(limit, pageToken, sortBy)
-		if err != nil {
-			return nil, err
-		}
-		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
-			break
-		}
-		pageToken = page.NextPage
-	}
-
-	return &allPages, nil
-}
-
-// SledView: Fetch a sled
-//
-// Parameters
-// - `sledId` The sled's unique ID.
-func (c *Client) SledView(sledId string) (*Sled, error) {
-	// Create the url.
-	path := "/hardware/sleds/{{.sled_id}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"sled_id": sledId,
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body Sled
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
 // ImageGlobalList: List global images
 // Returns a list of all the global images. Global images are returned sorted by creation date, with the most recent images appearing first.
 //
@@ -6061,134 +5805,6 @@ func (c *Client) RoleView(roleName string) (*Role, error) {
 	return &body, nil
 }
 
-// SagaList: List sagas
-//
-// To iterate over all pages, use the `SagaListAllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `sortBy`
-func (c *Client) SagaList(limit int, pageToken string, sortBy IdSortMode) (*SagaResultsPage, error) {
-	// Create the url.
-	path := "/sagas"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"sort_by":    string(sortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body SagaResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// SagaListAllPages: List sagas
-//
-// This method is a wrapper around the `SagaList` method.
-// This method returns all the pages at once.
-//
-// Parameters
-// - `sortBy`
-func (c *Client) SagaListAllPages(sortBy IdSortMode) (*[]Saga, error) {
-	var allPages []Saga
-	pageToken := ""
-	limit := 100
-	for {
-		page, err := c.SagaList(limit, pageToken, sortBy)
-		if err != nil {
-			return nil, err
-		}
-		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
-			break
-		}
-		pageToken = page.NextPage
-	}
-
-	return &allPages, nil
-}
-
-// SagaView: Fetch a saga
-//
-// Parameters
-// - `sagaId`
-func (c *Client) SagaView(sagaId string) (*Saga, error) {
-	// Create the url.
-	path := "/sagas/{{.saga_id}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"saga_id": sagaId,
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body Saga
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
 // SessionSshkeyList: List SSH public keys
 // Lists SSH public keys for the currently authenticated user.
 //
@@ -6905,6 +6521,262 @@ func (c *Client) SiloIdentityProviderView(providerName Name, siloName Name) (*Sa
 	return &body, nil
 }
 
+// RackList: List racks
+//
+// To iterate over all pages, use the `RackListAllPages` method, instead.
+//
+// Parameters
+// - `limit` Maximum number of items returned by a single call
+// - `pageToken` Token returned by previous call to retrieve the subsequent page
+// - `sortBy`
+func (c *Client) RackList(limit int, pageToken string, sortBy IdSortMode) (*RackResultsPage, error) {
+	// Create the url.
+	path := "/system/hardware/racks"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"limit":      strconv.Itoa(limit),
+		"page_token": pageToken,
+		"sort_by":    string(sortBy),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body RackResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// RackListAllPages: List racks
+//
+// This method is a wrapper around the `RackList` method.
+// This method returns all the pages at once.
+//
+// Parameters
+// - `sortBy`
+func (c *Client) RackListAllPages(sortBy IdSortMode) (*[]Rack, error) {
+	var allPages []Rack
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.RackList(limit, pageToken, sortBy)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == pageToken {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+}
+
+// RackView: Fetch a rack
+//
+// Parameters
+// - `rackId` The rack's unique ID.
+func (c *Client) RackView(rackId string) (*Rack, error) {
+	// Create the url.
+	path := "/system/hardware/racks/{{.rack_id}}"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"rack_id": rackId,
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body Rack
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SledList: List sleds
+//
+// To iterate over all pages, use the `SledListAllPages` method, instead.
+//
+// Parameters
+// - `limit` Maximum number of items returned by a single call
+// - `pageToken` Token returned by previous call to retrieve the subsequent page
+// - `sortBy`
+func (c *Client) SledList(limit int, pageToken string, sortBy IdSortMode) (*SledResultsPage, error) {
+	// Create the url.
+	path := "/system/hardware/sleds"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"limit":      strconv.Itoa(limit),
+		"page_token": pageToken,
+		"sort_by":    string(sortBy),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SledResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SledListAllPages: List sleds
+//
+// This method is a wrapper around the `SledList` method.
+// This method returns all the pages at once.
+//
+// Parameters
+// - `sortBy`
+func (c *Client) SledListAllPages(sortBy IdSortMode) (*[]Sled, error) {
+	var allPages []Sled
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.SledList(limit, pageToken, sortBy)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == pageToken {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+}
+
+// SledView: Fetch a sled
+//
+// Parameters
+// - `sledId` The sled's unique ID.
+func (c *Client) SledView(sledId string) (*Sled, error) {
+	// Create the url.
+	path := "/system/hardware/sleds/{{.sled_id}}"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"sled_id": sledId,
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body Sled
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
 // SystemPolicyView: Fetch the top-level IAM policy
 func (c *Client) SystemPolicyView() (*FleetRolePolicy, error) {
 	// Create the url.
@@ -6985,6 +6857,161 @@ func (c *Client) SystemPolicyUpdate(j *FleetRolePolicy) (*FleetRolePolicy, error
 
 	// Return the response.
 	return &body, nil
+}
+
+// SagaList: List sagas
+//
+// To iterate over all pages, use the `SagaListAllPages` method, instead.
+//
+// Parameters
+// - `limit` Maximum number of items returned by a single call
+// - `pageToken` Token returned by previous call to retrieve the subsequent page
+// - `sortBy`
+func (c *Client) SagaList(limit int, pageToken string, sortBy IdSortMode) (*SagaResultsPage, error) {
+	// Create the url.
+	path := "/system/sagas"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"limit":      strconv.Itoa(limit),
+		"page_token": pageToken,
+		"sort_by":    string(sortBy),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SagaResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SagaListAllPages: List sagas
+//
+// This method is a wrapper around the `SagaList` method.
+// This method returns all the pages at once.
+//
+// Parameters
+// - `sortBy`
+func (c *Client) SagaListAllPages(sortBy IdSortMode) (*[]Saga, error) {
+	var allPages []Saga
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.SagaList(limit, pageToken, sortBy)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == pageToken {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+}
+
+// SagaView: Fetch a saga
+//
+// Parameters
+// - `sagaId`
+func (c *Client) SagaView(sagaId string) (*Saga, error) {
+	// Create the url.
+	path := "/system/sagas/{{.saga_id}}"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"saga_id": sagaId,
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body Saga
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// UpdatesRefresh: Refresh update data
+func (c *Client) UpdatesRefresh() error {
+	// Create the url.
+	path := "/system/updates/refresh"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, nil)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // SystemUserList: List built-in users
@@ -7188,33 +7215,6 @@ func (c *Client) TimeseriesSchemaGetAllPages() (*[]TimeseriesSchema, error) {
 	}
 
 	return &allPages, nil
-}
-
-// UpdatesRefresh: Refresh update data
-func (c *Client) UpdatesRefresh() error {
-	// Create the url.
-	path := "/updates/refresh"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, nil)
-	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return err
-	}
-
-	return nil
 }
 
 // UserList: List users
