@@ -765,6 +765,8 @@ type InstanceCreate struct {
 	Ncpus InstanceCpuCount `json:"ncpus,omitempty" yaml:"ncpus,omitempty"`
 	// NetworkInterfaces is the network interfaces to be created for this instance.
 	NetworkInterfaces InstanceNetworkInterfaceAttachment `json:"network_interfaces,omitempty" yaml:"network_interfaces,omitempty"`
+	// Start is should this instance be started upon creation; true by default.
+	Start bool `json:"start,omitempty" yaml:"start,omitempty"`
 	// UserData is user data for instance initialization systems (such as cloud-init). Must be a Base64-encoded string, as specified in RFC 4648 § 4 (+ and / characters with padding). Maximum 32 KiB unencoded data.
 	UserData string `json:"user_data,omitempty" yaml:"user_data,omitempty"`
 }
