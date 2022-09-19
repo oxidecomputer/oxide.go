@@ -414,21 +414,27 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 		for _, prop := range keys {
 			p := v.Value.Properties[prop]
 			// We want to collect all the unique properties to create our global oneOf type.
-			propertyName := convertToValidGoType(prop, p)
+			propertyType := convertToValidGoType(prop, p)
 
-			propertyString := strcase.ToCamel(prop)
+			// Check if we have an enum in order to use the corresponding type instead of
+			// "string"
+			if propertyType == "string" && len(p.Value.Enum) != 0 {
+				propertyType = typeName + strcase.ToCamel(prop)
+			}
+
+			propertyName := strcase.ToCamel(prop)
 			// Avoids duplication for every enum
-			if !containsMatchFirstWord(properties, propertyString) {
+			if !containsMatchFirstWord(properties, propertyName) {
 				// Construct TypeFields
 				field := TypeFields{
-					Description:       formatTypeDescription(strcase.ToCamel(prop), p.Value),
-					Name:              strcase.ToCamel(prop),
-					Type:              propertyName,
+					Description:       formatTypeDescription(propertyName, p.Value),
+					Name:              propertyName,
+					Type:              propertyType,
 					SerializationInfo: fmt.Sprintf("`json:\"%s,omitempty\" yaml:\"%s,omitempty\"`", prop, prop),
 				}
 				fields = append(fields, field)
 
-				properties = append(properties, propertyString)
+				properties = append(properties, propertyName)
 			}
 
 			if p.Value.Enum != nil {

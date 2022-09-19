@@ -263,7 +263,7 @@ func Test_createOneOf(t *testing.T) {
 				{
 					Description: "// ImageSource is the source of the underlying image.", Name: "ImageSource", Type: "struct", Fields: []TypeFields{
 						{
-							Description: "// Type is the type definition for a Type.", Name: "Type", Type: "string", SerializationInfo: "`json:\"type,omitempty\" yaml:\"type,omitempty\"`",
+							Description: "// Type is the type definition for a Type.", Name: "Type", Type: "ImageSourceType", SerializationInfo: "`json:\"type,omitempty\" yaml:\"type,omitempty\"`",
 						},
 						{
 							Description: "// Url is the type definition for a Url.", Name: "Url", Type: "string", SerializationInfo: "`json:\"url,omitempty\" yaml:\"url,omitempty\"`",

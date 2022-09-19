@@ -33,7 +33,7 @@ type BinRangedouble struct {
 	// End is the type definition for a End.
 	End float64 `json:"end,omitempty" yaml:"end,omitempty"`
 	// Type is the type definition for a Type.
-	Type string `json:"type,omitempty" yaml:"type,omitempty"`
+	Type BinRangedoubleType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Start is the type definition for a Start.
 	Start float64 `json:"start,omitempty" yaml:"start,omitempty"`
 }
@@ -67,7 +67,7 @@ type BinRangeint64 struct {
 	// End is the type definition for a End.
 	End int `json:"end,omitempty" yaml:"end,omitempty"`
 	// Type is the type definition for a Type.
-	Type string `json:"type,omitempty" yaml:"type,omitempty"`
+	Type BinRangeint64Type `json:"type,omitempty" yaml:"type,omitempty"`
 	// Start is the type definition for a Start.
 	Start int `json:"start,omitempty" yaml:"start,omitempty"`
 }
@@ -210,7 +210,7 @@ type Datum struct {
 	// Datum is the type definition for a Datum.
 	Datum bool `json:"datum,omitempty" yaml:"datum,omitempty"`
 	// Type is the type definition for a Type.
-	Type string `json:"type,omitempty" yaml:"type,omitempty"`
+	Type DatumType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // DerEncodedKeyPair is the type definition for a DerEncodedKeyPair.
@@ -250,7 +250,7 @@ type DigestSha256 struct {
 // Digest is the type definition for a Digest.
 type Digest struct {
 	// Type is the type definition for a Type.
-	Type string `json:"type,omitempty" yaml:"type,omitempty"`
+	Type DigestType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is the type definition for a Value.
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
@@ -344,7 +344,7 @@ type DiskSource struct {
 	// BlockSize is size of blocks for this Disk. valid values are: 512, 2048, or 4096
 	BlockSize BlockSize `json:"block_size,omitempty" yaml:"block_size,omitempty"`
 	// Type is the type definition for a Type.
-	Type string `json:"type,omitempty" yaml:"type,omitempty"`
+	Type DiskSourceType `json:"type,omitempty" yaml:"type,omitempty"`
 	// SnapshotId is the type definition for a SnapshotId.
 	SnapshotId string `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
 	// ImageId is the type definition for a ImageId.
@@ -395,7 +395,7 @@ type DiskStateFaulted struct {
 // DiskState is state of a Disk (primarily: attached or not)
 type DiskState struct {
 	// State is the type definition for a State.
-	State string `json:"state,omitempty" yaml:"state,omitempty"`
+	State DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
 	// Instance is the type definition for a Instance.
 	Instance string `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
@@ -436,7 +436,7 @@ type ExternalIpCreate struct {
 	// PoolName is the type definition for a PoolName.
 	PoolName Name `json:"pool_name,omitempty" yaml:"pool_name,omitempty"`
 	// Type is the type definition for a Type.
-	Type string `json:"type,omitempty" yaml:"type,omitempty"`
+	Type ExternalIpCreateType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // ExternalIpResultsPage is a single page of results
@@ -633,7 +633,7 @@ type IdpMetadataSourceBase64EncodedXml struct {
 // IdpMetadataSource is the type definition for a IdpMetadataSource.
 type IdpMetadataSource struct {
 	// Type is the type definition for a Type.
-	Type string `json:"type,omitempty" yaml:"type,omitempty"`
+	Type IdpMetadataSourceType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Url is the type definition for a Url.
 	Url string `json:"url,omitempty" yaml:"url,omitempty"`
 	// Data is the type definition for a Data.
@@ -708,7 +708,7 @@ type ImageSourceYouCanBootAnythingAsLongAsItsAlpine struct {
 // ImageSource is the source of the underlying image.
 type ImageSource struct {
 	// Type is the type definition for a Type.
-	Type string `json:"type,omitempty" yaml:"type,omitempty"`
+	Type ImageSourceType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Url is the type definition for a Url.
 	Url string `json:"url,omitempty" yaml:"url,omitempty"`
 	// Id is the type definition for a Id.
@@ -804,7 +804,7 @@ type InstanceDiskAttachment struct {
 	// Size is total size of the Disk in bytes
 	Size ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
 	// Type is the type definition for a Type.
-	Type string `json:"type,omitempty" yaml:"type,omitempty"`
+	Type InstanceDiskAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // InstanceMigrate is migration parameters for an [`Instance`](omicron_common::api::external::Instance)
@@ -838,7 +838,7 @@ type InstanceNetworkInterfaceAttachment struct {
 	// Params is the type definition for a Params.
 	Params []NetworkInterfaceCreate `json:"params,omitempty" yaml:"params,omitempty"`
 	// Type is the type definition for a Type.
-	Type string `json:"type,omitempty" yaml:"type,omitempty"`
+	Type InstanceNetworkInterfaceAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // InstanceResultsPage is a single page of results
@@ -1231,7 +1231,7 @@ type RouteDestinationSubnet struct {
 // When traffic is to be sent to a destination that is within a given `RouteDestination`, the corresponding [`RouterRoute`] applies, and traffic will be forward to the [`RouteTarget`] for that rule.
 type RouteDestination struct {
 	// Type is the type definition for a Type.
-	Type string `json:"type,omitempty" yaml:"type,omitempty"`
+	Type RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is the type definition for a Value.
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
@@ -1276,7 +1276,7 @@ type RouteTargetInternetGateway struct {
 // RouteTarget is a `RouteTarget` describes the possible locations that traffic matching a route destination can be sent.
 type RouteTarget struct {
 	// Type is the type definition for a Type.
-	Type string `json:"type,omitempty" yaml:"type,omitempty"`
+	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is the type definition for a Value.
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
@@ -1384,7 +1384,7 @@ type SagaErrorInfoSubsagaCreateFailed struct {
 // SagaErrorInfo is the type definition for a SagaErrorInfo.
 type SagaErrorInfo struct {
 	// Error is the type definition for a Error.
-	Error string `json:"error,omitempty" yaml:"error,omitempty"`
+	Error SagaErrorInfoError `json:"error,omitempty" yaml:"error,omitempty"`
 	// SourceError is the type definition for a SourceError.
 	SourceError interface{} `json:"source_error,omitempty" yaml:"source_error,omitempty"`
 	// Message is the type definition for a Message.
@@ -1425,7 +1425,7 @@ type SagaStateFailed struct {
 // SagaState is the type definition for a SagaState.
 type SagaState struct {
 	// State is the type definition for a State.
-	State string `json:"state,omitempty" yaml:"state,omitempty"`
+	State SagaStateState `json:"state,omitempty" yaml:"state,omitempty"`
 	// ErrorInfo is the type definition for a ErrorInfo.
 	ErrorInfo SagaErrorInfo `json:"error_info,omitempty" yaml:"error_info,omitempty"`
 	// ErrorNodeName is unique name for a saga [`Node`]
@@ -1825,7 +1825,7 @@ type VpcFirewallRuleHostFilterIpNet struct {
 // VpcFirewallRuleHostFilter is the `VpcFirewallRuleHostFilter` is used to filter traffic on the basis of its source or destination host.
 type VpcFirewallRuleHostFilter struct {
 	// Type is the type definition for a Type.
-	Type string `json:"type,omitempty" yaml:"type,omitempty"`
+	Type VpcFirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
@@ -1875,7 +1875,7 @@ type VpcFirewallRuleTargetIpNet struct {
 // VpcFirewallRuleTarget is a `VpcFirewallRuleTarget` is used to specify the set of [`Instance`]s to which a firewall rule applies.
 type VpcFirewallRuleTarget struct {
 	// Type is the type definition for a Type.
-	Type string `json:"type,omitempty" yaml:"type,omitempty"`
+	Type VpcFirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
