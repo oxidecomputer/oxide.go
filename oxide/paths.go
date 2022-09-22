@@ -61,54 +61,6 @@ func (c *Client) DiskViewById(id string) (*Disk, error) {
 	return &body, nil
 }
 
-// ImageGlobalViewById: Fetch a global image by id
-//
-// Parameters
-// - `id`
-func (c *Client) ImageGlobalViewById(id string) (*GlobalImage, error) {
-	// Create the url.
-	path := "/by-id/global-images/{{.id}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"id": id,
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body GlobalImage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
 // ImageViewById: Fetch an image by id
 //
 // Parameters
@@ -587,889 +539,6 @@ func (c *Client) VpcViewById(id string) (*Vpc, error) {
 
 	// Return the response.
 	return &body, nil
-}
-
-// ImageGlobalList: List global images
-// Returns a list of all the global images. Global images are returned sorted by creation date, with the most recent images appearing first.
-//
-// To iterate over all pages, use the `ImageGlobalListAllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `sortBy`
-func (c *Client) ImageGlobalList(limit int, pageToken string, sortBy NameSortMode) (*GlobalImageResultsPage, error) {
-	// Create the url.
-	path := "/images"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"sort_by":    string(sortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body GlobalImageResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// ImageGlobalListAllPages: List global images
-// Returns a list of all the global images. Global images are returned sorted by creation date, with the most recent images appearing first.
-//
-// This method is a wrapper around the `ImageGlobalList` method.
-// This method returns all the pages at once.
-//
-// Parameters
-// - `sortBy`
-func (c *Client) ImageGlobalListAllPages(sortBy NameSortMode) (*[]GlobalImage, error) {
-	var allPages []GlobalImage
-	pageToken := ""
-	limit := 100
-	for {
-		page, err := c.ImageGlobalList(limit, pageToken, sortBy)
-		if err != nil {
-			return nil, err
-		}
-		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
-			break
-		}
-		pageToken = page.NextPage
-	}
-
-	return &allPages, nil
-}
-
-// ImageGlobalCreate: Create a global image
-// Create a new global image. This image can then be used by any user as a base for instances.
-func (c *Client) ImageGlobalCreate(j *GlobalImageCreate) (*GlobalImage, error) {
-	// Create the url.
-	path := "/images"
-	uri := resolveRelative(c.server, path)
-
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
-
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body GlobalImage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// ImageGlobalView: Fetch a global image
-// Returns the details of a specific global image.
-//
-// Parameters
-// - `imageName`
-func (c *Client) ImageGlobalView(imageName Name) (*GlobalImage, error) {
-	// Create the url.
-	path := "/images/{{.image_name}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"image_name": string(imageName),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body GlobalImage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// ImageGlobalDelete: Delete a global image
-// Permanently delete a global image. This operation cannot be undone. Any instances using the global image will continue to run, however new instances can not be created with this image.
-//
-// Parameters
-// - `imageName`
-func (c *Client) ImageGlobalDelete(imageName Name) error {
-	// Create the url.
-	path := "/images/{{.image_name}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("DELETE", uri, nil)
-	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"image_name": string(imageName),
-	}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// IpPoolList: List IP pools
-//
-// To iterate over all pages, use the `IpPoolListAllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `sortBy`
-func (c *Client) IpPoolList(limit int, pageToken string, sortBy NameOrIdSortMode) (*IpPoolResultsPage, error) {
-	// Create the url.
-	path := "/ip-pools"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"sort_by":    string(sortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body IpPoolResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// IpPoolListAllPages: List IP pools
-//
-// This method is a wrapper around the `IpPoolList` method.
-// This method returns all the pages at once.
-//
-// Parameters
-// - `sortBy`
-func (c *Client) IpPoolListAllPages(sortBy NameOrIdSortMode) (*[]IpPool, error) {
-	var allPages []IpPool
-	pageToken := ""
-	limit := 100
-	for {
-		page, err := c.IpPoolList(limit, pageToken, sortBy)
-		if err != nil {
-			return nil, err
-		}
-		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
-			break
-		}
-		pageToken = page.NextPage
-	}
-
-	return &allPages, nil
-}
-
-// IpPoolCreate: Create an IP pool
-func (c *Client) IpPoolCreate(j *IpPoolCreate) (*IpPool, error) {
-	// Create the url.
-	path := "/ip-pools"
-	uri := resolveRelative(c.server, path)
-
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
-
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body IpPool
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// IpPoolServiceView: Fetch an IP pool used for Oxide services.
-//
-// Parameters
-// - `rackId`
-func (c *Client) IpPoolServiceView(rackId string) (*IpPool, error) {
-	// Create the url.
-	path := "/ip-pools-service/{{.rack_id}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"rack_id": rackId,
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body IpPool
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// IpPoolServiceRangeList: List ranges for an IP pool used for Oxide services.
-// Ranges are ordered by their first address.
-//
-// To iterate over all pages, use the `IpPoolServiceRangeListAllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `rackId`
-func (c *Client) IpPoolServiceRangeList(rackId string, limit int, pageToken string) (*IpPoolRangeResultsPage, error) {
-	// Create the url.
-	path := "/ip-pools-service/{{.rack_id}}/ranges"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"rack_id":    rackId,
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body IpPoolRangeResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// IpPoolServiceRangeListAllPages: List ranges for an IP pool used for Oxide services.
-// Ranges are ordered by their first address.
-//
-// This method is a wrapper around the `IpPoolServiceRangeList` method.
-// This method returns all the pages at once.
-//
-// Parameters
-// - `rackId`
-func (c *Client) IpPoolServiceRangeListAllPages(rackId string) (*[]IpPoolRange, error) {
-	var allPages []IpPoolRange
-	pageToken := ""
-	limit := 100
-	for {
-		page, err := c.IpPoolServiceRangeList(rackId, limit, pageToken)
-		if err != nil {
-			return nil, err
-		}
-		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
-			break
-		}
-		pageToken = page.NextPage
-	}
-
-	return &allPages, nil
-}
-
-// IpPoolServiceRangeAdd: Add a range to an IP pool used for Oxide services.
-//
-// Parameters
-// - `rackId`
-func (c *Client) IpPoolServiceRangeAdd(rackId string, j *IpRange) (*IpPoolRange, error) {
-	// Create the url.
-	path := "/ip-pools-service/{{.rack_id}}/ranges/add"
-	uri := resolveRelative(c.server, path)
-
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
-
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"rack_id": rackId,
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body IpPoolRange
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// IpPoolServiceRangeRemove: Remove a range from an IP pool used for Oxide services.
-//
-// Parameters
-// - `rackId`
-func (c *Client) IpPoolServiceRangeRemove(rackId string, j *IpRange) error {
-	// Create the url.
-	path := "/ip-pools-service/{{.rack_id}}/ranges/remove"
-	uri := resolveRelative(c.server, path)
-
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
-		return fmt.Errorf("encoding json body request failed: %v", err)
-	}
-
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
-	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"rack_id": rackId,
-	}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// IpPoolView: Fetch an IP pool
-//
-// Parameters
-// - `poolName`
-func (c *Client) IpPoolView(poolName Name) (*IpPool, error) {
-	// Create the url.
-	path := "/ip-pools/{{.pool_name}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"pool_name": string(poolName),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body IpPool
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// IpPoolUpdate: Update an IP Pool
-//
-// Parameters
-// - `poolName`
-func (c *Client) IpPoolUpdate(poolName Name, j *IpPoolUpdate) (*IpPool, error) {
-	// Create the url.
-	path := "/ip-pools/{{.pool_name}}"
-	uri := resolveRelative(c.server, path)
-
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
-
-	// Create the request.
-	req, err := http.NewRequest("PUT", uri, b)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"pool_name": string(poolName),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body IpPool
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// IpPoolDelete: Delete an IP Pool
-//
-// Parameters
-// - `poolName`
-func (c *Client) IpPoolDelete(poolName Name) error {
-	// Create the url.
-	path := "/ip-pools/{{.pool_name}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("DELETE", uri, nil)
-	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"pool_name": string(poolName),
-	}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// IpPoolRangeList: List ranges for an IP pool
-// Ranges are ordered by their first address.
-//
-// To iterate over all pages, use the `IpPoolRangeListAllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `poolName`
-func (c *Client) IpPoolRangeList(poolName Name, limit int, pageToken string) (*IpPoolRangeResultsPage, error) {
-	// Create the url.
-	path := "/ip-pools/{{.pool_name}}/ranges"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"pool_name":  string(poolName),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body IpPoolRangeResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// IpPoolRangeListAllPages: List ranges for an IP pool
-// Ranges are ordered by their first address.
-//
-// This method is a wrapper around the `IpPoolRangeList` method.
-// This method returns all the pages at once.
-//
-// Parameters
-// - `poolName`
-func (c *Client) IpPoolRangeListAllPages(poolName Name) (*[]IpPoolRange, error) {
-	var allPages []IpPoolRange
-	pageToken := ""
-	limit := 100
-	for {
-		page, err := c.IpPoolRangeList(poolName, limit, pageToken)
-		if err != nil {
-			return nil, err
-		}
-		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
-			break
-		}
-		pageToken = page.NextPage
-	}
-
-	return &allPages, nil
-}
-
-// IpPoolRangeAdd: Add a range to an IP pool
-//
-// Parameters
-// - `poolName`
-func (c *Client) IpPoolRangeAdd(poolName Name, j *IpRange) (*IpPoolRange, error) {
-	// Create the url.
-	path := "/ip-pools/{{.pool_name}}/ranges/add"
-	uri := resolveRelative(c.server, path)
-
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
-
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"pool_name": string(poolName),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body IpPoolRange
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// IpPoolRangeRemove: Remove a range from an IP pool
-//
-// Parameters
-// - `poolName`
-func (c *Client) IpPoolRangeRemove(poolName Name, j *IpRange) error {
-	// Create the url.
-	path := "/ip-pools/{{.pool_name}}/ranges/remove"
-	uri := resolveRelative(c.server, path)
-
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
-		return fmt.Errorf("encoding json body request failed: %v", err)
-	}
-
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
-	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"pool_name": string(poolName),
-	}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return err
-	}
-
-	return nil
 }
 
 // Login: Prompt user login
@@ -6019,18 +5088,13 @@ func (c *Client) SessionSshkeyDelete(sshKeyName Name) error {
 	return nil
 }
 
-// SiloList: List silos
-// Lists silos that are discoverable based on the current permissions.
-//
-// To iterate over all pages, use the `SiloListAllPages` method, instead.
+// SystemImageViewById: Fetch a system-wide image by id
 //
 // Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `sortBy`
-func (c *Client) SiloList(limit int, pageToken string, sortBy NameOrIdSortMode) (*SiloResultsPage, error) {
+// - `id`
+func (c *Client) SystemImageViewById(id string) (*GlobalImage, error) {
 	// Create the url.
-	path := "/silos"
+	path := "/system/by-id/images/{{.id}}"
 	uri := resolveRelative(c.server, path)
 
 	// Create the request.
@@ -6041,9 +5105,7 @@ func (c *Client) SiloList(limit int, pageToken string, sortBy NameOrIdSortMode) 
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"sort_by":    string(sortBy),
+		"id": id,
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -6065,7 +5127,7 @@ func (c *Client) SiloList(limit int, pageToken string, sortBy NameOrIdSortMode) 
 		return nil, errors.New("request returned an empty body in the response")
 	}
 
-	var body SiloResultsPage
+	var body GlobalImage
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -6074,49 +5136,26 @@ func (c *Client) SiloList(limit int, pageToken string, sortBy NameOrIdSortMode) 
 	return &body, nil
 }
 
-// SiloListAllPages: List silos
-// Lists silos that are discoverable based on the current permissions.
-//
-// This method is a wrapper around the `SiloList` method.
-// This method returns all the pages at once.
+// IpPoolViewById: Fetch an IP pool by id
 //
 // Parameters
-// - `sortBy`
-func (c *Client) SiloListAllPages(sortBy NameOrIdSortMode) (*[]Silo, error) {
-	var allPages []Silo
-	pageToken := ""
-	limit := 100
-	for {
-		page, err := c.SiloList(limit, pageToken, sortBy)
-		if err != nil {
-			return nil, err
-		}
-		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
-			break
-		}
-		pageToken = page.NextPage
-	}
-
-	return &allPages, nil
-}
-
-// SiloCreate: Create a silo
-func (c *Client) SiloCreate(j *SiloCreate) (*Silo, error) {
+// - `id`
+func (c *Client) IpPoolViewById(id string) (*IpPool, error) {
 	// Create the url.
-	path := "/silos"
+	path := "/system/by-id/ip-pools/{{.id}}"
 	uri := resolveRelative(c.server, path)
 
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
-
 	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
+	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"id": id,
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Send the request.
@@ -6136,7 +5175,7 @@ func (c *Client) SiloCreate(j *SiloCreate) (*Silo, error) {
 		return nil, errors.New("request returned an empty body in the response")
 	}
 
-	var body Silo
+	var body IpPool
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -6145,14 +5184,13 @@ func (c *Client) SiloCreate(j *SiloCreate) (*Silo, error) {
 	return &body, nil
 }
 
-// SiloView: Fetch a silo
-// Fetch a silo by name.
+// SiloViewById: Fetch a silo by id
 //
 // Parameters
-// - `siloName` The silo's unique name.
-func (c *Client) SiloView(siloName Name) (*Silo, error) {
+// - `id`
+func (c *Client) SiloViewById(id string) (*Silo, error) {
 	// Create the url.
-	path := "/silos/{{.silo_name}}"
+	path := "/system/by-id/silos/{{.id}}"
 	uri := resolveRelative(c.server, path)
 
 	// Create the request.
@@ -6163,7 +5201,7 @@ func (c *Client) SiloView(siloName Name) (*Silo, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"silo_name": string(siloName),
+		"id": id,
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -6186,333 +5224,6 @@ func (c *Client) SiloView(siloName Name) (*Silo, error) {
 	}
 
 	var body Silo
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// SiloDelete: Delete a silo
-// Delete a silo by name.
-//
-// Parameters
-// - `siloName` The silo's unique name.
-func (c *Client) SiloDelete(siloName Name) error {
-	// Create the url.
-	path := "/silos/{{.silo_name}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("DELETE", uri, nil)
-	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"silo_name": string(siloName),
-	}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// SiloIdentityProviderList: List a silo's IDPs
-//
-// To iterate over all pages, use the `SiloIdentityProviderListAllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `siloName` The silo's unique name.
-// - `sortBy`
-func (c *Client) SiloIdentityProviderList(siloName Name, limit int, pageToken string, sortBy NameSortMode) (*IdentityProviderResultsPage, error) {
-	// Create the url.
-	path := "/silos/{{.silo_name}}/identity-providers"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"silo_name":  string(siloName),
-		"sort_by":    string(sortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body IdentityProviderResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// SiloIdentityProviderListAllPages: List a silo's IDPs
-//
-// This method is a wrapper around the `SiloIdentityProviderList` method.
-// This method returns all the pages at once.
-//
-// Parameters
-// - `siloName` The silo's unique name.
-// - `sortBy`
-func (c *Client) SiloIdentityProviderListAllPages(siloName Name, sortBy NameSortMode) (*[]IdentityProvider, error) {
-	var allPages []IdentityProvider
-	pageToken := ""
-	limit := 100
-	for {
-		page, err := c.SiloIdentityProviderList(siloName, limit, pageToken, sortBy)
-		if err != nil {
-			return nil, err
-		}
-		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
-			break
-		}
-		pageToken = page.NextPage
-	}
-
-	return &allPages, nil
-}
-
-// SiloPolicyView: Fetch a silo's IAM policy
-//
-// Parameters
-// - `siloName` The silo's unique name.
-func (c *Client) SiloPolicyView(siloName Name) (*SiloRolePolicy, error) {
-	// Create the url.
-	path := "/silos/{{.silo_name}}/policy"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"silo_name": string(siloName),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body SiloRolePolicy
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// SiloPolicyUpdate: Update a silo's IAM policy
-//
-// Parameters
-// - `siloName` The silo's unique name.
-func (c *Client) SiloPolicyUpdate(siloName Name, j *SiloRolePolicy) (*SiloRolePolicy, error) {
-	// Create the url.
-	path := "/silos/{{.silo_name}}/policy"
-	uri := resolveRelative(c.server, path)
-
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
-
-	// Create the request.
-	req, err := http.NewRequest("PUT", uri, b)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"silo_name": string(siloName),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body SiloRolePolicy
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// SiloIdentityProviderCreate: Create a SAML IDP
-//
-// Parameters
-// - `siloName` The silo's unique name.
-func (c *Client) SiloIdentityProviderCreate(siloName Name, j *SamlIdentityProviderCreate) (*SamlIdentityProvider, error) {
-	// Create the url.
-	path := "/silos/{{.silo_name}}/saml-identity-providers"
-	uri := resolveRelative(c.server, path)
-
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
-
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"silo_name": string(siloName),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body SamlIdentityProvider
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// SiloIdentityProviderView: Fetch a SAML IDP
-//
-// Parameters
-// - `providerName` The SAML identity provider's name
-// - `siloName` The silo's unique name.
-func (c *Client) SiloIdentityProviderView(providerName Name, siloName Name) (*SamlIdentityProvider, error) {
-	// Create the url.
-	path := "/silos/{{.silo_name}}/saml-identity-providers/{{.provider_name}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"provider_name": string(providerName),
-		"silo_name":     string(siloName),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body SamlIdentityProvider
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -6777,6 +5488,889 @@ func (c *Client) SledView(sledId string) (*Sled, error) {
 	return &body, nil
 }
 
+// SystemImageList: List system-wide images
+// Returns a list of all the system-wide images. System-wide images are returned sorted by creation date, with the most recent images appearing first.
+//
+// To iterate over all pages, use the `SystemImageListAllPages` method, instead.
+//
+// Parameters
+// - `limit` Maximum number of items returned by a single call
+// - `pageToken` Token returned by previous call to retrieve the subsequent page
+// - `sortBy`
+func (c *Client) SystemImageList(limit int, pageToken string, sortBy NameSortMode) (*GlobalImageResultsPage, error) {
+	// Create the url.
+	path := "/system/images"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"limit":      strconv.Itoa(limit),
+		"page_token": pageToken,
+		"sort_by":    string(sortBy),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body GlobalImageResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SystemImageListAllPages: List system-wide images
+// Returns a list of all the system-wide images. System-wide images are returned sorted by creation date, with the most recent images appearing first.
+//
+// This method is a wrapper around the `SystemImageList` method.
+// This method returns all the pages at once.
+//
+// Parameters
+// - `sortBy`
+func (c *Client) SystemImageListAllPages(sortBy NameSortMode) (*[]GlobalImage, error) {
+	var allPages []GlobalImage
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.SystemImageList(limit, pageToken, sortBy)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == pageToken {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+}
+
+// SystemImageCreate: Create a system-wide image
+// Create a new system-wide image. This image can then be used by any user in any silo as a base for instances.
+func (c *Client) SystemImageCreate(j *GlobalImageCreate) (*GlobalImage, error) {
+	// Create the url.
+	path := "/system/images"
+	uri := resolveRelative(c.server, path)
+
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body GlobalImage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SystemImageView: Fetch a system-wide image
+// Returns the details of a specific system-wide image.
+//
+// Parameters
+// - `imageName`
+func (c *Client) SystemImageView(imageName Name) (*GlobalImage, error) {
+	// Create the url.
+	path := "/system/images/{{.image_name}}"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"image_name": string(imageName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body GlobalImage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SystemImageDelete: Delete a system-wide image
+// Permanently delete a system-wide image. This operation cannot be undone. Any instances using the system-wide image will continue to run, however new instances can not be created with this image.
+//
+// Parameters
+// - `imageName`
+func (c *Client) SystemImageDelete(imageName Name) error {
+	// Create the url.
+	path := "/system/images/{{.image_name}}"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("DELETE", uri, nil)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"image_name": string(imageName),
+	}); err != nil {
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// IpPoolList: List IP pools
+//
+// To iterate over all pages, use the `IpPoolListAllPages` method, instead.
+//
+// Parameters
+// - `limit` Maximum number of items returned by a single call
+// - `pageToken` Token returned by previous call to retrieve the subsequent page
+// - `sortBy`
+func (c *Client) IpPoolList(limit int, pageToken string, sortBy NameOrIdSortMode) (*IpPoolResultsPage, error) {
+	// Create the url.
+	path := "/system/ip-pools"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"limit":      strconv.Itoa(limit),
+		"page_token": pageToken,
+		"sort_by":    string(sortBy),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body IpPoolResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// IpPoolListAllPages: List IP pools
+//
+// This method is a wrapper around the `IpPoolList` method.
+// This method returns all the pages at once.
+//
+// Parameters
+// - `sortBy`
+func (c *Client) IpPoolListAllPages(sortBy NameOrIdSortMode) (*[]IpPool, error) {
+	var allPages []IpPool
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.IpPoolList(limit, pageToken, sortBy)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == pageToken {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+}
+
+// IpPoolCreate: Create an IP pool
+func (c *Client) IpPoolCreate(j *IpPoolCreate) (*IpPool, error) {
+	// Create the url.
+	path := "/system/ip-pools"
+	uri := resolveRelative(c.server, path)
+
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body IpPool
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// IpPoolServiceView: Fetch an IP pool used for Oxide services.
+//
+// Parameters
+// - `rackId`
+func (c *Client) IpPoolServiceView(rackId string) (*IpPool, error) {
+	// Create the url.
+	path := "/system/ip-pools-service/{{.rack_id}}"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"rack_id": rackId,
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body IpPool
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// IpPoolServiceRangeList: List ranges for an IP pool used for Oxide services.
+// Ranges are ordered by their first address.
+//
+// To iterate over all pages, use the `IpPoolServiceRangeListAllPages` method, instead.
+//
+// Parameters
+// - `limit` Maximum number of items returned by a single call
+// - `pageToken` Token returned by previous call to retrieve the subsequent page
+// - `rackId`
+func (c *Client) IpPoolServiceRangeList(rackId string, limit int, pageToken string) (*IpPoolRangeResultsPage, error) {
+	// Create the url.
+	path := "/system/ip-pools-service/{{.rack_id}}/ranges"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"limit":      strconv.Itoa(limit),
+		"page_token": pageToken,
+		"rack_id":    rackId,
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body IpPoolRangeResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// IpPoolServiceRangeListAllPages: List ranges for an IP pool used for Oxide services.
+// Ranges are ordered by their first address.
+//
+// This method is a wrapper around the `IpPoolServiceRangeList` method.
+// This method returns all the pages at once.
+//
+// Parameters
+// - `rackId`
+func (c *Client) IpPoolServiceRangeListAllPages(rackId string) (*[]IpPoolRange, error) {
+	var allPages []IpPoolRange
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.IpPoolServiceRangeList(rackId, limit, pageToken)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == pageToken {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+}
+
+// IpPoolServiceRangeAdd: Add a range to an IP pool used for Oxide services.
+//
+// Parameters
+// - `rackId`
+func (c *Client) IpPoolServiceRangeAdd(rackId string, j *IpRange) (*IpPoolRange, error) {
+	// Create the url.
+	path := "/system/ip-pools-service/{{.rack_id}}/ranges/add"
+	uri := resolveRelative(c.server, path)
+
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"rack_id": rackId,
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body IpPoolRange
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// IpPoolServiceRangeRemove: Remove a range from an IP pool used for Oxide services.
+//
+// Parameters
+// - `rackId`
+func (c *Client) IpPoolServiceRangeRemove(rackId string, j *IpRange) error {
+	// Create the url.
+	path := "/system/ip-pools-service/{{.rack_id}}/ranges/remove"
+	uri := resolveRelative(c.server, path)
+
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, b)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"rack_id": rackId,
+	}); err != nil {
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// IpPoolView: Fetch an IP pool
+//
+// Parameters
+// - `poolName`
+func (c *Client) IpPoolView(poolName Name) (*IpPool, error) {
+	// Create the url.
+	path := "/system/ip-pools/{{.pool_name}}"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"pool_name": string(poolName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body IpPool
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// IpPoolUpdate: Update an IP Pool
+//
+// Parameters
+// - `poolName`
+func (c *Client) IpPoolUpdate(poolName Name, j *IpPoolUpdate) (*IpPool, error) {
+	// Create the url.
+	path := "/system/ip-pools/{{.pool_name}}"
+	uri := resolveRelative(c.server, path)
+
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request.
+	req, err := http.NewRequest("PUT", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"pool_name": string(poolName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body IpPool
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// IpPoolDelete: Delete an IP Pool
+//
+// Parameters
+// - `poolName`
+func (c *Client) IpPoolDelete(poolName Name) error {
+	// Create the url.
+	path := "/system/ip-pools/{{.pool_name}}"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("DELETE", uri, nil)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"pool_name": string(poolName),
+	}); err != nil {
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// IpPoolRangeList: List ranges for an IP pool
+// Ranges are ordered by their first address.
+//
+// To iterate over all pages, use the `IpPoolRangeListAllPages` method, instead.
+//
+// Parameters
+// - `limit` Maximum number of items returned by a single call
+// - `pageToken` Token returned by previous call to retrieve the subsequent page
+// - `poolName`
+func (c *Client) IpPoolRangeList(poolName Name, limit int, pageToken string) (*IpPoolRangeResultsPage, error) {
+	// Create the url.
+	path := "/system/ip-pools/{{.pool_name}}/ranges"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"limit":      strconv.Itoa(limit),
+		"page_token": pageToken,
+		"pool_name":  string(poolName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body IpPoolRangeResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// IpPoolRangeListAllPages: List ranges for an IP pool
+// Ranges are ordered by their first address.
+//
+// This method is a wrapper around the `IpPoolRangeList` method.
+// This method returns all the pages at once.
+//
+// Parameters
+// - `poolName`
+func (c *Client) IpPoolRangeListAllPages(poolName Name) (*[]IpPoolRange, error) {
+	var allPages []IpPoolRange
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.IpPoolRangeList(poolName, limit, pageToken)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == pageToken {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+}
+
+// IpPoolRangeAdd: Add a range to an IP pool
+//
+// Parameters
+// - `poolName`
+func (c *Client) IpPoolRangeAdd(poolName Name, j *IpRange) (*IpPoolRange, error) {
+	// Create the url.
+	path := "/system/ip-pools/{{.pool_name}}/ranges/add"
+	uri := resolveRelative(c.server, path)
+
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"pool_name": string(poolName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body IpPoolRange
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// IpPoolRangeRemove: Remove a range from an IP pool
+//
+// Parameters
+// - `poolName`
+func (c *Client) IpPoolRangeRemove(poolName Name, j *IpRange) error {
+	// Create the url.
+	path := "/system/ip-pools/{{.pool_name}}/ranges/remove"
+	uri := resolveRelative(c.server, path)
+
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, b)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"pool_name": string(poolName),
+	}); err != nil {
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // SystemPolicyView: Fetch the top-level IAM policy
 func (c *Client) SystemPolicyView() (*FleetRolePolicy, error) {
 	// Create the url.
@@ -6979,6 +6573,508 @@ func (c *Client) SagaView(sagaId string) (*Saga, error) {
 	}
 
 	var body Saga
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SiloList: List silos
+// Lists silos that are discoverable based on the current permissions.
+//
+// To iterate over all pages, use the `SiloListAllPages` method, instead.
+//
+// Parameters
+// - `limit` Maximum number of items returned by a single call
+// - `pageToken` Token returned by previous call to retrieve the subsequent page
+// - `sortBy`
+func (c *Client) SiloList(limit int, pageToken string, sortBy NameOrIdSortMode) (*SiloResultsPage, error) {
+	// Create the url.
+	path := "/system/silos"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"limit":      strconv.Itoa(limit),
+		"page_token": pageToken,
+		"sort_by":    string(sortBy),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SiloResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SiloListAllPages: List silos
+// Lists silos that are discoverable based on the current permissions.
+//
+// This method is a wrapper around the `SiloList` method.
+// This method returns all the pages at once.
+//
+// Parameters
+// - `sortBy`
+func (c *Client) SiloListAllPages(sortBy NameOrIdSortMode) (*[]Silo, error) {
+	var allPages []Silo
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.SiloList(limit, pageToken, sortBy)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == pageToken {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+}
+
+// SiloCreate: Create a silo
+func (c *Client) SiloCreate(j *SiloCreate) (*Silo, error) {
+	// Create the url.
+	path := "/system/silos"
+	uri := resolveRelative(c.server, path)
+
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body Silo
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SiloView: Fetch a silo
+// Fetch a silo by name.
+//
+// Parameters
+// - `siloName` The silo's unique name.
+func (c *Client) SiloView(siloName Name) (*Silo, error) {
+	// Create the url.
+	path := "/system/silos/{{.silo_name}}"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"silo_name": string(siloName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body Silo
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SiloDelete: Delete a silo
+// Delete a silo by name.
+//
+// Parameters
+// - `siloName` The silo's unique name.
+func (c *Client) SiloDelete(siloName Name) error {
+	// Create the url.
+	path := "/system/silos/{{.silo_name}}"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("DELETE", uri, nil)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"silo_name": string(siloName),
+	}); err != nil {
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// SiloIdentityProviderList: List a silo's IDPs
+//
+// To iterate over all pages, use the `SiloIdentityProviderListAllPages` method, instead.
+//
+// Parameters
+// - `limit` Maximum number of items returned by a single call
+// - `pageToken` Token returned by previous call to retrieve the subsequent page
+// - `siloName` The silo's unique name.
+// - `sortBy`
+func (c *Client) SiloIdentityProviderList(siloName Name, limit int, pageToken string, sortBy NameSortMode) (*IdentityProviderResultsPage, error) {
+	// Create the url.
+	path := "/system/silos/{{.silo_name}}/identity-providers"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"limit":      strconv.Itoa(limit),
+		"page_token": pageToken,
+		"silo_name":  string(siloName),
+		"sort_by":    string(sortBy),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body IdentityProviderResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SiloIdentityProviderListAllPages: List a silo's IDPs
+//
+// This method is a wrapper around the `SiloIdentityProviderList` method.
+// This method returns all the pages at once.
+//
+// Parameters
+// - `siloName` The silo's unique name.
+// - `sortBy`
+func (c *Client) SiloIdentityProviderListAllPages(siloName Name, sortBy NameSortMode) (*[]IdentityProvider, error) {
+	var allPages []IdentityProvider
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.SiloIdentityProviderList(siloName, limit, pageToken, sortBy)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == pageToken {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+}
+
+// SiloPolicyView: Fetch a silo's IAM policy
+//
+// Parameters
+// - `siloName` The silo's unique name.
+func (c *Client) SiloPolicyView(siloName Name) (*SiloRolePolicy, error) {
+	// Create the url.
+	path := "/system/silos/{{.silo_name}}/policy"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"silo_name": string(siloName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SiloRolePolicy
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SiloPolicyUpdate: Update a silo's IAM policy
+//
+// Parameters
+// - `siloName` The silo's unique name.
+func (c *Client) SiloPolicyUpdate(siloName Name, j *SiloRolePolicy) (*SiloRolePolicy, error) {
+	// Create the url.
+	path := "/system/silos/{{.silo_name}}/policy"
+	uri := resolveRelative(c.server, path)
+
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request.
+	req, err := http.NewRequest("PUT", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"silo_name": string(siloName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SiloRolePolicy
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SiloIdentityProviderCreate: Create a SAML IDP
+//
+// Parameters
+// - `siloName` The silo's unique name.
+func (c *Client) SiloIdentityProviderCreate(siloName Name, j *SamlIdentityProviderCreate) (*SamlIdentityProvider, error) {
+	// Create the url.
+	path := "/system/silos/{{.silo_name}}/saml-identity-providers"
+	uri := resolveRelative(c.server, path)
+
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"silo_name": string(siloName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SamlIdentityProvider
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SiloIdentityProviderView: Fetch a SAML IDP
+//
+// Parameters
+// - `providerName` The SAML identity provider's name
+// - `siloName` The silo's unique name.
+func (c *Client) SiloIdentityProviderView(providerName Name, siloName Name) (*SamlIdentityProvider, error) {
+	// Create the url.
+	path := "/system/silos/{{.silo_name}}/saml-identity-providers/{{.provider_name}}"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"provider_name": string(providerName),
+		"silo_name":     string(siloName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SamlIdentityProvider
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
