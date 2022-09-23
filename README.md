@@ -32,7 +32,7 @@ import (
 )
 
 func main() {
-   client, err := oxide.NewClient("<auth token>", "<user-agent>", "<host>")
+	client, err := oxide.NewClient("<auth token>", "<user-agent>", "<host>")
 	if err != nil {
 		panic(err)
 	}
