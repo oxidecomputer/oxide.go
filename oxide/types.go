@@ -866,7 +866,7 @@ type InstanceState string
 type IpKind string
 
 // IpNet is the type definition for a IpNet.
-type IpNet string
+type IpNet interface{}
 
 // IpPool is identity-related metadata that's included in nearly all public API objects
 type IpPool struct {
@@ -926,7 +926,7 @@ type IpPoolUpdate struct {
 }
 
 // IpRange is the type definition for a IpRange.
-type IpRange string
+type IpRange interface{}
 
 // Ipv4Net is an IPv4 subnet, including prefix and subnet mask
 type Ipv4Net string
@@ -2225,18 +2225,6 @@ const IpKindEphemeral IpKind = "ephemeral"
 // IpKindFloating represents the IpKind `"floating"`.
 const IpKindFloating IpKind = "floating"
 
-// IpNetIpv4Net represents the IpNet `"Ipv4Net"`.
-const IpNetIpv4Net IpNet = "ipv4net"
-
-// IpNetIpv6Net represents the IpNet `"Ipv6Net"`.
-const IpNetIpv6Net IpNet = "ipv6net"
-
-// IpRangeIpv4Range represents the IpRange `"Ipv4Range"`.
-const IpRangeIpv4Range IpRange = "ipv4range"
-
-// IpRangeIpv6Range represents the IpRange `"Ipv6Range"`.
-const IpRangeIpv6Range IpRange = "ipv6range"
-
 // NameOrIdSortModeNameAscending represents the NameOrIdSortMode `"name_ascending"`.
 const NameOrIdSortModeNameAscending NameOrIdSortMode = "name_ascending"
 
@@ -2571,16 +2559,10 @@ var IpKinds = []IpKind{
 }
 
 // IpNets is the collection of all IpNet values.
-var IpNets = []IpNet{
-	IpNetIpv4Net,
-	IpNetIpv6Net,
-}
+var IpNets = []IpNet{}
 
 // IpRanges is the collection of all IpRange values.
-var IpRanges = []IpRange{
-	IpRangeIpv4Range,
-	IpRangeIpv6Range,
-}
+var IpRanges = []IpRange{}
 
 // NameOrIdSortModes is the collection of all NameOrIdSortMode values.
 var NameOrIdSortModes = []NameOrIdSortMode{

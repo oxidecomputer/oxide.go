@@ -334,10 +334,10 @@ func Test_createAllOf(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Run(tt.name, func(t *testing.T) {
-				got, got1, got2 := createAllOf(tt.args.s, tt.args.stringEnums, tt.args.name, tt.args.typeName)
+				got, got1 := createAllOf(tt.args.s, tt.args.stringEnums, tt.args.name, tt.args.typeName)
 				assert.Equal(t, tt.want, got)
 				assert.Equal(t, tt.want1, got1)
-				assert.Equal(t, tt.want2, got2)
+				//assert.Equal(t, tt.want2, got2)
 			})
 		})
 	}
