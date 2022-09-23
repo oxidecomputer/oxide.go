@@ -309,24 +309,16 @@ func Test_createAllOf(t *testing.T) {
 		typeName    string
 	}
 	tests := []struct {
-		name  string
-		args  args
-		want  map[string][]string
-		want1 []TypeTemplate
-		want2 []EnumTemplate
+		name string
+		args args
+		want []TypeTemplate
 	}{
 		{
 			name: "success allOf",
 			args: args{typeSpecAllOf, enums, "IpRange", "IpRange"},
-			want: map[string][]string{"IpRange": {"Ipv4Range"}},
-			want1: []TypeTemplate{
+			want: []TypeTemplate{
 				{
-					Description: "// IpRange is the type definition for a IpRange.", Name: "IpRange", Type: "string",
-				},
-			},
-			want2: []EnumTemplate{
-				{
-					Description: "// IpRangeIpv4Range represents the IpRange `\"Ipv4Range\"`.", Name: "IpRangeIpv4Range", ValueType: "const", Value: "IpRange = \"ipv4range\"",
+					Description: "// IpRange is the type definition for a IpRange.", Name: "IpRange", Type: "interface{}",
 				},
 			},
 		},
@@ -334,10 +326,8 @@ func Test_createAllOf(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Run(tt.name, func(t *testing.T) {
-				got, got1, got2 := createAllOf(tt.args.s, tt.args.stringEnums, tt.args.name, tt.args.typeName)
+				got := createAllOf(tt.args.s, tt.args.stringEnums, tt.args.name, tt.args.typeName)
 				assert.Equal(t, tt.want, got)
-				assert.Equal(t, tt.want1, got1)
-				assert.Equal(t, tt.want2, got2)
 			})
 		})
 	}

@@ -127,6 +127,11 @@ func constructEnums(enumStrCollection map[string][]string) []EnumTemplate {
 			// Most likely, the enum values are strings.
 			enumItems = enumItems + fmt.Sprintf("\t%s,\n", strcase.ToCamel(fmt.Sprintf("%s_%s", makeSingular(name), enum)))
 		}
+
+		if enumItems == "" {
+			continue
+		}
+
 		enumVar := fmt.Sprintf("= []%s{\n", makeSingular(name)) + enumItems + "}"
 
 		enumTpl := EnumTemplate{
@@ -245,10 +250,9 @@ func populateTypeTemplates(name string, s *openapi3.Schema, additionalName strin
 		fmt.Printf("[WARN] TODO: skipping type for %q, since it is a ANYOF\n", name)
 	case "all_of":
 		// TODO: This approach works for the current usage of "allOf". Monitor to see if this changes
-		enums, tt, et := createAllOf(s, collectEnumStringTypes, name, typeName)
+		tt := createAllOf(s, collectEnumStringTypes, name, typeName)
 		types = append(types, tt...)
-		enumTypes = append(enumTypes, et...)
-		collectEnumStringTypes = enums
+
 	default:
 		fmt.Printf("[WARN] TODO: skipping type for %q, since it is an unknown type\n", name)
 	}
@@ -352,9 +356,19 @@ func createStringEnum(s *openapi3.Schema, stringEnums map[string][]string, name,
 	return stringEnums, typeTpls, enumTpls
 }
 
-// TODO: For now AllOf values are treated as enums because that's how they are being used.
-// Keep an eye out to see if this changes
-func createAllOf(s *openapi3.Schema, stringEnums map[string][]string, name, typeName string) (map[string][]string, []TypeTemplate, []EnumTemplate) {
+// TODO: For now AllOf values are treated as interfaces. This way you can pass whichever
+// of the struct types you need like this:
+//
+// ipRange := oxide.Ipv4Range{
+// 	 First: "172.20.15.240",
+// 	 Last:  "172.20.15.250",
+// }
+// body := oxide.IpRange(ipRange)
+// resp, err := client.IpPoolRangeAdd("mypool", &body)
+//
+// Probably not the best approach, but will leave them this way until I come up with
+// a more idiomatic solution. Keep an eye out on this one to refine.
+func createAllOf(s *openapi3.Schema, stringEnums map[string][]string, name, typeName string) []TypeTemplate {
 	singularTypename := makeSingular(typeName)
 	singularName := makeSingular(name)
 	typeTpls := make([]TypeTemplate, 0)
@@ -364,7 +378,7 @@ func createAllOf(s *openapi3.Schema, stringEnums map[string][]string, name, type
 		typeTpl := TypeTemplate{
 			Description: formatTypeDescription(singularName, s),
 			Name:        singularTypename,
-			Type:        "string",
+			Type:        "interface{}",
 		}
 
 		typeTpls = append(typeTpls, typeTpl)
@@ -372,26 +386,7 @@ func createAllOf(s *openapi3.Schema, stringEnums map[string][]string, name, type
 		stringEnums[singularTypename] = []string{}
 	}
 
-	enumTpls := make([]EnumTemplate, 0)
-	for _, v := range s.AllOf {
-		enum := getReferenceSchema(v)
-
-		snakeCaseTypeName := fmt.Sprintf("%s_%s", singularName, enum)
-
-		enumTpl := EnumTemplate{
-			Description: fmt.Sprintf("// %s represents the %s `%q`.", strcase.ToCamel(snakeCaseTypeName), singularName, enum),
-			Name:        strcase.ToCamel(snakeCaseTypeName),
-			ValueType:   "const",
-			Value:       fmt.Sprintf("%s = %q", singularName, strings.ToLower(enum)),
-		}
-
-		enumTpls = append(enumTpls, enumTpl)
-
-		// Add the enum type to the list of enum types.
-		stringEnums[singularTypename] = append(stringEnums[singularTypename], enum)
-	}
-
-	return stringEnums, typeTpls, enumTpls
+	return typeTpls
 }
 
 func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []EnumTemplate) {
