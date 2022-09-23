@@ -2558,12 +2558,6 @@ var IpKinds = []IpKind{
 	IpKindFloating,
 }
 
-// IpNets is the collection of all IpNet values.
-var IpNets = []IpNet{}
-
-// IpRanges is the collection of all IpRange values.
-var IpRanges = []IpRange{}
-
 // NameOrIdSortModes is the collection of all NameOrIdSortMode values.
 var NameOrIdSortModes = []NameOrIdSortMode{
 	NameOrIdSortModeIdAscending,
