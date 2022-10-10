@@ -8,6 +8,8 @@ on:
       - .github/workflows/generate.yml
       - "VERSION"
       - "VERSION_OMICRON"
+      - go.mod
+      - go.sum
   workflow_dispatch:
     inputs:
 jobs:
