@@ -458,14 +458,16 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 		return typeTpls, enumTpls
 	}
 
-	typeTpl := TypeTemplate{
-		Description: formatTypeDescription(typeName, s),
-		Name:        typeName,
-		Type:        "struct",
-		Fields:      fields,
+	// Make sure to only create structs if the oneOf is not a replacement for enums on the API spec
+	if len(fields) > 0 {
+		typeTpl := TypeTemplate{
+			Description: formatTypeDescription(typeName, s),
+			Name:        typeName,
+			Type:        "struct",
+			Fields:      fields,
+		}
+		typeTpls = append(typeTpls, typeTpl)
 	}
-	typeTpls = append(typeTpls, typeTpl)
-
 	return typeTpls, enumTpls
 }
 
