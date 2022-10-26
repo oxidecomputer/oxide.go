@@ -530,6 +530,23 @@ type GlobalImageResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+// Group is client view of a [`Group`]
+type Group struct {
+	// DisplayName is human-readable name that can identify the group
+	DisplayName string `json:"display_name,omitempty" yaml:"display_name,omitempty"`
+	Id          string `json:"id,omitempty" yaml:"id,omitempty"`
+	// SiloId is uuid of the silo to which this group belongs
+	SiloId string `json:"silo_id,omitempty" yaml:"silo_id,omitempty"`
+}
+
+// GroupResultsPage is a single page of results
+type GroupResultsPage struct {
+	// Items is list of items on this page of results
+	Items []Group `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
 // Histogramdouble is a simple type for managing a histogram metric.
 //
 // A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
@@ -580,9 +597,7 @@ type Histogramint64 struct {
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
 }
 
-// IdSortMode is supported set of sort modes for scanning by id only.
-//
-// Currently, we only support scanning in ascending order.
+// IdSortMode is sort in increasing order of "id"
 type IdSortMode string
 
 // IdentityProvider is client view of an [`IdentityProvider`]
@@ -609,7 +624,7 @@ type IdentityProviderResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// IdentityProviderType is the type definition for a IdentityProviderType.
+// IdentityProviderType is sAML identity provider
 type IdentityProviderType string
 
 // IdentityType is describes what kind of identity is described by an id
@@ -857,9 +872,7 @@ type InstanceSerialConsoleData struct {
 	LastByteOffset int `json:"last_byte_offset,omitempty" yaml:"last_byte_offset,omitempty"`
 }
 
-// InstanceState is running state of an Instance (primarily: booted or stopped)
-//
-// This typically reflects whether it's starting, running, stopping, or stopped, but also includes states related to the Instance's lifecycle
+// InstanceState is the instance is being created.
 type InstanceState string
 
 // IpKind is the kind of an external IP address for an instance
@@ -974,12 +987,10 @@ type MeasurementResultsPage struct {
 // Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 type Name string
 
-// NameOrIdSortMode is supported set of sort modes for scanning by name or id
+// NameOrIdSortMode is sort in increasing order of "name"
 type NameOrIdSortMode string
 
-// NameSortMode is supported set of sort modes for scanning by name only
-//
-// Currently, we only support scanning in ascending order.
+// NameSortMode is sort in increasing order of "name"
 type NameSortMode string
 
 // NetworkInterface is a `NetworkInterface` represents a virtual network interface device.
@@ -1318,9 +1329,9 @@ type RouterRouteCreateParams struct {
 	Target RouteTarget `json:"target,omitempty" yaml:"target,omitempty"`
 }
 
-// RouterRouteKind is the classification of a [`RouterRoute`] as defined by the system. The kind determines certain attributes such as if the route is modifiable and describes how or where the route was created.
+// RouterRouteKind is determines the default destination of traffic, such as whether it goes to the internet or not.
 //
-// See [RFD-21](https://rfd.shared.oxide.computer/rfd/0021#concept-router) for more context
+// `Destination: An Internet Gateway` `Modifiable: true`
 type RouterRouteKind string
 
 // RouterRouteResultsPage is a single page of results
@@ -1491,14 +1502,14 @@ type Silo struct {
 	Discoverable bool `json:"discoverable,omitempty" yaml:"discoverable,omitempty"`
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// IdentityMode is how users and groups are managed in this Silo
+	IdentityMode SiloIdentityMode `json:"identity_mode,omitempty" yaml:"identity_mode,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
-	// UserProvisionType is user provision type
-	UserProvisionType UserProvisionType `json:"user_provision_type,omitempty" yaml:"user_provision_type,omitempty"`
 }
 
 // SiloCreate is create-time parameters for a [`Silo`](crate::external_api::views::Silo)
@@ -1509,11 +1520,14 @@ type SiloCreate struct {
 	AdminGroupName string `json:"admin_group_name,omitempty" yaml:"admin_group_name,omitempty"`
 	Description    string `json:"description,omitempty" yaml:"description,omitempty"`
 	Discoverable   bool   `json:"discoverable,omitempty" yaml:"discoverable,omitempty"`
+	// IdentityMode is describes how identities are managed and users are authenticated in this Silo
+	IdentityMode SiloIdentityMode `json:"identity_mode,omitempty" yaml:"identity_mode,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
-	// UserProvisionType is how users will be provisioned in a silo during authentication.
-	UserProvisionType UserProvisionType `json:"user_provision_type,omitempty" yaml:"user_provision_type,omitempty"`
 }
+
+// SiloIdentityMode is users are authenticated with SAML using an external authentication provider.  The system updates information about users and groups only during successful authentication (i.e,. "JIT provisioning" of users and groups).
+type SiloIdentityMode string
 
 // SiloResultsPage is a single page of results
 type SiloResultsPage struct {
@@ -1672,6 +1686,8 @@ type User struct {
 	// DisplayName is human-readable name that can identify the user
 	DisplayName string `json:"display_name,omitempty" yaml:"display_name,omitempty"`
 	Id          string `json:"id,omitempty" yaml:"id,omitempty"`
+	// SiloId is uuid of the silo to which this user belongs
+	SiloId string `json:"silo_id,omitempty" yaml:"silo_id,omitempty"`
 }
 
 // UserBuiltin is client view of a [`UserBuiltin`]
@@ -1696,8 +1712,14 @@ type UserBuiltinResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// UserProvisionType is how users will be provisioned in a silo during authentication.
-type UserProvisionType string
+// UserCreate is create-time parameters for a [`User`](crate::external_api::views::User)
+type UserCreate struct {
+	// ExternalId is username used to log in
+	ExternalId UserId `json:"external_id,omitempty" yaml:"external_id,omitempty"`
+}
+
+// UserId is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+type UserId string
 
 // UserResultsPage is a single page of results
 type UserResultsPage struct {
@@ -2318,6 +2340,12 @@ const SagaStateStateSucceeded SagaStateState = "succeeded"
 // SagaStateStateFailed represents the SagaStateState `"failed"`.
 const SagaStateStateFailed SagaStateState = "failed"
 
+// SiloIdentityModeSamlJit represents the SiloIdentityMode `"saml_jit"`.
+const SiloIdentityModeSamlJit SiloIdentityMode = "saml_jit"
+
+// SiloIdentityModeLocalOnly represents the SiloIdentityMode `"local_only"`.
+const SiloIdentityModeLocalOnly SiloIdentityMode = "local_only"
+
 // SiloRoleAdmin represents the SiloRole `"admin"`.
 const SiloRoleAdmin SiloRole = "admin"
 
@@ -2338,12 +2366,6 @@ const SnapshotStateFaulted SnapshotState = "faulted"
 
 // SnapshotStateDestroyed represents the SnapshotState `"destroyed"`.
 const SnapshotStateDestroyed SnapshotState = "destroyed"
-
-// UserProvisionTypeFixed represents the UserProvisionType `"fixed"`.
-const UserProvisionTypeFixed UserProvisionType = "fixed"
-
-// UserProvisionTypeJit represents the UserProvisionType `"jit"`.
-const UserProvisionTypeJit UserProvisionType = "jit"
 
 // VpcFirewallRuleActionAllow represents the VpcFirewallRuleAction `"allow"`.
 const VpcFirewallRuleActionAllow VpcFirewallRuleAction = "allow"
@@ -2625,6 +2647,12 @@ var SagaStateStates = []SagaStateState{
 	SagaStateStateSucceeded,
 }
 
+// SiloIdentityModes is the collection of all SiloIdentityMode values.
+var SiloIdentityModes = []SiloIdentityMode{
+	SiloIdentityModeLocalOnly,
+	SiloIdentityModeSamlJit,
+}
+
 // SiloRoles is the collection of all SiloRole values.
 var SiloRoles = []SiloRole{
 	SiloRoleAdmin,
@@ -2638,12 +2666,6 @@ var SnapshotStates = []SnapshotState{
 	SnapshotStateDestroyed,
 	SnapshotStateFaulted,
 	SnapshotStateReady,
-}
-
-// UserProvisionTypes is the collection of all UserProvisionType values.
-var UserProvisionTypes = []UserProvisionType{
-	UserProvisionTypeFixed,
-	UserProvisionTypeJit,
 }
 
 // VpcFirewallRuleActions is the collection of all VpcFirewallRuleAction values.

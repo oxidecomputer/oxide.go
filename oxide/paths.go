@@ -541,15 +541,95 @@ func (c *Client) VpcViewById(id string) (*Vpc, error) {
 	return &body, nil
 }
 
-// Login: Prompt user login
+// GroupList: List groups
+//
+// To iterate over all pages, use the `GroupListAllPages` method, instead.
+//
+// Parameters
+// - `limit` Maximum number of items returned by a single call
+// - `pageToken` Token returned by previous call to retrieve the subsequent page
+// - `sortBy`
+func (c *Client) GroupList(limit int, pageToken string, sortBy IdSortMode) (*GroupResultsPage, error) {
+	// Create the url.
+	path := "/groups"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"limit":      strconv.Itoa(limit),
+		"page_token": pageToken,
+		"sort_by":    string(sortBy),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body GroupResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// GroupListAllPages: List groups
+//
+// This method is a wrapper around the `GroupList` method.
+// This method returns all the pages at once.
+//
+// Parameters
+// - `sortBy`
+func (c *Client) GroupListAllPages(sortBy IdSortMode) (*[]Group, error) {
+	var allPages []Group
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.GroupList(limit, pageToken, sortBy)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == pageToken {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+}
+
+// LoginSamlBegin: Prompt user login
 // Either display a page asking a user for their credentials, or redirect them to their identity provider.
 //
 // Parameters
 // - `providerName`
 // - `siloName`
-func (c *Client) Login(providerName Name, siloName Name) error {
+func (c *Client) LoginSamlBegin(providerName Name, siloName Name) error {
 	// Create the url.
-	path := "/login/{{.silo_name}}/{{.provider_name}}"
+	path := "/login/{{.silo_name}}/saml/{{.provider_name}}"
 	uri := resolveRelative(c.server, path)
 
 	// Create the request.
@@ -581,15 +661,15 @@ func (c *Client) Login(providerName Name, siloName Name) error {
 	return nil
 }
 
-// ConsumeCredentials: Authenticate a user
+// LoginSaml: Authenticate a user
 // Either receive a username and password, or some sort of identity provider data (like a SAMLResponse). Use these to set the user's session cookie.
 //
 // Parameters
 // - `providerName`
 // - `siloName`
-func (c *Client) ConsumeCredentials(providerName Name, siloName Name, b io.Reader) error {
+func (c *Client) LoginSaml(providerName Name, siloName Name, b io.Reader) error {
 	// Create the url.
-	path := "/login/{{.silo_name}}/{{.provider_name}}"
+	path := "/login/{{.silo_name}}/saml/{{.provider_name}}"
 	uri := resolveRelative(c.server, path)
 
 	// Create the request.
@@ -6877,6 +6957,204 @@ func (c *Client) SiloIdentityProviderListAllPages(siloName Name, sortBy NameSort
 	return &allPages, nil
 }
 
+// LocalIdpUserCreate: Create a user
+// Users can only be created in Silos with `provision_type` == `Fixed`. Otherwise, Silo users are just-in-time (JIT) provisioned when a user first logs in using an external Identity Provider.
+//
+// Parameters
+// - `siloName` The silo's unique name.
+func (c *Client) LocalIdpUserCreate(siloName Name, j *UserCreate) (*User, error) {
+	// Create the url.
+	path := "/system/silos/{{.silo_name}}/identity-providers/local/users"
+	uri := resolveRelative(c.server, path)
+
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"silo_name": string(siloName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body User
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// LocalIdpUserDelete
+//
+// Parameters
+// - `siloName` The silo's unique name.
+// - `userId` The user's internal id
+func (c *Client) LocalIdpUserDelete(siloName Name, userId string) error {
+	// Create the url.
+	path := "/system/silos/{{.silo_name}}/identity-providers/local/users/{{.user_id}}"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("DELETE", uri, nil)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"silo_name": string(siloName),
+		"user_id":   userId,
+	}); err != nil {
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// SamlIdentityProviderCreate: Create a SAML IDP
+//
+// Parameters
+// - `siloName` The silo's unique name.
+func (c *Client) SamlIdentityProviderCreate(siloName Name, j *SamlIdentityProviderCreate) (*SamlIdentityProvider, error) {
+	// Create the url.
+	path := "/system/silos/{{.silo_name}}/identity-providers/saml"
+	uri := resolveRelative(c.server, path)
+
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"silo_name": string(siloName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SamlIdentityProvider
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SamlIdentityProviderView: Fetch a SAML IDP
+//
+// Parameters
+// - `providerName` The SAML identity provider's name
+// - `siloName` The silo's unique name.
+func (c *Client) SamlIdentityProviderView(providerName Name, siloName Name) (*SamlIdentityProvider, error) {
+	// Create the url.
+	path := "/system/silos/{{.silo_name}}/identity-providers/saml/{{.provider_name}}"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"provider_name": string(providerName),
+		"silo_name":     string(siloName),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SamlIdentityProvider
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
 // SiloPolicyView: Fetch a silo's IAM policy
 //
 // Parameters
@@ -6979,68 +7257,18 @@ func (c *Client) SiloPolicyUpdate(siloName Name, j *SiloRolePolicy) (*SiloRolePo
 	return &body, nil
 }
 
-// SiloIdentityProviderCreate: Create a SAML IDP
+// SiloUsersList: List users in a specific Silo
+//
+// To iterate over all pages, use the `SiloUsersListAllPages` method, instead.
 //
 // Parameters
+// - `limit` Maximum number of items returned by a single call
+// - `pageToken` Token returned by previous call to retrieve the subsequent page
 // - `siloName` The silo's unique name.
-func (c *Client) SiloIdentityProviderCreate(siloName Name, j *SamlIdentityProviderCreate) (*SamlIdentityProvider, error) {
+// - `sortBy`
+func (c *Client) SiloUsersList(siloName Name, limit int, pageToken string, sortBy IdSortMode) (*UserResultsPage, error) {
 	// Create the url.
-	path := "/system/silos/{{.silo_name}}/saml-identity-providers"
-	uri := resolveRelative(c.server, path)
-
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
-
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"silo_name": string(siloName),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body SamlIdentityProvider
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// SiloIdentityProviderView: Fetch a SAML IDP
-//
-// Parameters
-// - `providerName` The SAML identity provider's name
-// - `siloName` The silo's unique name.
-func (c *Client) SiloIdentityProviderView(providerName Name, siloName Name) (*SamlIdentityProvider, error) {
-	// Create the url.
-	path := "/system/silos/{{.silo_name}}/saml-identity-providers/{{.provider_name}}"
+	path := "/system/silos/{{.silo_name}}/users/all"
 	uri := resolveRelative(c.server, path)
 
 	// Create the request.
@@ -7051,8 +7279,10 @@ func (c *Client) SiloIdentityProviderView(providerName Name, siloName Name) (*Sa
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"provider_name": string(providerName),
-		"silo_name":     string(siloName),
+		"limit":      strconv.Itoa(limit),
+		"page_token": pageToken,
+		"silo_name":  string(siloName),
+		"sort_by":    string(sortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -7074,7 +7304,84 @@ func (c *Client) SiloIdentityProviderView(providerName Name, siloName Name) (*Sa
 		return nil, errors.New("request returned an empty body in the response")
 	}
 
-	var body SamlIdentityProvider
+	var body UserResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SiloUsersListAllPages: List users in a specific Silo
+//
+// This method is a wrapper around the `SiloUsersList` method.
+// This method returns all the pages at once.
+//
+// Parameters
+// - `siloName` The silo's unique name.
+// - `sortBy`
+func (c *Client) SiloUsersListAllPages(siloName Name, sortBy IdSortMode) (*[]User, error) {
+	var allPages []User
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.SiloUsersList(siloName, limit, pageToken, sortBy)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == pageToken {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+}
+
+// SiloUserView
+//
+// Parameters
+// - `siloName` The silo's unique name.
+// - `userId` The user's internal id
+func (c *Client) SiloUserView(siloName Name, userId string) (*User, error) {
+	// Create the url.
+	path := "/system/silos/{{.silo_name}}/users/id/{{.user_id}}"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"silo_name": string(siloName),
+		"user_id":   userId,
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body User
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
