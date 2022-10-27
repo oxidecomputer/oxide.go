@@ -359,10 +359,11 @@ func createStringEnum(s *openapi3.Schema, stringEnums map[string][]string, name,
 // TODO: For now AllOf values are treated as interfaces. This way you can pass whichever
 // of the struct types you need like this:
 //
-// ipRange := oxide.Ipv4Range{
-// 	 First: "172.20.15.240",
-// 	 Last:  "172.20.15.250",
-// }
+//	ipRange := oxide.Ipv4Range{
+//		 First: "172.20.15.240",
+//		 Last:  "172.20.15.250",
+//	}
+//
 // body := oxide.IpRange(ipRange)
 // resp, err := client.IpPoolRangeAdd("mypool", &body)
 //

@@ -371,7 +371,6 @@ func parseParams(specParams openapi3.Parameters, method string) paramsInfo {
 	return pInfo
 }
 
-//func parseRequestBody(reqBody *openapi3.RequestBodyRef, pInfo paramsInfo, methodName string) (paramsInfo, string, string) {
 func parseRequestBody(reqBody *openapi3.RequestBodyRef, pInfo paramsInfo, methodName string) paramsInfo {
 	if reqBody == nil {
 		return pInfo
