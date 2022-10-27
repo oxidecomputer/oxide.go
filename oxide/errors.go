@@ -2,7 +2,7 @@ package oxide
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 )
@@ -40,7 +40,7 @@ func checkResponse(res *http.Response) error {
 		return nil
 	}
 
-	slurp, _ := ioutil.ReadAll(res.Body)
+	slurp, _ := io.ReadAll(res.Body)
 	// TODO: We could optionally decode the response body as JSON if there is a
 	// standardized error format.
 

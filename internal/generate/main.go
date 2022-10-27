@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -51,7 +50,7 @@ func loadAPIFromFile(file string) (*openapi3.T, error) {
 
 	}
 	p := filepath.Join(filepath.Dir(wd), file)
-	omicronVersion, err := ioutil.ReadFile(p)
+	omicronVersion, err := os.ReadFile(p)
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving Omicron version: %v", err)
 	}

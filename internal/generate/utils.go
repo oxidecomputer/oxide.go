@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -168,12 +167,12 @@ func getReferenceSchema(v *openapi3.SchemaRef) string {
 }
 
 func compareFiles(expected, actual string) error {
-	f1, err := ioutil.ReadFile(expected)
+	f1, err := os.ReadFile(expected)
 	if err != nil {
 		return err
 	}
 
-	f2, err := ioutil.ReadFile(actual)
+	f2, err := os.ReadFile(actual)
 	if err != nil {
 		return err
 	}
