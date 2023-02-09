@@ -49,3 +49,20 @@ func expandURL(u *url.URL, expansions map[string]string) error {
 
 	return nil
 }
+
+func addQueries(u *url.URL, query map[string]string) error {
+	q := u.Query()
+	for k, v := range query {
+		if v == "" {
+			continue
+		}
+
+		//escape the string
+		query[k] = url.QueryEscape(v)
+
+		q.Set(k, v)
+	}
+	u.RawQuery = q.Encode()
+	fmt.Println(u)
+	return nil
+}

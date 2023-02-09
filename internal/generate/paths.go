@@ -25,6 +25,7 @@ type methodTemplate struct {
 	Path            string
 	PathParams      []string
 	ParamsString    string //temporary field
+	QueryParams     []string
 	IsList          bool
 	IsListAll       bool
 	HasDescription  bool
@@ -163,6 +164,7 @@ func buildMethod(f *os.File, spec *openapi3.T, method string, path string, o *op
 	pInfo = parseRequestBody(o.RequestBody, pInfo, methodName)
 	sigParams := buildSignatureParams(pInfo.parameters)
 	pathParams := buildPathParams(pInfo.parameters)
+	queryParams := buildQueryParams(pInfo.parameters)
 
 	config := methodTemplate{
 		Description:     o.Description,
@@ -176,6 +178,7 @@ func buildMethod(f *os.File, spec *openapi3.T, method string, path string, o *op
 		ParamsString:    pInfo.paramsString,
 		Path:            cleanPath(path),
 		PathParams:      pathParams,
+		QueryParams:     queryParams,
 		IsList:          isList,
 		IsListAll:       isGetAllPages,
 		HasBody:         o.RequestBody != nil,
@@ -325,17 +328,52 @@ func buildPathParams(params map[string]*openapi3.Parameter) []string {
 		// Iterate over all the paths in the spec and write the types.
 		// We want to ensure we keep the order so the diffs don't change.
 		keys := make([]string, 0)
-		for k := range params {
-			keys = append(keys, k)
+		for k, v := range params {
+			if v.In == "path" {
+				keys = append(keys, k)
+			}
 		}
 		sort.Strings(keys)
 		for _, name := range keys {
 			p := params[name]
 			t := convertToValidGoType(name, p.Schema)
 			n := strcase.ToLowerCamel(name)
-			println(t)
 			if t == "string" {
 				pathParams = append(pathParams, fmt.Sprintf("%q: %s,", name, n))
+				// TODO: Identify interfaces instead of singling out NameOrId
+			} else if t == "NameOrId" {
+				pathParams = append(pathParams, fmt.Sprintf("%q: %s.(string),", name, n))
+			} else if t == "int" {
+				pathParams = append(pathParams, fmt.Sprintf("%q: strconv.Itoa(%s),", name, n))
+			} else if t == "*time.Time" {
+				pathParams = append(pathParams, fmt.Sprintf("%q: %s.String(),", name, n))
+			} else {
+				pathParams = append(pathParams, fmt.Sprintf("%q: string(%s),", name, n))
+			}
+		}
+	}
+	return pathParams
+}
+
+func buildQueryParams(params map[string]*openapi3.Parameter) []string {
+	pathParams := make([]string, 0)
+	if len(params) > 0 {
+		// Iterate over all the paths in the spec and write the types.
+		// We want to ensure we keep the order so the diffs don't change.
+		keys := make([]string, 0)
+		for k, v := range params {
+			if v.In == "query" {
+				keys = append(keys, k)
+			}
+		}
+		sort.Strings(keys)
+		for _, name := range keys {
+			p := params[name]
+			t := convertToValidGoType(name, p.Schema)
+			n := strcase.ToLowerCamel(name)
+			if t == "string" {
+				pathParams = append(pathParams, fmt.Sprintf("%q: %s,", name, n))
+				// TODO: Identify interfaces instead of singling out NameOrId
 			} else if t == "NameOrId" {
 				pathParams = append(pathParams, fmt.Sprintf("%q: %s.(string),", name, n))
 			} else if t == "int" {

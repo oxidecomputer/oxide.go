@@ -22,10 +22,16 @@ func (c *Client) IpPoolList(limit int, pageToken string, ) (*IpPoolResultsPage, 
 
     // Add the parameters to the url.
     if err := expandURL(req.URL, map[string]string{ 
+    }); err != nil {
+        return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+    }
+
+    // Add query if any
+    if err := addQueries(req.URL, map[string]string{ 
         "limit": strconv.Itoa(limit),
         "page_token": pageToken,
     }); err != nil {
-        return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+        return nil, fmt.Errorf("adding queries to URL failed: %v", err)
     }
 
     // Send the request.
@@ -143,6 +149,12 @@ func (c *Client) IpPoolView(poolName Name, ) (*IpPool, error) {
         return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
     }
 
+    // Add query if any
+    if err := addQueries(req.URL, map[string]string{ 
+    }); err != nil {
+        return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+    }
+
     // Send the request.
     resp, err := c.client.Do(req)
     if err != nil {
@@ -197,6 +209,12 @@ func (c *Client) IpPoolUpdate(poolName Name, j *IpPoolUpdate) (*IpPool, error) {
         return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
     }
 
+    // Add query if any
+    if err := addQueries(req.URL, map[string]string{ 
+    }); err != nil {
+        return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+    }
+
     // Send the request.
     resp, err := c.client.Do(req)
     if err != nil {
@@ -243,6 +261,12 @@ func (c *Client) IpPoolDelete(poolName Name, ) error {
         "pool_name": string(poolName),
     }); err != nil {
         return fmt.Errorf("expanding URL with parameters failed: %v", err)
+    }
+
+    // Add query if any
+    if err := addQueries(req.URL, map[string]string{ 
+    }); err != nil {
+        return fmt.Errorf("adding queries to URL failed: %v", err)
     }
 
     // Send the request.
