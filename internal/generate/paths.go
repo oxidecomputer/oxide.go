@@ -53,7 +53,10 @@ func generatePaths(file string, spec *openapi3.T) error {
 	// We want to ensure we keep the order.
 	keys := make([]string, 0)
 	for k := range spec.Paths {
-		keys = append(keys, k)
+		// TODO: Remove this conditional when all APIs have been updated
+		if strings.Contains(k, "/v1/") {
+			keys = append(keys, k)
+		}
 	}
 	sort.Strings(keys)
 	for _, path := range keys {
@@ -149,7 +152,7 @@ func buildMethod(f *os.File, spec *openapi3.T, method string, path string, o *op
 	ogDocParamsString := pInfo.docParamsString
 	if isGetAllPages {
 		methodName += "AllPages"
-		pInfo.paramsString = strings.TrimSpace(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(pInfo.paramsString, "pageToken string", ""), "limit int", ""), ", ,", ""))
+		pInfo.paramsString = listAllSignature(pInfo.paramsString)
 		delete(pInfo.parameters, "page_token")
 		delete(pInfo.parameters, "limit")
 	}
@@ -330,8 +333,11 @@ func buildPathParams(params map[string]*openapi3.Parameter) []string {
 			p := params[name]
 			t := convertToValidGoType(name, p.Schema)
 			n := strcase.ToLowerCamel(name)
+			println(t)
 			if t == "string" {
 				pathParams = append(pathParams, fmt.Sprintf("%q: %s,", name, n))
+			} else if t == "NameOrId" {
+				pathParams = append(pathParams, fmt.Sprintf("%q: %s.(string),", name, n))
 			} else if t == "int" {
 				pathParams = append(pathParams, fmt.Sprintf("%q: strconv.Itoa(%s),", name, n))
 			} else if t == "*time.Time" {
@@ -398,4 +404,11 @@ func parseRequestBody(reqBody *openapi3.RequestBodyRef, pInfo paramsInfo, method
 	}
 
 	return pInfo
+}
+
+func listAllSignature(params string) string {
+	// Remove pageToken and limit as we want to list all pages
+	params = strings.ReplaceAll(params, "pageToken string,", "")
+	params = strings.ReplaceAll(params, "limit int,", "")
+	return strings.TrimSpace(params)
 }

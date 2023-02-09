@@ -13,7 +13,7 @@ func Test_generatePaths(t *testing.T) {
 
 	pathsSpec := &openapi3.T{
 		Paths: openapi3.Paths{
-			"/ip-pools": &openapi3.PathItem{
+			"/v1/ip-pools": &openapi3.PathItem{
 				Get: &openapi3.Operation{
 					Tags:        []string{"ip-pools"},
 					OperationID: "ip-pool-list",
@@ -96,7 +96,7 @@ func Test_generatePaths(t *testing.T) {
 						}},
 				},
 			},
-			"/ip-pools{pool_name}": &openapi3.PathItem{
+			"/v1/ip-pools{pool_name}": &openapi3.PathItem{
 				Get: &openapi3.Operation{
 					Tags:        []string{"ip-pools"},
 					OperationID: "ip-pool-view",
