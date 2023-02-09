@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -160,8 +161,14 @@ func buildMethod(f *os.File, spec *openapi3.T, method string, path string, o *op
 
 	pInfo = parseRequestBody(o.RequestBody, pInfo, methodName)
 	sigParams := buildSignatureParams(pInfo.parameters)
-	pathParams := buildPathParams(pInfo.parameters)
-	queryParams := buildQueryParams(pInfo.parameters)
+	pathParams, err := buildPathOrQueryParams("path", pInfo.parameters)
+	if err != nil {
+		return err
+	}
+	queryParams, err := buildPathOrQueryParams("query", pInfo.parameters)
+	if err != nil {
+		return err
+	}
 
 	config := methodTemplate{
 		Description:     o.Description,
@@ -319,47 +326,18 @@ func buildSignatureParams(params map[string]*openapi3.Parameter) map[string]stri
 	return sigParams
 }
 
-func buildPathParams(params map[string]*openapi3.Parameter) []string {
+func buildPathOrQueryParams(paramType string, params map[string]*openapi3.Parameter) ([]string, error) {
 	pathParams := make([]string, 0)
-	if len(params) > 0 {
-		// Iterate over all the paths in the spec and write the types.
-		// We want to ensure we keep the order so the diffs don't change.
-		keys := make([]string, 0)
-		for k, v := range params {
-			if v.In == "path" {
-				keys = append(keys, k)
-			}
-		}
-		sort.Strings(keys)
-		for _, name := range keys {
-			p := params[name]
-			t := convertToValidGoType(name, p.Schema)
-			n := strcase.ToLowerCamel(name)
-			if t == "string" {
-				pathParams = append(pathParams, fmt.Sprintf("%q: %s,", name, n))
-				// TODO: Identify interfaces instead of singling out NameOrId
-			} else if t == "NameOrId" {
-				pathParams = append(pathParams, fmt.Sprintf("%q: %s.(string),", name, n))
-			} else if t == "int" {
-				pathParams = append(pathParams, fmt.Sprintf("%q: strconv.Itoa(%s),", name, n))
-			} else if t == "*time.Time" {
-				pathParams = append(pathParams, fmt.Sprintf("%q: %s.String(),", name, n))
-			} else {
-				pathParams = append(pathParams, fmt.Sprintf("%q: string(%s),", name, n))
-			}
-		}
+	if paramType != "query" && paramType != "path" {
+		return nil, errors.New("paramType must be one of 'query' or 'path'")
 	}
-	return pathParams
-}
 
-func buildQueryParams(params map[string]*openapi3.Parameter) []string {
-	pathParams := make([]string, 0)
 	if len(params) > 0 {
 		// Iterate over all the paths in the spec and write the types.
 		// We want to ensure we keep the order so the diffs don't change.
 		keys := make([]string, 0)
 		for k, v := range params {
-			if v.In == "query" {
+			if v.In == paramType {
 				keys = append(keys, k)
 			}
 		}
@@ -382,7 +360,7 @@ func buildQueryParams(params map[string]*openapi3.Parameter) []string {
 			}
 		}
 	}
-	return pathParams
+	return pathParams, nil
 }
 
 func parseParams(specParams openapi3.Parameters, method string) paramsInfo {
