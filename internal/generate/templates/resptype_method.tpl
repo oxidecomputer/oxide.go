@@ -14,6 +14,13 @@
         {{.}}{{end}}
     }); err != nil {
         return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+    }
+
+    // Add query if any
+    if err := addQueries(req.URL, map[string]string{ {{range .QueryParams}}
+        {{.}}{{end}}
+    }); err != nil {
+        return nil, fmt.Errorf("adding queries to URL failed: %v", err)
     }{{end}}
 
     // Send the request.

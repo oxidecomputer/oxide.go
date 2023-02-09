@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -25,6 +26,7 @@ type methodTemplate struct {
 	Path            string
 	PathParams      []string
 	ParamsString    string //temporary field
+	QueryParams     []string
 	IsList          bool
 	IsListAll       bool
 	HasDescription  bool
@@ -149,7 +151,7 @@ func buildMethod(f *os.File, spec *openapi3.T, method string, path string, o *op
 	ogDocParamsString := pInfo.docParamsString
 	if isGetAllPages {
 		methodName += "AllPages"
-		pInfo.paramsString = strings.TrimSpace(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(pInfo.paramsString, "pageToken string", ""), "limit int", ""), ", ,", ""))
+		pInfo.paramsString = listAllSignature(pInfo.paramsString)
 		delete(pInfo.parameters, "page_token")
 		delete(pInfo.parameters, "limit")
 	}
@@ -159,7 +161,14 @@ func buildMethod(f *os.File, spec *openapi3.T, method string, path string, o *op
 
 	pInfo = parseRequestBody(o.RequestBody, pInfo, methodName)
 	sigParams := buildSignatureParams(pInfo.parameters)
-	pathParams := buildPathParams(pInfo.parameters)
+	pathParams, err := buildPathOrQueryParams("path", pInfo.parameters)
+	if err != nil {
+		return err
+	}
+	queryParams, err := buildPathOrQueryParams("query", pInfo.parameters)
+	if err != nil {
+		return err
+	}
 
 	config := methodTemplate{
 		Description:     o.Description,
@@ -173,6 +182,7 @@ func buildMethod(f *os.File, spec *openapi3.T, method string, path string, o *op
 		ParamsString:    pInfo.paramsString,
 		Path:            cleanPath(path),
 		PathParams:      pathParams,
+		QueryParams:     queryParams,
 		IsList:          isList,
 		IsListAll:       isGetAllPages,
 		HasBody:         o.RequestBody != nil,
@@ -316,14 +326,20 @@ func buildSignatureParams(params map[string]*openapi3.Parameter) map[string]stri
 	return sigParams
 }
 
-func buildPathParams(params map[string]*openapi3.Parameter) []string {
+func buildPathOrQueryParams(paramType string, params map[string]*openapi3.Parameter) ([]string, error) {
 	pathParams := make([]string, 0)
+	if paramType != "query" && paramType != "path" {
+		return nil, errors.New("paramType must be one of 'query' or 'path'")
+	}
+
 	if len(params) > 0 {
 		// Iterate over all the paths in the spec and write the types.
 		// We want to ensure we keep the order so the diffs don't change.
 		keys := make([]string, 0)
-		for k := range params {
-			keys = append(keys, k)
+		for k, v := range params {
+			if v.In == paramType {
+				keys = append(keys, k)
+			}
 		}
 		sort.Strings(keys)
 		for _, name := range keys {
@@ -332,6 +348,9 @@ func buildPathParams(params map[string]*openapi3.Parameter) []string {
 			n := strcase.ToLowerCamel(name)
 			if t == "string" {
 				pathParams = append(pathParams, fmt.Sprintf("%q: %s,", name, n))
+				// TODO: Identify interfaces instead of singling out NameOrId
+			} else if t == "NameOrId" {
+				pathParams = append(pathParams, fmt.Sprintf("%q: %s.(string),", name, n))
 			} else if t == "int" {
 				pathParams = append(pathParams, fmt.Sprintf("%q: strconv.Itoa(%s),", name, n))
 			} else if t == "*time.Time" {
@@ -341,7 +360,7 @@ func buildPathParams(params map[string]*openapi3.Parameter) []string {
 			}
 		}
 	}
-	return pathParams
+	return pathParams, nil
 }
 
 func parseParams(specParams openapi3.Parameters, method string) paramsInfo {
@@ -398,4 +417,11 @@ func parseRequestBody(reqBody *openapi3.RequestBodyRef, pInfo paramsInfo, method
 	}
 
 	return pInfo
+}
+
+func listAllSignature(params string) string {
+	// Remove pageToken and limit as we want to list all pages
+	params = strings.ReplaceAll(params, "pageToken string,", "")
+	params = strings.ReplaceAll(params, "limit int,", "")
+	return strings.TrimSpace(params)
 }
