@@ -9,7 +9,7 @@ import (
 
 func Test_generateTypes(t *testing.T) {
 	typesSpec := &openapi3.T{
-		Components: openapi3.Components{
+		Components: &openapi3.Components{
 			Schemas: openapi3.Schemas{
 				"DiskIdentifier": &openapi3.SchemaRef{Value: &openapi3.Schema{
 					Description: "Parameters for the [`Disk`](omicron_common::api::external::Disk) to be attached or detached to an instance",

@@ -10,7 +10,7 @@ import (
 func Test_generateResponses(t *testing.T) {
 	respDesc := "Error"
 	responsesSpec := &openapi3.T{
-		Components: openapi3.Components{
+		Components: &openapi3.Components{
 			Responses: openapi3.Responses{
 				"Error": &openapi3.ResponseRef{Value: &openapi3.Response{
 					Description: &respDesc,
