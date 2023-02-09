@@ -54,10 +54,7 @@ func generatePaths(file string, spec *openapi3.T) error {
 	// We want to ensure we keep the order.
 	keys := make([]string, 0)
 	for k := range spec.Paths {
-		// TODO: Remove this conditional when all APIs have been updated
-		if strings.Contains(k, "/v1/") {
-			keys = append(keys, k)
-		}
+		keys = append(keys, k)
 	}
 	sort.Strings(keys)
 	for _, path := range keys {
