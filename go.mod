@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/getkin/kin-openapi v0.114.0
 	github.com/iancoleman/strcase v0.2.0
-	github.com/stretchr/testify v1.8.1
+	github.com/stretchr/testify v1.8.2
 )
 
 require (
