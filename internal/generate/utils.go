@@ -182,3 +182,12 @@ func compareFiles(expected, actual string) error {
 	}
 	return nil
 }
+
+// This function is mainly used to avoid having parameters named "interface" which is a Go type
+func verifyNotAGoType(str string) string {
+	if str == "interface" {
+		return "itf"
+	}
+
+	return str
+}
