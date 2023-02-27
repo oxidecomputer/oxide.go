@@ -121,6 +121,7 @@ func (c *Client) ImageViewById(id string) (*Image, error) {
 }
 
 // InstanceViewById: Fetch an instance by id
+// Use `GET /v1/instances/{instance}` instead
 //
 // Parameters
 // - `id`
@@ -174,6 +175,7 @@ func (c *Client) InstanceViewById(id string) (*Instance, error) {
 }
 
 // InstanceNetworkInterfaceViewById: Fetch a network interface by id
+// Use `GET /v1/network-interfaces/{interface}` instead
 //
 // Parameters
 // - `id`
@@ -335,6 +337,7 @@ func (c *Client) ProjectViewById(id string) (*Project, error) {
 }
 
 // SnapshotViewById: Fetch a snapshot by id
+// Use `GET /v1/snapshots/{snapshot}` instead.
 //
 // Parameters
 // - `id`
@@ -388,6 +391,7 @@ func (c *Client) SnapshotViewById(id string) (*Snapshot, error) {
 }
 
 // VpcRouterRouteViewById: Fetch a route by id
+// Use `GET /v1/vpc-router-routes/{route}` instead
 //
 // Parameters
 // - `id`
@@ -441,6 +445,7 @@ func (c *Client) VpcRouterRouteViewById(id string) (*RouterRoute, error) {
 }
 
 // VpcRouterViewById: Get a router by id
+// Use `GET /v1/vpc-routers/{router}` instead
 //
 // Parameters
 // - `id`
@@ -494,6 +499,7 @@ func (c *Client) VpcRouterViewById(id string) (*VpcRouter, error) {
 }
 
 // VpcSubnetViewById: Fetch a subnet by id
+// Use `GET /v1/vpc-subnets/{id}` instead
 //
 // Parameters
 // - `id`
@@ -547,6 +553,7 @@ func (c *Client) VpcSubnetViewById(id string) (*VpcSubnet, error) {
 }
 
 // VpcViewById: Fetch a VPC
+// Use `GET /v1/vpcs/{id}` instead
 //
 // Parameters
 // - `id`
@@ -2160,6 +2167,7 @@ func (c *Client) ImageDelete(imageName Name, organizationName Name, projectName 
 }
 
 // InstanceList: List instances
+// Use `GET /v1/instances` instead
 //
 // To iterate over all pages, use the `InstanceListAllPages` method, instead.
 //
@@ -2224,6 +2232,7 @@ func (c *Client) InstanceList(limit int, pageToken string, sortBy NameSortMode, 
 }
 
 // InstanceListAllPages: List instances
+// Use `GET /v1/instances` instead
 //
 // This method is a wrapper around the `InstanceList` method.
 // This method returns all the pages at once.
@@ -2764,6 +2773,7 @@ func (c *Client) InstanceMigrate(instanceName Name, organizationName Name, proje
 }
 
 // InstanceNetworkInterfaceList: List network interfaces
+// Use `GET /v1/network-interfaces` instead
 //
 // To iterate over all pages, use the `InstanceNetworkInterfaceListAllPages` method, instead.
 //
@@ -2830,6 +2840,7 @@ func (c *Client) InstanceNetworkInterfaceList(limit int, pageToken string, sortB
 }
 
 // InstanceNetworkInterfaceListAllPages: List network interfaces
+// Use `GET /v1/network-interfaces` instead
 //
 // This method is a wrapper around the `InstanceNetworkInterfaceList` method.
 // This method returns all the pages at once.
@@ -2859,6 +2870,7 @@ func (c *Client) InstanceNetworkInterfaceListAllPages(sortBy NameSortMode, insta
 }
 
 // InstanceNetworkInterfaceCreate: Create a network interface
+// Use `POST /v1/network-interfaces` instead
 //
 // Parameters
 // - `instanceName`
@@ -2922,6 +2934,7 @@ func (c *Client) InstanceNetworkInterfaceCreate(instanceName Name, organizationN
 }
 
 // InstanceNetworkInterfaceView: Fetch a network interface
+// Use `GET /v1/network-interfaces/{interface}` instead
 //
 // Parameters
 // - `instanceName`
@@ -2981,6 +2994,7 @@ func (c *Client) InstanceNetworkInterfaceView(instanceName Name, interfaceName N
 }
 
 // InstanceNetworkInterfaceUpdate: Update a network interface
+// Use `PUT /v1/network-interfaces/{interface}` instead
 //
 // Parameters
 // - `instanceName`
@@ -3047,6 +3061,7 @@ func (c *Client) InstanceNetworkInterfaceUpdate(instanceName Name, interfaceName
 
 // InstanceNetworkInterfaceDelete: Delete a network interface
 // Note that the primary interface for an instance cannot be deleted if there are any secondary interfaces. A new primary interface must be designated first. The primary interface can be deleted if there are no secondary interfaces.
+// Use `DELETE /v1/network-interfaces/{interface}` instead
 //
 // Parameters
 // - `instanceName`
@@ -3498,6 +3513,7 @@ func (c *Client) ProjectPolicyUpdate(organizationName Name, projectName Name, j 
 }
 
 // SnapshotList: List snapshots
+// Use `GET /v1/snapshots` instead.
 //
 // To iterate over all pages, use the `SnapshotListAllPages` method, instead.
 //
@@ -3562,6 +3578,7 @@ func (c *Client) SnapshotList(limit int, pageToken string, sortBy NameSortMode, 
 }
 
 // SnapshotListAllPages: List snapshots
+// Use `GET /v1/snapshots` instead.
 //
 // This method is a wrapper around the `SnapshotList` method.
 // This method returns all the pages at once.
@@ -3590,7 +3607,7 @@ func (c *Client) SnapshotListAllPages(sortBy NameSortMode, organizationName Name
 }
 
 // SnapshotCreate: Create a snapshot
-// Creates a point-in-time snapshot from a disk.
+// Use `POST /v1/snapshots` instead.
 //
 // Parameters
 // - `organizationName` The organization's unique name.
@@ -3652,6 +3669,7 @@ func (c *Client) SnapshotCreate(organizationName Name, projectName Name, j *Snap
 }
 
 // SnapshotView: Fetch a snapshot
+// Use `GET /v1/snapshots/{snapshot}` instead.
 //
 // Parameters
 // - `organizationName`
@@ -3709,6 +3727,7 @@ func (c *Client) SnapshotView(organizationName Name, projectName Name, snapshotN
 }
 
 // SnapshotDelete: Delete a snapshot
+// Use `DELETE /v1/snapshots/{snapshot}` instead.
 //
 // Parameters
 // - `organizationName`
@@ -3755,6 +3774,7 @@ func (c *Client) SnapshotDelete(organizationName Name, projectName Name, snapsho
 }
 
 // VpcList: List VPCs
+// Use `GET /v1/vpcs` instead
 //
 // To iterate over all pages, use the `VpcListAllPages` method, instead.
 //
@@ -3819,6 +3839,7 @@ func (c *Client) VpcList(limit int, pageToken string, sortBy NameSortMode, organ
 }
 
 // VpcListAllPages: List VPCs
+// Use `GET /v1/vpcs` instead
 //
 // This method is a wrapper around the `VpcList` method.
 // This method returns all the pages at once.
@@ -3847,6 +3868,7 @@ func (c *Client) VpcListAllPages(sortBy NameSortMode, organizationName Name, pro
 }
 
 // VpcCreate: Create a VPC
+// Use `POST /v1/vpcs` instead
 //
 // Parameters
 // - `organizationName` The organization's unique name.
@@ -3908,6 +3930,7 @@ func (c *Client) VpcCreate(organizationName Name, projectName Name, j *VpcCreate
 }
 
 // VpcView: Fetch a VPC
+// Use `GET /v1/vpcs/{vpc}` instead
 //
 // Parameters
 // - `organizationName`
@@ -3965,6 +3988,7 @@ func (c *Client) VpcView(organizationName Name, projectName Name, vpcName Name) 
 }
 
 // VpcUpdate: Update a VPC
+// Use `PUT /v1/vpcs/{vpc}` instead
 //
 // Parameters
 // - `organizationName`
@@ -4028,6 +4052,7 @@ func (c *Client) VpcUpdate(organizationName Name, projectName Name, vpcName Name
 }
 
 // VpcDelete: Delete a VPC
+// Use `DELETE /v1/vpcs/{vpc}` instead
 //
 // Parameters
 // - `organizationName`
@@ -4074,6 +4099,7 @@ func (c *Client) VpcDelete(organizationName Name, projectName Name, vpcName Name
 }
 
 // VpcFirewallRulesView: List firewall rules
+// Use `GET /v1/vpc-firewall-rules` instead
 //
 // Parameters
 // - `organizationName`
@@ -4131,6 +4157,7 @@ func (c *Client) VpcFirewallRulesView(organizationName Name, projectName Name, v
 }
 
 // VpcFirewallRulesUpdate: Replace firewall rules
+// Use `PUT /v1/vpc-firewall-rules` instead
 //
 // Parameters
 // - `organizationName`
@@ -4194,6 +4221,7 @@ func (c *Client) VpcFirewallRulesUpdate(organizationName Name, projectName Name,
 }
 
 // VpcRouterList: List routers
+// Use `GET /v1/vpc-routers` instead
 //
 // To iterate over all pages, use the `VpcRouterListAllPages` method, instead.
 //
@@ -4260,6 +4288,7 @@ func (c *Client) VpcRouterList(limit int, pageToken string, sortBy NameSortMode,
 }
 
 // VpcRouterListAllPages: List routers
+// Use `GET /v1/vpc-routers` instead
 //
 // This method is a wrapper around the `VpcRouterList` method.
 // This method returns all the pages at once.
@@ -4289,6 +4318,7 @@ func (c *Client) VpcRouterListAllPages(sortBy NameSortMode, organizationName Nam
 }
 
 // VpcRouterCreate: Create a router
+// Use `POST /v1/vpc-routers` instead
 //
 // Parameters
 // - `organizationName`
@@ -4352,6 +4382,7 @@ func (c *Client) VpcRouterCreate(organizationName Name, projectName Name, vpcNam
 }
 
 // VpcRouterView: Get a router
+// Use `GET /v1/vpc-routers/{router}` instead
 //
 // Parameters
 // - `organizationName`
@@ -4476,6 +4507,7 @@ func (c *Client) VpcRouterUpdate(organizationName Name, projectName Name, router
 }
 
 // VpcRouterDelete: Delete a router
+// Use `DELETE /v1/vpc-routers/{router}` instead
 //
 // Parameters
 // - `organizationName`
@@ -4524,7 +4556,7 @@ func (c *Client) VpcRouterDelete(organizationName Name, projectName Name, router
 }
 
 // VpcRouterRouteList: List routes
-// List the routes associated with a router in a particular VPC.
+// List the routes associated with a router in a particular VPC. Use `GET /v1/vpc-router-routes` instead.
 //
 // To iterate over all pages, use the `VpcRouterRouteListAllPages` method, instead.
 //
@@ -4593,7 +4625,7 @@ func (c *Client) VpcRouterRouteList(limit int, pageToken string, sortBy NameSort
 }
 
 // VpcRouterRouteListAllPages: List routes
-// List the routes associated with a router in a particular VPC.
+// List the routes associated with a router in a particular VPC. Use `GET /v1/vpc-router-routes` instead.
 //
 // This method is a wrapper around the `VpcRouterRouteList` method.
 // This method returns all the pages at once.
@@ -4624,13 +4656,14 @@ func (c *Client) VpcRouterRouteListAllPages(sortBy NameSortMode, organizationNam
 }
 
 // VpcRouterRouteCreate: Create a router
+// Use `POST /v1/vpc-router-routes` instead
 //
 // Parameters
 // - `organizationName`
 // - `projectName`
 // - `routerName`
 // - `vpcName`
-func (c *Client) VpcRouterRouteCreate(organizationName Name, projectName Name, routerName Name, vpcName Name, j *RouterRouteCreateParams) (*RouterRoute, error) {
+func (c *Client) VpcRouterRouteCreate(organizationName Name, projectName Name, routerName Name, vpcName Name, j *RouterRouteCreate) (*RouterRoute, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes"
 	uri := resolveRelative(c.server, path)
@@ -4689,6 +4722,7 @@ func (c *Client) VpcRouterRouteCreate(organizationName Name, projectName Name, r
 }
 
 // VpcRouterRouteView: Fetch a route
+// Use `GET /v1/vpc-router-routes/{route}` instead
 //
 // Parameters
 // - `organizationName`
@@ -4750,6 +4784,7 @@ func (c *Client) VpcRouterRouteView(organizationName Name, projectName Name, rou
 }
 
 // VpcRouterRouteUpdate: Update a route
+// Use `PUT /v1/vpc-router-routes/{route}` instead
 //
 // Parameters
 // - `organizationName`
@@ -4757,7 +4792,7 @@ func (c *Client) VpcRouterRouteView(organizationName Name, projectName Name, rou
 // - `routeName`
 // - `routerName`
 // - `vpcName`
-func (c *Client) VpcRouterRouteUpdate(organizationName Name, projectName Name, routeName Name, routerName Name, vpcName Name, j *RouterRouteUpdateParams) (*RouterRoute, error) {
+func (c *Client) VpcRouterRouteUpdate(organizationName Name, projectName Name, routeName Name, routerName Name, vpcName Name, j *RouterRouteUpdate) (*RouterRoute, error) {
 	// Create the url.
 	path := "/organizations/{{.organization_name}}/projects/{{.project_name}}/vpcs/{{.vpc_name}}/routers/{{.router_name}}/routes/{{.route_name}}"
 	uri := resolveRelative(c.server, path)
@@ -4817,6 +4852,7 @@ func (c *Client) VpcRouterRouteUpdate(organizationName Name, projectName Name, r
 }
 
 // VpcRouterRouteDelete: Delete a route
+// Use `DELETE /v1/vpc-router-routes/{route}` instead
 //
 // Parameters
 // - `organizationName`
@@ -4867,6 +4903,7 @@ func (c *Client) VpcRouterRouteDelete(organizationName Name, projectName Name, r
 }
 
 // VpcSubnetList: List subnets
+// Use `GET /v1/vpc-subnets` instead
 //
 // To iterate over all pages, use the `VpcSubnetListAllPages` method, instead.
 //
@@ -4933,6 +4970,7 @@ func (c *Client) VpcSubnetList(limit int, pageToken string, sortBy NameSortMode,
 }
 
 // VpcSubnetListAllPages: List subnets
+// Use `GET /v1/vpc-subnets` instead
 //
 // This method is a wrapper around the `VpcSubnetList` method.
 // This method returns all the pages at once.
@@ -4962,6 +5000,7 @@ func (c *Client) VpcSubnetListAllPages(sortBy NameSortMode, organizationName Nam
 }
 
 // VpcSubnetCreate: Create a subnet
+// Use `POST /v1/vpc-subnets` instead
 //
 // Parameters
 // - `organizationName`
@@ -5025,6 +5064,7 @@ func (c *Client) VpcSubnetCreate(organizationName Name, projectName Name, vpcNam
 }
 
 // VpcSubnetView: Fetch a subnet
+// Use `GET /v1/vpc-subnets/{subnet}` instead
 //
 // Parameters
 // - `organizationName`
@@ -5084,6 +5124,7 @@ func (c *Client) VpcSubnetView(organizationName Name, projectName Name, subnetNa
 }
 
 // VpcSubnetUpdate: Update a subnet
+// Use `PUT /v1/vpc-subnets/{subnet}` instead
 //
 // Parameters
 // - `organizationName`
@@ -5149,6 +5190,7 @@ func (c *Client) VpcSubnetUpdate(organizationName Name, projectName Name, subnet
 }
 
 // VpcSubnetDelete: Delete a subnet
+// Use `DELETE /v1/vpc-subnets/{subnet}` instead
 //
 // Parameters
 // - `organizationName`
@@ -5295,6 +5337,7 @@ func (c *Client) VpcSubnetListNetworkInterfacesAllPages(sortBy NameSortMode, org
 }
 
 // PolicyView: Fetch the current silo's IAM policy
+// Use `GET /v1/policy` instead
 func (c *Client) PolicyView() (*SiloRolePolicy, error) {
 	// Create the url.
 	path := "/policy"
@@ -5333,6 +5376,7 @@ func (c *Client) PolicyView() (*SiloRolePolicy, error) {
 }
 
 // PolicyUpdate: Update the current silo's IAM policy
+// Use `PUT /v1/policy` instead
 func (c *Client) PolicyUpdate(j *SiloRolePolicy) (*SiloRolePolicy, error) {
 	// Create the url.
 	path := "/policy"
@@ -5898,7 +5942,7 @@ func (c *Client) SiloViewById(id string) (*Silo, error) {
 }
 
 // CertificateList: List system-wide certificates
-// Returns a list of all the system-wide certificates. System-wide certificates are returned sorted by creation date, with the most recent certificates appearing first.
+// Returns a list of all the system-wide certificates. System-wide certificates are returned sorted by creation date, with the most recent certificates appearing first. Use `GET /v1/system/certificates` instead
 //
 // To iterate over all pages, use the `CertificateListAllPages` method, instead.
 //
@@ -5906,7 +5950,7 @@ func (c *Client) SiloViewById(id string) (*Silo, error) {
 // - `limit` Maximum number of items returned by a single call
 // - `pageToken` Token returned by previous call to retrieve the subsequent page
 // - `sortBy`
-func (c *Client) CertificateList(limit int, pageToken string, sortBy NameSortMode) (*CertificateResultsPage, error) {
+func (c *Client) CertificateList(limit int, pageToken string, sortBy NameOrIdSortMode) (*CertificateResultsPage, error) {
 	// Create the url.
 	path := "/system/certificates"
 	uri := resolveRelative(c.server, path)
@@ -5958,14 +6002,14 @@ func (c *Client) CertificateList(limit int, pageToken string, sortBy NameSortMod
 }
 
 // CertificateListAllPages: List system-wide certificates
-// Returns a list of all the system-wide certificates. System-wide certificates are returned sorted by creation date, with the most recent certificates appearing first.
+// Returns a list of all the system-wide certificates. System-wide certificates are returned sorted by creation date, with the most recent certificates appearing first. Use `GET /v1/system/certificates` instead
 //
 // This method is a wrapper around the `CertificateList` method.
 // This method returns all the pages at once.
 //
 // Parameters
 // - `sortBy`
-func (c *Client) CertificateListAllPages(sortBy NameSortMode) (*[]Certificate, error) {
+func (c *Client) CertificateListAllPages(sortBy NameOrIdSortMode) (*[]Certificate, error) {
 	var allPages []Certificate
 	pageToken := ""
 	limit := 100
@@ -5985,7 +6029,7 @@ func (c *Client) CertificateListAllPages(sortBy NameSortMode) (*[]Certificate, e
 }
 
 // CertificateCreate: Create a new system-wide x.509 certificate.
-// This certificate is automatically used by the Oxide Control plane to serve external connections.
+// This certificate is automatically used by the Oxide Control plane to serve external connections. Use `POST /v1/system/certificates` instead
 func (c *Client) CertificateCreate(j *CertificateCreate) (*Certificate, error) {
 	// Create the url.
 	path := "/system/certificates"
@@ -6030,7 +6074,7 @@ func (c *Client) CertificateCreate(j *CertificateCreate) (*Certificate, error) {
 }
 
 // CertificateView: Fetch a certificate
-// Returns the details of a specific certificate
+// Returns the details of a specific certificate Use `GET /v1/system/certificates/{certificate}` instead
 //
 // Parameters
 // - `certificate`
@@ -6084,7 +6128,7 @@ func (c *Client) CertificateView(certificate NameOrId) (*Certificate, error) {
 }
 
 // CertificateDelete: Delete a certificate
-// Permanently delete a certificate. This operation cannot be undone.
+// Permanently delete a certificate. This operation cannot be undone. Use `DELETE /v1/system/certificates/{certificate}` instead
 //
 // Parameters
 // - `certificate`
@@ -6127,6 +6171,7 @@ func (c *Client) CertificateDelete(certificate NameOrId) error {
 }
 
 // PhysicalDiskList: List physical disks
+// Use `GET /v1/system/hardware/disks` instead
 //
 // To iterate over all pages, use the `PhysicalDiskListAllPages` method, instead.
 //
@@ -6186,6 +6231,7 @@ func (c *Client) PhysicalDiskList(limit int, pageToken string, sortBy IdSortMode
 }
 
 // PhysicalDiskListAllPages: List physical disks
+// Use `GET /v1/system/hardware/disks` instead
 //
 // This method is a wrapper around the `PhysicalDiskList` method.
 // This method returns all the pages at once.
@@ -6212,6 +6258,7 @@ func (c *Client) PhysicalDiskListAllPages(sortBy IdSortMode) (*[]PhysicalDisk, e
 }
 
 // RackList: List racks
+// Use `GET /v1/system/hardware/racks` instead
 //
 // To iterate over all pages, use the `RackListAllPages` method, instead.
 //
@@ -6271,6 +6318,7 @@ func (c *Client) RackList(limit int, pageToken string, sortBy IdSortMode) (*Rack
 }
 
 // RackListAllPages: List racks
+// Use `GET /v1/system/hardware/racks` instead
 //
 // This method is a wrapper around the `RackList` method.
 // This method returns all the pages at once.
@@ -6297,6 +6345,7 @@ func (c *Client) RackListAllPages(sortBy IdSortMode) (*[]Rack, error) {
 }
 
 // RackView: Fetch a rack
+// Use `GET /v1/system/hardware/racks/{rack_id}` instead
 //
 // Parameters
 // - `rackId` The rack's unique ID.
@@ -6350,6 +6399,7 @@ func (c *Client) RackView(rackId string) (*Rack, error) {
 }
 
 // SledList: List sleds
+// Use `GET /v1/system/hardware/sleds instead`
 //
 // To iterate over all pages, use the `SledListAllPages` method, instead.
 //
@@ -6409,6 +6459,7 @@ func (c *Client) SledList(limit int, pageToken string, sortBy IdSortMode) (*Sled
 }
 
 // SledListAllPages: List sleds
+// Use `GET /v1/system/hardware/sleds instead`
 //
 // This method is a wrapper around the `SledList` method.
 // This method returns all the pages at once.
@@ -6435,6 +6486,7 @@ func (c *Client) SledListAllPages(sortBy IdSortMode) (*[]Sled, error) {
 }
 
 // SledView: Fetch a sled
+// Use `GET /v1/system/hardware/sleds/{sled_id}` instead
 //
 // Parameters
 // - `sledId` The sled's unique ID.
@@ -6488,6 +6540,7 @@ func (c *Client) SledView(sledId string) (*Sled, error) {
 }
 
 // SledPhysicalDiskList: List physical disks attached to sleds
+// Use `GET /v1/system/hardware/sleds/{sled_id}/disks` instead
 //
 // To iterate over all pages, use the `SledPhysicalDiskListAllPages` method, instead.
 //
@@ -6550,6 +6603,7 @@ func (c *Client) SledPhysicalDiskList(sledId string, limit int, pageToken string
 }
 
 // SledPhysicalDiskListAllPages: List physical disks attached to sleds
+// Use `GET /v1/system/hardware/sleds/{sled_id}/disks` instead
 //
 // This method is a wrapper around the `SledPhysicalDiskList` method.
 // This method returns all the pages at once.
@@ -7576,6 +7630,7 @@ func (c *Client) SystemMetricAllPages(metricName SystemMetricName, endTime *time
 }
 
 // SystemPolicyView: Fetch the top-level IAM policy
+// Use `GET /v1/system/policy` instead
 func (c *Client) SystemPolicyView() (*FleetRolePolicy, error) {
 	// Create the url.
 	path := "/system/policy"
@@ -7614,6 +7669,7 @@ func (c *Client) SystemPolicyView() (*FleetRolePolicy, error) {
 }
 
 // SystemPolicyUpdate: Update the top-level IAM policy
+// Use 'PUT /v1/system/policy' instead
 func (c *Client) SystemPolicyUpdate(j *FleetRolePolicy) (*FleetRolePolicy, error) {
 	// Create the url.
 	path := "/system/policy"
@@ -7658,6 +7714,7 @@ func (c *Client) SystemPolicyUpdate(j *FleetRolePolicy) (*FleetRolePolicy, error
 }
 
 // SagaList: List sagas
+// Use `GET v1/system/sagas` instead
 //
 // To iterate over all pages, use the `SagaListAllPages` method, instead.
 //
@@ -7717,6 +7774,7 @@ func (c *Client) SagaList(limit int, pageToken string, sortBy IdSortMode) (*Saga
 }
 
 // SagaListAllPages: List sagas
+// Use `GET v1/system/sagas` instead
 //
 // This method is a wrapper around the `SagaList` method.
 // This method returns all the pages at once.
@@ -7743,6 +7801,7 @@ func (c *Client) SagaListAllPages(sortBy IdSortMode) (*[]Saga, error) {
 }
 
 // SagaView: Fetch a saga
+// Use `GET v1/system/sagas/{saga_id}` instead
 //
 // Parameters
 // - `sagaId`
@@ -10026,6 +10085,339 @@ func (c *Client) InstanceStopV1(organization NameOrId, project NameOrId, instanc
 	return &body, nil
 }
 
+// InstanceNetworkInterfaceListV1: List network interfaces
+//
+// To iterate over all pages, use the `InstanceNetworkInterfaceListV1AllPages` method, instead.
+//
+// Parameters
+// - `instance`
+// - `limit` Maximum number of items returned by a single call
+// - `organization`
+// - `pageToken` Token returned by previous call to retrieve the subsequent page
+// - `project`
+// - `sortBy`
+func (c *Client) InstanceNetworkInterfaceListV1(instance NameOrId, limit int, organization NameOrId, pageToken string, project NameOrId, sortBy NameOrIdSortMode) (*NetworkInterfaceResultsPage, error) {
+	// Create the url.
+	path := "/v1/network-interfaces"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"instance":     instance.(string),
+		"limit":        strconv.Itoa(limit),
+		"organization": organization.(string),
+		"page_token":   pageToken,
+		"project":      project.(string),
+		"sort_by":      string(sortBy),
+	}); err != nil {
+		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body NetworkInterfaceResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// InstanceNetworkInterfaceListV1AllPages: List network interfaces
+//
+// This method is a wrapper around the `InstanceNetworkInterfaceListV1` method.
+// This method returns all the pages at once.
+//
+// Parameters
+// - `instance`
+// - `organization`
+// - `project`
+// - `sortBy`
+func (c *Client) InstanceNetworkInterfaceListV1AllPages(instance NameOrId, organization NameOrId, project NameOrId, sortBy NameOrIdSortMode) (*[]NetworkInterface, error) {
+	var allPages []NetworkInterface
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.InstanceNetworkInterfaceListV1(instance, limit, organization, pageToken, project, sortBy)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == pageToken {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+}
+
+// InstanceNetworkInterfaceCreateV1: Create a network interface
+//
+// Parameters
+// - `instance`
+// - `organization`
+// - `project`
+func (c *Client) InstanceNetworkInterfaceCreateV1(instance NameOrId, organization NameOrId, project NameOrId, j *NetworkInterfaceCreate) (*NetworkInterface, error) {
+	// Create the url.
+	path := "/v1/network-interfaces"
+	uri := resolveRelative(c.server, path)
+
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"instance":     instance.(string),
+		"organization": organization.(string),
+		"project":      project.(string),
+	}); err != nil {
+		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body NetworkInterface
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// InstanceNetworkInterfaceViewV1: Fetch a network interface
+//
+// Parameters
+// - `instance`
+// - `itf`
+// - `organization`
+// - `project`
+func (c *Client) InstanceNetworkInterfaceViewV1(itf NameOrId, instance NameOrId, organization NameOrId, project NameOrId) (*NetworkInterface, error) {
+	// Create the url.
+	path := "/v1/network-interfaces/{{.interface}}"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"interface": itf.(string),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"instance":     instance.(string),
+		"organization": organization.(string),
+		"project":      project.(string),
+	}); err != nil {
+		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body NetworkInterface
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// InstanceNetworkInterfaceUpdateV1: Update a network interface
+//
+// Parameters
+// - `instance`
+// - `itf`
+// - `organization`
+// - `project`
+func (c *Client) InstanceNetworkInterfaceUpdateV1(itf NameOrId, instance NameOrId, organization NameOrId, project NameOrId, j *NetworkInterfaceUpdate) (*NetworkInterface, error) {
+	// Create the url.
+	path := "/v1/network-interfaces/{{.interface}}"
+	uri := resolveRelative(c.server, path)
+
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request.
+	req, err := http.NewRequest("PUT", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"interface": itf.(string),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"instance":     instance.(string),
+		"organization": organization.(string),
+		"project":      project.(string),
+	}); err != nil {
+		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body NetworkInterface
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// InstanceNetworkInterfaceDeleteV1: Delete a network interface
+// Note that the primary interface for an instance cannot be deleted if there are any secondary interfaces. A new primary interface must be designated first. The primary interface can be deleted if there are no secondary interfaces.
+//
+// Parameters
+// - `instance`
+// - `itf`
+// - `organization`
+// - `project`
+func (c *Client) InstanceNetworkInterfaceDeleteV1(itf NameOrId, instance NameOrId, organization NameOrId, project NameOrId) error {
+	// Create the url.
+	path := "/v1/network-interfaces/{{.interface}}"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("DELETE", uri, nil)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"interface": itf.(string),
+	}); err != nil {
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"instance":     instance.(string),
+		"organization": organization.(string),
+		"project":      project.(string),
+	}); err != nil {
+		return fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // OrganizationListV1: List organizations
 //
 // To iterate over all pages, use the `OrganizationListV1AllPages` method, instead.
@@ -10413,6 +10805,88 @@ func (c *Client) OrganizationPolicyUpdateV1(organization NameOrId, j *Organizati
 	}
 
 	var body OrganizationRolePolicy
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// PolicyViewV1: Fetch the current silo's IAM policy
+func (c *Client) PolicyViewV1() (*SiloRolePolicy, error) {
+	// Create the url.
+	path := "/v1/policy"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SiloRolePolicy
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// PolicyUpdateV1: Update the current silo's IAM policy
+func (c *Client) PolicyUpdateV1(j *SiloRolePolicy) (*SiloRolePolicy, error) {
+	// Create the url.
+	path := "/v1/policy"
+	uri := resolveRelative(c.server, path)
+
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request.
+	req, err := http.NewRequest("PUT", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SiloRolePolicy
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -10841,6 +11315,1163 @@ func (c *Client) ProjectPolicyUpdateV1(project NameOrId, organization NameOrId, 
 	}
 
 	var body ProjectRolePolicy
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SnapshotListV1: List snapshots
+//
+// To iterate over all pages, use the `SnapshotListV1AllPages` method, instead.
+//
+// Parameters
+// - `limit` Maximum number of items returned by a single call
+// - `organization`
+// - `pageToken` Token returned by previous call to retrieve the subsequent page
+// - `project`
+// - `sortBy`
+func (c *Client) SnapshotListV1(limit int, organization NameOrId, pageToken string, project NameOrId, sortBy NameOrIdSortMode) (*SnapshotResultsPage, error) {
+	// Create the url.
+	path := "/v1/snapshots"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"limit":        strconv.Itoa(limit),
+		"organization": organization.(string),
+		"page_token":   pageToken,
+		"project":      project.(string),
+		"sort_by":      string(sortBy),
+	}); err != nil {
+		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SnapshotResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SnapshotListV1AllPages: List snapshots
+//
+// This method is a wrapper around the `SnapshotListV1` method.
+// This method returns all the pages at once.
+//
+// Parameters
+// - `organization`
+// - `project`
+// - `sortBy`
+func (c *Client) SnapshotListV1AllPages(organization NameOrId, project NameOrId, sortBy NameOrIdSortMode) (*[]Snapshot, error) {
+	var allPages []Snapshot
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.SnapshotListV1(limit, organization, pageToken, project, sortBy)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == pageToken {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+}
+
+// SnapshotCreateV1: Create a snapshot
+// Creates a point-in-time snapshot from a disk.
+//
+// Parameters
+// - `organization`
+// - `project`
+func (c *Client) SnapshotCreateV1(organization NameOrId, project NameOrId, j *SnapshotCreate) (*Snapshot, error) {
+	// Create the url.
+	path := "/v1/snapshots"
+	uri := resolveRelative(c.server, path)
+
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"organization": organization.(string),
+		"project":      project.(string),
+	}); err != nil {
+		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body Snapshot
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SnapshotViewV1: Fetch a snapshot
+//
+// Parameters
+// - `organization`
+// - `project`
+// - `snapshot`
+func (c *Client) SnapshotViewV1(snapshot NameOrId, organization NameOrId, project NameOrId) (*Snapshot, error) {
+	// Create the url.
+	path := "/v1/snapshots/{{.snapshot}}"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"snapshot": snapshot.(string),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"organization": organization.(string),
+		"project":      project.(string),
+	}); err != nil {
+		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body Snapshot
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SnapshotDeleteV1: Delete a snapshot
+//
+// Parameters
+// - `organization`
+// - `project`
+// - `snapshot`
+func (c *Client) SnapshotDeleteV1(snapshot NameOrId, organization NameOrId, project NameOrId) error {
+	// Create the url.
+	path := "/v1/snapshots/{{.snapshot}}"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("DELETE", uri, nil)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"snapshot": snapshot.(string),
+	}); err != nil {
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"organization": organization.(string),
+		"project":      project.(string),
+	}); err != nil {
+		return fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// CertificateListV1: List system-wide certificates
+// Returns a list of all the system-wide certificates. System-wide certificates are returned sorted by creation date, with the most recent certificates appearing first.
+//
+// To iterate over all pages, use the `CertificateListV1AllPages` method, instead.
+//
+// Parameters
+// - `limit` Maximum number of items returned by a single call
+// - `pageToken` Token returned by previous call to retrieve the subsequent page
+// - `sortBy`
+func (c *Client) CertificateListV1(limit int, pageToken string, sortBy NameOrIdSortMode) (*CertificateResultsPage, error) {
+	// Create the url.
+	path := "/v1/system/certificates"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"limit":      strconv.Itoa(limit),
+		"page_token": pageToken,
+		"sort_by":    string(sortBy),
+	}); err != nil {
+		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body CertificateResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// CertificateListV1AllPages: List system-wide certificates
+// Returns a list of all the system-wide certificates. System-wide certificates are returned sorted by creation date, with the most recent certificates appearing first.
+//
+// This method is a wrapper around the `CertificateListV1` method.
+// This method returns all the pages at once.
+//
+// Parameters
+// - `sortBy`
+func (c *Client) CertificateListV1AllPages(sortBy NameOrIdSortMode) (*[]Certificate, error) {
+	var allPages []Certificate
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.CertificateListV1(limit, pageToken, sortBy)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == pageToken {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+}
+
+// CertificateCreateV1: Create a new system-wide x.509 certificate.
+// This certificate is automatically used by the Oxide Control plane to serve external connections.
+func (c *Client) CertificateCreateV1(j *CertificateCreate) (*Certificate, error) {
+	// Create the url.
+	path := "/v1/system/certificates"
+	uri := resolveRelative(c.server, path)
+
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body Certificate
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// CertificateViewV1: Fetch a certificate
+// Returns the details of a specific certificate
+//
+// Parameters
+// - `certificate`
+func (c *Client) CertificateViewV1(certificate NameOrId) (*Certificate, error) {
+	// Create the url.
+	path := "/v1/system/certificates/{{.certificate}}"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"certificate": certificate.(string),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{}); err != nil {
+		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body Certificate
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// CertificateDeleteV1: Delete a certificate
+// Permanently delete a certificate. This operation cannot be undone.
+//
+// Parameters
+// - `certificate`
+func (c *Client) CertificateDeleteV1(certificate NameOrId) error {
+	// Create the url.
+	path := "/v1/system/certificates/{{.certificate}}"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("DELETE", uri, nil)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"certificate": certificate.(string),
+	}); err != nil {
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{}); err != nil {
+		return fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// PhysicalDiskListV1: List physical disks
+//
+// To iterate over all pages, use the `PhysicalDiskListV1AllPages` method, instead.
+//
+// Parameters
+// - `limit` Maximum number of items returned by a single call
+// - `pageToken` Token returned by previous call to retrieve the subsequent page
+// - `sortBy`
+func (c *Client) PhysicalDiskListV1(limit int, pageToken string, sortBy IdSortMode) (*PhysicalDiskResultsPage, error) {
+	// Create the url.
+	path := "/v1/system/hardware/disks"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"limit":      strconv.Itoa(limit),
+		"page_token": pageToken,
+		"sort_by":    string(sortBy),
+	}); err != nil {
+		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body PhysicalDiskResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// PhysicalDiskListV1AllPages: List physical disks
+//
+// This method is a wrapper around the `PhysicalDiskListV1` method.
+// This method returns all the pages at once.
+//
+// Parameters
+// - `sortBy`
+func (c *Client) PhysicalDiskListV1AllPages(sortBy IdSortMode) (*[]PhysicalDisk, error) {
+	var allPages []PhysicalDisk
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.PhysicalDiskListV1(limit, pageToken, sortBy)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == pageToken {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+}
+
+// RackListV1: List racks
+//
+// To iterate over all pages, use the `RackListV1AllPages` method, instead.
+//
+// Parameters
+// - `limit` Maximum number of items returned by a single call
+// - `pageToken` Token returned by previous call to retrieve the subsequent page
+// - `sortBy`
+func (c *Client) RackListV1(limit int, pageToken string, sortBy IdSortMode) (*RackResultsPage, error) {
+	// Create the url.
+	path := "/v1/system/hardware/racks"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"limit":      strconv.Itoa(limit),
+		"page_token": pageToken,
+		"sort_by":    string(sortBy),
+	}); err != nil {
+		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body RackResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// RackListV1AllPages: List racks
+//
+// This method is a wrapper around the `RackListV1` method.
+// This method returns all the pages at once.
+//
+// Parameters
+// - `sortBy`
+func (c *Client) RackListV1AllPages(sortBy IdSortMode) (*[]Rack, error) {
+	var allPages []Rack
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.RackListV1(limit, pageToken, sortBy)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == pageToken {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+}
+
+// RackViewV1: Fetch a rack
+//
+// Parameters
+// - `rackId` The rack's unique ID.
+func (c *Client) RackViewV1(rackId string) (*Rack, error) {
+	// Create the url.
+	path := "/v1/system/hardware/racks/{{.rack_id}}"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"rack_id": rackId,
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{}); err != nil {
+		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body Rack
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SledListV1: List sleds
+//
+// To iterate over all pages, use the `SledListV1AllPages` method, instead.
+//
+// Parameters
+// - `limit` Maximum number of items returned by a single call
+// - `pageToken` Token returned by previous call to retrieve the subsequent page
+// - `sortBy`
+func (c *Client) SledListV1(limit int, pageToken string, sortBy IdSortMode) (*SledResultsPage, error) {
+	// Create the url.
+	path := "/v1/system/hardware/sleds"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"limit":      strconv.Itoa(limit),
+		"page_token": pageToken,
+		"sort_by":    string(sortBy),
+	}); err != nil {
+		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SledResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SledListV1AllPages: List sleds
+//
+// This method is a wrapper around the `SledListV1` method.
+// This method returns all the pages at once.
+//
+// Parameters
+// - `sortBy`
+func (c *Client) SledListV1AllPages(sortBy IdSortMode) (*[]Sled, error) {
+	var allPages []Sled
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.SledListV1(limit, pageToken, sortBy)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == pageToken {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+}
+
+// SledViewV1: Fetch a sled
+//
+// Parameters
+// - `sledId` The sled's unique ID.
+func (c *Client) SledViewV1(sledId string) (*Sled, error) {
+	// Create the url.
+	path := "/v1/system/hardware/sleds/{{.sled_id}}"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"sled_id": sledId,
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{}); err != nil {
+		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body Sled
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SledPhysicalDiskListV1: List physical disks attached to sleds
+//
+// To iterate over all pages, use the `SledPhysicalDiskListV1AllPages` method, instead.
+//
+// Parameters
+// - `limit` Maximum number of items returned by a single call
+// - `pageToken` Token returned by previous call to retrieve the subsequent page
+// - `sledId` The sled's unique ID.
+// - `sortBy`
+func (c *Client) SledPhysicalDiskListV1(sledId string, limit int, pageToken string, sortBy IdSortMode) (*PhysicalDiskResultsPage, error) {
+	// Create the url.
+	path := "/v1/system/hardware/sleds/{{.sled_id}}/disks"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"sled_id": sledId,
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"limit":      strconv.Itoa(limit),
+		"page_token": pageToken,
+		"sort_by":    string(sortBy),
+	}); err != nil {
+		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body PhysicalDiskResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SledPhysicalDiskListV1AllPages: List physical disks attached to sleds
+//
+// This method is a wrapper around the `SledPhysicalDiskListV1` method.
+// This method returns all the pages at once.
+//
+// Parameters
+// - `sledId` The sled's unique ID.
+// - `sortBy`
+func (c *Client) SledPhysicalDiskListV1AllPages(sledId string, sortBy IdSortMode) (*[]PhysicalDisk, error) {
+	var allPages []PhysicalDisk
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.SledPhysicalDiskListV1(sledId, limit, pageToken, sortBy)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == pageToken {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+}
+
+// SystemPolicyViewV1: Fetch the top-level IAM policy
+func (c *Client) SystemPolicyViewV1() (*FleetRolePolicy, error) {
+	// Create the url.
+	path := "/v1/system/policy"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body FleetRolePolicy
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SystemPolicyUpdateV1: Update the top-level IAM policy
+func (c *Client) SystemPolicyUpdateV1(j *FleetRolePolicy) (*FleetRolePolicy, error) {
+	// Create the url.
+	path := "/v1/system/policy"
+	uri := resolveRelative(c.server, path)
+
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request.
+	req, err := http.NewRequest("PUT", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body FleetRolePolicy
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SagaListV1: List sagas
+//
+// To iterate over all pages, use the `SagaListV1AllPages` method, instead.
+//
+// Parameters
+// - `limit` Maximum number of items returned by a single call
+// - `pageToken` Token returned by previous call to retrieve the subsequent page
+// - `sortBy`
+func (c *Client) SagaListV1(limit int, pageToken string, sortBy IdSortMode) (*SagaResultsPage, error) {
+	// Create the url.
+	path := "/v1/system/sagas"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"limit":      strconv.Itoa(limit),
+		"page_token": pageToken,
+		"sort_by":    string(sortBy),
+	}); err != nil {
+		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SagaResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SagaListV1AllPages: List sagas
+//
+// This method is a wrapper around the `SagaListV1` method.
+// This method returns all the pages at once.
+//
+// Parameters
+// - `sortBy`
+func (c *Client) SagaListV1AllPages(sortBy IdSortMode) (*[]Saga, error) {
+	var allPages []Saga
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.SagaListV1(limit, pageToken, sortBy)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == pageToken {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+}
+
+// SagaViewV1: Fetch a saga
+//
+// Parameters
+// - `sagaId`
+func (c *Client) SagaViewV1(sagaId string) (*Saga, error) {
+	// Create the url.
+	path := "/v1/system/sagas/{{.saga_id}}"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"saga_id": sagaId,
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{}); err != nil {
+		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body Saga
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -11398,4 +13029,1454 @@ func (c *Client) SystemVersion() (*SystemVersion, error) {
 
 	// Return the response.
 	return &body, nil
+}
+
+// VpcFirewallRulesViewV1: List firewall rules
+//
+// Parameters
+// - `organization`
+// - `project`
+// - `vpc`
+func (c *Client) VpcFirewallRulesViewV1(organization NameOrId, project NameOrId, vpc NameOrId) (*VpcFirewallRules, error) {
+	// Create the url.
+	path := "/v1/vpc-firewall-rules"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"organization": organization.(string),
+		"project":      project.(string),
+		"vpc":          vpc.(string),
+	}); err != nil {
+		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body VpcFirewallRules
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// VpcFirewallRulesUpdateV1: Replace firewall rules
+//
+// Parameters
+// - `organization`
+// - `project`
+// - `vpc`
+func (c *Client) VpcFirewallRulesUpdateV1(organization NameOrId, project NameOrId, vpc NameOrId, j *VpcFirewallRuleUpdateParams) (*VpcFirewallRules, error) {
+	// Create the url.
+	path := "/v1/vpc-firewall-rules"
+	uri := resolveRelative(c.server, path)
+
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request.
+	req, err := http.NewRequest("PUT", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"organization": organization.(string),
+		"project":      project.(string),
+		"vpc":          vpc.(string),
+	}); err != nil {
+		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body VpcFirewallRules
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// VpcRouterRouteListV1: List routes
+// List the routes associated with a router in a particular VPC.
+//
+// To iterate over all pages, use the `VpcRouterRouteListV1AllPages` method, instead.
+//
+// Parameters
+// - `limit` Maximum number of items returned by a single call
+// - `organization`
+// - `pageToken` Token returned by previous call to retrieve the subsequent page
+// - `project`
+// - `router`
+// - `sortBy`
+// - `vpc`
+func (c *Client) VpcRouterRouteListV1(limit int, organization NameOrId, pageToken string, project NameOrId, router NameOrId, sortBy NameOrIdSortMode, vpc NameOrId) (*RouterRouteResultsPage, error) {
+	// Create the url.
+	path := "/v1/vpc-router-routes"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"limit":        strconv.Itoa(limit),
+		"organization": organization.(string),
+		"page_token":   pageToken,
+		"project":      project.(string),
+		"router":       router.(string),
+		"sort_by":      string(sortBy),
+		"vpc":          vpc.(string),
+	}); err != nil {
+		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body RouterRouteResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// VpcRouterRouteListV1AllPages: List routes
+// List the routes associated with a router in a particular VPC.
+//
+// This method is a wrapper around the `VpcRouterRouteListV1` method.
+// This method returns all the pages at once.
+//
+// Parameters
+// - `organization`
+// - `project`
+// - `router`
+// - `sortBy`
+// - `vpc`
+func (c *Client) VpcRouterRouteListV1AllPages(organization NameOrId, project NameOrId, router NameOrId, sortBy NameOrIdSortMode, vpc NameOrId) (*[]RouterRoute, error) {
+	var allPages []RouterRoute
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.VpcRouterRouteListV1(limit, organization, pageToken, project, router, sortBy, vpc)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == pageToken {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+}
+
+// VpcRouterRouteCreateV1: Create a router
+//
+// Parameters
+// - `organization`
+// - `project`
+// - `router`
+// - `vpc`
+func (c *Client) VpcRouterRouteCreateV1(organization NameOrId, project NameOrId, router NameOrId, vpc NameOrId, j *RouterRouteCreate) (*RouterRoute, error) {
+	// Create the url.
+	path := "/v1/vpc-router-routes"
+	uri := resolveRelative(c.server, path)
+
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"organization": organization.(string),
+		"project":      project.(string),
+		"router":       router.(string),
+		"vpc":          vpc.(string),
+	}); err != nil {
+		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body RouterRoute
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// VpcRouterRouteViewV1: Fetch a route
+//
+// Parameters
+// - `organization`
+// - `project`
+// - `route`
+// - `router`
+// - `vpc`
+func (c *Client) VpcRouterRouteViewV1(route NameOrId, organization NameOrId, project NameOrId, router NameOrId, vpc NameOrId) (*RouterRoute, error) {
+	// Create the url.
+	path := "/v1/vpc-router-routes/{{.route}}"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"route": route.(string),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"organization": organization.(string),
+		"project":      project.(string),
+		"router":       router.(string),
+		"vpc":          vpc.(string),
+	}); err != nil {
+		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body RouterRoute
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// VpcRouterRouteUpdateV1: Update a route
+//
+// Parameters
+// - `organization`
+// - `project`
+// - `route`
+// - `router`
+// - `vpc`
+func (c *Client) VpcRouterRouteUpdateV1(route NameOrId, organization NameOrId, project NameOrId, router NameOrId, vpc NameOrId, j *RouterRouteUpdate) (*RouterRoute, error) {
+	// Create the url.
+	path := "/v1/vpc-router-routes/{{.route}}"
+	uri := resolveRelative(c.server, path)
+
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request.
+	req, err := http.NewRequest("PUT", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"route": route.(string),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"organization": organization.(string),
+		"project":      project.(string),
+		"router":       router.(string),
+		"vpc":          vpc.(string),
+	}); err != nil {
+		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body RouterRoute
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// VpcRouterRouteDeleteV1: Delete a route
+//
+// Parameters
+// - `organization`
+// - `project`
+// - `route`
+// - `router`
+// - `vpc`
+func (c *Client) VpcRouterRouteDeleteV1(route NameOrId, organization NameOrId, project NameOrId, router NameOrId, vpc NameOrId) error {
+	// Create the url.
+	path := "/v1/vpc-router-routes/{{.route}}"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("DELETE", uri, nil)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"route": route.(string),
+	}); err != nil {
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"organization": organization.(string),
+		"project":      project.(string),
+		"router":       router.(string),
+		"vpc":          vpc.(string),
+	}); err != nil {
+		return fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// VpcRouterListV1: List routers
+//
+// To iterate over all pages, use the `VpcRouterListV1AllPages` method, instead.
+//
+// Parameters
+// - `limit` Maximum number of items returned by a single call
+// - `organization`
+// - `pageToken` Token returned by previous call to retrieve the subsequent page
+// - `project`
+// - `sortBy`
+// - `vpc`
+func (c *Client) VpcRouterListV1(limit int, organization NameOrId, pageToken string, project NameOrId, sortBy NameOrIdSortMode, vpc NameOrId) (*VpcRouterResultsPage, error) {
+	// Create the url.
+	path := "/v1/vpc-routers"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"limit":        strconv.Itoa(limit),
+		"organization": organization.(string),
+		"page_token":   pageToken,
+		"project":      project.(string),
+		"sort_by":      string(sortBy),
+		"vpc":          vpc.(string),
+	}); err != nil {
+		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body VpcRouterResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// VpcRouterListV1AllPages: List routers
+//
+// This method is a wrapper around the `VpcRouterListV1` method.
+// This method returns all the pages at once.
+//
+// Parameters
+// - `organization`
+// - `project`
+// - `sortBy`
+// - `vpc`
+func (c *Client) VpcRouterListV1AllPages(organization NameOrId, project NameOrId, sortBy NameOrIdSortMode, vpc NameOrId) (*[]VpcRouter, error) {
+	var allPages []VpcRouter
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.VpcRouterListV1(limit, organization, pageToken, project, sortBy, vpc)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == pageToken {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+}
+
+// VpcRouterCreateV1: Create a VPC router
+//
+// Parameters
+// - `organization`
+// - `project`
+// - `vpc`
+func (c *Client) VpcRouterCreateV1(organization NameOrId, project NameOrId, vpc NameOrId, j *VpcRouterCreate) (*VpcRouter, error) {
+	// Create the url.
+	path := "/v1/vpc-routers"
+	uri := resolveRelative(c.server, path)
+
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"organization": organization.(string),
+		"project":      project.(string),
+		"vpc":          vpc.(string),
+	}); err != nil {
+		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body VpcRouter
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// VpcRouterViewV1: Get a router
+//
+// Parameters
+// - `organization`
+// - `project`
+// - `router`
+// - `vpc`
+func (c *Client) VpcRouterViewV1(router NameOrId, organization NameOrId, project NameOrId, vpc NameOrId) (*VpcRouter, error) {
+	// Create the url.
+	path := "/v1/vpc-routers/{{.router}}"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"router": router.(string),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"organization": organization.(string),
+		"project":      project.(string),
+		"vpc":          vpc.(string),
+	}); err != nil {
+		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body VpcRouter
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// VpcRouterUpdateV1: Update a router
+//
+// Parameters
+// - `organization`
+// - `project`
+// - `router`
+// - `vpc`
+func (c *Client) VpcRouterUpdateV1(router NameOrId, organization NameOrId, project NameOrId, vpc NameOrId, j *VpcRouterUpdate) (*VpcRouter, error) {
+	// Create the url.
+	path := "/v1/vpc-routers/{{.router}}"
+	uri := resolveRelative(c.server, path)
+
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request.
+	req, err := http.NewRequest("PUT", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"router": router.(string),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"organization": organization.(string),
+		"project":      project.(string),
+		"vpc":          vpc.(string),
+	}); err != nil {
+		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body VpcRouter
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// VpcRouterDeleteV1: Delete a router
+//
+// Parameters
+// - `organization`
+// - `project`
+// - `router`
+// - `vpc`
+func (c *Client) VpcRouterDeleteV1(router NameOrId, organization NameOrId, project NameOrId, vpc NameOrId) error {
+	// Create the url.
+	path := "/v1/vpc-routers/{{.router}}"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("DELETE", uri, nil)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"router": router.(string),
+	}); err != nil {
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"organization": organization.(string),
+		"project":      project.(string),
+		"vpc":          vpc.(string),
+	}); err != nil {
+		return fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// VpcSubnetListV1: Fetch a subnet
+//
+// To iterate over all pages, use the `VpcSubnetListV1AllPages` method, instead.
+//
+// Parameters
+// - `limit` Maximum number of items returned by a single call
+// - `organization`
+// - `pageToken` Token returned by previous call to retrieve the subsequent page
+// - `project`
+// - `sortBy`
+// - `vpc`
+func (c *Client) VpcSubnetListV1(limit int, organization NameOrId, pageToken string, project NameOrId, sortBy NameOrIdSortMode, vpc NameOrId) (*VpcSubnetResultsPage, error) {
+	// Create the url.
+	path := "/v1/vpc-subnets"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"limit":        strconv.Itoa(limit),
+		"organization": organization.(string),
+		"page_token":   pageToken,
+		"project":      project.(string),
+		"sort_by":      string(sortBy),
+		"vpc":          vpc.(string),
+	}); err != nil {
+		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body VpcSubnetResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// VpcSubnetListV1AllPages: Fetch a subnet
+//
+// This method is a wrapper around the `VpcSubnetListV1` method.
+// This method returns all the pages at once.
+//
+// Parameters
+// - `organization`
+// - `project`
+// - `sortBy`
+// - `vpc`
+func (c *Client) VpcSubnetListV1AllPages(organization NameOrId, project NameOrId, sortBy NameOrIdSortMode, vpc NameOrId) (*[]VpcSubnet, error) {
+	var allPages []VpcSubnet
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.VpcSubnetListV1(limit, organization, pageToken, project, sortBy, vpc)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == pageToken {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+}
+
+// VpcSubnetCreateV1: Create a subnet
+//
+// Parameters
+// - `organization`
+// - `project`
+// - `vpc`
+func (c *Client) VpcSubnetCreateV1(organization NameOrId, project NameOrId, vpc NameOrId, j *VpcSubnetCreate) (*VpcSubnet, error) {
+	// Create the url.
+	path := "/v1/vpc-subnets"
+	uri := resolveRelative(c.server, path)
+
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"organization": organization.(string),
+		"project":      project.(string),
+		"vpc":          vpc.(string),
+	}); err != nil {
+		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body VpcSubnet
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// VpcSubnetViewV1: Fetch a subnet
+//
+// Parameters
+// - `organization`
+// - `project`
+// - `subnet`
+// - `vpc`
+func (c *Client) VpcSubnetViewV1(subnet NameOrId, organization NameOrId, project NameOrId, vpc NameOrId) (*VpcSubnet, error) {
+	// Create the url.
+	path := "/v1/vpc-subnets/{{.subnet}}"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"subnet": subnet.(string),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"organization": organization.(string),
+		"project":      project.(string),
+		"vpc":          vpc.(string),
+	}); err != nil {
+		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body VpcSubnet
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// VpcSubnetUpdateV1: Update a subnet
+//
+// Parameters
+// - `organization`
+// - `project`
+// - `subnet`
+// - `vpc`
+func (c *Client) VpcSubnetUpdateV1(subnet NameOrId, organization NameOrId, project NameOrId, vpc NameOrId, j *VpcSubnetUpdate) (*VpcSubnet, error) {
+	// Create the url.
+	path := "/v1/vpc-subnets/{{.subnet}}"
+	uri := resolveRelative(c.server, path)
+
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request.
+	req, err := http.NewRequest("PUT", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"subnet": subnet.(string),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"organization": organization.(string),
+		"project":      project.(string),
+		"vpc":          vpc.(string),
+	}); err != nil {
+		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body VpcSubnet
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// VpcSubnetDeleteV1: Delete a subnet
+//
+// Parameters
+// - `organization`
+// - `project`
+// - `subnet`
+// - `vpc`
+func (c *Client) VpcSubnetDeleteV1(subnet NameOrId, organization NameOrId, project NameOrId, vpc NameOrId) error {
+	// Create the url.
+	path := "/v1/vpc-subnets/{{.subnet}}"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("DELETE", uri, nil)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"subnet": subnet.(string),
+	}); err != nil {
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"organization": organization.(string),
+		"project":      project.(string),
+		"vpc":          vpc.(string),
+	}); err != nil {
+		return fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// VpcListV1: List VPCs
+//
+// To iterate over all pages, use the `VpcListV1AllPages` method, instead.
+//
+// Parameters
+// - `limit` Maximum number of items returned by a single call
+// - `organization`
+// - `pageToken` Token returned by previous call to retrieve the subsequent page
+// - `project`
+// - `sortBy`
+func (c *Client) VpcListV1(limit int, organization NameOrId, pageToken string, project NameOrId, sortBy NameOrIdSortMode) (*VpcResultsPage, error) {
+	// Create the url.
+	path := "/v1/vpcs"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"limit":        strconv.Itoa(limit),
+		"organization": organization.(string),
+		"page_token":   pageToken,
+		"project":      project.(string),
+		"sort_by":      string(sortBy),
+	}); err != nil {
+		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body VpcResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// VpcListV1AllPages: List VPCs
+//
+// This method is a wrapper around the `VpcListV1` method.
+// This method returns all the pages at once.
+//
+// Parameters
+// - `organization`
+// - `project`
+// - `sortBy`
+func (c *Client) VpcListV1AllPages(organization NameOrId, project NameOrId, sortBy NameOrIdSortMode) (*[]Vpc, error) {
+	var allPages []Vpc
+	pageToken := ""
+	limit := 100
+	for {
+		page, err := c.VpcListV1(limit, organization, pageToken, project, sortBy)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == pageToken {
+			break
+		}
+		pageToken = page.NextPage
+	}
+
+	return &allPages, nil
+}
+
+// VpcCreateV1: Create a VPC
+//
+// Parameters
+// - `organization`
+// - `project`
+func (c *Client) VpcCreateV1(organization NameOrId, project NameOrId, j *VpcCreate) (*Vpc, error) {
+	// Create the url.
+	path := "/v1/vpcs"
+	uri := resolveRelative(c.server, path)
+
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"organization": organization.(string),
+		"project":      project.(string),
+	}); err != nil {
+		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body Vpc
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// VpcViewV1: Fetch a VPC
+//
+// Parameters
+// - `organization`
+// - `project`
+// - `vpc`
+func (c *Client) VpcViewV1(vpc NameOrId, organization NameOrId, project NameOrId) (*Vpc, error) {
+	// Create the url.
+	path := "/v1/vpcs/{{.vpc}}"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"vpc": vpc.(string),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"organization": organization.(string),
+		"project":      project.(string),
+	}); err != nil {
+		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body Vpc
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// VpcUpdateV1: Update a VPC
+//
+// Parameters
+// - `organization`
+// - `project`
+// - `vpc`
+func (c *Client) VpcUpdateV1(vpc NameOrId, organization NameOrId, project NameOrId, j *VpcUpdate) (*Vpc, error) {
+	// Create the url.
+	path := "/v1/vpcs/{{.vpc}}"
+	uri := resolveRelative(c.server, path)
+
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request.
+	req, err := http.NewRequest("PUT", uri, b)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"vpc": vpc.(string),
+	}); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"organization": organization.(string),
+		"project":      project.(string),
+	}); err != nil {
+		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body Vpc
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// VpcDeleteV1: Delete a VPC
+//
+// Parameters
+// - `organization`
+// - `project`
+// - `vpc`
+func (c *Client) VpcDeleteV1(vpc NameOrId, organization NameOrId, project NameOrId) error {
+	// Create the url.
+	path := "/v1/vpcs/{{.vpc}}"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("DELETE", uri, nil)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"vpc": vpc.(string),
+	}); err != nil {
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"organization": organization.(string),
+		"project":      project.(string),
+	}); err != nil {
+		return fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -1418,8 +1418,8 @@ type RouterRoute struct {
 	VpcRouterId string `json:"vpc_router_id,omitempty" yaml:"vpc_router_id,omitempty"`
 }
 
-// RouterRouteCreateParams is create-time parameters for a [`RouterRoute`]
-type RouterRouteCreateParams struct {
+// RouterRouteCreate is create-time parameters for a [`omicron_common::api::external::RouterRoute`]
+type RouterRouteCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Destination is a `RouteDestination` is used to match traffic with a routing rule, on the destination of that traffic.
 	//
@@ -1444,8 +1444,8 @@ type RouterRouteResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// RouterRouteUpdateParams is updateable properties of a [`RouterRoute`]
-type RouterRouteUpdateParams struct {
+// RouterRouteUpdate is updateable properties of a [`omicron_common::api::external::RouterRoute`]
+type RouterRouteUpdate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Destination is a `RouteDestination` is used to match traffic with a routing rule, on the destination of that traffic.
 	//

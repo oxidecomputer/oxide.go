@@ -170,8 +170,10 @@ func buildMethod(f *os.File, spec *openapi3.T, method string, path string, o *op
 		return err
 	}
 
+	sanitisedDescription := strings.ReplaceAll(o.Description, "\n", "\n// ")
+
 	config := methodTemplate{
-		Description:     o.Description,
+		Description:     sanitisedDescription,
 		HTTPMethod:      method,
 		FunctionName:    methodName,
 		WrappedFunction: ogmethodName,
@@ -320,7 +322,10 @@ func buildSignatureParams(params map[string]*openapi3.Parameter) map[string]stri
 		sort.Strings(keys)
 		for _, name := range keys {
 			t := params[name]
-			sigParams[strcase.ToLowerCamel(name)] = t.Description
+			k := strcase.ToLowerCamel(name)
+			// Avoid naming a param variable a Go type
+			k = verifyNotAGoType(k)
+			sigParams[k] = t.Description
 		}
 	}
 	return sigParams
@@ -350,6 +355,8 @@ func buildPathOrQueryParams(paramType string, params map[string]*openapi3.Parame
 				pathParams = append(pathParams, fmt.Sprintf("%q: %s,", name, n))
 				// TODO: Identify interfaces instead of singling out NameOrId
 			} else if t == "NameOrId" {
+				// Avoid naming a param variable a Go type
+				n = verifyNotAGoType(n)
 				pathParams = append(pathParams, fmt.Sprintf("%q: %s.(string),", name, n))
 			} else if t == "int" {
 				pathParams = append(pathParams, fmt.Sprintf("%q: strconv.Itoa(%s),", name, n))
@@ -372,6 +379,9 @@ func parseParams(specParams openapi3.Parameters, method string) paramsInfo {
 		}
 
 		paramName := strcase.ToLowerCamel(p.Value.Name)
+
+		// Avoid naming a param variable a Go type
+		paramName = verifyNotAGoType(paramName)
 
 		// Check if we have a page result.
 		if isPageParam(paramName) && method == http.MethodGet {
