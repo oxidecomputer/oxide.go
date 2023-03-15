@@ -741,7 +741,9 @@ type Image struct {
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
-	// ProjectId is the project the disk belongs to
+	// Os is the family of the operating system like Debian, Ubuntu, etc.
+	Os string `json:"os,omitempty" yaml:"os,omitempty"`
+	// ProjectId is the project the image belongs to
 	ProjectId string `json:"project_id,omitempty" yaml:"project_id,omitempty"`
 	// Size is total size in bytes
 	Size ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
@@ -751,7 +753,7 @@ type Image struct {
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
 	// Url is uRL source of this image, if any
 	Url string `json:"url,omitempty" yaml:"url,omitempty"`
-	// Version is version of this, if any
+	// Version is version of the operating system
 	Version string `json:"version,omitempty" yaml:"version,omitempty"`
 }
 
@@ -762,8 +764,12 @@ type ImageCreate struct {
 	Description string    `json:"description,omitempty" yaml:"description,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	// Os is the family of the operating system (e.g. Debian, Ubuntu, etc.)
+	Os string `json:"os,omitempty" yaml:"os,omitempty"`
 	// Source is the source of the image's contents.
 	Source ImageSource `json:"source,omitempty" yaml:"source,omitempty"`
+	// Version is the version of the operating system (e.g. 18.04, 20.04, etc.)
+	Version string `json:"version,omitempty" yaml:"version,omitempty"`
 }
 
 // ImageResultsPage is a single page of results
