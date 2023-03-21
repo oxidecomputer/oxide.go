@@ -380,6 +380,10 @@ func parseParams(specParams openapi3.Parameters, method string) paramsInfo {
 
 		paramName := strcase.ToLowerCamel(p.Value.Name)
 
+		//		if p.Value.Schema.Ref == "#/components/schemas/NameOrId" {
+		//			println(paramName)
+		//		}
+
 		// Avoid naming a param variable a Go type
 		paramName = verifyNotAGoType(paramName)
 

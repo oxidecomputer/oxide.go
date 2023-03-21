@@ -54,6 +54,49 @@ func generateTypes(file string, spec *openapi3.T) error {
 	}
 	defer f.Close()
 
+	// Code to generate params structs
+	keys := make([]string, 0)
+	for k := range spec.Paths {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	for _, path := range keys {
+		p := spec.Paths[path]
+		if p.Ref != "" {
+			fmt.Printf("[WARN] TODO: skipping path for %q, since it is a reference\n", path)
+			continue
+		}
+
+		ops := p.Operations()
+
+		for _, o := range ops {
+			if len(o.Parameters) > 0 {
+				// TODO: add all params, not just resource selector???
+				opId := strcase.ToCamel(o.OperationID)
+				selector := opId + "Params"
+				fmt.Printf("type %v struct {\n", selector)
+				for _, p := range o.Parameters {
+					if p.Ref != "" {
+						fmt.Printf("[WARN] TODO: skipping parameter for %q, since it is a reference\n", p.Value.Name)
+						continue
+					}
+
+					paramName := strcase.ToCamel(p.Value.Name)
+
+					if p.Value.Schema.Ref == "#/components/schemas/NameOrId" {
+						fmt.Printf("  %v NameOrId\n", paramName)
+					} else {
+						paramType := convertToValidGoType("", p.Value.Schema)
+						fmt.Printf("  %v %v\n", paramName, paramType)
+					}
+
+				}
+				println("}")
+			}
+		}
+
+	}
+
 	typeCollection, enumCollection := constructTypes(spec.Components.Schemas)
 
 	enumCollection = append(enumCollection, constructEnums(collectEnumStringTypes)...)
