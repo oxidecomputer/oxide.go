@@ -4,7 +4,7 @@ package oxide
 
 import "time"
 
-// Baseboard is describes properties that should uniquely identify a Gimlet.
+// Baseboard is properties that should uniquely identify a Sled.
 type Baseboard struct {
 	Part     string `json:"part,omitempty" yaml:"part,omitempty"`
 	Revision int    `json:"revision,omitempty" yaml:"revision,omitempty"`
@@ -358,12 +358,6 @@ type DiskCreate struct {
 	Size ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
 }
 
-// DiskIdentifier is tODO-v1: Delete this Parameters for the [`Disk`](omicron_common::api::external::Disk) to be attached or detached to an instance
-type DiskIdentifier struct {
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
-}
-
 // DiskMetricName is the type definition for a DiskMetricName.
 type DiskMetricName string
 
@@ -520,21 +514,6 @@ type ExternalIpResultsPage struct {
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
-
-// FieldSchema is the name and type information for a field of a timeseries schema.
-type FieldSchema struct {
-	Name string `json:"name,omitempty" yaml:"name,omitempty"`
-	// Source is the source from which a field is derived, the target or metric.
-	Source FieldSource `json:"source,omitempty" yaml:"source,omitempty"`
-	// Ty is the `FieldType` identifies the data type of a target or metric field.
-	Ty FieldType `json:"ty,omitempty" yaml:"ty,omitempty"`
-}
-
-// FieldSource is the source from which a field is derived, the target or metric.
-type FieldSource string
-
-// FieldType is the `FieldType` identifies the data type of a target or metric field.
-type FieldType string
 
 // FleetRole is the type definition for a FleetRole.
 type FleetRole string
@@ -1137,62 +1116,6 @@ type NetworkInterfaceUpdate struct {
 // Each node requires a string name that's unique within its DAG.  The name is used to identify its output.  Nodes that depend on a given node (either directly or indirectly) can access the node's output using its name.
 type NodeName string
 
-// Organization is client view of an [`Organization`]
-type Organization struct {
-	// Description is human-readable free-form text about a resource
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// Id is unique, immutable, system-controlled identifier for each resource
-	Id string `json:"id,omitempty" yaml:"id,omitempty"`
-	// Name is unique, mutable, user-controlled identifier for each resource
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
-	// TimeCreated is timestamp when this resource was created
-	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
-	// TimeModified is timestamp when this resource was last modified
-	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
-}
-
-// OrganizationCreate is create-time parameters for an [`Organization`](crate::external_api::views::Organization)
-type OrganizationCreate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
-}
-
-// OrganizationResultsPage is a single page of results
-type OrganizationResultsPage struct {
-	// Items is list of items on this page of results
-	Items []Organization `json:"items,omitempty" yaml:"items,omitempty"`
-	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
-}
-
-// OrganizationRole is the type definition for a OrganizationRole.
-type OrganizationRole string
-
-// OrganizationRolePolicy is client view of a [`Policy`], which describes how this resource may be accessed
-//
-// Note that the Policy only describes access granted explicitly for this resource.  The policies of parent resources can also cause a user to have access to this resource.
-type OrganizationRolePolicy struct {
-	// RoleAssignments is roles directly assigned on this resource
-	RoleAssignments []OrganizationRoleRoleAssignment `json:"role_assignments,omitempty" yaml:"role_assignments,omitempty"`
-}
-
-// OrganizationRoleRoleAssignment is describes the assignment of a particular role on a particular resource to a particular identity (user, group, etc.)
-//
-// The resource is not part of this structure.  Rather, [`RoleAssignment`]s are put into a [`Policy`] and that Policy is applied to a particular resource.
-type OrganizationRoleRoleAssignment struct {
-	IdentityId string `json:"identity_id,omitempty" yaml:"identity_id,omitempty"`
-	// IdentityType is describes what kind of identity is described by an id
-	IdentityType IdentityType     `json:"identity_type,omitempty" yaml:"identity_type,omitempty"`
-	RoleName     OrganizationRole `json:"role_name,omitempty" yaml:"role_name,omitempty"`
-}
-
-// OrganizationUpdate is updateable properties of an [`Organization`](crate::external_api::views::Organization)
-type OrganizationUpdate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
-}
-
 // Password is passwords may be subject to additional constraints.
 type Password string
 
@@ -1230,8 +1153,7 @@ type Project struct {
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
-	Name           Name   `json:"name,omitempty" yaml:"name,omitempty"`
-	OrganizationId string `json:"organization_id,omitempty" yaml:"organization_id,omitempty"`
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
@@ -1672,18 +1594,22 @@ type SiloRoleRoleAssignment struct {
 	RoleName     SiloRole     `json:"role_name,omitempty" yaml:"role_name,omitempty"`
 }
 
-// Sled is client view of a [`Sled`]
+// Sled is an operator's view of a Sled.
 type Sled struct {
-	// Baseboard is describes properties that should uniquely identify a Gimlet.
+	// Baseboard is properties that should uniquely identify a Sled.
 	Baseboard Baseboard `json:"baseboard,omitempty" yaml:"baseboard,omitempty"`
 	// Id is unique, immutable, system-controlled identifier for each resource
-	Id             string `json:"id,omitempty" yaml:"id,omitempty"`
-	RackId         string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
-	ServiceAddress string `json:"service_address,omitempty" yaml:"service_address,omitempty"`
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// RackId is the rack to which this Sled is currently attached
+	RackId string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+	// UsableHardwareThreads is the number of hardware threads which can execute on this sled
+	UsableHardwareThreads int `json:"usable_hardware_threads,omitempty" yaml:"usable_hardware_threads,omitempty"`
+	// UsablePhysicalRam is amount of RAM which may be used by the Sled's OS
+	UsablePhysicalRam ByteCount `json:"usable_physical_ram,omitempty" yaml:"usable_physical_ram,omitempty"`
 }
 
 // SledResultsPage is a single page of results
@@ -1806,29 +1732,6 @@ type SystemUpdateStart struct {
 type SystemVersion struct {
 	Status       UpdateStatus `json:"status,omitempty" yaml:"status,omitempty"`
 	VersionRange VersionRange `json:"version_range,omitempty" yaml:"version_range,omitempty"`
-}
-
-// TimeseriesName is names are constructed by concatenating the target and metric names with ':'. Target and metric names must be lowercase alphanumeric characters with '_' separating words.
-type TimeseriesName string
-
-// TimeseriesSchema is the schema for a timeseries.
-//
-// This includes the name of the timeseries, as well as the datum type of its metric and the schema for each field.
-type TimeseriesSchema struct {
-	Created *time.Time `json:"created,omitempty" yaml:"created,omitempty"`
-	// DatumType is the type of an individual datum of a metric.
-	DatumType   DatumType     `json:"datum_type,omitempty" yaml:"datum_type,omitempty"`
-	FieldSchema []FieldSchema `json:"field_schema,omitempty" yaml:"field_schema,omitempty"`
-	// TimeseriesName is names are constructed by concatenating the target and metric names with ':'. Target and metric names must be lowercase alphanumeric characters with '_' separating words.
-	TimeseriesName TimeseriesName `json:"timeseries_name,omitempty" yaml:"timeseries_name,omitempty"`
-}
-
-// TimeseriesSchemaResultsPage is a single page of results
-type TimeseriesSchemaResultsPage struct {
-	// Items is list of items on this page of results
-	Items []TimeseriesSchema `json:"items,omitempty" yaml:"items,omitempty"`
-	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
 // UpdateDeployment is identity-related metadata that's included in "asset" public API objects (which generally have no name or description)
@@ -2396,27 +2299,6 @@ const DiskStateStateFaulted DiskStateState = "faulted"
 // ExternalIpCreateTypeEphemeral represents the ExternalIpCreateType `"ephemeral"`.
 const ExternalIpCreateTypeEphemeral ExternalIpCreateType = "ephemeral"
 
-// FieldSourceTarget represents the FieldSource `"target"`.
-const FieldSourceTarget FieldSource = "target"
-
-// FieldSourceMetric represents the FieldSource `"metric"`.
-const FieldSourceMetric FieldSource = "metric"
-
-// FieldTypeString represents the FieldType `"string"`.
-const FieldTypeString FieldType = "string"
-
-// FieldTypeI64 represents the FieldType `"i64"`.
-const FieldTypeI64 FieldType = "i64"
-
-// FieldTypeIpAddr represents the FieldType `"ip_addr"`.
-const FieldTypeIpAddr FieldType = "ip_addr"
-
-// FieldTypeUuid represents the FieldType `"uuid"`.
-const FieldTypeUuid FieldType = "uuid"
-
-// FieldTypeBool represents the FieldType `"bool"`.
-const FieldTypeBool FieldType = "bool"
-
 // FleetRoleAdmin represents the FleetRole `"admin"`.
 const FleetRoleAdmin FleetRole = "admin"
 
@@ -2515,15 +2397,6 @@ const NameOrIdSortModeIdAscending NameOrIdSortMode = "id_ascending"
 
 // NameSortModeNameAscending represents the NameSortMode `"name_ascending"`.
 const NameSortModeNameAscending NameSortMode = "name_ascending"
-
-// OrganizationRoleAdmin represents the OrganizationRole `"admin"`.
-const OrganizationRoleAdmin OrganizationRole = "admin"
-
-// OrganizationRoleCollaborator represents the OrganizationRole `"collaborator"`.
-const OrganizationRoleCollaborator OrganizationRole = "collaborator"
-
-// OrganizationRoleViewer represents the OrganizationRole `"viewer"`.
-const OrganizationRoleViewer OrganizationRole = "viewer"
 
 // PhysicalDiskTypeInternal represents the PhysicalDiskType `"internal"`.
 const PhysicalDiskTypeInternal PhysicalDiskType = "internal"
@@ -2820,21 +2693,6 @@ var ExternalIpCreateTypes = []ExternalIpCreateType{
 	ExternalIpCreateTypeEphemeral,
 }
 
-// FieldSources is the collection of all FieldSource values.
-var FieldSources = []FieldSource{
-	FieldSourceMetric,
-	FieldSourceTarget,
-}
-
-// FieldTypes is the collection of all FieldType values.
-var FieldTypes = []FieldType{
-	FieldTypeBool,
-	FieldTypeI64,
-	FieldTypeIpAddr,
-	FieldTypeString,
-	FieldTypeUuid,
-}
-
 // FleetRoles is the collection of all FleetRole values.
 var FleetRoles = []FleetRole{
 	FleetRoleAdmin,
@@ -2914,13 +2772,6 @@ var NameOrIdSortModes = []NameOrIdSortMode{
 // NameSortModes is the collection of all NameSortMode values.
 var NameSortModes = []NameSortMode{
 	NameSortModeNameAscending,
-}
-
-// OrganizationRoles is the collection of all OrganizationRole values.
-var OrganizationRoles = []OrganizationRole{
-	OrganizationRoleAdmin,
-	OrganizationRoleCollaborator,
-	OrganizationRoleViewer,
 }
 
 // PhysicalDiskTypes is the collection of all PhysicalDiskType values.
