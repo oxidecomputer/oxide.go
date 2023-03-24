@@ -19,9 +19,7 @@ type methodTemplate struct {
 	HTTPMethod      string
 	FunctionName    string
 	WrappedFunction string
-	WrappedParams   string // temporary field
 	ResponseType    string
-	SignatureParams map[string]string
 	Summary         string
 	Path            string
 	PathParams      []string
@@ -140,7 +138,7 @@ func buildMethod(f *os.File, spec *openapi3.T, method string, path string, o *op
 	}
 
 	methodName := strcase.ToCamel(o.OperationID)
-	pInfo := parseParams(o.Parameters, method)
+	pInfo := buildParams(o.Parameters, method, methodName)
 
 	// Adapt for ListAll methods
 	if pInfo.isPageResult && isGetAllPages && len(pagedRespType) > 0 {
@@ -148,19 +146,14 @@ func buildMethod(f *os.File, spec *openapi3.T, method string, path string, o *op
 	}
 
 	ogmethodName := methodName
-	ogDocParamsString := pInfo.docParamsString
 	if isGetAllPages {
 		methodName += "AllPages"
-		pInfo.paramsString = listAllSignature(pInfo.paramsString)
-		delete(pInfo.parameters, "page_token")
-		delete(pInfo.parameters, "limit")
 	}
 
 	isList := pInfo.isPageResult && !isGetAllPages
 	// end ListAll specific code
 
 	pInfo = parseRequestBody(o.RequestBody, pInfo, methodName)
-	sigParams := buildSignatureParams(pInfo.parameters)
 	pathParams, err := buildPathOrQueryParams("path", pInfo.parameters)
 	if err != nil {
 		return err
@@ -177,9 +170,7 @@ func buildMethod(f *os.File, spec *openapi3.T, method string, path string, o *op
 		HTTPMethod:      method,
 		FunctionName:    methodName,
 		WrappedFunction: ogmethodName,
-		WrappedParams:   ogDocParamsString,
 		ResponseType:    respType,
-		SignatureParams: sigParams,
 		Summary:         o.Summary,
 		ParamsString:    pInfo.paramsString,
 		Path:            cleanPath(path),
@@ -312,25 +303,6 @@ func writeTpl(f *os.File, config methodTemplate) error {
 	return nil
 }
 
-func buildSignatureParams(params map[string]*openapi3.Parameter) map[string]string {
-	sigParams := make(map[string]string)
-	if len(params) > 0 {
-		keys := make([]string, 0)
-		for k := range params {
-			keys = append(keys, k)
-		}
-		sort.Strings(keys)
-		for _, name := range keys {
-			t := params[name]
-			k := strcase.ToLowerCamel(name)
-			// Avoid naming a param variable a Go type
-			k = verifyNotAGoType(k)
-			sigParams[k] = t.Description
-		}
-	}
-	return sigParams
-}
-
 func buildPathOrQueryParams(paramType string, params map[string]*openapi3.Parameter) ([]string, error) {
 	pathParams := make([]string, 0)
 	if paramType != "query" && paramType != "path" {
@@ -350,7 +322,7 @@ func buildPathOrQueryParams(paramType string, params map[string]*openapi3.Parame
 		for _, name := range keys {
 			p := params[name]
 			t := convertToValidGoType(name, p.Schema)
-			n := strcase.ToLowerCamel(name)
+			n := "params." + strcase.ToCamel(name)
 			if t == "string" {
 				pathParams = append(pathParams, fmt.Sprintf("%q: %s,", name, n))
 				// TODO: Identify interfaces instead of singling out NameOrId
@@ -370,33 +342,33 @@ func buildPathOrQueryParams(paramType string, params map[string]*openapi3.Parame
 	return pathParams, nil
 }
 
-func parseParams(specParams openapi3.Parameters, method string) paramsInfo {
-	pInfo := paramsInfo{parameters: make(map[string]*openapi3.Parameter, 0)}
-	for index, p := range specParams {
-		if p.Ref != "" {
-			fmt.Printf("[WARN] TODO: skipping parameter for %q, since it is a reference\n", p.Value.Name)
-			continue
-		}
-
-		paramName := strcase.ToLowerCamel(p.Value.Name)
-
-		// Avoid naming a param variable a Go type
-		paramName = verifyNotAGoType(paramName)
-
-		// Check if we have a page result.
-		if isPageParam(paramName) && method == http.MethodGet {
-			pInfo.isPageResult = true
-		}
-
-		pInfo.parameters[p.Value.Name] = p.Value
-		pInfo.paramsString += fmt.Sprintf("%s %s, ", paramName, convertToValidGoType(p.Value.Name, p.Value.Schema))
-		if index == len(specParams)-1 {
-			pInfo.docParamsString += paramName
-		} else {
-			pInfo.docParamsString += fmt.Sprintf("%s, ", paramName)
-		}
+func buildParams(specParams openapi3.Parameters, method, opID string) paramsInfo {
+	pInfo := paramsInfo{
+		parameters: make(map[string]*openapi3.Parameter, 0),
 	}
 
+	if len(specParams) > 0 {
+		pInfo.paramsString = "params " + opID + "Params, "
+
+		for _, p := range specParams {
+			if p.Ref != "" {
+				fmt.Printf("[WARN] TODO: skipping parameter for %q, since it is a reference\n", p.Value.Name)
+				continue
+			}
+
+			paramName := strcase.ToLowerCamel(p.Value.Name)
+
+			// Avoid naming a param variable a Go type
+			paramName = verifyNotAGoType(paramName)
+
+			// Check if we have a page result.
+			if isPageParam(paramName) && method == http.MethodGet {
+				pInfo.isPageResult = true
+			}
+
+			pInfo.parameters[p.Value.Name] = p.Value
+		}
+	}
 	return pInfo
 }
 
@@ -418,20 +390,9 @@ func parseRequestBody(reqBody *openapi3.RequestBodyRef, pInfo paramsInfo, method
 		typeName := convertToValidGoType("", r.Schema)
 
 		pInfo.paramsString += "j *" + typeName
-
-		if len(pInfo.docParamsString) > 0 {
-			pInfo.docParamsString += ", "
-		}
 		pInfo.docParamsString += "body"
 		break
 	}
 
 	return pInfo
-}
-
-func listAllSignature(params string) string {
-	// Remove pageToken and limit as we want to list all pages
-	params = strings.ReplaceAll(params, "pageToken string,", "")
-	params = strings.ReplaceAll(params, "limit int,", "")
-	return strings.TrimSpace(params)
 }

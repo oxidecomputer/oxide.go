@@ -10,14 +10,10 @@ import (
 	"io"
 	"net/http"
 	"strconv"
-	"time"
 )
 
 // LoginLocal: Authenticate a user (i.e., log in) via username and password
-//
-// Parameters
-// - `siloName`
-func (c *Client) LoginLocal(siloName Name, j *UsernamePasswordCredentials) error {
+func (c *Client) LoginLocal(params LoginLocalParams, j *UsernamePasswordCredentials) error {
 	// Create the url.
 	path := "/login/{{.silo_name}}/local"
 	uri := resolveRelative(c.server, path)
@@ -36,7 +32,7 @@ func (c *Client) LoginLocal(siloName Name, j *UsernamePasswordCredentials) error
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"silo_name": string(siloName),
+		"silo_name": string(params.SiloName),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -63,11 +59,7 @@ func (c *Client) LoginLocal(siloName Name, j *UsernamePasswordCredentials) error
 
 // LoginSamlBegin: Prompt user login
 // Either display a page asking a user for their credentials, or redirect them to their identity provider.
-//
-// Parameters
-// - `providerName`
-// - `siloName`
-func (c *Client) LoginSamlBegin(providerName Name, siloName Name) error {
+func (c *Client) LoginSamlBegin(params LoginSamlBeginParams) error {
 	// Create the url.
 	path := "/login/{{.silo_name}}/saml/{{.provider_name}}"
 	uri := resolveRelative(c.server, path)
@@ -80,8 +72,8 @@ func (c *Client) LoginSamlBegin(providerName Name, siloName Name) error {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"provider_name": string(providerName),
-		"silo_name":     string(siloName),
+		"provider_name": string(params.ProviderName),
+		"silo_name":     string(params.SiloName),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -107,11 +99,7 @@ func (c *Client) LoginSamlBegin(providerName Name, siloName Name) error {
 }
 
 // LoginSaml: Authenticate a user (i.e., log in) via SAML
-//
-// Parameters
-// - `providerName`
-// - `siloName`
-func (c *Client) LoginSaml(providerName Name, siloName Name, b io.Reader) error {
+func (c *Client) LoginSaml(params LoginSamlParams, b io.Reader) error {
 	// Create the url.
 	path := "/login/{{.silo_name}}/saml/{{.provider_name}}"
 	uri := resolveRelative(c.server, path)
@@ -124,8 +112,8 @@ func (c *Client) LoginSaml(providerName Name, siloName Name, b io.Reader) error 
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"provider_name": string(providerName),
-		"silo_name":     string(siloName),
+		"provider_name": string(params.ProviderName),
+		"silo_name":     string(params.SiloName),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -151,10 +139,7 @@ func (c *Client) LoginSaml(providerName Name, siloName Name, b io.Reader) error 
 }
 
 // SystemImageViewById: Fetch a system-wide image by id
-//
-// Parameters
-// - `id`
-func (c *Client) SystemImageViewById(id string) (*GlobalImage, error) {
+func (c *Client) SystemImageViewById(params SystemImageViewByIdParams) (*GlobalImage, error) {
 	// Create the url.
 	path := "/system/by-id/images/{{.id}}"
 	uri := resolveRelative(c.server, path)
@@ -167,7 +152,7 @@ func (c *Client) SystemImageViewById(id string) (*GlobalImage, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"id": id,
+		"id": params.Id,
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -205,10 +190,7 @@ func (c *Client) SystemImageViewById(id string) (*GlobalImage, error) {
 
 // SiloViewById: Fetch a silo by id
 // Use `GET /v1/system/silos/{id}` instead.
-//
-// Parameters
-// - `id`
-func (c *Client) SiloViewById(id string) (*Silo, error) {
+func (c *Client) SiloViewById(params SiloViewByIdParams) (*Silo, error) {
 	// Create the url.
 	path := "/system/by-id/silos/{{.id}}"
 	uri := resolveRelative(c.server, path)
@@ -221,7 +203,7 @@ func (c *Client) SiloViewById(id string) (*Silo, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"id": id,
+		"id": params.Id,
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -261,12 +243,7 @@ func (c *Client) SiloViewById(id string) (*Silo, error) {
 // Use `GET /v1/system/hardware/disks` instead
 //
 // To iterate over all pages, use the `PhysicalDiskListAllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `sortBy`
-func (c *Client) PhysicalDiskList(limit int, pageToken string, sortBy IdSortMode) (*PhysicalDiskResultsPage, error) {
+func (c *Client) PhysicalDiskList(params PhysicalDiskListParams) (*PhysicalDiskResultsPage, error) {
 	// Create the url.
 	path := "/system/hardware/disks"
 	uri := resolveRelative(c.server, path)
@@ -284,9 +261,9 @@ func (c *Client) PhysicalDiskList(limit int, pageToken string, sortBy IdSortMode
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"sort_by":    string(sortBy),
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -322,23 +299,20 @@ func (c *Client) PhysicalDiskList(limit int, pageToken string, sortBy IdSortMode
 //
 // This method is a wrapper around the `PhysicalDiskList` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `sortBy`
-func (c *Client) PhysicalDiskListAllPages(sortBy IdSortMode) (*[]PhysicalDisk, error) {
+func (c *Client) PhysicalDiskListAllPages(params PhysicalDiskListParams) (*[]PhysicalDisk, error) {
 	var allPages []PhysicalDisk
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.PhysicalDiskList(limit, pageToken, sortBy)
+		page, err := c.PhysicalDiskList(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
@@ -348,12 +322,7 @@ func (c *Client) PhysicalDiskListAllPages(sortBy IdSortMode) (*[]PhysicalDisk, e
 // Use `GET /v1/system/hardware/racks` instead
 //
 // To iterate over all pages, use the `RackListAllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `sortBy`
-func (c *Client) RackList(limit int, pageToken string, sortBy IdSortMode) (*RackResultsPage, error) {
+func (c *Client) RackList(params RackListParams) (*RackResultsPage, error) {
 	// Create the url.
 	path := "/system/hardware/racks"
 	uri := resolveRelative(c.server, path)
@@ -371,9 +340,9 @@ func (c *Client) RackList(limit int, pageToken string, sortBy IdSortMode) (*Rack
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"sort_by":    string(sortBy),
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -409,23 +378,20 @@ func (c *Client) RackList(limit int, pageToken string, sortBy IdSortMode) (*Rack
 //
 // This method is a wrapper around the `RackList` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `sortBy`
-func (c *Client) RackListAllPages(sortBy IdSortMode) (*[]Rack, error) {
+func (c *Client) RackListAllPages(params RackListParams) (*[]Rack, error) {
 	var allPages []Rack
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.RackList(limit, pageToken, sortBy)
+		page, err := c.RackList(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
@@ -433,10 +399,7 @@ func (c *Client) RackListAllPages(sortBy IdSortMode) (*[]Rack, error) {
 
 // RackView: Fetch a rack
 // Use `GET /v1/system/hardware/racks/{rack_id}` instead
-//
-// Parameters
-// - `rackId` The rack's unique ID.
-func (c *Client) RackView(rackId string) (*Rack, error) {
+func (c *Client) RackView(params RackViewParams) (*Rack, error) {
 	// Create the url.
 	path := "/system/hardware/racks/{{.rack_id}}"
 	uri := resolveRelative(c.server, path)
@@ -449,7 +412,7 @@ func (c *Client) RackView(rackId string) (*Rack, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"rack_id": rackId,
+		"rack_id": params.RackId,
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -489,12 +452,7 @@ func (c *Client) RackView(rackId string) (*Rack, error) {
 // Use `GET /v1/system/hardware/sleds instead`
 //
 // To iterate over all pages, use the `SledListAllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `sortBy`
-func (c *Client) SledList(limit int, pageToken string, sortBy IdSortMode) (*SledResultsPage, error) {
+func (c *Client) SledList(params SledListParams) (*SledResultsPage, error) {
 	// Create the url.
 	path := "/system/hardware/sleds"
 	uri := resolveRelative(c.server, path)
@@ -512,9 +470,9 @@ func (c *Client) SledList(limit int, pageToken string, sortBy IdSortMode) (*Sled
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"sort_by":    string(sortBy),
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -550,23 +508,20 @@ func (c *Client) SledList(limit int, pageToken string, sortBy IdSortMode) (*Sled
 //
 // This method is a wrapper around the `SledList` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `sortBy`
-func (c *Client) SledListAllPages(sortBy IdSortMode) (*[]Sled, error) {
+func (c *Client) SledListAllPages(params SledListParams) (*[]Sled, error) {
 	var allPages []Sled
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.SledList(limit, pageToken, sortBy)
+		page, err := c.SledList(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
@@ -574,10 +529,7 @@ func (c *Client) SledListAllPages(sortBy IdSortMode) (*[]Sled, error) {
 
 // SledView: Fetch a sled
 // Use `GET /v1/system/hardware/sleds/{sled_id}` instead
-//
-// Parameters
-// - `sledId` The sled's unique ID.
-func (c *Client) SledView(sledId string) (*Sled, error) {
+func (c *Client) SledView(params SledViewParams) (*Sled, error) {
 	// Create the url.
 	path := "/system/hardware/sleds/{{.sled_id}}"
 	uri := resolveRelative(c.server, path)
@@ -590,7 +542,7 @@ func (c *Client) SledView(sledId string) (*Sled, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"sled_id": sledId,
+		"sled_id": params.SledId,
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -630,13 +582,7 @@ func (c *Client) SledView(sledId string) (*Sled, error) {
 // Use `GET /v1/system/hardware/sleds/{sled_id}/disks` instead
 //
 // To iterate over all pages, use the `SledPhysicalDiskListAllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `sledId` The sled's unique ID.
-// - `sortBy`
-func (c *Client) SledPhysicalDiskList(sledId string, limit int, pageToken string, sortBy IdSortMode) (*PhysicalDiskResultsPage, error) {
+func (c *Client) SledPhysicalDiskList(params SledPhysicalDiskListParams) (*PhysicalDiskResultsPage, error) {
 	// Create the url.
 	path := "/system/hardware/sleds/{{.sled_id}}/disks"
 	uri := resolveRelative(c.server, path)
@@ -649,16 +595,16 @@ func (c *Client) SledPhysicalDiskList(sledId string, limit int, pageToken string
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"sled_id": sledId,
+		"sled_id": params.SledId,
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"sort_by":    string(sortBy),
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -694,24 +640,20 @@ func (c *Client) SledPhysicalDiskList(sledId string, limit int, pageToken string
 //
 // This method is a wrapper around the `SledPhysicalDiskList` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `sledId` The sled's unique ID.
-// - `sortBy`
-func (c *Client) SledPhysicalDiskListAllPages(sledId string, sortBy IdSortMode) (*[]PhysicalDisk, error) {
+func (c *Client) SledPhysicalDiskListAllPages(params SledPhysicalDiskListParams) (*[]PhysicalDisk, error) {
 	var allPages []PhysicalDisk
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.SledPhysicalDiskList(sledId, limit, pageToken, sortBy)
+		page, err := c.SledPhysicalDiskList(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
@@ -721,12 +663,7 @@ func (c *Client) SledPhysicalDiskListAllPages(sledId string, sortBy IdSortMode) 
 // Returns a list of all the system-wide images. System-wide images are returned sorted by creation date, with the most recent images appearing first.
 //
 // To iterate over all pages, use the `SystemImageListAllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `sortBy`
-func (c *Client) SystemImageList(limit int, pageToken string, sortBy NameSortMode) (*GlobalImageResultsPage, error) {
+func (c *Client) SystemImageList(params SystemImageListParams) (*GlobalImageResultsPage, error) {
 	// Create the url.
 	path := "/system/images"
 	uri := resolveRelative(c.server, path)
@@ -744,9 +681,9 @@ func (c *Client) SystemImageList(limit int, pageToken string, sortBy NameSortMod
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"sort_by":    string(sortBy),
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -782,23 +719,20 @@ func (c *Client) SystemImageList(limit int, pageToken string, sortBy NameSortMod
 //
 // This method is a wrapper around the `SystemImageList` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `sortBy`
-func (c *Client) SystemImageListAllPages(sortBy NameSortMode) (*[]GlobalImage, error) {
+func (c *Client) SystemImageListAllPages(params SystemImageListParams) (*[]GlobalImage, error) {
 	var allPages []GlobalImage
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.SystemImageList(limit, pageToken, sortBy)
+		page, err := c.SystemImageList(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
@@ -851,10 +785,7 @@ func (c *Client) SystemImageCreate(j *GlobalImageCreate) (*GlobalImage, error) {
 
 // SystemImageView: Fetch a system-wide image
 // Returns the details of a specific system-wide image.
-//
-// Parameters
-// - `imageName`
-func (c *Client) SystemImageView(imageName Name) (*GlobalImage, error) {
+func (c *Client) SystemImageView(params SystemImageViewParams) (*GlobalImage, error) {
 	// Create the url.
 	path := "/system/images/{{.image_name}}"
 	uri := resolveRelative(c.server, path)
@@ -867,7 +798,7 @@ func (c *Client) SystemImageView(imageName Name) (*GlobalImage, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"image_name": string(imageName),
+		"image_name": string(params.ImageName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -905,10 +836,7 @@ func (c *Client) SystemImageView(imageName Name) (*GlobalImage, error) {
 
 // SystemImageDelete: Delete a system-wide image
 // Permanently delete a system-wide image. This operation cannot be undone. Any instances using the system-wide image will continue to run, however new instances can not be created with this image.
-//
-// Parameters
-// - `imageName`
-func (c *Client) SystemImageDelete(imageName Name) error {
+func (c *Client) SystemImageDelete(params SystemImageDeleteParams) error {
 	// Create the url.
 	path := "/system/images/{{.image_name}}"
 	uri := resolveRelative(c.server, path)
@@ -921,7 +849,7 @@ func (c *Client) SystemImageDelete(imageName Name) error {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"image_name": string(imageName),
+		"image_name": string(params.ImageName),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -950,12 +878,7 @@ func (c *Client) SystemImageDelete(imageName Name) error {
 // Use `GET v1/system/sagas` instead
 //
 // To iterate over all pages, use the `SagaListAllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `sortBy`
-func (c *Client) SagaList(limit int, pageToken string, sortBy IdSortMode) (*SagaResultsPage, error) {
+func (c *Client) SagaList(params SagaListParams) (*SagaResultsPage, error) {
 	// Create the url.
 	path := "/system/sagas"
 	uri := resolveRelative(c.server, path)
@@ -973,9 +896,9 @@ func (c *Client) SagaList(limit int, pageToken string, sortBy IdSortMode) (*Saga
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"sort_by":    string(sortBy),
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -1011,23 +934,20 @@ func (c *Client) SagaList(limit int, pageToken string, sortBy IdSortMode) (*Saga
 //
 // This method is a wrapper around the `SagaList` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `sortBy`
-func (c *Client) SagaListAllPages(sortBy IdSortMode) (*[]Saga, error) {
+func (c *Client) SagaListAllPages(params SagaListParams) (*[]Saga, error) {
 	var allPages []Saga
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.SagaList(limit, pageToken, sortBy)
+		page, err := c.SagaList(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
@@ -1035,10 +955,7 @@ func (c *Client) SagaListAllPages(sortBy IdSortMode) (*[]Saga, error) {
 
 // SagaView: Fetch a saga
 // Use `GET v1/system/sagas/{saga_id}` instead
-//
-// Parameters
-// - `sagaId`
-func (c *Client) SagaView(sagaId string) (*Saga, error) {
+func (c *Client) SagaView(params SagaViewParams) (*Saga, error) {
 	// Create the url.
 	path := "/system/sagas/{{.saga_id}}"
 	uri := resolveRelative(c.server, path)
@@ -1051,7 +968,7 @@ func (c *Client) SagaView(sagaId string) (*Saga, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"saga_id": sagaId,
+		"saga_id": params.SagaId,
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1091,12 +1008,7 @@ func (c *Client) SagaView(sagaId string) (*Saga, error) {
 // Lists silos that are discoverable based on the current permissions. Use `GET /v1/system/silos` instead
 //
 // To iterate over all pages, use the `SiloListAllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `sortBy`
-func (c *Client) SiloList(limit int, pageToken string, sortBy NameOrIdSortMode) (*SiloResultsPage, error) {
+func (c *Client) SiloList(params SiloListParams) (*SiloResultsPage, error) {
 	// Create the url.
 	path := "/system/silos"
 	uri := resolveRelative(c.server, path)
@@ -1114,9 +1026,9 @@ func (c *Client) SiloList(limit int, pageToken string, sortBy NameOrIdSortMode) 
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"sort_by":    string(sortBy),
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -1152,23 +1064,20 @@ func (c *Client) SiloList(limit int, pageToken string, sortBy NameOrIdSortMode) 
 //
 // This method is a wrapper around the `SiloList` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `sortBy`
-func (c *Client) SiloListAllPages(sortBy NameOrIdSortMode) (*[]Silo, error) {
+func (c *Client) SiloListAllPages(params SiloListParams) (*[]Silo, error) {
 	var allPages []Silo
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.SiloList(limit, pageToken, sortBy)
+		page, err := c.SiloList(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
@@ -1221,10 +1130,7 @@ func (c *Client) SiloCreate(j *SiloCreate) (*Silo, error) {
 
 // SiloView: Fetch a silo
 // Fetch a silo by name. Use `GET /v1/system/silos/{silo}` instead.
-//
-// Parameters
-// - `siloName` The silo's unique name.
-func (c *Client) SiloView(siloName Name) (*Silo, error) {
+func (c *Client) SiloView(params SiloViewParams) (*Silo, error) {
 	// Create the url.
 	path := "/system/silos/{{.silo_name}}"
 	uri := resolveRelative(c.server, path)
@@ -1237,7 +1143,7 @@ func (c *Client) SiloView(siloName Name) (*Silo, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"silo_name": string(siloName),
+		"silo_name": string(params.SiloName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1275,10 +1181,7 @@ func (c *Client) SiloView(siloName Name) (*Silo, error) {
 
 // SiloDelete: Delete a silo
 // Delete a silo by name. Use `DELETE /v1/system/silos/{silo}` instead.
-//
-// Parameters
-// - `siloName` The silo's unique name.
-func (c *Client) SiloDelete(siloName Name) error {
+func (c *Client) SiloDelete(params SiloDeleteParams) error {
 	// Create the url.
 	path := "/system/silos/{{.silo_name}}"
 	uri := resolveRelative(c.server, path)
@@ -1291,7 +1194,7 @@ func (c *Client) SiloDelete(siloName Name) error {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"silo_name": string(siloName),
+		"silo_name": string(params.SiloName),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1318,10 +1221,7 @@ func (c *Client) SiloDelete(siloName Name) error {
 
 // SiloPolicyView: Fetch a silo's IAM policy
 // Use `GET /v1/system/silos/{silo}/policy` instead.
-//
-// Parameters
-// - `siloName` The silo's unique name.
-func (c *Client) SiloPolicyView(siloName Name) (*SiloRolePolicy, error) {
+func (c *Client) SiloPolicyView(params SiloPolicyViewParams) (*SiloRolePolicy, error) {
 	// Create the url.
 	path := "/system/silos/{{.silo_name}}/policy"
 	uri := resolveRelative(c.server, path)
@@ -1334,7 +1234,7 @@ func (c *Client) SiloPolicyView(siloName Name) (*SiloRolePolicy, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"silo_name": string(siloName),
+		"silo_name": string(params.SiloName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1372,10 +1272,7 @@ func (c *Client) SiloPolicyView(siloName Name) (*SiloRolePolicy, error) {
 
 // SiloPolicyUpdate: Update a silo's IAM policy
 // Use `PUT /v1/system/silos/{silo}/policy` instead
-//
-// Parameters
-// - `siloName` The silo's unique name.
-func (c *Client) SiloPolicyUpdate(siloName Name, j *SiloRolePolicy) (*SiloRolePolicy, error) {
+func (c *Client) SiloPolicyUpdate(params SiloPolicyUpdateParams, j *SiloRolePolicy) (*SiloRolePolicy, error) {
 	// Create the url.
 	path := "/system/silos/{{.silo_name}}/policy"
 	uri := resolveRelative(c.server, path)
@@ -1394,7 +1291,7 @@ func (c *Client) SiloPolicyUpdate(siloName Name, j *SiloRolePolicy) (*SiloRolePo
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"silo_name": string(siloName),
+		"silo_name": string(params.SiloName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1433,13 +1330,7 @@ func (c *Client) SiloPolicyUpdate(siloName Name, j *SiloRolePolicy) (*SiloRolePo
 // DiskList: List disks
 //
 // To iterate over all pages, use the `DiskListAllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `project`
-// - `sortBy`
-func (c *Client) DiskList(limit int, pageToken string, project NameOrId, sortBy NameOrIdSortMode) (*DiskResultsPage, error) {
+func (c *Client) DiskList(params DiskListParams) (*DiskResultsPage, error) {
 	// Create the url.
 	path := "/v1/disks"
 	uri := resolveRelative(c.server, path)
@@ -1457,10 +1348,10 @@ func (c *Client) DiskList(limit int, pageToken string, project NameOrId, sortBy 
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"project":    project.(string),
-		"sort_by":    string(sortBy),
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"project":    params.Project.(string),
+		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -1495,34 +1386,27 @@ func (c *Client) DiskList(limit int, pageToken string, project NameOrId, sortBy 
 //
 // This method is a wrapper around the `DiskList` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `project`
-// - `sortBy`
-func (c *Client) DiskListAllPages(project NameOrId, sortBy NameOrIdSortMode) (*[]Disk, error) {
+func (c *Client) DiskListAllPages(params DiskListParams) (*[]Disk, error) {
 	var allPages []Disk
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.DiskList(limit, pageToken, project, sortBy)
+		page, err := c.DiskList(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
 }
 
 // DiskCreate: Create a disk
-//
-// Parameters
-// - `project`
-func (c *Client) DiskCreate(project NameOrId, j *DiskCreate) (*Disk, error) {
+func (c *Client) DiskCreate(params DiskCreateParams, j *DiskCreate) (*Disk, error) {
 	// Create the url.
 	path := "/v1/disks"
 	uri := resolveRelative(c.server, path)
@@ -1546,7 +1430,7 @@ func (c *Client) DiskCreate(project NameOrId, j *DiskCreate) (*Disk, error) {
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
+		"project": params.Project.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -1578,11 +1462,7 @@ func (c *Client) DiskCreate(project NameOrId, j *DiskCreate) (*Disk, error) {
 }
 
 // DiskView: Fetch a disk
-//
-// Parameters
-// - `disk`
-// - `project`
-func (c *Client) DiskView(disk NameOrId, project NameOrId) (*Disk, error) {
+func (c *Client) DiskView(params DiskViewParams) (*Disk, error) {
 	// Create the url.
 	path := "/v1/disks/{{.disk}}"
 	uri := resolveRelative(c.server, path)
@@ -1595,14 +1475,14 @@ func (c *Client) DiskView(disk NameOrId, project NameOrId) (*Disk, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"disk": disk.(string),
+		"disk": params.Disk.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
+		"project": params.Project.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -1634,11 +1514,7 @@ func (c *Client) DiskView(disk NameOrId, project NameOrId) (*Disk, error) {
 }
 
 // DiskDelete: Delete a disk
-//
-// Parameters
-// - `disk`
-// - `project`
-func (c *Client) DiskDelete(disk NameOrId, project NameOrId) error {
+func (c *Client) DiskDelete(params DiskDeleteParams) error {
 	// Create the url.
 	path := "/v1/disks/{{.disk}}"
 	uri := resolveRelative(c.server, path)
@@ -1651,14 +1527,14 @@ func (c *Client) DiskDelete(disk NameOrId, project NameOrId) error {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"disk": disk.(string),
+		"disk": params.Disk.(string),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
+		"project": params.Project.(string),
 	}); err != nil {
 		return fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -1681,16 +1557,7 @@ func (c *Client) DiskDelete(disk NameOrId, project NameOrId) error {
 // DiskMetricsList: Fetch disk metrics
 //
 // To iterate over all pages, use the `DiskMetricsListAllPages` method, instead.
-//
-// Parameters
-// - `disk`
-// - `endTime` An exclusive end time of metrics.
-// - `limit` Maximum number of items returned by a single call
-// - `metric`
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `project`
-// - `startTime` An inclusive start time of metrics.
-func (c *Client) DiskMetricsList(disk NameOrId, metric DiskMetricName, endTime *time.Time, limit int, pageToken string, startTime *time.Time, project NameOrId) (*MeasurementResultsPage, error) {
+func (c *Client) DiskMetricsList(params DiskMetricsListParams) (*MeasurementResultsPage, error) {
 	// Create the url.
 	path := "/v1/disks/{{.disk}}/metrics/{{.metric}}"
 	uri := resolveRelative(c.server, path)
@@ -1703,19 +1570,19 @@ func (c *Client) DiskMetricsList(disk NameOrId, metric DiskMetricName, endTime *
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"disk":   disk.(string),
-		"metric": string(metric),
+		"disk":   params.Disk.(string),
+		"metric": string(params.Metric),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"end_time":   endTime.String(),
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"project":    project.(string),
-		"start_time": startTime.String(),
+		"end_time":   params.EndTime.String(),
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"project":    params.Project.(string),
+		"start_time": params.StartTime.String(),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -1750,27 +1617,20 @@ func (c *Client) DiskMetricsList(disk NameOrId, metric DiskMetricName, endTime *
 //
 // This method is a wrapper around the `DiskMetricsList` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `disk`
-// - `endTime` An exclusive end time of metrics.
-// - `metric`
-// - `project`
-// - `startTime` An inclusive start time of metrics.
-func (c *Client) DiskMetricsListAllPages(disk NameOrId, metric DiskMetricName, endTime *time.Time, startTime *time.Time, project NameOrId) (*[]Measurement, error) {
+func (c *Client) DiskMetricsListAllPages(params DiskMetricsListParams) (*[]Measurement, error) {
 	var allPages []Measurement
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.DiskMetricsList(disk, metric, endTime, limit, pageToken, startTime, project)
+		page, err := c.DiskMetricsList(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
@@ -1779,12 +1639,7 @@ func (c *Client) DiskMetricsListAllPages(disk NameOrId, metric DiskMetricName, e
 // GroupListV1: List groups
 //
 // To iterate over all pages, use the `GroupListV1AllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `sortBy`
-func (c *Client) GroupListV1(limit int, pageToken string, sortBy IdSortMode) (*GroupResultsPage, error) {
+func (c *Client) GroupListV1(params GroupListV1Params) (*GroupResultsPage, error) {
 	// Create the url.
 	path := "/v1/groups"
 	uri := resolveRelative(c.server, path)
@@ -1802,9 +1657,9 @@ func (c *Client) GroupListV1(limit int, pageToken string, sortBy IdSortMode) (*G
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"sort_by":    string(sortBy),
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -1839,33 +1694,27 @@ func (c *Client) GroupListV1(limit int, pageToken string, sortBy IdSortMode) (*G
 //
 // This method is a wrapper around the `GroupListV1` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `sortBy`
-func (c *Client) GroupListV1AllPages(sortBy IdSortMode) (*[]Group, error) {
+func (c *Client) GroupListV1AllPages(params GroupListV1Params) (*[]Group, error) {
 	var allPages []Group
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.GroupListV1(limit, pageToken, sortBy)
+		page, err := c.GroupListV1(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
 }
 
 // GroupView: Fetch group
-//
-// Parameters
-// - `group`
-func (c *Client) GroupView(group string) (*Group, error) {
+func (c *Client) GroupView(params GroupViewParams) (*Group, error) {
 	// Create the url.
 	path := "/v1/groups/{{.group}}"
 	uri := resolveRelative(c.server, path)
@@ -1878,7 +1727,7 @@ func (c *Client) GroupView(group string) (*Group, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"group": group,
+		"group": params.Group,
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -1918,13 +1767,7 @@ func (c *Client) GroupView(group string) (*Group, error) {
 // List images which are global or scoped to the specified project. The images are returned sorted by creation date, with the most recent images appearing first.
 //
 // To iterate over all pages, use the `ImageListAllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `project`
-// - `sortBy`
-func (c *Client) ImageList(limit int, pageToken string, project NameOrId, sortBy NameOrIdSortMode) (*ImageResultsPage, error) {
+func (c *Client) ImageList(params ImageListParams) (*ImageResultsPage, error) {
 	// Create the url.
 	path := "/v1/images"
 	uri := resolveRelative(c.server, path)
@@ -1942,10 +1785,10 @@ func (c *Client) ImageList(limit int, pageToken string, project NameOrId, sortBy
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"project":    project.(string),
-		"sort_by":    string(sortBy),
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"project":    params.Project.(string),
+		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -1981,24 +1824,20 @@ func (c *Client) ImageList(limit int, pageToken string, project NameOrId, sortBy
 //
 // This method is a wrapper around the `ImageList` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `project`
-// - `sortBy`
-func (c *Client) ImageListAllPages(project NameOrId, sortBy NameOrIdSortMode) (*[]Image, error) {
+func (c *Client) ImageListAllPages(params ImageListParams) (*[]Image, error) {
 	var allPages []Image
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.ImageList(limit, pageToken, project, sortBy)
+		page, err := c.ImageList(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
@@ -2006,10 +1845,7 @@ func (c *Client) ImageListAllPages(project NameOrId, sortBy NameOrIdSortMode) (*
 
 // ImageCreate: Create an image
 // Create a new image in a project.
-//
-// Parameters
-// - `project`
-func (c *Client) ImageCreate(project NameOrId, j *ImageCreate) (*Image, error) {
+func (c *Client) ImageCreate(params ImageCreateParams, j *ImageCreate) (*Image, error) {
 	// Create the url.
 	path := "/v1/images"
 	uri := resolveRelative(c.server, path)
@@ -2033,7 +1869,7 @@ func (c *Client) ImageCreate(project NameOrId, j *ImageCreate) (*Image, error) {
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
+		"project": params.Project.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -2066,11 +1902,7 @@ func (c *Client) ImageCreate(project NameOrId, j *ImageCreate) (*Image, error) {
 
 // ImageView: Fetch an image
 // Fetch the details for a specific image in a project.
-//
-// Parameters
-// - `image`
-// - `project`
-func (c *Client) ImageView(image NameOrId, project NameOrId) (*Image, error) {
+func (c *Client) ImageView(params ImageViewParams) (*Image, error) {
 	// Create the url.
 	path := "/v1/images/{{.image}}"
 	uri := resolveRelative(c.server, path)
@@ -2083,14 +1915,14 @@ func (c *Client) ImageView(image NameOrId, project NameOrId) (*Image, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"image": image.(string),
+		"image": params.Image.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
+		"project": params.Project.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -2123,11 +1955,7 @@ func (c *Client) ImageView(image NameOrId, project NameOrId) (*Image, error) {
 
 // ImageDelete: Delete an image
 // Permanently delete an image from a project. This operation cannot be undone. Any instances in the project using the image will continue to run, however new instances can not be created with this image.
-//
-// Parameters
-// - `image`
-// - `project`
-func (c *Client) ImageDelete(image NameOrId, project NameOrId) error {
+func (c *Client) ImageDelete(params ImageDeleteParams) error {
 	// Create the url.
 	path := "/v1/images/{{.image}}"
 	uri := resolveRelative(c.server, path)
@@ -2140,14 +1968,14 @@ func (c *Client) ImageDelete(image NameOrId, project NameOrId) error {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"image": image.(string),
+		"image": params.Image.(string),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
+		"project": params.Project.(string),
 	}); err != nil {
 		return fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -2170,13 +1998,7 @@ func (c *Client) ImageDelete(image NameOrId, project NameOrId) error {
 // InstanceList: List instances
 //
 // To iterate over all pages, use the `InstanceListAllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `project`
-// - `sortBy`
-func (c *Client) InstanceList(limit int, pageToken string, project NameOrId, sortBy NameOrIdSortMode) (*InstanceResultsPage, error) {
+func (c *Client) InstanceList(params InstanceListParams) (*InstanceResultsPage, error) {
 	// Create the url.
 	path := "/v1/instances"
 	uri := resolveRelative(c.server, path)
@@ -2194,10 +2016,10 @@ func (c *Client) InstanceList(limit int, pageToken string, project NameOrId, sor
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"project":    project.(string),
-		"sort_by":    string(sortBy),
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"project":    params.Project.(string),
+		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -2232,34 +2054,27 @@ func (c *Client) InstanceList(limit int, pageToken string, project NameOrId, sor
 //
 // This method is a wrapper around the `InstanceList` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `project`
-// - `sortBy`
-func (c *Client) InstanceListAllPages(project NameOrId, sortBy NameOrIdSortMode) (*[]Instance, error) {
+func (c *Client) InstanceListAllPages(params InstanceListParams) (*[]Instance, error) {
 	var allPages []Instance
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.InstanceList(limit, pageToken, project, sortBy)
+		page, err := c.InstanceList(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
 }
 
 // InstanceCreate: Create an instance
-//
-// Parameters
-// - `project`
-func (c *Client) InstanceCreate(project NameOrId, j *InstanceCreate) (*Instance, error) {
+func (c *Client) InstanceCreate(params InstanceCreateParams, j *InstanceCreate) (*Instance, error) {
 	// Create the url.
 	path := "/v1/instances"
 	uri := resolveRelative(c.server, path)
@@ -2283,7 +2098,7 @@ func (c *Client) InstanceCreate(project NameOrId, j *InstanceCreate) (*Instance,
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
+		"project": params.Project.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -2315,11 +2130,7 @@ func (c *Client) InstanceCreate(project NameOrId, j *InstanceCreate) (*Instance,
 }
 
 // InstanceView: Fetch an instance
-//
-// Parameters
-// - `instance`
-// - `project`
-func (c *Client) InstanceView(project NameOrId, instance NameOrId) (*Instance, error) {
+func (c *Client) InstanceView(params InstanceViewParams) (*Instance, error) {
 	// Create the url.
 	path := "/v1/instances/{{.instance}}"
 	uri := resolveRelative(c.server, path)
@@ -2332,14 +2143,14 @@ func (c *Client) InstanceView(project NameOrId, instance NameOrId) (*Instance, e
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"instance": instance.(string),
+		"instance": params.Instance.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
+		"project": params.Project.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -2371,11 +2182,7 @@ func (c *Client) InstanceView(project NameOrId, instance NameOrId) (*Instance, e
 }
 
 // InstanceDelete: Delete an instance
-//
-// Parameters
-// - `instance`
-// - `project`
-func (c *Client) InstanceDelete(project NameOrId, instance NameOrId) error {
+func (c *Client) InstanceDelete(params InstanceDeleteParams) error {
 	// Create the url.
 	path := "/v1/instances/{{.instance}}"
 	uri := resolveRelative(c.server, path)
@@ -2388,14 +2195,14 @@ func (c *Client) InstanceDelete(project NameOrId, instance NameOrId) error {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"instance": instance.(string),
+		"instance": params.Instance.(string),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
+		"project": params.Project.(string),
 	}); err != nil {
 		return fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -2418,14 +2225,7 @@ func (c *Client) InstanceDelete(project NameOrId, instance NameOrId) error {
 // InstanceDiskList: List an instance's disks
 //
 // To iterate over all pages, use the `InstanceDiskListAllPages` method, instead.
-//
-// Parameters
-// - `instance`
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `project`
-// - `sortBy`
-func (c *Client) InstanceDiskList(limit int, pageToken string, project NameOrId, sortBy NameOrIdSortMode, instance NameOrId) (*DiskResultsPage, error) {
+func (c *Client) InstanceDiskList(params InstanceDiskListParams) (*DiskResultsPage, error) {
 	// Create the url.
 	path := "/v1/instances/{{.instance}}/disks"
 	uri := resolveRelative(c.server, path)
@@ -2438,17 +2238,17 @@ func (c *Client) InstanceDiskList(limit int, pageToken string, project NameOrId,
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"instance": instance.(string),
+		"instance": params.Instance.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"project":    project.(string),
-		"sort_by":    string(sortBy),
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"project":    params.Project.(string),
+		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -2483,36 +2283,27 @@ func (c *Client) InstanceDiskList(limit int, pageToken string, project NameOrId,
 //
 // This method is a wrapper around the `InstanceDiskList` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `instance`
-// - `project`
-// - `sortBy`
-func (c *Client) InstanceDiskListAllPages(project NameOrId, sortBy NameOrIdSortMode, instance NameOrId) (*[]Disk, error) {
+func (c *Client) InstanceDiskListAllPages(params InstanceDiskListParams) (*[]Disk, error) {
 	var allPages []Disk
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.InstanceDiskList(limit, pageToken, project, sortBy, instance)
+		page, err := c.InstanceDiskList(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
 }
 
 // InstanceDiskAttach: Attach a disk to an instance
-//
-// Parameters
-// - `instance`
-// - `project`
-func (c *Client) InstanceDiskAttach(instance NameOrId, project NameOrId, j *DiskPath) (*Disk, error) {
+func (c *Client) InstanceDiskAttach(params InstanceDiskAttachParams, j *DiskPath) (*Disk, error) {
 	// Create the url.
 	path := "/v1/instances/{{.instance}}/disks/attach"
 	uri := resolveRelative(c.server, path)
@@ -2531,14 +2322,14 @@ func (c *Client) InstanceDiskAttach(instance NameOrId, project NameOrId, j *Disk
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"instance": instance.(string),
+		"instance": params.Instance.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
+		"project": params.Project.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -2570,11 +2361,7 @@ func (c *Client) InstanceDiskAttach(instance NameOrId, project NameOrId, j *Disk
 }
 
 // InstanceDiskDetach: Detach a disk from an instance
-//
-// Parameters
-// - `instance`
-// - `project`
-func (c *Client) InstanceDiskDetach(instance NameOrId, project NameOrId, j *DiskPath) (*Disk, error) {
+func (c *Client) InstanceDiskDetach(params InstanceDiskDetachParams, j *DiskPath) (*Disk, error) {
 	// Create the url.
 	path := "/v1/instances/{{.instance}}/disks/detach"
 	uri := resolveRelative(c.server, path)
@@ -2593,14 +2380,14 @@ func (c *Client) InstanceDiskDetach(instance NameOrId, project NameOrId, j *Disk
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"instance": instance.(string),
+		"instance": params.Instance.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
+		"project": params.Project.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -2632,11 +2419,7 @@ func (c *Client) InstanceDiskDetach(instance NameOrId, project NameOrId, j *Disk
 }
 
 // InstanceExternalIpList: List external IP addresses
-//
-// Parameters
-// - `instance`
-// - `project`
-func (c *Client) InstanceExternalIpList(project NameOrId, instance NameOrId) (*ExternalIpResultsPage, error) {
+func (c *Client) InstanceExternalIpList(params InstanceExternalIpListParams) (*ExternalIpResultsPage, error) {
 	// Create the url.
 	path := "/v1/instances/{{.instance}}/external-ips"
 	uri := resolveRelative(c.server, path)
@@ -2649,14 +2432,14 @@ func (c *Client) InstanceExternalIpList(project NameOrId, instance NameOrId) (*E
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"instance": instance.(string),
+		"instance": params.Instance.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
+		"project": params.Project.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -2688,11 +2471,7 @@ func (c *Client) InstanceExternalIpList(project NameOrId, instance NameOrId) (*E
 }
 
 // InstanceMigrate: Migrate an instance
-//
-// Parameters
-// - `instance`
-// - `project`
-func (c *Client) InstanceMigrate(project NameOrId, instance NameOrId, j *InstanceMigrate) (*Instance, error) {
+func (c *Client) InstanceMigrate(params InstanceMigrateParams, j *InstanceMigrate) (*Instance, error) {
 	// Create the url.
 	path := "/v1/instances/{{.instance}}/migrate"
 	uri := resolveRelative(c.server, path)
@@ -2711,14 +2490,14 @@ func (c *Client) InstanceMigrate(project NameOrId, instance NameOrId, j *Instanc
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"instance": instance.(string),
+		"instance": params.Instance.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
+		"project": params.Project.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -2750,11 +2529,7 @@ func (c *Client) InstanceMigrate(project NameOrId, instance NameOrId, j *Instanc
 }
 
 // InstanceReboot: Reboot an instance
-//
-// Parameters
-// - `instance`
-// - `project`
-func (c *Client) InstanceReboot(project NameOrId, instance NameOrId) (*Instance, error) {
+func (c *Client) InstanceReboot(params InstanceRebootParams) (*Instance, error) {
 	// Create the url.
 	path := "/v1/instances/{{.instance}}/reboot"
 	uri := resolveRelative(c.server, path)
@@ -2767,14 +2542,14 @@ func (c *Client) InstanceReboot(project NameOrId, instance NameOrId) (*Instance,
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"instance": instance.(string),
+		"instance": params.Instance.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
+		"project": params.Project.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -2806,14 +2581,7 @@ func (c *Client) InstanceReboot(project NameOrId, instance NameOrId) (*Instance,
 }
 
 // InstanceSerialConsole: Fetch an instance's serial console
-//
-// Parameters
-// - `fromStart` Character index in the serial buffer from which to read, counting the bytes output since instance start. If this is not provided, `most_recent` must be provided, and if this *is* provided, `most_recent` must *not* be provided.
-// - `instance`
-// - `maxBytes` Maximum number of bytes of buffered serial console contents to return. If the requested range runs to the end of the available buffer, the data returned will be shorter than `max_bytes`.
-// - `mostRecent` Character index in the serial buffer from which to read, counting *backward* from the most recently buffered data retrieved from the instance. (See note on `from_start` about mutual exclusivity)
-// - `project`
-func (c *Client) InstanceSerialConsole(instance NameOrId, fromStart int, maxBytes int, mostRecent int, project NameOrId) (*InstanceSerialConsoleData, error) {
+func (c *Client) InstanceSerialConsole(params InstanceSerialConsoleParams) (*InstanceSerialConsoleData, error) {
 	// Create the url.
 	path := "/v1/instances/{{.instance}}/serial-console"
 	uri := resolveRelative(c.server, path)
@@ -2826,17 +2594,17 @@ func (c *Client) InstanceSerialConsole(instance NameOrId, fromStart int, maxByte
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"instance": instance.(string),
+		"instance": params.Instance.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"from_start":  strconv.Itoa(fromStart),
-		"max_bytes":   strconv.Itoa(maxBytes),
-		"most_recent": strconv.Itoa(mostRecent),
-		"project":     project.(string),
+		"from_start":  strconv.Itoa(params.FromStart),
+		"max_bytes":   strconv.Itoa(params.MaxBytes),
+		"most_recent": strconv.Itoa(params.MostRecent),
+		"project":     params.Project.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -2868,11 +2636,7 @@ func (c *Client) InstanceSerialConsole(instance NameOrId, fromStart int, maxByte
 }
 
 // InstanceSerialConsoleStream: Stream an instance's serial console
-//
-// Parameters
-// - `instance`
-// - `project`
-func (c *Client) InstanceSerialConsoleStream(instance NameOrId, project NameOrId) error {
+func (c *Client) InstanceSerialConsoleStream(params InstanceSerialConsoleStreamParams) error {
 	// Create the url.
 	path := "/v1/instances/{{.instance}}/serial-console/stream"
 	uri := resolveRelative(c.server, path)
@@ -2885,14 +2649,14 @@ func (c *Client) InstanceSerialConsoleStream(instance NameOrId, project NameOrId
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"instance": instance.(string),
+		"instance": params.Instance.(string),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
+		"project": params.Project.(string),
 	}); err != nil {
 		return fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -2913,11 +2677,7 @@ func (c *Client) InstanceSerialConsoleStream(instance NameOrId, project NameOrId
 }
 
 // InstanceStart: Boot an instance
-//
-// Parameters
-// - `instance`
-// - `project`
-func (c *Client) InstanceStart(project NameOrId, instance NameOrId) (*Instance, error) {
+func (c *Client) InstanceStart(params InstanceStartParams) (*Instance, error) {
 	// Create the url.
 	path := "/v1/instances/{{.instance}}/start"
 	uri := resolveRelative(c.server, path)
@@ -2930,14 +2690,14 @@ func (c *Client) InstanceStart(project NameOrId, instance NameOrId) (*Instance, 
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"instance": instance.(string),
+		"instance": params.Instance.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
+		"project": params.Project.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -2969,11 +2729,7 @@ func (c *Client) InstanceStart(project NameOrId, instance NameOrId) (*Instance, 
 }
 
 // InstanceStop: Stop an instance
-//
-// Parameters
-// - `instance`
-// - `project`
-func (c *Client) InstanceStop(project NameOrId, instance NameOrId) (*Instance, error) {
+func (c *Client) InstanceStop(params InstanceStopParams) (*Instance, error) {
 	// Create the url.
 	path := "/v1/instances/{{.instance}}/stop"
 	uri := resolveRelative(c.server, path)
@@ -2986,14 +2742,14 @@ func (c *Client) InstanceStop(project NameOrId, instance NameOrId) (*Instance, e
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"instance": instance.(string),
+		"instance": params.Instance.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
+		"project": params.Project.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -3065,12 +2821,7 @@ func (c *Client) CurrentUserView() (*User, error) {
 // CurrentUserGroups: Fetch the silo groups the current user belongs to
 //
 // To iterate over all pages, use the `CurrentUserGroupsAllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `sortBy`
-func (c *Client) CurrentUserGroups(limit int, pageToken string, sortBy IdSortMode) (*GroupResultsPage, error) {
+func (c *Client) CurrentUserGroups(params CurrentUserGroupsParams) (*GroupResultsPage, error) {
 	// Create the url.
 	path := "/v1/me/groups"
 	uri := resolveRelative(c.server, path)
@@ -3088,9 +2839,9 @@ func (c *Client) CurrentUserGroups(limit int, pageToken string, sortBy IdSortMod
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"sort_by":    string(sortBy),
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -3125,23 +2876,20 @@ func (c *Client) CurrentUserGroups(limit int, pageToken string, sortBy IdSortMod
 //
 // This method is a wrapper around the `CurrentUserGroups` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `sortBy`
-func (c *Client) CurrentUserGroupsAllPages(sortBy IdSortMode) (*[]Group, error) {
+func (c *Client) CurrentUserGroupsAllPages(params CurrentUserGroupsParams) (*[]Group, error) {
 	var allPages []Group
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.CurrentUserGroups(limit, pageToken, sortBy)
+		page, err := c.CurrentUserGroups(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
@@ -3151,12 +2899,7 @@ func (c *Client) CurrentUserGroupsAllPages(sortBy IdSortMode) (*[]Group, error) 
 // Lists SSH public keys for the currently authenticated user.
 //
 // To iterate over all pages, use the `CurrentUserSshKeyListAllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `sortBy`
-func (c *Client) CurrentUserSshKeyList(limit int, pageToken string, sortBy NameOrIdSortMode) (*SshKeyResultsPage, error) {
+func (c *Client) CurrentUserSshKeyList(params CurrentUserSshKeyListParams) (*SshKeyResultsPage, error) {
 	// Create the url.
 	path := "/v1/me/ssh-keys"
 	uri := resolveRelative(c.server, path)
@@ -3174,9 +2917,9 @@ func (c *Client) CurrentUserSshKeyList(limit int, pageToken string, sortBy NameO
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"sort_by":    string(sortBy),
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -3212,23 +2955,20 @@ func (c *Client) CurrentUserSshKeyList(limit int, pageToken string, sortBy NameO
 //
 // This method is a wrapper around the `CurrentUserSshKeyList` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `sortBy`
-func (c *Client) CurrentUserSshKeyListAllPages(sortBy NameOrIdSortMode) (*[]SshKey, error) {
+func (c *Client) CurrentUserSshKeyListAllPages(params CurrentUserSshKeyListParams) (*[]SshKey, error) {
 	var allPages []SshKey
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.CurrentUserSshKeyList(limit, pageToken, sortBy)
+		page, err := c.CurrentUserSshKeyList(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
@@ -3281,10 +3021,7 @@ func (c *Client) CurrentUserSshKeyCreate(j *SshKeyCreate) (*SshKey, error) {
 
 // CurrentUserSshKeyView: Fetch an SSH public key
 // Fetch an SSH public key associated with the currently authenticated user.
-//
-// Parameters
-// - `sshKey`
-func (c *Client) CurrentUserSshKeyView(sshKey NameOrId) (*SshKey, error) {
+func (c *Client) CurrentUserSshKeyView(params CurrentUserSshKeyViewParams) (*SshKey, error) {
 	// Create the url.
 	path := "/v1/me/ssh-keys/{{.ssh_key}}"
 	uri := resolveRelative(c.server, path)
@@ -3297,7 +3034,7 @@ func (c *Client) CurrentUserSshKeyView(sshKey NameOrId) (*SshKey, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"ssh_key": sshKey.(string),
+		"ssh_key": params.SshKey.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -3335,10 +3072,7 @@ func (c *Client) CurrentUserSshKeyView(sshKey NameOrId) (*SshKey, error) {
 
 // CurrentUserSshKeyDelete: Delete an SSH public key
 // Delete an SSH public key associated with the currently authenticated user.
-//
-// Parameters
-// - `sshKey`
-func (c *Client) CurrentUserSshKeyDelete(sshKey NameOrId) error {
+func (c *Client) CurrentUserSshKeyDelete(params CurrentUserSshKeyDeleteParams) error {
 	// Create the url.
 	path := "/v1/me/ssh-keys/{{.ssh_key}}"
 	uri := resolveRelative(c.server, path)
@@ -3351,7 +3085,7 @@ func (c *Client) CurrentUserSshKeyDelete(sshKey NameOrId) error {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"ssh_key": sshKey.(string),
+		"ssh_key": params.SshKey.(string),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -3379,14 +3113,7 @@ func (c *Client) CurrentUserSshKeyDelete(sshKey NameOrId) error {
 // InstanceNetworkInterfaceList: List network interfaces
 //
 // To iterate over all pages, use the `InstanceNetworkInterfaceListAllPages` method, instead.
-//
-// Parameters
-// - `instance`
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `project`
-// - `sortBy`
-func (c *Client) InstanceNetworkInterfaceList(instance NameOrId, limit int, pageToken string, project NameOrId, sortBy NameOrIdSortMode) (*NetworkInterfaceResultsPage, error) {
+func (c *Client) InstanceNetworkInterfaceList(params InstanceNetworkInterfaceListParams) (*NetworkInterfaceResultsPage, error) {
 	// Create the url.
 	path := "/v1/network-interfaces"
 	uri := resolveRelative(c.server, path)
@@ -3404,11 +3131,11 @@ func (c *Client) InstanceNetworkInterfaceList(instance NameOrId, limit int, page
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"instance":   instance.(string),
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"project":    project.(string),
-		"sort_by":    string(sortBy),
+		"instance":   params.Instance.(string),
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"project":    params.Project.(string),
+		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -3443,36 +3170,27 @@ func (c *Client) InstanceNetworkInterfaceList(instance NameOrId, limit int, page
 //
 // This method is a wrapper around the `InstanceNetworkInterfaceList` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `instance`
-// - `project`
-// - `sortBy`
-func (c *Client) InstanceNetworkInterfaceListAllPages(instance NameOrId, project NameOrId, sortBy NameOrIdSortMode) (*[]NetworkInterface, error) {
+func (c *Client) InstanceNetworkInterfaceListAllPages(params InstanceNetworkInterfaceListParams) (*[]NetworkInterface, error) {
 	var allPages []NetworkInterface
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.InstanceNetworkInterfaceList(instance, limit, pageToken, project, sortBy)
+		page, err := c.InstanceNetworkInterfaceList(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
 }
 
 // InstanceNetworkInterfaceCreate: Create a network interface
-//
-// Parameters
-// - `instance`
-// - `project`
-func (c *Client) InstanceNetworkInterfaceCreate(instance NameOrId, project NameOrId, j *NetworkInterfaceCreate) (*NetworkInterface, error) {
+func (c *Client) InstanceNetworkInterfaceCreate(params InstanceNetworkInterfaceCreateParams, j *NetworkInterfaceCreate) (*NetworkInterface, error) {
 	// Create the url.
 	path := "/v1/network-interfaces"
 	uri := resolveRelative(c.server, path)
@@ -3496,8 +3214,8 @@ func (c *Client) InstanceNetworkInterfaceCreate(instance NameOrId, project NameO
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"instance": instance.(string),
-		"project":  project.(string),
+		"instance": params.Instance.(string),
+		"project":  params.Project.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -3529,12 +3247,7 @@ func (c *Client) InstanceNetworkInterfaceCreate(instance NameOrId, project NameO
 }
 
 // InstanceNetworkInterfaceView: Fetch a network interface
-//
-// Parameters
-// - `instance`
-// - `itf`
-// - `project`
-func (c *Client) InstanceNetworkInterfaceView(itf NameOrId, instance NameOrId, project NameOrId) (*NetworkInterface, error) {
+func (c *Client) InstanceNetworkInterfaceView(params InstanceNetworkInterfaceViewParams) (*NetworkInterface, error) {
 	// Create the url.
 	path := "/v1/network-interfaces/{{.interface}}"
 	uri := resolveRelative(c.server, path)
@@ -3547,15 +3260,15 @@ func (c *Client) InstanceNetworkInterfaceView(itf NameOrId, instance NameOrId, p
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"interface": itf.(string),
+		"interface": params.Interface.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"instance": instance.(string),
-		"project":  project.(string),
+		"instance": params.Instance.(string),
+		"project":  params.Project.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -3587,12 +3300,7 @@ func (c *Client) InstanceNetworkInterfaceView(itf NameOrId, instance NameOrId, p
 }
 
 // InstanceNetworkInterfaceUpdate: Update a network interface
-//
-// Parameters
-// - `instance`
-// - `itf`
-// - `project`
-func (c *Client) InstanceNetworkInterfaceUpdate(itf NameOrId, instance NameOrId, project NameOrId, j *NetworkInterfaceUpdate) (*NetworkInterface, error) {
+func (c *Client) InstanceNetworkInterfaceUpdate(params InstanceNetworkInterfaceUpdateParams, j *NetworkInterfaceUpdate) (*NetworkInterface, error) {
 	// Create the url.
 	path := "/v1/network-interfaces/{{.interface}}"
 	uri := resolveRelative(c.server, path)
@@ -3611,15 +3319,15 @@ func (c *Client) InstanceNetworkInterfaceUpdate(itf NameOrId, instance NameOrId,
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"interface": itf.(string),
+		"interface": params.Interface.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"instance": instance.(string),
-		"project":  project.(string),
+		"instance": params.Instance.(string),
+		"project":  params.Project.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -3652,12 +3360,7 @@ func (c *Client) InstanceNetworkInterfaceUpdate(itf NameOrId, instance NameOrId,
 
 // InstanceNetworkInterfaceDelete: Delete a network interface
 // Note that the primary interface for an instance cannot be deleted if there are any secondary interfaces. A new primary interface must be designated first. The primary interface can be deleted if there are no secondary interfaces.
-//
-// Parameters
-// - `instance`
-// - `itf`
-// - `project`
-func (c *Client) InstanceNetworkInterfaceDelete(itf NameOrId, instance NameOrId, project NameOrId) error {
+func (c *Client) InstanceNetworkInterfaceDelete(params InstanceNetworkInterfaceDeleteParams) error {
 	// Create the url.
 	path := "/v1/network-interfaces/{{.interface}}"
 	uri := resolveRelative(c.server, path)
@@ -3670,15 +3373,15 @@ func (c *Client) InstanceNetworkInterfaceDelete(itf NameOrId, instance NameOrId,
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"interface": itf.(string),
+		"interface": params.Interface.(string),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"instance": instance.(string),
-		"project":  project.(string),
+		"instance": params.Instance.(string),
+		"project":  params.Project.(string),
 	}); err != nil {
 		return fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -3783,12 +3486,7 @@ func (c *Client) PolicyUpdate(j *SiloRolePolicy) (*SiloRolePolicy, error) {
 // ProjectList: List projects
 //
 // To iterate over all pages, use the `ProjectListAllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `sortBy`
-func (c *Client) ProjectList(limit int, pageToken string, sortBy NameOrIdSortMode) (*ProjectResultsPage, error) {
+func (c *Client) ProjectList(params ProjectListParams) (*ProjectResultsPage, error) {
 	// Create the url.
 	path := "/v1/projects"
 	uri := resolveRelative(c.server, path)
@@ -3806,9 +3504,9 @@ func (c *Client) ProjectList(limit int, pageToken string, sortBy NameOrIdSortMod
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"sort_by":    string(sortBy),
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -3843,23 +3541,20 @@ func (c *Client) ProjectList(limit int, pageToken string, sortBy NameOrIdSortMod
 //
 // This method is a wrapper around the `ProjectList` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `sortBy`
-func (c *Client) ProjectListAllPages(sortBy NameOrIdSortMode) (*[]Project, error) {
+func (c *Client) ProjectListAllPages(params ProjectListParams) (*[]Project, error) {
 	var allPages []Project
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.ProjectList(limit, pageToken, sortBy)
+		page, err := c.ProjectList(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
@@ -3910,10 +3605,7 @@ func (c *Client) ProjectCreate(j *ProjectCreate) (*Project, error) {
 }
 
 // ProjectView: Fetch a project
-//
-// Parameters
-// - `project`
-func (c *Client) ProjectView(project NameOrId) (*Project, error) {
+func (c *Client) ProjectView(params ProjectViewParams) (*Project, error) {
 	// Create the url.
 	path := "/v1/projects/{{.project}}"
 	uri := resolveRelative(c.server, path)
@@ -3926,7 +3618,7 @@ func (c *Client) ProjectView(project NameOrId) (*Project, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"project": project.(string),
+		"project": params.Project.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -3963,10 +3655,7 @@ func (c *Client) ProjectView(project NameOrId) (*Project, error) {
 }
 
 // ProjectUpdate: Update a project
-//
-// Parameters
-// - `project`
-func (c *Client) ProjectUpdate(project NameOrId, j *ProjectUpdate) (*Project, error) {
+func (c *Client) ProjectUpdate(params ProjectUpdateParams, j *ProjectUpdate) (*Project, error) {
 	// Create the url.
 	path := "/v1/projects/{{.project}}"
 	uri := resolveRelative(c.server, path)
@@ -3985,7 +3674,7 @@ func (c *Client) ProjectUpdate(project NameOrId, j *ProjectUpdate) (*Project, er
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"project": project.(string),
+		"project": params.Project.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -4022,10 +3711,7 @@ func (c *Client) ProjectUpdate(project NameOrId, j *ProjectUpdate) (*Project, er
 }
 
 // ProjectDelete: Delete a project
-//
-// Parameters
-// - `project`
-func (c *Client) ProjectDelete(project NameOrId) error {
+func (c *Client) ProjectDelete(params ProjectDeleteParams) error {
 	// Create the url.
 	path := "/v1/projects/{{.project}}"
 	uri := resolveRelative(c.server, path)
@@ -4038,7 +3724,7 @@ func (c *Client) ProjectDelete(project NameOrId) error {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"project": project.(string),
+		"project": params.Project.(string),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -4064,10 +3750,7 @@ func (c *Client) ProjectDelete(project NameOrId) error {
 }
 
 // ProjectPolicyView: Fetch a project's IAM policy
-//
-// Parameters
-// - `project`
-func (c *Client) ProjectPolicyView(project NameOrId) (*ProjectRolePolicy, error) {
+func (c *Client) ProjectPolicyView(params ProjectPolicyViewParams) (*ProjectRolePolicy, error) {
 	// Create the url.
 	path := "/v1/projects/{{.project}}/policy"
 	uri := resolveRelative(c.server, path)
@@ -4080,7 +3763,7 @@ func (c *Client) ProjectPolicyView(project NameOrId) (*ProjectRolePolicy, error)
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"project": project.(string),
+		"project": params.Project.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -4117,10 +3800,7 @@ func (c *Client) ProjectPolicyView(project NameOrId) (*ProjectRolePolicy, error)
 }
 
 // ProjectPolicyUpdate: Update a project's IAM policy
-//
-// Parameters
-// - `project`
-func (c *Client) ProjectPolicyUpdate(project NameOrId, j *ProjectRolePolicy) (*ProjectRolePolicy, error) {
+func (c *Client) ProjectPolicyUpdate(params ProjectPolicyUpdateParams, j *ProjectRolePolicy) (*ProjectRolePolicy, error) {
 	// Create the url.
 	path := "/v1/projects/{{.project}}/policy"
 	uri := resolveRelative(c.server, path)
@@ -4139,7 +3819,7 @@ func (c *Client) ProjectPolicyUpdate(project NameOrId, j *ProjectRolePolicy) (*P
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"project": project.(string),
+		"project": params.Project.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -4178,13 +3858,7 @@ func (c *Client) ProjectPolicyUpdate(project NameOrId, j *ProjectRolePolicy) (*P
 // SnapshotList: List snapshots
 //
 // To iterate over all pages, use the `SnapshotListAllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `project`
-// - `sortBy`
-func (c *Client) SnapshotList(limit int, pageToken string, project NameOrId, sortBy NameOrIdSortMode) (*SnapshotResultsPage, error) {
+func (c *Client) SnapshotList(params SnapshotListParams) (*SnapshotResultsPage, error) {
 	// Create the url.
 	path := "/v1/snapshots"
 	uri := resolveRelative(c.server, path)
@@ -4202,10 +3876,10 @@ func (c *Client) SnapshotList(limit int, pageToken string, project NameOrId, sor
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"project":    project.(string),
-		"sort_by":    string(sortBy),
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"project":    params.Project.(string),
+		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -4240,24 +3914,20 @@ func (c *Client) SnapshotList(limit int, pageToken string, project NameOrId, sor
 //
 // This method is a wrapper around the `SnapshotList` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `project`
-// - `sortBy`
-func (c *Client) SnapshotListAllPages(project NameOrId, sortBy NameOrIdSortMode) (*[]Snapshot, error) {
+func (c *Client) SnapshotListAllPages(params SnapshotListParams) (*[]Snapshot, error) {
 	var allPages []Snapshot
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.SnapshotList(limit, pageToken, project, sortBy)
+		page, err := c.SnapshotList(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
@@ -4265,10 +3935,7 @@ func (c *Client) SnapshotListAllPages(project NameOrId, sortBy NameOrIdSortMode)
 
 // SnapshotCreate: Create a snapshot
 // Creates a point-in-time snapshot from a disk.
-//
-// Parameters
-// - `project`
-func (c *Client) SnapshotCreate(project NameOrId, j *SnapshotCreate) (*Snapshot, error) {
+func (c *Client) SnapshotCreate(params SnapshotCreateParams, j *SnapshotCreate) (*Snapshot, error) {
 	// Create the url.
 	path := "/v1/snapshots"
 	uri := resolveRelative(c.server, path)
@@ -4292,7 +3959,7 @@ func (c *Client) SnapshotCreate(project NameOrId, j *SnapshotCreate) (*Snapshot,
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
+		"project": params.Project.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -4324,11 +3991,7 @@ func (c *Client) SnapshotCreate(project NameOrId, j *SnapshotCreate) (*Snapshot,
 }
 
 // SnapshotView: Fetch a snapshot
-//
-// Parameters
-// - `project`
-// - `snapshot`
-func (c *Client) SnapshotView(snapshot NameOrId, project NameOrId) (*Snapshot, error) {
+func (c *Client) SnapshotView(params SnapshotViewParams) (*Snapshot, error) {
 	// Create the url.
 	path := "/v1/snapshots/{{.snapshot}}"
 	uri := resolveRelative(c.server, path)
@@ -4341,14 +4004,14 @@ func (c *Client) SnapshotView(snapshot NameOrId, project NameOrId) (*Snapshot, e
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"snapshot": snapshot.(string),
+		"snapshot": params.Snapshot.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
+		"project": params.Project.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -4380,11 +4043,7 @@ func (c *Client) SnapshotView(snapshot NameOrId, project NameOrId) (*Snapshot, e
 }
 
 // SnapshotDelete: Delete a snapshot
-//
-// Parameters
-// - `project`
-// - `snapshot`
-func (c *Client) SnapshotDelete(snapshot NameOrId, project NameOrId) error {
+func (c *Client) SnapshotDelete(params SnapshotDeleteParams) error {
 	// Create the url.
 	path := "/v1/snapshots/{{.snapshot}}"
 	uri := resolveRelative(c.server, path)
@@ -4397,14 +4056,14 @@ func (c *Client) SnapshotDelete(snapshot NameOrId, project NameOrId) error {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"snapshot": snapshot.(string),
+		"snapshot": params.Snapshot.(string),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
+		"project": params.Project.(string),
 	}); err != nil {
 		return fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -4428,12 +4087,7 @@ func (c *Client) SnapshotDelete(snapshot NameOrId, project NameOrId) error {
 // Returns a list of all the system-wide certificates. System-wide certificates are returned sorted by creation date, with the most recent certificates appearing first.
 //
 // To iterate over all pages, use the `CertificateListAllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `sortBy`
-func (c *Client) CertificateList(limit int, pageToken string, sortBy NameOrIdSortMode) (*CertificateResultsPage, error) {
+func (c *Client) CertificateList(params CertificateListParams) (*CertificateResultsPage, error) {
 	// Create the url.
 	path := "/v1/system/certificates"
 	uri := resolveRelative(c.server, path)
@@ -4451,9 +4105,9 @@ func (c *Client) CertificateList(limit int, pageToken string, sortBy NameOrIdSor
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"sort_by":    string(sortBy),
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -4489,23 +4143,20 @@ func (c *Client) CertificateList(limit int, pageToken string, sortBy NameOrIdSor
 //
 // This method is a wrapper around the `CertificateList` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `sortBy`
-func (c *Client) CertificateListAllPages(sortBy NameOrIdSortMode) (*[]Certificate, error) {
+func (c *Client) CertificateListAllPages(params CertificateListParams) (*[]Certificate, error) {
 	var allPages []Certificate
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.CertificateList(limit, pageToken, sortBy)
+		page, err := c.CertificateList(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
@@ -4558,10 +4209,7 @@ func (c *Client) CertificateCreate(j *CertificateCreate) (*Certificate, error) {
 
 // CertificateView: Fetch a certificate
 // Returns the details of a specific certificate
-//
-// Parameters
-// - `certificate`
-func (c *Client) CertificateView(certificate NameOrId) (*Certificate, error) {
+func (c *Client) CertificateView(params CertificateViewParams) (*Certificate, error) {
 	// Create the url.
 	path := "/v1/system/certificates/{{.certificate}}"
 	uri := resolveRelative(c.server, path)
@@ -4574,7 +4222,7 @@ func (c *Client) CertificateView(certificate NameOrId) (*Certificate, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"certificate": certificate.(string),
+		"certificate": params.Certificate.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -4612,10 +4260,7 @@ func (c *Client) CertificateView(certificate NameOrId) (*Certificate, error) {
 
 // CertificateDelete: Delete a certificate
 // Permanently delete a certificate. This operation cannot be undone.
-//
-// Parameters
-// - `certificate`
-func (c *Client) CertificateDelete(certificate NameOrId) error {
+func (c *Client) CertificateDelete(params CertificateDeleteParams) error {
 	// Create the url.
 	path := "/v1/system/certificates/{{.certificate}}"
 	uri := resolveRelative(c.server, path)
@@ -4628,7 +4273,7 @@ func (c *Client) CertificateDelete(certificate NameOrId) error {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"certificate": certificate.(string),
+		"certificate": params.Certificate.(string),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -4656,12 +4301,7 @@ func (c *Client) CertificateDelete(certificate NameOrId) error {
 // PhysicalDiskListV1: List physical disks
 //
 // To iterate over all pages, use the `PhysicalDiskListV1AllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `sortBy`
-func (c *Client) PhysicalDiskListV1(limit int, pageToken string, sortBy IdSortMode) (*PhysicalDiskResultsPage, error) {
+func (c *Client) PhysicalDiskListV1(params PhysicalDiskListV1Params) (*PhysicalDiskResultsPage, error) {
 	// Create the url.
 	path := "/v1/system/hardware/disks"
 	uri := resolveRelative(c.server, path)
@@ -4679,9 +4319,9 @@ func (c *Client) PhysicalDiskListV1(limit int, pageToken string, sortBy IdSortMo
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"sort_by":    string(sortBy),
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -4716,23 +4356,20 @@ func (c *Client) PhysicalDiskListV1(limit int, pageToken string, sortBy IdSortMo
 //
 // This method is a wrapper around the `PhysicalDiskListV1` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `sortBy`
-func (c *Client) PhysicalDiskListV1AllPages(sortBy IdSortMode) (*[]PhysicalDisk, error) {
+func (c *Client) PhysicalDiskListV1AllPages(params PhysicalDiskListV1Params) (*[]PhysicalDisk, error) {
 	var allPages []PhysicalDisk
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.PhysicalDiskListV1(limit, pageToken, sortBy)
+		page, err := c.PhysicalDiskListV1(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
@@ -4741,12 +4378,7 @@ func (c *Client) PhysicalDiskListV1AllPages(sortBy IdSortMode) (*[]PhysicalDisk,
 // RackListV1: List racks
 //
 // To iterate over all pages, use the `RackListV1AllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `sortBy`
-func (c *Client) RackListV1(limit int, pageToken string, sortBy IdSortMode) (*RackResultsPage, error) {
+func (c *Client) RackListV1(params RackListV1Params) (*RackResultsPage, error) {
 	// Create the url.
 	path := "/v1/system/hardware/racks"
 	uri := resolveRelative(c.server, path)
@@ -4764,9 +4396,9 @@ func (c *Client) RackListV1(limit int, pageToken string, sortBy IdSortMode) (*Ra
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"sort_by":    string(sortBy),
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -4801,33 +4433,27 @@ func (c *Client) RackListV1(limit int, pageToken string, sortBy IdSortMode) (*Ra
 //
 // This method is a wrapper around the `RackListV1` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `sortBy`
-func (c *Client) RackListV1AllPages(sortBy IdSortMode) (*[]Rack, error) {
+func (c *Client) RackListV1AllPages(params RackListV1Params) (*[]Rack, error) {
 	var allPages []Rack
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.RackListV1(limit, pageToken, sortBy)
+		page, err := c.RackListV1(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
 }
 
 // RackViewV1: Fetch a rack
-//
-// Parameters
-// - `rackId` The rack's unique ID.
-func (c *Client) RackViewV1(rackId string) (*Rack, error) {
+func (c *Client) RackViewV1(params RackViewV1Params) (*Rack, error) {
 	// Create the url.
 	path := "/v1/system/hardware/racks/{{.rack_id}}"
 	uri := resolveRelative(c.server, path)
@@ -4840,7 +4466,7 @@ func (c *Client) RackViewV1(rackId string) (*Rack, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"rack_id": rackId,
+		"rack_id": params.RackId,
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -4879,12 +4505,7 @@ func (c *Client) RackViewV1(rackId string) (*Rack, error) {
 // SledListV1: List sleds
 //
 // To iterate over all pages, use the `SledListV1AllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `sortBy`
-func (c *Client) SledListV1(limit int, pageToken string, sortBy IdSortMode) (*SledResultsPage, error) {
+func (c *Client) SledListV1(params SledListV1Params) (*SledResultsPage, error) {
 	// Create the url.
 	path := "/v1/system/hardware/sleds"
 	uri := resolveRelative(c.server, path)
@@ -4902,9 +4523,9 @@ func (c *Client) SledListV1(limit int, pageToken string, sortBy IdSortMode) (*Sl
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"sort_by":    string(sortBy),
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -4939,33 +4560,27 @@ func (c *Client) SledListV1(limit int, pageToken string, sortBy IdSortMode) (*Sl
 //
 // This method is a wrapper around the `SledListV1` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `sortBy`
-func (c *Client) SledListV1AllPages(sortBy IdSortMode) (*[]Sled, error) {
+func (c *Client) SledListV1AllPages(params SledListV1Params) (*[]Sled, error) {
 	var allPages []Sled
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.SledListV1(limit, pageToken, sortBy)
+		page, err := c.SledListV1(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
 }
 
 // SledViewV1: Fetch a sled
-//
-// Parameters
-// - `sledId` The sled's unique ID.
-func (c *Client) SledViewV1(sledId string) (*Sled, error) {
+func (c *Client) SledViewV1(params SledViewV1Params) (*Sled, error) {
 	// Create the url.
 	path := "/v1/system/hardware/sleds/{{.sled_id}}"
 	uri := resolveRelative(c.server, path)
@@ -4978,7 +4593,7 @@ func (c *Client) SledViewV1(sledId string) (*Sled, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"sled_id": sledId,
+		"sled_id": params.SledId,
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -5017,13 +4632,7 @@ func (c *Client) SledViewV1(sledId string) (*Sled, error) {
 // SledPhysicalDiskListV1: List physical disks attached to sleds
 //
 // To iterate over all pages, use the `SledPhysicalDiskListV1AllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `sledId` The sled's unique ID.
-// - `sortBy`
-func (c *Client) SledPhysicalDiskListV1(sledId string, limit int, pageToken string, sortBy IdSortMode) (*PhysicalDiskResultsPage, error) {
+func (c *Client) SledPhysicalDiskListV1(params SledPhysicalDiskListV1Params) (*PhysicalDiskResultsPage, error) {
 	// Create the url.
 	path := "/v1/system/hardware/sleds/{{.sled_id}}/disks"
 	uri := resolveRelative(c.server, path)
@@ -5036,16 +4645,16 @@ func (c *Client) SledPhysicalDiskListV1(sledId string, limit int, pageToken stri
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"sled_id": sledId,
+		"sled_id": params.SledId,
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"sort_by":    string(sortBy),
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -5080,24 +4689,20 @@ func (c *Client) SledPhysicalDiskListV1(sledId string, limit int, pageToken stri
 //
 // This method is a wrapper around the `SledPhysicalDiskListV1` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `sledId` The sled's unique ID.
-// - `sortBy`
-func (c *Client) SledPhysicalDiskListV1AllPages(sledId string, sortBy IdSortMode) (*[]PhysicalDisk, error) {
+func (c *Client) SledPhysicalDiskListV1AllPages(params SledPhysicalDiskListV1Params) (*[]PhysicalDisk, error) {
 	var allPages []PhysicalDisk
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.SledPhysicalDiskListV1(sledId, limit, pageToken, sortBy)
+		page, err := c.SledPhysicalDiskListV1(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
@@ -5106,13 +4711,7 @@ func (c *Client) SledPhysicalDiskListV1AllPages(sledId string, sortBy IdSortMode
 // SiloIdentityProviderList: List a silo's IDPs_name
 //
 // To iterate over all pages, use the `SiloIdentityProviderListAllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `silo`
-// - `sortBy`
-func (c *Client) SiloIdentityProviderList(limit int, pageToken string, silo NameOrId, sortBy NameOrIdSortMode) (*IdentityProviderResultsPage, error) {
+func (c *Client) SiloIdentityProviderList(params SiloIdentityProviderListParams) (*IdentityProviderResultsPage, error) {
 	// Create the url.
 	path := "/v1/system/identity-providers"
 	uri := resolveRelative(c.server, path)
@@ -5130,10 +4729,10 @@ func (c *Client) SiloIdentityProviderList(limit int, pageToken string, silo Name
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"silo":       silo.(string),
-		"sort_by":    string(sortBy),
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"silo":       params.Silo.(string),
+		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -5168,24 +4767,20 @@ func (c *Client) SiloIdentityProviderList(limit int, pageToken string, silo Name
 //
 // This method is a wrapper around the `SiloIdentityProviderList` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `silo`
-// - `sortBy`
-func (c *Client) SiloIdentityProviderListAllPages(silo NameOrId, sortBy NameOrIdSortMode) (*[]IdentityProvider, error) {
+func (c *Client) SiloIdentityProviderListAllPages(params SiloIdentityProviderListParams) (*[]IdentityProvider, error) {
 	var allPages []IdentityProvider
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.SiloIdentityProviderList(limit, pageToken, silo, sortBy)
+		page, err := c.SiloIdentityProviderList(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
@@ -5193,10 +4788,7 @@ func (c *Client) SiloIdentityProviderListAllPages(silo NameOrId, sortBy NameOrId
 
 // LocalIdpUserCreate: Create a user
 // Users can only be created in Silos with `provision_type` == `Fixed`. Otherwise, Silo users are just-in-time (JIT) provisioned when a user first logs in using an external Identity Provider. Use `POST /v1/system/identity-providers/local/users` instead
-//
-// Parameters
-// - `silo`
-func (c *Client) LocalIdpUserCreate(silo NameOrId, j *UserCreate) (*User, error) {
+func (c *Client) LocalIdpUserCreate(params LocalIdpUserCreateParams, j *UserCreate) (*User, error) {
 	// Create the url.
 	path := "/v1/system/identity-providers/local/users"
 	uri := resolveRelative(c.server, path)
@@ -5220,7 +4812,7 @@ func (c *Client) LocalIdpUserCreate(silo NameOrId, j *UserCreate) (*User, error)
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"silo": silo.(string),
+		"silo": params.Silo.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -5252,11 +4844,7 @@ func (c *Client) LocalIdpUserCreate(silo NameOrId, j *UserCreate) (*User, error)
 }
 
 // LocalIdpUserDelete: Delete a user
-//
-// Parameters
-// - `silo`
-// - `userId` The user's internal id
-func (c *Client) LocalIdpUserDelete(userId string, silo NameOrId) error {
+func (c *Client) LocalIdpUserDelete(params LocalIdpUserDeleteParams) error {
 	// Create the url.
 	path := "/v1/system/identity-providers/local/users/{{.user_id}}"
 	uri := resolveRelative(c.server, path)
@@ -5269,14 +4857,14 @@ func (c *Client) LocalIdpUserDelete(userId string, silo NameOrId) error {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"user_id": userId,
+		"user_id": params.UserId,
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"silo": silo.(string),
+		"silo": params.Silo.(string),
 	}); err != nil {
 		return fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -5298,11 +4886,7 @@ func (c *Client) LocalIdpUserDelete(userId string, silo NameOrId) error {
 
 // LocalIdpUserSetPassword: Set or invalidate a user's password
 // Passwords can only be updated for users in Silos with identity mode `LocalOnly`.
-//
-// Parameters
-// - `silo`
-// - `userId` The user's internal id
-func (c *Client) LocalIdpUserSetPassword(userId string, silo NameOrId, j *UserPassword) error {
+func (c *Client) LocalIdpUserSetPassword(params LocalIdpUserSetPasswordParams, j *UserPassword) error {
 	// Create the url.
 	path := "/v1/system/identity-providers/local/users/{{.user_id}}/set-password"
 	uri := resolveRelative(c.server, path)
@@ -5321,14 +4905,14 @@ func (c *Client) LocalIdpUserSetPassword(userId string, silo NameOrId, j *UserPa
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"user_id": userId,
+		"user_id": params.UserId,
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"silo": silo.(string),
+		"silo": params.Silo.(string),
 	}); err != nil {
 		return fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -5349,10 +4933,7 @@ func (c *Client) LocalIdpUserSetPassword(userId string, silo NameOrId, j *UserPa
 }
 
 // SamlIdentityProviderCreate: Create a SAML IDP
-//
-// Parameters
-// - `silo`
-func (c *Client) SamlIdentityProviderCreate(silo NameOrId, j *SamlIdentityProviderCreate) (*SamlIdentityProvider, error) {
+func (c *Client) SamlIdentityProviderCreate(params SamlIdentityProviderCreateParams, j *SamlIdentityProviderCreate) (*SamlIdentityProvider, error) {
 	// Create the url.
 	path := "/v1/system/identity-providers/saml"
 	uri := resolveRelative(c.server, path)
@@ -5376,7 +4957,7 @@ func (c *Client) SamlIdentityProviderCreate(silo NameOrId, j *SamlIdentityProvid
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"silo": silo.(string),
+		"silo": params.Silo.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -5408,11 +4989,7 @@ func (c *Client) SamlIdentityProviderCreate(silo NameOrId, j *SamlIdentityProvid
 }
 
 // SamlIdentityProviderView: Fetch a SAML IDP
-//
-// Parameters
-// - `provider`
-// - `silo`
-func (c *Client) SamlIdentityProviderView(provider NameOrId, silo NameOrId) (*SamlIdentityProvider, error) {
+func (c *Client) SamlIdentityProviderView(params SamlIdentityProviderViewParams) (*SamlIdentityProvider, error) {
 	// Create the url.
 	path := "/v1/system/identity-providers/saml/{{.provider}}"
 	uri := resolveRelative(c.server, path)
@@ -5425,14 +5002,14 @@ func (c *Client) SamlIdentityProviderView(provider NameOrId, silo NameOrId) (*Sa
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"provider": provider.(string),
+		"provider": params.Provider.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"silo": silo.(string),
+		"silo": params.Silo.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -5466,12 +5043,7 @@ func (c *Client) SamlIdentityProviderView(provider NameOrId, silo NameOrId) (*Sa
 // IpPoolList: List IP pools
 //
 // To iterate over all pages, use the `IpPoolListAllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `sortBy`
-func (c *Client) IpPoolList(limit int, pageToken string, sortBy NameOrIdSortMode) (*IpPoolResultsPage, error) {
+func (c *Client) IpPoolList(params IpPoolListParams) (*IpPoolResultsPage, error) {
 	// Create the url.
 	path := "/v1/system/ip-pools"
 	uri := resolveRelative(c.server, path)
@@ -5489,9 +5061,9 @@ func (c *Client) IpPoolList(limit int, pageToken string, sortBy NameOrIdSortMode
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"sort_by":    string(sortBy),
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -5526,23 +5098,20 @@ func (c *Client) IpPoolList(limit int, pageToken string, sortBy NameOrIdSortMode
 //
 // This method is a wrapper around the `IpPoolList` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `sortBy`
-func (c *Client) IpPoolListAllPages(sortBy NameOrIdSortMode) (*[]IpPool, error) {
+func (c *Client) IpPoolListAllPages(params IpPoolListParams) (*[]IpPool, error) {
 	var allPages []IpPool
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.IpPoolList(limit, pageToken, sortBy)
+		page, err := c.IpPoolList(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
@@ -5634,11 +5203,7 @@ func (c *Client) IpPoolServiceView() (*IpPool, error) {
 // Ranges are ordered by their first address.
 //
 // To iterate over all pages, use the `IpPoolServiceRangeListAllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-func (c *Client) IpPoolServiceRangeList(limit int, pageToken string) (*IpPoolRangeResultsPage, error) {
+func (c *Client) IpPoolServiceRangeList(params IpPoolServiceRangeListParams) (*IpPoolRangeResultsPage, error) {
 	// Create the url.
 	path := "/v1/system/ip-pools-service/ranges"
 	uri := resolveRelative(c.server, path)
@@ -5656,8 +5221,8 @@ func (c *Client) IpPoolServiceRangeList(limit int, pageToken string) (*IpPoolRan
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -5693,20 +5258,20 @@ func (c *Client) IpPoolServiceRangeList(limit int, pageToken string) (*IpPoolRan
 //
 // This method is a wrapper around the `IpPoolServiceRangeList` method.
 // This method returns all the pages at once.
-func (c *Client) IpPoolServiceRangeListAllPages() (*[]IpPoolRange, error) {
+func (c *Client) IpPoolServiceRangeListAllPages(params IpPoolServiceRangeListParams) (*[]IpPoolRange, error) {
 	var allPages []IpPoolRange
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.IpPoolServiceRangeList(limit, pageToken)
+		page, err := c.IpPoolServiceRangeList(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
@@ -5790,10 +5355,7 @@ func (c *Client) IpPoolServiceRangeRemove(j *IpRange) error {
 }
 
 // IpPoolView: Fetch an IP pool
-//
-// Parameters
-// - `pool`
-func (c *Client) IpPoolView(pool NameOrId) (*IpPool, error) {
+func (c *Client) IpPoolView(params IpPoolViewParams) (*IpPool, error) {
 	// Create the url.
 	path := "/v1/system/ip-pools/{{.pool}}"
 	uri := resolveRelative(c.server, path)
@@ -5806,7 +5368,7 @@ func (c *Client) IpPoolView(pool NameOrId) (*IpPool, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"pool": pool.(string),
+		"pool": params.Pool.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -5843,10 +5405,7 @@ func (c *Client) IpPoolView(pool NameOrId) (*IpPool, error) {
 }
 
 // IpPoolUpdate: Update an IP Pool
-//
-// Parameters
-// - `pool`
-func (c *Client) IpPoolUpdate(pool NameOrId, j *IpPoolUpdate) (*IpPool, error) {
+func (c *Client) IpPoolUpdate(params IpPoolUpdateParams, j *IpPoolUpdate) (*IpPool, error) {
 	// Create the url.
 	path := "/v1/system/ip-pools/{{.pool}}"
 	uri := resolveRelative(c.server, path)
@@ -5865,7 +5424,7 @@ func (c *Client) IpPoolUpdate(pool NameOrId, j *IpPoolUpdate) (*IpPool, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"pool": pool.(string),
+		"pool": params.Pool.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -5902,10 +5461,7 @@ func (c *Client) IpPoolUpdate(pool NameOrId, j *IpPoolUpdate) (*IpPool, error) {
 }
 
 // IpPoolDelete: Delete an IP Pool
-//
-// Parameters
-// - `pool`
-func (c *Client) IpPoolDelete(pool NameOrId) error {
+func (c *Client) IpPoolDelete(params IpPoolDeleteParams) error {
 	// Create the url.
 	path := "/v1/system/ip-pools/{{.pool}}"
 	uri := resolveRelative(c.server, path)
@@ -5918,7 +5474,7 @@ func (c *Client) IpPoolDelete(pool NameOrId) error {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"pool": pool.(string),
+		"pool": params.Pool.(string),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -5947,12 +5503,7 @@ func (c *Client) IpPoolDelete(pool NameOrId) error {
 // Ranges are ordered by their first address.
 //
 // To iterate over all pages, use the `IpPoolRangeListAllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `pool`
-func (c *Client) IpPoolRangeList(pool NameOrId, limit int, pageToken string) (*IpPoolRangeResultsPage, error) {
+func (c *Client) IpPoolRangeList(params IpPoolRangeListParams) (*IpPoolRangeResultsPage, error) {
 	// Create the url.
 	path := "/v1/system/ip-pools/{{.pool}}/ranges"
 	uri := resolveRelative(c.server, path)
@@ -5965,15 +5516,15 @@ func (c *Client) IpPoolRangeList(pool NameOrId, limit int, pageToken string) (*I
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"pool": pool.(string),
+		"pool": params.Pool.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -6009,33 +5560,27 @@ func (c *Client) IpPoolRangeList(pool NameOrId, limit int, pageToken string) (*I
 //
 // This method is a wrapper around the `IpPoolRangeList` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `pool`
-func (c *Client) IpPoolRangeListAllPages(pool NameOrId) (*[]IpPoolRange, error) {
+func (c *Client) IpPoolRangeListAllPages(params IpPoolRangeListParams) (*[]IpPoolRange, error) {
 	var allPages []IpPoolRange
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.IpPoolRangeList(pool, limit, pageToken)
+		page, err := c.IpPoolRangeList(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
 }
 
 // IpPoolRangeAdd: Add a range to an IP pool
-//
-// Parameters
-// - `pool`
-func (c *Client) IpPoolRangeAdd(pool NameOrId, j *IpRange) (*IpPoolRange, error) {
+func (c *Client) IpPoolRangeAdd(params IpPoolRangeAddParams, j *IpRange) (*IpPoolRange, error) {
 	// Create the url.
 	path := "/v1/system/ip-pools/{{.pool}}/ranges/add"
 	uri := resolveRelative(c.server, path)
@@ -6054,7 +5599,7 @@ func (c *Client) IpPoolRangeAdd(pool NameOrId, j *IpRange) (*IpPoolRange, error)
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"pool": pool.(string),
+		"pool": params.Pool.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -6091,10 +5636,7 @@ func (c *Client) IpPoolRangeAdd(pool NameOrId, j *IpRange) (*IpPoolRange, error)
 }
 
 // IpPoolRangeRemove: Remove a range from an IP pool
-//
-// Parameters
-// - `pool`
-func (c *Client) IpPoolRangeRemove(pool NameOrId, j *IpRange) error {
+func (c *Client) IpPoolRangeRemove(params IpPoolRangeRemoveParams, j *IpRange) error {
 	// Create the url.
 	path := "/v1/system/ip-pools/{{.pool}}/ranges/remove"
 	uri := resolveRelative(c.server, path)
@@ -6113,7 +5655,7 @@ func (c *Client) IpPoolRangeRemove(pool NameOrId, j *IpRange) error {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"pool": pool.(string),
+		"pool": params.Pool.(string),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -6141,15 +5683,7 @@ func (c *Client) IpPoolRangeRemove(pool NameOrId, j *IpRange) error {
 // SystemMetric: Access metrics data
 //
 // To iterate over all pages, use the `SystemMetricAllPages` method, instead.
-//
-// Parameters
-// - `endTime` An exclusive end time of metrics.
-// - `id` The UUID of the container being queried
-// - `limit` Maximum number of items returned by a single call
-// - `metricName`
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `startTime` An inclusive start time of metrics.
-func (c *Client) SystemMetric(metricName SystemMetricName, endTime *time.Time, id string, limit int, pageToken string, startTime *time.Time) (*MeasurementResultsPage, error) {
+func (c *Client) SystemMetric(params SystemMetricParams) (*MeasurementResultsPage, error) {
 	// Create the url.
 	path := "/v1/system/metrics/{{.metric_name}}"
 	uri := resolveRelative(c.server, path)
@@ -6162,18 +5696,18 @@ func (c *Client) SystemMetric(metricName SystemMetricName, endTime *time.Time, i
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"metric_name": string(metricName),
+		"metric_name": string(params.MetricName),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"end_time":   endTime.String(),
-		"id":         id,
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"start_time": startTime.String(),
+		"end_time":   params.EndTime.String(),
+		"id":         params.Id,
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"start_time": params.StartTime.String(),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -6208,26 +5742,20 @@ func (c *Client) SystemMetric(metricName SystemMetricName, endTime *time.Time, i
 //
 // This method is a wrapper around the `SystemMetric` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `endTime` An exclusive end time of metrics.
-// - `id` The UUID of the container being queried
-// - `metricName`
-// - `startTime` An inclusive start time of metrics.
-func (c *Client) SystemMetricAllPages(metricName SystemMetricName, endTime *time.Time, id string, startTime *time.Time) (*[]Measurement, error) {
+func (c *Client) SystemMetricAllPages(params SystemMetricParams) (*[]Measurement, error) {
 	var allPages []Measurement
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.SystemMetric(metricName, endTime, id, limit, pageToken, startTime)
+		page, err := c.SystemMetric(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
@@ -6318,11 +5846,7 @@ func (c *Client) SystemPolicyUpdate(j *FleetRolePolicy) (*FleetRolePolicy, error
 // RoleList: List built-in roles
 //
 // To iterate over all pages, use the `RoleListAllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-func (c *Client) RoleList(limit int, pageToken string) (*RoleResultsPage, error) {
+func (c *Client) RoleList(params RoleListParams) (*RoleResultsPage, error) {
 	// Create the url.
 	path := "/v1/system/roles"
 	uri := resolveRelative(c.server, path)
@@ -6340,8 +5864,8 @@ func (c *Client) RoleList(limit int, pageToken string) (*RoleResultsPage, error)
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -6376,30 +5900,27 @@ func (c *Client) RoleList(limit int, pageToken string) (*RoleResultsPage, error)
 //
 // This method is a wrapper around the `RoleList` method.
 // This method returns all the pages at once.
-func (c *Client) RoleListAllPages() (*[]Role, error) {
+func (c *Client) RoleListAllPages(params RoleListParams) (*[]Role, error) {
 	var allPages []Role
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.RoleList(limit, pageToken)
+		page, err := c.RoleList(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
 }
 
 // RoleView: Fetch a built-in role
-//
-// Parameters
-// - `roleName` The built-in role's unique name.
-func (c *Client) RoleView(roleName string) (*Role, error) {
+func (c *Client) RoleView(params RoleViewParams) (*Role, error) {
 	// Create the url.
 	path := "/v1/system/roles/{{.role_name}}"
 	uri := resolveRelative(c.server, path)
@@ -6412,7 +5933,7 @@ func (c *Client) RoleView(roleName string) (*Role, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"role_name": roleName,
+		"role_name": params.RoleName,
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -6451,12 +5972,7 @@ func (c *Client) RoleView(roleName string) (*Role, error) {
 // SagaListV1: List sagas
 //
 // To iterate over all pages, use the `SagaListV1AllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `sortBy`
-func (c *Client) SagaListV1(limit int, pageToken string, sortBy IdSortMode) (*SagaResultsPage, error) {
+func (c *Client) SagaListV1(params SagaListV1Params) (*SagaResultsPage, error) {
 	// Create the url.
 	path := "/v1/system/sagas"
 	uri := resolveRelative(c.server, path)
@@ -6474,9 +5990,9 @@ func (c *Client) SagaListV1(limit int, pageToken string, sortBy IdSortMode) (*Sa
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"sort_by":    string(sortBy),
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -6511,33 +6027,27 @@ func (c *Client) SagaListV1(limit int, pageToken string, sortBy IdSortMode) (*Sa
 //
 // This method is a wrapper around the `SagaListV1` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `sortBy`
-func (c *Client) SagaListV1AllPages(sortBy IdSortMode) (*[]Saga, error) {
+func (c *Client) SagaListV1AllPages(params SagaListV1Params) (*[]Saga, error) {
 	var allPages []Saga
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.SagaListV1(limit, pageToken, sortBy)
+		page, err := c.SagaListV1(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
 }
 
 // SagaViewV1: Fetch a saga
-//
-// Parameters
-// - `sagaId`
-func (c *Client) SagaViewV1(sagaId string) (*Saga, error) {
+func (c *Client) SagaViewV1(params SagaViewV1Params) (*Saga, error) {
 	// Create the url.
 	path := "/v1/system/sagas/{{.saga_id}}"
 	uri := resolveRelative(c.server, path)
@@ -6550,7 +6060,7 @@ func (c *Client) SagaViewV1(sagaId string) (*Saga, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"saga_id": sagaId,
+		"saga_id": params.SagaId,
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -6590,12 +6100,7 @@ func (c *Client) SagaViewV1(sagaId string) (*Saga, error) {
 // Lists silos that are discoverable based on the current permissions.
 //
 // To iterate over all pages, use the `SiloListV1AllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `sortBy`
-func (c *Client) SiloListV1(limit int, pageToken string, sortBy NameOrIdSortMode) (*SiloResultsPage, error) {
+func (c *Client) SiloListV1(params SiloListV1Params) (*SiloResultsPage, error) {
 	// Create the url.
 	path := "/v1/system/silos"
 	uri := resolveRelative(c.server, path)
@@ -6613,9 +6118,9 @@ func (c *Client) SiloListV1(limit int, pageToken string, sortBy NameOrIdSortMode
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"sort_by":    string(sortBy),
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -6651,23 +6156,20 @@ func (c *Client) SiloListV1(limit int, pageToken string, sortBy NameOrIdSortMode
 //
 // This method is a wrapper around the `SiloListV1` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `sortBy`
-func (c *Client) SiloListV1AllPages(sortBy NameOrIdSortMode) (*[]Silo, error) {
+func (c *Client) SiloListV1AllPages(params SiloListV1Params) (*[]Silo, error) {
 	var allPages []Silo
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.SiloListV1(limit, pageToken, sortBy)
+		page, err := c.SiloListV1(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
@@ -6719,10 +6221,7 @@ func (c *Client) SiloCreateV1(j *SiloCreate) (*Silo, error) {
 
 // SiloViewV1: Fetch a silo
 // Fetch a silo by name.
-//
-// Parameters
-// - `silo`
-func (c *Client) SiloViewV1(silo NameOrId) (*Silo, error) {
+func (c *Client) SiloViewV1(params SiloViewV1Params) (*Silo, error) {
 	// Create the url.
 	path := "/v1/system/silos/{{.silo}}"
 	uri := resolveRelative(c.server, path)
@@ -6735,7 +6234,7 @@ func (c *Client) SiloViewV1(silo NameOrId) (*Silo, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"silo": silo.(string),
+		"silo": params.Silo.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -6773,10 +6272,7 @@ func (c *Client) SiloViewV1(silo NameOrId) (*Silo, error) {
 
 // SiloDeleteV1: Delete a silo
 // Delete a silo by name.
-//
-// Parameters
-// - `silo`
-func (c *Client) SiloDeleteV1(silo NameOrId) error {
+func (c *Client) SiloDeleteV1(params SiloDeleteV1Params) error {
 	// Create the url.
 	path := "/v1/system/silos/{{.silo}}"
 	uri := resolveRelative(c.server, path)
@@ -6789,7 +6285,7 @@ func (c *Client) SiloDeleteV1(silo NameOrId) error {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"silo": silo.(string),
+		"silo": params.Silo.(string),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -6815,10 +6311,7 @@ func (c *Client) SiloDeleteV1(silo NameOrId) error {
 }
 
 // SiloPolicyViewV1: Fetch a silo's IAM policy
-//
-// Parameters
-// - `silo`
-func (c *Client) SiloPolicyViewV1(silo NameOrId) (*SiloRolePolicy, error) {
+func (c *Client) SiloPolicyViewV1(params SiloPolicyViewV1Params) (*SiloRolePolicy, error) {
 	// Create the url.
 	path := "/v1/system/silos/{{.silo}}/policy"
 	uri := resolveRelative(c.server, path)
@@ -6831,7 +6324,7 @@ func (c *Client) SiloPolicyViewV1(silo NameOrId) (*SiloRolePolicy, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"silo": silo.(string),
+		"silo": params.Silo.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -6868,10 +6361,7 @@ func (c *Client) SiloPolicyViewV1(silo NameOrId) (*SiloRolePolicy, error) {
 }
 
 // SiloPolicyUpdateV1: Update a silo's IAM policy
-//
-// Parameters
-// - `silo`
-func (c *Client) SiloPolicyUpdateV1(silo NameOrId, j *SiloRolePolicy) (*SiloRolePolicy, error) {
+func (c *Client) SiloPolicyUpdateV1(params SiloPolicyUpdateV1Params, j *SiloRolePolicy) (*SiloRolePolicy, error) {
 	// Create the url.
 	path := "/v1/system/silos/{{.silo}}/policy"
 	uri := resolveRelative(c.server, path)
@@ -6890,7 +6380,7 @@ func (c *Client) SiloPolicyUpdateV1(silo NameOrId, j *SiloRolePolicy) (*SiloRole
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"silo": silo.(string),
+		"silo": params.Silo.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -6929,12 +6419,7 @@ func (c *Client) SiloPolicyUpdateV1(silo NameOrId, j *SiloRolePolicy) (*SiloRole
 // SystemComponentVersionList: View version and update status of component tree
 //
 // To iterate over all pages, use the `SystemComponentVersionListAllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `sortBy`
-func (c *Client) SystemComponentVersionList(limit int, pageToken string, sortBy IdSortMode) (*UpdateableComponentResultsPage, error) {
+func (c *Client) SystemComponentVersionList(params SystemComponentVersionListParams) (*UpdateableComponentResultsPage, error) {
 	// Create the url.
 	path := "/v1/system/update/components"
 	uri := resolveRelative(c.server, path)
@@ -6952,9 +6437,9 @@ func (c *Client) SystemComponentVersionList(limit int, pageToken string, sortBy 
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"sort_by":    string(sortBy),
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -6989,23 +6474,20 @@ func (c *Client) SystemComponentVersionList(limit int, pageToken string, sortBy 
 //
 // This method is a wrapper around the `SystemComponentVersionList` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `sortBy`
-func (c *Client) SystemComponentVersionListAllPages(sortBy IdSortMode) (*[]UpdateableComponent, error) {
+func (c *Client) SystemComponentVersionListAllPages(params SystemComponentVersionListParams) (*[]UpdateableComponent, error) {
 	var allPages []UpdateableComponent
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.SystemComponentVersionList(limit, pageToken, sortBy)
+		page, err := c.SystemComponentVersionList(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
@@ -7014,12 +6496,7 @@ func (c *Client) SystemComponentVersionListAllPages(sortBy IdSortMode) (*[]Updat
 // UpdateDeploymentsList: List all update deployments
 //
 // To iterate over all pages, use the `UpdateDeploymentsListAllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `sortBy`
-func (c *Client) UpdateDeploymentsList(limit int, pageToken string, sortBy IdSortMode) (*UpdateDeploymentResultsPage, error) {
+func (c *Client) UpdateDeploymentsList(params UpdateDeploymentsListParams) (*UpdateDeploymentResultsPage, error) {
 	// Create the url.
 	path := "/v1/system/update/deployments"
 	uri := resolveRelative(c.server, path)
@@ -7037,9 +6514,9 @@ func (c *Client) UpdateDeploymentsList(limit int, pageToken string, sortBy IdSor
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"sort_by":    string(sortBy),
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -7074,33 +6551,27 @@ func (c *Client) UpdateDeploymentsList(limit int, pageToken string, sortBy IdSor
 //
 // This method is a wrapper around the `UpdateDeploymentsList` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `sortBy`
-func (c *Client) UpdateDeploymentsListAllPages(sortBy IdSortMode) (*[]UpdateDeployment, error) {
+func (c *Client) UpdateDeploymentsListAllPages(params UpdateDeploymentsListParams) (*[]UpdateDeployment, error) {
 	var allPages []UpdateDeployment
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.UpdateDeploymentsList(limit, pageToken, sortBy)
+		page, err := c.UpdateDeploymentsList(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
 }
 
 // UpdateDeploymentView: Fetch a system update deployment
-//
-// Parameters
-// - `id`
-func (c *Client) UpdateDeploymentView(id string) (*UpdateDeployment, error) {
+func (c *Client) UpdateDeploymentView(params UpdateDeploymentViewParams) (*UpdateDeployment, error) {
 	// Create the url.
 	path := "/v1/system/update/deployments/{{.id}}"
 	uri := resolveRelative(c.server, path)
@@ -7113,7 +6584,7 @@ func (c *Client) UpdateDeploymentView(id string) (*UpdateDeployment, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"id": id,
+		"id": params.Id,
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -7251,12 +6722,7 @@ func (c *Client) SystemUpdateStop() error {
 // SystemUpdateList: List all updates
 //
 // To iterate over all pages, use the `SystemUpdateListAllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `sortBy`
-func (c *Client) SystemUpdateList(limit int, pageToken string, sortBy IdSortMode) (*SystemUpdateResultsPage, error) {
+func (c *Client) SystemUpdateList(params SystemUpdateListParams) (*SystemUpdateResultsPage, error) {
 	// Create the url.
 	path := "/v1/system/update/updates"
 	uri := resolveRelative(c.server, path)
@@ -7274,9 +6740,9 @@ func (c *Client) SystemUpdateList(limit int, pageToken string, sortBy IdSortMode
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"sort_by":    string(sortBy),
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -7311,33 +6777,27 @@ func (c *Client) SystemUpdateList(limit int, pageToken string, sortBy IdSortMode
 //
 // This method is a wrapper around the `SystemUpdateList` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `sortBy`
-func (c *Client) SystemUpdateListAllPages(sortBy IdSortMode) (*[]SystemUpdate, error) {
+func (c *Client) SystemUpdateListAllPages(params SystemUpdateListParams) (*[]SystemUpdate, error) {
 	var allPages []SystemUpdate
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.SystemUpdateList(limit, pageToken, sortBy)
+		page, err := c.SystemUpdateList(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
 }
 
 // SystemUpdateView: View system update
-//
-// Parameters
-// - `version`
-func (c *Client) SystemUpdateView(version SemverVersion) (*SystemUpdate, error) {
+func (c *Client) SystemUpdateView(params SystemUpdateViewParams) (*SystemUpdate, error) {
 	// Create the url.
 	path := "/v1/system/update/updates/{{.version}}"
 	uri := resolveRelative(c.server, path)
@@ -7350,7 +6810,7 @@ func (c *Client) SystemUpdateView(version SemverVersion) (*SystemUpdate, error) 
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"version": string(version),
+		"version": string(params.Version),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -7387,10 +6847,7 @@ func (c *Client) SystemUpdateView(version SemverVersion) (*SystemUpdate, error) 
 }
 
 // SystemUpdateComponentsList: View system update component tree
-//
-// Parameters
-// - `version`
-func (c *Client) SystemUpdateComponentsList(version SemverVersion) (*ComponentUpdateResultsPage, error) {
+func (c *Client) SystemUpdateComponentsList(params SystemUpdateComponentsListParams) (*ComponentUpdateResultsPage, error) {
 	// Create the url.
 	path := "/v1/system/update/updates/{{.version}}/components"
 	uri := resolveRelative(c.server, path)
@@ -7403,7 +6860,7 @@ func (c *Client) SystemUpdateComponentsList(version SemverVersion) (*ComponentUp
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"version": string(version),
+		"version": string(params.Version),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -7480,13 +6937,7 @@ func (c *Client) SystemVersion() (*SystemVersion, error) {
 // SiloUserListV1: List users in a silo
 //
 // To iterate over all pages, use the `SiloUserListV1AllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `silo`
-// - `sortBy`
-func (c *Client) SiloUserListV1(limit int, pageToken string, silo NameOrId, sortBy IdSortMode) (*UserResultsPage, error) {
+func (c *Client) SiloUserListV1(params SiloUserListV1Params) (*UserResultsPage, error) {
 	// Create the url.
 	path := "/v1/system/users"
 	uri := resolveRelative(c.server, path)
@@ -7504,10 +6955,10 @@ func (c *Client) SiloUserListV1(limit int, pageToken string, silo NameOrId, sort
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"silo":       silo.(string),
-		"sort_by":    string(sortBy),
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"silo":       params.Silo.(string),
+		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -7542,24 +6993,20 @@ func (c *Client) SiloUserListV1(limit int, pageToken string, silo NameOrId, sort
 //
 // This method is a wrapper around the `SiloUserListV1` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `silo`
-// - `sortBy`
-func (c *Client) SiloUserListV1AllPages(silo NameOrId, sortBy IdSortMode) (*[]User, error) {
+func (c *Client) SiloUserListV1AllPages(params SiloUserListV1Params) (*[]User, error) {
 	var allPages []User
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.SiloUserListV1(limit, pageToken, silo, sortBy)
+		page, err := c.SiloUserListV1(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
@@ -7568,12 +7015,7 @@ func (c *Client) SiloUserListV1AllPages(silo NameOrId, sortBy IdSortMode) (*[]Us
 // UserBuiltinList: List built-in users
 //
 // To iterate over all pages, use the `UserBuiltinListAllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `sortBy`
-func (c *Client) UserBuiltinList(limit int, pageToken string, sortBy NameSortMode) (*UserBuiltinResultsPage, error) {
+func (c *Client) UserBuiltinList(params UserBuiltinListParams) (*UserBuiltinResultsPage, error) {
 	// Create the url.
 	path := "/v1/system/users-builtin"
 	uri := resolveRelative(c.server, path)
@@ -7591,9 +7033,9 @@ func (c *Client) UserBuiltinList(limit int, pageToken string, sortBy NameSortMod
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"sort_by":    string(sortBy),
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -7628,33 +7070,27 @@ func (c *Client) UserBuiltinList(limit int, pageToken string, sortBy NameSortMod
 //
 // This method is a wrapper around the `UserBuiltinList` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `sortBy`
-func (c *Client) UserBuiltinListAllPages(sortBy NameSortMode) (*[]UserBuiltin, error) {
+func (c *Client) UserBuiltinListAllPages(params UserBuiltinListParams) (*[]UserBuiltin, error) {
 	var allPages []UserBuiltin
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.UserBuiltinList(limit, pageToken, sortBy)
+		page, err := c.UserBuiltinList(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
 }
 
 // UserBuiltinView: Fetch a built-in user
-//
-// Parameters
-// - `user`
-func (c *Client) UserBuiltinView(user NameOrId) (*UserBuiltin, error) {
+func (c *Client) UserBuiltinView(params UserBuiltinViewParams) (*UserBuiltin, error) {
 	// Create the url.
 	path := "/v1/system/users-builtin/{{.user}}"
 	uri := resolveRelative(c.server, path)
@@ -7667,7 +7103,7 @@ func (c *Client) UserBuiltinView(user NameOrId) (*UserBuiltin, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"user": user.(string),
+		"user": params.User.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -7704,11 +7140,7 @@ func (c *Client) UserBuiltinView(user NameOrId) (*UserBuiltin, error) {
 }
 
 // SiloUserViewV1: Fetch a user
-//
-// Parameters
-// - `silo`
-// - `userId` The user's internal id
-func (c *Client) SiloUserViewV1(userId string, silo NameOrId) (*User, error) {
+func (c *Client) SiloUserViewV1(params SiloUserViewV1Params) (*User, error) {
 	// Create the url.
 	path := "/v1/system/users/{{.user_id}}"
 	uri := resolveRelative(c.server, path)
@@ -7721,14 +7153,14 @@ func (c *Client) SiloUserViewV1(userId string, silo NameOrId) (*User, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"user_id": userId,
+		"user_id": params.UserId,
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"silo": silo.(string),
+		"silo": params.Silo.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -7762,13 +7194,7 @@ func (c *Client) SiloUserViewV1(userId string, silo NameOrId) (*User, error) {
 // UserListV1: List users
 //
 // To iterate over all pages, use the `UserListV1AllPages` method, instead.
-//
-// Parameters
-// - `group`
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `sortBy`
-func (c *Client) UserListV1(group string, limit int, pageToken string, sortBy IdSortMode) (*UserResultsPage, error) {
+func (c *Client) UserListV1(params UserListV1Params) (*UserResultsPage, error) {
 	// Create the url.
 	path := "/v1/users"
 	uri := resolveRelative(c.server, path)
@@ -7786,10 +7212,10 @@ func (c *Client) UserListV1(group string, limit int, pageToken string, sortBy Id
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"group":      group,
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"sort_by":    string(sortBy),
+		"group":      params.Group,
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -7824,35 +7250,27 @@ func (c *Client) UserListV1(group string, limit int, pageToken string, sortBy Id
 //
 // This method is a wrapper around the `UserListV1` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `group`
-// - `sortBy`
-func (c *Client) UserListV1AllPages(group string, sortBy IdSortMode) (*[]User, error) {
+func (c *Client) UserListV1AllPages(params UserListV1Params) (*[]User, error) {
 	var allPages []User
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.UserListV1(group, limit, pageToken, sortBy)
+		page, err := c.UserListV1(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
 }
 
 // VpcFirewallRulesView: List firewall rules
-//
-// Parameters
-// - `project`
-// - `vpc`
-func (c *Client) VpcFirewallRulesView(project NameOrId, vpc NameOrId) (*VpcFirewallRules, error) {
+func (c *Client) VpcFirewallRulesView(params VpcFirewallRulesViewParams) (*VpcFirewallRules, error) {
 	// Create the url.
 	path := "/v1/vpc-firewall-rules"
 	uri := resolveRelative(c.server, path)
@@ -7870,8 +7288,8 @@ func (c *Client) VpcFirewallRulesView(project NameOrId, vpc NameOrId) (*VpcFirew
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
-		"vpc":     vpc.(string),
+		"project": params.Project.(string),
+		"vpc":     params.Vpc.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -7903,11 +7321,7 @@ func (c *Client) VpcFirewallRulesView(project NameOrId, vpc NameOrId) (*VpcFirew
 }
 
 // VpcFirewallRulesUpdate: Replace firewall rules
-//
-// Parameters
-// - `project`
-// - `vpc`
-func (c *Client) VpcFirewallRulesUpdate(project NameOrId, vpc NameOrId, j *VpcFirewallRuleUpdateParams) (*VpcFirewallRules, error) {
+func (c *Client) VpcFirewallRulesUpdate(params VpcFirewallRulesUpdateParams, j *VpcFirewallRuleUpdateParams) (*VpcFirewallRules, error) {
 	// Create the url.
 	path := "/v1/vpc-firewall-rules"
 	uri := resolveRelative(c.server, path)
@@ -7931,8 +7345,8 @@ func (c *Client) VpcFirewallRulesUpdate(project NameOrId, vpc NameOrId, j *VpcFi
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
-		"vpc":     vpc.(string),
+		"project": params.Project.(string),
+		"vpc":     params.Vpc.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -7967,15 +7381,7 @@ func (c *Client) VpcFirewallRulesUpdate(project NameOrId, vpc NameOrId, j *VpcFi
 // List the routes associated with a router in a particular VPC.
 //
 // To iterate over all pages, use the `VpcRouterRouteListAllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `project`
-// - `router`
-// - `sortBy`
-// - `vpc`
-func (c *Client) VpcRouterRouteList(limit int, pageToken string, project NameOrId, router NameOrId, sortBy NameOrIdSortMode, vpc NameOrId) (*RouterRouteResultsPage, error) {
+func (c *Client) VpcRouterRouteList(params VpcRouterRouteListParams) (*RouterRouteResultsPage, error) {
 	// Create the url.
 	path := "/v1/vpc-router-routes"
 	uri := resolveRelative(c.server, path)
@@ -7993,12 +7399,12 @@ func (c *Client) VpcRouterRouteList(limit int, pageToken string, project NameOrI
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"project":    project.(string),
-		"router":     router.(string),
-		"sort_by":    string(sortBy),
-		"vpc":        vpc.(string),
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"project":    params.Project.(string),
+		"router":     params.Router.(string),
+		"sort_by":    string(params.SortBy),
+		"vpc":        params.Vpc.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -8034,38 +7440,27 @@ func (c *Client) VpcRouterRouteList(limit int, pageToken string, project NameOrI
 //
 // This method is a wrapper around the `VpcRouterRouteList` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `project`
-// - `router`
-// - `sortBy`
-// - `vpc`
-func (c *Client) VpcRouterRouteListAllPages(project NameOrId, router NameOrId, sortBy NameOrIdSortMode, vpc NameOrId) (*[]RouterRoute, error) {
+func (c *Client) VpcRouterRouteListAllPages(params VpcRouterRouteListParams) (*[]RouterRoute, error) {
 	var allPages []RouterRoute
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.VpcRouterRouteList(limit, pageToken, project, router, sortBy, vpc)
+		page, err := c.VpcRouterRouteList(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
 }
 
 // VpcRouterRouteCreate: Create a router
-//
-// Parameters
-// - `project`
-// - `router`
-// - `vpc`
-func (c *Client) VpcRouterRouteCreate(project NameOrId, router NameOrId, vpc NameOrId, j *RouterRouteCreate) (*RouterRoute, error) {
+func (c *Client) VpcRouterRouteCreate(params VpcRouterRouteCreateParams, j *RouterRouteCreate) (*RouterRoute, error) {
 	// Create the url.
 	path := "/v1/vpc-router-routes"
 	uri := resolveRelative(c.server, path)
@@ -8089,9 +7484,9 @@ func (c *Client) VpcRouterRouteCreate(project NameOrId, router NameOrId, vpc Nam
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
-		"router":  router.(string),
-		"vpc":     vpc.(string),
+		"project": params.Project.(string),
+		"router":  params.Router.(string),
+		"vpc":     params.Vpc.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -8123,13 +7518,7 @@ func (c *Client) VpcRouterRouteCreate(project NameOrId, router NameOrId, vpc Nam
 }
 
 // VpcRouterRouteView: Fetch a route
-//
-// Parameters
-// - `project`
-// - `route`
-// - `router`
-// - `vpc`
-func (c *Client) VpcRouterRouteView(route NameOrId, project NameOrId, router NameOrId, vpc NameOrId) (*RouterRoute, error) {
+func (c *Client) VpcRouterRouteView(params VpcRouterRouteViewParams) (*RouterRoute, error) {
 	// Create the url.
 	path := "/v1/vpc-router-routes/{{.route}}"
 	uri := resolveRelative(c.server, path)
@@ -8142,16 +7531,16 @@ func (c *Client) VpcRouterRouteView(route NameOrId, project NameOrId, router Nam
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"route": route.(string),
+		"route": params.Route.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
-		"router":  router.(string),
-		"vpc":     vpc.(string),
+		"project": params.Project.(string),
+		"router":  params.Router.(string),
+		"vpc":     params.Vpc.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -8183,13 +7572,7 @@ func (c *Client) VpcRouterRouteView(route NameOrId, project NameOrId, router Nam
 }
 
 // VpcRouterRouteUpdate: Update a route
-//
-// Parameters
-// - `project`
-// - `route`
-// - `router`
-// - `vpc`
-func (c *Client) VpcRouterRouteUpdate(route NameOrId, project NameOrId, router NameOrId, vpc NameOrId, j *RouterRouteUpdate) (*RouterRoute, error) {
+func (c *Client) VpcRouterRouteUpdate(params VpcRouterRouteUpdateParams, j *RouterRouteUpdate) (*RouterRoute, error) {
 	// Create the url.
 	path := "/v1/vpc-router-routes/{{.route}}"
 	uri := resolveRelative(c.server, path)
@@ -8208,16 +7591,16 @@ func (c *Client) VpcRouterRouteUpdate(route NameOrId, project NameOrId, router N
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"route": route.(string),
+		"route": params.Route.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
-		"router":  router.(string),
-		"vpc":     vpc.(string),
+		"project": params.Project.(string),
+		"router":  params.Router.(string),
+		"vpc":     params.Vpc.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -8249,13 +7632,7 @@ func (c *Client) VpcRouterRouteUpdate(route NameOrId, project NameOrId, router N
 }
 
 // VpcRouterRouteDelete: Delete a route
-//
-// Parameters
-// - `project`
-// - `route`
-// - `router`
-// - `vpc`
-func (c *Client) VpcRouterRouteDelete(route NameOrId, project NameOrId, router NameOrId, vpc NameOrId) error {
+func (c *Client) VpcRouterRouteDelete(params VpcRouterRouteDeleteParams) error {
 	// Create the url.
 	path := "/v1/vpc-router-routes/{{.route}}"
 	uri := resolveRelative(c.server, path)
@@ -8268,16 +7645,16 @@ func (c *Client) VpcRouterRouteDelete(route NameOrId, project NameOrId, router N
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"route": route.(string),
+		"route": params.Route.(string),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
-		"router":  router.(string),
-		"vpc":     vpc.(string),
+		"project": params.Project.(string),
+		"router":  params.Router.(string),
+		"vpc":     params.Vpc.(string),
 	}); err != nil {
 		return fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -8300,14 +7677,7 @@ func (c *Client) VpcRouterRouteDelete(route NameOrId, project NameOrId, router N
 // VpcRouterList: List routers
 //
 // To iterate over all pages, use the `VpcRouterListAllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `project`
-// - `sortBy`
-// - `vpc`
-func (c *Client) VpcRouterList(limit int, pageToken string, project NameOrId, sortBy NameOrIdSortMode, vpc NameOrId) (*VpcRouterResultsPage, error) {
+func (c *Client) VpcRouterList(params VpcRouterListParams) (*VpcRouterResultsPage, error) {
 	// Create the url.
 	path := "/v1/vpc-routers"
 	uri := resolveRelative(c.server, path)
@@ -8325,11 +7695,11 @@ func (c *Client) VpcRouterList(limit int, pageToken string, project NameOrId, so
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"project":    project.(string),
-		"sort_by":    string(sortBy),
-		"vpc":        vpc.(string),
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"project":    params.Project.(string),
+		"sort_by":    string(params.SortBy),
+		"vpc":        params.Vpc.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -8364,36 +7734,27 @@ func (c *Client) VpcRouterList(limit int, pageToken string, project NameOrId, so
 //
 // This method is a wrapper around the `VpcRouterList` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `project`
-// - `sortBy`
-// - `vpc`
-func (c *Client) VpcRouterListAllPages(project NameOrId, sortBy NameOrIdSortMode, vpc NameOrId) (*[]VpcRouter, error) {
+func (c *Client) VpcRouterListAllPages(params VpcRouterListParams) (*[]VpcRouter, error) {
 	var allPages []VpcRouter
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.VpcRouterList(limit, pageToken, project, sortBy, vpc)
+		page, err := c.VpcRouterList(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
 }
 
 // VpcRouterCreate: Create a VPC router
-//
-// Parameters
-// - `project`
-// - `vpc`
-func (c *Client) VpcRouterCreate(project NameOrId, vpc NameOrId, j *VpcRouterCreate) (*VpcRouter, error) {
+func (c *Client) VpcRouterCreate(params VpcRouterCreateParams, j *VpcRouterCreate) (*VpcRouter, error) {
 	// Create the url.
 	path := "/v1/vpc-routers"
 	uri := resolveRelative(c.server, path)
@@ -8417,8 +7778,8 @@ func (c *Client) VpcRouterCreate(project NameOrId, vpc NameOrId, j *VpcRouterCre
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
-		"vpc":     vpc.(string),
+		"project": params.Project.(string),
+		"vpc":     params.Vpc.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -8450,12 +7811,7 @@ func (c *Client) VpcRouterCreate(project NameOrId, vpc NameOrId, j *VpcRouterCre
 }
 
 // VpcRouterView: Get a router
-//
-// Parameters
-// - `project`
-// - `router`
-// - `vpc`
-func (c *Client) VpcRouterView(router NameOrId, project NameOrId, vpc NameOrId) (*VpcRouter, error) {
+func (c *Client) VpcRouterView(params VpcRouterViewParams) (*VpcRouter, error) {
 	// Create the url.
 	path := "/v1/vpc-routers/{{.router}}"
 	uri := resolveRelative(c.server, path)
@@ -8468,15 +7824,15 @@ func (c *Client) VpcRouterView(router NameOrId, project NameOrId, vpc NameOrId) 
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"router": router.(string),
+		"router": params.Router.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
-		"vpc":     vpc.(string),
+		"project": params.Project.(string),
+		"vpc":     params.Vpc.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -8508,12 +7864,7 @@ func (c *Client) VpcRouterView(router NameOrId, project NameOrId, vpc NameOrId) 
 }
 
 // VpcRouterUpdate: Update a router
-//
-// Parameters
-// - `project`
-// - `router`
-// - `vpc`
-func (c *Client) VpcRouterUpdate(router NameOrId, project NameOrId, vpc NameOrId, j *VpcRouterUpdate) (*VpcRouter, error) {
+func (c *Client) VpcRouterUpdate(params VpcRouterUpdateParams, j *VpcRouterUpdate) (*VpcRouter, error) {
 	// Create the url.
 	path := "/v1/vpc-routers/{{.router}}"
 	uri := resolveRelative(c.server, path)
@@ -8532,15 +7883,15 @@ func (c *Client) VpcRouterUpdate(router NameOrId, project NameOrId, vpc NameOrId
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"router": router.(string),
+		"router": params.Router.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
-		"vpc":     vpc.(string),
+		"project": params.Project.(string),
+		"vpc":     params.Vpc.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -8572,12 +7923,7 @@ func (c *Client) VpcRouterUpdate(router NameOrId, project NameOrId, vpc NameOrId
 }
 
 // VpcRouterDelete: Delete a router
-//
-// Parameters
-// - `project`
-// - `router`
-// - `vpc`
-func (c *Client) VpcRouterDelete(router NameOrId, project NameOrId, vpc NameOrId) error {
+func (c *Client) VpcRouterDelete(params VpcRouterDeleteParams) error {
 	// Create the url.
 	path := "/v1/vpc-routers/{{.router}}"
 	uri := resolveRelative(c.server, path)
@@ -8590,15 +7936,15 @@ func (c *Client) VpcRouterDelete(router NameOrId, project NameOrId, vpc NameOrId
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"router": router.(string),
+		"router": params.Router.(string),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
-		"vpc":     vpc.(string),
+		"project": params.Project.(string),
+		"vpc":     params.Vpc.(string),
 	}); err != nil {
 		return fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -8621,14 +7967,7 @@ func (c *Client) VpcRouterDelete(router NameOrId, project NameOrId, vpc NameOrId
 // VpcSubnetList: Fetch a subnet
 //
 // To iterate over all pages, use the `VpcSubnetListAllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `project`
-// - `sortBy`
-// - `vpc`
-func (c *Client) VpcSubnetList(limit int, pageToken string, project NameOrId, sortBy NameOrIdSortMode, vpc NameOrId) (*VpcSubnetResultsPage, error) {
+func (c *Client) VpcSubnetList(params VpcSubnetListParams) (*VpcSubnetResultsPage, error) {
 	// Create the url.
 	path := "/v1/vpc-subnets"
 	uri := resolveRelative(c.server, path)
@@ -8646,11 +7985,11 @@ func (c *Client) VpcSubnetList(limit int, pageToken string, project NameOrId, so
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"project":    project.(string),
-		"sort_by":    string(sortBy),
-		"vpc":        vpc.(string),
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"project":    params.Project.(string),
+		"sort_by":    string(params.SortBy),
+		"vpc":        params.Vpc.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -8685,36 +8024,27 @@ func (c *Client) VpcSubnetList(limit int, pageToken string, project NameOrId, so
 //
 // This method is a wrapper around the `VpcSubnetList` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `project`
-// - `sortBy`
-// - `vpc`
-func (c *Client) VpcSubnetListAllPages(project NameOrId, sortBy NameOrIdSortMode, vpc NameOrId) (*[]VpcSubnet, error) {
+func (c *Client) VpcSubnetListAllPages(params VpcSubnetListParams) (*[]VpcSubnet, error) {
 	var allPages []VpcSubnet
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.VpcSubnetList(limit, pageToken, project, sortBy, vpc)
+		page, err := c.VpcSubnetList(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
 }
 
 // VpcSubnetCreate: Create a subnet
-//
-// Parameters
-// - `project`
-// - `vpc`
-func (c *Client) VpcSubnetCreate(project NameOrId, vpc NameOrId, j *VpcSubnetCreate) (*VpcSubnet, error) {
+func (c *Client) VpcSubnetCreate(params VpcSubnetCreateParams, j *VpcSubnetCreate) (*VpcSubnet, error) {
 	// Create the url.
 	path := "/v1/vpc-subnets"
 	uri := resolveRelative(c.server, path)
@@ -8738,8 +8068,8 @@ func (c *Client) VpcSubnetCreate(project NameOrId, vpc NameOrId, j *VpcSubnetCre
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
-		"vpc":     vpc.(string),
+		"project": params.Project.(string),
+		"vpc":     params.Vpc.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -8771,12 +8101,7 @@ func (c *Client) VpcSubnetCreate(project NameOrId, vpc NameOrId, j *VpcSubnetCre
 }
 
 // VpcSubnetView: Fetch a subnet
-//
-// Parameters
-// - `project`
-// - `subnet`
-// - `vpc`
-func (c *Client) VpcSubnetView(subnet NameOrId, project NameOrId, vpc NameOrId) (*VpcSubnet, error) {
+func (c *Client) VpcSubnetView(params VpcSubnetViewParams) (*VpcSubnet, error) {
 	// Create the url.
 	path := "/v1/vpc-subnets/{{.subnet}}"
 	uri := resolveRelative(c.server, path)
@@ -8789,15 +8114,15 @@ func (c *Client) VpcSubnetView(subnet NameOrId, project NameOrId, vpc NameOrId) 
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"subnet": subnet.(string),
+		"subnet": params.Subnet.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
-		"vpc":     vpc.(string),
+		"project": params.Project.(string),
+		"vpc":     params.Vpc.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -8829,12 +8154,7 @@ func (c *Client) VpcSubnetView(subnet NameOrId, project NameOrId, vpc NameOrId) 
 }
 
 // VpcSubnetUpdate: Update a subnet
-//
-// Parameters
-// - `project`
-// - `subnet`
-// - `vpc`
-func (c *Client) VpcSubnetUpdate(subnet NameOrId, project NameOrId, vpc NameOrId, j *VpcSubnetUpdate) (*VpcSubnet, error) {
+func (c *Client) VpcSubnetUpdate(params VpcSubnetUpdateParams, j *VpcSubnetUpdate) (*VpcSubnet, error) {
 	// Create the url.
 	path := "/v1/vpc-subnets/{{.subnet}}"
 	uri := resolveRelative(c.server, path)
@@ -8853,15 +8173,15 @@ func (c *Client) VpcSubnetUpdate(subnet NameOrId, project NameOrId, vpc NameOrId
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"subnet": subnet.(string),
+		"subnet": params.Subnet.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
-		"vpc":     vpc.(string),
+		"project": params.Project.(string),
+		"vpc":     params.Vpc.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -8893,12 +8213,7 @@ func (c *Client) VpcSubnetUpdate(subnet NameOrId, project NameOrId, vpc NameOrId
 }
 
 // VpcSubnetDelete: Delete a subnet
-//
-// Parameters
-// - `project`
-// - `subnet`
-// - `vpc`
-func (c *Client) VpcSubnetDelete(subnet NameOrId, project NameOrId, vpc NameOrId) error {
+func (c *Client) VpcSubnetDelete(params VpcSubnetDeleteParams) error {
 	// Create the url.
 	path := "/v1/vpc-subnets/{{.subnet}}"
 	uri := resolveRelative(c.server, path)
@@ -8911,15 +8226,15 @@ func (c *Client) VpcSubnetDelete(subnet NameOrId, project NameOrId, vpc NameOrId
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"subnet": subnet.(string),
+		"subnet": params.Subnet.(string),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
-		"vpc":     vpc.(string),
+		"project": params.Project.(string),
+		"vpc":     params.Vpc.(string),
 	}); err != nil {
 		return fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -8942,15 +8257,7 @@ func (c *Client) VpcSubnetDelete(subnet NameOrId, project NameOrId, vpc NameOrId
 // VpcSubnetListNetworkInterfaces: List network interfaces
 //
 // To iterate over all pages, use the `VpcSubnetListNetworkInterfacesAllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `project`
-// - `sortBy`
-// - `subnet`
-// - `vpc`
-func (c *Client) VpcSubnetListNetworkInterfaces(subnet NameOrId, limit int, pageToken string, project NameOrId, sortBy NameOrIdSortMode, vpc NameOrId) (*NetworkInterfaceResultsPage, error) {
+func (c *Client) VpcSubnetListNetworkInterfaces(params VpcSubnetListNetworkInterfacesParams) (*NetworkInterfaceResultsPage, error) {
 	// Create the url.
 	path := "/v1/vpc-subnets/{{.subnet}}/network-interfaces"
 	uri := resolveRelative(c.server, path)
@@ -8963,18 +8270,18 @@ func (c *Client) VpcSubnetListNetworkInterfaces(subnet NameOrId, limit int, page
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"subnet": subnet.(string),
+		"subnet": params.Subnet.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"project":    project.(string),
-		"sort_by":    string(sortBy),
-		"vpc":        vpc.(string),
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"project":    params.Project.(string),
+		"sort_by":    string(params.SortBy),
+		"vpc":        params.Vpc.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -9009,26 +8316,20 @@ func (c *Client) VpcSubnetListNetworkInterfaces(subnet NameOrId, limit int, page
 //
 // This method is a wrapper around the `VpcSubnetListNetworkInterfaces` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `project`
-// - `sortBy`
-// - `subnet`
-// - `vpc`
-func (c *Client) VpcSubnetListNetworkInterfacesAllPages(subnet NameOrId, project NameOrId, sortBy NameOrIdSortMode, vpc NameOrId) (*[]NetworkInterface, error) {
+func (c *Client) VpcSubnetListNetworkInterfacesAllPages(params VpcSubnetListNetworkInterfacesParams) (*[]NetworkInterface, error) {
 	var allPages []NetworkInterface
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.VpcSubnetListNetworkInterfaces(subnet, limit, pageToken, project, sortBy, vpc)
+		page, err := c.VpcSubnetListNetworkInterfaces(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
@@ -9037,13 +8338,7 @@ func (c *Client) VpcSubnetListNetworkInterfacesAllPages(subnet NameOrId, project
 // VpcList: List VPCs
 //
 // To iterate over all pages, use the `VpcListAllPages` method, instead.
-//
-// Parameters
-// - `limit` Maximum number of items returned by a single call
-// - `pageToken` Token returned by previous call to retrieve the subsequent page
-// - `project`
-// - `sortBy`
-func (c *Client) VpcList(limit int, pageToken string, project NameOrId, sortBy NameOrIdSortMode) (*VpcResultsPage, error) {
+func (c *Client) VpcList(params VpcListParams) (*VpcResultsPage, error) {
 	// Create the url.
 	path := "/v1/vpcs"
 	uri := resolveRelative(c.server, path)
@@ -9061,10 +8356,10 @@ func (c *Client) VpcList(limit int, pageToken string, project NameOrId, sortBy N
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(limit),
-		"page_token": pageToken,
-		"project":    project.(string),
-		"sort_by":    string(sortBy),
+		"limit":      strconv.Itoa(params.Limit),
+		"page_token": params.PageToken,
+		"project":    params.Project.(string),
+		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -9099,34 +8394,27 @@ func (c *Client) VpcList(limit int, pageToken string, project NameOrId, sortBy N
 //
 // This method is a wrapper around the `VpcList` method.
 // This method returns all the pages at once.
-//
-// Parameters
-// - `project`
-// - `sortBy`
-func (c *Client) VpcListAllPages(project NameOrId, sortBy NameOrIdSortMode) (*[]Vpc, error) {
+func (c *Client) VpcListAllPages(params VpcListParams) (*[]Vpc, error) {
 	var allPages []Vpc
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.VpcList(limit, pageToken, project, sortBy)
+		page, err := c.VpcList(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
 }
 
 // VpcCreate: Create a VPC
-//
-// Parameters
-// - `project`
-func (c *Client) VpcCreate(project NameOrId, j *VpcCreate) (*Vpc, error) {
+func (c *Client) VpcCreate(params VpcCreateParams, j *VpcCreate) (*Vpc, error) {
 	// Create the url.
 	path := "/v1/vpcs"
 	uri := resolveRelative(c.server, path)
@@ -9150,7 +8438,7 @@ func (c *Client) VpcCreate(project NameOrId, j *VpcCreate) (*Vpc, error) {
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
+		"project": params.Project.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -9182,11 +8470,7 @@ func (c *Client) VpcCreate(project NameOrId, j *VpcCreate) (*Vpc, error) {
 }
 
 // VpcView: Fetch a VPC
-//
-// Parameters
-// - `project`
-// - `vpc`
-func (c *Client) VpcView(vpc NameOrId, project NameOrId) (*Vpc, error) {
+func (c *Client) VpcView(params VpcViewParams) (*Vpc, error) {
 	// Create the url.
 	path := "/v1/vpcs/{{.vpc}}"
 	uri := resolveRelative(c.server, path)
@@ -9199,14 +8483,14 @@ func (c *Client) VpcView(vpc NameOrId, project NameOrId) (*Vpc, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"vpc": vpc.(string),
+		"vpc": params.Vpc.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
+		"project": params.Project.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -9238,11 +8522,7 @@ func (c *Client) VpcView(vpc NameOrId, project NameOrId) (*Vpc, error) {
 }
 
 // VpcUpdate: Update a VPC
-//
-// Parameters
-// - `project`
-// - `vpc`
-func (c *Client) VpcUpdate(vpc NameOrId, project NameOrId, j *VpcUpdate) (*Vpc, error) {
+func (c *Client) VpcUpdate(params VpcUpdateParams, j *VpcUpdate) (*Vpc, error) {
 	// Create the url.
 	path := "/v1/vpcs/{{.vpc}}"
 	uri := resolveRelative(c.server, path)
@@ -9261,14 +8541,14 @@ func (c *Client) VpcUpdate(vpc NameOrId, project NameOrId, j *VpcUpdate) (*Vpc, 
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"vpc": vpc.(string),
+		"vpc": params.Vpc.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
+		"project": params.Project.(string),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -9300,11 +8580,7 @@ func (c *Client) VpcUpdate(vpc NameOrId, project NameOrId, j *VpcUpdate) (*Vpc, 
 }
 
 // VpcDelete: Delete a VPC
-//
-// Parameters
-// - `project`
-// - `vpc`
-func (c *Client) VpcDelete(vpc NameOrId, project NameOrId) error {
+func (c *Client) VpcDelete(params VpcDeleteParams) error {
 	// Create the url.
 	path := "/v1/vpcs/{{.vpc}}"
 	uri := resolveRelative(c.server, path)
@@ -9317,14 +8593,14 @@ func (c *Client) VpcDelete(vpc NameOrId, project NameOrId) error {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"vpc": vpc.(string),
+		"vpc": params.Vpc.(string),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": project.(string),
+		"project": params.Project.(string),
 	}); err != nil {
 		return fmt.Errorf("adding queries to URL failed: %v", err)
 	}

@@ -2194,6 +2194,842 @@ type VpcUpdate struct {
 	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
+// LoginLocalParams is the request parameters for LoginLocal
+type LoginLocalParams struct {
+	SiloName Name `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
+}
+
+// LoginSamlBeginParams is the request parameters for LoginSamlBegin
+type LoginSamlBeginParams struct {
+	ProviderName Name `json:"provider_name,omitempty" yaml:"provider_name,omitempty"`
+	SiloName     Name `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
+}
+
+// LoginSamlParams is the request parameters for LoginSaml
+type LoginSamlParams struct {
+	ProviderName Name `json:"provider_name,omitempty" yaml:"provider_name,omitempty"`
+	SiloName     Name `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
+}
+
+// SystemImageViewByIdParams is the request parameters for SystemImageViewById
+type SystemImageViewByIdParams struct {
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+}
+
+// SiloViewByIdParams is the request parameters for SiloViewById
+type SiloViewByIdParams struct {
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+}
+
+// PhysicalDiskListParams is the request parameters for PhysicalDiskList
+type PhysicalDiskListParams struct {
+	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// RackListParams is the request parameters for RackList
+type RackListParams struct {
+	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// RackViewParams is the request parameters for RackView
+type RackViewParams struct {
+	RackId string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
+}
+
+// SledListParams is the request parameters for SledList
+type SledListParams struct {
+	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// SledViewParams is the request parameters for SledView
+type SledViewParams struct {
+	SledId string `json:"sled_id,omitempty" yaml:"sled_id,omitempty"`
+}
+
+// SledPhysicalDiskListParams is the request parameters for SledPhysicalDiskList
+type SledPhysicalDiskListParams struct {
+	SledId    string     `json:"sled_id,omitempty" yaml:"sled_id,omitempty"`
+	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// SystemImageListParams is the request parameters for SystemImageList
+type SystemImageListParams struct {
+	Limit     int          `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string       `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    NameSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// SystemImageDeleteParams is the request parameters for SystemImageDelete
+type SystemImageDeleteParams struct {
+	ImageName Name `json:"image_name,omitempty" yaml:"image_name,omitempty"`
+}
+
+// SystemImageViewParams is the request parameters for SystemImageView
+type SystemImageViewParams struct {
+	ImageName Name `json:"image_name,omitempty" yaml:"image_name,omitempty"`
+}
+
+// SagaListParams is the request parameters for SagaList
+type SagaListParams struct {
+	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// SagaViewParams is the request parameters for SagaView
+type SagaViewParams struct {
+	SagaId string `json:"saga_id,omitempty" yaml:"saga_id,omitempty"`
+}
+
+// SiloListParams is the request parameters for SiloList
+type SiloListParams struct {
+	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// SiloDeleteParams is the request parameters for SiloDelete
+type SiloDeleteParams struct {
+	SiloName Name `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
+}
+
+// SiloViewParams is the request parameters for SiloView
+type SiloViewParams struct {
+	SiloName Name `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
+}
+
+// SiloPolicyViewParams is the request parameters for SiloPolicyView
+type SiloPolicyViewParams struct {
+	SiloName Name `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
+}
+
+// SiloPolicyUpdateParams is the request parameters for SiloPolicyUpdate
+type SiloPolicyUpdateParams struct {
+	SiloName Name `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
+}
+
+// DiskListParams is the request parameters for DiskList
+type DiskListParams struct {
+	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// DiskCreateParams is the request parameters for DiskCreate
+type DiskCreateParams struct {
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// DiskDeleteParams is the request parameters for DiskDelete
+type DiskDeleteParams struct {
+	Disk    NameOrId `json:"disk,omitempty" yaml:"disk,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// DiskViewParams is the request parameters for DiskView
+type DiskViewParams struct {
+	Disk    NameOrId `json:"disk,omitempty" yaml:"disk,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// DiskMetricsListParams is the request parameters for DiskMetricsList
+type DiskMetricsListParams struct {
+	Disk      NameOrId       `json:"disk,omitempty" yaml:"disk,omitempty"`
+	Metric    DiskMetricName `json:"metric,omitempty" yaml:"metric,omitempty"`
+	EndTime   *time.Time     `json:"end_time,omitempty" yaml:"end_time,omitempty"`
+	Limit     int            `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string         `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	StartTime *time.Time     `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+	Project   NameOrId       `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// GroupListV1Params is the request parameters for GroupListV1
+type GroupListV1Params struct {
+	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// GroupViewParams is the request parameters for GroupView
+type GroupViewParams struct {
+	Group string `json:"group,omitempty" yaml:"group,omitempty"`
+}
+
+// ImageListParams is the request parameters for ImageList
+type ImageListParams struct {
+	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// ImageCreateParams is the request parameters for ImageCreate
+type ImageCreateParams struct {
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// ImageDeleteParams is the request parameters for ImageDelete
+type ImageDeleteParams struct {
+	Image   NameOrId `json:"image,omitempty" yaml:"image,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// ImageViewParams is the request parameters for ImageView
+type ImageViewParams struct {
+	Image   NameOrId `json:"image,omitempty" yaml:"image,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// InstanceListParams is the request parameters for InstanceList
+type InstanceListParams struct {
+	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// InstanceCreateParams is the request parameters for InstanceCreate
+type InstanceCreateParams struct {
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// InstanceDeleteParams is the request parameters for InstanceDelete
+type InstanceDeleteParams struct {
+	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+}
+
+// InstanceViewParams is the request parameters for InstanceView
+type InstanceViewParams struct {
+	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+}
+
+// InstanceDiskListParams is the request parameters for InstanceDiskList
+type InstanceDiskListParams struct {
+	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Instance  NameOrId         `json:"instance,omitempty" yaml:"instance,omitempty"`
+}
+
+// InstanceDiskAttachParams is the request parameters for InstanceDiskAttach
+type InstanceDiskAttachParams struct {
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// InstanceDiskDetachParams is the request parameters for InstanceDiskDetach
+type InstanceDiskDetachParams struct {
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// InstanceExternalIpListParams is the request parameters for InstanceExternalIpList
+type InstanceExternalIpListParams struct {
+	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+}
+
+// InstanceMigrateParams is the request parameters for InstanceMigrate
+type InstanceMigrateParams struct {
+	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+}
+
+// InstanceRebootParams is the request parameters for InstanceReboot
+type InstanceRebootParams struct {
+	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+}
+
+// InstanceSerialConsoleParams is the request parameters for InstanceSerialConsole
+type InstanceSerialConsoleParams struct {
+	Instance   NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+	FromStart  int      `json:"from_start,omitempty" yaml:"from_start,omitempty"`
+	MaxBytes   int      `json:"max_bytes,omitempty" yaml:"max_bytes,omitempty"`
+	MostRecent int      `json:"most_recent,omitempty" yaml:"most_recent,omitempty"`
+	Project    NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// InstanceSerialConsoleStreamParams is the request parameters for InstanceSerialConsoleStream
+type InstanceSerialConsoleStreamParams struct {
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// InstanceStartParams is the request parameters for InstanceStart
+type InstanceStartParams struct {
+	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+}
+
+// InstanceStopParams is the request parameters for InstanceStop
+type InstanceStopParams struct {
+	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+}
+
+// CurrentUserGroupsParams is the request parameters for CurrentUserGroups
+type CurrentUserGroupsParams struct {
+	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// CurrentUserSshKeyListParams is the request parameters for CurrentUserSshKeyList
+type CurrentUserSshKeyListParams struct {
+	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// CurrentUserSshKeyDeleteParams is the request parameters for CurrentUserSshKeyDelete
+type CurrentUserSshKeyDeleteParams struct {
+	SshKey NameOrId `json:"ssh_key,omitempty" yaml:"ssh_key,omitempty"`
+}
+
+// CurrentUserSshKeyViewParams is the request parameters for CurrentUserSshKeyView
+type CurrentUserSshKeyViewParams struct {
+	SshKey NameOrId `json:"ssh_key,omitempty" yaml:"ssh_key,omitempty"`
+}
+
+// InstanceNetworkInterfaceListParams is the request parameters for InstanceNetworkInterfaceList
+type InstanceNetworkInterfaceListParams struct {
+	Instance  NameOrId         `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// InstanceNetworkInterfaceCreateParams is the request parameters for InstanceNetworkInterfaceCreate
+type InstanceNetworkInterfaceCreateParams struct {
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// InstanceNetworkInterfaceDeleteParams is the request parameters for InstanceNetworkInterfaceDelete
+type InstanceNetworkInterfaceDeleteParams struct {
+	Interface NameOrId `json:"interface,omitempty" yaml:"interface,omitempty"`
+	Instance  NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Project   NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// InstanceNetworkInterfaceViewParams is the request parameters for InstanceNetworkInterfaceView
+type InstanceNetworkInterfaceViewParams struct {
+	Interface NameOrId `json:"interface,omitempty" yaml:"interface,omitempty"`
+	Instance  NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Project   NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// InstanceNetworkInterfaceUpdateParams is the request parameters for InstanceNetworkInterfaceUpdate
+type InstanceNetworkInterfaceUpdateParams struct {
+	Interface NameOrId `json:"interface,omitempty" yaml:"interface,omitempty"`
+	Instance  NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Project   NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// ProjectListParams is the request parameters for ProjectList
+type ProjectListParams struct {
+	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// ProjectDeleteParams is the request parameters for ProjectDelete
+type ProjectDeleteParams struct {
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// ProjectViewParams is the request parameters for ProjectView
+type ProjectViewParams struct {
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// ProjectUpdateParams is the request parameters for ProjectUpdate
+type ProjectUpdateParams struct {
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// ProjectPolicyViewParams is the request parameters for ProjectPolicyView
+type ProjectPolicyViewParams struct {
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// ProjectPolicyUpdateParams is the request parameters for ProjectPolicyUpdate
+type ProjectPolicyUpdateParams struct {
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// SnapshotListParams is the request parameters for SnapshotList
+type SnapshotListParams struct {
+	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// SnapshotCreateParams is the request parameters for SnapshotCreate
+type SnapshotCreateParams struct {
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// SnapshotDeleteParams is the request parameters for SnapshotDelete
+type SnapshotDeleteParams struct {
+	Snapshot NameOrId `json:"snapshot,omitempty" yaml:"snapshot,omitempty"`
+	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// SnapshotViewParams is the request parameters for SnapshotView
+type SnapshotViewParams struct {
+	Snapshot NameOrId `json:"snapshot,omitempty" yaml:"snapshot,omitempty"`
+	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// CertificateListParams is the request parameters for CertificateList
+type CertificateListParams struct {
+	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// CertificateDeleteParams is the request parameters for CertificateDelete
+type CertificateDeleteParams struct {
+	Certificate NameOrId `json:"certificate,omitempty" yaml:"certificate,omitempty"`
+}
+
+// CertificateViewParams is the request parameters for CertificateView
+type CertificateViewParams struct {
+	Certificate NameOrId `json:"certificate,omitempty" yaml:"certificate,omitempty"`
+}
+
+// PhysicalDiskListV1Params is the request parameters for PhysicalDiskListV1
+type PhysicalDiskListV1Params struct {
+	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// RackListV1Params is the request parameters for RackListV1
+type RackListV1Params struct {
+	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// RackViewV1Params is the request parameters for RackViewV1
+type RackViewV1Params struct {
+	RackId string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
+}
+
+// SledListV1Params is the request parameters for SledListV1
+type SledListV1Params struct {
+	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// SledViewV1Params is the request parameters for SledViewV1
+type SledViewV1Params struct {
+	SledId string `json:"sled_id,omitempty" yaml:"sled_id,omitempty"`
+}
+
+// SledPhysicalDiskListV1Params is the request parameters for SledPhysicalDiskListV1
+type SledPhysicalDiskListV1Params struct {
+	SledId    string     `json:"sled_id,omitempty" yaml:"sled_id,omitempty"`
+	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// SiloIdentityProviderListParams is the request parameters for SiloIdentityProviderList
+type SiloIdentityProviderListParams struct {
+	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Silo      NameOrId         `json:"silo,omitempty" yaml:"silo,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// LocalIdpUserCreateParams is the request parameters for LocalIdpUserCreate
+type LocalIdpUserCreateParams struct {
+	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
+}
+
+// LocalIdpUserDeleteParams is the request parameters for LocalIdpUserDelete
+type LocalIdpUserDeleteParams struct {
+	UserId string   `json:"user_id,omitempty" yaml:"user_id,omitempty"`
+	Silo   NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
+}
+
+// LocalIdpUserSetPasswordParams is the request parameters for LocalIdpUserSetPassword
+type LocalIdpUserSetPasswordParams struct {
+	UserId string   `json:"user_id,omitempty" yaml:"user_id,omitempty"`
+	Silo   NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
+}
+
+// SamlIdentityProviderCreateParams is the request parameters for SamlIdentityProviderCreate
+type SamlIdentityProviderCreateParams struct {
+	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
+}
+
+// SamlIdentityProviderViewParams is the request parameters for SamlIdentityProviderView
+type SamlIdentityProviderViewParams struct {
+	Provider NameOrId `json:"provider,omitempty" yaml:"provider,omitempty"`
+	Silo     NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
+}
+
+// IpPoolListParams is the request parameters for IpPoolList
+type IpPoolListParams struct {
+	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// IpPoolServiceRangeListParams is the request parameters for IpPoolServiceRangeList
+type IpPoolServiceRangeListParams struct {
+	Limit     int    `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+}
+
+// IpPoolDeleteParams is the request parameters for IpPoolDelete
+type IpPoolDeleteParams struct {
+	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
+}
+
+// IpPoolViewParams is the request parameters for IpPoolView
+type IpPoolViewParams struct {
+	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
+}
+
+// IpPoolUpdateParams is the request parameters for IpPoolUpdate
+type IpPoolUpdateParams struct {
+	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
+}
+
+// IpPoolRangeListParams is the request parameters for IpPoolRangeList
+type IpPoolRangeListParams struct {
+	Pool      NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Limit     int      `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string   `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+}
+
+// IpPoolRangeAddParams is the request parameters for IpPoolRangeAdd
+type IpPoolRangeAddParams struct {
+	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
+}
+
+// IpPoolRangeRemoveParams is the request parameters for IpPoolRangeRemove
+type IpPoolRangeRemoveParams struct {
+	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
+}
+
+// SystemMetricParams is the request parameters for SystemMetric
+type SystemMetricParams struct {
+	MetricName SystemMetricName `json:"metric_name,omitempty" yaml:"metric_name,omitempty"`
+	EndTime    *time.Time       `json:"end_time,omitempty" yaml:"end_time,omitempty"`
+	Id         string           `json:"id,omitempty" yaml:"id,omitempty"`
+	Limit      int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken  string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	StartTime  *time.Time       `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+}
+
+// RoleListParams is the request parameters for RoleList
+type RoleListParams struct {
+	Limit     int    `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+}
+
+// RoleViewParams is the request parameters for RoleView
+type RoleViewParams struct {
+	RoleName string `json:"role_name,omitempty" yaml:"role_name,omitempty"`
+}
+
+// SagaListV1Params is the request parameters for SagaListV1
+type SagaListV1Params struct {
+	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// SagaViewV1Params is the request parameters for SagaViewV1
+type SagaViewV1Params struct {
+	SagaId string `json:"saga_id,omitempty" yaml:"saga_id,omitempty"`
+}
+
+// SiloListV1Params is the request parameters for SiloListV1
+type SiloListV1Params struct {
+	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// SiloDeleteV1Params is the request parameters for SiloDeleteV1
+type SiloDeleteV1Params struct {
+	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
+}
+
+// SiloViewV1Params is the request parameters for SiloViewV1
+type SiloViewV1Params struct {
+	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
+}
+
+// SiloPolicyViewV1Params is the request parameters for SiloPolicyViewV1
+type SiloPolicyViewV1Params struct {
+	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
+}
+
+// SiloPolicyUpdateV1Params is the request parameters for SiloPolicyUpdateV1
+type SiloPolicyUpdateV1Params struct {
+	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
+}
+
+// SystemComponentVersionListParams is the request parameters for SystemComponentVersionList
+type SystemComponentVersionListParams struct {
+	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// UpdateDeploymentsListParams is the request parameters for UpdateDeploymentsList
+type UpdateDeploymentsListParams struct {
+	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// UpdateDeploymentViewParams is the request parameters for UpdateDeploymentView
+type UpdateDeploymentViewParams struct {
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+}
+
+// SystemUpdateListParams is the request parameters for SystemUpdateList
+type SystemUpdateListParams struct {
+	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// SystemUpdateViewParams is the request parameters for SystemUpdateView
+type SystemUpdateViewParams struct {
+	Version SemverVersion `json:"version,omitempty" yaml:"version,omitempty"`
+}
+
+// SystemUpdateComponentsListParams is the request parameters for SystemUpdateComponentsList
+type SystemUpdateComponentsListParams struct {
+	Version SemverVersion `json:"version,omitempty" yaml:"version,omitempty"`
+}
+
+// SiloUserListV1Params is the request parameters for SiloUserListV1
+type SiloUserListV1Params struct {
+	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Silo      NameOrId   `json:"silo,omitempty" yaml:"silo,omitempty"`
+	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// UserBuiltinListParams is the request parameters for UserBuiltinList
+type UserBuiltinListParams struct {
+	Limit     int          `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string       `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    NameSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// UserBuiltinViewParams is the request parameters for UserBuiltinView
+type UserBuiltinViewParams struct {
+	User NameOrId `json:"user,omitempty" yaml:"user,omitempty"`
+}
+
+// SiloUserViewV1Params is the request parameters for SiloUserViewV1
+type SiloUserViewV1Params struct {
+	UserId string   `json:"user_id,omitempty" yaml:"user_id,omitempty"`
+	Silo   NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
+}
+
+// UserListV1Params is the request parameters for UserListV1
+type UserListV1Params struct {
+	Group     string     `json:"group,omitempty" yaml:"group,omitempty"`
+	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// VpcFirewallRulesViewParams is the request parameters for VpcFirewallRulesView
+type VpcFirewallRulesViewParams struct {
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+}
+
+// VpcFirewallRulesUpdateParams is the request parameters for VpcFirewallRulesUpdate
+type VpcFirewallRulesUpdateParams struct {
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+}
+
+// VpcRouterRouteListParams is the request parameters for VpcRouterRouteList
+type VpcRouterRouteListParams struct {
+	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	Router    NameOrId         `json:"router,omitempty" yaml:"router,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Vpc       NameOrId         `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+}
+
+// VpcRouterRouteCreateParams is the request parameters for VpcRouterRouteCreate
+type VpcRouterRouteCreateParams struct {
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Router  NameOrId `json:"router,omitempty" yaml:"router,omitempty"`
+	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+}
+
+// VpcRouterRouteDeleteParams is the request parameters for VpcRouterRouteDelete
+type VpcRouterRouteDeleteParams struct {
+	Route   NameOrId `json:"route,omitempty" yaml:"route,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Router  NameOrId `json:"router,omitempty" yaml:"router,omitempty"`
+	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+}
+
+// VpcRouterRouteViewParams is the request parameters for VpcRouterRouteView
+type VpcRouterRouteViewParams struct {
+	Route   NameOrId `json:"route,omitempty" yaml:"route,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Router  NameOrId `json:"router,omitempty" yaml:"router,omitempty"`
+	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+}
+
+// VpcRouterRouteUpdateParams is the request parameters for VpcRouterRouteUpdate
+type VpcRouterRouteUpdateParams struct {
+	Route   NameOrId `json:"route,omitempty" yaml:"route,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Router  NameOrId `json:"router,omitempty" yaml:"router,omitempty"`
+	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+}
+
+// VpcRouterListParams is the request parameters for VpcRouterList
+type VpcRouterListParams struct {
+	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Vpc       NameOrId         `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+}
+
+// VpcRouterCreateParams is the request parameters for VpcRouterCreate
+type VpcRouterCreateParams struct {
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+}
+
+// VpcRouterDeleteParams is the request parameters for VpcRouterDelete
+type VpcRouterDeleteParams struct {
+	Router  NameOrId `json:"router,omitempty" yaml:"router,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+}
+
+// VpcRouterViewParams is the request parameters for VpcRouterView
+type VpcRouterViewParams struct {
+	Router  NameOrId `json:"router,omitempty" yaml:"router,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+}
+
+// VpcRouterUpdateParams is the request parameters for VpcRouterUpdate
+type VpcRouterUpdateParams struct {
+	Router  NameOrId `json:"router,omitempty" yaml:"router,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+}
+
+// VpcSubnetListParams is the request parameters for VpcSubnetList
+type VpcSubnetListParams struct {
+	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Vpc       NameOrId         `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+}
+
+// VpcSubnetCreateParams is the request parameters for VpcSubnetCreate
+type VpcSubnetCreateParams struct {
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+}
+
+// VpcSubnetDeleteParams is the request parameters for VpcSubnetDelete
+type VpcSubnetDeleteParams struct {
+	Subnet  NameOrId `json:"subnet,omitempty" yaml:"subnet,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+}
+
+// VpcSubnetViewParams is the request parameters for VpcSubnetView
+type VpcSubnetViewParams struct {
+	Subnet  NameOrId `json:"subnet,omitempty" yaml:"subnet,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+}
+
+// VpcSubnetUpdateParams is the request parameters for VpcSubnetUpdate
+type VpcSubnetUpdateParams struct {
+	Subnet  NameOrId `json:"subnet,omitempty" yaml:"subnet,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+}
+
+// VpcSubnetListNetworkInterfacesParams is the request parameters for VpcSubnetListNetworkInterfaces
+type VpcSubnetListNetworkInterfacesParams struct {
+	Subnet    NameOrId         `json:"subnet,omitempty" yaml:"subnet,omitempty"`
+	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Vpc       NameOrId         `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+}
+
+// VpcListParams is the request parameters for VpcList
+type VpcListParams struct {
+	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// VpcCreateParams is the request parameters for VpcCreate
+type VpcCreateParams struct {
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// VpcDeleteParams is the request parameters for VpcDelete
+type VpcDeleteParams struct {
+	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// VpcViewParams is the request parameters for VpcView
+type VpcViewParams struct {
+	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// VpcUpdateParams is the request parameters for VpcUpdate
+type VpcUpdateParams struct {
+	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
 // BinRangedoubleTypeRangeTo represents the BinRangedoubleType `"range_to"`.
 const BinRangedoubleTypeRangeTo BinRangedoubleType = "range_to"
 

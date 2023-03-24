@@ -4,9 +4,5 @@
 // This method is a wrapper around the `{{.WrappedFunction}}` method.
 // This method returns all the pages at once.{{end}}{{if .IsList}}
 //
-// To iterate over all pages, use the `{{.FunctionName}}AllPages` method, instead.{{end}}{{if .HasParams}}
-//
-// Parameters
-{{range $k, $v := .SignatureParams}}// - `{{$k}}` {{$v}}
-{{end}}{{else}}
-{{end}}{{end}}
+// To iterate over all pages, use the `{{.FunctionName}}AllPages` method, instead.{{end}}
+{{end}}

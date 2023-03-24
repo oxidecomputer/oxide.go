@@ -58,9 +58,77 @@ func generateTypes(file string, spec *openapi3.T) error {
 
 	enumCollection = append(enumCollection, constructEnums(collectEnumStringTypes)...)
 
+	typeCollection = append(typeCollection, constructParamTypes(spec.Paths)...)
+
 	writeTypes(f, typeCollection, enumCollection)
 
 	return nil
+}
+
+func constructParamTypes(paths openapi3.Paths) []TypeTemplate {
+	paramTypes := make([]TypeTemplate, 0)
+
+	keys := make([]string, 0)
+	for k := range paths {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	for _, path := range keys {
+		p := paths[path]
+		if p.Ref != "" {
+			fmt.Printf("[WARN] TODO: skipping path for %q, since it is a reference\n", path)
+			continue
+		}
+		ops := p.Operations()
+		keys := make([]string, 0)
+		for k := range ops {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for _, op := range keys {
+			o := ops[op]
+			if len(o.Parameters) > 0 {
+				// TODO: add request bodies as well
+				paramsTypeName := strcase.ToCamel(o.OperationID) + "Params"
+				paramsTpl := TypeTemplate{
+					Type:        "struct",
+					Name:        paramsTypeName,
+					Description: "// " + paramsTypeName + " is the request parameters for " + strcase.ToCamel(o.OperationID),
+				}
+
+				fields := make([]TypeFields, 0)
+				for _, p := range o.Parameters {
+					if p.Ref != "" {
+						fmt.Printf("[WARN] TODO: skipping parameter for %q, since it is a reference\n", p.Value.Name)
+						continue
+					}
+
+					paramName := strcase.ToCamel(p.Value.Name)
+					field := TypeFields{
+						Name: paramName,
+					}
+
+					// TODO: Make this better
+					if p.Value.Schema.Ref == "#/components/schemas/NameOrId" {
+						field.Type = "NameOrId"
+					} else {
+						paramType := convertToValidGoType("", p.Value.Schema)
+						field.Type = paramType
+					}
+
+					serInfo := fmt.Sprintf("`json:\"%s,omitempty\" yaml:\"%s,omitempty\"`", p.Value.Name, p.Value.Name)
+					field.SerializationInfo = serInfo
+
+					fields = append(fields, field)
+				}
+				paramsTpl.Fields = fields
+				paramTypes = append(paramTypes, paramsTpl)
+			}
+		}
+
+	}
+
+	return paramTypes
 }
 
 // constructTypes takes the types collected from several parts of the spec and constructs
