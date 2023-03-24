@@ -60,7 +60,7 @@ func (c *Client) IpPoolList(params IpPoolListParams, ) (*IpPoolResultsPage, erro
 //
 // This method is a wrapper around the `IpPoolList` method.
 // This method returns all the pages at once.
-func (c *Client) IpPoolListAllPages(params IpPoolListParams,) (*IpPoolResultsPage, error) {
+func (c *Client) IpPoolListAllPages(params IpPoolListParams, ) (*IpPoolResultsPage, error) {
 	var allPages IpPoolResultsPage
 	params.PageToken = ""
 	params.Limit = 100
@@ -95,18 +95,6 @@ func (c *Client) IpPoolCreate(j *IpPoolCreate) (*IpPool, error) {
     req, err := http.NewRequest("POST", uri, b)
     if err != nil {
         return nil, fmt.Errorf("error creating request: %v", err)
-    }
-
-    // Add the parameters to the url.
-    if err := expandURL(req.URL, map[string]string{ 
-    }); err != nil {
-        return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-    }
-
-    // Add query if any
-    if err := addQueries(req.URL, map[string]string{ 
-    }); err != nil {
-        return nil, fmt.Errorf("adding queries to URL failed: %v", err)
     }
 
     // Send the request.

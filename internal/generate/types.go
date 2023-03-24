@@ -68,7 +68,6 @@ func generateTypes(file string, spec *openapi3.T) error {
 func constructParamTypes(paths openapi3.Paths) []TypeTemplate {
 	paramTypes := make([]TypeTemplate, 0)
 
-	// Code to generate params structs
 	keys := make([]string, 0)
 	for k := range paths {
 		keys = append(keys, k)
@@ -81,7 +80,13 @@ func constructParamTypes(paths openapi3.Paths) []TypeTemplate {
 			continue
 		}
 		ops := p.Operations()
-		for _, o := range ops {
+		keys := make([]string, 0)
+		for k := range ops {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for _, op := range keys {
+			o := ops[op]
 			if len(o.Parameters) > 0 {
 				// TODO: add request bodies as well
 				paramsTypeName := strcase.ToCamel(o.OperationID) + "Params"

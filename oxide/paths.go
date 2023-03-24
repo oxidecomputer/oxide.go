@@ -757,16 +757,6 @@ func (c *Client) SystemImageCreate(j *GlobalImageCreate) (*GlobalImage, error) {
 		return nil, fmt.Errorf("error creating request: %v", err)
 	}
 
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
-	}
-
 	// Send the request.
 	resp, err := c.client.Do(req)
 	if err != nil {
@@ -1110,16 +1100,6 @@ func (c *Client) SiloCreate(j *SiloCreate) (*Silo, error) {
 	req, err := http.NewRequest("POST", uri, b)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
 
 	// Send the request.
@@ -2812,16 +2792,6 @@ func (c *Client) CurrentUserView() (*User, error) {
 		return nil, fmt.Errorf("error creating request: %v", err)
 	}
 
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
-	}
-
 	// Send the request.
 	resp, err := c.client.Do(req)
 	if err != nil {
@@ -3021,16 +2991,6 @@ func (c *Client) CurrentUserSshKeyCreate(j *SshKeyCreate) (*SshKey, error) {
 	req, err := http.NewRequest("POST", uri, b)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
 
 	// Send the request.
@@ -3453,16 +3413,6 @@ func (c *Client) PolicyView() (*SiloRolePolicy, error) {
 		return nil, fmt.Errorf("error creating request: %v", err)
 	}
 
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
-	}
-
 	// Send the request.
 	resp, err := c.client.Do(req)
 	if err != nil {
@@ -3505,16 +3455,6 @@ func (c *Client) PolicyUpdate(j *SiloRolePolicy) (*SiloRolePolicy, error) {
 	req, err := http.NewRequest("PUT", uri, b)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
 
 	// Send the request.
@@ -3636,16 +3576,6 @@ func (c *Client) ProjectCreate(j *ProjectCreate) (*Project, error) {
 	req, err := http.NewRequest("POST", uri, b)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
 
 	// Send the request.
@@ -4249,16 +4179,6 @@ func (c *Client) CertificateCreate(j *CertificateCreate) (*Certificate, error) {
 	req, err := http.NewRequest("POST", uri, b)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
 
 	// Send the request.
@@ -5215,16 +5135,6 @@ func (c *Client) IpPoolCreate(j *IpPoolCreate) (*IpPool, error) {
 		return nil, fmt.Errorf("error creating request: %v", err)
 	}
 
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
-	}
-
 	// Send the request.
 	resp, err := c.client.Do(req)
 	if err != nil {
@@ -5261,16 +5171,6 @@ func (c *Client) IpPoolServiceView() (*IpPool, error) {
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
 
 	// Send the request.
@@ -5395,16 +5295,6 @@ func (c *Client) IpPoolServiceRangeAdd(j *IpRange) (*IpPoolRange, error) {
 		return nil, fmt.Errorf("error creating request: %v", err)
 	}
 
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
-	}
-
 	// Send the request.
 	resp, err := c.client.Do(req)
 	if err != nil {
@@ -5447,16 +5337,6 @@ func (c *Client) IpPoolServiceRangeRemove(j *IpRange) error {
 	req, err := http.NewRequest("POST", uri, b)
 	if err != nil {
 		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return fmt.Errorf("adding queries to URL failed: %v", err)
 	}
 
 	// Send the request.
@@ -5893,16 +5773,6 @@ func (c *Client) SystemPolicyView() (*FleetRolePolicy, error) {
 		return nil, fmt.Errorf("error creating request: %v", err)
 	}
 
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
-	}
-
 	// Send the request.
 	resp, err := c.client.Do(req)
 	if err != nil {
@@ -5945,16 +5815,6 @@ func (c *Client) SystemPolicyUpdate(j *FleetRolePolicy) (*FleetRolePolicy, error
 	req, err := http.NewRequest("PUT", uri, b)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
 
 	// Send the request.
@@ -6331,16 +6191,6 @@ func (c *Client) SiloCreateV1(j *SiloCreate) (*Silo, error) {
 	req, err := http.NewRequest("POST", uri, b)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
 
 	// Send the request.
@@ -6782,16 +6632,6 @@ func (c *Client) SystemUpdateRefresh() error {
 		return fmt.Errorf("error creating request: %v", err)
 	}
 
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return fmt.Errorf("adding queries to URL failed: %v", err)
-	}
-
 	// Send the request.
 	resp, err := c.client.Do(req)
 	if err != nil {
@@ -6823,16 +6663,6 @@ func (c *Client) SystemUpdateStart(j *SystemUpdateStart) (*UpdateDeployment, err
 	req, err := http.NewRequest("POST", uri, b)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
 
 	// Send the request.
@@ -6872,16 +6702,6 @@ func (c *Client) SystemUpdateStop() error {
 	req, err := http.NewRequest("POST", uri, nil)
 	if err != nil {
 		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return fmt.Errorf("adding queries to URL failed: %v", err)
 	}
 
 	// Send the request.
@@ -7086,16 +6906,6 @@ func (c *Client) SystemVersion() (*SystemVersion, error) {
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
 
 	// Send the request.

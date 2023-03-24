@@ -5,11 +5,7 @@ package oxide
 // IpPoolList
 //
 // To iterate over all pages, use the `IpPoolListAllPages` method, instead.
-//
-// Parameters
-// - `limit` 
-// - `pageToken` 
-func (c *Client) IpPoolList(limit int, pageToken string, ) (*IpPoolResultsPage, error) {
+func (c *Client) IpPoolList(params IpPoolListParams, ) (*IpPoolResultsPage, error) {
     // Create the url.
     path := "/v1/ip-pools"
     uri := resolveRelative(c.server, path)
@@ -28,8 +24,8 @@ func (c *Client) IpPoolList(limit int, pageToken string, ) (*IpPoolResultsPage, 
 
     // Add query if any
     if err := addQueries(req.URL, map[string]string{ 
-        "limit": strconv.Itoa(limit),
-        "page_token": pageToken,
+        "limit": strconv.Itoa(params.Limit),
+        "page_token": params.PageToken,
     }); err != nil {
         return nil, fmt.Errorf("adding queries to URL failed: %v", err)
     }
@@ -64,20 +60,20 @@ func (c *Client) IpPoolList(limit int, pageToken string, ) (*IpPoolResultsPage, 
 //
 // This method is a wrapper around the `IpPoolList` method.
 // This method returns all the pages at once.
-func (c *Client) IpPoolListAllPages() (*IpPoolResultsPage, error) {
+func (c *Client) IpPoolListAllPages(params IpPoolListParams, ) (*IpPoolResultsPage, error) {
 	var allPages IpPoolResultsPage
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.IpPoolList(limit, pageToken)
+		page, err := c.IpPoolList(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
@@ -128,10 +124,7 @@ func (c *Client) IpPoolCreate(j *IpPoolCreate) (*IpPool, error) {
 }
 
 // IpPoolView
-//
-// Parameters
-// - `poolName` 
-func (c *Client) IpPoolView(poolName Name, ) (*IpPool, error) {
+func (c *Client) IpPoolView(params IpPoolViewParams, ) (*IpPool, error) {
     // Create the url.
     path := "/v1/ip-pools{{.pool_name}}"
     uri := resolveRelative(c.server, path)
@@ -144,7 +137,7 @@ func (c *Client) IpPoolView(poolName Name, ) (*IpPool, error) {
 
     // Add the parameters to the url.
     if err := expandURL(req.URL, map[string]string{ 
-        "pool_name": string(poolName),
+        "pool_name": string(params.PoolName),
     }); err != nil {
         return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
     }
@@ -182,10 +175,7 @@ func (c *Client) IpPoolView(poolName Name, ) (*IpPool, error) {
 }
 
 // IpPoolUpdate
-//
-// Parameters
-// - `poolName` 
-func (c *Client) IpPoolUpdate(poolName Name, j *IpPoolUpdate) (*IpPool, error) {
+func (c *Client) IpPoolUpdate(params IpPoolUpdateParams, j *IpPoolUpdate) (*IpPool, error) {
     // Create the url.
     path := "/v1/ip-pools{{.pool_name}}"
     uri := resolveRelative(c.server, path)
@@ -204,7 +194,7 @@ func (c *Client) IpPoolUpdate(poolName Name, j *IpPoolUpdate) (*IpPool, error) {
 
     // Add the parameters to the url.
     if err := expandURL(req.URL, map[string]string{ 
-        "pool_name": string(poolName),
+        "pool_name": string(params.PoolName),
     }); err != nil {
         return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
     }
@@ -242,10 +232,7 @@ func (c *Client) IpPoolUpdate(poolName Name, j *IpPoolUpdate) (*IpPool, error) {
 }
 
 // IpPoolDelete
-//
-// Parameters
-// - `poolName` 
-func (c *Client) IpPoolDelete(poolName Name, ) error {
+func (c *Client) IpPoolDelete(params IpPoolDeleteParams, ) error {
     // Create the url.
     path := "/v1/ip-pools{{.pool_name}}"
     uri := resolveRelative(c.server, path)
@@ -258,7 +245,7 @@ func (c *Client) IpPoolDelete(poolName Name, ) error {
 
     // Add the parameters to the url.
     if err := expandURL(req.URL, map[string]string{ 
-        "pool_name": string(poolName),
+        "pool_name": string(params.PoolName),
     }); err != nil {
         return fmt.Errorf("expanding URL with parameters failed: %v", err)
     }
