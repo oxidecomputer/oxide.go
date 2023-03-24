@@ -54,14 +54,71 @@ func generateTypes(file string, spec *openapi3.T) error {
 	}
 	defer f.Close()
 
+	//	// Code to generate params structs
+	//	keys := make([]string, 0)
+	//	for k := range spec.Paths {
+	//		keys = append(keys, k)
+	//	}
+	//	sort.Strings(keys)
+	//	for _, path := range keys {
+	//		p := spec.Paths[path]
+	//		if p.Ref != "" {
+	//			fmt.Printf("[WARN] TODO: skipping path for %q, since it is a reference\n", path)
+	//			continue
+	//		}
+	//
+	//		ops := p.Operations()
+	//
+	//		for _, o := range ops {
+	//			if len(o.Parameters) > 0 {
+	//				// TODO: add all params, not just resource selector???
+	//				opId := strcase.ToCamel(o.OperationID)
+	//				selector := opId + "Params"
+	//				fmt.Printf("type %v struct {\n", selector)
+	//				for _, p := range o.Parameters {
+	//					if p.Ref != "" {
+	//						fmt.Printf("[WARN] TODO: skipping parameter for %q, since it is a reference\n", p.Value.Name)
+	//						continue
+	//					}
+	//
+	//					paramName := strcase.ToCamel(p.Value.Name)
+	//
+	//					if p.Value.Schema.Ref == "#/components/schemas/NameOrId" {
+	//						fmt.Printf("  %v NameOrId\n", paramName)
+	//					} else {
+	//						paramType := convertToValidGoType("", p.Value.Schema)
+	//						fmt.Printf("  %v %v\n", paramName, paramType)
+	//					}
+	//
+	//				}
+	//				println("}")
+	//			}
+	//		}
+	//
+	//	}
+
+	typeCollection, enumCollection := constructTypes(spec.Components.Schemas)
+
+	enumCollection = append(enumCollection, constructEnums(collectEnumStringTypes)...)
+
+	typeCollection = append(typeCollection, constructParamTypes(spec.Paths)...)
+
+	writeTypes(f, typeCollection, enumCollection)
+
+	return nil
+}
+
+func constructParamTypes(paths openapi3.Paths) []TypeTemplate {
+	paramTypes := make([]TypeTemplate, 0)
+
 	// Code to generate params structs
 	keys := make([]string, 0)
-	for k := range spec.Paths {
+	for k := range paths {
 		keys = append(keys, k)
 	}
 	sort.Strings(keys)
 	for _, path := range keys {
-		p := spec.Paths[path]
+		p := paths[path]
 		if p.Ref != "" {
 			fmt.Printf("[WARN] TODO: skipping path for %q, since it is a reference\n", path)
 			continue
@@ -72,9 +129,15 @@ func generateTypes(file string, spec *openapi3.T) error {
 		for _, o := range ops {
 			if len(o.Parameters) > 0 {
 				// TODO: add all params, not just resource selector???
-				opId := strcase.ToCamel(o.OperationID)
-				selector := opId + "Params"
+				selector := strcase.ToCamel(o.OperationID) + "Params"
+				paramsTpl := TypeTemplate{
+					Type:        "struct",
+					Name:        selector,
+					Description: "// " + selector + " is the request parameters for " + strcase.ToCamel(o.OperationID),
+				}
 				fmt.Printf("type %v struct {\n", selector)
+
+				fields := make([]TypeFields, 0)
 				for _, p := range o.Parameters {
 					if p.Ref != "" {
 						fmt.Printf("[WARN] TODO: skipping parameter for %q, since it is a reference\n", p.Value.Name)
@@ -82,28 +145,37 @@ func generateTypes(file string, spec *openapi3.T) error {
 					}
 
 					paramName := strcase.ToCamel(p.Value.Name)
+					field := TypeFields{
+						Name: paramName,
+					}
 
 					if p.Value.Schema.Ref == "#/components/schemas/NameOrId" {
+						// TODO: Make this better
+						field.Type = "NameOrId"
+
 						fmt.Printf("  %v NameOrId\n", paramName)
 					} else {
 						paramType := convertToValidGoType("", p.Value.Schema)
+						field.Type = paramType
+
 						fmt.Printf("  %v %v\n", paramName, paramType)
 					}
 
+					serInfo := fmt.Sprintf("`json:\"%s,omitempty\" yaml:\"%s,omitempty\"`", p.Value.Name, p.Value.Name)
+					field.SerializationInfo = serInfo
+
+					fields = append(fields, field)
 				}
 				println("}")
+
+				paramsTpl.Fields = fields
+				paramTypes = append(paramTypes, paramsTpl)
 			}
 		}
 
 	}
 
-	typeCollection, enumCollection := constructTypes(spec.Components.Schemas)
-
-	enumCollection = append(enumCollection, constructEnums(collectEnumStringTypes)...)
-
-	writeTypes(f, typeCollection, enumCollection)
-
-	return nil
+	return paramTypes
 }
 
 // constructTypes takes the types collected from several parts of the spec and constructs
