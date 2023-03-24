@@ -2199,14 +2199,14 @@ type LoginLocalParams struct {
 	SiloName Name `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
 }
 
-// LoginSamlBeginParams is the request parameters for LoginSamlBegin
-type LoginSamlBeginParams struct {
+// LoginSamlParams is the request parameters for LoginSaml
+type LoginSamlParams struct {
 	ProviderName Name `json:"provider_name,omitempty" yaml:"provider_name,omitempty"`
 	SiloName     Name `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
 }
 
-// LoginSamlParams is the request parameters for LoginSaml
-type LoginSamlParams struct {
+// LoginSamlBeginParams is the request parameters for LoginSamlBegin
+type LoginSamlBeginParams struct {
 	ProviderName Name `json:"provider_name,omitempty" yaml:"provider_name,omitempty"`
 	SiloName     Name `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
 }
@@ -2306,13 +2306,13 @@ type SiloViewParams struct {
 	SiloName Name `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
 }
 
-// SiloPolicyViewParams is the request parameters for SiloPolicyView
-type SiloPolicyViewParams struct {
+// SiloPolicyUpdateParams is the request parameters for SiloPolicyUpdate
+type SiloPolicyUpdateParams struct {
 	SiloName Name `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
 }
 
-// SiloPolicyUpdateParams is the request parameters for SiloPolicyUpdate
-type SiloPolicyUpdateParams struct {
+// SiloPolicyViewParams is the request parameters for SiloPolicyView
+type SiloPolicyViewParams struct {
 	SiloName Name `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
 }
 
@@ -2364,17 +2364,17 @@ type GroupViewParams struct {
 	Group string `json:"group,omitempty" yaml:"group,omitempty"`
 }
 
-// ImageCreateParams is the request parameters for ImageCreate
-type ImageCreateParams struct {
-	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
-}
-
 // ImageListParams is the request parameters for ImageList
 type ImageListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// ImageCreateParams is the request parameters for ImageCreate
+type ImageCreateParams struct {
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
 // ImageDeleteParams is the request parameters for ImageDelete
@@ -2389,17 +2389,17 @@ type ImageViewParams struct {
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
-// InstanceCreateParams is the request parameters for InstanceCreate
-type InstanceCreateParams struct {
-	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
-}
-
 // InstanceListParams is the request parameters for InstanceList
 type InstanceListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// InstanceCreateParams is the request parameters for InstanceCreate
+type InstanceCreateParams struct {
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
 // InstanceDeleteParams is the request parameters for InstanceDelete
@@ -2494,13 +2494,13 @@ type CurrentUserSshKeyListParams struct {
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
 
-// CurrentUserSshKeyDeleteParams is the request parameters for CurrentUserSshKeyDelete
-type CurrentUserSshKeyDeleteParams struct {
+// CurrentUserSshKeyViewParams is the request parameters for CurrentUserSshKeyView
+type CurrentUserSshKeyViewParams struct {
 	SshKey NameOrId `json:"ssh_key,omitempty" yaml:"ssh_key,omitempty"`
 }
 
-// CurrentUserSshKeyViewParams is the request parameters for CurrentUserSshKeyView
-type CurrentUserSshKeyViewParams struct {
+// CurrentUserSshKeyDeleteParams is the request parameters for CurrentUserSshKeyDelete
+type CurrentUserSshKeyDeleteParams struct {
 	SshKey NameOrId `json:"ssh_key,omitempty" yaml:"ssh_key,omitempty"`
 }
 
@@ -2562,13 +2562,13 @@ type ProjectUpdateParams struct {
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
-// ProjectPolicyUpdateParams is the request parameters for ProjectPolicyUpdate
-type ProjectPolicyUpdateParams struct {
+// ProjectPolicyViewParams is the request parameters for ProjectPolicyView
+type ProjectPolicyViewParams struct {
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
-// ProjectPolicyViewParams is the request parameters for ProjectPolicyView
-type ProjectPolicyViewParams struct {
+// ProjectPolicyUpdateParams is the request parameters for ProjectPolicyUpdate
+type ProjectPolicyUpdateParams struct {
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
@@ -2702,11 +2702,6 @@ type IpPoolServiceRangeListParams struct {
 	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 }
 
-// IpPoolUpdateParams is the request parameters for IpPoolUpdate
-type IpPoolUpdateParams struct {
-	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
-}
-
 // IpPoolDeleteParams is the request parameters for IpPoolDelete
 type IpPoolDeleteParams struct {
 	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
@@ -2714,6 +2709,11 @@ type IpPoolDeleteParams struct {
 
 // IpPoolViewParams is the request parameters for IpPoolView
 type IpPoolViewParams struct {
+	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
+}
+
+// IpPoolUpdateParams is the request parameters for IpPoolUpdate
+type IpPoolUpdateParams struct {
 	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 }
 
@@ -2932,13 +2932,6 @@ type VpcRouterCreateParams struct {
 	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
 }
 
-// VpcRouterDeleteParams is the request parameters for VpcRouterDelete
-type VpcRouterDeleteParams struct {
-	Router  NameOrId `json:"router,omitempty" yaml:"router,omitempty"`
-	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
-	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
-}
-
 // VpcRouterViewParams is the request parameters for VpcRouterView
 type VpcRouterViewParams struct {
 	Router  NameOrId `json:"router,omitempty" yaml:"router,omitempty"`
@@ -2948,6 +2941,13 @@ type VpcRouterViewParams struct {
 
 // VpcRouterUpdateParams is the request parameters for VpcRouterUpdate
 type VpcRouterUpdateParams struct {
+	Router  NameOrId `json:"router,omitempty" yaml:"router,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+}
+
+// VpcRouterDeleteParams is the request parameters for VpcRouterDelete
+type VpcRouterDeleteParams struct {
 	Router  NameOrId `json:"router,omitempty" yaml:"router,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
@@ -3012,6 +3012,12 @@ type VpcCreateParams struct {
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
+// VpcDeleteParams is the request parameters for VpcDelete
+type VpcDeleteParams struct {
+	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
 // VpcViewParams is the request parameters for VpcView
 type VpcViewParams struct {
 	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
@@ -3020,12 +3026,6 @@ type VpcViewParams struct {
 
 // VpcUpdateParams is the request parameters for VpcUpdate
 type VpcUpdateParams struct {
-	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
-	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
-}
-
-// VpcDeleteParams is the request parameters for VpcDelete
-type VpcDeleteParams struct {
 	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }

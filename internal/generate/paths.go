@@ -21,22 +21,23 @@ type methodTemplate struct {
 	WrappedFunction string
 	WrappedParams   string // temporary field
 	ResponseType    string
-	SignatureParams map[string]string
-	Summary         string
-	Path            string
-	PathParams      []string
-	ParamsString    string //temporary field
-	QueryParams     []string
-	IsList          bool
-	IsListAll       bool
-	HasDescription  bool
-	HasParams       bool
-	HasBody         bool
-	HasSummary      bool
-	IsAppJSON       bool
+	//	SignatureParams map[string]string
+	Summary        string
+	Path           string
+	PathParams     []string
+	ParamsString   string //temporary field
+	QueryParams    []string
+	IsList         bool
+	IsListAll      bool
+	HasDescription bool
+	HasParams      bool
+	HasBody        bool
+	HasSummary     bool
+	IsAppJSON      bool
 }
 
 type paramsInfo struct {
+	paramTypeName   string
 	parameters      map[string]*openapi3.Parameter
 	paramsString    string
 	docParamsString string
@@ -140,7 +141,9 @@ func buildMethod(f *os.File, spec *openapi3.T, method string, path string, o *op
 	}
 
 	methodName := strcase.ToCamel(o.OperationID)
-	pInfo := parseParams(o.Parameters, method)
+	//	pInfo := parseParams(o.Parameters, method)
+	pInfo := buildParams(o.Parameters, method, methodName)
+	println(pInfo.paramTypeName)
 
 	// Adapt for ListAll methods
 	if pInfo.isPageResult && isGetAllPages && len(pagedRespType) > 0 {
@@ -148,7 +151,7 @@ func buildMethod(f *os.File, spec *openapi3.T, method string, path string, o *op
 	}
 
 	ogmethodName := methodName
-	ogDocParamsString := pInfo.docParamsString
+	//ogDocParamsString := pInfo.docParamsString
 	if isGetAllPages {
 		methodName += "AllPages"
 		pInfo.paramsString = listAllSignature(pInfo.paramsString)
@@ -160,7 +163,12 @@ func buildMethod(f *os.File, spec *openapi3.T, method string, path string, o *op
 	// end ListAll specific code
 
 	pInfo = parseRequestBody(o.RequestBody, pInfo, methodName)
-	sigParams := buildSignatureParams(pInfo.parameters)
+	// TODO: make this better
+	// sigParams := buildSignatureParams(pInfo.parameters)
+
+	//	sig := make(map[string]string, 0)
+	//	sig["params"] = pInfo.paramTypeName
+	//	sigParams := sig
 	pathParams, err := buildPathOrQueryParams("path", pInfo.parameters)
 	if err != nil {
 		return err
@@ -177,21 +185,21 @@ func buildMethod(f *os.File, spec *openapi3.T, method string, path string, o *op
 		HTTPMethod:      method,
 		FunctionName:    methodName,
 		WrappedFunction: ogmethodName,
-		WrappedParams:   ogDocParamsString,
-		ResponseType:    respType,
-		SignatureParams: sigParams,
-		Summary:         o.Summary,
-		ParamsString:    pInfo.paramsString,
-		Path:            cleanPath(path),
-		PathParams:      pathParams,
-		QueryParams:     queryParams,
-		IsList:          isList,
-		IsListAll:       isGetAllPages,
-		HasBody:         o.RequestBody != nil,
-		IsAppJSON:       true,
-		HasParams:       len(pInfo.parameters) > 0,
-		HasSummary:      o.Summary != "",
-		HasDescription:  o.Description != "",
+		//	WrappedParams:   "params", //ogDocParamsString,
+		ResponseType: respType,
+		//	SignatureParams: sigParams,
+		Summary:        o.Summary,
+		ParamsString:   pInfo.paramsString,
+		Path:           cleanPath(path),
+		PathParams:     pathParams,
+		QueryParams:    queryParams,
+		IsList:         isList,
+		IsListAll:      isGetAllPages,
+		HasBody:        o.RequestBody != nil,
+		IsAppJSON:      true,
+		HasParams:      true, //len(pInfo.parameters) > 0,
+		HasSummary:     o.Summary != "",
+		HasDescription: o.Description != "",
 	}
 
 	// TODO: Handle other content types
@@ -350,7 +358,8 @@ func buildPathOrQueryParams(paramType string, params map[string]*openapi3.Parame
 		for _, name := range keys {
 			p := params[name]
 			t := convertToValidGoType(name, p.Schema)
-			n := strcase.ToLowerCamel(name)
+			//n := strcase.ToLowerCamel(name)
+			n := "params." + strcase.ToCamel(name)
 			if t == "string" {
 				pathParams = append(pathParams, fmt.Sprintf("%q: %s,", name, n))
 				// TODO: Identify interfaces instead of singling out NameOrId
@@ -368,6 +377,44 @@ func buildPathOrQueryParams(paramType string, params map[string]*openapi3.Parame
 		}
 	}
 	return pathParams, nil
+}
+
+func buildParams(specParams openapi3.Parameters, method, opID string) paramsInfo {
+	pInfo := paramsInfo{
+		parameters: make(map[string]*openapi3.Parameter, 0),
+	}
+
+	if len(specParams) > 0 {
+		pInfo.paramsString = "params " + opID + "Params, "
+
+		for _, p := range specParams {
+			if p.Ref != "" {
+				fmt.Printf("[WARN] TODO: skipping parameter for %q, since it is a reference\n", p.Value.Name)
+				continue
+			}
+
+			paramName := strcase.ToLowerCamel(p.Value.Name)
+
+			// Avoid naming a param variable a Go type
+			paramName = verifyNotAGoType(paramName)
+
+			// Check if we have a page result.
+			if isPageParam(paramName) && method == http.MethodGet {
+				pInfo.isPageResult = true
+			}
+
+			pInfo.parameters[p.Value.Name] = p.Value
+			//	pInfo.paramsString += fmt.Sprintf("%s %s, ", paramName, convertToValidGoType(p.Value.Name, p.Value.Schema))
+
+			// TODO: is this even necessary????
+			//	if index == len(specParams)-1 {
+			//		pInfo.docParamsString += paramName
+			//	} else {
+			//		pInfo.docParamsString += fmt.Sprintf("%s, ", paramName)
+			//	}
+		}
+	}
+	return pInfo
 }
 
 func parseParams(specParams openapi3.Parameters, method string) paramsInfo {
@@ -423,9 +470,9 @@ func parseRequestBody(reqBody *openapi3.RequestBodyRef, pInfo paramsInfo, method
 
 		pInfo.paramsString += "j *" + typeName
 
-		if len(pInfo.docParamsString) > 0 {
-			pInfo.docParamsString += ", "
-		}
+		//	if len(pInfo.docParamsString) > 0 {
+		//		pInfo.docParamsString += ", "
+		//	}
 		pInfo.docParamsString += "body"
 		break
 	}

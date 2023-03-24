@@ -1,17 +1,17 @@
 {{template "description" .}}func (c *Client) {{.FunctionName}}({{.ParamsString}}) (*{{.ResponseType}}, error) {
 	var allPages {{.ResponseType}}
-	pageToken := ""
-	limit := 100
+	params.PageToken = ""
+	params.Limit = 100
 	for {
-		page, err := c.{{.WrappedFunction}}({{.WrappedParams}})
+		page, err := c.{{.WrappedFunction}}(params)
 		if err != nil {
 			return nil, err
 		}
 		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == pageToken {
+		if page.NextPage == "" || page.NextPage == params.PageToken {
 			break
 		}
-		pageToken = page.NextPage
+		params.PageToken = page.NextPage
 	}
 
 	return &allPages, nil
