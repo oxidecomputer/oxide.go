@@ -325,11 +325,6 @@ func buildPathOrQueryParams(paramType string, params map[string]*openapi3.Parame
 			n := "params." + strcase.ToCamel(name)
 			if t == "string" {
 				pathParams = append(pathParams, fmt.Sprintf("%q: %s,", name, n))
-				// TODO: Identify interfaces instead of singling out NameOrId
-			} else if t == "NameOrId" {
-				// Avoid naming a param variable a Go type
-				n = verifyNotAGoType(n)
-				pathParams = append(pathParams, fmt.Sprintf("%q: %s.(string),", name, n))
 			} else if t == "int" {
 				pathParams = append(pathParams, fmt.Sprintf("%q: strconv.Itoa(%s),", name, n))
 			} else if t == "*time.Time" {

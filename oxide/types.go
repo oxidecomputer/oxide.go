@@ -1042,7 +1042,7 @@ type MeasurementResultsPage struct {
 type Name string
 
 // NameOrId is the type definition for a NameOrId.
-type NameOrId interface{}
+type NameOrId string
 
 // NameOrIdSortMode is sort in increasing order of "name"
 type NameOrIdSortMode string
