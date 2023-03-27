@@ -450,6 +450,12 @@ func createAllOf(s *openapi3.Schema, stringEnums map[string][]string, name, type
 			Type:        "interface{}",
 		}
 
+		// TODO: See above about making a more idiomatic approach, this is a small workaround
+		// until https://github.com/oxidecomputer/oxide.go/issues/67 is done
+		if singularTypename == "NameOrId" {
+			typeTpl.Type = "string"
+		}
+
 		typeTpls = append(typeTpls, typeTpl)
 
 		stringEnums[singularTypename] = []string{}

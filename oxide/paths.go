@@ -1350,7 +1350,7 @@ func (c *Client) DiskList(params DiskListParams) (*DiskResultsPage, error) {
 	if err := addQueries(req.URL, map[string]string{
 		"limit":      strconv.Itoa(params.Limit),
 		"page_token": params.PageToken,
-		"project":    params.Project.(string),
+		"project":    string(params.Project),
 		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
@@ -1430,7 +1430,7 @@ func (c *Client) DiskCreate(params DiskCreateParams, j *DiskCreate) (*Disk, erro
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
+		"project": string(params.Project),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -1475,14 +1475,14 @@ func (c *Client) DiskView(params DiskViewParams) (*Disk, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"disk": params.Disk.(string),
+		"disk": string(params.Disk),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
+		"project": string(params.Project),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -1527,14 +1527,14 @@ func (c *Client) DiskDelete(params DiskDeleteParams) error {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"disk": params.Disk.(string),
+		"disk": string(params.Disk),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
+		"project": string(params.Project),
 	}); err != nil {
 		return fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -1570,7 +1570,7 @@ func (c *Client) DiskMetricsList(params DiskMetricsListParams) (*MeasurementResu
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"disk":   params.Disk.(string),
+		"disk":   string(params.Disk),
 		"metric": string(params.Metric),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
@@ -1581,7 +1581,7 @@ func (c *Client) DiskMetricsList(params DiskMetricsListParams) (*MeasurementResu
 		"end_time":   params.EndTime.String(),
 		"limit":      strconv.Itoa(params.Limit),
 		"page_token": params.PageToken,
-		"project":    params.Project.(string),
+		"project":    string(params.Project),
 		"start_time": params.StartTime.String(),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
@@ -1787,7 +1787,7 @@ func (c *Client) ImageList(params ImageListParams) (*ImageResultsPage, error) {
 	if err := addQueries(req.URL, map[string]string{
 		"limit":      strconv.Itoa(params.Limit),
 		"page_token": params.PageToken,
-		"project":    params.Project.(string),
+		"project":    string(params.Project),
 		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
@@ -1869,7 +1869,7 @@ func (c *Client) ImageCreate(params ImageCreateParams, j *ImageCreate) (*Image, 
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
+		"project": string(params.Project),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -1915,14 +1915,14 @@ func (c *Client) ImageView(params ImageViewParams) (*Image, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"image": params.Image.(string),
+		"image": string(params.Image),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
+		"project": string(params.Project),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -1968,14 +1968,14 @@ func (c *Client) ImageDelete(params ImageDeleteParams) error {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"image": params.Image.(string),
+		"image": string(params.Image),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
+		"project": string(params.Project),
 	}); err != nil {
 		return fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -2018,7 +2018,7 @@ func (c *Client) InstanceList(params InstanceListParams) (*InstanceResultsPage, 
 	if err := addQueries(req.URL, map[string]string{
 		"limit":      strconv.Itoa(params.Limit),
 		"page_token": params.PageToken,
-		"project":    params.Project.(string),
+		"project":    string(params.Project),
 		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
@@ -2098,7 +2098,7 @@ func (c *Client) InstanceCreate(params InstanceCreateParams, j *InstanceCreate) 
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
+		"project": string(params.Project),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -2143,14 +2143,14 @@ func (c *Client) InstanceView(params InstanceViewParams) (*Instance, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"instance": params.Instance.(string),
+		"instance": string(params.Instance),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
+		"project": string(params.Project),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -2195,14 +2195,14 @@ func (c *Client) InstanceDelete(params InstanceDeleteParams) error {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"instance": params.Instance.(string),
+		"instance": string(params.Instance),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
+		"project": string(params.Project),
 	}); err != nil {
 		return fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -2238,7 +2238,7 @@ func (c *Client) InstanceDiskList(params InstanceDiskListParams) (*DiskResultsPa
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"instance": params.Instance.(string),
+		"instance": string(params.Instance),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -2247,7 +2247,7 @@ func (c *Client) InstanceDiskList(params InstanceDiskListParams) (*DiskResultsPa
 	if err := addQueries(req.URL, map[string]string{
 		"limit":      strconv.Itoa(params.Limit),
 		"page_token": params.PageToken,
-		"project":    params.Project.(string),
+		"project":    string(params.Project),
 		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
@@ -2322,14 +2322,14 @@ func (c *Client) InstanceDiskAttach(params InstanceDiskAttachParams, j *DiskPath
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"instance": params.Instance.(string),
+		"instance": string(params.Instance),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
+		"project": string(params.Project),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -2380,14 +2380,14 @@ func (c *Client) InstanceDiskDetach(params InstanceDiskDetachParams, j *DiskPath
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"instance": params.Instance.(string),
+		"instance": string(params.Instance),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
+		"project": string(params.Project),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -2432,14 +2432,14 @@ func (c *Client) InstanceExternalIpList(params InstanceExternalIpListParams) (*E
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"instance": params.Instance.(string),
+		"instance": string(params.Instance),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
+		"project": string(params.Project),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -2490,14 +2490,14 @@ func (c *Client) InstanceMigrate(params InstanceMigrateParams, j *InstanceMigrat
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"instance": params.Instance.(string),
+		"instance": string(params.Instance),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
+		"project": string(params.Project),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -2542,14 +2542,14 @@ func (c *Client) InstanceReboot(params InstanceRebootParams) (*Instance, error) 
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"instance": params.Instance.(string),
+		"instance": string(params.Instance),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
+		"project": string(params.Project),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -2594,7 +2594,7 @@ func (c *Client) InstanceSerialConsole(params InstanceSerialConsoleParams) (*Ins
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"instance": params.Instance.(string),
+		"instance": string(params.Instance),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -2604,7 +2604,7 @@ func (c *Client) InstanceSerialConsole(params InstanceSerialConsoleParams) (*Ins
 		"from_start":  strconv.Itoa(params.FromStart),
 		"max_bytes":   strconv.Itoa(params.MaxBytes),
 		"most_recent": strconv.Itoa(params.MostRecent),
-		"project":     params.Project.(string),
+		"project":     string(params.Project),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -2649,14 +2649,14 @@ func (c *Client) InstanceSerialConsoleStream(params InstanceSerialConsoleStreamP
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"instance": params.Instance.(string),
+		"instance": string(params.Instance),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
+		"project": string(params.Project),
 	}); err != nil {
 		return fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -2690,14 +2690,14 @@ func (c *Client) InstanceStart(params InstanceStartParams) (*Instance, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"instance": params.Instance.(string),
+		"instance": string(params.Instance),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
+		"project": string(params.Project),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -2742,14 +2742,14 @@ func (c *Client) InstanceStop(params InstanceStopParams) (*Instance, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"instance": params.Instance.(string),
+		"instance": string(params.Instance),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
+		"project": string(params.Project),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -3034,7 +3034,7 @@ func (c *Client) CurrentUserSshKeyView(params CurrentUserSshKeyViewParams) (*Ssh
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"ssh_key": params.SshKey.(string),
+		"ssh_key": string(params.SshKey),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -3085,7 +3085,7 @@ func (c *Client) CurrentUserSshKeyDelete(params CurrentUserSshKeyDeleteParams) e
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"ssh_key": params.SshKey.(string),
+		"ssh_key": string(params.SshKey),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -3131,10 +3131,10 @@ func (c *Client) InstanceNetworkInterfaceList(params InstanceNetworkInterfaceLis
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"instance":   params.Instance.(string),
+		"instance":   string(params.Instance),
 		"limit":      strconv.Itoa(params.Limit),
 		"page_token": params.PageToken,
-		"project":    params.Project.(string),
+		"project":    string(params.Project),
 		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
@@ -3214,8 +3214,8 @@ func (c *Client) InstanceNetworkInterfaceCreate(params InstanceNetworkInterfaceC
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"instance": params.Instance.(string),
-		"project":  params.Project.(string),
+		"instance": string(params.Instance),
+		"project":  string(params.Project),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -3260,15 +3260,15 @@ func (c *Client) InstanceNetworkInterfaceView(params InstanceNetworkInterfaceVie
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"interface": params.Interface.(string),
+		"interface": string(params.Interface),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"instance": params.Instance.(string),
-		"project":  params.Project.(string),
+		"instance": string(params.Instance),
+		"project":  string(params.Project),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -3319,15 +3319,15 @@ func (c *Client) InstanceNetworkInterfaceUpdate(params InstanceNetworkInterfaceU
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"interface": params.Interface.(string),
+		"interface": string(params.Interface),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"instance": params.Instance.(string),
-		"project":  params.Project.(string),
+		"instance": string(params.Instance),
+		"project":  string(params.Project),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -3373,15 +3373,15 @@ func (c *Client) InstanceNetworkInterfaceDelete(params InstanceNetworkInterfaceD
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"interface": params.Interface.(string),
+		"interface": string(params.Interface),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"instance": params.Instance.(string),
-		"project":  params.Project.(string),
+		"instance": string(params.Instance),
+		"project":  string(params.Project),
 	}); err != nil {
 		return fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -3618,7 +3618,7 @@ func (c *Client) ProjectView(params ProjectViewParams) (*Project, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"project": params.Project.(string),
+		"project": string(params.Project),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -3674,7 +3674,7 @@ func (c *Client) ProjectUpdate(params ProjectUpdateParams, j *ProjectUpdate) (*P
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"project": params.Project.(string),
+		"project": string(params.Project),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -3724,7 +3724,7 @@ func (c *Client) ProjectDelete(params ProjectDeleteParams) error {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"project": params.Project.(string),
+		"project": string(params.Project),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -3763,7 +3763,7 @@ func (c *Client) ProjectPolicyView(params ProjectPolicyViewParams) (*ProjectRole
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"project": params.Project.(string),
+		"project": string(params.Project),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -3819,7 +3819,7 @@ func (c *Client) ProjectPolicyUpdate(params ProjectPolicyUpdateParams, j *Projec
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"project": params.Project.(string),
+		"project": string(params.Project),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -3878,7 +3878,7 @@ func (c *Client) SnapshotList(params SnapshotListParams) (*SnapshotResultsPage, 
 	if err := addQueries(req.URL, map[string]string{
 		"limit":      strconv.Itoa(params.Limit),
 		"page_token": params.PageToken,
-		"project":    params.Project.(string),
+		"project":    string(params.Project),
 		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
@@ -3959,7 +3959,7 @@ func (c *Client) SnapshotCreate(params SnapshotCreateParams, j *SnapshotCreate) 
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
+		"project": string(params.Project),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -4004,14 +4004,14 @@ func (c *Client) SnapshotView(params SnapshotViewParams) (*Snapshot, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"snapshot": params.Snapshot.(string),
+		"snapshot": string(params.Snapshot),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
+		"project": string(params.Project),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -4056,14 +4056,14 @@ func (c *Client) SnapshotDelete(params SnapshotDeleteParams) error {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"snapshot": params.Snapshot.(string),
+		"snapshot": string(params.Snapshot),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
+		"project": string(params.Project),
 	}); err != nil {
 		return fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -4222,7 +4222,7 @@ func (c *Client) CertificateView(params CertificateViewParams) (*Certificate, er
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"certificate": params.Certificate.(string),
+		"certificate": string(params.Certificate),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -4273,7 +4273,7 @@ func (c *Client) CertificateDelete(params CertificateDeleteParams) error {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"certificate": params.Certificate.(string),
+		"certificate": string(params.Certificate),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -4731,7 +4731,7 @@ func (c *Client) SiloIdentityProviderList(params SiloIdentityProviderListParams)
 	if err := addQueries(req.URL, map[string]string{
 		"limit":      strconv.Itoa(params.Limit),
 		"page_token": params.PageToken,
-		"silo":       params.Silo.(string),
+		"silo":       string(params.Silo),
 		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
@@ -4812,7 +4812,7 @@ func (c *Client) LocalIdpUserCreate(params LocalIdpUserCreateParams, j *UserCrea
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"silo": params.Silo.(string),
+		"silo": string(params.Silo),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -4864,7 +4864,7 @@ func (c *Client) LocalIdpUserDelete(params LocalIdpUserDeleteParams) error {
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"silo": params.Silo.(string),
+		"silo": string(params.Silo),
 	}); err != nil {
 		return fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -4912,7 +4912,7 @@ func (c *Client) LocalIdpUserSetPassword(params LocalIdpUserSetPasswordParams, j
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"silo": params.Silo.(string),
+		"silo": string(params.Silo),
 	}); err != nil {
 		return fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -4957,7 +4957,7 @@ func (c *Client) SamlIdentityProviderCreate(params SamlIdentityProviderCreatePar
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"silo": params.Silo.(string),
+		"silo": string(params.Silo),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -5002,14 +5002,14 @@ func (c *Client) SamlIdentityProviderView(params SamlIdentityProviderViewParams)
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"provider": params.Provider.(string),
+		"provider": string(params.Provider),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"silo": params.Silo.(string),
+		"silo": string(params.Silo),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -5368,7 +5368,7 @@ func (c *Client) IpPoolView(params IpPoolViewParams) (*IpPool, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"pool": params.Pool.(string),
+		"pool": string(params.Pool),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -5424,7 +5424,7 @@ func (c *Client) IpPoolUpdate(params IpPoolUpdateParams, j *IpPoolUpdate) (*IpPo
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"pool": params.Pool.(string),
+		"pool": string(params.Pool),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -5474,7 +5474,7 @@ func (c *Client) IpPoolDelete(params IpPoolDeleteParams) error {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"pool": params.Pool.(string),
+		"pool": string(params.Pool),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -5516,7 +5516,7 @@ func (c *Client) IpPoolRangeList(params IpPoolRangeListParams) (*IpPoolRangeResu
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"pool": params.Pool.(string),
+		"pool": string(params.Pool),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -5599,7 +5599,7 @@ func (c *Client) IpPoolRangeAdd(params IpPoolRangeAddParams, j *IpRange) (*IpPoo
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"pool": params.Pool.(string),
+		"pool": string(params.Pool),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -5655,7 +5655,7 @@ func (c *Client) IpPoolRangeRemove(params IpPoolRangeRemoveParams, j *IpRange) e
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"pool": params.Pool.(string),
+		"pool": string(params.Pool),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -6234,7 +6234,7 @@ func (c *Client) SiloViewV1(params SiloViewV1Params) (*Silo, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"silo": params.Silo.(string),
+		"silo": string(params.Silo),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -6285,7 +6285,7 @@ func (c *Client) SiloDeleteV1(params SiloDeleteV1Params) error {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"silo": params.Silo.(string),
+		"silo": string(params.Silo),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -6324,7 +6324,7 @@ func (c *Client) SiloPolicyViewV1(params SiloPolicyViewV1Params) (*SiloRolePolic
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"silo": params.Silo.(string),
+		"silo": string(params.Silo),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -6380,7 +6380,7 @@ func (c *Client) SiloPolicyUpdateV1(params SiloPolicyUpdateV1Params, j *SiloRole
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"silo": params.Silo.(string),
+		"silo": string(params.Silo),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -6957,7 +6957,7 @@ func (c *Client) SiloUserListV1(params SiloUserListV1Params) (*UserResultsPage, 
 	if err := addQueries(req.URL, map[string]string{
 		"limit":      strconv.Itoa(params.Limit),
 		"page_token": params.PageToken,
-		"silo":       params.Silo.(string),
+		"silo":       string(params.Silo),
 		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
@@ -7103,7 +7103,7 @@ func (c *Client) UserBuiltinView(params UserBuiltinViewParams) (*UserBuiltin, er
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"user": params.User.(string),
+		"user": string(params.User),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -7160,7 +7160,7 @@ func (c *Client) SiloUserViewV1(params SiloUserViewV1Params) (*User, error) {
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"silo": params.Silo.(string),
+		"silo": string(params.Silo),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -7288,8 +7288,8 @@ func (c *Client) VpcFirewallRulesView(params VpcFirewallRulesViewParams) (*VpcFi
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
-		"vpc":     params.Vpc.(string),
+		"project": string(params.Project),
+		"vpc":     string(params.Vpc),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -7345,8 +7345,8 @@ func (c *Client) VpcFirewallRulesUpdate(params VpcFirewallRulesUpdateParams, j *
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
-		"vpc":     params.Vpc.(string),
+		"project": string(params.Project),
+		"vpc":     string(params.Vpc),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -7401,10 +7401,10 @@ func (c *Client) VpcRouterRouteList(params VpcRouterRouteListParams) (*RouterRou
 	if err := addQueries(req.URL, map[string]string{
 		"limit":      strconv.Itoa(params.Limit),
 		"page_token": params.PageToken,
-		"project":    params.Project.(string),
-		"router":     params.Router.(string),
+		"project":    string(params.Project),
+		"router":     string(params.Router),
 		"sort_by":    string(params.SortBy),
-		"vpc":        params.Vpc.(string),
+		"vpc":        string(params.Vpc),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -7484,9 +7484,9 @@ func (c *Client) VpcRouterRouteCreate(params VpcRouterRouteCreateParams, j *Rout
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
-		"router":  params.Router.(string),
-		"vpc":     params.Vpc.(string),
+		"project": string(params.Project),
+		"router":  string(params.Router),
+		"vpc":     string(params.Vpc),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -7531,16 +7531,16 @@ func (c *Client) VpcRouterRouteView(params VpcRouterRouteViewParams) (*RouterRou
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"route": params.Route.(string),
+		"route": string(params.Route),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
-		"router":  params.Router.(string),
-		"vpc":     params.Vpc.(string),
+		"project": string(params.Project),
+		"router":  string(params.Router),
+		"vpc":     string(params.Vpc),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -7591,16 +7591,16 @@ func (c *Client) VpcRouterRouteUpdate(params VpcRouterRouteUpdateParams, j *Rout
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"route": params.Route.(string),
+		"route": string(params.Route),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
-		"router":  params.Router.(string),
-		"vpc":     params.Vpc.(string),
+		"project": string(params.Project),
+		"router":  string(params.Router),
+		"vpc":     string(params.Vpc),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -7645,16 +7645,16 @@ func (c *Client) VpcRouterRouteDelete(params VpcRouterRouteDeleteParams) error {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"route": params.Route.(string),
+		"route": string(params.Route),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
-		"router":  params.Router.(string),
-		"vpc":     params.Vpc.(string),
+		"project": string(params.Project),
+		"router":  string(params.Router),
+		"vpc":     string(params.Vpc),
 	}); err != nil {
 		return fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -7697,9 +7697,9 @@ func (c *Client) VpcRouterList(params VpcRouterListParams) (*VpcRouterResultsPag
 	if err := addQueries(req.URL, map[string]string{
 		"limit":      strconv.Itoa(params.Limit),
 		"page_token": params.PageToken,
-		"project":    params.Project.(string),
+		"project":    string(params.Project),
 		"sort_by":    string(params.SortBy),
-		"vpc":        params.Vpc.(string),
+		"vpc":        string(params.Vpc),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -7778,8 +7778,8 @@ func (c *Client) VpcRouterCreate(params VpcRouterCreateParams, j *VpcRouterCreat
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
-		"vpc":     params.Vpc.(string),
+		"project": string(params.Project),
+		"vpc":     string(params.Vpc),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -7824,15 +7824,15 @@ func (c *Client) VpcRouterView(params VpcRouterViewParams) (*VpcRouter, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"router": params.Router.(string),
+		"router": string(params.Router),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
-		"vpc":     params.Vpc.(string),
+		"project": string(params.Project),
+		"vpc":     string(params.Vpc),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -7883,15 +7883,15 @@ func (c *Client) VpcRouterUpdate(params VpcRouterUpdateParams, j *VpcRouterUpdat
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"router": params.Router.(string),
+		"router": string(params.Router),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
-		"vpc":     params.Vpc.(string),
+		"project": string(params.Project),
+		"vpc":     string(params.Vpc),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -7936,15 +7936,15 @@ func (c *Client) VpcRouterDelete(params VpcRouterDeleteParams) error {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"router": params.Router.(string),
+		"router": string(params.Router),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
-		"vpc":     params.Vpc.(string),
+		"project": string(params.Project),
+		"vpc":     string(params.Vpc),
 	}); err != nil {
 		return fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -7987,9 +7987,9 @@ func (c *Client) VpcSubnetList(params VpcSubnetListParams) (*VpcSubnetResultsPag
 	if err := addQueries(req.URL, map[string]string{
 		"limit":      strconv.Itoa(params.Limit),
 		"page_token": params.PageToken,
-		"project":    params.Project.(string),
+		"project":    string(params.Project),
 		"sort_by":    string(params.SortBy),
-		"vpc":        params.Vpc.(string),
+		"vpc":        string(params.Vpc),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -8068,8 +8068,8 @@ func (c *Client) VpcSubnetCreate(params VpcSubnetCreateParams, j *VpcSubnetCreat
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
-		"vpc":     params.Vpc.(string),
+		"project": string(params.Project),
+		"vpc":     string(params.Vpc),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -8114,15 +8114,15 @@ func (c *Client) VpcSubnetView(params VpcSubnetViewParams) (*VpcSubnet, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"subnet": params.Subnet.(string),
+		"subnet": string(params.Subnet),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
-		"vpc":     params.Vpc.(string),
+		"project": string(params.Project),
+		"vpc":     string(params.Vpc),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -8173,15 +8173,15 @@ func (c *Client) VpcSubnetUpdate(params VpcSubnetUpdateParams, j *VpcSubnetUpdat
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"subnet": params.Subnet.(string),
+		"subnet": string(params.Subnet),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
-		"vpc":     params.Vpc.(string),
+		"project": string(params.Project),
+		"vpc":     string(params.Vpc),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -8226,15 +8226,15 @@ func (c *Client) VpcSubnetDelete(params VpcSubnetDeleteParams) error {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"subnet": params.Subnet.(string),
+		"subnet": string(params.Subnet),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
-		"vpc":     params.Vpc.(string),
+		"project": string(params.Project),
+		"vpc":     string(params.Vpc),
 	}); err != nil {
 		return fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -8270,7 +8270,7 @@ func (c *Client) VpcSubnetListNetworkInterfaces(params VpcSubnetListNetworkInter
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"subnet": params.Subnet.(string),
+		"subnet": string(params.Subnet),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
@@ -8279,9 +8279,9 @@ func (c *Client) VpcSubnetListNetworkInterfaces(params VpcSubnetListNetworkInter
 	if err := addQueries(req.URL, map[string]string{
 		"limit":      strconv.Itoa(params.Limit),
 		"page_token": params.PageToken,
-		"project":    params.Project.(string),
+		"project":    string(params.Project),
 		"sort_by":    string(params.SortBy),
-		"vpc":        params.Vpc.(string),
+		"vpc":        string(params.Vpc),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -8358,7 +8358,7 @@ func (c *Client) VpcList(params VpcListParams) (*VpcResultsPage, error) {
 	if err := addQueries(req.URL, map[string]string{
 		"limit":      strconv.Itoa(params.Limit),
 		"page_token": params.PageToken,
-		"project":    params.Project.(string),
+		"project":    string(params.Project),
 		"sort_by":    string(params.SortBy),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
@@ -8438,7 +8438,7 @@ func (c *Client) VpcCreate(params VpcCreateParams, j *VpcCreate) (*Vpc, error) {
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
+		"project": string(params.Project),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -8483,14 +8483,14 @@ func (c *Client) VpcView(params VpcViewParams) (*Vpc, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"vpc": params.Vpc.(string),
+		"vpc": string(params.Vpc),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
+		"project": string(params.Project),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -8541,14 +8541,14 @@ func (c *Client) VpcUpdate(params VpcUpdateParams, j *VpcUpdate) (*Vpc, error) {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"vpc": params.Vpc.(string),
+		"vpc": string(params.Vpc),
 	}); err != nil {
 		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
+		"project": string(params.Project),
 	}); err != nil {
 		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -8593,14 +8593,14 @@ func (c *Client) VpcDelete(params VpcDeleteParams) error {
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, map[string]string{
-		"vpc": params.Vpc.(string),
+		"vpc": string(params.Vpc),
 	}); err != nil {
 		return fmt.Errorf("expanding URL with parameters failed: %v", err)
 	}
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": params.Project.(string),
+		"project": string(params.Project),
 	}); err != nil {
 		return fmt.Errorf("adding queries to URL failed: %v", err)
 	}
