@@ -105,14 +105,7 @@ func constructParamTypes(paths openapi3.Paths) []TypeTemplate {
 					paramName := strcase.ToCamel(p.Value.Name)
 					field := TypeFields{
 						Name: paramName,
-					}
-
-					// TODO: Make this better
-					if p.Value.Schema.Ref == "#/components/schemas/NameOrId" {
-						field.Type = "NameOrId"
-					} else {
-						paramType := convertToValidGoType("", p.Value.Schema)
-						field.Type = paramType
+						Type: convertToValidGoType("", p.Value.Schema),
 					}
 
 					serInfo := fmt.Sprintf("`json:\"%s,omitempty\" yaml:\"%s,omitempty\"`", p.Value.Name, p.Value.Name)
