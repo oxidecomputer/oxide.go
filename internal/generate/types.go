@@ -153,6 +153,8 @@ func constructTypes(schemas openapi3.Schemas) ([]TypeTemplate, []EnumTemplate) {
 			continue
 		}
 
+		// Set name as a valid Go type name
+		name = strcase.ToCamel(name)
 		typeTpl, enumTpl := populateTypeTemplates(name, s.Value, "")
 		typeCollection = append(typeCollection, typeTpl...)
 		enumCollection = append(enumCollection, enumTpl...)
@@ -254,9 +256,9 @@ func writeTypes(f *os.File, typeCollection []TypeTemplate, enumCollection []Enum
 // The additional parameter is only used as a suffix for the type name.
 // This is mostly for oneOf types.
 func populateTypeTemplates(name string, s *openapi3.Schema, enumFieldName string) ([]TypeTemplate, []EnumTemplate) {
-	name = strcase.ToCamel(name)
-	typeName := strcase.ToCamel(name)
+	typeName := name
 
+	// Type name will change for each enum type
 	if enumFieldName != "" {
 		typeName = fmt.Sprintf("%s%s", name, strcase.ToCamel(enumFieldName))
 	}
