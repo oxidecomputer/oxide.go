@@ -2,7 +2,10 @@
 
 package oxide
 
-import "time"
+import (
+	"io"
+	"time"
+)
 
 // Baseboard is properties that should uniquely identify a Sled.
 type Baseboard struct {
@@ -2196,7 +2199,8 @@ type VpcUpdate struct {
 
 // LoginLocalParams is the request parameters for LoginLocal
 type LoginLocalParams struct {
-	SiloName Name `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
+	SiloName Name                         `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
+	Body     *UsernamePasswordCredentials `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // LoginSamlBeginParams is the request parameters for LoginSamlBegin
@@ -2207,8 +2211,9 @@ type LoginSamlBeginParams struct {
 
 // LoginSamlParams is the request parameters for LoginSaml
 type LoginSamlParams struct {
-	ProviderName Name `json:"provider_name,omitempty" yaml:"provider_name,omitempty"`
-	SiloName     Name `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
+	ProviderName Name      `json:"provider_name,omitempty" yaml:"provider_name,omitempty"`
+	SiloName     Name      `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
+	Body         io.Reader `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // SystemImageViewByIdParams is the request parameters for SystemImageViewById
@@ -2313,7 +2318,8 @@ type SiloPolicyViewParams struct {
 
 // SiloPolicyUpdateParams is the request parameters for SiloPolicyUpdate
 type SiloPolicyUpdateParams struct {
-	SiloName Name `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
+	SiloName Name            `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
+	Body     *SiloRolePolicy `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // DiskListParams is the request parameters for DiskList
@@ -2326,7 +2332,8 @@ type DiskListParams struct {
 
 // DiskCreateParams is the request parameters for DiskCreate
 type DiskCreateParams struct {
-	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Project NameOrId    `json:"project,omitempty" yaml:"project,omitempty"`
+	Body    *DiskCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // DiskDeleteParams is the request parameters for DiskDelete
@@ -2374,7 +2381,8 @@ type ImageListParams struct {
 
 // ImageCreateParams is the request parameters for ImageCreate
 type ImageCreateParams struct {
-	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Project NameOrId     `json:"project,omitempty" yaml:"project,omitempty"`
+	Body    *ImageCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // ImageDeleteParams is the request parameters for ImageDelete
@@ -2399,7 +2407,8 @@ type InstanceListParams struct {
 
 // InstanceCreateParams is the request parameters for InstanceCreate
 type InstanceCreateParams struct {
-	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Project NameOrId        `json:"project,omitempty" yaml:"project,omitempty"`
+	Body    *InstanceCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // InstanceDeleteParams is the request parameters for InstanceDelete
@@ -2425,14 +2434,16 @@ type InstanceDiskListParams struct {
 
 // InstanceDiskAttachParams is the request parameters for InstanceDiskAttach
 type InstanceDiskAttachParams struct {
-	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
-	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Instance NameOrId  `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Project  NameOrId  `json:"project,omitempty" yaml:"project,omitempty"`
+	Body     *DiskPath `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // InstanceDiskDetachParams is the request parameters for InstanceDiskDetach
 type InstanceDiskDetachParams struct {
-	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
-	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Instance NameOrId  `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Project  NameOrId  `json:"project,omitempty" yaml:"project,omitempty"`
+	Body     *DiskPath `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // InstanceExternalIpListParams is the request parameters for InstanceExternalIpList
@@ -2443,8 +2454,9 @@ type InstanceExternalIpListParams struct {
 
 // InstanceMigrateParams is the request parameters for InstanceMigrate
 type InstanceMigrateParams struct {
-	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
-	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Project  NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	Instance NameOrId         `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Body     *InstanceMigrate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // InstanceRebootParams is the request parameters for InstanceReboot
@@ -2515,8 +2527,9 @@ type InstanceNetworkInterfaceListParams struct {
 
 // InstanceNetworkInterfaceCreateParams is the request parameters for InstanceNetworkInterfaceCreate
 type InstanceNetworkInterfaceCreateParams struct {
-	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
-	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Instance NameOrId                `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Project  NameOrId                `json:"project,omitempty" yaml:"project,omitempty"`
+	Body     *NetworkInterfaceCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // InstanceNetworkInterfaceDeleteParams is the request parameters for InstanceNetworkInterfaceDelete
@@ -2535,9 +2548,10 @@ type InstanceNetworkInterfaceViewParams struct {
 
 // InstanceNetworkInterfaceUpdateParams is the request parameters for InstanceNetworkInterfaceUpdate
 type InstanceNetworkInterfaceUpdateParams struct {
-	Interface NameOrId `json:"interface,omitempty" yaml:"interface,omitempty"`
-	Instance  NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
-	Project   NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Interface NameOrId                `json:"interface,omitempty" yaml:"interface,omitempty"`
+	Instance  NameOrId                `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Project   NameOrId                `json:"project,omitempty" yaml:"project,omitempty"`
+	Body      *NetworkInterfaceUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // ProjectListParams is the request parameters for ProjectList
@@ -2559,7 +2573,8 @@ type ProjectViewParams struct {
 
 // ProjectUpdateParams is the request parameters for ProjectUpdate
 type ProjectUpdateParams struct {
-	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Project NameOrId       `json:"project,omitempty" yaml:"project,omitempty"`
+	Body    *ProjectUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // ProjectPolicyViewParams is the request parameters for ProjectPolicyView
@@ -2569,7 +2584,8 @@ type ProjectPolicyViewParams struct {
 
 // ProjectPolicyUpdateParams is the request parameters for ProjectPolicyUpdate
 type ProjectPolicyUpdateParams struct {
-	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Project NameOrId           `json:"project,omitempty" yaml:"project,omitempty"`
+	Body    *ProjectRolePolicy `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // SnapshotListParams is the request parameters for SnapshotList
@@ -2582,7 +2598,8 @@ type SnapshotListParams struct {
 
 // SnapshotCreateParams is the request parameters for SnapshotCreate
 type SnapshotCreateParams struct {
-	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Project NameOrId        `json:"project,omitempty" yaml:"project,omitempty"`
+	Body    *SnapshotCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // SnapshotDeleteParams is the request parameters for SnapshotDelete
@@ -2663,7 +2680,8 @@ type SiloIdentityProviderListParams struct {
 
 // LocalIdpUserCreateParams is the request parameters for LocalIdpUserCreate
 type LocalIdpUserCreateParams struct {
-	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
+	Silo NameOrId    `json:"silo,omitempty" yaml:"silo,omitempty"`
+	Body *UserCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // LocalIdpUserDeleteParams is the request parameters for LocalIdpUserDelete
@@ -2674,13 +2692,15 @@ type LocalIdpUserDeleteParams struct {
 
 // LocalIdpUserSetPasswordParams is the request parameters for LocalIdpUserSetPassword
 type LocalIdpUserSetPasswordParams struct {
-	UserId string   `json:"user_id,omitempty" yaml:"user_id,omitempty"`
-	Silo   NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
+	UserId string        `json:"user_id,omitempty" yaml:"user_id,omitempty"`
+	Silo   NameOrId      `json:"silo,omitempty" yaml:"silo,omitempty"`
+	Body   *UserPassword `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // SamlIdentityProviderCreateParams is the request parameters for SamlIdentityProviderCreate
 type SamlIdentityProviderCreateParams struct {
-	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
+	Silo NameOrId                    `json:"silo,omitempty" yaml:"silo,omitempty"`
+	Body *SamlIdentityProviderCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // SamlIdentityProviderViewParams is the request parameters for SamlIdentityProviderView
@@ -2714,7 +2734,8 @@ type IpPoolViewParams struct {
 
 // IpPoolUpdateParams is the request parameters for IpPoolUpdate
 type IpPoolUpdateParams struct {
-	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Pool NameOrId      `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Body *IpPoolUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // IpPoolRangeListParams is the request parameters for IpPoolRangeList
@@ -2727,11 +2748,13 @@ type IpPoolRangeListParams struct {
 // IpPoolRangeAddParams is the request parameters for IpPoolRangeAdd
 type IpPoolRangeAddParams struct {
 	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Body *IpRange `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // IpPoolRangeRemoveParams is the request parameters for IpPoolRangeRemove
 type IpPoolRangeRemoveParams struct {
 	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Body *IpRange `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // SystemMetricParams is the request parameters for SystemMetric
@@ -2791,7 +2814,8 @@ type SiloPolicyViewV1Params struct {
 
 // SiloPolicyUpdateV1Params is the request parameters for SiloPolicyUpdateV1
 type SiloPolicyUpdateV1Params struct {
-	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
+	Silo NameOrId        `json:"silo,omitempty" yaml:"silo,omitempty"`
+	Body *SiloRolePolicy `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // SystemComponentVersionListParams is the request parameters for SystemComponentVersionList
@@ -2872,8 +2896,9 @@ type VpcFirewallRulesViewParams struct {
 
 // VpcFirewallRulesUpdateParams is the request parameters for VpcFirewallRulesUpdate
 type VpcFirewallRulesUpdateParams struct {
-	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
-	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Project NameOrId                     `json:"project,omitempty" yaml:"project,omitempty"`
+	Vpc     NameOrId                     `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Body    *VpcFirewallRuleUpdateParams `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // VpcRouterRouteListParams is the request parameters for VpcRouterRouteList
@@ -2888,9 +2913,10 @@ type VpcRouterRouteListParams struct {
 
 // VpcRouterRouteCreateParams is the request parameters for VpcRouterRouteCreate
 type VpcRouterRouteCreateParams struct {
-	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
-	Router  NameOrId `json:"router,omitempty" yaml:"router,omitempty"`
-	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Project NameOrId           `json:"project,omitempty" yaml:"project,omitempty"`
+	Router  NameOrId           `json:"router,omitempty" yaml:"router,omitempty"`
+	Vpc     NameOrId           `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Body    *RouterRouteCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // VpcRouterRouteDeleteParams is the request parameters for VpcRouterRouteDelete
@@ -2911,10 +2937,11 @@ type VpcRouterRouteViewParams struct {
 
 // VpcRouterRouteUpdateParams is the request parameters for VpcRouterRouteUpdate
 type VpcRouterRouteUpdateParams struct {
-	Route   NameOrId `json:"route,omitempty" yaml:"route,omitempty"`
-	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
-	Router  NameOrId `json:"router,omitempty" yaml:"router,omitempty"`
-	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Route   NameOrId           `json:"route,omitempty" yaml:"route,omitempty"`
+	Project NameOrId           `json:"project,omitempty" yaml:"project,omitempty"`
+	Router  NameOrId           `json:"router,omitempty" yaml:"router,omitempty"`
+	Vpc     NameOrId           `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Body    *RouterRouteUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // VpcRouterListParams is the request parameters for VpcRouterList
@@ -2928,8 +2955,9 @@ type VpcRouterListParams struct {
 
 // VpcRouterCreateParams is the request parameters for VpcRouterCreate
 type VpcRouterCreateParams struct {
-	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
-	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Project NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	Vpc     NameOrId         `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Body    *VpcRouterCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // VpcRouterDeleteParams is the request parameters for VpcRouterDelete
@@ -2948,9 +2976,10 @@ type VpcRouterViewParams struct {
 
 // VpcRouterUpdateParams is the request parameters for VpcRouterUpdate
 type VpcRouterUpdateParams struct {
-	Router  NameOrId `json:"router,omitempty" yaml:"router,omitempty"`
-	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
-	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Router  NameOrId         `json:"router,omitempty" yaml:"router,omitempty"`
+	Project NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	Vpc     NameOrId         `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Body    *VpcRouterUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // VpcSubnetListParams is the request parameters for VpcSubnetList
@@ -2964,8 +2993,9 @@ type VpcSubnetListParams struct {
 
 // VpcSubnetCreateParams is the request parameters for VpcSubnetCreate
 type VpcSubnetCreateParams struct {
-	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
-	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Project NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	Vpc     NameOrId         `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Body    *VpcSubnetCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // VpcSubnetDeleteParams is the request parameters for VpcSubnetDelete
@@ -2984,9 +3014,10 @@ type VpcSubnetViewParams struct {
 
 // VpcSubnetUpdateParams is the request parameters for VpcSubnetUpdate
 type VpcSubnetUpdateParams struct {
-	Subnet  NameOrId `json:"subnet,omitempty" yaml:"subnet,omitempty"`
-	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
-	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Subnet  NameOrId         `json:"subnet,omitempty" yaml:"subnet,omitempty"`
+	Project NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	Vpc     NameOrId         `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Body    *VpcSubnetUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // VpcSubnetListNetworkInterfacesParams is the request parameters for VpcSubnetListNetworkInterfaces
@@ -3009,7 +3040,8 @@ type VpcListParams struct {
 
 // VpcCreateParams is the request parameters for VpcCreate
 type VpcCreateParams struct {
-	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Project NameOrId   `json:"project,omitempty" yaml:"project,omitempty"`
+	Body    *VpcCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // VpcDeleteParams is the request parameters for VpcDelete
@@ -3026,8 +3058,9 @@ type VpcViewParams struct {
 
 // VpcUpdateParams is the request parameters for VpcUpdate
 type VpcUpdateParams struct {
-	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
-	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Vpc     NameOrId   `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Project NameOrId   `json:"project,omitempty" yaml:"project,omitempty"`
+	Body    *VpcUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // BinRangedoubleTypeRangeTo represents the BinRangedoubleType `"range_to"`.

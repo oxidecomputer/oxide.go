@@ -113,6 +113,30 @@ func constructParamTypes(paths openapi3.Paths) []TypeTemplate {
 
 					fields = append(fields, field)
 				}
+				if o.RequestBody != nil {
+					var field TypeFields
+					// The Nexus API spec only has a single value for content, so we can safely
+					// break when a condition is met
+					for mt, r := range o.RequestBody.Value.Content {
+						if mt != "application/json" {
+							field = TypeFields{
+								Name:              "Body",
+								Type:              "io.Reader",
+								SerializationInfo: "`json:\"body,omitempty\" yaml:\"body,omitempty\"`",
+							}
+							break
+						}
+
+						// TODO: Handle other mime types in a more idiomatic way
+						field = TypeFields{
+							Name:              "Body",
+							Type:              "*" + convertToValidGoType("", r.Schema),
+							SerializationInfo: "`json:\"body,omitempty\" yaml:\"body,omitempty\"`",
+						}
+						break
+					}
+					fields = append(fields, field)
+				}
 				paramsTpl.Fields = fields
 				paramTypes = append(paramTypes, paramsTpl)
 			}

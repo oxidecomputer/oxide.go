@@ -367,6 +367,7 @@ func buildParams(specParams openapi3.Parameters, method, opID string) paramsInfo
 	return pInfo
 }
 
+// TODO: REMOVEME with this PR
 func parseRequestBody(reqBody *openapi3.RequestBodyRef, pInfo paramsInfo, methodName string) paramsInfo {
 	if reqBody == nil {
 		return pInfo
