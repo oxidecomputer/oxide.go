@@ -175,6 +175,17 @@ type Cumulativeint64 struct {
 	Value     int        `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
+// CurrentUser is info about the current user
+type CurrentUser struct {
+	// DisplayName is human-readable name that can identify the user
+	DisplayName string `json:"display_name,omitempty" yaml:"display_name,omitempty"`
+	Id          string `json:"id,omitempty" yaml:"id,omitempty"`
+	// SiloId is uuid of the silo to which this user belongs
+	SiloId string `json:"silo_id,omitempty" yaml:"silo_id,omitempty"`
+	// SiloName is name of the silo to which this user belongs.
+	SiloName Name `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
+}
+
 // DatumType is the type definition for a DatumType.
 type DatumType string
 
@@ -366,6 +377,7 @@ type DiskMetricName string
 
 // DiskPath is the type definition for a DiskPath.
 type DiskPath struct {
+	// Disk is name or ID of the disk
 	Disk NameOrId `json:"disk,omitempty" yaml:"disk,omitempty"`
 }
 
@@ -405,6 +417,12 @@ type DiskSourceGlobalImage struct {
 	Type    DiskSourceType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
+// DiskSourceImportingBlocks is create a blank disk that will accept bulk writes or pull blocks from an external source.
+type DiskSourceImportingBlocks struct {
+	BlockSize BlockSize      `json:"block_size,omitempty" yaml:"block_size,omitempty"`
+	Type      DiskSourceType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
 // DiskSource is different sources for a disk
 type DiskSource struct {
 	// BlockSize is size of blocks for this Disk. valid values are: 512, 2048, or 4096
@@ -427,6 +445,26 @@ type DiskStateCreating struct {
 
 // DiskStateDetached is disk is ready but detached from any Instance
 type DiskStateDetached struct {
+	State DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
+}
+
+// DiskStateImportReady is disk is ready to receive blocks from an external source
+type DiskStateImportReady struct {
+	State DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
+}
+
+// DiskStateImportingFromUrl is disk is importing blocks from a URL
+type DiskStateImportingFromUrl struct {
+	State DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
+}
+
+// DiskStateImportingFromBulkWrites is disk is importing blocks from bulk writes
+type DiskStateImportingFromBulkWrites struct {
+	State DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
+}
+
+// DiskStateFinalizing is disk is being finalized to state Detached
+type DiskStateFinalizing struct {
 	State DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
 }
 
@@ -484,6 +522,12 @@ type Error struct {
 	ErrorCode string `json:"error_code,omitempty" yaml:"error_code,omitempty"`
 	Message   string `json:"message,omitempty" yaml:"message,omitempty"`
 	RequestId string `json:"request_id,omitempty" yaml:"request_id,omitempty"`
+}
+
+// ExpectedDigest is the type definition for a ExpectedDigest.
+type ExpectedDigest struct {
+	// Sha256 is the type definition for a Sha256.
+	Sha256 string `json:"sha256,omitempty" yaml:"sha256,omitempty"`
 }
 
 // ExternalIp is the type definition for a ExternalIp.
@@ -790,6 +834,20 @@ type ImageSource struct {
 	Url string `json:"url,omitempty" yaml:"url,omitempty"`
 	// Id is the type definition for a Id.
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+}
+
+// ImportBlocksBulkWrite is parameters for importing blocks with a bulk write
+type ImportBlocksBulkWrite struct {
+	Base64EncodedData string `json:"base64_encoded_data,omitempty" yaml:"base64_encoded_data,omitempty"`
+	Offset            int    `json:"offset,omitempty" yaml:"offset,omitempty"`
+}
+
+// ImportBlocksFromUrl is parameters for importing blocks from a URL to a disk
+type ImportBlocksFromUrl struct {
+	// ExpectedDigest is expected digest of all blocks when importing from a URL
+	ExpectedDigest ExpectedDigest `json:"expected_digest,omitempty" yaml:"expected_digest,omitempty"`
+	// Url is the source to pull blocks from
+	Url string `json:"url,omitempty" yaml:"url,omitempty"`
 }
 
 // Instance is client view of an [`Instance`]
@@ -1517,7 +1575,7 @@ type SamlIdentityProviderCreate struct {
 	IdpMetadataSource IdpMetadataSource `json:"idp_metadata_source,omitempty" yaml:"idp_metadata_source,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
-	// SigningKeypair is optional request signing key pair
+	// SigningKeypair is request signing key pair
 	SigningKeypair DerEncodedKeyPair `json:"signing_keypair,omitempty" yaml:"signing_keypair,omitempty"`
 	// SloUrl is service provider endpoint where the idp should send log out requests
 	SloUrl string `json:"slo_url,omitempty" yaml:"slo_url,omitempty"`
@@ -2221,50 +2279,6 @@ type SystemImageViewByIdParams struct {
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 }
 
-// SiloViewByIdParams is the request parameters for SiloViewById
-type SiloViewByIdParams struct {
-	Id string `json:"id,omitempty" yaml:"id,omitempty"`
-}
-
-// PhysicalDiskListParams is the request parameters for PhysicalDiskList
-type PhysicalDiskListParams struct {
-	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
-}
-
-// RackListParams is the request parameters for RackList
-type RackListParams struct {
-	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
-}
-
-// RackViewParams is the request parameters for RackView
-type RackViewParams struct {
-	RackId string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
-}
-
-// SledListParams is the request parameters for SledList
-type SledListParams struct {
-	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
-}
-
-// SledViewParams is the request parameters for SledView
-type SledViewParams struct {
-	SledId string `json:"sled_id,omitempty" yaml:"sled_id,omitempty"`
-}
-
-// SledPhysicalDiskListParams is the request parameters for SledPhysicalDiskList
-type SledPhysicalDiskListParams struct {
-	SledId    string     `json:"sled_id,omitempty" yaml:"sled_id,omitempty"`
-	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
-}
-
 // SystemImageListParams is the request parameters for SystemImageList
 type SystemImageListParams struct {
 	Limit     int          `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -2280,46 +2294,6 @@ type SystemImageDeleteParams struct {
 // SystemImageViewParams is the request parameters for SystemImageView
 type SystemImageViewParams struct {
 	ImageName Name `json:"image_name,omitempty" yaml:"image_name,omitempty"`
-}
-
-// SagaListParams is the request parameters for SagaList
-type SagaListParams struct {
-	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
-}
-
-// SagaViewParams is the request parameters for SagaView
-type SagaViewParams struct {
-	SagaId string `json:"saga_id,omitempty" yaml:"saga_id,omitempty"`
-}
-
-// SiloListParams is the request parameters for SiloList
-type SiloListParams struct {
-	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
-}
-
-// SiloDeleteParams is the request parameters for SiloDelete
-type SiloDeleteParams struct {
-	SiloName Name `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
-}
-
-// SiloViewParams is the request parameters for SiloView
-type SiloViewParams struct {
-	SiloName Name `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
-}
-
-// SiloPolicyViewParams is the request parameters for SiloPolicyView
-type SiloPolicyViewParams struct {
-	SiloName Name `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
-}
-
-// SiloPolicyUpdateParams is the request parameters for SiloPolicyUpdate
-type SiloPolicyUpdateParams struct {
-	SiloName Name            `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
-	Body     *SiloRolePolicy `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // DiskListParams is the request parameters for DiskList
@@ -2348,6 +2322,39 @@ type DiskViewParams struct {
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
+// DiskBulkWriteImportParams is the request parameters for DiskBulkWriteImport
+type DiskBulkWriteImportParams struct {
+	Disk    NameOrId               `json:"disk,omitempty" yaml:"disk,omitempty"`
+	Project NameOrId               `json:"project,omitempty" yaml:"project,omitempty"`
+	Body    *ImportBlocksBulkWrite `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// DiskBulkWriteImportStartParams is the request parameters for DiskBulkWriteImportStart
+type DiskBulkWriteImportStartParams struct {
+	Disk    NameOrId `json:"disk,omitempty" yaml:"disk,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// DiskBulkWriteImportStopParams is the request parameters for DiskBulkWriteImportStop
+type DiskBulkWriteImportStopParams struct {
+	Disk    NameOrId `json:"disk,omitempty" yaml:"disk,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// DiskFinalizeImportParams is the request parameters for DiskFinalizeImport
+type DiskFinalizeImportParams struct {
+	Disk         NameOrId `json:"disk,omitempty" yaml:"disk,omitempty"`
+	Project      NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	SnapshotName string   `json:"snapshot_name,omitempty" yaml:"snapshot_name,omitempty"`
+}
+
+// DiskImportBlocksFromUrlParams is the request parameters for DiskImportBlocksFromUrl
+type DiskImportBlocksFromUrlParams struct {
+	Disk    NameOrId             `json:"disk,omitempty" yaml:"disk,omitempty"`
+	Project NameOrId             `json:"project,omitempty" yaml:"project,omitempty"`
+	Body    *ImportBlocksFromUrl `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
 // DiskMetricsListParams is the request parameters for DiskMetricsList
 type DiskMetricsListParams struct {
 	Disk      NameOrId       `json:"disk,omitempty" yaml:"disk,omitempty"`
@@ -2359,8 +2366,8 @@ type DiskMetricsListParams struct {
 	Project   NameOrId       `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
-// GroupListV1Params is the request parameters for GroupListV1
-type GroupListV1Params struct {
+// GroupListParams is the request parameters for GroupList
+type GroupListParams struct {
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
@@ -2476,8 +2483,11 @@ type InstanceSerialConsoleParams struct {
 
 // InstanceSerialConsoleStreamParams is the request parameters for InstanceSerialConsoleStream
 type InstanceSerialConsoleStreamParams struct {
-	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
-	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Instance   NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+	FromStart  int      `json:"from_start,omitempty" yaml:"from_start,omitempty"`
+	MaxBytes   int      `json:"max_bytes,omitempty" yaml:"max_bytes,omitempty"`
+	MostRecent int      `json:"most_recent,omitempty" yaml:"most_recent,omitempty"`
+	Project    NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
 // InstanceStartParams is the request parameters for InstanceStart
@@ -2631,39 +2641,39 @@ type CertificateViewParams struct {
 	Certificate NameOrId `json:"certificate,omitempty" yaml:"certificate,omitempty"`
 }
 
-// PhysicalDiskListV1Params is the request parameters for PhysicalDiskListV1
-type PhysicalDiskListV1Params struct {
+// PhysicalDiskListParams is the request parameters for PhysicalDiskList
+type PhysicalDiskListParams struct {
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
 
-// RackListV1Params is the request parameters for RackListV1
-type RackListV1Params struct {
+// RackListParams is the request parameters for RackList
+type RackListParams struct {
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
 
-// RackViewV1Params is the request parameters for RackViewV1
-type RackViewV1Params struct {
+// RackViewParams is the request parameters for RackView
+type RackViewParams struct {
 	RackId string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
 }
 
-// SledListV1Params is the request parameters for SledListV1
-type SledListV1Params struct {
+// SledListParams is the request parameters for SledList
+type SledListParams struct {
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
 
-// SledViewV1Params is the request parameters for SledViewV1
-type SledViewV1Params struct {
+// SledViewParams is the request parameters for SledView
+type SledViewParams struct {
 	SledId string `json:"sled_id,omitempty" yaml:"sled_id,omitempty"`
 }
 
-// SledPhysicalDiskListV1Params is the request parameters for SledPhysicalDiskListV1
-type SledPhysicalDiskListV1Params struct {
+// SledPhysicalDiskListParams is the request parameters for SledPhysicalDiskList
+type SledPhysicalDiskListParams struct {
 	SledId    string     `json:"sled_id,omitempty" yaml:"sled_id,omitempty"`
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -2778,42 +2788,42 @@ type RoleViewParams struct {
 	RoleName string `json:"role_name,omitempty" yaml:"role_name,omitempty"`
 }
 
-// SagaListV1Params is the request parameters for SagaListV1
-type SagaListV1Params struct {
+// SagaListParams is the request parameters for SagaList
+type SagaListParams struct {
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
 
-// SagaViewV1Params is the request parameters for SagaViewV1
-type SagaViewV1Params struct {
+// SagaViewParams is the request parameters for SagaView
+type SagaViewParams struct {
 	SagaId string `json:"saga_id,omitempty" yaml:"saga_id,omitempty"`
 }
 
-// SiloListV1Params is the request parameters for SiloListV1
-type SiloListV1Params struct {
+// SiloListParams is the request parameters for SiloList
+type SiloListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
 
-// SiloDeleteV1Params is the request parameters for SiloDeleteV1
-type SiloDeleteV1Params struct {
+// SiloDeleteParams is the request parameters for SiloDelete
+type SiloDeleteParams struct {
 	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 }
 
-// SiloViewV1Params is the request parameters for SiloViewV1
-type SiloViewV1Params struct {
+// SiloViewParams is the request parameters for SiloView
+type SiloViewParams struct {
 	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 }
 
-// SiloPolicyViewV1Params is the request parameters for SiloPolicyViewV1
-type SiloPolicyViewV1Params struct {
+// SiloPolicyViewParams is the request parameters for SiloPolicyView
+type SiloPolicyViewParams struct {
 	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 }
 
-// SiloPolicyUpdateV1Params is the request parameters for SiloPolicyUpdateV1
-type SiloPolicyUpdateV1Params struct {
+// SiloPolicyUpdateParams is the request parameters for SiloPolicyUpdate
+type SiloPolicyUpdateParams struct {
 	Silo NameOrId        `json:"silo,omitempty" yaml:"silo,omitempty"`
 	Body *SiloRolePolicy `json:"body,omitempty" yaml:"body,omitempty"`
 }
@@ -2854,8 +2864,8 @@ type SystemUpdateComponentsListParams struct {
 	Version SemverVersion `json:"version,omitempty" yaml:"version,omitempty"`
 }
 
-// SiloUserListV1Params is the request parameters for SiloUserListV1
-type SiloUserListV1Params struct {
+// SiloUserListParams is the request parameters for SiloUserList
+type SiloUserListParams struct {
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	Silo      NameOrId   `json:"silo,omitempty" yaml:"silo,omitempty"`
@@ -2874,14 +2884,14 @@ type UserBuiltinViewParams struct {
 	User NameOrId `json:"user,omitempty" yaml:"user,omitempty"`
 }
 
-// SiloUserViewV1Params is the request parameters for SiloUserViewV1
-type SiloUserViewV1Params struct {
+// SiloUserViewParams is the request parameters for SiloUserView
+type SiloUserViewParams struct {
 	UserId string   `json:"user_id,omitempty" yaml:"user_id,omitempty"`
 	Silo   NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 }
 
-// UserListV1Params is the request parameters for UserListV1
-type UserListV1Params struct {
+// UserListParams is the request parameters for UserList
+type UserListParams struct {
 	Group     string     `json:"group,omitempty" yaml:"group,omitempty"`
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -3141,11 +3151,26 @@ const DiskSourceTypeImage DiskSourceType = "image"
 // DiskSourceTypeGlobalImage represents the DiskSourceType `"global_image"`.
 const DiskSourceTypeGlobalImage DiskSourceType = "global_image"
 
+// DiskSourceTypeImportingBlocks represents the DiskSourceType `"importing_blocks"`.
+const DiskSourceTypeImportingBlocks DiskSourceType = "importing_blocks"
+
 // DiskStateStateCreating represents the DiskStateState `"creating"`.
 const DiskStateStateCreating DiskStateState = "creating"
 
 // DiskStateStateDetached represents the DiskStateState `"detached"`.
 const DiskStateStateDetached DiskStateState = "detached"
+
+// DiskStateStateImportReady represents the DiskStateState `"import_ready"`.
+const DiskStateStateImportReady DiskStateState = "import_ready"
+
+// DiskStateStateImportingFromUrl represents the DiskStateState `"importing_from_url"`.
+const DiskStateStateImportingFromUrl DiskStateState = "importing_from_url"
+
+// DiskStateStateImportingFromBulkWrites represents the DiskStateState `"importing_from_bulk_writes"`.
+const DiskStateStateImportingFromBulkWrites DiskStateState = "importing_from_bulk_writes"
+
+// DiskStateStateFinalizing represents the DiskStateState `"finalizing"`.
+const DiskStateStateFinalizing DiskStateState = "finalizing"
 
 // DiskStateStateMaintenance represents the DiskStateState `"maintenance"`.
 const DiskStateStateMaintenance DiskStateState = "maintenance"
@@ -3542,6 +3567,7 @@ var DiskSourceTypes = []DiskSourceType{
 	DiskSourceTypeBlank,
 	DiskSourceTypeGlobalImage,
 	DiskSourceTypeImage,
+	DiskSourceTypeImportingBlocks,
 	DiskSourceTypeSnapshot,
 }
 
@@ -3554,6 +3580,10 @@ var DiskStateStates = []DiskStateState{
 	DiskStateStateDetached,
 	DiskStateStateDetaching,
 	DiskStateStateFaulted,
+	DiskStateStateFinalizing,
+	DiskStateStateImportReady,
+	DiskStateStateImportingFromBulkWrites,
+	DiskStateStateImportingFromUrl,
 	DiskStateStateMaintenance,
 }
 

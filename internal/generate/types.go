@@ -118,6 +118,7 @@ func constructParamTypes(paths openapi3.Paths) []TypeTemplate {
 					// The Nexus API spec only has a single value for content, so we can safely
 					// break when a condition is met
 					for mt, r := range o.RequestBody.Value.Content {
+						// TODO: Handle other mime types in a more idiomatic way
 						if mt != "application/json" {
 							field = TypeFields{
 								Name:              "Body",
@@ -127,7 +128,6 @@ func constructParamTypes(paths openapi3.Paths) []TypeTemplate {
 							break
 						}
 
-						// TODO: Handle other mime types in a more idiomatic way
 						field = TypeFields{
 							Name:              "Body",
 							Type:              "*" + convertToValidGoType("", r.Schema),
@@ -351,6 +351,13 @@ func populateTypeTemplates(name string, s *openapi3.Schema, enumFieldName string
 }
 
 func createTypeObject(schemas map[string]*openapi3.SchemaRef, name, typeName, description string) TypeTemplate {
+	// TODO: Create types out of the schemas instead of plucking them out of the objects
+	// will leave this for another PR, because the yak shaving is getting ridiculous.
+	// This particular type was being defined here and also in createOneOf()
+	if typeName == "ExpectedDigest" {
+		return TypeTemplate{}
+	}
+
 	typeTpl := TypeTemplate{
 		Description: description,
 		Name:        typeName,
@@ -545,8 +552,10 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 	// TODO: For now AllOf values within a OneOf are treated as enums
 	// because that's how they are being used. Keep an eye out if this
 	// changes
-	if s.OneOf[0].Value.AllOf != nil {
-		return typeTpls, enumTpls
+	for _, v := range s.OneOf {
+		if v.Value.AllOf != nil {
+			return typeTpls, enumTpls
+		}
 	}
 
 	// Make sure to only create structs if the oneOf is not a replacement for enums on the API spec

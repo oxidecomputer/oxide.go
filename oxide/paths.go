@@ -188,477 +188,6 @@ func (c *Client) SystemImageViewById(params SystemImageViewByIdParams) (*GlobalI
 	return &body, nil
 }
 
-// SiloViewById: Fetch a silo by id
-// Use `GET /v1/system/silos/{id}` instead.
-func (c *Client) SiloViewById(params SiloViewByIdParams) (*Silo, error) {
-	// Create the url.
-	path := "/system/by-id/silos/{{.id}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"id": params.Id,
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body Silo
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// PhysicalDiskList: List physical disks
-// Use `GET /v1/system/hardware/disks` instead
-//
-// To iterate over all pages, use the `PhysicalDiskListAllPages` method, instead.
-func (c *Client) PhysicalDiskList(params PhysicalDiskListParams) (*PhysicalDiskResultsPage, error) {
-	// Create the url.
-	path := "/system/hardware/disks"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"sort_by":    string(params.SortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body PhysicalDiskResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// PhysicalDiskListAllPages: List physical disks
-// Use `GET /v1/system/hardware/disks` instead
-//
-// This method is a wrapper around the `PhysicalDiskList` method.
-// This method returns all the pages at once.
-func (c *Client) PhysicalDiskListAllPages(params PhysicalDiskListParams) (*[]PhysicalDisk, error) {
-	var allPages []PhysicalDisk
-	params.PageToken = ""
-	params.Limit = 100
-	for {
-		page, err := c.PhysicalDiskList(params)
-		if err != nil {
-			return nil, err
-		}
-		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == params.PageToken {
-			break
-		}
-		params.PageToken = page.NextPage
-	}
-
-	return &allPages, nil
-}
-
-// RackList: List racks
-// Use `GET /v1/system/hardware/racks` instead
-//
-// To iterate over all pages, use the `RackListAllPages` method, instead.
-func (c *Client) RackList(params RackListParams) (*RackResultsPage, error) {
-	// Create the url.
-	path := "/system/hardware/racks"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"sort_by":    string(params.SortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body RackResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// RackListAllPages: List racks
-// Use `GET /v1/system/hardware/racks` instead
-//
-// This method is a wrapper around the `RackList` method.
-// This method returns all the pages at once.
-func (c *Client) RackListAllPages(params RackListParams) (*[]Rack, error) {
-	var allPages []Rack
-	params.PageToken = ""
-	params.Limit = 100
-	for {
-		page, err := c.RackList(params)
-		if err != nil {
-			return nil, err
-		}
-		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == params.PageToken {
-			break
-		}
-		params.PageToken = page.NextPage
-	}
-
-	return &allPages, nil
-}
-
-// RackView: Fetch a rack
-// Use `GET /v1/system/hardware/racks/{rack_id}` instead
-func (c *Client) RackView(params RackViewParams) (*Rack, error) {
-	// Create the url.
-	path := "/system/hardware/racks/{{.rack_id}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"rack_id": params.RackId,
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body Rack
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// SledList: List sleds
-// Use `GET /v1/system/hardware/sleds instead`
-//
-// To iterate over all pages, use the `SledListAllPages` method, instead.
-func (c *Client) SledList(params SledListParams) (*SledResultsPage, error) {
-	// Create the url.
-	path := "/system/hardware/sleds"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"sort_by":    string(params.SortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body SledResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// SledListAllPages: List sleds
-// Use `GET /v1/system/hardware/sleds instead`
-//
-// This method is a wrapper around the `SledList` method.
-// This method returns all the pages at once.
-func (c *Client) SledListAllPages(params SledListParams) (*[]Sled, error) {
-	var allPages []Sled
-	params.PageToken = ""
-	params.Limit = 100
-	for {
-		page, err := c.SledList(params)
-		if err != nil {
-			return nil, err
-		}
-		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == params.PageToken {
-			break
-		}
-		params.PageToken = page.NextPage
-	}
-
-	return &allPages, nil
-}
-
-// SledView: Fetch a sled
-// Use `GET /v1/system/hardware/sleds/{sled_id}` instead
-func (c *Client) SledView(params SledViewParams) (*Sled, error) {
-	// Create the url.
-	path := "/system/hardware/sleds/{{.sled_id}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"sled_id": params.SledId,
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body Sled
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// SledPhysicalDiskList: List physical disks attached to sleds
-// Use `GET /v1/system/hardware/sleds/{sled_id}/disks` instead
-//
-// To iterate over all pages, use the `SledPhysicalDiskListAllPages` method, instead.
-func (c *Client) SledPhysicalDiskList(params SledPhysicalDiskListParams) (*PhysicalDiskResultsPage, error) {
-	// Create the url.
-	path := "/system/hardware/sleds/{{.sled_id}}/disks"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"sled_id": params.SledId,
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"sort_by":    string(params.SortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body PhysicalDiskResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// SledPhysicalDiskListAllPages: List physical disks attached to sleds
-// Use `GET /v1/system/hardware/sleds/{sled_id}/disks` instead
-//
-// This method is a wrapper around the `SledPhysicalDiskList` method.
-// This method returns all the pages at once.
-func (c *Client) SledPhysicalDiskListAllPages(params SledPhysicalDiskListParams) (*[]PhysicalDisk, error) {
-	var allPages []PhysicalDisk
-	params.PageToken = ""
-	params.Limit = 100
-	for {
-		page, err := c.SledPhysicalDiskList(params)
-		if err != nil {
-			return nil, err
-		}
-		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == params.PageToken {
-			break
-		}
-		params.PageToken = page.NextPage
-	}
-
-	return &allPages, nil
-}
-
 // SystemImageList: List system-wide images
 // Returns a list of all the system-wide images. System-wide images are returned sorted by creation date, with the most recent images appearing first.
 //
@@ -872,459 +401,6 @@ func (c *Client) SystemImageDelete(params SystemImageDeleteParams) error {
 	}
 
 	return nil
-}
-
-// SagaList: List sagas
-// Use `GET v1/system/sagas` instead
-//
-// To iterate over all pages, use the `SagaListAllPages` method, instead.
-func (c *Client) SagaList(params SagaListParams) (*SagaResultsPage, error) {
-	// Create the url.
-	path := "/system/sagas"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"sort_by":    string(params.SortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body SagaResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// SagaListAllPages: List sagas
-// Use `GET v1/system/sagas` instead
-//
-// This method is a wrapper around the `SagaList` method.
-// This method returns all the pages at once.
-func (c *Client) SagaListAllPages(params SagaListParams) (*[]Saga, error) {
-	var allPages []Saga
-	params.PageToken = ""
-	params.Limit = 100
-	for {
-		page, err := c.SagaList(params)
-		if err != nil {
-			return nil, err
-		}
-		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == params.PageToken {
-			break
-		}
-		params.PageToken = page.NextPage
-	}
-
-	return &allPages, nil
-}
-
-// SagaView: Fetch a saga
-// Use `GET v1/system/sagas/{saga_id}` instead
-func (c *Client) SagaView(params SagaViewParams) (*Saga, error) {
-	// Create the url.
-	path := "/system/sagas/{{.saga_id}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"saga_id": params.SagaId,
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body Saga
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// SiloList: List silos
-// Lists silos that are discoverable based on the current permissions. Use `GET /v1/system/silos` instead
-//
-// To iterate over all pages, use the `SiloListAllPages` method, instead.
-func (c *Client) SiloList(params SiloListParams) (*SiloResultsPage, error) {
-	// Create the url.
-	path := "/system/silos"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"sort_by":    string(params.SortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body SiloResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// SiloListAllPages: List silos
-// Lists silos that are discoverable based on the current permissions. Use `GET /v1/system/silos` instead
-//
-// This method is a wrapper around the `SiloList` method.
-// This method returns all the pages at once.
-func (c *Client) SiloListAllPages(params SiloListParams) (*[]Silo, error) {
-	var allPages []Silo
-	params.PageToken = ""
-	params.Limit = 100
-	for {
-		page, err := c.SiloList(params)
-		if err != nil {
-			return nil, err
-		}
-		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == params.PageToken {
-			break
-		}
-		params.PageToken = page.NextPage
-	}
-
-	return &allPages, nil
-}
-
-// SiloCreate: Create a silo
-// Use `POST /v1/system/silos` instead
-func (c *Client) SiloCreate(j *SiloCreate) (*Silo, error) {
-	// Create the url.
-	path := "/system/silos"
-	uri := resolveRelative(c.server, path)
-
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
-
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body Silo
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// SiloView: Fetch a silo
-// Fetch a silo by name. Use `GET /v1/system/silos/{silo}` instead.
-func (c *Client) SiloView(params SiloViewParams) (*Silo, error) {
-	// Create the url.
-	path := "/system/silos/{{.silo_name}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"silo_name": string(params.SiloName),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body Silo
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// SiloDelete: Delete a silo
-// Delete a silo by name. Use `DELETE /v1/system/silos/{silo}` instead.
-func (c *Client) SiloDelete(params SiloDeleteParams) error {
-	// Create the url.
-	path := "/system/silos/{{.silo_name}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("DELETE", uri, nil)
-	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"silo_name": string(params.SiloName),
-	}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return fmt.Errorf("adding queries to URL failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// SiloPolicyView: Fetch a silo's IAM policy
-// Use `GET /v1/system/silos/{silo}/policy` instead.
-func (c *Client) SiloPolicyView(params SiloPolicyViewParams) (*SiloRolePolicy, error) {
-	// Create the url.
-	path := "/system/silos/{{.silo_name}}/policy"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"silo_name": string(params.SiloName),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body SiloRolePolicy
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// SiloPolicyUpdate: Update a silo's IAM policy
-// Use `PUT /v1/system/silos/{silo}/policy` instead
-func (c *Client) SiloPolicyUpdate(params SiloPolicyUpdateParams, j *SiloRolePolicy) (*SiloRolePolicy, error) {
-	// Create the url.
-	path := "/system/silos/{{.silo_name}}/policy"
-	uri := resolveRelative(c.server, path)
-
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
-
-	// Create the request.
-	req, err := http.NewRequest("PUT", uri, b)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"silo_name": string(params.SiloName),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body SiloRolePolicy
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
 }
 
 // DiskList: List disks
@@ -1554,6 +630,224 @@ func (c *Client) DiskDelete(params DiskDeleteParams) error {
 	return nil
 }
 
+// DiskBulkWriteImport: Import blocks into a disk
+func (c *Client) DiskBulkWriteImport(params DiskBulkWriteImportParams, j *ImportBlocksBulkWrite) error {
+	// Create the url.
+	path := "/v1/disks/{{.disk}}/bulk-write"
+	uri := resolveRelative(c.server, path)
+
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, b)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"disk": string(params.Disk),
+	}); err != nil {
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"project": string(params.Project),
+	}); err != nil {
+		return fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// DiskBulkWriteImportStart: Start the process of importing blocks into a disk
+func (c *Client) DiskBulkWriteImportStart(params DiskBulkWriteImportStartParams) error {
+	// Create the url.
+	path := "/v1/disks/{{.disk}}/bulk-write-start"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, nil)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"disk": string(params.Disk),
+	}); err != nil {
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"project": string(params.Project),
+	}); err != nil {
+		return fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// DiskBulkWriteImportStop: Stop the process of importing blocks into a disk
+func (c *Client) DiskBulkWriteImportStop(params DiskBulkWriteImportStopParams) error {
+	// Create the url.
+	path := "/v1/disks/{{.disk}}/bulk-write-stop"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, nil)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"disk": string(params.Disk),
+	}); err != nil {
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"project": string(params.Project),
+	}); err != nil {
+		return fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// DiskFinalizeImport: Finalize disk when imports are done
+func (c *Client) DiskFinalizeImport(params DiskFinalizeImportParams) error {
+	// Create the url.
+	path := "/v1/disks/{{.disk}}/finalize"
+	uri := resolveRelative(c.server, path)
+
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, nil)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"disk": string(params.Disk),
+	}); err != nil {
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"project":       string(params.Project),
+		"snapshot_name": params.SnapshotName,
+	}); err != nil {
+		return fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// DiskImportBlocksFromUrl: Send request to import blocks from URL
+func (c *Client) DiskImportBlocksFromUrl(params DiskImportBlocksFromUrlParams, j *ImportBlocksFromUrl) error {
+	// Create the url.
+	path := "/v1/disks/{{.disk}}/import"
+	uri := resolveRelative(c.server, path)
+
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(j); err != nil {
+		return fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request.
+	req, err := http.NewRequest("POST", uri, b)
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, map[string]string{
+		"disk": string(params.Disk),
+	}); err != nil {
+		return fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add query if any
+	if err := addQueries(req.URL, map[string]string{
+		"project": string(params.Project),
+	}); err != nil {
+		return fmt.Errorf("adding queries to URL failed: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // DiskMetricsList: Fetch disk metrics
 //
 // To iterate over all pages, use the `DiskMetricsListAllPages` method, instead.
@@ -1636,10 +930,10 @@ func (c *Client) DiskMetricsListAllPages(params DiskMetricsListParams) (*[]Measu
 	return &allPages, nil
 }
 
-// GroupListV1: List groups
+// GroupList: List groups
 //
-// To iterate over all pages, use the `GroupListV1AllPages` method, instead.
-func (c *Client) GroupListV1(params GroupListV1Params) (*GroupResultsPage, error) {
+// To iterate over all pages, use the `GroupListAllPages` method, instead.
+func (c *Client) GroupList(params GroupListParams) (*GroupResultsPage, error) {
 	// Create the url.
 	path := "/v1/groups"
 	uri := resolveRelative(c.server, path)
@@ -1690,16 +984,16 @@ func (c *Client) GroupListV1(params GroupListV1Params) (*GroupResultsPage, error
 	return &body, nil
 }
 
-// GroupListV1AllPages: List groups
+// GroupListAllPages: List groups
 //
-// This method is a wrapper around the `GroupListV1` method.
+// This method is a wrapper around the `GroupList` method.
 // This method returns all the pages at once.
-func (c *Client) GroupListV1AllPages(params GroupListV1Params) (*[]Group, error) {
+func (c *Client) GroupListAllPages(params GroupListParams) (*[]Group, error) {
 	var allPages []Group
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.GroupListV1(params)
+		page, err := c.GroupList(params)
 		if err != nil {
 			return nil, err
 		}
@@ -2656,7 +1950,10 @@ func (c *Client) InstanceSerialConsoleStream(params InstanceSerialConsoleStreamP
 
 	// Add query if any
 	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
+		"from_start":  strconv.Itoa(params.FromStart),
+		"max_bytes":   strconv.Itoa(params.MaxBytes),
+		"most_recent": strconv.Itoa(params.MostRecent),
+		"project":     string(params.Project),
 	}); err != nil {
 		return fmt.Errorf("adding queries to URL failed: %v", err)
 	}
@@ -2781,7 +2078,7 @@ func (c *Client) InstanceStop(params InstanceStopParams) (*Instance, error) {
 }
 
 // CurrentUserView: Fetch the user associated with the current session
-func (c *Client) CurrentUserView() (*User, error) {
+func (c *Client) CurrentUserView() (*CurrentUser, error) {
 	// Create the url.
 	path := "/v1/me"
 	uri := resolveRelative(c.server, path)
@@ -2809,7 +2106,7 @@ func (c *Client) CurrentUserView() (*User, error) {
 		return nil, errors.New("request returned an empty body in the response")
 	}
 
-	var body User
+	var body CurrentUser
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -4298,10 +3595,10 @@ func (c *Client) CertificateDelete(params CertificateDeleteParams) error {
 	return nil
 }
 
-// PhysicalDiskListV1: List physical disks
+// PhysicalDiskList: List physical disks
 //
-// To iterate over all pages, use the `PhysicalDiskListV1AllPages` method, instead.
-func (c *Client) PhysicalDiskListV1(params PhysicalDiskListV1Params) (*PhysicalDiskResultsPage, error) {
+// To iterate over all pages, use the `PhysicalDiskListAllPages` method, instead.
+func (c *Client) PhysicalDiskList(params PhysicalDiskListParams) (*PhysicalDiskResultsPage, error) {
 	// Create the url.
 	path := "/v1/system/hardware/disks"
 	uri := resolveRelative(c.server, path)
@@ -4352,16 +3649,16 @@ func (c *Client) PhysicalDiskListV1(params PhysicalDiskListV1Params) (*PhysicalD
 	return &body, nil
 }
 
-// PhysicalDiskListV1AllPages: List physical disks
+// PhysicalDiskListAllPages: List physical disks
 //
-// This method is a wrapper around the `PhysicalDiskListV1` method.
+// This method is a wrapper around the `PhysicalDiskList` method.
 // This method returns all the pages at once.
-func (c *Client) PhysicalDiskListV1AllPages(params PhysicalDiskListV1Params) (*[]PhysicalDisk, error) {
+func (c *Client) PhysicalDiskListAllPages(params PhysicalDiskListParams) (*[]PhysicalDisk, error) {
 	var allPages []PhysicalDisk
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.PhysicalDiskListV1(params)
+		page, err := c.PhysicalDiskList(params)
 		if err != nil {
 			return nil, err
 		}
@@ -4375,10 +3672,10 @@ func (c *Client) PhysicalDiskListV1AllPages(params PhysicalDiskListV1Params) (*[
 	return &allPages, nil
 }
 
-// RackListV1: List racks
+// RackList: List racks
 //
-// To iterate over all pages, use the `RackListV1AllPages` method, instead.
-func (c *Client) RackListV1(params RackListV1Params) (*RackResultsPage, error) {
+// To iterate over all pages, use the `RackListAllPages` method, instead.
+func (c *Client) RackList(params RackListParams) (*RackResultsPage, error) {
 	// Create the url.
 	path := "/v1/system/hardware/racks"
 	uri := resolveRelative(c.server, path)
@@ -4429,16 +3726,16 @@ func (c *Client) RackListV1(params RackListV1Params) (*RackResultsPage, error) {
 	return &body, nil
 }
 
-// RackListV1AllPages: List racks
+// RackListAllPages: List racks
 //
-// This method is a wrapper around the `RackListV1` method.
+// This method is a wrapper around the `RackList` method.
 // This method returns all the pages at once.
-func (c *Client) RackListV1AllPages(params RackListV1Params) (*[]Rack, error) {
+func (c *Client) RackListAllPages(params RackListParams) (*[]Rack, error) {
 	var allPages []Rack
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.RackListV1(params)
+		page, err := c.RackList(params)
 		if err != nil {
 			return nil, err
 		}
@@ -4452,8 +3749,8 @@ func (c *Client) RackListV1AllPages(params RackListV1Params) (*[]Rack, error) {
 	return &allPages, nil
 }
 
-// RackViewV1: Fetch a rack
-func (c *Client) RackViewV1(params RackViewV1Params) (*Rack, error) {
+// RackView: Fetch a rack
+func (c *Client) RackView(params RackViewParams) (*Rack, error) {
 	// Create the url.
 	path := "/v1/system/hardware/racks/{{.rack_id}}"
 	uri := resolveRelative(c.server, path)
@@ -4502,10 +3799,10 @@ func (c *Client) RackViewV1(params RackViewV1Params) (*Rack, error) {
 	return &body, nil
 }
 
-// SledListV1: List sleds
+// SledList: List sleds
 //
-// To iterate over all pages, use the `SledListV1AllPages` method, instead.
-func (c *Client) SledListV1(params SledListV1Params) (*SledResultsPage, error) {
+// To iterate over all pages, use the `SledListAllPages` method, instead.
+func (c *Client) SledList(params SledListParams) (*SledResultsPage, error) {
 	// Create the url.
 	path := "/v1/system/hardware/sleds"
 	uri := resolveRelative(c.server, path)
@@ -4556,16 +3853,16 @@ func (c *Client) SledListV1(params SledListV1Params) (*SledResultsPage, error) {
 	return &body, nil
 }
 
-// SledListV1AllPages: List sleds
+// SledListAllPages: List sleds
 //
-// This method is a wrapper around the `SledListV1` method.
+// This method is a wrapper around the `SledList` method.
 // This method returns all the pages at once.
-func (c *Client) SledListV1AllPages(params SledListV1Params) (*[]Sled, error) {
+func (c *Client) SledListAllPages(params SledListParams) (*[]Sled, error) {
 	var allPages []Sled
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.SledListV1(params)
+		page, err := c.SledList(params)
 		if err != nil {
 			return nil, err
 		}
@@ -4579,8 +3876,8 @@ func (c *Client) SledListV1AllPages(params SledListV1Params) (*[]Sled, error) {
 	return &allPages, nil
 }
 
-// SledViewV1: Fetch a sled
-func (c *Client) SledViewV1(params SledViewV1Params) (*Sled, error) {
+// SledView: Fetch a sled
+func (c *Client) SledView(params SledViewParams) (*Sled, error) {
 	// Create the url.
 	path := "/v1/system/hardware/sleds/{{.sled_id}}"
 	uri := resolveRelative(c.server, path)
@@ -4629,10 +3926,10 @@ func (c *Client) SledViewV1(params SledViewV1Params) (*Sled, error) {
 	return &body, nil
 }
 
-// SledPhysicalDiskListV1: List physical disks attached to sleds
+// SledPhysicalDiskList: List physical disks attached to sleds
 //
-// To iterate over all pages, use the `SledPhysicalDiskListV1AllPages` method, instead.
-func (c *Client) SledPhysicalDiskListV1(params SledPhysicalDiskListV1Params) (*PhysicalDiskResultsPage, error) {
+// To iterate over all pages, use the `SledPhysicalDiskListAllPages` method, instead.
+func (c *Client) SledPhysicalDiskList(params SledPhysicalDiskListParams) (*PhysicalDiskResultsPage, error) {
 	// Create the url.
 	path := "/v1/system/hardware/sleds/{{.sled_id}}/disks"
 	uri := resolveRelative(c.server, path)
@@ -4685,16 +3982,16 @@ func (c *Client) SledPhysicalDiskListV1(params SledPhysicalDiskListV1Params) (*P
 	return &body, nil
 }
 
-// SledPhysicalDiskListV1AllPages: List physical disks attached to sleds
+// SledPhysicalDiskListAllPages: List physical disks attached to sleds
 //
-// This method is a wrapper around the `SledPhysicalDiskListV1` method.
+// This method is a wrapper around the `SledPhysicalDiskList` method.
 // This method returns all the pages at once.
-func (c *Client) SledPhysicalDiskListV1AllPages(params SledPhysicalDiskListV1Params) (*[]PhysicalDisk, error) {
+func (c *Client) SledPhysicalDiskListAllPages(params SledPhysicalDiskListParams) (*[]PhysicalDisk, error) {
 	var allPages []PhysicalDisk
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.SledPhysicalDiskListV1(params)
+		page, err := c.SledPhysicalDiskList(params)
 		if err != nil {
 			return nil, err
 		}
@@ -4787,7 +4084,7 @@ func (c *Client) SiloIdentityProviderListAllPages(params SiloIdentityProviderLis
 }
 
 // LocalIdpUserCreate: Create a user
-// Users can only be created in Silos with `provision_type` == `Fixed`. Otherwise, Silo users are just-in-time (JIT) provisioned when a user first logs in using an external Identity Provider. Use `POST /v1/system/identity-providers/local/users` instead
+// Users can only be created in Silos with `provision_type` == `Fixed`. Otherwise, Silo users are just-in-time (JIT) provisioned when a user first logs in using an external Identity Provider.
 func (c *Client) LocalIdpUserCreate(params LocalIdpUserCreateParams, j *UserCreate) (*User, error) {
 	// Create the url.
 	path := "/v1/system/identity-providers/local/users"
@@ -5969,10 +5266,10 @@ func (c *Client) RoleView(params RoleViewParams) (*Role, error) {
 	return &body, nil
 }
 
-// SagaListV1: List sagas
+// SagaList: List sagas
 //
-// To iterate over all pages, use the `SagaListV1AllPages` method, instead.
-func (c *Client) SagaListV1(params SagaListV1Params) (*SagaResultsPage, error) {
+// To iterate over all pages, use the `SagaListAllPages` method, instead.
+func (c *Client) SagaList(params SagaListParams) (*SagaResultsPage, error) {
 	// Create the url.
 	path := "/v1/system/sagas"
 	uri := resolveRelative(c.server, path)
@@ -6023,16 +5320,16 @@ func (c *Client) SagaListV1(params SagaListV1Params) (*SagaResultsPage, error) {
 	return &body, nil
 }
 
-// SagaListV1AllPages: List sagas
+// SagaListAllPages: List sagas
 //
-// This method is a wrapper around the `SagaListV1` method.
+// This method is a wrapper around the `SagaList` method.
 // This method returns all the pages at once.
-func (c *Client) SagaListV1AllPages(params SagaListV1Params) (*[]Saga, error) {
+func (c *Client) SagaListAllPages(params SagaListParams) (*[]Saga, error) {
 	var allPages []Saga
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.SagaListV1(params)
+		page, err := c.SagaList(params)
 		if err != nil {
 			return nil, err
 		}
@@ -6046,8 +5343,8 @@ func (c *Client) SagaListV1AllPages(params SagaListV1Params) (*[]Saga, error) {
 	return &allPages, nil
 }
 
-// SagaViewV1: Fetch a saga
-func (c *Client) SagaViewV1(params SagaViewV1Params) (*Saga, error) {
+// SagaView: Fetch a saga
+func (c *Client) SagaView(params SagaViewParams) (*Saga, error) {
 	// Create the url.
 	path := "/v1/system/sagas/{{.saga_id}}"
 	uri := resolveRelative(c.server, path)
@@ -6096,11 +5393,11 @@ func (c *Client) SagaViewV1(params SagaViewV1Params) (*Saga, error) {
 	return &body, nil
 }
 
-// SiloListV1: List silos
+// SiloList: List silos
 // Lists silos that are discoverable based on the current permissions.
 //
-// To iterate over all pages, use the `SiloListV1AllPages` method, instead.
-func (c *Client) SiloListV1(params SiloListV1Params) (*SiloResultsPage, error) {
+// To iterate over all pages, use the `SiloListAllPages` method, instead.
+func (c *Client) SiloList(params SiloListParams) (*SiloResultsPage, error) {
 	// Create the url.
 	path := "/v1/system/silos"
 	uri := resolveRelative(c.server, path)
@@ -6151,17 +5448,17 @@ func (c *Client) SiloListV1(params SiloListV1Params) (*SiloResultsPage, error) {
 	return &body, nil
 }
 
-// SiloListV1AllPages: List silos
+// SiloListAllPages: List silos
 // Lists silos that are discoverable based on the current permissions.
 //
-// This method is a wrapper around the `SiloListV1` method.
+// This method is a wrapper around the `SiloList` method.
 // This method returns all the pages at once.
-func (c *Client) SiloListV1AllPages(params SiloListV1Params) (*[]Silo, error) {
+func (c *Client) SiloListAllPages(params SiloListParams) (*[]Silo, error) {
 	var allPages []Silo
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.SiloListV1(params)
+		page, err := c.SiloList(params)
 		if err != nil {
 			return nil, err
 		}
@@ -6175,8 +5472,8 @@ func (c *Client) SiloListV1AllPages(params SiloListV1Params) (*[]Silo, error) {
 	return &allPages, nil
 }
 
-// SiloCreateV1: Create a silo
-func (c *Client) SiloCreateV1(j *SiloCreate) (*Silo, error) {
+// SiloCreate: Create a silo
+func (c *Client) SiloCreate(j *SiloCreate) (*Silo, error) {
 	// Create the url.
 	path := "/v1/system/silos"
 	uri := resolveRelative(c.server, path)
@@ -6219,9 +5516,9 @@ func (c *Client) SiloCreateV1(j *SiloCreate) (*Silo, error) {
 	return &body, nil
 }
 
-// SiloViewV1: Fetch a silo
+// SiloView: Fetch a silo
 // Fetch a silo by name.
-func (c *Client) SiloViewV1(params SiloViewV1Params) (*Silo, error) {
+func (c *Client) SiloView(params SiloViewParams) (*Silo, error) {
 	// Create the url.
 	path := "/v1/system/silos/{{.silo}}"
 	uri := resolveRelative(c.server, path)
@@ -6270,9 +5567,9 @@ func (c *Client) SiloViewV1(params SiloViewV1Params) (*Silo, error) {
 	return &body, nil
 }
 
-// SiloDeleteV1: Delete a silo
+// SiloDelete: Delete a silo
 // Delete a silo by name.
-func (c *Client) SiloDeleteV1(params SiloDeleteV1Params) error {
+func (c *Client) SiloDelete(params SiloDeleteParams) error {
 	// Create the url.
 	path := "/v1/system/silos/{{.silo}}"
 	uri := resolveRelative(c.server, path)
@@ -6310,8 +5607,8 @@ func (c *Client) SiloDeleteV1(params SiloDeleteV1Params) error {
 	return nil
 }
 
-// SiloPolicyViewV1: Fetch a silo's IAM policy
-func (c *Client) SiloPolicyViewV1(params SiloPolicyViewV1Params) (*SiloRolePolicy, error) {
+// SiloPolicyView: Fetch a silo's IAM policy
+func (c *Client) SiloPolicyView(params SiloPolicyViewParams) (*SiloRolePolicy, error) {
 	// Create the url.
 	path := "/v1/system/silos/{{.silo}}/policy"
 	uri := resolveRelative(c.server, path)
@@ -6360,8 +5657,8 @@ func (c *Client) SiloPolicyViewV1(params SiloPolicyViewV1Params) (*SiloRolePolic
 	return &body, nil
 }
 
-// SiloPolicyUpdateV1: Update a silo's IAM policy
-func (c *Client) SiloPolicyUpdateV1(params SiloPolicyUpdateV1Params, j *SiloRolePolicy) (*SiloRolePolicy, error) {
+// SiloPolicyUpdate: Update a silo's IAM policy
+func (c *Client) SiloPolicyUpdate(params SiloPolicyUpdateParams, j *SiloRolePolicy) (*SiloRolePolicy, error) {
 	// Create the url.
 	path := "/v1/system/silos/{{.silo}}/policy"
 	uri := resolveRelative(c.server, path)
@@ -6934,10 +6231,10 @@ func (c *Client) SystemVersion() (*SystemVersion, error) {
 	return &body, nil
 }
 
-// SiloUserListV1: List users in a silo
+// SiloUserList: List users in a silo
 //
-// To iterate over all pages, use the `SiloUserListV1AllPages` method, instead.
-func (c *Client) SiloUserListV1(params SiloUserListV1Params) (*UserResultsPage, error) {
+// To iterate over all pages, use the `SiloUserListAllPages` method, instead.
+func (c *Client) SiloUserList(params SiloUserListParams) (*UserResultsPage, error) {
 	// Create the url.
 	path := "/v1/system/users"
 	uri := resolveRelative(c.server, path)
@@ -6989,16 +6286,16 @@ func (c *Client) SiloUserListV1(params SiloUserListV1Params) (*UserResultsPage, 
 	return &body, nil
 }
 
-// SiloUserListV1AllPages: List users in a silo
+// SiloUserListAllPages: List users in a silo
 //
-// This method is a wrapper around the `SiloUserListV1` method.
+// This method is a wrapper around the `SiloUserList` method.
 // This method returns all the pages at once.
-func (c *Client) SiloUserListV1AllPages(params SiloUserListV1Params) (*[]User, error) {
+func (c *Client) SiloUserListAllPages(params SiloUserListParams) (*[]User, error) {
 	var allPages []User
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.SiloUserListV1(params)
+		page, err := c.SiloUserList(params)
 		if err != nil {
 			return nil, err
 		}
@@ -7139,8 +6436,8 @@ func (c *Client) UserBuiltinView(params UserBuiltinViewParams) (*UserBuiltin, er
 	return &body, nil
 }
 
-// SiloUserViewV1: Fetch a user
-func (c *Client) SiloUserViewV1(params SiloUserViewV1Params) (*User, error) {
+// SiloUserView: Fetch a user
+func (c *Client) SiloUserView(params SiloUserViewParams) (*User, error) {
 	// Create the url.
 	path := "/v1/system/users/{{.user_id}}"
 	uri := resolveRelative(c.server, path)
@@ -7191,10 +6488,10 @@ func (c *Client) SiloUserViewV1(params SiloUserViewV1Params) (*User, error) {
 	return &body, nil
 }
 
-// UserListV1: List users
+// UserList: List users
 //
-// To iterate over all pages, use the `UserListV1AllPages` method, instead.
-func (c *Client) UserListV1(params UserListV1Params) (*UserResultsPage, error) {
+// To iterate over all pages, use the `UserListAllPages` method, instead.
+func (c *Client) UserList(params UserListParams) (*UserResultsPage, error) {
 	// Create the url.
 	path := "/v1/users"
 	uri := resolveRelative(c.server, path)
@@ -7246,16 +6543,16 @@ func (c *Client) UserListV1(params UserListV1Params) (*UserResultsPage, error) {
 	return &body, nil
 }
 
-// UserListV1AllPages: List users
+// UserListAllPages: List users
 //
-// This method is a wrapper around the `UserListV1` method.
+// This method is a wrapper around the `UserList` method.
 // This method returns all the pages at once.
-func (c *Client) UserListV1AllPages(params UserListV1Params) (*[]User, error) {
+func (c *Client) UserListAllPages(params UserListParams) (*[]User, error) {
 	var allPages []User
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.UserListV1(params)
+		page, err := c.UserList(params)
 		if err != nil {
 			return nil, err
 		}
