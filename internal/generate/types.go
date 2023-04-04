@@ -86,8 +86,7 @@ func constructParamTypes(paths openapi3.Paths) []TypeTemplate {
 		sort.Strings(keys)
 		for _, op := range keys {
 			o := ops[op]
-			if len(o.Parameters) > 0 {
-				// TODO: add request bodies as well
+			if len(o.Parameters) > 0 || o.RequestBody != nil {
 				paramsTypeName := strcase.ToCamel(o.OperationID) + "Params"
 				paramsTpl := TypeTemplate{
 					Type:        "struct",
@@ -353,6 +352,8 @@ func populateTypeTemplates(name string, s *openapi3.Schema, enumFieldName string
 func createTypeObject(schemas map[string]*openapi3.SchemaRef, name, typeName, description string) TypeTemplate {
 	// TODO: Create types out of the schemas instead of plucking them out of the objects
 	// will leave this for another PR, because the yak shaving is getting ridiculous.
+	// Tracked -> https://github.com/oxidecomputer/oxide.go/issues/110
+	//
 	// This particular type was being defined here and also in createOneOf()
 	if typeName == "ExpectedDigest" {
 		return TypeTemplate{}

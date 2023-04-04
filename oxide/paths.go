@@ -7,20 +7,19 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"net/http"
 	"strconv"
 )
 
 // LoginLocal: Authenticate a user (i.e., log in) via username and password
-func (c *Client) LoginLocal(params LoginLocalParams, j *UsernamePasswordCredentials) error {
+func (c *Client) LoginLocal(params LoginLocalParams) error {
 	// Create the url.
 	path := "/login/{{.silo_name}}/local"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -99,10 +98,11 @@ func (c *Client) LoginSamlBegin(params LoginSamlBeginParams) error {
 }
 
 // LoginSaml: Authenticate a user (i.e., log in) via SAML
-func (c *Client) LoginSaml(params LoginSamlParams, b io.Reader) error {
+func (c *Client) LoginSaml(params LoginSamlParams) error {
 	// Create the url.
 	path := "/login/{{.silo_name}}/saml/{{.provider_name}}"
 	uri := resolveRelative(c.server, path)
+	b := params.Body
 
 	// Create the request.
 	req, err := http.NewRequest("POST", uri, b)
@@ -269,14 +269,14 @@ func (c *Client) SystemImageListAllPages(params SystemImageListParams) (*[]Globa
 
 // SystemImageCreate: Create a system-wide image
 // Create a new system-wide image. This image can then be used by any user in any silo as a base for instances.
-func (c *Client) SystemImageCreate(j *GlobalImageCreate) (*GlobalImage, error) {
+func (c *Client) SystemImageCreate(params SystemImageCreateParams) (*GlobalImage, error) {
 	// Create the url.
 	path := "/system/images"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -482,14 +482,14 @@ func (c *Client) DiskListAllPages(params DiskListParams) (*[]Disk, error) {
 }
 
 // DiskCreate: Create a disk
-func (c *Client) DiskCreate(params DiskCreateParams, j *DiskCreate) (*Disk, error) {
+func (c *Client) DiskCreate(params DiskCreateParams) (*Disk, error) {
 	// Create the url.
 	path := "/v1/disks"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -631,14 +631,14 @@ func (c *Client) DiskDelete(params DiskDeleteParams) error {
 }
 
 // DiskBulkWriteImport: Import blocks into a disk
-func (c *Client) DiskBulkWriteImport(params DiskBulkWriteImportParams, j *ImportBlocksBulkWrite) error {
+func (c *Client) DiskBulkWriteImport(params DiskBulkWriteImportParams) error {
 	// Create the url.
 	path := "/v1/disks/{{.disk}}/bulk-write"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -802,14 +802,14 @@ func (c *Client) DiskFinalizeImport(params DiskFinalizeImportParams) error {
 }
 
 // DiskImportBlocksFromUrl: Send request to import blocks from URL
-func (c *Client) DiskImportBlocksFromUrl(params DiskImportBlocksFromUrlParams, j *ImportBlocksFromUrl) error {
+func (c *Client) DiskImportBlocksFromUrl(params DiskImportBlocksFromUrlParams) error {
 	// Create the url.
 	path := "/v1/disks/{{.disk}}/import"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -1139,14 +1139,14 @@ func (c *Client) ImageListAllPages(params ImageListParams) (*[]Image, error) {
 
 // ImageCreate: Create an image
 // Create a new image in a project.
-func (c *Client) ImageCreate(params ImageCreateParams, j *ImageCreate) (*Image, error) {
+func (c *Client) ImageCreate(params ImageCreateParams) (*Image, error) {
 	// Create the url.
 	path := "/v1/images"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -1368,14 +1368,14 @@ func (c *Client) InstanceListAllPages(params InstanceListParams) (*[]Instance, e
 }
 
 // InstanceCreate: Create an instance
-func (c *Client) InstanceCreate(params InstanceCreateParams, j *InstanceCreate) (*Instance, error) {
+func (c *Client) InstanceCreate(params InstanceCreateParams) (*Instance, error) {
 	// Create the url.
 	path := "/v1/instances"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -1597,14 +1597,14 @@ func (c *Client) InstanceDiskListAllPages(params InstanceDiskListParams) (*[]Dis
 }
 
 // InstanceDiskAttach: Attach a disk to an instance
-func (c *Client) InstanceDiskAttach(params InstanceDiskAttachParams, j *DiskPath) (*Disk, error) {
+func (c *Client) InstanceDiskAttach(params InstanceDiskAttachParams) (*Disk, error) {
 	// Create the url.
 	path := "/v1/instances/{{.instance}}/disks/attach"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -1655,14 +1655,14 @@ func (c *Client) InstanceDiskAttach(params InstanceDiskAttachParams, j *DiskPath
 }
 
 // InstanceDiskDetach: Detach a disk from an instance
-func (c *Client) InstanceDiskDetach(params InstanceDiskDetachParams, j *DiskPath) (*Disk, error) {
+func (c *Client) InstanceDiskDetach(params InstanceDiskDetachParams) (*Disk, error) {
 	// Create the url.
 	path := "/v1/instances/{{.instance}}/disks/detach"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -1765,14 +1765,14 @@ func (c *Client) InstanceExternalIpList(params InstanceExternalIpListParams) (*E
 }
 
 // InstanceMigrate: Migrate an instance
-func (c *Client) InstanceMigrate(params InstanceMigrateParams, j *InstanceMigrate) (*Instance, error) {
+func (c *Client) InstanceMigrate(params InstanceMigrateParams) (*Instance, error) {
 	// Create the url.
 	path := "/v1/instances/{{.instance}}/migrate"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -2273,14 +2273,14 @@ func (c *Client) CurrentUserSshKeyListAllPages(params CurrentUserSshKeyListParam
 
 // CurrentUserSshKeyCreate: Create an SSH public key
 // Create an SSH public key for the currently authenticated user.
-func (c *Client) CurrentUserSshKeyCreate(j *SshKeyCreate) (*SshKey, error) {
+func (c *Client) CurrentUserSshKeyCreate(params CurrentUserSshKeyCreateParams) (*SshKey, error) {
 	// Create the url.
 	path := "/v1/me/ssh-keys"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -2487,14 +2487,14 @@ func (c *Client) InstanceNetworkInterfaceListAllPages(params InstanceNetworkInte
 }
 
 // InstanceNetworkInterfaceCreate: Create a network interface
-func (c *Client) InstanceNetworkInterfaceCreate(params InstanceNetworkInterfaceCreateParams, j *NetworkInterfaceCreate) (*NetworkInterface, error) {
+func (c *Client) InstanceNetworkInterfaceCreate(params InstanceNetworkInterfaceCreateParams) (*NetworkInterface, error) {
 	// Create the url.
 	path := "/v1/network-interfaces"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -2597,14 +2597,14 @@ func (c *Client) InstanceNetworkInterfaceView(params InstanceNetworkInterfaceVie
 }
 
 // InstanceNetworkInterfaceUpdate: Update a network interface
-func (c *Client) InstanceNetworkInterfaceUpdate(params InstanceNetworkInterfaceUpdateParams, j *NetworkInterfaceUpdate) (*NetworkInterface, error) {
+func (c *Client) InstanceNetworkInterfaceUpdate(params InstanceNetworkInterfaceUpdateParams) (*NetworkInterface, error) {
 	// Create the url.
 	path := "/v1/network-interfaces/{{.interface}}"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -2737,14 +2737,14 @@ func (c *Client) PolicyView() (*SiloRolePolicy, error) {
 }
 
 // PolicyUpdate: Update the current silo's IAM policy
-func (c *Client) PolicyUpdate(j *SiloRolePolicy) (*SiloRolePolicy, error) {
+func (c *Client) PolicyUpdate(params PolicyUpdateParams) (*SiloRolePolicy, error) {
 	// Create the url.
 	path := "/v1/policy"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -2858,14 +2858,14 @@ func (c *Client) ProjectListAllPages(params ProjectListParams) (*[]Project, erro
 }
 
 // ProjectCreate: Create a project
-func (c *Client) ProjectCreate(j *ProjectCreate) (*Project, error) {
+func (c *Client) ProjectCreate(params ProjectCreateParams) (*Project, error) {
 	// Create the url.
 	path := "/v1/projects"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -2952,14 +2952,14 @@ func (c *Client) ProjectView(params ProjectViewParams) (*Project, error) {
 }
 
 // ProjectUpdate: Update a project
-func (c *Client) ProjectUpdate(params ProjectUpdateParams, j *ProjectUpdate) (*Project, error) {
+func (c *Client) ProjectUpdate(params ProjectUpdateParams) (*Project, error) {
 	// Create the url.
 	path := "/v1/projects/{{.project}}"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -3097,14 +3097,14 @@ func (c *Client) ProjectPolicyView(params ProjectPolicyViewParams) (*ProjectRole
 }
 
 // ProjectPolicyUpdate: Update a project's IAM policy
-func (c *Client) ProjectPolicyUpdate(params ProjectPolicyUpdateParams, j *ProjectRolePolicy) (*ProjectRolePolicy, error) {
+func (c *Client) ProjectPolicyUpdate(params ProjectPolicyUpdateParams) (*ProjectRolePolicy, error) {
 	// Create the url.
 	path := "/v1/projects/{{.project}}/policy"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -3232,14 +3232,14 @@ func (c *Client) SnapshotListAllPages(params SnapshotListParams) (*[]Snapshot, e
 
 // SnapshotCreate: Create a snapshot
 // Creates a point-in-time snapshot from a disk.
-func (c *Client) SnapshotCreate(params SnapshotCreateParams, j *SnapshotCreate) (*Snapshot, error) {
+func (c *Client) SnapshotCreate(params SnapshotCreateParams) (*Snapshot, error) {
 	// Create the url.
 	path := "/v1/snapshots"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -3461,14 +3461,14 @@ func (c *Client) CertificateListAllPages(params CertificateListParams) (*[]Certi
 
 // CertificateCreate: Create a new system-wide x.509 certificate.
 // This certificate is automatically used by the Oxide Control plane to serve external connections.
-func (c *Client) CertificateCreate(j *CertificateCreate) (*Certificate, error) {
+func (c *Client) CertificateCreate(params CertificateCreateParams) (*Certificate, error) {
 	// Create the url.
 	path := "/v1/system/certificates"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -4085,14 +4085,14 @@ func (c *Client) SiloIdentityProviderListAllPages(params SiloIdentityProviderLis
 
 // LocalIdpUserCreate: Create a user
 // Users can only be created in Silos with `provision_type` == `Fixed`. Otherwise, Silo users are just-in-time (JIT) provisioned when a user first logs in using an external Identity Provider.
-func (c *Client) LocalIdpUserCreate(params LocalIdpUserCreateParams, j *UserCreate) (*User, error) {
+func (c *Client) LocalIdpUserCreate(params LocalIdpUserCreateParams) (*User, error) {
 	// Create the url.
 	path := "/v1/system/identity-providers/local/users"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -4183,14 +4183,14 @@ func (c *Client) LocalIdpUserDelete(params LocalIdpUserDeleteParams) error {
 
 // LocalIdpUserSetPassword: Set or invalidate a user's password
 // Passwords can only be updated for users in Silos with identity mode `LocalOnly`.
-func (c *Client) LocalIdpUserSetPassword(params LocalIdpUserSetPasswordParams, j *UserPassword) error {
+func (c *Client) LocalIdpUserSetPassword(params LocalIdpUserSetPasswordParams) error {
 	// Create the url.
 	path := "/v1/system/identity-providers/local/users/{{.user_id}}/set-password"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -4230,14 +4230,14 @@ func (c *Client) LocalIdpUserSetPassword(params LocalIdpUserSetPasswordParams, j
 }
 
 // SamlIdentityProviderCreate: Create a SAML IDP
-func (c *Client) SamlIdentityProviderCreate(params SamlIdentityProviderCreateParams, j *SamlIdentityProviderCreate) (*SamlIdentityProvider, error) {
+func (c *Client) SamlIdentityProviderCreate(params SamlIdentityProviderCreateParams) (*SamlIdentityProvider, error) {
 	// Create the url.
 	path := "/v1/system/identity-providers/saml"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -4415,14 +4415,14 @@ func (c *Client) IpPoolListAllPages(params IpPoolListParams) (*[]IpPool, error) 
 }
 
 // IpPoolCreate: Create an IP pool
-func (c *Client) IpPoolCreate(j *IpPoolCreate) (*IpPool, error) {
+func (c *Client) IpPoolCreate(params IpPoolCreateParams) (*IpPool, error) {
 	// Create the url.
 	path := "/v1/system/ip-pools"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -4575,14 +4575,14 @@ func (c *Client) IpPoolServiceRangeListAllPages(params IpPoolServiceRangeListPar
 }
 
 // IpPoolServiceRangeAdd: Add a range to an IP pool used for Oxide services.
-func (c *Client) IpPoolServiceRangeAdd(j *IpRange) (*IpPoolRange, error) {
+func (c *Client) IpPoolServiceRangeAdd(params IpPoolServiceRangeAddParams) (*IpPoolRange, error) {
 	// Create the url.
 	path := "/v1/system/ip-pools-service/ranges/add"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -4619,14 +4619,14 @@ func (c *Client) IpPoolServiceRangeAdd(j *IpRange) (*IpPoolRange, error) {
 }
 
 // IpPoolServiceRangeRemove: Remove a range from an IP pool used for Oxide services.
-func (c *Client) IpPoolServiceRangeRemove(j *IpRange) error {
+func (c *Client) IpPoolServiceRangeRemove(params IpPoolServiceRangeRemoveParams) error {
 	// Create the url.
 	path := "/v1/system/ip-pools-service/ranges/remove"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -4702,14 +4702,14 @@ func (c *Client) IpPoolView(params IpPoolViewParams) (*IpPool, error) {
 }
 
 // IpPoolUpdate: Update an IP Pool
-func (c *Client) IpPoolUpdate(params IpPoolUpdateParams, j *IpPoolUpdate) (*IpPool, error) {
+func (c *Client) IpPoolUpdate(params IpPoolUpdateParams) (*IpPool, error) {
 	// Create the url.
 	path := "/v1/system/ip-pools/{{.pool}}"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -4877,14 +4877,14 @@ func (c *Client) IpPoolRangeListAllPages(params IpPoolRangeListParams) (*[]IpPoo
 }
 
 // IpPoolRangeAdd: Add a range to an IP pool
-func (c *Client) IpPoolRangeAdd(params IpPoolRangeAddParams, j *IpRange) (*IpPoolRange, error) {
+func (c *Client) IpPoolRangeAdd(params IpPoolRangeAddParams) (*IpPoolRange, error) {
 	// Create the url.
 	path := "/v1/system/ip-pools/{{.pool}}/ranges/add"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -4933,14 +4933,14 @@ func (c *Client) IpPoolRangeAdd(params IpPoolRangeAddParams, j *IpRange) (*IpPoo
 }
 
 // IpPoolRangeRemove: Remove a range from an IP pool
-func (c *Client) IpPoolRangeRemove(params IpPoolRangeRemoveParams, j *IpRange) error {
+func (c *Client) IpPoolRangeRemove(params IpPoolRangeRemoveParams) error {
 	// Create the url.
 	path := "/v1/system/ip-pools/{{.pool}}/ranges/remove"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -5097,14 +5097,14 @@ func (c *Client) SystemPolicyView() (*FleetRolePolicy, error) {
 }
 
 // SystemPolicyUpdate: Update the top-level IAM policy
-func (c *Client) SystemPolicyUpdate(j *FleetRolePolicy) (*FleetRolePolicy, error) {
+func (c *Client) SystemPolicyUpdate(params SystemPolicyUpdateParams) (*FleetRolePolicy, error) {
 	// Create the url.
 	path := "/v1/system/policy"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -5473,14 +5473,14 @@ func (c *Client) SiloListAllPages(params SiloListParams) (*[]Silo, error) {
 }
 
 // SiloCreate: Create a silo
-func (c *Client) SiloCreate(j *SiloCreate) (*Silo, error) {
+func (c *Client) SiloCreate(params SiloCreateParams) (*Silo, error) {
 	// Create the url.
 	path := "/v1/system/silos"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -5658,14 +5658,14 @@ func (c *Client) SiloPolicyView(params SiloPolicyViewParams) (*SiloRolePolicy, e
 }
 
 // SiloPolicyUpdate: Update a silo's IAM policy
-func (c *Client) SiloPolicyUpdate(params SiloPolicyUpdateParams, j *SiloRolePolicy) (*SiloRolePolicy, error) {
+func (c *Client) SiloPolicyUpdate(params SiloPolicyUpdateParams) (*SiloRolePolicy, error) {
 	// Create the url.
 	path := "/v1/system/silos/{{.silo}}/policy"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -5945,14 +5945,14 @@ func (c *Client) SystemUpdateRefresh() error {
 }
 
 // SystemUpdateStart: Start system update
-func (c *Client) SystemUpdateStart(j *SystemUpdateStart) (*UpdateDeployment, error) {
+func (c *Client) SystemUpdateStart(params SystemUpdateStartParams) (*UpdateDeployment, error) {
 	// Create the url.
 	path := "/v1/system/update/start"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -6618,14 +6618,14 @@ func (c *Client) VpcFirewallRulesView(params VpcFirewallRulesViewParams) (*VpcFi
 }
 
 // VpcFirewallRulesUpdate: Replace firewall rules
-func (c *Client) VpcFirewallRulesUpdate(params VpcFirewallRulesUpdateParams, j *VpcFirewallRuleUpdateParams) (*VpcFirewallRules, error) {
+func (c *Client) VpcFirewallRulesUpdate(params VpcFirewallRulesUpdateParams) (*VpcFirewallRules, error) {
 	// Create the url.
 	path := "/v1/vpc-firewall-rules"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -6757,14 +6757,14 @@ func (c *Client) VpcRouterRouteListAllPages(params VpcRouterRouteListParams) (*[
 }
 
 // VpcRouterRouteCreate: Create a router
-func (c *Client) VpcRouterRouteCreate(params VpcRouterRouteCreateParams, j *RouterRouteCreate) (*RouterRoute, error) {
+func (c *Client) VpcRouterRouteCreate(params VpcRouterRouteCreateParams) (*RouterRoute, error) {
 	// Create the url.
 	path := "/v1/vpc-router-routes"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -6869,14 +6869,14 @@ func (c *Client) VpcRouterRouteView(params VpcRouterRouteViewParams) (*RouterRou
 }
 
 // VpcRouterRouteUpdate: Update a route
-func (c *Client) VpcRouterRouteUpdate(params VpcRouterRouteUpdateParams, j *RouterRouteUpdate) (*RouterRoute, error) {
+func (c *Client) VpcRouterRouteUpdate(params VpcRouterRouteUpdateParams) (*RouterRoute, error) {
 	// Create the url.
 	path := "/v1/vpc-router-routes/{{.route}}"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -7051,14 +7051,14 @@ func (c *Client) VpcRouterListAllPages(params VpcRouterListParams) (*[]VpcRouter
 }
 
 // VpcRouterCreate: Create a VPC router
-func (c *Client) VpcRouterCreate(params VpcRouterCreateParams, j *VpcRouterCreate) (*VpcRouter, error) {
+func (c *Client) VpcRouterCreate(params VpcRouterCreateParams) (*VpcRouter, error) {
 	// Create the url.
 	path := "/v1/vpc-routers"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -7161,14 +7161,14 @@ func (c *Client) VpcRouterView(params VpcRouterViewParams) (*VpcRouter, error) {
 }
 
 // VpcRouterUpdate: Update a router
-func (c *Client) VpcRouterUpdate(params VpcRouterUpdateParams, j *VpcRouterUpdate) (*VpcRouter, error) {
+func (c *Client) VpcRouterUpdate(params VpcRouterUpdateParams) (*VpcRouter, error) {
 	// Create the url.
 	path := "/v1/vpc-routers/{{.router}}"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -7341,14 +7341,14 @@ func (c *Client) VpcSubnetListAllPages(params VpcSubnetListParams) (*[]VpcSubnet
 }
 
 // VpcSubnetCreate: Create a subnet
-func (c *Client) VpcSubnetCreate(params VpcSubnetCreateParams, j *VpcSubnetCreate) (*VpcSubnet, error) {
+func (c *Client) VpcSubnetCreate(params VpcSubnetCreateParams) (*VpcSubnet, error) {
 	// Create the url.
 	path := "/v1/vpc-subnets"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -7451,14 +7451,14 @@ func (c *Client) VpcSubnetView(params VpcSubnetViewParams) (*VpcSubnet, error) {
 }
 
 // VpcSubnetUpdate: Update a subnet
-func (c *Client) VpcSubnetUpdate(params VpcSubnetUpdateParams, j *VpcSubnetUpdate) (*VpcSubnet, error) {
+func (c *Client) VpcSubnetUpdate(params VpcSubnetUpdateParams) (*VpcSubnet, error) {
 	// Create the url.
 	path := "/v1/vpc-subnets/{{.subnet}}"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -7711,14 +7711,14 @@ func (c *Client) VpcListAllPages(params VpcListParams) (*[]Vpc, error) {
 }
 
 // VpcCreate: Create a VPC
-func (c *Client) VpcCreate(params VpcCreateParams, j *VpcCreate) (*Vpc, error) {
+func (c *Client) VpcCreate(params VpcCreateParams) (*Vpc, error) {
 	// Create the url.
 	path := "/v1/vpcs"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -7819,14 +7819,14 @@ func (c *Client) VpcView(params VpcViewParams) (*Vpc, error) {
 }
 
 // VpcUpdate: Update a VPC
-func (c *Client) VpcUpdate(params VpcUpdateParams, j *VpcUpdate) (*Vpc, error) {
+func (c *Client) VpcUpdate(params VpcUpdateParams) (*Vpc, error) {
 	// Create the url.
 	path := "/v1/vpcs/{{.vpc}}"
 	uri := resolveRelative(c.server, path)
 
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(j); err != nil {
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 

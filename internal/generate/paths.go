@@ -35,10 +35,9 @@ type methodTemplate struct {
 }
 
 type paramsInfo struct {
-	parameters      map[string]*openapi3.Parameter
-	paramsString    string
-	docParamsString string
-	isPageResult    bool
+	parameters   map[string]*openapi3.Parameter
+	paramsString string
+	isPageResult bool
 }
 
 // Generate the paths.go file.
@@ -138,7 +137,7 @@ func buildMethod(f *os.File, spec *openapi3.T, method string, path string, o *op
 	}
 
 	methodName := strcase.ToCamel(o.OperationID)
-	pInfo := buildParams(o.Parameters, method, methodName)
+	pInfo := buildParams(o, method, methodName)
 
 	// Adapt for ListAll methods
 	if pInfo.isPageResult && isGetAllPages && len(pagedRespType) > 0 {
@@ -153,7 +152,6 @@ func buildMethod(f *os.File, spec *openapi3.T, method string, path string, o *op
 	isList := pInfo.isPageResult && !isGetAllPages
 	// end ListAll specific code
 
-	pInfo = parseRequestBody(o.RequestBody, pInfo, methodName)
 	pathParams, err := buildPathOrQueryParams("path", pInfo.parameters)
 	if err != nil {
 		return err
@@ -337,15 +335,15 @@ func buildPathOrQueryParams(paramType string, params map[string]*openapi3.Parame
 	return pathParams, nil
 }
 
-func buildParams(specParams openapi3.Parameters, method, opID string) paramsInfo {
+func buildParams(operation *openapi3.Operation, method, opID string) paramsInfo {
 	pInfo := paramsInfo{
 		parameters: make(map[string]*openapi3.Parameter, 0),
 	}
 
-	if len(specParams) > 0 {
+	if len(operation.Parameters) > 0 || operation.RequestBody != nil {
 		pInfo.paramsString = "params " + opID + "Params, "
 
-		for _, p := range specParams {
+		for _, p := range operation.Parameters {
 			if p.Ref != "" {
 				fmt.Printf("[WARN] TODO: skipping parameter for %q, since it is a reference\n", p.Value.Name)
 				continue
@@ -364,31 +362,5 @@ func buildParams(specParams openapi3.Parameters, method, opID string) paramsInfo
 			pInfo.parameters[p.Value.Name] = p.Value
 		}
 	}
-	return pInfo
-}
-
-// TODO: REMOVEME with this PR
-func parseRequestBody(reqBody *openapi3.RequestBodyRef, pInfo paramsInfo, methodName string) paramsInfo {
-	if reqBody == nil {
-		return pInfo
-	}
-
-	if reqBody.Ref != "" {
-		fmt.Printf("[WARN] TODO: skipping request body for %q, since it is a reference: %q\n", methodName, reqBody.Ref)
-	}
-
-	for mt, r := range reqBody.Value.Content {
-		if mt != "application/json" {
-			pInfo.paramsString += "b io.Reader"
-			break
-		}
-
-		typeName := convertToValidGoType("", r.Schema)
-
-		pInfo.paramsString += "j *" + typeName
-		pInfo.docParamsString += "body"
-		break
-	}
-
 	return pInfo
 }

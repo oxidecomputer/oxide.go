@@ -2255,6 +2255,26 @@ type VpcUpdate struct {
 	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
+// DeviceAuthRequestParams is the request parameters for DeviceAuthRequest
+type DeviceAuthRequestParams struct {
+	Body io.Reader `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// DeviceAuthConfirmParams is the request parameters for DeviceAuthConfirm
+type DeviceAuthConfirmParams struct {
+	Body *DeviceAuthVerify `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// DeviceAccessTokenParams is the request parameters for DeviceAccessToken
+type DeviceAccessTokenParams struct {
+	Body io.Reader `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// LoginSpoofParams is the request parameters for LoginSpoof
+type LoginSpoofParams struct {
+	Body *SpoofLoginBody `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
 // LoginLocalParams is the request parameters for LoginLocal
 type LoginLocalParams struct {
 	SiloName Name                         `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
@@ -2284,6 +2304,11 @@ type SystemImageListParams struct {
 	Limit     int          `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string       `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    NameSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// SystemImageCreateParams is the request parameters for SystemImageCreate
+type SystemImageCreateParams struct {
+	Body *GlobalImageCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // SystemImageDeleteParams is the request parameters for SystemImageDelete
@@ -2516,6 +2541,11 @@ type CurrentUserSshKeyListParams struct {
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
 
+// CurrentUserSshKeyCreateParams is the request parameters for CurrentUserSshKeyCreate
+type CurrentUserSshKeyCreateParams struct {
+	Body *SshKeyCreate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
 // CurrentUserSshKeyDeleteParams is the request parameters for CurrentUserSshKeyDelete
 type CurrentUserSshKeyDeleteParams struct {
 	SshKey NameOrId `json:"ssh_key,omitempty" yaml:"ssh_key,omitempty"`
@@ -2564,11 +2594,21 @@ type InstanceNetworkInterfaceUpdateParams struct {
 	Body      *NetworkInterfaceUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+// PolicyUpdateParams is the request parameters for PolicyUpdate
+type PolicyUpdateParams struct {
+	Body *SiloRolePolicy `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
 // ProjectListParams is the request parameters for ProjectList
 type ProjectListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// ProjectCreateParams is the request parameters for ProjectCreate
+type ProjectCreateParams struct {
+	Body *ProjectCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // ProjectDeleteParams is the request parameters for ProjectDelete
@@ -2629,6 +2669,11 @@ type CertificateListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// CertificateCreateParams is the request parameters for CertificateCreate
+type CertificateCreateParams struct {
+	Body *CertificateCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // CertificateDeleteParams is the request parameters for CertificateDelete
@@ -2726,10 +2771,25 @@ type IpPoolListParams struct {
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
 
+// IpPoolCreateParams is the request parameters for IpPoolCreate
+type IpPoolCreateParams struct {
+	Body *IpPoolCreate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
 // IpPoolServiceRangeListParams is the request parameters for IpPoolServiceRangeList
 type IpPoolServiceRangeListParams struct {
 	Limit     int    `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+}
+
+// IpPoolServiceRangeAddParams is the request parameters for IpPoolServiceRangeAdd
+type IpPoolServiceRangeAddParams struct {
+	Body *IpRange `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// IpPoolServiceRangeRemoveParams is the request parameters for IpPoolServiceRangeRemove
+type IpPoolServiceRangeRemoveParams struct {
+	Body *IpRange `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // IpPoolDeleteParams is the request parameters for IpPoolDelete
@@ -2777,6 +2837,11 @@ type SystemMetricParams struct {
 	StartTime  *time.Time       `json:"start_time,omitempty" yaml:"start_time,omitempty"`
 }
 
+// SystemPolicyUpdateParams is the request parameters for SystemPolicyUpdate
+type SystemPolicyUpdateParams struct {
+	Body *FleetRolePolicy `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
 // RoleListParams is the request parameters for RoleList
 type RoleListParams struct {
 	Limit     int    `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -2805,6 +2870,11 @@ type SiloListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// SiloCreateParams is the request parameters for SiloCreate
+type SiloCreateParams struct {
+	Body *SiloCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // SiloDeleteParams is the request parameters for SiloDelete
@@ -2845,6 +2915,11 @@ type UpdateDeploymentsListParams struct {
 // UpdateDeploymentViewParams is the request parameters for UpdateDeploymentView
 type UpdateDeploymentViewParams struct {
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+}
+
+// SystemUpdateStartParams is the request parameters for SystemUpdateStart
+type SystemUpdateStartParams struct {
+	Body *SystemUpdateStart `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // SystemUpdateListParams is the request parameters for SystemUpdateList
