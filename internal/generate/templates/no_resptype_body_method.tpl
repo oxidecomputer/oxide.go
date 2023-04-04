@@ -5,9 +5,10 @@
 
     // Encode the request body as json.
     b := new(bytes.Buffer)
-    if err := json.NewEncoder(b).Encode(j); err != nil {
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
         return fmt.Errorf("encoding json body request failed: %v", err)
-    }{{end}}
+    }{{else}}
+    b := params.Body{{end}}
 
     // Create the request.
     req, err := http.NewRequest("{{.HTTPMethod}}", uri, b)

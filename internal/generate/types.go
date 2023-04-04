@@ -86,8 +86,7 @@ func constructParamTypes(paths openapi3.Paths) []TypeTemplate {
 		sort.Strings(keys)
 		for _, op := range keys {
 			o := ops[op]
-			if len(o.Parameters) > 0 {
-				// TODO: add request bodies as well
+			if len(o.Parameters) > 0 || o.RequestBody != nil {
 				paramsTypeName := strcase.ToCamel(o.OperationID) + "Params"
 				paramsTpl := TypeTemplate{
 					Type:        "struct",
@@ -111,6 +110,30 @@ func constructParamTypes(paths openapi3.Paths) []TypeTemplate {
 					serInfo := fmt.Sprintf("`json:\"%s,omitempty\" yaml:\"%s,omitempty\"`", p.Value.Name, p.Value.Name)
 					field.SerializationInfo = serInfo
 
+					fields = append(fields, field)
+				}
+				if o.RequestBody != nil {
+					var field TypeFields
+					// The Nexus API spec only has a single value for content, so we can safely
+					// break when a condition is met
+					for mt, r := range o.RequestBody.Value.Content {
+						// TODO: Handle other mime types in a more idiomatic way
+						if mt != "application/json" {
+							field = TypeFields{
+								Name:              "Body",
+								Type:              "io.Reader",
+								SerializationInfo: "`json:\"body,omitempty\" yaml:\"body,omitempty\"`",
+							}
+							break
+						}
+
+						field = TypeFields{
+							Name:              "Body",
+							Type:              "*" + convertToValidGoType("", r.Schema),
+							SerializationInfo: "`json:\"body,omitempty\" yaml:\"body,omitempty\"`",
+						}
+						break
+					}
 					fields = append(fields, field)
 				}
 				paramsTpl.Fields = fields
@@ -327,6 +350,15 @@ func populateTypeTemplates(name string, s *openapi3.Schema, enumFieldName string
 }
 
 func createTypeObject(schemas map[string]*openapi3.SchemaRef, name, typeName, description string) TypeTemplate {
+	// TODO: Create types out of the schemas instead of plucking them out of the objects
+	// will leave this for another PR, because the yak shaving is getting ridiculous.
+	// Tracked -> https://github.com/oxidecomputer/oxide.go/issues/110
+	//
+	// This particular type was being defined here and also in createOneOf()
+	if typeName == "ExpectedDigest" {
+		return TypeTemplate{}
+	}
+
 	typeTpl := TypeTemplate{
 		Description: description,
 		Name:        typeName,
@@ -521,8 +553,10 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 	// TODO: For now AllOf values within a OneOf are treated as enums
 	// because that's how they are being used. Keep an eye out if this
 	// changes
-	if s.OneOf[0].Value.AllOf != nil {
-		return typeTpls, enumTpls
+	for _, v := range s.OneOf {
+		if v.Value.AllOf != nil {
+			return typeTpls, enumTpls
+		}
 	}
 
 	// Make sure to only create structs if the oneOf is not a replacement for enums on the API spec

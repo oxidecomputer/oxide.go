@@ -80,14 +80,14 @@ func (c *Client) IpPoolListAllPages(params IpPoolListParams, ) (*IpPoolResultsPa
 }
 
 // IpPoolCreate
-func (c *Client) IpPoolCreate(j *IpPoolCreate) (*IpPool, error) {
+func (c *Client) IpPoolCreate(params IpPoolCreateParams, ) (*IpPool, error) {
     // Create the url.
     path := "/v1/ip-pools"
     uri := resolveRelative(c.server, path)
 
     // Encode the request body as json.
     b := new(bytes.Buffer)
-    if err := json.NewEncoder(b).Encode(j); err != nil {
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
         return nil, fmt.Errorf("encoding json body request failed: %v", err)
     }
 
@@ -175,14 +175,14 @@ func (c *Client) IpPoolView(params IpPoolViewParams, ) (*IpPool, error) {
 }
 
 // IpPoolUpdate
-func (c *Client) IpPoolUpdate(params IpPoolUpdateParams, j *IpPoolUpdate) (*IpPool, error) {
+func (c *Client) IpPoolUpdate(params IpPoolUpdateParams, ) (*IpPool, error) {
     // Create the url.
     path := "/v1/ip-pools{{.pool_name}}"
     uri := resolveRelative(c.server, path)
 
     // Encode the request body as json.
     b := new(bytes.Buffer)
-    if err := json.NewEncoder(b).Encode(j); err != nil {
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
         return nil, fmt.Errorf("encoding json body request failed: %v", err)
     }
 
