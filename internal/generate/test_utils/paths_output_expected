@@ -6,18 +6,18 @@ package oxide
 //
 // To iterate over all pages, use the `IpPoolListAllPages` method, instead.
 func (c *Client) IpPoolList(params IpPoolListParams, ) (*IpPoolResultsPage, error) {
-    // Create the url.
-    path := "/v1/ip-pools"
-    uri := resolveRelative(c.server, path)
-
-    pathParams := map[string]string{ 
-    }
-    queryParams := map[string]string{ 
-        "limit": strconv.Itoa(params.Limit),
-        "page_token": params.PageToken,
-    }
-
-    req, err := buildRequest(nil, "GET", uri, pathParams, queryParams)
+    // Create the request
+    req, err := buildRequest(
+        nil, 
+        "GET", 
+        resolveRelative(c.server, "/v1/ip-pools"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": strconv.Itoa(params.Limit),
+            "page_token": params.PageToken,
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
@@ -72,23 +72,23 @@ func (c *Client) IpPoolListAllPages(params IpPoolListParams, ) (*IpPoolResultsPa
 }
 
 // IpPoolCreate
-func (c *Client) IpPoolCreate(params IpPoolCreateParams, ) (*IpPool, error) {
-    // Create the url.
-    path := "/v1/ip-pools"
-    uri := resolveRelative(c.server, path)
-
+func (c *Client) IpPoolCreate(params IpPoolCreateParams, ) (*IpPool, error) { 
     // Encode the request body as json.
     b := new(bytes.Buffer)
     if err := json.NewEncoder(b).Encode(params.Body); err != nil {
         return nil, fmt.Errorf("encoding json body request failed: %v", err)
     }
 
-    pathParams := map[string]string{ 
-    }
-    queryParams := map[string]string{ 
-    }
-
-    req, err := buildRequest(b, "POST", uri, pathParams, queryParams)
+    // Create the request
+    req, err := buildRequest(
+        b, 
+        "POST", 
+        resolveRelative(c.server, "/v1/ip-pools"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
@@ -121,17 +121,17 @@ func (c *Client) IpPoolCreate(params IpPoolCreateParams, ) (*IpPool, error) {
 
 // IpPoolView
 func (c *Client) IpPoolView(params IpPoolViewParams, ) (*IpPool, error) {
-    // Create the url.
-    path := "/v1/ip-pools{{.pool_name}}"
-    uri := resolveRelative(c.server, path)
-
-    pathParams := map[string]string{ 
-        "pool_name": string(params.PoolName),
-    }
-    queryParams := map[string]string{ 
-    }
-
-    req, err := buildRequest(nil, "GET", uri, pathParams, queryParams)
+    // Create the request
+    req, err := buildRequest(
+        nil, 
+        "GET", 
+        resolveRelative(c.server, "/v1/ip-pools{{.pool_name}}"), 
+        map[string]string{ 
+            "pool_name": string(params.PoolName),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
@@ -163,24 +163,24 @@ func (c *Client) IpPoolView(params IpPoolViewParams, ) (*IpPool, error) {
 }
 
 // IpPoolUpdate
-func (c *Client) IpPoolUpdate(params IpPoolUpdateParams, ) (*IpPool, error) {
-    // Create the url.
-    path := "/v1/ip-pools{{.pool_name}}"
-    uri := resolveRelative(c.server, path)
-
+func (c *Client) IpPoolUpdate(params IpPoolUpdateParams, ) (*IpPool, error) { 
     // Encode the request body as json.
     b := new(bytes.Buffer)
     if err := json.NewEncoder(b).Encode(params.Body); err != nil {
         return nil, fmt.Errorf("encoding json body request failed: %v", err)
     }
 
-    pathParams := map[string]string{ 
-        "pool_name": string(params.PoolName),
-    }
-    queryParams := map[string]string{ 
-    }
-
-    req, err := buildRequest(b, "PUT", uri, pathParams, queryParams)
+    // Create the request
+    req, err := buildRequest(
+        b, 
+        "PUT", 
+        resolveRelative(c.server, "/v1/ip-pools{{.pool_name}}"), 
+        map[string]string{ 
+            "pool_name": string(params.PoolName),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
@@ -213,17 +213,17 @@ func (c *Client) IpPoolUpdate(params IpPoolUpdateParams, ) (*IpPool, error) {
 
 // IpPoolDelete
 func (c *Client) IpPoolDelete(params IpPoolDeleteParams, ) error {
-    // Create the url.
-    path := "/v1/ip-pools{{.pool_name}}"
-    uri := resolveRelative(c.server, path)
-
-    pathParams := map[string]string{ 
-        "pool_name": string(params.PoolName),
-    }
-    queryParams := map[string]string{ 
-    }
-
-    req, err := buildRequest(nil, "DELETE", uri, pathParams, queryParams)
+    // Create the request
+    req, err := buildRequest(
+        nil, 
+        "DELETE", 
+        resolveRelative(c.server, "/v1/ip-pools{{.pool_name}}"), 
+        map[string]string{ 
+            "pool_name": string(params.PoolName),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}

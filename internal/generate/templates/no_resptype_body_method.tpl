@@ -1,8 +1,4 @@
-{{template "description" .}}func (c *Client) {{.FunctionName}}({{.ParamsString}}) error {
-    // Create the url.
-    path := "{{.Path}}"
-    uri := resolveRelative(c.server, path){{if .IsAppJSON}}
-
+{{template "description" .}}func (c *Client) {{.FunctionName}}({{.ParamsString}}) error { {{if .IsAppJSON}}
     // Encode the request body as json.
     b := new(bytes.Buffer)
     if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -10,14 +6,18 @@
     }{{else}}
     b := params.Body{{end}}
 
-    pathParams := map[string]string{ {{range .PathParams}}
-        {{.}}{{end}}
-    }
-    queryParams := map[string]string{ {{range .QueryParams}}
-        {{.}}{{end}}
-    }
-
-    req, err := buildRequest(b, "{{.HTTPMethod}}", uri, pathParams, queryParams)
+    // Create the request
+    req, err := buildRequest(
+        b, 
+        "{{.HTTPMethod}}", 
+        resolveRelative(c.server, "{{.Path}}"), 
+        map[string]string{ {{range .PathParams}}
+            {{.}}{{end}}
+        }, 
+        map[string]string{ {{range .QueryParams}}
+            {{.}}{{end}}
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}

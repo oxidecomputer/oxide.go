@@ -1,16 +1,16 @@
 {{template "description" .}}func (c *Client) {{.FunctionName}}({{.ParamsString}}) (*{{.ResponseType}}, error) {
-    // Create the url.
-    path := "{{.Path}}"
-    uri := resolveRelative(c.server, path)
-
-    pathParams := map[string]string{ {{range .PathParams}}
-        {{.}}{{end}}
-    }
-    queryParams := map[string]string{ {{range .QueryParams}}
-        {{.}}{{end}}
-    }
-
-    req, err := buildRequest(nil, "{{.HTTPMethod}}", uri, pathParams, queryParams)
+    // Create the request
+    req, err := buildRequest(
+        nil, 
+        "{{.HTTPMethod}}", 
+        resolveRelative(c.server, "{{.Path}}"), 
+        map[string]string{ {{range .PathParams}}
+            {{.}}{{end}}
+        }, 
+        map[string]string{ {{range .QueryParams}}
+            {{.}}{{end}}
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
