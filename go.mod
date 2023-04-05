@@ -1,6 +1,6 @@
 module github.com/oxidecomputer/oxide.go
 
-go 1.19
+go 1.20
 
 require (
 	github.com/getkin/kin-openapi v0.115.0
