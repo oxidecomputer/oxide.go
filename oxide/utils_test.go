@@ -194,6 +194,7 @@ func Test_buildRequest(t *testing.T) {
 				Body: nil,
 			},
 		},
+		// TODO: Create a check that verifies that path is not malformed
 		//		{
 		//			name: "fails on a malformed path",
 		//			args: args{
@@ -215,6 +216,7 @@ func Test_buildRequest(t *testing.T) {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
 			}
+			// Only asserting values that we care about
 			assert.Equal(t, tt.want.Method, got.Method)
 			assert.Equal(t, tt.want.Body, got.Body)
 			assert.Equal(t, tt.want.URL.Host, got.URL.Host)
