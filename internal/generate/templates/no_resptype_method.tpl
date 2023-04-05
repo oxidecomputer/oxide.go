@@ -3,25 +3,17 @@
     path := "{{.Path}}"
     uri := resolveRelative(c.server, path)
 
-    // Create the request.
-    req, err := http.NewRequest("{{.HTTPMethod}}", uri, nil)
-    if err != nil {
-        return fmt.Errorf("error creating request: %v", err)
-    }{{if .HasParams}}
-
-    // Add the parameters to the url.
-    if err := expandURL(req.URL, map[string]string{ {{range .PathParams}}
+    pathParams := map[string]string{ {{range .PathParams}}
         {{.}}{{end}}
-    }); err != nil {
-        return fmt.Errorf("expanding URL with parameters failed: %v", err)
+    }
+    queryParams := map[string]string{ {{range .QueryParams}}
+        {{.}}{{end}}
     }
 
-    // Add query if any
-    if err := addQueries(req.URL, map[string]string{ {{range .QueryParams}}
-        {{.}}{{end}}
-    }); err != nil {
-        return fmt.Errorf("adding queries to URL failed: %v", err)
-    }{{end}}
+    req, err := buildRequest(nil, "{{.HTTPMethod}}", uri, pathParams, queryParams)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
 
     // Send the request.
     resp, err := c.client.Do(req)
