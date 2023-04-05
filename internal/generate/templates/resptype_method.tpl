@@ -1,27 +1,19 @@
 {{template "description" .}}func (c *Client) {{.FunctionName}}({{.ParamsString}}) (*{{.ResponseType}}, error) {
-    // Create the url.
-    path := "{{.Path}}"
-    uri := resolveRelative(c.server, path)
-
-    // Create the request.
-    req, err := http.NewRequest("{{.HTTPMethod}}", uri, nil)
-    if err != nil {
-        return nil, fmt.Errorf("error creating request: %v", err)
-    }{{if .HasParams}}
-
-    // Add the parameters to the url.
-    if err := expandURL(req.URL, map[string]string{ {{range .PathParams}}
-        {{.}}{{end}}
-    }); err != nil {
-        return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-    }
-
-    // Add query if any
-    if err := addQueries(req.URL, map[string]string{ {{range .QueryParams}}
-        {{.}}{{end}}
-    }); err != nil {
-        return nil, fmt.Errorf("adding queries to URL failed: %v", err)
-    }{{end}}
+    // Create the request
+    req, err := buildRequest(
+        nil, 
+        "{{.HTTPMethod}}", 
+        resolveRelative(c.server, "{{.Path}}"), 
+        map[string]string{ {{range .PathParams}}
+            {{.}}{{end}}
+        }, 
+        map[string]string{ {{range .QueryParams}}
+            {{.}}{{end}}
+        },
+    )
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
 
     // Send the request.
     resp, err := c.client.Do(req)

@@ -7,38 +7,29 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"net/http"
 	"strconv"
 )
 
 // LoginLocal: Authenticate a user (i.e., log in) via username and password
 func (c *Client) LoginLocal(params LoginLocalParams) error {
-	// Create the url.
-	path := "/login/{{.silo_name}}/local"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"POST",
+		resolveRelative(c.server, "/login/{{.silo_name}}/local"),
+		map[string]string{
+			"silo_name": string(params.SiloName),
+		},
+		map[string]string{},
+	)
 	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"silo_name": string(params.SiloName),
-	}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return fmt.Errorf("adding queries to URL failed: %v", err)
+		return fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -59,27 +50,19 @@ func (c *Client) LoginLocal(params LoginLocalParams) error {
 // LoginSamlBegin: Prompt user login
 // Either display a page asking a user for their credentials, or redirect them to their identity provider.
 func (c *Client) LoginSamlBegin(params LoginSamlBeginParams) error {
-	// Create the url.
-	path := "/login/{{.silo_name}}/saml/{{.provider_name}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/login/{{.silo_name}}/saml/{{.provider_name}}"),
+		map[string]string{
+			"provider_name": string(params.ProviderName),
+			"silo_name":     string(params.SiloName),
+		},
+		map[string]string{},
+	)
 	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"provider_name": string(params.ProviderName),
-		"silo_name":     string(params.SiloName),
-	}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return fmt.Errorf("adding queries to URL failed: %v", err)
+		return fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -99,28 +82,21 @@ func (c *Client) LoginSamlBegin(params LoginSamlBeginParams) error {
 
 // LoginSaml: Authenticate a user (i.e., log in) via SAML
 func (c *Client) LoginSaml(params LoginSamlParams) error {
-	// Create the url.
-	path := "/login/{{.silo_name}}/saml/{{.provider_name}}"
-	uri := resolveRelative(c.server, path)
 	b := params.Body
 
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"POST",
+		resolveRelative(c.server, "/login/{{.silo_name}}/saml/{{.provider_name}}"),
+		map[string]string{
+			"provider_name": string(params.ProviderName),
+			"silo_name":     string(params.SiloName),
+		},
+		map[string]string{},
+	)
 	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"provider_name": string(params.ProviderName),
-		"silo_name":     string(params.SiloName),
-	}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return fmt.Errorf("adding queries to URL failed: %v", err)
+		return fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -140,26 +116,18 @@ func (c *Client) LoginSaml(params LoginSamlParams) error {
 
 // SystemImageViewById: Fetch a system-wide image by id
 func (c *Client) SystemImageViewById(params SystemImageViewByIdParams) (*GlobalImage, error) {
-	// Create the url.
-	path := "/system/by-id/images/{{.id}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/system/by-id/images/{{.id}}"),
+		map[string]string{
+			"id": params.Id,
+		},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"id": params.Id,
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -193,28 +161,20 @@ func (c *Client) SystemImageViewById(params SystemImageViewByIdParams) (*GlobalI
 //
 // To iterate over all pages, use the `SystemImageListAllPages` method, instead.
 func (c *Client) SystemImageList(params SystemImageListParams) (*GlobalImageResultsPage, error) {
-	// Create the url.
-	path := "/system/images"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/system/images"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"sort_by":    string(params.SortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -270,20 +230,22 @@ func (c *Client) SystemImageListAllPages(params SystemImageListParams) (*[]Globa
 // SystemImageCreate: Create a system-wide image
 // Create a new system-wide image. This image can then be used by any user in any silo as a base for instances.
 func (c *Client) SystemImageCreate(params SystemImageCreateParams) (*GlobalImage, error) {
-	// Create the url.
-	path := "/system/images"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"POST",
+		resolveRelative(c.server, "/system/images"),
+		map[string]string{},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -315,26 +277,18 @@ func (c *Client) SystemImageCreate(params SystemImageCreateParams) (*GlobalImage
 // SystemImageView: Fetch a system-wide image
 // Returns the details of a specific system-wide image.
 func (c *Client) SystemImageView(params SystemImageViewParams) (*GlobalImage, error) {
-	// Create the url.
-	path := "/system/images/{{.image_name}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/system/images/{{.image_name}}"),
+		map[string]string{
+			"image_name": string(params.ImageName),
+		},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"image_name": string(params.ImageName),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -366,26 +320,18 @@ func (c *Client) SystemImageView(params SystemImageViewParams) (*GlobalImage, er
 // SystemImageDelete: Delete a system-wide image
 // Permanently delete a system-wide image. This operation cannot be undone. Any instances using the system-wide image will continue to run, however new instances can not be created with this image.
 func (c *Client) SystemImageDelete(params SystemImageDeleteParams) error {
-	// Create the url.
-	path := "/system/images/{{.image_name}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("DELETE", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"DELETE",
+		resolveRelative(c.server, "/system/images/{{.image_name}}"),
+		map[string]string{
+			"image_name": string(params.ImageName),
+		},
+		map[string]string{},
+	)
 	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"image_name": string(params.ImageName),
-	}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return fmt.Errorf("adding queries to URL failed: %v", err)
+		return fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -407,29 +353,21 @@ func (c *Client) SystemImageDelete(params SystemImageDeleteParams) error {
 //
 // To iterate over all pages, use the `DiskListAllPages` method, instead.
 func (c *Client) DiskList(params DiskListParams) (*DiskResultsPage, error) {
-	// Create the url.
-	path := "/v1/disks"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/disks"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"project":    string(params.Project),
+			"sort_by":    string(params.SortBy),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"project":    string(params.Project),
-		"sort_by":    string(params.SortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -483,32 +421,24 @@ func (c *Client) DiskListAllPages(params DiskListParams) (*[]Disk, error) {
 
 // DiskCreate: Create a disk
 func (c *Client) DiskCreate(params DiskCreateParams) (*Disk, error) {
-	// Create the url.
-	path := "/v1/disks"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/disks"),
+		map[string]string{},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -539,28 +469,20 @@ func (c *Client) DiskCreate(params DiskCreateParams) (*Disk, error) {
 
 // DiskView: Fetch a disk
 func (c *Client) DiskView(params DiskViewParams) (*Disk, error) {
-	// Create the url.
-	path := "/v1/disks/{{.disk}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/disks/{{.disk}}"),
+		map[string]string{
+			"disk": string(params.Disk),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"disk": string(params.Disk),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -591,28 +513,20 @@ func (c *Client) DiskView(params DiskViewParams) (*Disk, error) {
 
 // DiskDelete: Delete a disk
 func (c *Client) DiskDelete(params DiskDeleteParams) error {
-	// Create the url.
-	path := "/v1/disks/{{.disk}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("DELETE", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"DELETE",
+		resolveRelative(c.server, "/v1/disks/{{.disk}}"),
+		map[string]string{
+			"disk": string(params.Disk),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
 	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"disk": string(params.Disk),
-	}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-	}); err != nil {
-		return fmt.Errorf("adding queries to URL failed: %v", err)
+		return fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -632,34 +546,26 @@ func (c *Client) DiskDelete(params DiskDeleteParams) error {
 
 // DiskBulkWriteImport: Import blocks into a disk
 func (c *Client) DiskBulkWriteImport(params DiskBulkWriteImportParams) error {
-	// Create the url.
-	path := "/v1/disks/{{.disk}}/bulk-write"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/disks/{{.disk}}/bulk-write"),
+		map[string]string{
+			"disk": string(params.Disk),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
 	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"disk": string(params.Disk),
-	}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-	}); err != nil {
-		return fmt.Errorf("adding queries to URL failed: %v", err)
+		return fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -679,28 +585,20 @@ func (c *Client) DiskBulkWriteImport(params DiskBulkWriteImportParams) error {
 
 // DiskBulkWriteImportStart: Start the process of importing blocks into a disk
 func (c *Client) DiskBulkWriteImportStart(params DiskBulkWriteImportStartParams) error {
-	// Create the url.
-	path := "/v1/disks/{{.disk}}/bulk-write-start"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"POST",
+		resolveRelative(c.server, "/v1/disks/{{.disk}}/bulk-write-start"),
+		map[string]string{
+			"disk": string(params.Disk),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
 	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"disk": string(params.Disk),
-	}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-	}); err != nil {
-		return fmt.Errorf("adding queries to URL failed: %v", err)
+		return fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -720,28 +618,20 @@ func (c *Client) DiskBulkWriteImportStart(params DiskBulkWriteImportStartParams)
 
 // DiskBulkWriteImportStop: Stop the process of importing blocks into a disk
 func (c *Client) DiskBulkWriteImportStop(params DiskBulkWriteImportStopParams) error {
-	// Create the url.
-	path := "/v1/disks/{{.disk}}/bulk-write-stop"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"POST",
+		resolveRelative(c.server, "/v1/disks/{{.disk}}/bulk-write-stop"),
+		map[string]string{
+			"disk": string(params.Disk),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
 	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"disk": string(params.Disk),
-	}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-	}); err != nil {
-		return fmt.Errorf("adding queries to URL failed: %v", err)
+		return fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -761,29 +651,21 @@ func (c *Client) DiskBulkWriteImportStop(params DiskBulkWriteImportStopParams) e
 
 // DiskFinalizeImport: Finalize disk when imports are done
 func (c *Client) DiskFinalizeImport(params DiskFinalizeImportParams) error {
-	// Create the url.
-	path := "/v1/disks/{{.disk}}/finalize"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"POST",
+		resolveRelative(c.server, "/v1/disks/{{.disk}}/finalize"),
+		map[string]string{
+			"disk": string(params.Disk),
+		},
+		map[string]string{
+			"project":       string(params.Project),
+			"snapshot_name": params.SnapshotName,
+		},
+	)
 	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"disk": string(params.Disk),
-	}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project":       string(params.Project),
-		"snapshot_name": params.SnapshotName,
-	}); err != nil {
-		return fmt.Errorf("adding queries to URL failed: %v", err)
+		return fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -803,34 +685,26 @@ func (c *Client) DiskFinalizeImport(params DiskFinalizeImportParams) error {
 
 // DiskImportBlocksFromUrl: Send request to import blocks from URL
 func (c *Client) DiskImportBlocksFromUrl(params DiskImportBlocksFromUrlParams) error {
-	// Create the url.
-	path := "/v1/disks/{{.disk}}/import"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/disks/{{.disk}}/import"),
+		map[string]string{
+			"disk": string(params.Disk),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
 	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"disk": string(params.Disk),
-	}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-	}); err != nil {
-		return fmt.Errorf("adding queries to URL failed: %v", err)
+		return fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -852,33 +726,25 @@ func (c *Client) DiskImportBlocksFromUrl(params DiskImportBlocksFromUrlParams) e
 //
 // To iterate over all pages, use the `DiskMetricsListAllPages` method, instead.
 func (c *Client) DiskMetricsList(params DiskMetricsListParams) (*MeasurementResultsPage, error) {
-	// Create the url.
-	path := "/v1/disks/{{.disk}}/metrics/{{.metric}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/disks/{{.disk}}/metrics/{{.metric}}"),
+		map[string]string{
+			"disk":   string(params.Disk),
+			"metric": string(params.Metric),
+		},
+		map[string]string{
+			"end_time":   params.EndTime.String(),
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"project":    string(params.Project),
+			"start_time": params.StartTime.String(),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"disk":   string(params.Disk),
-		"metric": string(params.Metric),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"end_time":   params.EndTime.String(),
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"project":    string(params.Project),
-		"start_time": params.StartTime.String(),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -934,28 +800,20 @@ func (c *Client) DiskMetricsListAllPages(params DiskMetricsListParams) (*[]Measu
 //
 // To iterate over all pages, use the `GroupListAllPages` method, instead.
 func (c *Client) GroupList(params GroupListParams) (*GroupResultsPage, error) {
-	// Create the url.
-	path := "/v1/groups"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/groups"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"sort_by":    string(params.SortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -1009,26 +867,18 @@ func (c *Client) GroupListAllPages(params GroupListParams) (*[]Group, error) {
 
 // GroupView: Fetch group
 func (c *Client) GroupView(params GroupViewParams) (*Group, error) {
-	// Create the url.
-	path := "/v1/groups/{{.group}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/groups/{{.group}}"),
+		map[string]string{
+			"group": params.Group,
+		},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"group": params.Group,
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -1062,29 +912,21 @@ func (c *Client) GroupView(params GroupViewParams) (*Group, error) {
 //
 // To iterate over all pages, use the `ImageListAllPages` method, instead.
 func (c *Client) ImageList(params ImageListParams) (*ImageResultsPage, error) {
-	// Create the url.
-	path := "/v1/images"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/images"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"project":    string(params.Project),
+			"sort_by":    string(params.SortBy),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"project":    string(params.Project),
-		"sort_by":    string(params.SortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -1140,32 +982,24 @@ func (c *Client) ImageListAllPages(params ImageListParams) (*[]Image, error) {
 // ImageCreate: Create an image
 // Create a new image in a project.
 func (c *Client) ImageCreate(params ImageCreateParams) (*Image, error) {
-	// Create the url.
-	path := "/v1/images"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/images"),
+		map[string]string{},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -1197,28 +1031,20 @@ func (c *Client) ImageCreate(params ImageCreateParams) (*Image, error) {
 // ImageView: Fetch an image
 // Fetch the details for a specific image in a project.
 func (c *Client) ImageView(params ImageViewParams) (*Image, error) {
-	// Create the url.
-	path := "/v1/images/{{.image}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/images/{{.image}}"),
+		map[string]string{
+			"image": string(params.Image),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"image": string(params.Image),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -1250,28 +1076,20 @@ func (c *Client) ImageView(params ImageViewParams) (*Image, error) {
 // ImageDelete: Delete an image
 // Permanently delete an image from a project. This operation cannot be undone. Any instances in the project using the image will continue to run, however new instances can not be created with this image.
 func (c *Client) ImageDelete(params ImageDeleteParams) error {
-	// Create the url.
-	path := "/v1/images/{{.image}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("DELETE", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"DELETE",
+		resolveRelative(c.server, "/v1/images/{{.image}}"),
+		map[string]string{
+			"image": string(params.Image),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
 	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"image": string(params.Image),
-	}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-	}); err != nil {
-		return fmt.Errorf("adding queries to URL failed: %v", err)
+		return fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -1293,29 +1111,21 @@ func (c *Client) ImageDelete(params ImageDeleteParams) error {
 //
 // To iterate over all pages, use the `InstanceListAllPages` method, instead.
 func (c *Client) InstanceList(params InstanceListParams) (*InstanceResultsPage, error) {
-	// Create the url.
-	path := "/v1/instances"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/instances"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"project":    string(params.Project),
+			"sort_by":    string(params.SortBy),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"project":    string(params.Project),
-		"sort_by":    string(params.SortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -1369,32 +1179,24 @@ func (c *Client) InstanceListAllPages(params InstanceListParams) (*[]Instance, e
 
 // InstanceCreate: Create an instance
 func (c *Client) InstanceCreate(params InstanceCreateParams) (*Instance, error) {
-	// Create the url.
-	path := "/v1/instances"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/instances"),
+		map[string]string{},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -1425,28 +1227,20 @@ func (c *Client) InstanceCreate(params InstanceCreateParams) (*Instance, error) 
 
 // InstanceView: Fetch an instance
 func (c *Client) InstanceView(params InstanceViewParams) (*Instance, error) {
-	// Create the url.
-	path := "/v1/instances/{{.instance}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/instances/{{.instance}}"),
+		map[string]string{
+			"instance": string(params.Instance),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"instance": string(params.Instance),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -1477,28 +1271,20 @@ func (c *Client) InstanceView(params InstanceViewParams) (*Instance, error) {
 
 // InstanceDelete: Delete an instance
 func (c *Client) InstanceDelete(params InstanceDeleteParams) error {
-	// Create the url.
-	path := "/v1/instances/{{.instance}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("DELETE", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"DELETE",
+		resolveRelative(c.server, "/v1/instances/{{.instance}}"),
+		map[string]string{
+			"instance": string(params.Instance),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
 	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"instance": string(params.Instance),
-	}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-	}); err != nil {
-		return fmt.Errorf("adding queries to URL failed: %v", err)
+		return fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -1520,31 +1306,23 @@ func (c *Client) InstanceDelete(params InstanceDeleteParams) error {
 //
 // To iterate over all pages, use the `InstanceDiskListAllPages` method, instead.
 func (c *Client) InstanceDiskList(params InstanceDiskListParams) (*DiskResultsPage, error) {
-	// Create the url.
-	path := "/v1/instances/{{.instance}}/disks"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/instances/{{.instance}}/disks"),
+		map[string]string{
+			"instance": string(params.Instance),
+		},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"project":    string(params.Project),
+			"sort_by":    string(params.SortBy),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"instance": string(params.Instance),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"project":    string(params.Project),
-		"sort_by":    string(params.SortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -1598,34 +1376,26 @@ func (c *Client) InstanceDiskListAllPages(params InstanceDiskListParams) (*[]Dis
 
 // InstanceDiskAttach: Attach a disk to an instance
 func (c *Client) InstanceDiskAttach(params InstanceDiskAttachParams) (*Disk, error) {
-	// Create the url.
-	path := "/v1/instances/{{.instance}}/disks/attach"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/instances/{{.instance}}/disks/attach"),
+		map[string]string{
+			"instance": string(params.Instance),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"instance": string(params.Instance),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -1656,34 +1426,26 @@ func (c *Client) InstanceDiskAttach(params InstanceDiskAttachParams) (*Disk, err
 
 // InstanceDiskDetach: Detach a disk from an instance
 func (c *Client) InstanceDiskDetach(params InstanceDiskDetachParams) (*Disk, error) {
-	// Create the url.
-	path := "/v1/instances/{{.instance}}/disks/detach"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/instances/{{.instance}}/disks/detach"),
+		map[string]string{
+			"instance": string(params.Instance),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"instance": string(params.Instance),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -1714,28 +1476,20 @@ func (c *Client) InstanceDiskDetach(params InstanceDiskDetachParams) (*Disk, err
 
 // InstanceExternalIpList: List external IP addresses
 func (c *Client) InstanceExternalIpList(params InstanceExternalIpListParams) (*ExternalIpResultsPage, error) {
-	// Create the url.
-	path := "/v1/instances/{{.instance}}/external-ips"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/instances/{{.instance}}/external-ips"),
+		map[string]string{
+			"instance": string(params.Instance),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"instance": string(params.Instance),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -1766,34 +1520,26 @@ func (c *Client) InstanceExternalIpList(params InstanceExternalIpListParams) (*E
 
 // InstanceMigrate: Migrate an instance
 func (c *Client) InstanceMigrate(params InstanceMigrateParams) (*Instance, error) {
-	// Create the url.
-	path := "/v1/instances/{{.instance}}/migrate"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/instances/{{.instance}}/migrate"),
+		map[string]string{
+			"instance": string(params.Instance),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"instance": string(params.Instance),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -1824,28 +1570,20 @@ func (c *Client) InstanceMigrate(params InstanceMigrateParams) (*Instance, error
 
 // InstanceReboot: Reboot an instance
 func (c *Client) InstanceReboot(params InstanceRebootParams) (*Instance, error) {
-	// Create the url.
-	path := "/v1/instances/{{.instance}}/reboot"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"POST",
+		resolveRelative(c.server, "/v1/instances/{{.instance}}/reboot"),
+		map[string]string{
+			"instance": string(params.Instance),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"instance": string(params.Instance),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -1876,31 +1614,23 @@ func (c *Client) InstanceReboot(params InstanceRebootParams) (*Instance, error) 
 
 // InstanceSerialConsole: Fetch an instance's serial console
 func (c *Client) InstanceSerialConsole(params InstanceSerialConsoleParams) (*InstanceSerialConsoleData, error) {
-	// Create the url.
-	path := "/v1/instances/{{.instance}}/serial-console"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/instances/{{.instance}}/serial-console"),
+		map[string]string{
+			"instance": string(params.Instance),
+		},
+		map[string]string{
+			"from_start":  strconv.Itoa(params.FromStart),
+			"max_bytes":   strconv.Itoa(params.MaxBytes),
+			"most_recent": strconv.Itoa(params.MostRecent),
+			"project":     string(params.Project),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"instance": string(params.Instance),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"from_start":  strconv.Itoa(params.FromStart),
-		"max_bytes":   strconv.Itoa(params.MaxBytes),
-		"most_recent": strconv.Itoa(params.MostRecent),
-		"project":     string(params.Project),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -1931,31 +1661,23 @@ func (c *Client) InstanceSerialConsole(params InstanceSerialConsoleParams) (*Ins
 
 // InstanceSerialConsoleStream: Stream an instance's serial console
 func (c *Client) InstanceSerialConsoleStream(params InstanceSerialConsoleStreamParams) error {
-	// Create the url.
-	path := "/v1/instances/{{.instance}}/serial-console/stream"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/instances/{{.instance}}/serial-console/stream"),
+		map[string]string{
+			"instance": string(params.Instance),
+		},
+		map[string]string{
+			"from_start":  strconv.Itoa(params.FromStart),
+			"max_bytes":   strconv.Itoa(params.MaxBytes),
+			"most_recent": strconv.Itoa(params.MostRecent),
+			"project":     string(params.Project),
+		},
+	)
 	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"instance": string(params.Instance),
-	}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"from_start":  strconv.Itoa(params.FromStart),
-		"max_bytes":   strconv.Itoa(params.MaxBytes),
-		"most_recent": strconv.Itoa(params.MostRecent),
-		"project":     string(params.Project),
-	}); err != nil {
-		return fmt.Errorf("adding queries to URL failed: %v", err)
+		return fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -1975,28 +1697,20 @@ func (c *Client) InstanceSerialConsoleStream(params InstanceSerialConsoleStreamP
 
 // InstanceStart: Boot an instance
 func (c *Client) InstanceStart(params InstanceStartParams) (*Instance, error) {
-	// Create the url.
-	path := "/v1/instances/{{.instance}}/start"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"POST",
+		resolveRelative(c.server, "/v1/instances/{{.instance}}/start"),
+		map[string]string{
+			"instance": string(params.Instance),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"instance": string(params.Instance),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -2027,28 +1741,20 @@ func (c *Client) InstanceStart(params InstanceStartParams) (*Instance, error) {
 
 // InstanceStop: Stop an instance
 func (c *Client) InstanceStop(params InstanceStopParams) (*Instance, error) {
-	// Create the url.
-	path := "/v1/instances/{{.instance}}/stop"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"POST",
+		resolveRelative(c.server, "/v1/instances/{{.instance}}/stop"),
+		map[string]string{
+			"instance": string(params.Instance),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"instance": string(params.Instance),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -2079,14 +1785,16 @@ func (c *Client) InstanceStop(params InstanceStopParams) (*Instance, error) {
 
 // CurrentUserView: Fetch the user associated with the current session
 func (c *Client) CurrentUserView() (*CurrentUser, error) {
-	// Create the url.
-	path := "/v1/me"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/me"),
+		map[string]string{},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -2119,28 +1827,20 @@ func (c *Client) CurrentUserView() (*CurrentUser, error) {
 //
 // To iterate over all pages, use the `CurrentUserGroupsAllPages` method, instead.
 func (c *Client) CurrentUserGroups(params CurrentUserGroupsParams) (*GroupResultsPage, error) {
-	// Create the url.
-	path := "/v1/me/groups"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/me/groups"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"sort_by":    string(params.SortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -2197,28 +1897,20 @@ func (c *Client) CurrentUserGroupsAllPages(params CurrentUserGroupsParams) (*[]G
 //
 // To iterate over all pages, use the `CurrentUserSshKeyListAllPages` method, instead.
 func (c *Client) CurrentUserSshKeyList(params CurrentUserSshKeyListParams) (*SshKeyResultsPage, error) {
-	// Create the url.
-	path := "/v1/me/ssh-keys"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/me/ssh-keys"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"sort_by":    string(params.SortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -2274,20 +1966,22 @@ func (c *Client) CurrentUserSshKeyListAllPages(params CurrentUserSshKeyListParam
 // CurrentUserSshKeyCreate: Create an SSH public key
 // Create an SSH public key for the currently authenticated user.
 func (c *Client) CurrentUserSshKeyCreate(params CurrentUserSshKeyCreateParams) (*SshKey, error) {
-	// Create the url.
-	path := "/v1/me/ssh-keys"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/me/ssh-keys"),
+		map[string]string{},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -2319,26 +2013,18 @@ func (c *Client) CurrentUserSshKeyCreate(params CurrentUserSshKeyCreateParams) (
 // CurrentUserSshKeyView: Fetch an SSH public key
 // Fetch an SSH public key associated with the currently authenticated user.
 func (c *Client) CurrentUserSshKeyView(params CurrentUserSshKeyViewParams) (*SshKey, error) {
-	// Create the url.
-	path := "/v1/me/ssh-keys/{{.ssh_key}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/me/ssh-keys/{{.ssh_key}}"),
+		map[string]string{
+			"ssh_key": string(params.SshKey),
+		},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"ssh_key": string(params.SshKey),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -2370,26 +2056,18 @@ func (c *Client) CurrentUserSshKeyView(params CurrentUserSshKeyViewParams) (*Ssh
 // CurrentUserSshKeyDelete: Delete an SSH public key
 // Delete an SSH public key associated with the currently authenticated user.
 func (c *Client) CurrentUserSshKeyDelete(params CurrentUserSshKeyDeleteParams) error {
-	// Create the url.
-	path := "/v1/me/ssh-keys/{{.ssh_key}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("DELETE", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"DELETE",
+		resolveRelative(c.server, "/v1/me/ssh-keys/{{.ssh_key}}"),
+		map[string]string{
+			"ssh_key": string(params.SshKey),
+		},
+		map[string]string{},
+	)
 	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"ssh_key": string(params.SshKey),
-	}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return fmt.Errorf("adding queries to URL failed: %v", err)
+		return fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -2411,30 +2089,22 @@ func (c *Client) CurrentUserSshKeyDelete(params CurrentUserSshKeyDeleteParams) e
 //
 // To iterate over all pages, use the `InstanceNetworkInterfaceListAllPages` method, instead.
 func (c *Client) InstanceNetworkInterfaceList(params InstanceNetworkInterfaceListParams) (*NetworkInterfaceResultsPage, error) {
-	// Create the url.
-	path := "/v1/network-interfaces"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/network-interfaces"),
+		map[string]string{},
+		map[string]string{
+			"instance":   string(params.Instance),
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"project":    string(params.Project),
+			"sort_by":    string(params.SortBy),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"instance":   string(params.Instance),
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"project":    string(params.Project),
-		"sort_by":    string(params.SortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -2488,33 +2158,25 @@ func (c *Client) InstanceNetworkInterfaceListAllPages(params InstanceNetworkInte
 
 // InstanceNetworkInterfaceCreate: Create a network interface
 func (c *Client) InstanceNetworkInterfaceCreate(params InstanceNetworkInterfaceCreateParams) (*NetworkInterface, error) {
-	// Create the url.
-	path := "/v1/network-interfaces"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/network-interfaces"),
+		map[string]string{},
+		map[string]string{
+			"instance": string(params.Instance),
+			"project":  string(params.Project),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"instance": string(params.Instance),
-		"project":  string(params.Project),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -2545,29 +2207,21 @@ func (c *Client) InstanceNetworkInterfaceCreate(params InstanceNetworkInterfaceC
 
 // InstanceNetworkInterfaceView: Fetch a network interface
 func (c *Client) InstanceNetworkInterfaceView(params InstanceNetworkInterfaceViewParams) (*NetworkInterface, error) {
-	// Create the url.
-	path := "/v1/network-interfaces/{{.interface}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/network-interfaces/{{.interface}}"),
+		map[string]string{
+			"interface": string(params.Interface),
+		},
+		map[string]string{
+			"instance": string(params.Instance),
+			"project":  string(params.Project),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"interface": string(params.Interface),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"instance": string(params.Instance),
-		"project":  string(params.Project),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -2598,35 +2252,27 @@ func (c *Client) InstanceNetworkInterfaceView(params InstanceNetworkInterfaceVie
 
 // InstanceNetworkInterfaceUpdate: Update a network interface
 func (c *Client) InstanceNetworkInterfaceUpdate(params InstanceNetworkInterfaceUpdateParams) (*NetworkInterface, error) {
-	// Create the url.
-	path := "/v1/network-interfaces/{{.interface}}"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("PUT", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"PUT",
+		resolveRelative(c.server, "/v1/network-interfaces/{{.interface}}"),
+		map[string]string{
+			"interface": string(params.Interface),
+		},
+		map[string]string{
+			"instance": string(params.Instance),
+			"project":  string(params.Project),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"interface": string(params.Interface),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"instance": string(params.Instance),
-		"project":  string(params.Project),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -2658,29 +2304,21 @@ func (c *Client) InstanceNetworkInterfaceUpdate(params InstanceNetworkInterfaceU
 // InstanceNetworkInterfaceDelete: Delete a network interface
 // Note that the primary interface for an instance cannot be deleted if there are any secondary interfaces. A new primary interface must be designated first. The primary interface can be deleted if there are no secondary interfaces.
 func (c *Client) InstanceNetworkInterfaceDelete(params InstanceNetworkInterfaceDeleteParams) error {
-	// Create the url.
-	path := "/v1/network-interfaces/{{.interface}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("DELETE", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"DELETE",
+		resolveRelative(c.server, "/v1/network-interfaces/{{.interface}}"),
+		map[string]string{
+			"interface": string(params.Interface),
+		},
+		map[string]string{
+			"instance": string(params.Instance),
+			"project":  string(params.Project),
+		},
+	)
 	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"interface": string(params.Interface),
-	}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"instance": string(params.Instance),
-		"project":  string(params.Project),
-	}); err != nil {
-		return fmt.Errorf("adding queries to URL failed: %v", err)
+		return fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -2700,14 +2338,16 @@ func (c *Client) InstanceNetworkInterfaceDelete(params InstanceNetworkInterfaceD
 
 // PolicyView: Fetch the current silo's IAM policy
 func (c *Client) PolicyView() (*SiloRolePolicy, error) {
-	// Create the url.
-	path := "/v1/policy"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/policy"),
+		map[string]string{},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -2738,20 +2378,22 @@ func (c *Client) PolicyView() (*SiloRolePolicy, error) {
 
 // PolicyUpdate: Update the current silo's IAM policy
 func (c *Client) PolicyUpdate(params PolicyUpdateParams) (*SiloRolePolicy, error) {
-	// Create the url.
-	path := "/v1/policy"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("PUT", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"PUT",
+		resolveRelative(c.server, "/v1/policy"),
+		map[string]string{},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -2784,28 +2426,20 @@ func (c *Client) PolicyUpdate(params PolicyUpdateParams) (*SiloRolePolicy, error
 //
 // To iterate over all pages, use the `ProjectListAllPages` method, instead.
 func (c *Client) ProjectList(params ProjectListParams) (*ProjectResultsPage, error) {
-	// Create the url.
-	path := "/v1/projects"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/projects"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"sort_by":    string(params.SortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -2859,20 +2493,22 @@ func (c *Client) ProjectListAllPages(params ProjectListParams) (*[]Project, erro
 
 // ProjectCreate: Create a project
 func (c *Client) ProjectCreate(params ProjectCreateParams) (*Project, error) {
-	// Create the url.
-	path := "/v1/projects"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/projects"),
+		map[string]string{},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -2903,26 +2539,18 @@ func (c *Client) ProjectCreate(params ProjectCreateParams) (*Project, error) {
 
 // ProjectView: Fetch a project
 func (c *Client) ProjectView(params ProjectViewParams) (*Project, error) {
-	// Create the url.
-	path := "/v1/projects/{{.project}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/projects/{{.project}}"),
+		map[string]string{
+			"project": string(params.Project),
+		},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"project": string(params.Project),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -2953,32 +2581,24 @@ func (c *Client) ProjectView(params ProjectViewParams) (*Project, error) {
 
 // ProjectUpdate: Update a project
 func (c *Client) ProjectUpdate(params ProjectUpdateParams) (*Project, error) {
-	// Create the url.
-	path := "/v1/projects/{{.project}}"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("PUT", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"PUT",
+		resolveRelative(c.server, "/v1/projects/{{.project}}"),
+		map[string]string{
+			"project": string(params.Project),
+		},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"project": string(params.Project),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -3009,26 +2629,18 @@ func (c *Client) ProjectUpdate(params ProjectUpdateParams) (*Project, error) {
 
 // ProjectDelete: Delete a project
 func (c *Client) ProjectDelete(params ProjectDeleteParams) error {
-	// Create the url.
-	path := "/v1/projects/{{.project}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("DELETE", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"DELETE",
+		resolveRelative(c.server, "/v1/projects/{{.project}}"),
+		map[string]string{
+			"project": string(params.Project),
+		},
+		map[string]string{},
+	)
 	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"project": string(params.Project),
-	}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return fmt.Errorf("adding queries to URL failed: %v", err)
+		return fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -3048,26 +2660,18 @@ func (c *Client) ProjectDelete(params ProjectDeleteParams) error {
 
 // ProjectPolicyView: Fetch a project's IAM policy
 func (c *Client) ProjectPolicyView(params ProjectPolicyViewParams) (*ProjectRolePolicy, error) {
-	// Create the url.
-	path := "/v1/projects/{{.project}}/policy"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/projects/{{.project}}/policy"),
+		map[string]string{
+			"project": string(params.Project),
+		},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"project": string(params.Project),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -3098,32 +2702,24 @@ func (c *Client) ProjectPolicyView(params ProjectPolicyViewParams) (*ProjectRole
 
 // ProjectPolicyUpdate: Update a project's IAM policy
 func (c *Client) ProjectPolicyUpdate(params ProjectPolicyUpdateParams) (*ProjectRolePolicy, error) {
-	// Create the url.
-	path := "/v1/projects/{{.project}}/policy"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("PUT", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"PUT",
+		resolveRelative(c.server, "/v1/projects/{{.project}}/policy"),
+		map[string]string{
+			"project": string(params.Project),
+		},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"project": string(params.Project),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -3156,29 +2752,21 @@ func (c *Client) ProjectPolicyUpdate(params ProjectPolicyUpdateParams) (*Project
 //
 // To iterate over all pages, use the `SnapshotListAllPages` method, instead.
 func (c *Client) SnapshotList(params SnapshotListParams) (*SnapshotResultsPage, error) {
-	// Create the url.
-	path := "/v1/snapshots"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/snapshots"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"project":    string(params.Project),
+			"sort_by":    string(params.SortBy),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"project":    string(params.Project),
-		"sort_by":    string(params.SortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -3233,32 +2821,24 @@ func (c *Client) SnapshotListAllPages(params SnapshotListParams) (*[]Snapshot, e
 // SnapshotCreate: Create a snapshot
 // Creates a point-in-time snapshot from a disk.
 func (c *Client) SnapshotCreate(params SnapshotCreateParams) (*Snapshot, error) {
-	// Create the url.
-	path := "/v1/snapshots"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/snapshots"),
+		map[string]string{},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -3289,28 +2869,20 @@ func (c *Client) SnapshotCreate(params SnapshotCreateParams) (*Snapshot, error) 
 
 // SnapshotView: Fetch a snapshot
 func (c *Client) SnapshotView(params SnapshotViewParams) (*Snapshot, error) {
-	// Create the url.
-	path := "/v1/snapshots/{{.snapshot}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/snapshots/{{.snapshot}}"),
+		map[string]string{
+			"snapshot": string(params.Snapshot),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"snapshot": string(params.Snapshot),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -3341,28 +2913,20 @@ func (c *Client) SnapshotView(params SnapshotViewParams) (*Snapshot, error) {
 
 // SnapshotDelete: Delete a snapshot
 func (c *Client) SnapshotDelete(params SnapshotDeleteParams) error {
-	// Create the url.
-	path := "/v1/snapshots/{{.snapshot}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("DELETE", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"DELETE",
+		resolveRelative(c.server, "/v1/snapshots/{{.snapshot}}"),
+		map[string]string{
+			"snapshot": string(params.Snapshot),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
 	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"snapshot": string(params.Snapshot),
-	}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-	}); err != nil {
-		return fmt.Errorf("adding queries to URL failed: %v", err)
+		return fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -3385,28 +2949,20 @@ func (c *Client) SnapshotDelete(params SnapshotDeleteParams) error {
 //
 // To iterate over all pages, use the `CertificateListAllPages` method, instead.
 func (c *Client) CertificateList(params CertificateListParams) (*CertificateResultsPage, error) {
-	// Create the url.
-	path := "/v1/system/certificates"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/certificates"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"sort_by":    string(params.SortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -3462,20 +3018,22 @@ func (c *Client) CertificateListAllPages(params CertificateListParams) (*[]Certi
 // CertificateCreate: Create a new system-wide x.509 certificate.
 // This certificate is automatically used by the Oxide Control plane to serve external connections.
 func (c *Client) CertificateCreate(params CertificateCreateParams) (*Certificate, error) {
-	// Create the url.
-	path := "/v1/system/certificates"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/system/certificates"),
+		map[string]string{},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -3507,26 +3065,18 @@ func (c *Client) CertificateCreate(params CertificateCreateParams) (*Certificate
 // CertificateView: Fetch a certificate
 // Returns the details of a specific certificate
 func (c *Client) CertificateView(params CertificateViewParams) (*Certificate, error) {
-	// Create the url.
-	path := "/v1/system/certificates/{{.certificate}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/certificates/{{.certificate}}"),
+		map[string]string{
+			"certificate": string(params.Certificate),
+		},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"certificate": string(params.Certificate),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -3558,26 +3108,18 @@ func (c *Client) CertificateView(params CertificateViewParams) (*Certificate, er
 // CertificateDelete: Delete a certificate
 // Permanently delete a certificate. This operation cannot be undone.
 func (c *Client) CertificateDelete(params CertificateDeleteParams) error {
-	// Create the url.
-	path := "/v1/system/certificates/{{.certificate}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("DELETE", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"DELETE",
+		resolveRelative(c.server, "/v1/system/certificates/{{.certificate}}"),
+		map[string]string{
+			"certificate": string(params.Certificate),
+		},
+		map[string]string{},
+	)
 	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"certificate": string(params.Certificate),
-	}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return fmt.Errorf("adding queries to URL failed: %v", err)
+		return fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -3599,28 +3141,20 @@ func (c *Client) CertificateDelete(params CertificateDeleteParams) error {
 //
 // To iterate over all pages, use the `PhysicalDiskListAllPages` method, instead.
 func (c *Client) PhysicalDiskList(params PhysicalDiskListParams) (*PhysicalDiskResultsPage, error) {
-	// Create the url.
-	path := "/v1/system/hardware/disks"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/hardware/disks"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"sort_by":    string(params.SortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -3676,28 +3210,20 @@ func (c *Client) PhysicalDiskListAllPages(params PhysicalDiskListParams) (*[]Phy
 //
 // To iterate over all pages, use the `RackListAllPages` method, instead.
 func (c *Client) RackList(params RackListParams) (*RackResultsPage, error) {
-	// Create the url.
-	path := "/v1/system/hardware/racks"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/hardware/racks"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"sort_by":    string(params.SortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -3751,26 +3277,18 @@ func (c *Client) RackListAllPages(params RackListParams) (*[]Rack, error) {
 
 // RackView: Fetch a rack
 func (c *Client) RackView(params RackViewParams) (*Rack, error) {
-	// Create the url.
-	path := "/v1/system/hardware/racks/{{.rack_id}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/hardware/racks/{{.rack_id}}"),
+		map[string]string{
+			"rack_id": params.RackId,
+		},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"rack_id": params.RackId,
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -3803,28 +3321,20 @@ func (c *Client) RackView(params RackViewParams) (*Rack, error) {
 //
 // To iterate over all pages, use the `SledListAllPages` method, instead.
 func (c *Client) SledList(params SledListParams) (*SledResultsPage, error) {
-	// Create the url.
-	path := "/v1/system/hardware/sleds"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/hardware/sleds"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"sort_by":    string(params.SortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -3878,26 +3388,18 @@ func (c *Client) SledListAllPages(params SledListParams) (*[]Sled, error) {
 
 // SledView: Fetch a sled
 func (c *Client) SledView(params SledViewParams) (*Sled, error) {
-	// Create the url.
-	path := "/v1/system/hardware/sleds/{{.sled_id}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/hardware/sleds/{{.sled_id}}"),
+		map[string]string{
+			"sled_id": params.SledId,
+		},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"sled_id": params.SledId,
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -3930,30 +3432,22 @@ func (c *Client) SledView(params SledViewParams) (*Sled, error) {
 //
 // To iterate over all pages, use the `SledPhysicalDiskListAllPages` method, instead.
 func (c *Client) SledPhysicalDiskList(params SledPhysicalDiskListParams) (*PhysicalDiskResultsPage, error) {
-	// Create the url.
-	path := "/v1/system/hardware/sleds/{{.sled_id}}/disks"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/hardware/sleds/{{.sled_id}}/disks"),
+		map[string]string{
+			"sled_id": params.SledId,
+		},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"sled_id": params.SledId,
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"sort_by":    string(params.SortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -4009,29 +3503,21 @@ func (c *Client) SledPhysicalDiskListAllPages(params SledPhysicalDiskListParams)
 //
 // To iterate over all pages, use the `SiloIdentityProviderListAllPages` method, instead.
 func (c *Client) SiloIdentityProviderList(params SiloIdentityProviderListParams) (*IdentityProviderResultsPage, error) {
-	// Create the url.
-	path := "/v1/system/identity-providers"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/identity-providers"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"silo":       string(params.Silo),
+			"sort_by":    string(params.SortBy),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"silo":       string(params.Silo),
-		"sort_by":    string(params.SortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -4086,32 +3572,24 @@ func (c *Client) SiloIdentityProviderListAllPages(params SiloIdentityProviderLis
 // LocalIdpUserCreate: Create a user
 // Users can only be created in Silos with `provision_type` == `Fixed`. Otherwise, Silo users are just-in-time (JIT) provisioned when a user first logs in using an external Identity Provider.
 func (c *Client) LocalIdpUserCreate(params LocalIdpUserCreateParams) (*User, error) {
-	// Create the url.
-	path := "/v1/system/identity-providers/local/users"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/system/identity-providers/local/users"),
+		map[string]string{},
+		map[string]string{
+			"silo": string(params.Silo),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"silo": string(params.Silo),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -4142,28 +3620,20 @@ func (c *Client) LocalIdpUserCreate(params LocalIdpUserCreateParams) (*User, err
 
 // LocalIdpUserDelete: Delete a user
 func (c *Client) LocalIdpUserDelete(params LocalIdpUserDeleteParams) error {
-	// Create the url.
-	path := "/v1/system/identity-providers/local/users/{{.user_id}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("DELETE", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"DELETE",
+		resolveRelative(c.server, "/v1/system/identity-providers/local/users/{{.user_id}}"),
+		map[string]string{
+			"user_id": params.UserId,
+		},
+		map[string]string{
+			"silo": string(params.Silo),
+		},
+	)
 	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"user_id": params.UserId,
-	}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"silo": string(params.Silo),
-	}); err != nil {
-		return fmt.Errorf("adding queries to URL failed: %v", err)
+		return fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -4184,34 +3654,26 @@ func (c *Client) LocalIdpUserDelete(params LocalIdpUserDeleteParams) error {
 // LocalIdpUserSetPassword: Set or invalidate a user's password
 // Passwords can only be updated for users in Silos with identity mode `LocalOnly`.
 func (c *Client) LocalIdpUserSetPassword(params LocalIdpUserSetPasswordParams) error {
-	// Create the url.
-	path := "/v1/system/identity-providers/local/users/{{.user_id}}/set-password"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/system/identity-providers/local/users/{{.user_id}}/set-password"),
+		map[string]string{
+			"user_id": params.UserId,
+		},
+		map[string]string{
+			"silo": string(params.Silo),
+		},
+	)
 	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"user_id": params.UserId,
-	}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"silo": string(params.Silo),
-	}); err != nil {
-		return fmt.Errorf("adding queries to URL failed: %v", err)
+		return fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -4231,32 +3693,24 @@ func (c *Client) LocalIdpUserSetPassword(params LocalIdpUserSetPasswordParams) e
 
 // SamlIdentityProviderCreate: Create a SAML IDP
 func (c *Client) SamlIdentityProviderCreate(params SamlIdentityProviderCreateParams) (*SamlIdentityProvider, error) {
-	// Create the url.
-	path := "/v1/system/identity-providers/saml"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/system/identity-providers/saml"),
+		map[string]string{},
+		map[string]string{
+			"silo": string(params.Silo),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"silo": string(params.Silo),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -4287,28 +3741,20 @@ func (c *Client) SamlIdentityProviderCreate(params SamlIdentityProviderCreatePar
 
 // SamlIdentityProviderView: Fetch a SAML IDP
 func (c *Client) SamlIdentityProviderView(params SamlIdentityProviderViewParams) (*SamlIdentityProvider, error) {
-	// Create the url.
-	path := "/v1/system/identity-providers/saml/{{.provider}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/identity-providers/saml/{{.provider}}"),
+		map[string]string{
+			"provider": string(params.Provider),
+		},
+		map[string]string{
+			"silo": string(params.Silo),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"provider": string(params.Provider),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"silo": string(params.Silo),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -4341,28 +3787,20 @@ func (c *Client) SamlIdentityProviderView(params SamlIdentityProviderViewParams)
 //
 // To iterate over all pages, use the `IpPoolListAllPages` method, instead.
 func (c *Client) IpPoolList(params IpPoolListParams) (*IpPoolResultsPage, error) {
-	// Create the url.
-	path := "/v1/system/ip-pools"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/ip-pools"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"sort_by":    string(params.SortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -4416,20 +3854,22 @@ func (c *Client) IpPoolListAllPages(params IpPoolListParams) (*[]IpPool, error) 
 
 // IpPoolCreate: Create an IP pool
 func (c *Client) IpPoolCreate(params IpPoolCreateParams) (*IpPool, error) {
-	// Create the url.
-	path := "/v1/system/ip-pools"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/system/ip-pools"),
+		map[string]string{},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -4460,14 +3900,16 @@ func (c *Client) IpPoolCreate(params IpPoolCreateParams) (*IpPool, error) {
 
 // IpPoolServiceView: Fetch the IP pool used for Oxide services.
 func (c *Client) IpPoolServiceView() (*IpPool, error) {
-	// Create the url.
-	path := "/v1/system/ip-pools-service"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/ip-pools-service"),
+		map[string]string{},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -4501,27 +3943,19 @@ func (c *Client) IpPoolServiceView() (*IpPool, error) {
 //
 // To iterate over all pages, use the `IpPoolServiceRangeListAllPages` method, instead.
 func (c *Client) IpPoolServiceRangeList(params IpPoolServiceRangeListParams) (*IpPoolRangeResultsPage, error) {
-	// Create the url.
-	path := "/v1/system/ip-pools-service/ranges"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/ip-pools-service/ranges"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -4576,20 +4010,22 @@ func (c *Client) IpPoolServiceRangeListAllPages(params IpPoolServiceRangeListPar
 
 // IpPoolServiceRangeAdd: Add a range to an IP pool used for Oxide services.
 func (c *Client) IpPoolServiceRangeAdd(params IpPoolServiceRangeAddParams) (*IpPoolRange, error) {
-	// Create the url.
-	path := "/v1/system/ip-pools-service/ranges/add"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/system/ip-pools-service/ranges/add"),
+		map[string]string{},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -4620,20 +4056,22 @@ func (c *Client) IpPoolServiceRangeAdd(params IpPoolServiceRangeAddParams) (*IpP
 
 // IpPoolServiceRangeRemove: Remove a range from an IP pool used for Oxide services.
 func (c *Client) IpPoolServiceRangeRemove(params IpPoolServiceRangeRemoveParams) error {
-	// Create the url.
-	path := "/v1/system/ip-pools-service/ranges/remove"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/system/ip-pools-service/ranges/remove"),
+		map[string]string{},
+		map[string]string{},
+	)
 	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
+		return fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -4653,26 +4091,18 @@ func (c *Client) IpPoolServiceRangeRemove(params IpPoolServiceRangeRemoveParams)
 
 // IpPoolView: Fetch an IP pool
 func (c *Client) IpPoolView(params IpPoolViewParams) (*IpPool, error) {
-	// Create the url.
-	path := "/v1/system/ip-pools/{{.pool}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/ip-pools/{{.pool}}"),
+		map[string]string{
+			"pool": string(params.Pool),
+		},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"pool": string(params.Pool),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -4703,32 +4133,24 @@ func (c *Client) IpPoolView(params IpPoolViewParams) (*IpPool, error) {
 
 // IpPoolUpdate: Update an IP Pool
 func (c *Client) IpPoolUpdate(params IpPoolUpdateParams) (*IpPool, error) {
-	// Create the url.
-	path := "/v1/system/ip-pools/{{.pool}}"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("PUT", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"PUT",
+		resolveRelative(c.server, "/v1/system/ip-pools/{{.pool}}"),
+		map[string]string{
+			"pool": string(params.Pool),
+		},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"pool": string(params.Pool),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -4759,26 +4181,18 @@ func (c *Client) IpPoolUpdate(params IpPoolUpdateParams) (*IpPool, error) {
 
 // IpPoolDelete: Delete an IP Pool
 func (c *Client) IpPoolDelete(params IpPoolDeleteParams) error {
-	// Create the url.
-	path := "/v1/system/ip-pools/{{.pool}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("DELETE", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"DELETE",
+		resolveRelative(c.server, "/v1/system/ip-pools/{{.pool}}"),
+		map[string]string{
+			"pool": string(params.Pool),
+		},
+		map[string]string{},
+	)
 	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"pool": string(params.Pool),
-	}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return fmt.Errorf("adding queries to URL failed: %v", err)
+		return fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -4801,29 +4215,21 @@ func (c *Client) IpPoolDelete(params IpPoolDeleteParams) error {
 //
 // To iterate over all pages, use the `IpPoolRangeListAllPages` method, instead.
 func (c *Client) IpPoolRangeList(params IpPoolRangeListParams) (*IpPoolRangeResultsPage, error) {
-	// Create the url.
-	path := "/v1/system/ip-pools/{{.pool}}/ranges"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/ip-pools/{{.pool}}/ranges"),
+		map[string]string{
+			"pool": string(params.Pool),
+		},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"pool": string(params.Pool),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -4878,32 +4284,24 @@ func (c *Client) IpPoolRangeListAllPages(params IpPoolRangeListParams) (*[]IpPoo
 
 // IpPoolRangeAdd: Add a range to an IP pool
 func (c *Client) IpPoolRangeAdd(params IpPoolRangeAddParams) (*IpPoolRange, error) {
-	// Create the url.
-	path := "/v1/system/ip-pools/{{.pool}}/ranges/add"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/system/ip-pools/{{.pool}}/ranges/add"),
+		map[string]string{
+			"pool": string(params.Pool),
+		},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"pool": string(params.Pool),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -4934,32 +4332,24 @@ func (c *Client) IpPoolRangeAdd(params IpPoolRangeAddParams) (*IpPoolRange, erro
 
 // IpPoolRangeRemove: Remove a range from an IP pool
 func (c *Client) IpPoolRangeRemove(params IpPoolRangeRemoveParams) error {
-	// Create the url.
-	path := "/v1/system/ip-pools/{{.pool}}/ranges/remove"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/system/ip-pools/{{.pool}}/ranges/remove"),
+		map[string]string{
+			"pool": string(params.Pool),
+		},
+		map[string]string{},
+	)
 	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"pool": string(params.Pool),
-	}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return fmt.Errorf("adding queries to URL failed: %v", err)
+		return fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -4981,32 +4371,24 @@ func (c *Client) IpPoolRangeRemove(params IpPoolRangeRemoveParams) error {
 //
 // To iterate over all pages, use the `SystemMetricAllPages` method, instead.
 func (c *Client) SystemMetric(params SystemMetricParams) (*MeasurementResultsPage, error) {
-	// Create the url.
-	path := "/v1/system/metrics/{{.metric_name}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/metrics/{{.metric_name}}"),
+		map[string]string{
+			"metric_name": string(params.MetricName),
+		},
+		map[string]string{
+			"end_time":   params.EndTime.String(),
+			"id":         params.Id,
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"start_time": params.StartTime.String(),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"metric_name": string(params.MetricName),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"end_time":   params.EndTime.String(),
-		"id":         params.Id,
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"start_time": params.StartTime.String(),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -5060,14 +4442,16 @@ func (c *Client) SystemMetricAllPages(params SystemMetricParams) (*[]Measurement
 
 // SystemPolicyView: Fetch the top-level IAM policy
 func (c *Client) SystemPolicyView() (*FleetRolePolicy, error) {
-	// Create the url.
-	path := "/v1/system/policy"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/policy"),
+		map[string]string{},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -5098,20 +4482,22 @@ func (c *Client) SystemPolicyView() (*FleetRolePolicy, error) {
 
 // SystemPolicyUpdate: Update the top-level IAM policy
 func (c *Client) SystemPolicyUpdate(params SystemPolicyUpdateParams) (*FleetRolePolicy, error) {
-	// Create the url.
-	path := "/v1/system/policy"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("PUT", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"PUT",
+		resolveRelative(c.server, "/v1/system/policy"),
+		map[string]string{},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -5144,27 +4530,19 @@ func (c *Client) SystemPolicyUpdate(params SystemPolicyUpdateParams) (*FleetRole
 //
 // To iterate over all pages, use the `RoleListAllPages` method, instead.
 func (c *Client) RoleList(params RoleListParams) (*RoleResultsPage, error) {
-	// Create the url.
-	path := "/v1/system/roles"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/roles"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -5218,26 +4596,18 @@ func (c *Client) RoleListAllPages(params RoleListParams) (*[]Role, error) {
 
 // RoleView: Fetch a built-in role
 func (c *Client) RoleView(params RoleViewParams) (*Role, error) {
-	// Create the url.
-	path := "/v1/system/roles/{{.role_name}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/roles/{{.role_name}}"),
+		map[string]string{
+			"role_name": params.RoleName,
+		},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"role_name": params.RoleName,
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -5270,28 +4640,20 @@ func (c *Client) RoleView(params RoleViewParams) (*Role, error) {
 //
 // To iterate over all pages, use the `SagaListAllPages` method, instead.
 func (c *Client) SagaList(params SagaListParams) (*SagaResultsPage, error) {
-	// Create the url.
-	path := "/v1/system/sagas"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/sagas"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"sort_by":    string(params.SortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -5345,26 +4707,18 @@ func (c *Client) SagaListAllPages(params SagaListParams) (*[]Saga, error) {
 
 // SagaView: Fetch a saga
 func (c *Client) SagaView(params SagaViewParams) (*Saga, error) {
-	// Create the url.
-	path := "/v1/system/sagas/{{.saga_id}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/sagas/{{.saga_id}}"),
+		map[string]string{
+			"saga_id": params.SagaId,
+		},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"saga_id": params.SagaId,
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -5398,28 +4752,20 @@ func (c *Client) SagaView(params SagaViewParams) (*Saga, error) {
 //
 // To iterate over all pages, use the `SiloListAllPages` method, instead.
 func (c *Client) SiloList(params SiloListParams) (*SiloResultsPage, error) {
-	// Create the url.
-	path := "/v1/system/silos"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/silos"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"sort_by":    string(params.SortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -5474,20 +4820,22 @@ func (c *Client) SiloListAllPages(params SiloListParams) (*[]Silo, error) {
 
 // SiloCreate: Create a silo
 func (c *Client) SiloCreate(params SiloCreateParams) (*Silo, error) {
-	// Create the url.
-	path := "/v1/system/silos"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/system/silos"),
+		map[string]string{},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -5519,26 +4867,18 @@ func (c *Client) SiloCreate(params SiloCreateParams) (*Silo, error) {
 // SiloView: Fetch a silo
 // Fetch a silo by name.
 func (c *Client) SiloView(params SiloViewParams) (*Silo, error) {
-	// Create the url.
-	path := "/v1/system/silos/{{.silo}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/silos/{{.silo}}"),
+		map[string]string{
+			"silo": string(params.Silo),
+		},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"silo": string(params.Silo),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -5570,26 +4910,18 @@ func (c *Client) SiloView(params SiloViewParams) (*Silo, error) {
 // SiloDelete: Delete a silo
 // Delete a silo by name.
 func (c *Client) SiloDelete(params SiloDeleteParams) error {
-	// Create the url.
-	path := "/v1/system/silos/{{.silo}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("DELETE", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"DELETE",
+		resolveRelative(c.server, "/v1/system/silos/{{.silo}}"),
+		map[string]string{
+			"silo": string(params.Silo),
+		},
+		map[string]string{},
+	)
 	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"silo": string(params.Silo),
-	}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return fmt.Errorf("adding queries to URL failed: %v", err)
+		return fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -5609,26 +4941,18 @@ func (c *Client) SiloDelete(params SiloDeleteParams) error {
 
 // SiloPolicyView: Fetch a silo's IAM policy
 func (c *Client) SiloPolicyView(params SiloPolicyViewParams) (*SiloRolePolicy, error) {
-	// Create the url.
-	path := "/v1/system/silos/{{.silo}}/policy"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/silos/{{.silo}}/policy"),
+		map[string]string{
+			"silo": string(params.Silo),
+		},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"silo": string(params.Silo),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -5659,32 +4983,24 @@ func (c *Client) SiloPolicyView(params SiloPolicyViewParams) (*SiloRolePolicy, e
 
 // SiloPolicyUpdate: Update a silo's IAM policy
 func (c *Client) SiloPolicyUpdate(params SiloPolicyUpdateParams) (*SiloRolePolicy, error) {
-	// Create the url.
-	path := "/v1/system/silos/{{.silo}}/policy"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("PUT", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"PUT",
+		resolveRelative(c.server, "/v1/system/silos/{{.silo}}/policy"),
+		map[string]string{
+			"silo": string(params.Silo),
+		},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"silo": string(params.Silo),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -5717,28 +5033,20 @@ func (c *Client) SiloPolicyUpdate(params SiloPolicyUpdateParams) (*SiloRolePolic
 //
 // To iterate over all pages, use the `SystemComponentVersionListAllPages` method, instead.
 func (c *Client) SystemComponentVersionList(params SystemComponentVersionListParams) (*UpdateableComponentResultsPage, error) {
-	// Create the url.
-	path := "/v1/system/update/components"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/update/components"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"sort_by":    string(params.SortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -5794,28 +5102,20 @@ func (c *Client) SystemComponentVersionListAllPages(params SystemComponentVersio
 //
 // To iterate over all pages, use the `UpdateDeploymentsListAllPages` method, instead.
 func (c *Client) UpdateDeploymentsList(params UpdateDeploymentsListParams) (*UpdateDeploymentResultsPage, error) {
-	// Create the url.
-	path := "/v1/system/update/deployments"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/update/deployments"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"sort_by":    string(params.SortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -5869,26 +5169,18 @@ func (c *Client) UpdateDeploymentsListAllPages(params UpdateDeploymentsListParam
 
 // UpdateDeploymentView: Fetch a system update deployment
 func (c *Client) UpdateDeploymentView(params UpdateDeploymentViewParams) (*UpdateDeployment, error) {
-	// Create the url.
-	path := "/v1/system/update/deployments/{{.id}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/update/deployments/{{.id}}"),
+		map[string]string{
+			"id": params.Id,
+		},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"id": params.Id,
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -5919,14 +5211,16 @@ func (c *Client) UpdateDeploymentView(params UpdateDeploymentViewParams) (*Updat
 
 // SystemUpdateRefresh: Refresh update data
 func (c *Client) SystemUpdateRefresh() error {
-	// Create the url.
-	path := "/v1/system/update/refresh"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"POST",
+		resolveRelative(c.server, "/v1/system/update/refresh"),
+		map[string]string{},
+		map[string]string{},
+	)
 	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
+		return fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -5946,20 +5240,22 @@ func (c *Client) SystemUpdateRefresh() error {
 
 // SystemUpdateStart: Start system update
 func (c *Client) SystemUpdateStart(params SystemUpdateStartParams) (*UpdateDeployment, error) {
-	// Create the url.
-	path := "/v1/system/update/start"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/system/update/start"),
+		map[string]string{},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -5991,14 +5287,16 @@ func (c *Client) SystemUpdateStart(params SystemUpdateStartParams) (*UpdateDeplo
 // SystemUpdateStop: Stop system update
 // If there is no update in progress, do nothing.
 func (c *Client) SystemUpdateStop() error {
-	// Create the url.
-	path := "/v1/system/update/stop"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"POST",
+		resolveRelative(c.server, "/v1/system/update/stop"),
+		map[string]string{},
+		map[string]string{},
+	)
 	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
+		return fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -6020,28 +5318,20 @@ func (c *Client) SystemUpdateStop() error {
 //
 // To iterate over all pages, use the `SystemUpdateListAllPages` method, instead.
 func (c *Client) SystemUpdateList(params SystemUpdateListParams) (*SystemUpdateResultsPage, error) {
-	// Create the url.
-	path := "/v1/system/update/updates"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/update/updates"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"sort_by":    string(params.SortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -6095,26 +5385,18 @@ func (c *Client) SystemUpdateListAllPages(params SystemUpdateListParams) (*[]Sys
 
 // SystemUpdateView: View system update
 func (c *Client) SystemUpdateView(params SystemUpdateViewParams) (*SystemUpdate, error) {
-	// Create the url.
-	path := "/v1/system/update/updates/{{.version}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/update/updates/{{.version}}"),
+		map[string]string{
+			"version": string(params.Version),
+		},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"version": string(params.Version),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -6145,26 +5427,18 @@ func (c *Client) SystemUpdateView(params SystemUpdateViewParams) (*SystemUpdate,
 
 // SystemUpdateComponentsList: View system update component tree
 func (c *Client) SystemUpdateComponentsList(params SystemUpdateComponentsListParams) (*ComponentUpdateResultsPage, error) {
-	// Create the url.
-	path := "/v1/system/update/updates/{{.version}}/components"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/update/updates/{{.version}}/components"),
+		map[string]string{
+			"version": string(params.Version),
+		},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"version": string(params.Version),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -6195,14 +5469,16 @@ func (c *Client) SystemUpdateComponentsList(params SystemUpdateComponentsListPar
 
 // SystemVersion: View system version and update status
 func (c *Client) SystemVersion() (*SystemVersion, error) {
-	// Create the url.
-	path := "/v1/system/update/version"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/update/version"),
+		map[string]string{},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -6235,29 +5511,21 @@ func (c *Client) SystemVersion() (*SystemVersion, error) {
 //
 // To iterate over all pages, use the `SiloUserListAllPages` method, instead.
 func (c *Client) SiloUserList(params SiloUserListParams) (*UserResultsPage, error) {
-	// Create the url.
-	path := "/v1/system/users"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/users"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"silo":       string(params.Silo),
+			"sort_by":    string(params.SortBy),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"silo":       string(params.Silo),
-		"sort_by":    string(params.SortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -6313,28 +5581,20 @@ func (c *Client) SiloUserListAllPages(params SiloUserListParams) (*[]User, error
 //
 // To iterate over all pages, use the `UserBuiltinListAllPages` method, instead.
 func (c *Client) UserBuiltinList(params UserBuiltinListParams) (*UserBuiltinResultsPage, error) {
-	// Create the url.
-	path := "/v1/system/users-builtin"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/users-builtin"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"sort_by":    string(params.SortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -6388,26 +5648,18 @@ func (c *Client) UserBuiltinListAllPages(params UserBuiltinListParams) (*[]UserB
 
 // UserBuiltinView: Fetch a built-in user
 func (c *Client) UserBuiltinView(params UserBuiltinViewParams) (*UserBuiltin, error) {
-	// Create the url.
-	path := "/v1/system/users-builtin/{{.user}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/users-builtin/{{.user}}"),
+		map[string]string{
+			"user": string(params.User),
+		},
+		map[string]string{},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"user": string(params.User),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -6438,28 +5690,20 @@ func (c *Client) UserBuiltinView(params UserBuiltinViewParams) (*UserBuiltin, er
 
 // SiloUserView: Fetch a user
 func (c *Client) SiloUserView(params SiloUserViewParams) (*User, error) {
-	// Create the url.
-	path := "/v1/system/users/{{.user_id}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/users/{{.user_id}}"),
+		map[string]string{
+			"user_id": params.UserId,
+		},
+		map[string]string{
+			"silo": string(params.Silo),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"user_id": params.UserId,
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"silo": string(params.Silo),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -6492,29 +5736,21 @@ func (c *Client) SiloUserView(params SiloUserViewParams) (*User, error) {
 //
 // To iterate over all pages, use the `UserListAllPages` method, instead.
 func (c *Client) UserList(params UserListParams) (*UserResultsPage, error) {
-	// Create the url.
-	path := "/v1/users"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/users"),
+		map[string]string{},
+		map[string]string{
+			"group":      params.Group,
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"group":      params.Group,
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"sort_by":    string(params.SortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -6568,27 +5804,19 @@ func (c *Client) UserListAllPages(params UserListParams) (*[]User, error) {
 
 // VpcFirewallRulesView: List firewall rules
 func (c *Client) VpcFirewallRulesView(params VpcFirewallRulesViewParams) (*VpcFirewallRules, error) {
-	// Create the url.
-	path := "/v1/vpc-firewall-rules"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/vpc-firewall-rules"),
+		map[string]string{},
+		map[string]string{
+			"project": string(params.Project),
+			"vpc":     string(params.Vpc),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-		"vpc":     string(params.Vpc),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -6619,33 +5847,25 @@ func (c *Client) VpcFirewallRulesView(params VpcFirewallRulesViewParams) (*VpcFi
 
 // VpcFirewallRulesUpdate: Replace firewall rules
 func (c *Client) VpcFirewallRulesUpdate(params VpcFirewallRulesUpdateParams) (*VpcFirewallRules, error) {
-	// Create the url.
-	path := "/v1/vpc-firewall-rules"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("PUT", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"PUT",
+		resolveRelative(c.server, "/v1/vpc-firewall-rules"),
+		map[string]string{},
+		map[string]string{
+			"project": string(params.Project),
+			"vpc":     string(params.Vpc),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-		"vpc":     string(params.Vpc),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -6679,31 +5899,23 @@ func (c *Client) VpcFirewallRulesUpdate(params VpcFirewallRulesUpdateParams) (*V
 //
 // To iterate over all pages, use the `VpcRouterRouteListAllPages` method, instead.
 func (c *Client) VpcRouterRouteList(params VpcRouterRouteListParams) (*RouterRouteResultsPage, error) {
-	// Create the url.
-	path := "/v1/vpc-router-routes"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/vpc-router-routes"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"project":    string(params.Project),
+			"router":     string(params.Router),
+			"sort_by":    string(params.SortBy),
+			"vpc":        string(params.Vpc),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"project":    string(params.Project),
-		"router":     string(params.Router),
-		"sort_by":    string(params.SortBy),
-		"vpc":        string(params.Vpc),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -6758,34 +5970,26 @@ func (c *Client) VpcRouterRouteListAllPages(params VpcRouterRouteListParams) (*[
 
 // VpcRouterRouteCreate: Create a router
 func (c *Client) VpcRouterRouteCreate(params VpcRouterRouteCreateParams) (*RouterRoute, error) {
-	// Create the url.
-	path := "/v1/vpc-router-routes"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/vpc-router-routes"),
+		map[string]string{},
+		map[string]string{
+			"project": string(params.Project),
+			"router":  string(params.Router),
+			"vpc":     string(params.Vpc),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-		"router":  string(params.Router),
-		"vpc":     string(params.Vpc),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -6816,30 +6020,22 @@ func (c *Client) VpcRouterRouteCreate(params VpcRouterRouteCreateParams) (*Route
 
 // VpcRouterRouteView: Fetch a route
 func (c *Client) VpcRouterRouteView(params VpcRouterRouteViewParams) (*RouterRoute, error) {
-	// Create the url.
-	path := "/v1/vpc-router-routes/{{.route}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/vpc-router-routes/{{.route}}"),
+		map[string]string{
+			"route": string(params.Route),
+		},
+		map[string]string{
+			"project": string(params.Project),
+			"router":  string(params.Router),
+			"vpc":     string(params.Vpc),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"route": string(params.Route),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-		"router":  string(params.Router),
-		"vpc":     string(params.Vpc),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -6870,36 +6066,28 @@ func (c *Client) VpcRouterRouteView(params VpcRouterRouteViewParams) (*RouterRou
 
 // VpcRouterRouteUpdate: Update a route
 func (c *Client) VpcRouterRouteUpdate(params VpcRouterRouteUpdateParams) (*RouterRoute, error) {
-	// Create the url.
-	path := "/v1/vpc-router-routes/{{.route}}"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("PUT", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"PUT",
+		resolveRelative(c.server, "/v1/vpc-router-routes/{{.route}}"),
+		map[string]string{
+			"route": string(params.Route),
+		},
+		map[string]string{
+			"project": string(params.Project),
+			"router":  string(params.Router),
+			"vpc":     string(params.Vpc),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"route": string(params.Route),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-		"router":  string(params.Router),
-		"vpc":     string(params.Vpc),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -6930,30 +6118,22 @@ func (c *Client) VpcRouterRouteUpdate(params VpcRouterRouteUpdateParams) (*Route
 
 // VpcRouterRouteDelete: Delete a route
 func (c *Client) VpcRouterRouteDelete(params VpcRouterRouteDeleteParams) error {
-	// Create the url.
-	path := "/v1/vpc-router-routes/{{.route}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("DELETE", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"DELETE",
+		resolveRelative(c.server, "/v1/vpc-router-routes/{{.route}}"),
+		map[string]string{
+			"route": string(params.Route),
+		},
+		map[string]string{
+			"project": string(params.Project),
+			"router":  string(params.Router),
+			"vpc":     string(params.Vpc),
+		},
+	)
 	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"route": string(params.Route),
-	}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-		"router":  string(params.Router),
-		"vpc":     string(params.Vpc),
-	}); err != nil {
-		return fmt.Errorf("adding queries to URL failed: %v", err)
+		return fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -6975,30 +6155,22 @@ func (c *Client) VpcRouterRouteDelete(params VpcRouterRouteDeleteParams) error {
 //
 // To iterate over all pages, use the `VpcRouterListAllPages` method, instead.
 func (c *Client) VpcRouterList(params VpcRouterListParams) (*VpcRouterResultsPage, error) {
-	// Create the url.
-	path := "/v1/vpc-routers"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/vpc-routers"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"project":    string(params.Project),
+			"sort_by":    string(params.SortBy),
+			"vpc":        string(params.Vpc),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"project":    string(params.Project),
-		"sort_by":    string(params.SortBy),
-		"vpc":        string(params.Vpc),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -7052,33 +6224,25 @@ func (c *Client) VpcRouterListAllPages(params VpcRouterListParams) (*[]VpcRouter
 
 // VpcRouterCreate: Create a VPC router
 func (c *Client) VpcRouterCreate(params VpcRouterCreateParams) (*VpcRouter, error) {
-	// Create the url.
-	path := "/v1/vpc-routers"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/vpc-routers"),
+		map[string]string{},
+		map[string]string{
+			"project": string(params.Project),
+			"vpc":     string(params.Vpc),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-		"vpc":     string(params.Vpc),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -7109,29 +6273,21 @@ func (c *Client) VpcRouterCreate(params VpcRouterCreateParams) (*VpcRouter, erro
 
 // VpcRouterView: Get a router
 func (c *Client) VpcRouterView(params VpcRouterViewParams) (*VpcRouter, error) {
-	// Create the url.
-	path := "/v1/vpc-routers/{{.router}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/vpc-routers/{{.router}}"),
+		map[string]string{
+			"router": string(params.Router),
+		},
+		map[string]string{
+			"project": string(params.Project),
+			"vpc":     string(params.Vpc),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"router": string(params.Router),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-		"vpc":     string(params.Vpc),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -7162,35 +6318,27 @@ func (c *Client) VpcRouterView(params VpcRouterViewParams) (*VpcRouter, error) {
 
 // VpcRouterUpdate: Update a router
 func (c *Client) VpcRouterUpdate(params VpcRouterUpdateParams) (*VpcRouter, error) {
-	// Create the url.
-	path := "/v1/vpc-routers/{{.router}}"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("PUT", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"PUT",
+		resolveRelative(c.server, "/v1/vpc-routers/{{.router}}"),
+		map[string]string{
+			"router": string(params.Router),
+		},
+		map[string]string{
+			"project": string(params.Project),
+			"vpc":     string(params.Vpc),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"router": string(params.Router),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-		"vpc":     string(params.Vpc),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -7221,29 +6369,21 @@ func (c *Client) VpcRouterUpdate(params VpcRouterUpdateParams) (*VpcRouter, erro
 
 // VpcRouterDelete: Delete a router
 func (c *Client) VpcRouterDelete(params VpcRouterDeleteParams) error {
-	// Create the url.
-	path := "/v1/vpc-routers/{{.router}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("DELETE", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"DELETE",
+		resolveRelative(c.server, "/v1/vpc-routers/{{.router}}"),
+		map[string]string{
+			"router": string(params.Router),
+		},
+		map[string]string{
+			"project": string(params.Project),
+			"vpc":     string(params.Vpc),
+		},
+	)
 	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"router": string(params.Router),
-	}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-		"vpc":     string(params.Vpc),
-	}); err != nil {
-		return fmt.Errorf("adding queries to URL failed: %v", err)
+		return fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -7265,30 +6405,22 @@ func (c *Client) VpcRouterDelete(params VpcRouterDeleteParams) error {
 //
 // To iterate over all pages, use the `VpcSubnetListAllPages` method, instead.
 func (c *Client) VpcSubnetList(params VpcSubnetListParams) (*VpcSubnetResultsPage, error) {
-	// Create the url.
-	path := "/v1/vpc-subnets"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/vpc-subnets"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"project":    string(params.Project),
+			"sort_by":    string(params.SortBy),
+			"vpc":        string(params.Vpc),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"project":    string(params.Project),
-		"sort_by":    string(params.SortBy),
-		"vpc":        string(params.Vpc),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -7342,33 +6474,25 @@ func (c *Client) VpcSubnetListAllPages(params VpcSubnetListParams) (*[]VpcSubnet
 
 // VpcSubnetCreate: Create a subnet
 func (c *Client) VpcSubnetCreate(params VpcSubnetCreateParams) (*VpcSubnet, error) {
-	// Create the url.
-	path := "/v1/vpc-subnets"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/vpc-subnets"),
+		map[string]string{},
+		map[string]string{
+			"project": string(params.Project),
+			"vpc":     string(params.Vpc),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-		"vpc":     string(params.Vpc),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -7399,29 +6523,21 @@ func (c *Client) VpcSubnetCreate(params VpcSubnetCreateParams) (*VpcSubnet, erro
 
 // VpcSubnetView: Fetch a subnet
 func (c *Client) VpcSubnetView(params VpcSubnetViewParams) (*VpcSubnet, error) {
-	// Create the url.
-	path := "/v1/vpc-subnets/{{.subnet}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/vpc-subnets/{{.subnet}}"),
+		map[string]string{
+			"subnet": string(params.Subnet),
+		},
+		map[string]string{
+			"project": string(params.Project),
+			"vpc":     string(params.Vpc),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"subnet": string(params.Subnet),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-		"vpc":     string(params.Vpc),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -7452,35 +6568,27 @@ func (c *Client) VpcSubnetView(params VpcSubnetViewParams) (*VpcSubnet, error) {
 
 // VpcSubnetUpdate: Update a subnet
 func (c *Client) VpcSubnetUpdate(params VpcSubnetUpdateParams) (*VpcSubnet, error) {
-	// Create the url.
-	path := "/v1/vpc-subnets/{{.subnet}}"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("PUT", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"PUT",
+		resolveRelative(c.server, "/v1/vpc-subnets/{{.subnet}}"),
+		map[string]string{
+			"subnet": string(params.Subnet),
+		},
+		map[string]string{
+			"project": string(params.Project),
+			"vpc":     string(params.Vpc),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"subnet": string(params.Subnet),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-		"vpc":     string(params.Vpc),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -7511,29 +6619,21 @@ func (c *Client) VpcSubnetUpdate(params VpcSubnetUpdateParams) (*VpcSubnet, erro
 
 // VpcSubnetDelete: Delete a subnet
 func (c *Client) VpcSubnetDelete(params VpcSubnetDeleteParams) error {
-	// Create the url.
-	path := "/v1/vpc-subnets/{{.subnet}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("DELETE", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"DELETE",
+		resolveRelative(c.server, "/v1/vpc-subnets/{{.subnet}}"),
+		map[string]string{
+			"subnet": string(params.Subnet),
+		},
+		map[string]string{
+			"project": string(params.Project),
+			"vpc":     string(params.Vpc),
+		},
+	)
 	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"subnet": string(params.Subnet),
-	}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-		"vpc":     string(params.Vpc),
-	}); err != nil {
-		return fmt.Errorf("adding queries to URL failed: %v", err)
+		return fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -7555,32 +6655,24 @@ func (c *Client) VpcSubnetDelete(params VpcSubnetDeleteParams) error {
 //
 // To iterate over all pages, use the `VpcSubnetListNetworkInterfacesAllPages` method, instead.
 func (c *Client) VpcSubnetListNetworkInterfaces(params VpcSubnetListNetworkInterfacesParams) (*NetworkInterfaceResultsPage, error) {
-	// Create the url.
-	path := "/v1/vpc-subnets/{{.subnet}}/network-interfaces"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/vpc-subnets/{{.subnet}}/network-interfaces"),
+		map[string]string{
+			"subnet": string(params.Subnet),
+		},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"project":    string(params.Project),
+			"sort_by":    string(params.SortBy),
+			"vpc":        string(params.Vpc),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"subnet": string(params.Subnet),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"project":    string(params.Project),
-		"sort_by":    string(params.SortBy),
-		"vpc":        string(params.Vpc),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -7636,29 +6728,21 @@ func (c *Client) VpcSubnetListNetworkInterfacesAllPages(params VpcSubnetListNetw
 //
 // To iterate over all pages, use the `VpcListAllPages` method, instead.
 func (c *Client) VpcList(params VpcListParams) (*VpcResultsPage, error) {
-	// Create the url.
-	path := "/v1/vpcs"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/vpcs"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"project":    string(params.Project),
+			"sort_by":    string(params.SortBy),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"limit":      strconv.Itoa(params.Limit),
-		"page_token": params.PageToken,
-		"project":    string(params.Project),
-		"sort_by":    string(params.SortBy),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -7712,32 +6796,24 @@ func (c *Client) VpcListAllPages(params VpcListParams) (*[]Vpc, error) {
 
 // VpcCreate: Create a VPC
 func (c *Client) VpcCreate(params VpcCreateParams) (*Vpc, error) {
-	// Create the url.
-	path := "/v1/vpcs"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("POST", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/vpcs"),
+		map[string]string{},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -7768,28 +6844,20 @@ func (c *Client) VpcCreate(params VpcCreateParams) (*Vpc, error) {
 
 // VpcView: Fetch a VPC
 func (c *Client) VpcView(params VpcViewParams) (*Vpc, error) {
-	// Create the url.
-	path := "/v1/vpcs/{{.vpc}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("GET", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/vpcs/{{.vpc}}"),
+		map[string]string{
+			"vpc": string(params.Vpc),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"vpc": string(params.Vpc),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -7820,34 +6888,26 @@ func (c *Client) VpcView(params VpcViewParams) (*Vpc, error) {
 
 // VpcUpdate: Update a VPC
 func (c *Client) VpcUpdate(params VpcUpdateParams) (*Vpc, error) {
-	// Create the url.
-	path := "/v1/vpcs/{{.vpc}}"
-	uri := resolveRelative(c.server, path)
-
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
-	// Create the request.
-	req, err := http.NewRequest("PUT", uri, b)
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"PUT",
+		resolveRelative(c.server, "/v1/vpcs/{{.vpc}}"),
+		map[string]string{
+			"vpc": string(params.Vpc),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
 	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"vpc": string(params.Vpc),
-	}); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-	}); err != nil {
-		return nil, fmt.Errorf("adding queries to URL failed: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
@@ -7878,28 +6938,20 @@ func (c *Client) VpcUpdate(params VpcUpdateParams) (*Vpc, error) {
 
 // VpcDelete: Delete a VPC
 func (c *Client) VpcDelete(params VpcDeleteParams) error {
-	// Create the url.
-	path := "/v1/vpcs/{{.vpc}}"
-	uri := resolveRelative(c.server, path)
-
-	// Create the request.
-	req, err := http.NewRequest("DELETE", uri, nil)
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"DELETE",
+		resolveRelative(c.server, "/v1/vpcs/{{.vpc}}"),
+		map[string]string{
+			"vpc": string(params.Vpc),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
 	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, map[string]string{
-		"vpc": string(params.Vpc),
-	}); err != nil {
-		return fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add query if any
-	if err := addQueries(req.URL, map[string]string{
-		"project": string(params.Project),
-	}); err != nil {
-		return fmt.Errorf("adding queries to URL failed: %v", err)
+		return fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
