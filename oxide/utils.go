@@ -3,8 +3,6 @@ package oxide
 import (
 	"bytes"
 	"fmt"
-	"io"
-	"net/http"
 	"net/url"
 	"strings"
 	"text/template"
@@ -65,22 +63,4 @@ func addQueries(u *url.URL, query map[string]string) {
 		q.Set(k, v)
 	}
 	u.RawQuery = q.Encode()
-}
-
-func buildRequest(body io.Reader, method, uri string, params, queries map[string]string) (*http.Request, error) {
-	// Create the request.
-	req, err := http.NewRequest(method, uri, body)
-	if err != nil {
-		return nil, fmt.Errorf("error creating request: %v", err)
-	}
-
-	// Add the parameters to the url.
-	if err := expandURL(req.URL, params); err != nil {
-		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
-	}
-
-	// Add queries if any
-	addQueries(req.URL, queries)
-
-	return req, nil
 }
