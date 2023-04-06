@@ -1,8 +1,13 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
 package oxide
 
 import (
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"os"
@@ -137,4 +142,22 @@ func (t userAgentTransport) RoundTrip(req *http.Request) (*http.Response, error)
 	newReq.Header["Authorization"] = []string{fmt.Sprintf("Bearer %s", t.client.token)}
 
 	return t.base.RoundTrip(&newReq)
+}
+
+func buildRequest(body io.Reader, method, uri string, params, queries map[string]string) (*http.Request, error) {
+	// Create the request.
+	req, err := http.NewRequest(method, uri, body)
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %v", err)
+	}
+
+	// Add the parameters to the url.
+	if err := expandURL(req.URL, params); err != nil {
+		return nil, fmt.Errorf("expanding URL with parameters failed: %v", err)
+	}
+
+	// Add queries if any
+	addQueries(req.URL, queries)
+
+	return req, nil
 }
