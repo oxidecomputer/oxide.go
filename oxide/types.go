@@ -3156,7 +3156,7 @@ type VpcUpdateParams struct {
 // Validate verifies all required fields for DeviceAuthRequestParams are set
 func (p *DeviceAuthRequestParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
+	v.HasRequiredObj(p.Body, "Body")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3166,7 +3166,7 @@ func (p *DeviceAuthRequestParams) Validate() error {
 // Validate verifies all required fields for DeviceAuthConfirmParams are set
 func (p *DeviceAuthConfirmParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
+	v.HasRequiredObj(p.Body, "Body")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3176,7 +3176,7 @@ func (p *DeviceAuthConfirmParams) Validate() error {
 // Validate verifies all required fields for DeviceAccessTokenParams are set
 func (p *DeviceAccessTokenParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
+	v.HasRequiredObj(p.Body, "Body")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3186,7 +3186,7 @@ func (p *DeviceAccessTokenParams) Validate() error {
 // Validate verifies all required fields for LoginSpoofParams are set
 func (p *LoginSpoofParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
+	v.HasRequiredObj(p.Body, "Body")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3196,8 +3196,8 @@ func (p *LoginSpoofParams) Validate() error {
 // Validate verifies all required fields for LoginLocalParams are set
 func (p *LoginLocalParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
-	v.HasRequiredStr(string(p.SiloName))
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.SiloName), "SiloName")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3207,7 +3207,8 @@ func (p *LoginLocalParams) Validate() error {
 // Validate verifies all required fields for LoginSamlBeginParams are set
 func (p *LoginSamlBeginParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.SiloName))
+	v.HasRequiredStr(string(p.ProviderName), "ProviderName")
+	v.HasRequiredStr(string(p.SiloName), "SiloName")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3217,8 +3218,9 @@ func (p *LoginSamlBeginParams) Validate() error {
 // Validate verifies all required fields for LoginSamlParams are set
 func (p *LoginSamlParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
-	v.HasRequiredStr(string(p.SiloName))
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.ProviderName), "ProviderName")
+	v.HasRequiredStr(string(p.SiloName), "SiloName")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3228,7 +3230,7 @@ func (p *LoginSamlParams) Validate() error {
 // Validate verifies all required fields for SystemImageViewByIdParams are set
 func (p *SystemImageViewByIdParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Id))
+	v.HasRequiredStr(string(p.Id), "Id")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3247,7 +3249,7 @@ func (p *SystemImageListParams) Validate() error {
 // Validate verifies all required fields for SystemImageCreateParams are set
 func (p *SystemImageCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
+	v.HasRequiredObj(p.Body, "Body")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3257,7 +3259,7 @@ func (p *SystemImageCreateParams) Validate() error {
 // Validate verifies all required fields for SystemImageDeleteParams are set
 func (p *SystemImageDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.ImageName))
+	v.HasRequiredStr(string(p.ImageName), "ImageName")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3267,7 +3269,7 @@ func (p *SystemImageDeleteParams) Validate() error {
 // Validate verifies all required fields for SystemImageViewParams are set
 func (p *SystemImageViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.ImageName))
+	v.HasRequiredStr(string(p.ImageName), "ImageName")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3286,7 +3288,8 @@ func (p *DiskListParams) Validate() error {
 // Validate verifies all required fields for DiskCreateParams are set
 func (p *DiskCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Project), "Project")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3296,7 +3299,7 @@ func (p *DiskCreateParams) Validate() error {
 // Validate verifies all required fields for DiskDeleteParams are set
 func (p *DiskDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Disk))
+	v.HasRequiredStr(string(p.Disk), "Disk")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3306,7 +3309,7 @@ func (p *DiskDeleteParams) Validate() error {
 // Validate verifies all required fields for DiskViewParams are set
 func (p *DiskViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Disk))
+	v.HasRequiredStr(string(p.Disk), "Disk")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3316,8 +3319,8 @@ func (p *DiskViewParams) Validate() error {
 // Validate verifies all required fields for DiskBulkWriteImportParams are set
 func (p *DiskBulkWriteImportParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
-	v.HasRequiredStr(string(p.Disk))
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Disk), "Disk")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3327,7 +3330,7 @@ func (p *DiskBulkWriteImportParams) Validate() error {
 // Validate verifies all required fields for DiskBulkWriteImportStartParams are set
 func (p *DiskBulkWriteImportStartParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Disk))
+	v.HasRequiredStr(string(p.Disk), "Disk")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3337,7 +3340,7 @@ func (p *DiskBulkWriteImportStartParams) Validate() error {
 // Validate verifies all required fields for DiskBulkWriteImportStopParams are set
 func (p *DiskBulkWriteImportStopParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Disk))
+	v.HasRequiredStr(string(p.Disk), "Disk")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3347,7 +3350,7 @@ func (p *DiskBulkWriteImportStopParams) Validate() error {
 // Validate verifies all required fields for DiskFinalizeImportParams are set
 func (p *DiskFinalizeImportParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Disk))
+	v.HasRequiredStr(string(p.Disk), "Disk")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3357,8 +3360,8 @@ func (p *DiskFinalizeImportParams) Validate() error {
 // Validate verifies all required fields for DiskImportBlocksFromUrlParams are set
 func (p *DiskImportBlocksFromUrlParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
-	v.HasRequiredStr(string(p.Disk))
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Disk), "Disk")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3368,7 +3371,8 @@ func (p *DiskImportBlocksFromUrlParams) Validate() error {
 // Validate verifies all required fields for DiskMetricsListParams are set
 func (p *DiskMetricsListParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Metric))
+	v.HasRequiredStr(string(p.Disk), "Disk")
+	v.HasRequiredStr(string(p.Metric), "Metric")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3387,7 +3391,7 @@ func (p *GroupListParams) Validate() error {
 // Validate verifies all required fields for GroupViewParams are set
 func (p *GroupViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Group))
+	v.HasRequiredStr(string(p.Group), "Group")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3406,7 +3410,8 @@ func (p *ImageListParams) Validate() error {
 // Validate verifies all required fields for ImageCreateParams are set
 func (p *ImageCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Project), "Project")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3416,7 +3421,7 @@ func (p *ImageCreateParams) Validate() error {
 // Validate verifies all required fields for ImageDeleteParams are set
 func (p *ImageDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Image))
+	v.HasRequiredStr(string(p.Image), "Image")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3426,7 +3431,7 @@ func (p *ImageDeleteParams) Validate() error {
 // Validate verifies all required fields for ImageViewParams are set
 func (p *ImageViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Image))
+	v.HasRequiredStr(string(p.Image), "Image")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3445,7 +3450,8 @@ func (p *InstanceListParams) Validate() error {
 // Validate verifies all required fields for InstanceCreateParams are set
 func (p *InstanceCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Project), "Project")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3455,7 +3461,7 @@ func (p *InstanceCreateParams) Validate() error {
 // Validate verifies all required fields for InstanceDeleteParams are set
 func (p *InstanceDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Instance))
+	v.HasRequiredStr(string(p.Instance), "Instance")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3465,7 +3471,7 @@ func (p *InstanceDeleteParams) Validate() error {
 // Validate verifies all required fields for InstanceViewParams are set
 func (p *InstanceViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Instance))
+	v.HasRequiredStr(string(p.Instance), "Instance")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3475,7 +3481,7 @@ func (p *InstanceViewParams) Validate() error {
 // Validate verifies all required fields for InstanceDiskListParams are set
 func (p *InstanceDiskListParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Instance))
+	v.HasRequiredStr(string(p.Instance), "Instance")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3485,8 +3491,8 @@ func (p *InstanceDiskListParams) Validate() error {
 // Validate verifies all required fields for InstanceDiskAttachParams are set
 func (p *InstanceDiskAttachParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
-	v.HasRequiredStr(string(p.Instance))
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Instance), "Instance")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3496,8 +3502,8 @@ func (p *InstanceDiskAttachParams) Validate() error {
 // Validate verifies all required fields for InstanceDiskDetachParams are set
 func (p *InstanceDiskDetachParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
-	v.HasRequiredStr(string(p.Instance))
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Instance), "Instance")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3507,7 +3513,7 @@ func (p *InstanceDiskDetachParams) Validate() error {
 // Validate verifies all required fields for InstanceExternalIpListParams are set
 func (p *InstanceExternalIpListParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Instance))
+	v.HasRequiredStr(string(p.Instance), "Instance")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3517,8 +3523,8 @@ func (p *InstanceExternalIpListParams) Validate() error {
 // Validate verifies all required fields for InstanceMigrateParams are set
 func (p *InstanceMigrateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
-	v.HasRequiredStr(string(p.Instance))
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Instance), "Instance")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3528,7 +3534,7 @@ func (p *InstanceMigrateParams) Validate() error {
 // Validate verifies all required fields for InstanceRebootParams are set
 func (p *InstanceRebootParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Instance))
+	v.HasRequiredStr(string(p.Instance), "Instance")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3538,7 +3544,7 @@ func (p *InstanceRebootParams) Validate() error {
 // Validate verifies all required fields for InstanceSerialConsoleParams are set
 func (p *InstanceSerialConsoleParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Instance))
+	v.HasRequiredStr(string(p.Instance), "Instance")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3548,7 +3554,7 @@ func (p *InstanceSerialConsoleParams) Validate() error {
 // Validate verifies all required fields for InstanceSerialConsoleStreamParams are set
 func (p *InstanceSerialConsoleStreamParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Instance))
+	v.HasRequiredStr(string(p.Instance), "Instance")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3558,7 +3564,7 @@ func (p *InstanceSerialConsoleStreamParams) Validate() error {
 // Validate verifies all required fields for InstanceStartParams are set
 func (p *InstanceStartParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Instance))
+	v.HasRequiredStr(string(p.Instance), "Instance")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3568,7 +3574,7 @@ func (p *InstanceStartParams) Validate() error {
 // Validate verifies all required fields for InstanceStopParams are set
 func (p *InstanceStopParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Instance))
+	v.HasRequiredStr(string(p.Instance), "Instance")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3596,7 +3602,7 @@ func (p *CurrentUserSshKeyListParams) Validate() error {
 // Validate verifies all required fields for CurrentUserSshKeyCreateParams are set
 func (p *CurrentUserSshKeyCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
+	v.HasRequiredObj(p.Body, "Body")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3606,7 +3612,7 @@ func (p *CurrentUserSshKeyCreateParams) Validate() error {
 // Validate verifies all required fields for CurrentUserSshKeyDeleteParams are set
 func (p *CurrentUserSshKeyDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.SshKey))
+	v.HasRequiredStr(string(p.SshKey), "SshKey")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3616,7 +3622,7 @@ func (p *CurrentUserSshKeyDeleteParams) Validate() error {
 // Validate verifies all required fields for CurrentUserSshKeyViewParams are set
 func (p *CurrentUserSshKeyViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.SshKey))
+	v.HasRequiredStr(string(p.SshKey), "SshKey")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3635,7 +3641,8 @@ func (p *InstanceNetworkInterfaceListParams) Validate() error {
 // Validate verifies all required fields for InstanceNetworkInterfaceCreateParams are set
 func (p *InstanceNetworkInterfaceCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Instance), "Instance")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3645,7 +3652,7 @@ func (p *InstanceNetworkInterfaceCreateParams) Validate() error {
 // Validate verifies all required fields for InstanceNetworkInterfaceDeleteParams are set
 func (p *InstanceNetworkInterfaceDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Interface))
+	v.HasRequiredStr(string(p.Interface), "Interface")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3655,7 +3662,7 @@ func (p *InstanceNetworkInterfaceDeleteParams) Validate() error {
 // Validate verifies all required fields for InstanceNetworkInterfaceViewParams are set
 func (p *InstanceNetworkInterfaceViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Interface))
+	v.HasRequiredStr(string(p.Interface), "Interface")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3665,8 +3672,8 @@ func (p *InstanceNetworkInterfaceViewParams) Validate() error {
 // Validate verifies all required fields for InstanceNetworkInterfaceUpdateParams are set
 func (p *InstanceNetworkInterfaceUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
-	v.HasRequiredStr(string(p.Interface))
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Interface), "Interface")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3676,7 +3683,7 @@ func (p *InstanceNetworkInterfaceUpdateParams) Validate() error {
 // Validate verifies all required fields for PolicyUpdateParams are set
 func (p *PolicyUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
+	v.HasRequiredObj(p.Body, "Body")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3695,7 +3702,7 @@ func (p *ProjectListParams) Validate() error {
 // Validate verifies all required fields for ProjectCreateParams are set
 func (p *ProjectCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
+	v.HasRequiredObj(p.Body, "Body")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3705,7 +3712,7 @@ func (p *ProjectCreateParams) Validate() error {
 // Validate verifies all required fields for ProjectDeleteParams are set
 func (p *ProjectDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Project))
+	v.HasRequiredStr(string(p.Project), "Project")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3715,7 +3722,7 @@ func (p *ProjectDeleteParams) Validate() error {
 // Validate verifies all required fields for ProjectViewParams are set
 func (p *ProjectViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Project))
+	v.HasRequiredStr(string(p.Project), "Project")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3725,8 +3732,8 @@ func (p *ProjectViewParams) Validate() error {
 // Validate verifies all required fields for ProjectUpdateParams are set
 func (p *ProjectUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
-	v.HasRequiredStr(string(p.Project))
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Project), "Project")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3736,7 +3743,7 @@ func (p *ProjectUpdateParams) Validate() error {
 // Validate verifies all required fields for ProjectPolicyViewParams are set
 func (p *ProjectPolicyViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Project))
+	v.HasRequiredStr(string(p.Project), "Project")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3746,8 +3753,8 @@ func (p *ProjectPolicyViewParams) Validate() error {
 // Validate verifies all required fields for ProjectPolicyUpdateParams are set
 func (p *ProjectPolicyUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
-	v.HasRequiredStr(string(p.Project))
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Project), "Project")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3766,7 +3773,8 @@ func (p *SnapshotListParams) Validate() error {
 // Validate verifies all required fields for SnapshotCreateParams are set
 func (p *SnapshotCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Project), "Project")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3776,7 +3784,7 @@ func (p *SnapshotCreateParams) Validate() error {
 // Validate verifies all required fields for SnapshotDeleteParams are set
 func (p *SnapshotDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Snapshot))
+	v.HasRequiredStr(string(p.Snapshot), "Snapshot")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3786,7 +3794,7 @@ func (p *SnapshotDeleteParams) Validate() error {
 // Validate verifies all required fields for SnapshotViewParams are set
 func (p *SnapshotViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Snapshot))
+	v.HasRequiredStr(string(p.Snapshot), "Snapshot")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3805,7 +3813,7 @@ func (p *CertificateListParams) Validate() error {
 // Validate verifies all required fields for CertificateCreateParams are set
 func (p *CertificateCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
+	v.HasRequiredObj(p.Body, "Body")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3815,7 +3823,7 @@ func (p *CertificateCreateParams) Validate() error {
 // Validate verifies all required fields for CertificateDeleteParams are set
 func (p *CertificateDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Certificate))
+	v.HasRequiredStr(string(p.Certificate), "Certificate")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3825,7 +3833,7 @@ func (p *CertificateDeleteParams) Validate() error {
 // Validate verifies all required fields for CertificateViewParams are set
 func (p *CertificateViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Certificate))
+	v.HasRequiredStr(string(p.Certificate), "Certificate")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3853,7 +3861,7 @@ func (p *RackListParams) Validate() error {
 // Validate verifies all required fields for RackViewParams are set
 func (p *RackViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.RackId))
+	v.HasRequiredStr(string(p.RackId), "RackId")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3872,7 +3880,7 @@ func (p *SledListParams) Validate() error {
 // Validate verifies all required fields for SledViewParams are set
 func (p *SledViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.SledId))
+	v.HasRequiredStr(string(p.SledId), "SledId")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3882,7 +3890,7 @@ func (p *SledViewParams) Validate() error {
 // Validate verifies all required fields for SledPhysicalDiskListParams are set
 func (p *SledPhysicalDiskListParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.SledId))
+	v.HasRequiredStr(string(p.SledId), "SledId")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3901,7 +3909,8 @@ func (p *SiloIdentityProviderListParams) Validate() error {
 // Validate verifies all required fields for LocalIdpUserCreateParams are set
 func (p *LocalIdpUserCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Silo), "Silo")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3911,7 +3920,8 @@ func (p *LocalIdpUserCreateParams) Validate() error {
 // Validate verifies all required fields for LocalIdpUserDeleteParams are set
 func (p *LocalIdpUserDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.UserId))
+	v.HasRequiredStr(string(p.UserId), "UserId")
+	v.HasRequiredStr(string(p.Silo), "Silo")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3921,8 +3931,9 @@ func (p *LocalIdpUserDeleteParams) Validate() error {
 // Validate verifies all required fields for LocalIdpUserSetPasswordParams are set
 func (p *LocalIdpUserSetPasswordParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
-	v.HasRequiredStr(string(p.UserId))
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.UserId), "UserId")
+	v.HasRequiredStr(string(p.Silo), "Silo")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3932,7 +3943,8 @@ func (p *LocalIdpUserSetPasswordParams) Validate() error {
 // Validate verifies all required fields for SamlIdentityProviderCreateParams are set
 func (p *SamlIdentityProviderCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Silo), "Silo")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3942,7 +3954,8 @@ func (p *SamlIdentityProviderCreateParams) Validate() error {
 // Validate verifies all required fields for SamlIdentityProviderViewParams are set
 func (p *SamlIdentityProviderViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Provider))
+	v.HasRequiredStr(string(p.Provider), "Provider")
+	v.HasRequiredStr(string(p.Silo), "Silo")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3961,7 +3974,7 @@ func (p *IpPoolListParams) Validate() error {
 // Validate verifies all required fields for IpPoolCreateParams are set
 func (p *IpPoolCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
+	v.HasRequiredObj(p.Body, "Body")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3980,7 +3993,7 @@ func (p *IpPoolServiceRangeListParams) Validate() error {
 // Validate verifies all required fields for IpPoolServiceRangeAddParams are set
 func (p *IpPoolServiceRangeAddParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
+	v.HasRequiredObj(p.Body, "Body")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3990,7 +4003,7 @@ func (p *IpPoolServiceRangeAddParams) Validate() error {
 // Validate verifies all required fields for IpPoolServiceRangeRemoveParams are set
 func (p *IpPoolServiceRangeRemoveParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
+	v.HasRequiredObj(p.Body, "Body")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4000,7 +4013,7 @@ func (p *IpPoolServiceRangeRemoveParams) Validate() error {
 // Validate verifies all required fields for IpPoolDeleteParams are set
 func (p *IpPoolDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Pool))
+	v.HasRequiredStr(string(p.Pool), "Pool")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4010,7 +4023,7 @@ func (p *IpPoolDeleteParams) Validate() error {
 // Validate verifies all required fields for IpPoolViewParams are set
 func (p *IpPoolViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Pool))
+	v.HasRequiredStr(string(p.Pool), "Pool")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4020,8 +4033,8 @@ func (p *IpPoolViewParams) Validate() error {
 // Validate verifies all required fields for IpPoolUpdateParams are set
 func (p *IpPoolUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
-	v.HasRequiredStr(string(p.Pool))
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Pool), "Pool")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4031,7 +4044,7 @@ func (p *IpPoolUpdateParams) Validate() error {
 // Validate verifies all required fields for IpPoolRangeListParams are set
 func (p *IpPoolRangeListParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Pool))
+	v.HasRequiredStr(string(p.Pool), "Pool")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4041,8 +4054,8 @@ func (p *IpPoolRangeListParams) Validate() error {
 // Validate verifies all required fields for IpPoolRangeAddParams are set
 func (p *IpPoolRangeAddParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
-	v.HasRequiredStr(string(p.Pool))
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Pool), "Pool")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4052,8 +4065,8 @@ func (p *IpPoolRangeAddParams) Validate() error {
 // Validate verifies all required fields for IpPoolRangeRemoveParams are set
 func (p *IpPoolRangeRemoveParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
-	v.HasRequiredStr(string(p.Pool))
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Pool), "Pool")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4063,7 +4076,8 @@ func (p *IpPoolRangeRemoveParams) Validate() error {
 // Validate verifies all required fields for SystemMetricParams are set
 func (p *SystemMetricParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.MetricName))
+	v.HasRequiredStr(string(p.MetricName), "MetricName")
+	v.HasRequiredStr(string(p.Id), "Id")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4073,7 +4087,7 @@ func (p *SystemMetricParams) Validate() error {
 // Validate verifies all required fields for SystemPolicyUpdateParams are set
 func (p *SystemPolicyUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
+	v.HasRequiredObj(p.Body, "Body")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4092,7 +4106,7 @@ func (p *RoleListParams) Validate() error {
 // Validate verifies all required fields for RoleViewParams are set
 func (p *RoleViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.RoleName))
+	v.HasRequiredStr(string(p.RoleName), "RoleName")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4111,7 +4125,7 @@ func (p *SagaListParams) Validate() error {
 // Validate verifies all required fields for SagaViewParams are set
 func (p *SagaViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.SagaId))
+	v.HasRequiredStr(string(p.SagaId), "SagaId")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4130,7 +4144,7 @@ func (p *SiloListParams) Validate() error {
 // Validate verifies all required fields for SiloCreateParams are set
 func (p *SiloCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
+	v.HasRequiredObj(p.Body, "Body")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4140,7 +4154,7 @@ func (p *SiloCreateParams) Validate() error {
 // Validate verifies all required fields for SiloDeleteParams are set
 func (p *SiloDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Silo))
+	v.HasRequiredStr(string(p.Silo), "Silo")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4150,7 +4164,7 @@ func (p *SiloDeleteParams) Validate() error {
 // Validate verifies all required fields for SiloViewParams are set
 func (p *SiloViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Silo))
+	v.HasRequiredStr(string(p.Silo), "Silo")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4160,7 +4174,7 @@ func (p *SiloViewParams) Validate() error {
 // Validate verifies all required fields for SiloPolicyViewParams are set
 func (p *SiloPolicyViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Silo))
+	v.HasRequiredStr(string(p.Silo), "Silo")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4170,8 +4184,8 @@ func (p *SiloPolicyViewParams) Validate() error {
 // Validate verifies all required fields for SiloPolicyUpdateParams are set
 func (p *SiloPolicyUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
-	v.HasRequiredStr(string(p.Silo))
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Silo), "Silo")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4199,7 +4213,7 @@ func (p *UpdateDeploymentsListParams) Validate() error {
 // Validate verifies all required fields for UpdateDeploymentViewParams are set
 func (p *UpdateDeploymentViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Id))
+	v.HasRequiredStr(string(p.Id), "Id")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4209,7 +4223,7 @@ func (p *UpdateDeploymentViewParams) Validate() error {
 // Validate verifies all required fields for SystemUpdateStartParams are set
 func (p *SystemUpdateStartParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
+	v.HasRequiredObj(p.Body, "Body")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4228,7 +4242,7 @@ func (p *SystemUpdateListParams) Validate() error {
 // Validate verifies all required fields for SystemUpdateViewParams are set
 func (p *SystemUpdateViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Version))
+	v.HasRequiredStr(string(p.Version), "Version")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4238,7 +4252,7 @@ func (p *SystemUpdateViewParams) Validate() error {
 // Validate verifies all required fields for SystemUpdateComponentsListParams are set
 func (p *SystemUpdateComponentsListParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Version))
+	v.HasRequiredStr(string(p.Version), "Version")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4266,7 +4280,7 @@ func (p *UserBuiltinListParams) Validate() error {
 // Validate verifies all required fields for UserBuiltinViewParams are set
 func (p *UserBuiltinViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.User))
+	v.HasRequiredStr(string(p.User), "User")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4276,7 +4290,8 @@ func (p *UserBuiltinViewParams) Validate() error {
 // Validate verifies all required fields for SiloUserViewParams are set
 func (p *SiloUserViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.UserId))
+	v.HasRequiredStr(string(p.UserId), "UserId")
+	v.HasRequiredStr(string(p.Silo), "Silo")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4295,6 +4310,7 @@ func (p *UserListParams) Validate() error {
 // Validate verifies all required fields for VpcFirewallRulesViewParams are set
 func (p *VpcFirewallRulesViewParams) Validate() error {
 	v := new(Validator)
+	v.HasRequiredStr(string(p.Vpc), "Vpc")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4304,7 +4320,8 @@ func (p *VpcFirewallRulesViewParams) Validate() error {
 // Validate verifies all required fields for VpcFirewallRulesUpdateParams are set
 func (p *VpcFirewallRulesUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Vpc), "Vpc")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4323,7 +4340,8 @@ func (p *VpcRouterRouteListParams) Validate() error {
 // Validate verifies all required fields for VpcRouterRouteCreateParams are set
 func (p *VpcRouterRouteCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Router), "Router")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4333,7 +4351,7 @@ func (p *VpcRouterRouteCreateParams) Validate() error {
 // Validate verifies all required fields for VpcRouterRouteDeleteParams are set
 func (p *VpcRouterRouteDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Route))
+	v.HasRequiredStr(string(p.Route), "Route")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4343,7 +4361,8 @@ func (p *VpcRouterRouteDeleteParams) Validate() error {
 // Validate verifies all required fields for VpcRouterRouteViewParams are set
 func (p *VpcRouterRouteViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Route))
+	v.HasRequiredStr(string(p.Route), "Route")
+	v.HasRequiredStr(string(p.Router), "Router")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4353,8 +4372,8 @@ func (p *VpcRouterRouteViewParams) Validate() error {
 // Validate verifies all required fields for VpcRouterRouteUpdateParams are set
 func (p *VpcRouterRouteUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
-	v.HasRequiredStr(string(p.Route))
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Route), "Route")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4373,7 +4392,8 @@ func (p *VpcRouterListParams) Validate() error {
 // Validate verifies all required fields for VpcRouterCreateParams are set
 func (p *VpcRouterCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Vpc), "Vpc")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4383,7 +4403,7 @@ func (p *VpcRouterCreateParams) Validate() error {
 // Validate verifies all required fields for VpcRouterDeleteParams are set
 func (p *VpcRouterDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Router))
+	v.HasRequiredStr(string(p.Router), "Router")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4393,7 +4413,7 @@ func (p *VpcRouterDeleteParams) Validate() error {
 // Validate verifies all required fields for VpcRouterViewParams are set
 func (p *VpcRouterViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Router))
+	v.HasRequiredStr(string(p.Router), "Router")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4403,8 +4423,8 @@ func (p *VpcRouterViewParams) Validate() error {
 // Validate verifies all required fields for VpcRouterUpdateParams are set
 func (p *VpcRouterUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
-	v.HasRequiredStr(string(p.Router))
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Router), "Router")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4423,7 +4443,8 @@ func (p *VpcSubnetListParams) Validate() error {
 // Validate verifies all required fields for VpcSubnetCreateParams are set
 func (p *VpcSubnetCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Vpc), "Vpc")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4433,7 +4454,7 @@ func (p *VpcSubnetCreateParams) Validate() error {
 // Validate verifies all required fields for VpcSubnetDeleteParams are set
 func (p *VpcSubnetDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Subnet))
+	v.HasRequiredStr(string(p.Subnet), "Subnet")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4443,7 +4464,7 @@ func (p *VpcSubnetDeleteParams) Validate() error {
 // Validate verifies all required fields for VpcSubnetViewParams are set
 func (p *VpcSubnetViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Subnet))
+	v.HasRequiredStr(string(p.Subnet), "Subnet")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4453,8 +4474,8 @@ func (p *VpcSubnetViewParams) Validate() error {
 // Validate verifies all required fields for VpcSubnetUpdateParams are set
 func (p *VpcSubnetUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
-	v.HasRequiredStr(string(p.Subnet))
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Subnet), "Subnet")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4464,7 +4485,7 @@ func (p *VpcSubnetUpdateParams) Validate() error {
 // Validate verifies all required fields for VpcSubnetListNetworkInterfacesParams are set
 func (p *VpcSubnetListNetworkInterfacesParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Subnet))
+	v.HasRequiredStr(string(p.Subnet), "Subnet")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4483,7 +4504,8 @@ func (p *VpcListParams) Validate() error {
 // Validate verifies all required fields for VpcCreateParams are set
 func (p *VpcCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Project), "Project")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4493,7 +4515,7 @@ func (p *VpcCreateParams) Validate() error {
 // Validate verifies all required fields for VpcDeleteParams are set
 func (p *VpcDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Vpc))
+	v.HasRequiredStr(string(p.Vpc), "Vpc")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4503,7 +4525,7 @@ func (p *VpcDeleteParams) Validate() error {
 // Validate verifies all required fields for VpcViewParams are set
 func (p *VpcViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Vpc))
+	v.HasRequiredStr(string(p.Vpc), "Vpc")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4513,8 +4535,8 @@ func (p *VpcViewParams) Validate() error {
 // Validate verifies all required fields for VpcUpdateParams are set
 func (p *VpcUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body)
-	v.HasRequiredStr(string(p.Vpc))
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Vpc), "Vpc")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}

@@ -1,4 +1,7 @@
-{{template "description" .}}func (c *Client) {{.FunctionName}}({{.ParamsString}}) (*{{.ResponseType}}, error) {
+{{template "description" .}}func (c *Client) {{.FunctionName}}({{.ParamsString}}) (*{{.ResponseType}}, error) { {{if .HasParams}}
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}{{end}}
 	var allPages {{.ResponseType}}
 	params.PageToken = ""
 	params.Limit = 100

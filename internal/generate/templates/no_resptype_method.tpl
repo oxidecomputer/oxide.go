@@ -1,4 +1,7 @@
-{{template "description" .}}func (c *Client) {{.FunctionName}}({{.ParamsString}}) error {
+{{template "description" .}}func (c *Client) {{.FunctionName}}({{.ParamsString}}) error { {{if .HasParams}}
+    if err := params.Validate(); err != nil {
+		return err
+	}{{end}}
     // Create the request
     req, err := buildRequest(
         nil, 

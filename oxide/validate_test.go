@@ -17,6 +17,7 @@ func TestValidator_HasRequiredStr(t *testing.T) {
 	}
 	type args struct {
 		value string
+		name  string
 	}
 	tests := []struct {
 		name    string
@@ -30,6 +31,7 @@ func TestValidator_HasRequiredStr(t *testing.T) {
 			fields: fields{},
 			args: args{
 				value: "some string",
+				name:  "name",
 			},
 			want: true,
 		},
@@ -38,9 +40,10 @@ func TestValidator_HasRequiredStr(t *testing.T) {
 			fields: fields{},
 			args: args{
 				value: "",
+				name:  "name",
 			},
 			want:    false,
-			wantErr: errors.Join(errors.New("required value is an empty string")),
+			wantErr: errors.Join(errors.New("required value for name is an empty string")),
 		},
 	}
 	for _, tt := range tests {
@@ -48,7 +51,7 @@ func TestValidator_HasRequiredStr(t *testing.T) {
 			v := &Validator{
 				err: tt.fields.err,
 			}
-			got := v.HasRequiredStr(tt.args.value)
+			got := v.HasRequiredStr(tt.args.value, tt.args.name)
 			assert.Equal(t, tt.want, got)
 			assert.Equal(t, tt.wantErr, v.err)
 
@@ -63,6 +66,7 @@ func TestValidator_HasRequiredObj(t *testing.T) {
 	}
 	type args struct {
 		value any
+		name  string
 	}
 	tests := []struct {
 		name    string
@@ -76,6 +80,7 @@ func TestValidator_HasRequiredObj(t *testing.T) {
 			fields: fields{},
 			args: args{
 				value: &val,
+				name:  "name",
 			},
 			want: true,
 		},
@@ -84,9 +89,10 @@ func TestValidator_HasRequiredObj(t *testing.T) {
 			fields: fields{},
 			args: args{
 				value: nil,
+				name:  "name",
 			},
 			want:    false,
-			wantErr: errors.Join(errors.New("required value is nil")),
+			wantErr: errors.Join(errors.New("required value for name is nil")),
 		},
 	}
 	for _, tt := range tests {
@@ -94,7 +100,7 @@ func TestValidator_HasRequiredObj(t *testing.T) {
 			v := &Validator{
 				err: tt.fields.err,
 			}
-			got := v.HasRequiredObj(tt.args.value)
+			got := v.HasRequiredObj(tt.args.value, tt.args.name)
 			assert.Equal(t, tt.want, got)
 			assert.Equal(t, tt.wantErr, v.err)
 
@@ -108,6 +114,7 @@ func TestValidator_HasRequiredNum(t *testing.T) {
 	}
 	type args struct {
 		value int
+		name  string
 	}
 	tests := []struct {
 		name    string
@@ -121,15 +128,18 @@ func TestValidator_HasRequiredNum(t *testing.T) {
 			fields: fields{},
 			args: args{
 				value: 1,
+				name:  "name",
 			},
 			want: true,
 		},
 		{
-			name:    "int is not present",
-			fields:  fields{},
-			args:    args{},
+			name:   "int is not present",
+			fields: fields{},
+			args: args{
+				name: "name",
+			},
 			want:    false,
-			wantErr: errors.Join(errors.New("required value is zero")),
+			wantErr: errors.Join(errors.New("required value for name is zero")),
 		},
 	}
 	for _, tt := range tests {
@@ -137,7 +147,7 @@ func TestValidator_HasRequiredNum(t *testing.T) {
 			v := &Validator{
 				err: tt.fields.err,
 			}
-			got := v.HasRequiredNum(tt.args.value)
+			got := v.HasRequiredNum(tt.args.value, tt.args.name)
 			assert.Equal(t, tt.want, got)
 			assert.Equal(t, tt.wantErr, v.err)
 

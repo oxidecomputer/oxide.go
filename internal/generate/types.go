@@ -198,7 +198,12 @@ func constructParamValidation(paths openapi3.Paths) []ValidationTemplate {
 					// TODO: Add validation for required queries. This may be a bit tricky because of the types
 					if p.Value.In == "path" {
 						// If an a value is part of a path, our API requires it, so we can safely add it.
-						validationTpl.RequiredStrings = append(validationTpl.RequiredObjects, paramName)
+						validationTpl.RequiredStrings = append(validationTpl.RequiredStrings, paramName)
+					}
+
+					if p.Value.In == "query" && p.Value.Required {
+						// TODO: For now all required values are strings, check for other types
+						validationTpl.RequiredStrings = append(validationTpl.RequiredStrings, paramName)
 					}
 				}
 				if o.RequestBody != nil {
@@ -338,10 +343,10 @@ func writeTypes(f *os.File, typeCollection []TypeTemplate, typeValidationCollect
 		fmt.Fprintf(f, "func (p *%s) Validate() error {\n", vm.AssociatedType)
 		fmt.Fprintln(f, "v := new(Validator)")
 		for _, o := range vm.RequiredObjects {
-			fmt.Fprintf(f, "v.HasRequiredObj(p.%s)\n", o)
+			fmt.Fprintf(f, "v.HasRequiredObj(p.%s, \"%s\")\n", o, o)
 		}
-		for _, o := range vm.RequiredStrings {
-			fmt.Fprintf(f, "v.HasRequiredStr(string(p.%s))\n", o)
+		for _, s := range vm.RequiredStrings {
+			fmt.Fprintf(f, "v.HasRequiredStr(string(p.%s), \"%s\")\n", s, s)
 		}
 		fmt.Fprintln(f, "if !v.IsValid() {")
 		// Unfortunately I have to craft the following line this way as I get

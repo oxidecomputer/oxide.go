@@ -1,4 +1,7 @@
-{{template "description" .}}func (c *Client) {{.FunctionName}}({{.ParamsString}}) error { {{if .IsAppJSON}}
+{{template "description" .}}func (c *Client) {{.FunctionName}}({{.ParamsString}}) error { {{if .HasParams}}
+    if err := params.Validate(); err != nil {
+		return err
+	}{{end}}{{if .IsAppJSON}}
     // Encode the request body as json.
     b := new(bytes.Buffer)
     if err := json.NewEncoder(b).Encode(params.Body); err != nil {
