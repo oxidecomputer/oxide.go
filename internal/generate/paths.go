@@ -182,7 +182,7 @@ func buildMethod(f *os.File, spec *openapi3.T, method string, path string, o *op
 		IsListAll:       isGetAllPages,
 		HasBody:         o.RequestBody != nil,
 		IsAppJSON:       true,
-		HasParams:       pInfo.paramsString != "", //len(pInfo.parameters) > 0,
+		HasParams:       pInfo.paramsString != "",
 		HasSummary:      o.Summary != "",
 		HasDescription:  o.Description != "",
 	}
