@@ -9,7 +9,10 @@ package oxide
 // IpPoolList
 //
 // To iterate over all pages, use the `IpPoolListAllPages` method, instead.
-func (c *Client) IpPoolList(params IpPoolListParams, ) (*IpPoolResultsPage, error) {
+func (c *Client) IpPoolList(params IpPoolListParams, ) (*IpPoolResultsPage, error) { 
+    if err := params.Validate(); err != nil {
+		return nil, err
+	}
     // Create the request
     req, err := buildRequest(
         nil, 
@@ -56,7 +59,10 @@ func (c *Client) IpPoolList(params IpPoolListParams, ) (*IpPoolResultsPage, erro
 //
 // This method is a wrapper around the `IpPoolList` method.
 // This method returns all the pages at once.
-func (c *Client) IpPoolListAllPages(params IpPoolListParams, ) (*IpPoolResultsPage, error) {
+func (c *Client) IpPoolListAllPages(params IpPoolListParams, ) (*IpPoolResultsPage, error) { 
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	var allPages IpPoolResultsPage
 	params.PageToken = ""
 	params.Limit = 100
@@ -77,6 +83,9 @@ func (c *Client) IpPoolListAllPages(params IpPoolListParams, ) (*IpPoolResultsPa
 
 // IpPoolCreate
 func (c *Client) IpPoolCreate(params IpPoolCreateParams, ) (*IpPool, error) { 
+    if err := params.Validate(); err != nil {
+		return nil, err
+	}
     // Encode the request body as json.
     b := new(bytes.Buffer)
     if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -124,7 +133,10 @@ func (c *Client) IpPoolCreate(params IpPoolCreateParams, ) (*IpPool, error) {
 }
 
 // IpPoolView
-func (c *Client) IpPoolView(params IpPoolViewParams, ) (*IpPool, error) {
+func (c *Client) IpPoolView(params IpPoolViewParams, ) (*IpPool, error) { 
+    if err := params.Validate(); err != nil {
+		return nil, err
+	}
     // Create the request
     req, err := buildRequest(
         nil, 
@@ -168,6 +180,9 @@ func (c *Client) IpPoolView(params IpPoolViewParams, ) (*IpPool, error) {
 
 // IpPoolUpdate
 func (c *Client) IpPoolUpdate(params IpPoolUpdateParams, ) (*IpPool, error) { 
+    if err := params.Validate(); err != nil {
+		return nil, err
+	}
     // Encode the request body as json.
     b := new(bytes.Buffer)
     if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -216,7 +231,10 @@ func (c *Client) IpPoolUpdate(params IpPoolUpdateParams, ) (*IpPool, error) {
 }
 
 // IpPoolDelete
-func (c *Client) IpPoolDelete(params IpPoolDeleteParams, ) error {
+func (c *Client) IpPoolDelete(params IpPoolDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
+		return err
+	}
     // Create the request
     req, err := buildRequest(
         nil, 

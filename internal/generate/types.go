@@ -51,6 +51,14 @@ type EnumTemplate struct {
 	Value       string
 }
 
+// ValidationTemplate holds information about the fields that
+// need to be validated
+type ValidationTemplate struct {
+	RequiredObjects []string
+	RequiredStrings []string
+	AssociatedType  string
+}
+
 // Generate the types file.
 func generateTypes(file string, spec *openapi3.T) error {
 	f, err := openGeneratedFile(file)
@@ -62,8 +70,9 @@ func generateTypes(file string, spec *openapi3.T) error {
 	typeCollection, enumCollection := constructTypes(spec.Components.Schemas)
 	enumCollection = append(enumCollection, constructEnums(collectEnumStringTypes)...)
 	typeCollection = append(typeCollection, constructParamTypes(spec.Paths)...)
+	v := constructParamValidation(spec.Paths)
 
-	writeTypes(f, typeCollection, enumCollection)
+	writeTypes(f, typeCollection, v, enumCollection)
 
 	return nil
 }
@@ -136,7 +145,6 @@ func constructParamTypes(paths openapi3.Paths) []TypeTemplate {
 							Type:              "*" + convertToValidGoType("", r.Schema),
 							SerializationInfo: "`json:\"body,omitempty\" yaml:\"body,omitempty\"`",
 						}
-						break
 					}
 					fields = append(fields, field)
 				}
@@ -148,6 +156,68 @@ func constructParamTypes(paths openapi3.Paths) []TypeTemplate {
 	}
 
 	return paramTypes
+}
+
+func constructParamValidation(paths openapi3.Paths) []ValidationTemplate {
+	validationMethods := make([]ValidationTemplate, 0)
+
+	keys := make([]string, 0)
+	for k := range paths {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	for _, path := range keys {
+		p := paths[path]
+		if p.Ref != "" {
+			fmt.Printf("[WARN] TODO: skipping path for %q, since it is a reference\n", path)
+			continue
+		}
+		ops := p.Operations()
+		keys := make([]string, 0)
+		for k := range ops {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for _, op := range keys {
+			o := ops[op]
+			if len(o.Parameters) > 0 || o.RequestBody != nil {
+				paramsTypeName := strcase.ToCamel(o.OperationID) + "Params"
+
+				validationTpl := ValidationTemplate{
+					AssociatedType: paramsTypeName,
+				}
+
+				for _, p := range o.Parameters {
+					if p.Ref != "" {
+						fmt.Printf("[WARN] TODO: skipping parameter for %q, since it is a reference\n", p.Value.Name)
+						continue
+					}
+
+					paramName := strcase.ToCamel(p.Value.Name)
+
+					// TODO: Add validation for required queries. This may be a bit tricky because of the types
+					if p.Value.In == "path" {
+						// If an a value is part of a path, our API requires it, so we can safely add it.
+						validationTpl.RequiredStrings = append(validationTpl.RequiredStrings, paramName)
+					}
+
+					if p.Value.In == "query" && p.Value.Required {
+						// TODO: For now all required values are strings, check for other types
+						validationTpl.RequiredStrings = append(validationTpl.RequiredStrings, paramName)
+					}
+				}
+				if o.RequestBody != nil {
+					// If an endpoint has a body, our API requires it, so we can safely add it.
+					validationTpl.RequiredObjects = append(validationTpl.RequiredObjects, "Body")
+
+				}
+				validationMethods = append(validationMethods, validationTpl)
+			}
+		}
+
+	}
+
+	return validationMethods
 }
 
 // constructTypes takes the types collected from several parts of the spec and constructs
@@ -237,7 +307,8 @@ func constructEnums(enumStrCollection map[string][]string) []EnumTemplate {
 }
 
 // writeTypes iterates over the templates, constructs the different types and writes to file
-func writeTypes(f *os.File, typeCollection []TypeTemplate, enumCollection []EnumTemplate) {
+func writeTypes(f *os.File, typeCollection []TypeTemplate, typeValidationCollection []ValidationTemplate, enumCollection []EnumTemplate) {
+	// Write all collected types to file
 	for _, tt := range typeCollection {
 		// If an empty template manages to get through, ignore it.
 		// if there is a weirdly constructed template, then let it get through
@@ -262,6 +333,32 @@ func writeTypes(f *os.File, typeCollection []TypeTemplate, enumCollection []Enum
 		fmt.Fprint(f, "\n")
 	}
 
+	// Write all collected validation methods to file
+	for _, vm := range typeValidationCollection {
+		if vm.AssociatedType == "" {
+			continue
+		}
+
+		fmt.Fprintf(f, "// Validate verifies all required fields for %s are set\n", vm.AssociatedType)
+		fmt.Fprintf(f, "func (p *%s) Validate() error {\n", vm.AssociatedType)
+		fmt.Fprintln(f, "v := new(Validator)")
+		for _, o := range vm.RequiredObjects {
+			fmt.Fprintf(f, "v.HasRequiredObj(p.%s, \"%s\")\n", o, o)
+		}
+		for _, s := range vm.RequiredStrings {
+			fmt.Fprintf(f, "v.HasRequiredStr(string(p.%s), \"%s\")\n", s, s)
+		}
+		fmt.Fprintln(f, "if !v.IsValid() {")
+		// Unfortunately I have to craft the following line this way as I get
+		// unwanted newlines otherwise :(
+		n := `\n`
+		fmt.Fprintf(f, "return fmt.Errorf(\"validation error:%v%v\", v.Error())", n, `%v`)
+		fmt.Fprintln(f, "}")
+		fmt.Fprintln(f, "return nil")
+		fmt.Fprintln(f, "}")
+	}
+
+	// Write all collected enums to file
 	for _, et := range enumCollection {
 		if et.Name == "" {
 			continue

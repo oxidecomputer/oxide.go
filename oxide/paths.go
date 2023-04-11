@@ -16,6 +16,9 @@ import (
 
 // LoginLocal: Authenticate a user (i.e., log in) via username and password
 func (c *Client) LoginLocal(params LoginLocalParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -54,6 +57,9 @@ func (c *Client) LoginLocal(params LoginLocalParams) error {
 // LoginSamlBegin: Prompt user login
 // Either display a page asking a user for their credentials, or redirect them to their identity provider.
 func (c *Client) LoginSamlBegin(params LoginSamlBeginParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -86,6 +92,9 @@ func (c *Client) LoginSamlBegin(params LoginSamlBeginParams) error {
 
 // LoginSaml: Authenticate a user (i.e., log in) via SAML
 func (c *Client) LoginSaml(params LoginSamlParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
 	b := params.Body
 
 	// Create the request
@@ -120,6 +129,9 @@ func (c *Client) LoginSaml(params LoginSamlParams) error {
 
 // SystemImageViewById: Fetch a system-wide image by id
 func (c *Client) SystemImageViewById(params SystemImageViewByIdParams) (*GlobalImage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -165,6 +177,9 @@ func (c *Client) SystemImageViewById(params SystemImageViewByIdParams) (*GlobalI
 //
 // To iterate over all pages, use the `SystemImageListAllPages` method, instead.
 func (c *Client) SystemImageList(params SystemImageListParams) (*GlobalImageResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -213,6 +228,9 @@ func (c *Client) SystemImageList(params SystemImageListParams) (*GlobalImageResu
 // This method is a wrapper around the `SystemImageList` method.
 // This method returns all the pages at once.
 func (c *Client) SystemImageListAllPages(params SystemImageListParams) (*[]GlobalImage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	var allPages []GlobalImage
 	params.PageToken = ""
 	params.Limit = 100
@@ -234,6 +252,9 @@ func (c *Client) SystemImageListAllPages(params SystemImageListParams) (*[]Globa
 // SystemImageCreate: Create a system-wide image
 // Create a new system-wide image. This image can then be used by any user in any silo as a base for instances.
 func (c *Client) SystemImageCreate(params SystemImageCreateParams) (*GlobalImage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -281,6 +302,9 @@ func (c *Client) SystemImageCreate(params SystemImageCreateParams) (*GlobalImage
 // SystemImageView: Fetch a system-wide image
 // Returns the details of a specific system-wide image.
 func (c *Client) SystemImageView(params SystemImageViewParams) (*GlobalImage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -324,6 +348,9 @@ func (c *Client) SystemImageView(params SystemImageViewParams) (*GlobalImage, er
 // SystemImageDelete: Delete a system-wide image
 // Permanently delete a system-wide image. This operation cannot be undone. Any instances using the system-wide image will continue to run, however new instances can not be created with this image.
 func (c *Client) SystemImageDelete(params SystemImageDeleteParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -357,6 +384,9 @@ func (c *Client) SystemImageDelete(params SystemImageDeleteParams) error {
 //
 // To iterate over all pages, use the `DiskListAllPages` method, instead.
 func (c *Client) DiskList(params DiskListParams) (*DiskResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -405,6 +435,9 @@ func (c *Client) DiskList(params DiskListParams) (*DiskResultsPage, error) {
 // This method is a wrapper around the `DiskList` method.
 // This method returns all the pages at once.
 func (c *Client) DiskListAllPages(params DiskListParams) (*[]Disk, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	var allPages []Disk
 	params.PageToken = ""
 	params.Limit = 100
@@ -425,6 +458,9 @@ func (c *Client) DiskListAllPages(params DiskListParams) (*[]Disk, error) {
 
 // DiskCreate: Create a disk
 func (c *Client) DiskCreate(params DiskCreateParams) (*Disk, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -473,6 +509,9 @@ func (c *Client) DiskCreate(params DiskCreateParams) (*Disk, error) {
 
 // DiskView: Fetch a disk
 func (c *Client) DiskView(params DiskViewParams) (*Disk, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -517,6 +556,9 @@ func (c *Client) DiskView(params DiskViewParams) (*Disk, error) {
 
 // DiskDelete: Delete a disk
 func (c *Client) DiskDelete(params DiskDeleteParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -550,6 +592,9 @@ func (c *Client) DiskDelete(params DiskDeleteParams) error {
 
 // DiskBulkWriteImport: Import blocks into a disk
 func (c *Client) DiskBulkWriteImport(params DiskBulkWriteImportParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -589,6 +634,9 @@ func (c *Client) DiskBulkWriteImport(params DiskBulkWriteImportParams) error {
 
 // DiskBulkWriteImportStart: Start the process of importing blocks into a disk
 func (c *Client) DiskBulkWriteImportStart(params DiskBulkWriteImportStartParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -622,6 +670,9 @@ func (c *Client) DiskBulkWriteImportStart(params DiskBulkWriteImportStartParams)
 
 // DiskBulkWriteImportStop: Stop the process of importing blocks into a disk
 func (c *Client) DiskBulkWriteImportStop(params DiskBulkWriteImportStopParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -655,6 +706,9 @@ func (c *Client) DiskBulkWriteImportStop(params DiskBulkWriteImportStopParams) e
 
 // DiskFinalizeImport: Finalize disk when imports are done
 func (c *Client) DiskFinalizeImport(params DiskFinalizeImportParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -689,6 +743,9 @@ func (c *Client) DiskFinalizeImport(params DiskFinalizeImportParams) error {
 
 // DiskImportBlocksFromUrl: Send request to import blocks from URL
 func (c *Client) DiskImportBlocksFromUrl(params DiskImportBlocksFromUrlParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -730,6 +787,9 @@ func (c *Client) DiskImportBlocksFromUrl(params DiskImportBlocksFromUrlParams) e
 //
 // To iterate over all pages, use the `DiskMetricsListAllPages` method, instead.
 func (c *Client) DiskMetricsList(params DiskMetricsListParams) (*MeasurementResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -782,6 +842,9 @@ func (c *Client) DiskMetricsList(params DiskMetricsListParams) (*MeasurementResu
 // This method is a wrapper around the `DiskMetricsList` method.
 // This method returns all the pages at once.
 func (c *Client) DiskMetricsListAllPages(params DiskMetricsListParams) (*[]Measurement, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	var allPages []Measurement
 	params.PageToken = ""
 	params.Limit = 100
@@ -804,6 +867,9 @@ func (c *Client) DiskMetricsListAllPages(params DiskMetricsListParams) (*[]Measu
 //
 // To iterate over all pages, use the `GroupListAllPages` method, instead.
 func (c *Client) GroupList(params GroupListParams) (*GroupResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -851,6 +917,9 @@ func (c *Client) GroupList(params GroupListParams) (*GroupResultsPage, error) {
 // This method is a wrapper around the `GroupList` method.
 // This method returns all the pages at once.
 func (c *Client) GroupListAllPages(params GroupListParams) (*[]Group, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	var allPages []Group
 	params.PageToken = ""
 	params.Limit = 100
@@ -871,6 +940,9 @@ func (c *Client) GroupListAllPages(params GroupListParams) (*[]Group, error) {
 
 // GroupView: Fetch group
 func (c *Client) GroupView(params GroupViewParams) (*Group, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -916,6 +988,9 @@ func (c *Client) GroupView(params GroupViewParams) (*Group, error) {
 //
 // To iterate over all pages, use the `ImageListAllPages` method, instead.
 func (c *Client) ImageList(params ImageListParams) (*ImageResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -965,6 +1040,9 @@ func (c *Client) ImageList(params ImageListParams) (*ImageResultsPage, error) {
 // This method is a wrapper around the `ImageList` method.
 // This method returns all the pages at once.
 func (c *Client) ImageListAllPages(params ImageListParams) (*[]Image, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	var allPages []Image
 	params.PageToken = ""
 	params.Limit = 100
@@ -986,6 +1064,9 @@ func (c *Client) ImageListAllPages(params ImageListParams) (*[]Image, error) {
 // ImageCreate: Create an image
 // Create a new image in a project.
 func (c *Client) ImageCreate(params ImageCreateParams) (*Image, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -1035,6 +1116,9 @@ func (c *Client) ImageCreate(params ImageCreateParams) (*Image, error) {
 // ImageView: Fetch an image
 // Fetch the details for a specific image in a project.
 func (c *Client) ImageView(params ImageViewParams) (*Image, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -1080,6 +1164,9 @@ func (c *Client) ImageView(params ImageViewParams) (*Image, error) {
 // ImageDelete: Delete an image
 // Permanently delete an image from a project. This operation cannot be undone. Any instances in the project using the image will continue to run, however new instances can not be created with this image.
 func (c *Client) ImageDelete(params ImageDeleteParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -1115,6 +1202,9 @@ func (c *Client) ImageDelete(params ImageDeleteParams) error {
 //
 // To iterate over all pages, use the `InstanceListAllPages` method, instead.
 func (c *Client) InstanceList(params InstanceListParams) (*InstanceResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -1163,6 +1253,9 @@ func (c *Client) InstanceList(params InstanceListParams) (*InstanceResultsPage, 
 // This method is a wrapper around the `InstanceList` method.
 // This method returns all the pages at once.
 func (c *Client) InstanceListAllPages(params InstanceListParams) (*[]Instance, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	var allPages []Instance
 	params.PageToken = ""
 	params.Limit = 100
@@ -1183,6 +1276,9 @@ func (c *Client) InstanceListAllPages(params InstanceListParams) (*[]Instance, e
 
 // InstanceCreate: Create an instance
 func (c *Client) InstanceCreate(params InstanceCreateParams) (*Instance, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -1231,6 +1327,9 @@ func (c *Client) InstanceCreate(params InstanceCreateParams) (*Instance, error) 
 
 // InstanceView: Fetch an instance
 func (c *Client) InstanceView(params InstanceViewParams) (*Instance, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -1275,6 +1374,9 @@ func (c *Client) InstanceView(params InstanceViewParams) (*Instance, error) {
 
 // InstanceDelete: Delete an instance
 func (c *Client) InstanceDelete(params InstanceDeleteParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -1310,6 +1412,9 @@ func (c *Client) InstanceDelete(params InstanceDeleteParams) error {
 //
 // To iterate over all pages, use the `InstanceDiskListAllPages` method, instead.
 func (c *Client) InstanceDiskList(params InstanceDiskListParams) (*DiskResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -1360,6 +1465,9 @@ func (c *Client) InstanceDiskList(params InstanceDiskListParams) (*DiskResultsPa
 // This method is a wrapper around the `InstanceDiskList` method.
 // This method returns all the pages at once.
 func (c *Client) InstanceDiskListAllPages(params InstanceDiskListParams) (*[]Disk, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	var allPages []Disk
 	params.PageToken = ""
 	params.Limit = 100
@@ -1380,6 +1488,9 @@ func (c *Client) InstanceDiskListAllPages(params InstanceDiskListParams) (*[]Dis
 
 // InstanceDiskAttach: Attach a disk to an instance
 func (c *Client) InstanceDiskAttach(params InstanceDiskAttachParams) (*Disk, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -1430,6 +1541,9 @@ func (c *Client) InstanceDiskAttach(params InstanceDiskAttachParams) (*Disk, err
 
 // InstanceDiskDetach: Detach a disk from an instance
 func (c *Client) InstanceDiskDetach(params InstanceDiskDetachParams) (*Disk, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -1480,6 +1594,9 @@ func (c *Client) InstanceDiskDetach(params InstanceDiskDetachParams) (*Disk, err
 
 // InstanceExternalIpList: List external IP addresses
 func (c *Client) InstanceExternalIpList(params InstanceExternalIpListParams) (*ExternalIpResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -1524,6 +1641,9 @@ func (c *Client) InstanceExternalIpList(params InstanceExternalIpListParams) (*E
 
 // InstanceMigrate: Migrate an instance
 func (c *Client) InstanceMigrate(params InstanceMigrateParams) (*Instance, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -1574,6 +1694,9 @@ func (c *Client) InstanceMigrate(params InstanceMigrateParams) (*Instance, error
 
 // InstanceReboot: Reboot an instance
 func (c *Client) InstanceReboot(params InstanceRebootParams) (*Instance, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -1618,6 +1741,9 @@ func (c *Client) InstanceReboot(params InstanceRebootParams) (*Instance, error) 
 
 // InstanceSerialConsole: Fetch an instance's serial console
 func (c *Client) InstanceSerialConsole(params InstanceSerialConsoleParams) (*InstanceSerialConsoleData, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -1665,6 +1791,9 @@ func (c *Client) InstanceSerialConsole(params InstanceSerialConsoleParams) (*Ins
 
 // InstanceSerialConsoleStream: Stream an instance's serial console
 func (c *Client) InstanceSerialConsoleStream(params InstanceSerialConsoleStreamParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -1701,6 +1830,9 @@ func (c *Client) InstanceSerialConsoleStream(params InstanceSerialConsoleStreamP
 
 // InstanceStart: Boot an instance
 func (c *Client) InstanceStart(params InstanceStartParams) (*Instance, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -1745,6 +1877,9 @@ func (c *Client) InstanceStart(params InstanceStartParams) (*Instance, error) {
 
 // InstanceStop: Stop an instance
 func (c *Client) InstanceStop(params InstanceStopParams) (*Instance, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -1831,6 +1966,9 @@ func (c *Client) CurrentUserView() (*CurrentUser, error) {
 //
 // To iterate over all pages, use the `CurrentUserGroupsAllPages` method, instead.
 func (c *Client) CurrentUserGroups(params CurrentUserGroupsParams) (*GroupResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -1878,6 +2016,9 @@ func (c *Client) CurrentUserGroups(params CurrentUserGroupsParams) (*GroupResult
 // This method is a wrapper around the `CurrentUserGroups` method.
 // This method returns all the pages at once.
 func (c *Client) CurrentUserGroupsAllPages(params CurrentUserGroupsParams) (*[]Group, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	var allPages []Group
 	params.PageToken = ""
 	params.Limit = 100
@@ -1901,6 +2042,9 @@ func (c *Client) CurrentUserGroupsAllPages(params CurrentUserGroupsParams) (*[]G
 //
 // To iterate over all pages, use the `CurrentUserSshKeyListAllPages` method, instead.
 func (c *Client) CurrentUserSshKeyList(params CurrentUserSshKeyListParams) (*SshKeyResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -1949,6 +2093,9 @@ func (c *Client) CurrentUserSshKeyList(params CurrentUserSshKeyListParams) (*Ssh
 // This method is a wrapper around the `CurrentUserSshKeyList` method.
 // This method returns all the pages at once.
 func (c *Client) CurrentUserSshKeyListAllPages(params CurrentUserSshKeyListParams) (*[]SshKey, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	var allPages []SshKey
 	params.PageToken = ""
 	params.Limit = 100
@@ -1970,6 +2117,9 @@ func (c *Client) CurrentUserSshKeyListAllPages(params CurrentUserSshKeyListParam
 // CurrentUserSshKeyCreate: Create an SSH public key
 // Create an SSH public key for the currently authenticated user.
 func (c *Client) CurrentUserSshKeyCreate(params CurrentUserSshKeyCreateParams) (*SshKey, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -2017,6 +2167,9 @@ func (c *Client) CurrentUserSshKeyCreate(params CurrentUserSshKeyCreateParams) (
 // CurrentUserSshKeyView: Fetch an SSH public key
 // Fetch an SSH public key associated with the currently authenticated user.
 func (c *Client) CurrentUserSshKeyView(params CurrentUserSshKeyViewParams) (*SshKey, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -2060,6 +2213,9 @@ func (c *Client) CurrentUserSshKeyView(params CurrentUserSshKeyViewParams) (*Ssh
 // CurrentUserSshKeyDelete: Delete an SSH public key
 // Delete an SSH public key associated with the currently authenticated user.
 func (c *Client) CurrentUserSshKeyDelete(params CurrentUserSshKeyDeleteParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -2093,6 +2249,9 @@ func (c *Client) CurrentUserSshKeyDelete(params CurrentUserSshKeyDeleteParams) e
 //
 // To iterate over all pages, use the `InstanceNetworkInterfaceListAllPages` method, instead.
 func (c *Client) InstanceNetworkInterfaceList(params InstanceNetworkInterfaceListParams) (*NetworkInterfaceResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -2142,6 +2301,9 @@ func (c *Client) InstanceNetworkInterfaceList(params InstanceNetworkInterfaceLis
 // This method is a wrapper around the `InstanceNetworkInterfaceList` method.
 // This method returns all the pages at once.
 func (c *Client) InstanceNetworkInterfaceListAllPages(params InstanceNetworkInterfaceListParams) (*[]NetworkInterface, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	var allPages []NetworkInterface
 	params.PageToken = ""
 	params.Limit = 100
@@ -2162,6 +2324,9 @@ func (c *Client) InstanceNetworkInterfaceListAllPages(params InstanceNetworkInte
 
 // InstanceNetworkInterfaceCreate: Create a network interface
 func (c *Client) InstanceNetworkInterfaceCreate(params InstanceNetworkInterfaceCreateParams) (*NetworkInterface, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -2211,6 +2376,9 @@ func (c *Client) InstanceNetworkInterfaceCreate(params InstanceNetworkInterfaceC
 
 // InstanceNetworkInterfaceView: Fetch a network interface
 func (c *Client) InstanceNetworkInterfaceView(params InstanceNetworkInterfaceViewParams) (*NetworkInterface, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -2256,6 +2424,9 @@ func (c *Client) InstanceNetworkInterfaceView(params InstanceNetworkInterfaceVie
 
 // InstanceNetworkInterfaceUpdate: Update a network interface
 func (c *Client) InstanceNetworkInterfaceUpdate(params InstanceNetworkInterfaceUpdateParams) (*NetworkInterface, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -2308,6 +2479,9 @@ func (c *Client) InstanceNetworkInterfaceUpdate(params InstanceNetworkInterfaceU
 // InstanceNetworkInterfaceDelete: Delete a network interface
 // Note that the primary interface for an instance cannot be deleted if there are any secondary interfaces. A new primary interface must be designated first. The primary interface can be deleted if there are no secondary interfaces.
 func (c *Client) InstanceNetworkInterfaceDelete(params InstanceNetworkInterfaceDeleteParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -2382,6 +2556,9 @@ func (c *Client) PolicyView() (*SiloRolePolicy, error) {
 
 // PolicyUpdate: Update the current silo's IAM policy
 func (c *Client) PolicyUpdate(params PolicyUpdateParams) (*SiloRolePolicy, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -2430,6 +2607,9 @@ func (c *Client) PolicyUpdate(params PolicyUpdateParams) (*SiloRolePolicy, error
 //
 // To iterate over all pages, use the `ProjectListAllPages` method, instead.
 func (c *Client) ProjectList(params ProjectListParams) (*ProjectResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -2477,6 +2657,9 @@ func (c *Client) ProjectList(params ProjectListParams) (*ProjectResultsPage, err
 // This method is a wrapper around the `ProjectList` method.
 // This method returns all the pages at once.
 func (c *Client) ProjectListAllPages(params ProjectListParams) (*[]Project, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	var allPages []Project
 	params.PageToken = ""
 	params.Limit = 100
@@ -2497,6 +2680,9 @@ func (c *Client) ProjectListAllPages(params ProjectListParams) (*[]Project, erro
 
 // ProjectCreate: Create a project
 func (c *Client) ProjectCreate(params ProjectCreateParams) (*Project, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -2543,6 +2729,9 @@ func (c *Client) ProjectCreate(params ProjectCreateParams) (*Project, error) {
 
 // ProjectView: Fetch a project
 func (c *Client) ProjectView(params ProjectViewParams) (*Project, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -2585,6 +2774,9 @@ func (c *Client) ProjectView(params ProjectViewParams) (*Project, error) {
 
 // ProjectUpdate: Update a project
 func (c *Client) ProjectUpdate(params ProjectUpdateParams) (*Project, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -2633,6 +2825,9 @@ func (c *Client) ProjectUpdate(params ProjectUpdateParams) (*Project, error) {
 
 // ProjectDelete: Delete a project
 func (c *Client) ProjectDelete(params ProjectDeleteParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -2664,6 +2859,9 @@ func (c *Client) ProjectDelete(params ProjectDeleteParams) error {
 
 // ProjectPolicyView: Fetch a project's IAM policy
 func (c *Client) ProjectPolicyView(params ProjectPolicyViewParams) (*ProjectRolePolicy, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -2706,6 +2904,9 @@ func (c *Client) ProjectPolicyView(params ProjectPolicyViewParams) (*ProjectRole
 
 // ProjectPolicyUpdate: Update a project's IAM policy
 func (c *Client) ProjectPolicyUpdate(params ProjectPolicyUpdateParams) (*ProjectRolePolicy, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -2756,6 +2957,9 @@ func (c *Client) ProjectPolicyUpdate(params ProjectPolicyUpdateParams) (*Project
 //
 // To iterate over all pages, use the `SnapshotListAllPages` method, instead.
 func (c *Client) SnapshotList(params SnapshotListParams) (*SnapshotResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -2804,6 +3008,9 @@ func (c *Client) SnapshotList(params SnapshotListParams) (*SnapshotResultsPage, 
 // This method is a wrapper around the `SnapshotList` method.
 // This method returns all the pages at once.
 func (c *Client) SnapshotListAllPages(params SnapshotListParams) (*[]Snapshot, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	var allPages []Snapshot
 	params.PageToken = ""
 	params.Limit = 100
@@ -2825,6 +3032,9 @@ func (c *Client) SnapshotListAllPages(params SnapshotListParams) (*[]Snapshot, e
 // SnapshotCreate: Create a snapshot
 // Creates a point-in-time snapshot from a disk.
 func (c *Client) SnapshotCreate(params SnapshotCreateParams) (*Snapshot, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -2873,6 +3083,9 @@ func (c *Client) SnapshotCreate(params SnapshotCreateParams) (*Snapshot, error) 
 
 // SnapshotView: Fetch a snapshot
 func (c *Client) SnapshotView(params SnapshotViewParams) (*Snapshot, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -2917,6 +3130,9 @@ func (c *Client) SnapshotView(params SnapshotViewParams) (*Snapshot, error) {
 
 // SnapshotDelete: Delete a snapshot
 func (c *Client) SnapshotDelete(params SnapshotDeleteParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -2953,6 +3169,9 @@ func (c *Client) SnapshotDelete(params SnapshotDeleteParams) error {
 //
 // To iterate over all pages, use the `CertificateListAllPages` method, instead.
 func (c *Client) CertificateList(params CertificateListParams) (*CertificateResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -3001,6 +3220,9 @@ func (c *Client) CertificateList(params CertificateListParams) (*CertificateResu
 // This method is a wrapper around the `CertificateList` method.
 // This method returns all the pages at once.
 func (c *Client) CertificateListAllPages(params CertificateListParams) (*[]Certificate, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	var allPages []Certificate
 	params.PageToken = ""
 	params.Limit = 100
@@ -3022,6 +3244,9 @@ func (c *Client) CertificateListAllPages(params CertificateListParams) (*[]Certi
 // CertificateCreate: Create a new system-wide x.509 certificate.
 // This certificate is automatically used by the Oxide Control plane to serve external connections.
 func (c *Client) CertificateCreate(params CertificateCreateParams) (*Certificate, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -3069,6 +3294,9 @@ func (c *Client) CertificateCreate(params CertificateCreateParams) (*Certificate
 // CertificateView: Fetch a certificate
 // Returns the details of a specific certificate
 func (c *Client) CertificateView(params CertificateViewParams) (*Certificate, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -3112,6 +3340,9 @@ func (c *Client) CertificateView(params CertificateViewParams) (*Certificate, er
 // CertificateDelete: Delete a certificate
 // Permanently delete a certificate. This operation cannot be undone.
 func (c *Client) CertificateDelete(params CertificateDeleteParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -3145,6 +3376,9 @@ func (c *Client) CertificateDelete(params CertificateDeleteParams) error {
 //
 // To iterate over all pages, use the `PhysicalDiskListAllPages` method, instead.
 func (c *Client) PhysicalDiskList(params PhysicalDiskListParams) (*PhysicalDiskResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -3192,6 +3426,9 @@ func (c *Client) PhysicalDiskList(params PhysicalDiskListParams) (*PhysicalDiskR
 // This method is a wrapper around the `PhysicalDiskList` method.
 // This method returns all the pages at once.
 func (c *Client) PhysicalDiskListAllPages(params PhysicalDiskListParams) (*[]PhysicalDisk, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	var allPages []PhysicalDisk
 	params.PageToken = ""
 	params.Limit = 100
@@ -3214,6 +3451,9 @@ func (c *Client) PhysicalDiskListAllPages(params PhysicalDiskListParams) (*[]Phy
 //
 // To iterate over all pages, use the `RackListAllPages` method, instead.
 func (c *Client) RackList(params RackListParams) (*RackResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -3261,6 +3501,9 @@ func (c *Client) RackList(params RackListParams) (*RackResultsPage, error) {
 // This method is a wrapper around the `RackList` method.
 // This method returns all the pages at once.
 func (c *Client) RackListAllPages(params RackListParams) (*[]Rack, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	var allPages []Rack
 	params.PageToken = ""
 	params.Limit = 100
@@ -3281,6 +3524,9 @@ func (c *Client) RackListAllPages(params RackListParams) (*[]Rack, error) {
 
 // RackView: Fetch a rack
 func (c *Client) RackView(params RackViewParams) (*Rack, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -3325,6 +3571,9 @@ func (c *Client) RackView(params RackViewParams) (*Rack, error) {
 //
 // To iterate over all pages, use the `SledListAllPages` method, instead.
 func (c *Client) SledList(params SledListParams) (*SledResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -3372,6 +3621,9 @@ func (c *Client) SledList(params SledListParams) (*SledResultsPage, error) {
 // This method is a wrapper around the `SledList` method.
 // This method returns all the pages at once.
 func (c *Client) SledListAllPages(params SledListParams) (*[]Sled, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	var allPages []Sled
 	params.PageToken = ""
 	params.Limit = 100
@@ -3392,6 +3644,9 @@ func (c *Client) SledListAllPages(params SledListParams) (*[]Sled, error) {
 
 // SledView: Fetch a sled
 func (c *Client) SledView(params SledViewParams) (*Sled, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -3436,6 +3691,9 @@ func (c *Client) SledView(params SledViewParams) (*Sled, error) {
 //
 // To iterate over all pages, use the `SledPhysicalDiskListAllPages` method, instead.
 func (c *Client) SledPhysicalDiskList(params SledPhysicalDiskListParams) (*PhysicalDiskResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -3485,6 +3743,9 @@ func (c *Client) SledPhysicalDiskList(params SledPhysicalDiskListParams) (*Physi
 // This method is a wrapper around the `SledPhysicalDiskList` method.
 // This method returns all the pages at once.
 func (c *Client) SledPhysicalDiskListAllPages(params SledPhysicalDiskListParams) (*[]PhysicalDisk, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	var allPages []PhysicalDisk
 	params.PageToken = ""
 	params.Limit = 100
@@ -3507,6 +3768,9 @@ func (c *Client) SledPhysicalDiskListAllPages(params SledPhysicalDiskListParams)
 //
 // To iterate over all pages, use the `SiloIdentityProviderListAllPages` method, instead.
 func (c *Client) SiloIdentityProviderList(params SiloIdentityProviderListParams) (*IdentityProviderResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -3555,6 +3819,9 @@ func (c *Client) SiloIdentityProviderList(params SiloIdentityProviderListParams)
 // This method is a wrapper around the `SiloIdentityProviderList` method.
 // This method returns all the pages at once.
 func (c *Client) SiloIdentityProviderListAllPages(params SiloIdentityProviderListParams) (*[]IdentityProvider, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	var allPages []IdentityProvider
 	params.PageToken = ""
 	params.Limit = 100
@@ -3576,6 +3843,9 @@ func (c *Client) SiloIdentityProviderListAllPages(params SiloIdentityProviderLis
 // LocalIdpUserCreate: Create a user
 // Users can only be created in Silos with `provision_type` == `Fixed`. Otherwise, Silo users are just-in-time (JIT) provisioned when a user first logs in using an external Identity Provider.
 func (c *Client) LocalIdpUserCreate(params LocalIdpUserCreateParams) (*User, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -3624,6 +3894,9 @@ func (c *Client) LocalIdpUserCreate(params LocalIdpUserCreateParams) (*User, err
 
 // LocalIdpUserDelete: Delete a user
 func (c *Client) LocalIdpUserDelete(params LocalIdpUserDeleteParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -3658,6 +3931,9 @@ func (c *Client) LocalIdpUserDelete(params LocalIdpUserDeleteParams) error {
 // LocalIdpUserSetPassword: Set or invalidate a user's password
 // Passwords can only be updated for users in Silos with identity mode `LocalOnly`.
 func (c *Client) LocalIdpUserSetPassword(params LocalIdpUserSetPasswordParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -3697,6 +3973,9 @@ func (c *Client) LocalIdpUserSetPassword(params LocalIdpUserSetPasswordParams) e
 
 // SamlIdentityProviderCreate: Create a SAML IDP
 func (c *Client) SamlIdentityProviderCreate(params SamlIdentityProviderCreateParams) (*SamlIdentityProvider, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -3745,6 +4024,9 @@ func (c *Client) SamlIdentityProviderCreate(params SamlIdentityProviderCreatePar
 
 // SamlIdentityProviderView: Fetch a SAML IDP
 func (c *Client) SamlIdentityProviderView(params SamlIdentityProviderViewParams) (*SamlIdentityProvider, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -3791,6 +4073,9 @@ func (c *Client) SamlIdentityProviderView(params SamlIdentityProviderViewParams)
 //
 // To iterate over all pages, use the `IpPoolListAllPages` method, instead.
 func (c *Client) IpPoolList(params IpPoolListParams) (*IpPoolResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -3838,6 +4123,9 @@ func (c *Client) IpPoolList(params IpPoolListParams) (*IpPoolResultsPage, error)
 // This method is a wrapper around the `IpPoolList` method.
 // This method returns all the pages at once.
 func (c *Client) IpPoolListAllPages(params IpPoolListParams) (*[]IpPool, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	var allPages []IpPool
 	params.PageToken = ""
 	params.Limit = 100
@@ -3858,6 +4146,9 @@ func (c *Client) IpPoolListAllPages(params IpPoolListParams) (*[]IpPool, error) 
 
 // IpPoolCreate: Create an IP pool
 func (c *Client) IpPoolCreate(params IpPoolCreateParams) (*IpPool, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -3947,6 +4238,9 @@ func (c *Client) IpPoolServiceView() (*IpPool, error) {
 //
 // To iterate over all pages, use the `IpPoolServiceRangeListAllPages` method, instead.
 func (c *Client) IpPoolServiceRangeList(params IpPoolServiceRangeListParams) (*IpPoolRangeResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -3994,6 +4288,9 @@ func (c *Client) IpPoolServiceRangeList(params IpPoolServiceRangeListParams) (*I
 // This method is a wrapper around the `IpPoolServiceRangeList` method.
 // This method returns all the pages at once.
 func (c *Client) IpPoolServiceRangeListAllPages(params IpPoolServiceRangeListParams) (*[]IpPoolRange, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	var allPages []IpPoolRange
 	params.PageToken = ""
 	params.Limit = 100
@@ -4014,6 +4311,9 @@ func (c *Client) IpPoolServiceRangeListAllPages(params IpPoolServiceRangeListPar
 
 // IpPoolServiceRangeAdd: Add a range to an IP pool used for Oxide services.
 func (c *Client) IpPoolServiceRangeAdd(params IpPoolServiceRangeAddParams) (*IpPoolRange, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -4060,6 +4360,9 @@ func (c *Client) IpPoolServiceRangeAdd(params IpPoolServiceRangeAddParams) (*IpP
 
 // IpPoolServiceRangeRemove: Remove a range from an IP pool used for Oxide services.
 func (c *Client) IpPoolServiceRangeRemove(params IpPoolServiceRangeRemoveParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -4095,6 +4398,9 @@ func (c *Client) IpPoolServiceRangeRemove(params IpPoolServiceRangeRemoveParams)
 
 // IpPoolView: Fetch an IP pool
 func (c *Client) IpPoolView(params IpPoolViewParams) (*IpPool, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -4137,6 +4443,9 @@ func (c *Client) IpPoolView(params IpPoolViewParams) (*IpPool, error) {
 
 // IpPoolUpdate: Update an IP Pool
 func (c *Client) IpPoolUpdate(params IpPoolUpdateParams) (*IpPool, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -4185,6 +4494,9 @@ func (c *Client) IpPoolUpdate(params IpPoolUpdateParams) (*IpPool, error) {
 
 // IpPoolDelete: Delete an IP Pool
 func (c *Client) IpPoolDelete(params IpPoolDeleteParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -4219,6 +4531,9 @@ func (c *Client) IpPoolDelete(params IpPoolDeleteParams) error {
 //
 // To iterate over all pages, use the `IpPoolRangeListAllPages` method, instead.
 func (c *Client) IpPoolRangeList(params IpPoolRangeListParams) (*IpPoolRangeResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -4268,6 +4583,9 @@ func (c *Client) IpPoolRangeList(params IpPoolRangeListParams) (*IpPoolRangeResu
 // This method is a wrapper around the `IpPoolRangeList` method.
 // This method returns all the pages at once.
 func (c *Client) IpPoolRangeListAllPages(params IpPoolRangeListParams) (*[]IpPoolRange, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	var allPages []IpPoolRange
 	params.PageToken = ""
 	params.Limit = 100
@@ -4288,6 +4606,9 @@ func (c *Client) IpPoolRangeListAllPages(params IpPoolRangeListParams) (*[]IpPoo
 
 // IpPoolRangeAdd: Add a range to an IP pool
 func (c *Client) IpPoolRangeAdd(params IpPoolRangeAddParams) (*IpPoolRange, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -4336,6 +4657,9 @@ func (c *Client) IpPoolRangeAdd(params IpPoolRangeAddParams) (*IpPoolRange, erro
 
 // IpPoolRangeRemove: Remove a range from an IP pool
 func (c *Client) IpPoolRangeRemove(params IpPoolRangeRemoveParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -4375,6 +4699,9 @@ func (c *Client) IpPoolRangeRemove(params IpPoolRangeRemoveParams) error {
 //
 // To iterate over all pages, use the `SystemMetricAllPages` method, instead.
 func (c *Client) SystemMetric(params SystemMetricParams) (*MeasurementResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -4426,6 +4753,9 @@ func (c *Client) SystemMetric(params SystemMetricParams) (*MeasurementResultsPag
 // This method is a wrapper around the `SystemMetric` method.
 // This method returns all the pages at once.
 func (c *Client) SystemMetricAllPages(params SystemMetricParams) (*[]Measurement, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	var allPages []Measurement
 	params.PageToken = ""
 	params.Limit = 100
@@ -4486,6 +4816,9 @@ func (c *Client) SystemPolicyView() (*FleetRolePolicy, error) {
 
 // SystemPolicyUpdate: Update the top-level IAM policy
 func (c *Client) SystemPolicyUpdate(params SystemPolicyUpdateParams) (*FleetRolePolicy, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -4534,6 +4867,9 @@ func (c *Client) SystemPolicyUpdate(params SystemPolicyUpdateParams) (*FleetRole
 //
 // To iterate over all pages, use the `RoleListAllPages` method, instead.
 func (c *Client) RoleList(params RoleListParams) (*RoleResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -4580,6 +4916,9 @@ func (c *Client) RoleList(params RoleListParams) (*RoleResultsPage, error) {
 // This method is a wrapper around the `RoleList` method.
 // This method returns all the pages at once.
 func (c *Client) RoleListAllPages(params RoleListParams) (*[]Role, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	var allPages []Role
 	params.PageToken = ""
 	params.Limit = 100
@@ -4600,6 +4939,9 @@ func (c *Client) RoleListAllPages(params RoleListParams) (*[]Role, error) {
 
 // RoleView: Fetch a built-in role
 func (c *Client) RoleView(params RoleViewParams) (*Role, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -4644,6 +4986,9 @@ func (c *Client) RoleView(params RoleViewParams) (*Role, error) {
 //
 // To iterate over all pages, use the `SagaListAllPages` method, instead.
 func (c *Client) SagaList(params SagaListParams) (*SagaResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -4691,6 +5036,9 @@ func (c *Client) SagaList(params SagaListParams) (*SagaResultsPage, error) {
 // This method is a wrapper around the `SagaList` method.
 // This method returns all the pages at once.
 func (c *Client) SagaListAllPages(params SagaListParams) (*[]Saga, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	var allPages []Saga
 	params.PageToken = ""
 	params.Limit = 100
@@ -4711,6 +5059,9 @@ func (c *Client) SagaListAllPages(params SagaListParams) (*[]Saga, error) {
 
 // SagaView: Fetch a saga
 func (c *Client) SagaView(params SagaViewParams) (*Saga, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -4756,6 +5107,9 @@ func (c *Client) SagaView(params SagaViewParams) (*Saga, error) {
 //
 // To iterate over all pages, use the `SiloListAllPages` method, instead.
 func (c *Client) SiloList(params SiloListParams) (*SiloResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -4804,6 +5158,9 @@ func (c *Client) SiloList(params SiloListParams) (*SiloResultsPage, error) {
 // This method is a wrapper around the `SiloList` method.
 // This method returns all the pages at once.
 func (c *Client) SiloListAllPages(params SiloListParams) (*[]Silo, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	var allPages []Silo
 	params.PageToken = ""
 	params.Limit = 100
@@ -4824,6 +5181,9 @@ func (c *Client) SiloListAllPages(params SiloListParams) (*[]Silo, error) {
 
 // SiloCreate: Create a silo
 func (c *Client) SiloCreate(params SiloCreateParams) (*Silo, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -4871,6 +5231,9 @@ func (c *Client) SiloCreate(params SiloCreateParams) (*Silo, error) {
 // SiloView: Fetch a silo
 // Fetch a silo by name.
 func (c *Client) SiloView(params SiloViewParams) (*Silo, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -4914,6 +5277,9 @@ func (c *Client) SiloView(params SiloViewParams) (*Silo, error) {
 // SiloDelete: Delete a silo
 // Delete a silo by name.
 func (c *Client) SiloDelete(params SiloDeleteParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -4945,6 +5311,9 @@ func (c *Client) SiloDelete(params SiloDeleteParams) error {
 
 // SiloPolicyView: Fetch a silo's IAM policy
 func (c *Client) SiloPolicyView(params SiloPolicyViewParams) (*SiloRolePolicy, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -4987,6 +5356,9 @@ func (c *Client) SiloPolicyView(params SiloPolicyViewParams) (*SiloRolePolicy, e
 
 // SiloPolicyUpdate: Update a silo's IAM policy
 func (c *Client) SiloPolicyUpdate(params SiloPolicyUpdateParams) (*SiloRolePolicy, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -5037,6 +5409,9 @@ func (c *Client) SiloPolicyUpdate(params SiloPolicyUpdateParams) (*SiloRolePolic
 //
 // To iterate over all pages, use the `SystemComponentVersionListAllPages` method, instead.
 func (c *Client) SystemComponentVersionList(params SystemComponentVersionListParams) (*UpdateableComponentResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -5084,6 +5459,9 @@ func (c *Client) SystemComponentVersionList(params SystemComponentVersionListPar
 // This method is a wrapper around the `SystemComponentVersionList` method.
 // This method returns all the pages at once.
 func (c *Client) SystemComponentVersionListAllPages(params SystemComponentVersionListParams) (*[]UpdateableComponent, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	var allPages []UpdateableComponent
 	params.PageToken = ""
 	params.Limit = 100
@@ -5106,6 +5484,9 @@ func (c *Client) SystemComponentVersionListAllPages(params SystemComponentVersio
 //
 // To iterate over all pages, use the `UpdateDeploymentsListAllPages` method, instead.
 func (c *Client) UpdateDeploymentsList(params UpdateDeploymentsListParams) (*UpdateDeploymentResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -5153,6 +5534,9 @@ func (c *Client) UpdateDeploymentsList(params UpdateDeploymentsListParams) (*Upd
 // This method is a wrapper around the `UpdateDeploymentsList` method.
 // This method returns all the pages at once.
 func (c *Client) UpdateDeploymentsListAllPages(params UpdateDeploymentsListParams) (*[]UpdateDeployment, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	var allPages []UpdateDeployment
 	params.PageToken = ""
 	params.Limit = 100
@@ -5173,6 +5557,9 @@ func (c *Client) UpdateDeploymentsListAllPages(params UpdateDeploymentsListParam
 
 // UpdateDeploymentView: Fetch a system update deployment
 func (c *Client) UpdateDeploymentView(params UpdateDeploymentViewParams) (*UpdateDeployment, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -5244,6 +5631,9 @@ func (c *Client) SystemUpdateRefresh() error {
 
 // SystemUpdateStart: Start system update
 func (c *Client) SystemUpdateStart(params SystemUpdateStartParams) (*UpdateDeployment, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -5322,6 +5712,9 @@ func (c *Client) SystemUpdateStop() error {
 //
 // To iterate over all pages, use the `SystemUpdateListAllPages` method, instead.
 func (c *Client) SystemUpdateList(params SystemUpdateListParams) (*SystemUpdateResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -5369,6 +5762,9 @@ func (c *Client) SystemUpdateList(params SystemUpdateListParams) (*SystemUpdateR
 // This method is a wrapper around the `SystemUpdateList` method.
 // This method returns all the pages at once.
 func (c *Client) SystemUpdateListAllPages(params SystemUpdateListParams) (*[]SystemUpdate, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	var allPages []SystemUpdate
 	params.PageToken = ""
 	params.Limit = 100
@@ -5389,6 +5785,9 @@ func (c *Client) SystemUpdateListAllPages(params SystemUpdateListParams) (*[]Sys
 
 // SystemUpdateView: View system update
 func (c *Client) SystemUpdateView(params SystemUpdateViewParams) (*SystemUpdate, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -5431,6 +5830,9 @@ func (c *Client) SystemUpdateView(params SystemUpdateViewParams) (*SystemUpdate,
 
 // SystemUpdateComponentsList: View system update component tree
 func (c *Client) SystemUpdateComponentsList(params SystemUpdateComponentsListParams) (*ComponentUpdateResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -5515,6 +5917,9 @@ func (c *Client) SystemVersion() (*SystemVersion, error) {
 //
 // To iterate over all pages, use the `SiloUserListAllPages` method, instead.
 func (c *Client) SiloUserList(params SiloUserListParams) (*UserResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -5563,6 +5968,9 @@ func (c *Client) SiloUserList(params SiloUserListParams) (*UserResultsPage, erro
 // This method is a wrapper around the `SiloUserList` method.
 // This method returns all the pages at once.
 func (c *Client) SiloUserListAllPages(params SiloUserListParams) (*[]User, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	var allPages []User
 	params.PageToken = ""
 	params.Limit = 100
@@ -5585,6 +5993,9 @@ func (c *Client) SiloUserListAllPages(params SiloUserListParams) (*[]User, error
 //
 // To iterate over all pages, use the `UserBuiltinListAllPages` method, instead.
 func (c *Client) UserBuiltinList(params UserBuiltinListParams) (*UserBuiltinResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -5632,6 +6043,9 @@ func (c *Client) UserBuiltinList(params UserBuiltinListParams) (*UserBuiltinResu
 // This method is a wrapper around the `UserBuiltinList` method.
 // This method returns all the pages at once.
 func (c *Client) UserBuiltinListAllPages(params UserBuiltinListParams) (*[]UserBuiltin, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	var allPages []UserBuiltin
 	params.PageToken = ""
 	params.Limit = 100
@@ -5652,6 +6066,9 @@ func (c *Client) UserBuiltinListAllPages(params UserBuiltinListParams) (*[]UserB
 
 // UserBuiltinView: Fetch a built-in user
 func (c *Client) UserBuiltinView(params UserBuiltinViewParams) (*UserBuiltin, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -5694,6 +6111,9 @@ func (c *Client) UserBuiltinView(params UserBuiltinViewParams) (*UserBuiltin, er
 
 // SiloUserView: Fetch a user
 func (c *Client) SiloUserView(params SiloUserViewParams) (*User, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -5740,6 +6160,9 @@ func (c *Client) SiloUserView(params SiloUserViewParams) (*User, error) {
 //
 // To iterate over all pages, use the `UserListAllPages` method, instead.
 func (c *Client) UserList(params UserListParams) (*UserResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -5788,6 +6211,9 @@ func (c *Client) UserList(params UserListParams) (*UserResultsPage, error) {
 // This method is a wrapper around the `UserList` method.
 // This method returns all the pages at once.
 func (c *Client) UserListAllPages(params UserListParams) (*[]User, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	var allPages []User
 	params.PageToken = ""
 	params.Limit = 100
@@ -5808,6 +6234,9 @@ func (c *Client) UserListAllPages(params UserListParams) (*[]User, error) {
 
 // VpcFirewallRulesView: List firewall rules
 func (c *Client) VpcFirewallRulesView(params VpcFirewallRulesViewParams) (*VpcFirewallRules, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -5851,6 +6280,9 @@ func (c *Client) VpcFirewallRulesView(params VpcFirewallRulesViewParams) (*VpcFi
 
 // VpcFirewallRulesUpdate: Replace firewall rules
 func (c *Client) VpcFirewallRulesUpdate(params VpcFirewallRulesUpdateParams) (*VpcFirewallRules, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -5903,6 +6335,9 @@ func (c *Client) VpcFirewallRulesUpdate(params VpcFirewallRulesUpdateParams) (*V
 //
 // To iterate over all pages, use the `VpcRouterRouteListAllPages` method, instead.
 func (c *Client) VpcRouterRouteList(params VpcRouterRouteListParams) (*RouterRouteResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -5954,6 +6389,9 @@ func (c *Client) VpcRouterRouteList(params VpcRouterRouteListParams) (*RouterRou
 // This method is a wrapper around the `VpcRouterRouteList` method.
 // This method returns all the pages at once.
 func (c *Client) VpcRouterRouteListAllPages(params VpcRouterRouteListParams) (*[]RouterRoute, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	var allPages []RouterRoute
 	params.PageToken = ""
 	params.Limit = 100
@@ -5974,6 +6412,9 @@ func (c *Client) VpcRouterRouteListAllPages(params VpcRouterRouteListParams) (*[
 
 // VpcRouterRouteCreate: Create a router
 func (c *Client) VpcRouterRouteCreate(params VpcRouterRouteCreateParams) (*RouterRoute, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -6024,6 +6465,9 @@ func (c *Client) VpcRouterRouteCreate(params VpcRouterRouteCreateParams) (*Route
 
 // VpcRouterRouteView: Fetch a route
 func (c *Client) VpcRouterRouteView(params VpcRouterRouteViewParams) (*RouterRoute, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -6070,6 +6514,9 @@ func (c *Client) VpcRouterRouteView(params VpcRouterRouteViewParams) (*RouterRou
 
 // VpcRouterRouteUpdate: Update a route
 func (c *Client) VpcRouterRouteUpdate(params VpcRouterRouteUpdateParams) (*RouterRoute, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -6122,6 +6569,9 @@ func (c *Client) VpcRouterRouteUpdate(params VpcRouterRouteUpdateParams) (*Route
 
 // VpcRouterRouteDelete: Delete a route
 func (c *Client) VpcRouterRouteDelete(params VpcRouterRouteDeleteParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -6159,6 +6609,9 @@ func (c *Client) VpcRouterRouteDelete(params VpcRouterRouteDeleteParams) error {
 //
 // To iterate over all pages, use the `VpcRouterListAllPages` method, instead.
 func (c *Client) VpcRouterList(params VpcRouterListParams) (*VpcRouterResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -6208,6 +6661,9 @@ func (c *Client) VpcRouterList(params VpcRouterListParams) (*VpcRouterResultsPag
 // This method is a wrapper around the `VpcRouterList` method.
 // This method returns all the pages at once.
 func (c *Client) VpcRouterListAllPages(params VpcRouterListParams) (*[]VpcRouter, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	var allPages []VpcRouter
 	params.PageToken = ""
 	params.Limit = 100
@@ -6228,6 +6684,9 @@ func (c *Client) VpcRouterListAllPages(params VpcRouterListParams) (*[]VpcRouter
 
 // VpcRouterCreate: Create a VPC router
 func (c *Client) VpcRouterCreate(params VpcRouterCreateParams) (*VpcRouter, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -6277,6 +6736,9 @@ func (c *Client) VpcRouterCreate(params VpcRouterCreateParams) (*VpcRouter, erro
 
 // VpcRouterView: Get a router
 func (c *Client) VpcRouterView(params VpcRouterViewParams) (*VpcRouter, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -6322,6 +6784,9 @@ func (c *Client) VpcRouterView(params VpcRouterViewParams) (*VpcRouter, error) {
 
 // VpcRouterUpdate: Update a router
 func (c *Client) VpcRouterUpdate(params VpcRouterUpdateParams) (*VpcRouter, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -6373,6 +6838,9 @@ func (c *Client) VpcRouterUpdate(params VpcRouterUpdateParams) (*VpcRouter, erro
 
 // VpcRouterDelete: Delete a router
 func (c *Client) VpcRouterDelete(params VpcRouterDeleteParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -6409,6 +6877,9 @@ func (c *Client) VpcRouterDelete(params VpcRouterDeleteParams) error {
 //
 // To iterate over all pages, use the `VpcSubnetListAllPages` method, instead.
 func (c *Client) VpcSubnetList(params VpcSubnetListParams) (*VpcSubnetResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -6458,6 +6929,9 @@ func (c *Client) VpcSubnetList(params VpcSubnetListParams) (*VpcSubnetResultsPag
 // This method is a wrapper around the `VpcSubnetList` method.
 // This method returns all the pages at once.
 func (c *Client) VpcSubnetListAllPages(params VpcSubnetListParams) (*[]VpcSubnet, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	var allPages []VpcSubnet
 	params.PageToken = ""
 	params.Limit = 100
@@ -6478,6 +6952,9 @@ func (c *Client) VpcSubnetListAllPages(params VpcSubnetListParams) (*[]VpcSubnet
 
 // VpcSubnetCreate: Create a subnet
 func (c *Client) VpcSubnetCreate(params VpcSubnetCreateParams) (*VpcSubnet, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -6527,6 +7004,9 @@ func (c *Client) VpcSubnetCreate(params VpcSubnetCreateParams) (*VpcSubnet, erro
 
 // VpcSubnetView: Fetch a subnet
 func (c *Client) VpcSubnetView(params VpcSubnetViewParams) (*VpcSubnet, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -6572,6 +7052,9 @@ func (c *Client) VpcSubnetView(params VpcSubnetViewParams) (*VpcSubnet, error) {
 
 // VpcSubnetUpdate: Update a subnet
 func (c *Client) VpcSubnetUpdate(params VpcSubnetUpdateParams) (*VpcSubnet, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -6623,6 +7106,9 @@ func (c *Client) VpcSubnetUpdate(params VpcSubnetUpdateParams) (*VpcSubnet, erro
 
 // VpcSubnetDelete: Delete a subnet
 func (c *Client) VpcSubnetDelete(params VpcSubnetDeleteParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -6659,6 +7145,9 @@ func (c *Client) VpcSubnetDelete(params VpcSubnetDeleteParams) error {
 //
 // To iterate over all pages, use the `VpcSubnetListNetworkInterfacesAllPages` method, instead.
 func (c *Client) VpcSubnetListNetworkInterfaces(params VpcSubnetListNetworkInterfacesParams) (*NetworkInterfaceResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -6710,6 +7199,9 @@ func (c *Client) VpcSubnetListNetworkInterfaces(params VpcSubnetListNetworkInter
 // This method is a wrapper around the `VpcSubnetListNetworkInterfaces` method.
 // This method returns all the pages at once.
 func (c *Client) VpcSubnetListNetworkInterfacesAllPages(params VpcSubnetListNetworkInterfacesParams) (*[]NetworkInterface, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	var allPages []NetworkInterface
 	params.PageToken = ""
 	params.Limit = 100
@@ -6732,6 +7224,9 @@ func (c *Client) VpcSubnetListNetworkInterfacesAllPages(params VpcSubnetListNetw
 //
 // To iterate over all pages, use the `VpcListAllPages` method, instead.
 func (c *Client) VpcList(params VpcListParams) (*VpcResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -6780,6 +7275,9 @@ func (c *Client) VpcList(params VpcListParams) (*VpcResultsPage, error) {
 // This method is a wrapper around the `VpcList` method.
 // This method returns all the pages at once.
 func (c *Client) VpcListAllPages(params VpcListParams) (*[]Vpc, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	var allPages []Vpc
 	params.PageToken = ""
 	params.Limit = 100
@@ -6800,6 +7298,9 @@ func (c *Client) VpcListAllPages(params VpcListParams) (*[]Vpc, error) {
 
 // VpcCreate: Create a VPC
 func (c *Client) VpcCreate(params VpcCreateParams) (*Vpc, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -6848,6 +7349,9 @@ func (c *Client) VpcCreate(params VpcCreateParams) (*Vpc, error) {
 
 // VpcView: Fetch a VPC
 func (c *Client) VpcView(params VpcViewParams) (*Vpc, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
@@ -6892,6 +7396,9 @@ func (c *Client) VpcView(params VpcViewParams) (*Vpc, error) {
 
 // VpcUpdate: Update a VPC
 func (c *Client) VpcUpdate(params VpcUpdateParams) (*Vpc, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
@@ -6942,6 +7449,9 @@ func (c *Client) VpcUpdate(params VpcUpdateParams) (*Vpc, error) {
 
 // VpcDelete: Delete a VPC
 func (c *Client) VpcDelete(params VpcDeleteParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
 	// Create the request
 	req, err := buildRequest(
 		nil,
