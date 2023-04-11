@@ -2248,7 +2248,7 @@ func (c *Client) CurrentUserSshKeyDelete(params CurrentUserSshKeyDeleteParams) e
 // InstanceNetworkInterfaceList: List network interfaces
 //
 // To iterate over all pages, use the `InstanceNetworkInterfaceListAllPages` method, instead.
-func (c *Client) InstanceNetworkInterfaceList(params InstanceNetworkInterfaceListParams) (*NetworkInterfaceResultsPage, error) {
+func (c *Client) InstanceNetworkInterfaceList(params InstanceNetworkInterfaceListParams) (*InstanceNetworkInterfaceResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2287,7 +2287,7 @@ func (c *Client) InstanceNetworkInterfaceList(params InstanceNetworkInterfaceLis
 		return nil, errors.New("request returned an empty body in the response")
 	}
 
-	var body NetworkInterfaceResultsPage
+	var body InstanceNetworkInterfaceResultsPage
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -2300,11 +2300,11 @@ func (c *Client) InstanceNetworkInterfaceList(params InstanceNetworkInterfaceLis
 //
 // This method is a wrapper around the `InstanceNetworkInterfaceList` method.
 // This method returns all the pages at once.
-func (c *Client) InstanceNetworkInterfaceListAllPages(params InstanceNetworkInterfaceListParams) (*[]NetworkInterface, error) {
+func (c *Client) InstanceNetworkInterfaceListAllPages(params InstanceNetworkInterfaceListParams) (*[]InstanceNetworkInterface, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	var allPages []NetworkInterface
+	var allPages []InstanceNetworkInterface
 	params.PageToken = ""
 	params.Limit = 100
 	for {
@@ -2323,7 +2323,7 @@ func (c *Client) InstanceNetworkInterfaceListAllPages(params InstanceNetworkInte
 }
 
 // InstanceNetworkInterfaceCreate: Create a network interface
-func (c *Client) InstanceNetworkInterfaceCreate(params InstanceNetworkInterfaceCreateParams) (*NetworkInterface, error) {
+func (c *Client) InstanceNetworkInterfaceCreate(params InstanceNetworkInterfaceCreateParams) (*InstanceNetworkInterface, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2365,7 +2365,7 @@ func (c *Client) InstanceNetworkInterfaceCreate(params InstanceNetworkInterfaceC
 		return nil, errors.New("request returned an empty body in the response")
 	}
 
-	var body NetworkInterface
+	var body InstanceNetworkInterface
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -2375,7 +2375,7 @@ func (c *Client) InstanceNetworkInterfaceCreate(params InstanceNetworkInterfaceC
 }
 
 // InstanceNetworkInterfaceView: Fetch a network interface
-func (c *Client) InstanceNetworkInterfaceView(params InstanceNetworkInterfaceViewParams) (*NetworkInterface, error) {
+func (c *Client) InstanceNetworkInterfaceView(params InstanceNetworkInterfaceViewParams) (*InstanceNetworkInterface, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2413,7 +2413,7 @@ func (c *Client) InstanceNetworkInterfaceView(params InstanceNetworkInterfaceVie
 		return nil, errors.New("request returned an empty body in the response")
 	}
 
-	var body NetworkInterface
+	var body InstanceNetworkInterface
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -2423,7 +2423,7 @@ func (c *Client) InstanceNetworkInterfaceView(params InstanceNetworkInterfaceVie
 }
 
 // InstanceNetworkInterfaceUpdate: Update a network interface
-func (c *Client) InstanceNetworkInterfaceUpdate(params InstanceNetworkInterfaceUpdateParams) (*NetworkInterface, error) {
+func (c *Client) InstanceNetworkInterfaceUpdate(params InstanceNetworkInterfaceUpdateParams) (*InstanceNetworkInterface, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2467,7 +2467,7 @@ func (c *Client) InstanceNetworkInterfaceUpdate(params InstanceNetworkInterfaceU
 		return nil, errors.New("request returned an empty body in the response")
 	}
 
-	var body NetworkInterface
+	var body InstanceNetworkInterface
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -7144,7 +7144,7 @@ func (c *Client) VpcSubnetDelete(params VpcSubnetDeleteParams) error {
 // VpcSubnetListNetworkInterfaces: List network interfaces
 //
 // To iterate over all pages, use the `VpcSubnetListNetworkInterfacesAllPages` method, instead.
-func (c *Client) VpcSubnetListNetworkInterfaces(params VpcSubnetListNetworkInterfacesParams) (*NetworkInterfaceResultsPage, error) {
+func (c *Client) VpcSubnetListNetworkInterfaces(params VpcSubnetListNetworkInterfacesParams) (*InstanceNetworkInterfaceResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7185,7 +7185,7 @@ func (c *Client) VpcSubnetListNetworkInterfaces(params VpcSubnetListNetworkInter
 		return nil, errors.New("request returned an empty body in the response")
 	}
 
-	var body NetworkInterfaceResultsPage
+	var body InstanceNetworkInterfaceResultsPage
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -7198,11 +7198,11 @@ func (c *Client) VpcSubnetListNetworkInterfaces(params VpcSubnetListNetworkInter
 //
 // This method is a wrapper around the `VpcSubnetListNetworkInterfaces` method.
 // This method returns all the pages at once.
-func (c *Client) VpcSubnetListNetworkInterfacesAllPages(params VpcSubnetListNetworkInterfacesParams) (*[]NetworkInterface, error) {
+func (c *Client) VpcSubnetListNetworkInterfacesAllPages(params VpcSubnetListNetworkInterfacesParams) (*[]InstanceNetworkInterface, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	var allPages []NetworkInterface
+	var allPages []InstanceNetworkInterface
 	params.PageToken = ""
 	params.Limit = 100
 	for {
