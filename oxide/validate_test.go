@@ -5,7 +5,7 @@
 package oxide
 
 import (
-	"fmt"
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -40,7 +40,7 @@ func TestValidator_HasRequiredStr(t *testing.T) {
 				value: "",
 			},
 			want:    false,
-			wantErr: fmt.Errorf("required value is an empty string"),
+			wantErr: errors.Join(errors.New("required value is an empty string")),
 		},
 	}
 	for _, tt := range tests {
@@ -86,7 +86,7 @@ func TestValidator_HasRequiredObj(t *testing.T) {
 				value: nil,
 			},
 			want:    false,
-			wantErr: fmt.Errorf("required value is nil"),
+			wantErr: errors.Join(errors.New("required value is nil")),
 		},
 	}
 	for _, tt := range tests {
@@ -129,7 +129,7 @@ func TestValidator_HasRequiredNum(t *testing.T) {
 			fields:  fields{},
 			args:    args{},
 			want:    false,
-			wantErr: fmt.Errorf("required value is zero"),
+			wantErr: errors.Join(errors.New("required value is zero")),
 		},
 	}
 	for _, tt := range tests {

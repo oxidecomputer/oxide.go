@@ -5,20 +5,20 @@
 package oxide
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 )
 
 // Validator is a helper to validate the Client methods
 type Validator struct {
-	// TODO: Capture multiple errors
 	err error
 }
 
 // HasRequiredStr checks for an empty string
 func (v *Validator) HasRequiredStr(value string) bool {
 	if value == "" {
-		v.err = fmt.Errorf("required value is an empty string")
+		v.err = errors.Join(v.err, fmt.Errorf("required value is an empty string"))
 		return false
 	}
 	return true
@@ -27,7 +27,7 @@ func (v *Validator) HasRequiredStr(value string) bool {
 // HasRequiredNum checks for an empty string
 func (v *Validator) HasRequiredNum(value int) bool {
 	if value == 0 {
-		v.err = fmt.Errorf("required value is zero")
+		v.err = errors.Join(v.err, fmt.Errorf("required value is zero"))
 		return false
 	}
 	return true
@@ -40,7 +40,7 @@ func (v *Validator) HasRequiredObj(value any) bool {
 	// Unfortunately generics are a little tricky when
 	// dealing with nil values, so we have to use reflect here.
 	if value == nil || reflect.ValueOf(value).IsNil() {
-		v.err = fmt.Errorf("required value is nil")
+		v.err = errors.Join(v.err, fmt.Errorf("required value is nil"))
 		return false
 	}
 	return true

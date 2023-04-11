@@ -23,6 +23,7 @@ func generateResponses(file string, spec *openapi3.T) error {
 
 	typeCollection := make([]TypeTemplate, 0)
 	enumCollection := make([]EnumTemplate, 0)
+	typeValidationCollection := make([]ValidationTemplate, 0)
 	// Iterate over all the responses in the spec and write the types.
 	// We want to ensure we keep the order so the diffs don't look like shit.
 	keys := make([]string, 0)
@@ -42,7 +43,7 @@ func generateResponses(file string, spec *openapi3.T) error {
 		enumCollection = append(enumCollection, et...)
 	}
 
-	writeTypes(f, typeCollection, enumCollection)
+	writeTypes(f, typeCollection, typeValidationCollection, enumCollection)
 
 	return nil
 }
