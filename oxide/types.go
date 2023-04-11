@@ -952,14 +952,40 @@ type InstanceMigrate struct {
 	DstSledId string `json:"dst_sled_id,omitempty" yaml:"dst_sled_id,omitempty"`
 }
 
+// InstanceNetworkInterface is an `InstanceNetworkInterface` represents a virtual network interface device attached to an instance.
+type InstanceNetworkInterface struct {
+	// Description is human-readable free-form text about a resource
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// InstanceId is the Instance to which the interface belongs.
+	InstanceId string `json:"instance_id,omitempty" yaml:"instance_id,omitempty"`
+	// Ip is the IP address assigned to this interface.
+	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
+	// Mac is the MAC address assigned to this interface.
+	Mac MacAddr `json:"mac,omitempty" yaml:"mac,omitempty"`
+	// Name is unique, mutable, user-controlled identifier for each resource
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	// Primary is true if this interface is the primary for the instance to which it's attached.
+	Primary bool `json:"primary,omitempty" yaml:"primary,omitempty"`
+	// SubnetId is the subnet to which the interface belongs.
+	SubnetId string `json:"subnet_id,omitempty" yaml:"subnet_id,omitempty"`
+	// TimeCreated is timestamp when this resource was created
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	// TimeModified is timestamp when this resource was last modified
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+	// VpcId is the VPC to which the interface belongs.
+	VpcId string `json:"vpc_id,omitempty" yaml:"vpc_id,omitempty"`
+}
+
 // InstanceNetworkInterfaceAttachmentType is the type definition for a InstanceNetworkInterfaceAttachmentType.
 type InstanceNetworkInterfaceAttachmentType string
 
-// InstanceNetworkInterfaceAttachmentCreate is create one or more `NetworkInterface`s for the `Instance`.
+// InstanceNetworkInterfaceAttachmentCreate is create one or more `InstanceNetworkInterface`s for the `Instance`.
 //
 // If more than one interface is provided, then the first will be designated the primary interface for the instance.
 type InstanceNetworkInterfaceAttachmentCreate struct {
-	Params []NetworkInterfaceCreate               `json:"params,omitempty" yaml:"params,omitempty"`
+	Params []InstanceNetworkInterfaceCreate       `json:"params,omitempty" yaml:"params,omitempty"`
 	Type   InstanceNetworkInterfaceAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -973,12 +999,47 @@ type InstanceNetworkInterfaceAttachmentNone struct {
 	Type InstanceNetworkInterfaceAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
-// InstanceNetworkInterfaceAttachment is describes an attachment of a `NetworkInterface` to an `Instance`, at the time the instance is created.
+// InstanceNetworkInterfaceAttachment is describes an attachment of an `InstanceNetworkInterface` to an `Instance`, at the time the instance is created.
 type InstanceNetworkInterfaceAttachment struct {
 	// Params is the type definition for a Params.
-	Params []NetworkInterfaceCreate `json:"params,omitempty" yaml:"params,omitempty"`
+	Params []InstanceNetworkInterfaceCreate `json:"params,omitempty" yaml:"params,omitempty"`
 	// Type is the type definition for a Type.
 	Type InstanceNetworkInterfaceAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// InstanceNetworkInterfaceCreate is create-time parameters for an [`InstanceNetworkInterface`](omicron_common::api::external::InstanceNetworkInterface).
+type InstanceNetworkInterfaceCreate struct {
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Ip is the IP address for the interface. One will be auto-assigned if not provided.
+	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	// SubnetName is the VPC Subnet in which to create the interface.
+	SubnetName Name `json:"subnet_name,omitempty" yaml:"subnet_name,omitempty"`
+	// VpcName is the VPC in which to create the interface.
+	VpcName Name `json:"vpc_name,omitempty" yaml:"vpc_name,omitempty"`
+}
+
+// InstanceNetworkInterfaceResultsPage is a single page of results
+type InstanceNetworkInterfaceResultsPage struct {
+	// Items is list of items on this page of results
+	Items []InstanceNetworkInterface `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// InstanceNetworkInterfaceUpdate is parameters for updating an [`InstanceNetworkInterface`](omicron_common::api::external::InstanceNetworkInterface).
+//
+// Note that modifying IP addresses for an interface is not yet supported, a new interface must be created instead.
+type InstanceNetworkInterfaceUpdate struct {
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	// Primary is make a secondary interface the instance's primary interface.
+	//
+	// If applied to a secondary interface, that interface will become the primary on the next reboot of the instance. Note that this may have implications for routing between instances, as the new primary interface will be on a distinct subnet from the previous primary interface.
+	//
+	// Note that this can only be used to select a new primary interface for an instance. Requests to change the primary interface into a secondary will return an error.
+	Primary bool `json:"primary,omitempty" yaml:"primary,omitempty"`
 }
 
 // InstanceResultsPage is a single page of results
@@ -1115,67 +1176,6 @@ type NameOrIdSortMode string
 
 // NameSortMode is sort in increasing order of "name"
 type NameSortMode string
-
-// NetworkInterface is a `NetworkInterface` represents a virtual network interface device.
-type NetworkInterface struct {
-	// Description is human-readable free-form text about a resource
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// Id is unique, immutable, system-controlled identifier for each resource
-	Id string `json:"id,omitempty" yaml:"id,omitempty"`
-	// InstanceId is the Instance to which the interface belongs.
-	InstanceId string `json:"instance_id,omitempty" yaml:"instance_id,omitempty"`
-	// Ip is the IP address assigned to this interface.
-	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
-	// Mac is the MAC address assigned to this interface.
-	Mac MacAddr `json:"mac,omitempty" yaml:"mac,omitempty"`
-	// Name is unique, mutable, user-controlled identifier for each resource
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
-	// Primary is true if this interface is the primary for the instance to which it's attached.
-	Primary bool `json:"primary,omitempty" yaml:"primary,omitempty"`
-	// SubnetId is the subnet to which the interface belongs.
-	SubnetId string `json:"subnet_id,omitempty" yaml:"subnet_id,omitempty"`
-	// TimeCreated is timestamp when this resource was created
-	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
-	// TimeModified is timestamp when this resource was last modified
-	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
-	// VpcId is the VPC to which the interface belongs.
-	VpcId string `json:"vpc_id,omitempty" yaml:"vpc_id,omitempty"`
-}
-
-// NetworkInterfaceCreate is create-time parameters for a [`NetworkInterface`](omicron_common::api::external::NetworkInterface)
-type NetworkInterfaceCreate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// Ip is the IP address for the interface. One will be auto-assigned if not provided.
-	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
-	// SubnetName is the VPC Subnet in which to create the interface.
-	SubnetName Name `json:"subnet_name,omitempty" yaml:"subnet_name,omitempty"`
-	// VpcName is the VPC in which to create the interface.
-	VpcName Name `json:"vpc_name,omitempty" yaml:"vpc_name,omitempty"`
-}
-
-// NetworkInterfaceResultsPage is a single page of results
-type NetworkInterfaceResultsPage struct {
-	// Items is list of items on this page of results
-	Items []NetworkInterface `json:"items,omitempty" yaml:"items,omitempty"`
-	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
-}
-
-// NetworkInterfaceUpdate is parameters for updating a [`NetworkInterface`](omicron_common::api::external::NetworkInterface).
-//
-// Note that modifying IP addresses for an interface is not yet supported, a new interface must be created instead.
-type NetworkInterfaceUpdate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
-	// Primary is make a secondary interface the instance's primary interface.
-	//
-	// If applied to a secondary interface, that interface will become the primary on the next reboot of the instance. Note that this may have implications for routing between instances, as the new primary interface will be on a distinct subnet from the previous primary interface.
-	//
-	// Note that this can only be used to select a new primary interface for an instance. Requests to change the primary interface into a secondary will return an error.
-	Primary bool `json:"primary,omitempty" yaml:"primary,omitempty"`
-}
 
 // NodeName is unique name for a saga [`Node`]
 //
@@ -2572,9 +2572,9 @@ type InstanceNetworkInterfaceListParams struct {
 
 // InstanceNetworkInterfaceCreateParams is the request parameters for InstanceNetworkInterfaceCreate
 type InstanceNetworkInterfaceCreateParams struct {
-	Instance NameOrId                `json:"instance,omitempty" yaml:"instance,omitempty"`
-	Project  NameOrId                `json:"project,omitempty" yaml:"project,omitempty"`
-	Body     *NetworkInterfaceCreate `json:"body,omitempty" yaml:"body,omitempty"`
+	Instance NameOrId                        `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Project  NameOrId                        `json:"project,omitempty" yaml:"project,omitempty"`
+	Body     *InstanceNetworkInterfaceCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // InstanceNetworkInterfaceDeleteParams is the request parameters for InstanceNetworkInterfaceDelete
@@ -2593,10 +2593,10 @@ type InstanceNetworkInterfaceViewParams struct {
 
 // InstanceNetworkInterfaceUpdateParams is the request parameters for InstanceNetworkInterfaceUpdate
 type InstanceNetworkInterfaceUpdateParams struct {
-	Interface NameOrId                `json:"interface,omitempty" yaml:"interface,omitempty"`
-	Instance  NameOrId                `json:"instance,omitempty" yaml:"instance,omitempty"`
-	Project   NameOrId                `json:"project,omitempty" yaml:"project,omitempty"`
-	Body      *NetworkInterfaceUpdate `json:"body,omitempty" yaml:"body,omitempty"`
+	Interface NameOrId                        `json:"interface,omitempty" yaml:"interface,omitempty"`
+	Instance  NameOrId                        `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Project   NameOrId                        `json:"project,omitempty" yaml:"project,omitempty"`
+	Body      *InstanceNetworkInterfaceUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // PolicyUpdateParams is the request parameters for PolicyUpdate
