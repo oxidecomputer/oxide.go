@@ -106,12 +106,10 @@ type Binint64 struct {
 // BlockSize is the type definition for a BlockSize.
 type BlockSize int64
 
-// ByteCount is a count of bytes, typically used either for memory or storage capacity
-//
-// The maximum supported byte count is [`i64::MAX`].  This makes it somewhat inconvenient to define constructors: a u32 constructor can be infallible, but an i64 constructor can fail (if the value is negative) and a u64 constructor can fail (if the value is larger than i64::MAX).  We provide all of these for consumers' convenience.
+// ByteCount is byte count to express memory or storage capacity.
 type ByteCount int64
 
-// Certificate is client view of a [`Certificate`]
+// Certificate is view of a Certificate
 type Certificate struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
@@ -127,7 +125,7 @@ type Certificate struct {
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
 }
 
-// CertificateCreate is create-time parameters for a [`Certificate`](crate::external_api::views::Certificate)
+// CertificateCreate is create-time parameters for a `Certificate`
 type CertificateCreate struct {
 	// Cert is pEM file containing public certificate chain
 	Cert        []string `json:"cert,omitempty" yaml:"cert,omitempty"`
@@ -240,50 +238,22 @@ type DatumCumulativeF64 struct {
 
 // DatumHistogramI64 is the type definition for a DatumHistogramI64.
 type DatumHistogramI64 struct {
-	// Datum is a simple type for managing a histogram metric.
+	// Datum is histogram metric
 	//
 	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
 	//
 	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
-	//
-	// Example ------- ```rust use oximeter::histogram::{BinRange, Histogram};
-	//
-	// let edges = [0i64, 10, 20]; let mut hist = Histogram::new(&edges).unwrap(); assert_eq!(hist.n_bins(), 4); // One additional bin for the range (20..) assert_eq!(hist.n_samples(), 0); hist.sample(4); hist.sample(100); assert_eq!(hist.n_samples(), 2);
-	//
-	// let data = hist.iter().collect::<Vec<_>>(); assert_eq!(data[0].range, BinRange::range(i64::MIN, 0)); // An additional bin for `..0` assert_eq!(data[0].count, 0); // Nothing is in this bin
-	//
-	// assert_eq!(data[1].range, BinRange::range(0, 10)); // The range `0..10` assert_eq!(data[1].count, 1); // 4 is sampled into this bin ```
-	//
-	// Notes -----
-	//
-	// Histograms may be constructed either from their left bin edges, or from a sequence of ranges. In either case, the left-most bin may be converted upon construction. In particular, if the left-most value is not equal to the minimum of the support, a new bin will be added from the minimum to that provided value. If the left-most value _is_ the support's minimum, because the provided bin was unbounded below, such as `(..0)`, then that bin will be converted into one bounded below, `(MIN..0)` in this case.
-	//
-	// The short of this is that, most of the time, it shouldn't matter. If one specifies the extremes of the support as their bins, be aware that the left-most may be converted from a `BinRange::RangeTo` into a `BinRange::Range`. In other words, the first bin of a histogram is _always_ a `Bin::Range` or a `Bin::RangeFrom` after construction. In fact, every bin is one of those variants, the `BinRange::RangeTo` is only provided as a convenience during construction.
 	Datum Histogramint64 `json:"datum,omitempty" yaml:"datum,omitempty"`
 	Type  DatumType      `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // DatumHistogramF64 is the type definition for a DatumHistogramF64.
 type DatumHistogramF64 struct {
-	// Datum is a simple type for managing a histogram metric.
+	// Datum is histogram metric
 	//
 	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
 	//
 	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
-	//
-	// Example ------- ```rust use oximeter::histogram::{BinRange, Histogram};
-	//
-	// let edges = [0i64, 10, 20]; let mut hist = Histogram::new(&edges).unwrap(); assert_eq!(hist.n_bins(), 4); // One additional bin for the range (20..) assert_eq!(hist.n_samples(), 0); hist.sample(4); hist.sample(100); assert_eq!(hist.n_samples(), 2);
-	//
-	// let data = hist.iter().collect::<Vec<_>>(); assert_eq!(data[0].range, BinRange::range(i64::MIN, 0)); // An additional bin for `..0` assert_eq!(data[0].count, 0); // Nothing is in this bin
-	//
-	// assert_eq!(data[1].range, BinRange::range(0, 10)); // The range `0..10` assert_eq!(data[1].count, 1); // 4 is sampled into this bin ```
-	//
-	// Notes -----
-	//
-	// Histograms may be constructed either from their left bin edges, or from a sequence of ranges. In either case, the left-most bin may be converted upon construction. In particular, if the left-most value is not equal to the minimum of the support, a new bin will be added from the minimum to that provided value. If the left-most value _is_ the support's minimum, because the provided bin was unbounded below, such as `(..0)`, then that bin will be converted into one bounded below, `(MIN..0)` in this case.
-	//
-	// The short of this is that, most of the time, it shouldn't matter. If one specifies the extremes of the support as their bins, be aware that the left-most may be converted from a `BinRange::RangeTo` into a `BinRange::Range`. In other words, the first bin of a histogram is _always_ a `Bin::Range` or a `Bin::RangeFrom` after construction. In fact, every bin is one of those variants, the `BinRange::RangeTo` is only provided as a convenience during construction.
 	Datum Histogramdouble `json:"datum,omitempty" yaml:"datum,omitempty"`
 	Type  DatumType       `json:"type,omitempty" yaml:"type,omitempty"`
 }
@@ -338,11 +308,9 @@ type Digest struct {
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-// Disk is client view of a [`Disk`]
+// Disk is view of a Disk
 type Disk struct {
-	// BlockSize is a count of bytes, typically used either for memory or storage capacity
-	//
-	// The maximum supported byte count is [`i64::MAX`].  This makes it somewhat inconvenient to define constructors: a u32 constructor can be infallible, but an i64 constructor can fail (if the value is negative) and a u64 constructor can fail (if the value is larger than i64::MAX).  We provide all of these for consumers' convenience.
+	// BlockSize is byte count to express memory or storage capacity.
 	BlockSize ByteCount `json:"block_size,omitempty" yaml:"block_size,omitempty"`
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
@@ -353,12 +321,10 @@ type Disk struct {
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name      Name   `json:"name,omitempty" yaml:"name,omitempty"`
 	ProjectId string `json:"project_id,omitempty" yaml:"project_id,omitempty"`
-	// Size is a count of bytes, typically used either for memory or storage capacity
-	//
-	// The maximum supported byte count is [`i64::MAX`].  This makes it somewhat inconvenient to define constructors: a u32 constructor can be infallible, but an i64 constructor can fail (if the value is negative) and a u64 constructor can fail (if the value is larger than i64::MAX).  We provide all of these for consumers' convenience.
+	// Size is byte count to express memory or storage capacity.
 	Size       ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
 	SnapshotId string    `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
-	// State is state of a Disk (primarily: attached or not)
+	// State is state of a Disk
 	State DiskState `json:"state,omitempty" yaml:"state,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
@@ -366,7 +332,7 @@ type Disk struct {
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
 }
 
-// DiskCreate is create-time parameters for a [`Disk`](omicron_common::api::external::Disk)
+// DiskCreate is create-time parameters for a `Disk`
 type DiskCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// DiskSource is initial source for this disk
@@ -506,7 +472,7 @@ type DiskStateFaulted struct {
 	State DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
 }
 
-// DiskState is state of a Disk (primarily: attached or not)
+// DiskState is state of a Disk
 type DiskState struct {
 	// State is the type definition for a State.
 	State DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
@@ -567,10 +533,16 @@ type ExternalIpResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+// FinalizeDisk is parameters for finalizing a disk
+type FinalizeDisk struct {
+	// SnapshotName is if specified a snapshot of the disk will be created with the given name during finalization. If not specified, a snapshot for the disk will _not_ be created. A snapshot can be manually created once the disk transitions into the `Detached` state.
+	SnapshotName Name `json:"snapshot_name,omitempty" yaml:"snapshot_name,omitempty"`
+}
+
 // FleetRole is the type definition for a FleetRole.
 type FleetRole string
 
-// FleetRolePolicy is client view of a [`Policy`], which describes how this resource may be accessed
+// FleetRolePolicy is policy for a particular resource
 //
 // Note that the Policy only describes access granted explicitly for this resource.  The policies of parent resources can also cause a user to have access to this resource.
 type FleetRolePolicy struct {
@@ -580,7 +552,7 @@ type FleetRolePolicy struct {
 
 // FleetRoleRoleAssignment is describes the assignment of a particular role on a particular resource to a particular identity (user, group, etc.)
 //
-// The resource is not part of this structure.  Rather, [`RoleAssignment`]s are put into a [`Policy`] and that Policy is applied to a particular resource.
+// The resource is not part of this structure.  Rather, `RoleAssignment`s are put into a `Policy` and that Policy is applied to a particular resource.
 type FleetRoleRoleAssignment struct {
 	IdentityId string `json:"identity_id,omitempty" yaml:"identity_id,omitempty"`
 	// IdentityType is describes what kind of identity is described by an id
@@ -588,7 +560,9 @@ type FleetRoleRoleAssignment struct {
 	RoleName     FleetRole    `json:"role_name,omitempty" yaml:"role_name,omitempty"`
 }
 
-// GlobalImage is client view of global Images
+// GlobalImage is view of a Global Image
+//
+// Global images are visible to all users within a Silo.
 type GlobalImage struct {
 	// BlockSize is size of blocks in bytes
 	BlockSize ByteCount `json:"block_size,omitempty" yaml:"block_size,omitempty"`
@@ -614,7 +588,7 @@ type GlobalImage struct {
 	Version string `json:"version,omitempty" yaml:"version,omitempty"`
 }
 
-// GlobalImageCreate is create-time parameters for an [`GlobalImage`](crate::external_api::views::GlobalImage)
+// GlobalImageCreate is create-time parameters for a `GlobalImage`
 type GlobalImageCreate struct {
 	// BlockSize is block size in bytes
 	BlockSize   BlockSize `json:"block_size,omitempty" yaml:"block_size,omitempty"`
@@ -635,7 +609,7 @@ type GlobalImageResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// Group is client view of a [`Group`]
+// Group is view of a Group
 type Group struct {
 	// DisplayName is human-readable name that can identify the group
 	DisplayName string `json:"display_name,omitempty" yaml:"display_name,omitempty"`
@@ -652,50 +626,22 @@ type GroupResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// Histogramdouble is a simple type for managing a histogram metric.
+// Histogramdouble is histogram metric
 //
 // A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
 //
 // Note that any gaps, unsorted bins, or non-finite values will result in an error.
-//
-// Example ------- ```rust use oximeter::histogram::{BinRange, Histogram};
-//
-// let edges = [0i64, 10, 20]; let mut hist = Histogram::new(&edges).unwrap(); assert_eq!(hist.n_bins(), 4); // One additional bin for the range (20..) assert_eq!(hist.n_samples(), 0); hist.sample(4); hist.sample(100); assert_eq!(hist.n_samples(), 2);
-//
-// let data = hist.iter().collect::<Vec<_>>(); assert_eq!(data[0].range, BinRange::range(i64::MIN, 0)); // An additional bin for `..0` assert_eq!(data[0].count, 0); // Nothing is in this bin
-//
-// assert_eq!(data[1].range, BinRange::range(0, 10)); // The range `0..10` assert_eq!(data[1].count, 1); // 4 is sampled into this bin ```
-//
-// Notes -----
-//
-// Histograms may be constructed either from their left bin edges, or from a sequence of ranges. In either case, the left-most bin may be converted upon construction. In particular, if the left-most value is not equal to the minimum of the support, a new bin will be added from the minimum to that provided value. If the left-most value _is_ the support's minimum, because the provided bin was unbounded below, such as `(..0)`, then that bin will be converted into one bounded below, `(MIN..0)` in this case.
-//
-// The short of this is that, most of the time, it shouldn't matter. If one specifies the extremes of the support as their bins, be aware that the left-most may be converted from a `BinRange::RangeTo` into a `BinRange::Range`. In other words, the first bin of a histogram is _always_ a `Bin::Range` or a `Bin::RangeFrom` after construction. In fact, every bin is one of those variants, the `BinRange::RangeTo` is only provided as a convenience during construction.
 type Histogramdouble struct {
 	Bins      []Bindouble `json:"bins,omitempty" yaml:"bins,omitempty"`
 	NSamples  int         `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
 	StartTime *time.Time  `json:"start_time,omitempty" yaml:"start_time,omitempty"`
 }
 
-// Histogramint64 is a simple type for managing a histogram metric.
+// Histogramint64 is histogram metric
 //
 // A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
 //
 // Note that any gaps, unsorted bins, or non-finite values will result in an error.
-//
-// Example ------- ```rust use oximeter::histogram::{BinRange, Histogram};
-//
-// let edges = [0i64, 10, 20]; let mut hist = Histogram::new(&edges).unwrap(); assert_eq!(hist.n_bins(), 4); // One additional bin for the range (20..) assert_eq!(hist.n_samples(), 0); hist.sample(4); hist.sample(100); assert_eq!(hist.n_samples(), 2);
-//
-// let data = hist.iter().collect::<Vec<_>>(); assert_eq!(data[0].range, BinRange::range(i64::MIN, 0)); // An additional bin for `..0` assert_eq!(data[0].count, 0); // Nothing is in this bin
-//
-// assert_eq!(data[1].range, BinRange::range(0, 10)); // The range `0..10` assert_eq!(data[1].count, 1); // 4 is sampled into this bin ```
-//
-// Notes -----
-//
-// Histograms may be constructed either from their left bin edges, or from a sequence of ranges. In either case, the left-most bin may be converted upon construction. In particular, if the left-most value is not equal to the minimum of the support, a new bin will be added from the minimum to that provided value. If the left-most value _is_ the support's minimum, because the provided bin was unbounded below, such as `(..0)`, then that bin will be converted into one bounded below, `(MIN..0)` in this case.
-//
-// The short of this is that, most of the time, it shouldn't matter. If one specifies the extremes of the support as their bins, be aware that the left-most may be converted from a `BinRange::RangeTo` into a `BinRange::Range`. In other words, the first bin of a histogram is _always_ a `Bin::Range` or a `Bin::RangeFrom` after construction. In fact, every bin is one of those variants, the `BinRange::RangeTo` is only provided as a convenience during construction.
 type Histogramint64 struct {
 	Bins      []Binint64 `json:"bins,omitempty" yaml:"bins,omitempty"`
 	NSamples  int        `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
@@ -705,7 +651,7 @@ type Histogramint64 struct {
 // IdSortMode is sort in increasing order of "id"
 type IdSortMode string
 
-// IdentityProvider is client view of an [`IdentityProvider`]
+// IdentityProvider is view of an Identity Provider
 type IdentityProvider struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
@@ -760,7 +706,9 @@ type IdpMetadataSource struct {
 	Data string `json:"data,omitempty" yaml:"data,omitempty"`
 }
 
-// Image is client view of project Images
+// Image is view of an Image
+//
+// Images are local to their containing project.
 type Image struct {
 	// BlockSize is size of blocks in bytes
 	BlockSize ByteCount `json:"block_size,omitempty" yaml:"block_size,omitempty"`
@@ -774,7 +722,7 @@ type Image struct {
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// Os is the family of the operating system like Debian, Ubuntu, etc.
 	Os string `json:"os,omitempty" yaml:"os,omitempty"`
-	// ProjectId is the project the image belongs to
+	// ProjectId is iD of the parent project if the image is a project image
 	ProjectId string `json:"project_id,omitempty" yaml:"project_id,omitempty"`
 	// Size is total size in bytes
 	Size ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
@@ -788,7 +736,7 @@ type Image struct {
 	Version string `json:"version,omitempty" yaml:"version,omitempty"`
 }
 
-// ImageCreate is create-time parameters for an [`Image`](crate::external_api::views::Image)
+// ImageCreate is create-time parameters for an `Image`
 type ImageCreate struct {
 	// BlockSize is block size in bytes
 	BlockSize   BlockSize `json:"block_size,omitempty" yaml:"block_size,omitempty"`
@@ -855,7 +803,7 @@ type ImportBlocksFromUrl struct {
 	Url string `json:"url,omitempty" yaml:"url,omitempty"`
 }
 
-// Instance is client view of an [`Instance`]
+// Instance is view of an Instance
 type Instance struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
@@ -885,7 +833,7 @@ type Instance struct {
 // InstanceCpuCount is the number of CPUs in an Instance
 type InstanceCpuCount int64
 
-// InstanceCreate is create-time parameters for an [`Instance`](omicron_common::api::external::Instance)
+// InstanceCreate is create-time parameters for an `Instance`
 type InstanceCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Disks is the disks to be created or attached for this instance.
@@ -895,9 +843,7 @@ type InstanceCreate struct {
 	// By default, all instances have outbound connectivity, but no inbound connectivity. These external addresses can be used to provide a fixed, known IP address for making inbound connections to the instance.
 	ExternalIps []ExternalIpCreate `json:"external_ips,omitempty" yaml:"external_ips,omitempty"`
 	Hostname    string             `json:"hostname,omitempty" yaml:"hostname,omitempty"`
-	// Memory is a count of bytes, typically used either for memory or storage capacity
-	//
-	// The maximum supported byte count is [`i64::MAX`].  This makes it somewhat inconvenient to define constructors: a u32 constructor can be infallible, but an i64 constructor can fail (if the value is negative) and a u64 constructor can fail (if the value is larger than i64::MAX).  We provide all of these for consumers' convenience.
+	// Memory is byte count to express memory or storage capacity.
 	Memory ByteCount `json:"memory,omitempty" yaml:"memory,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
@@ -947,7 +893,7 @@ type InstanceDiskAttachment struct {
 	Type InstanceDiskAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
-// InstanceMigrate is migration parameters for an [`Instance`](omicron_common::api::external::Instance)
+// InstanceMigrate is migration parameters for an `Instance`
 type InstanceMigrate struct {
 	DstSledId string `json:"dst_sled_id,omitempty" yaml:"dst_sled_id,omitempty"`
 }
@@ -1007,7 +953,7 @@ type InstanceNetworkInterfaceAttachment struct {
 	Type InstanceNetworkInterfaceAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
-// InstanceNetworkInterfaceCreate is create-time parameters for an [`InstanceNetworkInterface`](omicron_common::api::external::InstanceNetworkInterface).
+// InstanceNetworkInterfaceCreate is create-time parameters for an `InstanceNetworkInterface`
 type InstanceNetworkInterfaceCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Ip is the IP address for the interface. One will be auto-assigned if not provided.
@@ -1028,7 +974,7 @@ type InstanceNetworkInterfaceResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// InstanceNetworkInterfaceUpdate is parameters for updating an [`InstanceNetworkInterface`](omicron_common::api::external::InstanceNetworkInterface).
+// InstanceNetworkInterfaceUpdate is parameters for updating an `InstanceNetworkInterface`
 //
 // Note that modifying IP addresses for an interface is not yet supported, a new interface must be created instead.
 type InstanceNetworkInterfaceUpdate struct {
@@ -1081,9 +1027,7 @@ type IpPool struct {
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
 }
 
-// IpPoolCreate is create-time parameters for an IP Pool.
-//
-// See [`IpPool`](crate::external_api::views::IpPool)
+// IpPoolCreate is create-time parameters for an `IpPool`
 type IpPoolCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
@@ -1177,15 +1121,12 @@ type NameOrIdSortMode string
 // NameSortMode is sort in increasing order of "name"
 type NameSortMode string
 
-// NodeName is unique name for a saga [`Node`]
-//
-// Each node requires a string name that's unique within its DAG.  The name is used to identify its output.  Nodes that depend on a given node (either directly or indirectly) can access the node's output using its name.
-type NodeName string
-
 // Password is passwords may be subject to additional constraints.
 type Password string
 
-// PhysicalDisk is client view of a [`PhysicalDisk`]
+// PhysicalDisk is view of a Physical Disk
+//
+// Physical disks reside in a particular sled and are used to store both Instance Disk data as well as internal metadata.
 type PhysicalDisk struct {
 	DiskType PhysicalDiskType `json:"disk_type,omitempty" yaml:"disk_type,omitempty"`
 	// Id is unique, immutable, system-controlled identifier for each resource
@@ -1212,7 +1153,7 @@ type PhysicalDiskResultsPage struct {
 // PhysicalDiskType is the type definition for a PhysicalDiskType.
 type PhysicalDiskType string
 
-// Project is client view of a [`Project`]
+// Project is view of a Project
 type Project struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
@@ -1226,7 +1167,7 @@ type Project struct {
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
 }
 
-// ProjectCreate is create-time parameters for a [`Project`](crate::external_api::views::Project)
+// ProjectCreate is create-time parameters for a `Project`
 type ProjectCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
@@ -1244,7 +1185,7 @@ type ProjectResultsPage struct {
 // ProjectRole is the type definition for a ProjectRole.
 type ProjectRole string
 
-// ProjectRolePolicy is client view of a [`Policy`], which describes how this resource may be accessed
+// ProjectRolePolicy is policy for a particular resource
 //
 // Note that the Policy only describes access granted explicitly for this resource.  The policies of parent resources can also cause a user to have access to this resource.
 type ProjectRolePolicy struct {
@@ -1254,7 +1195,7 @@ type ProjectRolePolicy struct {
 
 // ProjectRoleRoleAssignment is describes the assignment of a particular role on a particular resource to a particular identity (user, group, etc.)
 //
-// The resource is not part of this structure.  Rather, [`RoleAssignment`]s are put into a [`Policy`] and that Policy is applied to a particular resource.
+// The resource is not part of this structure.  Rather, `RoleAssignment`s are put into a `Policy` and that Policy is applied to a particular resource.
 type ProjectRoleRoleAssignment struct {
 	IdentityId string `json:"identity_id,omitempty" yaml:"identity_id,omitempty"`
 	// IdentityType is describes what kind of identity is described by an id
@@ -1262,13 +1203,13 @@ type ProjectRoleRoleAssignment struct {
 	RoleName     ProjectRole  `json:"role_name,omitempty" yaml:"role_name,omitempty"`
 }
 
-// ProjectUpdate is updateable properties of a [`Project`](crate::external_api::views::Project)
+// ProjectUpdate is updateable properties of a `Project`
 type ProjectUpdate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
-// Rack is client view of an [`Rack`]
+// Rack is view of an Rack
 type Rack struct {
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
@@ -1286,7 +1227,7 @@ type RackResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// Role is client view of a [`Role`]
+// Role is view of a Role
 type Role struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Name is role names consist of two string components separated by dot (".").
@@ -1335,7 +1276,7 @@ type RouteDestinationSubnet struct {
 
 // RouteDestination is a `RouteDestination` is used to match traffic with a routing rule, on the destination of that traffic.
 //
-// When traffic is to be sent to a destination that is within a given `RouteDestination`, the corresponding [`RouterRoute`] applies, and traffic will be forward to the [`RouteTarget`] for that rule.
+// When traffic is to be sent to a destination that is within a given `RouteDestination`, the corresponding `RouterRoute` applies, and traffic will be forward to the `RouteTarget` for that rule.
 type RouteDestination struct {
 	// Type is the type definition for a Type.
 	Type RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
@@ -1394,7 +1335,7 @@ type RouterRoute struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Destination is a `RouteDestination` is used to match traffic with a routing rule, on the destination of that traffic.
 	//
-	// When traffic is to be sent to a destination that is within a given `RouteDestination`, the corresponding [`RouterRoute`] applies, and traffic will be forward to the [`RouteTarget`] for that rule.
+	// When traffic is to be sent to a destination that is within a given `RouteDestination`, the corresponding `RouterRoute` applies, and traffic will be forward to the `RouteTarget` for that rule.
 	Destination RouteDestination `json:"destination,omitempty" yaml:"destination,omitempty"`
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
@@ -1408,16 +1349,16 @@ type RouterRoute struct {
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
-	// VpcRouterId is the VPC Router to which the route belongs.
+	// VpcRouterId is the ID of the VPC Router to which the route belongs
 	VpcRouterId string `json:"vpc_router_id,omitempty" yaml:"vpc_router_id,omitempty"`
 }
 
-// RouterRouteCreate is create-time parameters for a [`omicron_common::api::external::RouterRoute`]
+// RouterRouteCreate is create-time parameters for a `RouterRoute`
 type RouterRouteCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Destination is a `RouteDestination` is used to match traffic with a routing rule, on the destination of that traffic.
 	//
-	// When traffic is to be sent to a destination that is within a given `RouteDestination`, the corresponding [`RouterRoute`] applies, and traffic will be forward to the [`RouteTarget`] for that rule.
+	// When traffic is to be sent to a destination that is within a given `RouteDestination`, the corresponding `RouterRoute` applies, and traffic will be forward to the `RouteTarget` for that rule.
 	Destination RouteDestination `json:"destination,omitempty" yaml:"destination,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
@@ -1438,107 +1379,16 @@ type RouterRouteResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// RouterRouteUpdate is updateable properties of a [`omicron_common::api::external::RouterRoute`]
+// RouterRouteUpdate is updateable properties of a `RouterRoute`
 type RouterRouteUpdate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Destination is a `RouteDestination` is used to match traffic with a routing rule, on the destination of that traffic.
 	//
-	// When traffic is to be sent to a destination that is within a given `RouteDestination`, the corresponding [`RouterRoute`] applies, and traffic will be forward to the [`RouteTarget`] for that rule.
+	// When traffic is to be sent to a destination that is within a given `RouteDestination`, the corresponding `RouterRoute` applies, and traffic will be forward to the `RouteTarget` for that rule.
 	Destination RouteDestination `json:"destination,omitempty" yaml:"destination,omitempty"`
 	Name        Name             `json:"name,omitempty" yaml:"name,omitempty"`
 	// Target is a `RouteTarget` describes the possible locations that traffic matching a route destination can be sent.
 	Target RouteTarget `json:"target,omitempty" yaml:"target,omitempty"`
-}
-
-// Saga is the type definition for a Saga.
-type Saga struct {
-	Id    string    `json:"id,omitempty" yaml:"id,omitempty"`
-	State SagaState `json:"state,omitempty" yaml:"state,omitempty"`
-}
-
-// SagaErrorInfoError is the type definition for a SagaErrorInfoError.
-type SagaErrorInfoError string
-
-// SagaErrorInfoActionFailed is the type definition for a SagaErrorInfoActionFailed.
-type SagaErrorInfoActionFailed struct {
-	Error       SagaErrorInfoError `json:"error,omitempty" yaml:"error,omitempty"`
-	SourceError interface{}        `json:"source_error,omitempty" yaml:"source_error,omitempty"`
-}
-
-// SagaErrorInfoDeserializeFailed is the type definition for a SagaErrorInfoDeserializeFailed.
-type SagaErrorInfoDeserializeFailed struct {
-	Error   SagaErrorInfoError `json:"error,omitempty" yaml:"error,omitempty"`
-	Message string             `json:"message,omitempty" yaml:"message,omitempty"`
-}
-
-// SagaErrorInfoInjectedError is the type definition for a SagaErrorInfoInjectedError.
-type SagaErrorInfoInjectedError struct {
-	Error SagaErrorInfoError `json:"error,omitempty" yaml:"error,omitempty"`
-}
-
-// SagaErrorInfoSerializeFailed is the type definition for a SagaErrorInfoSerializeFailed.
-type SagaErrorInfoSerializeFailed struct {
-	Error   SagaErrorInfoError `json:"error,omitempty" yaml:"error,omitempty"`
-	Message string             `json:"message,omitempty" yaml:"message,omitempty"`
-}
-
-// SagaErrorInfoSubsagaCreateFailed is the type definition for a SagaErrorInfoSubsagaCreateFailed.
-type SagaErrorInfoSubsagaCreateFailed struct {
-	Error   SagaErrorInfoError `json:"error,omitempty" yaml:"error,omitempty"`
-	Message string             `json:"message,omitempty" yaml:"message,omitempty"`
-}
-
-// SagaErrorInfo is the type definition for a SagaErrorInfo.
-type SagaErrorInfo struct {
-	// Error is the type definition for a Error.
-	Error SagaErrorInfoError `json:"error,omitempty" yaml:"error,omitempty"`
-	// SourceError is the type definition for a SourceError.
-	SourceError interface{} `json:"source_error,omitempty" yaml:"source_error,omitempty"`
-	// Message is the type definition for a Message.
-	Message string `json:"message,omitempty" yaml:"message,omitempty"`
-}
-
-// SagaResultsPage is a single page of results
-type SagaResultsPage struct {
-	// Items is list of items on this page of results
-	Items []Saga `json:"items,omitempty" yaml:"items,omitempty"`
-	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
-}
-
-// SagaStateState is the type definition for a SagaStateState.
-type SagaStateState string
-
-// SagaStateRunning is the type definition for a SagaStateRunning.
-type SagaStateRunning struct {
-	State SagaStateState `json:"state,omitempty" yaml:"state,omitempty"`
-}
-
-// SagaStateSucceeded is the type definition for a SagaStateSucceeded.
-type SagaStateSucceeded struct {
-	State SagaStateState `json:"state,omitempty" yaml:"state,omitempty"`
-}
-
-// SagaStateFailed is the type definition for a SagaStateFailed.
-type SagaStateFailed struct {
-	ErrorInfo SagaErrorInfo `json:"error_info,omitempty" yaml:"error_info,omitempty"`
-	// ErrorNodeName is unique name for a saga [`Node`]
-	//
-	// Each node requires a string name that's unique within its DAG.  The name is used to identify its output.  Nodes that depend on a given node (either directly or indirectly) can access the node's output using its name.
-	ErrorNodeName NodeName       `json:"error_node_name,omitempty" yaml:"error_node_name,omitempty"`
-	State         SagaStateState `json:"state,omitempty" yaml:"state,omitempty"`
-}
-
-// SagaState is the type definition for a SagaState.
-type SagaState struct {
-	// State is the type definition for a State.
-	State SagaStateState `json:"state,omitempty" yaml:"state,omitempty"`
-	// ErrorInfo is the type definition for a ErrorInfo.
-	ErrorInfo SagaErrorInfo `json:"error_info,omitempty" yaml:"error_info,omitempty"`
-	// ErrorNodeName is unique name for a saga [`Node`]
-	//
-	// Each node requires a string name that's unique within its DAG.  The name is used to identify its output.  Nodes that depend on a given node (either directly or indirectly) can access the node's output using its name.
-	ErrorNodeName NodeName `json:"error_node_name,omitempty" yaml:"error_node_name,omitempty"`
 }
 
 // SamlIdentityProvider is identity-related metadata that's included in nearly all public API objects
@@ -1596,7 +1446,9 @@ type SemverVersion string
 // ServiceUsingCertificate is this certificate is intended for access to the external API.
 type ServiceUsingCertificate string
 
-// Silo is client view of a ['Silo']
+// Silo is view of a Silo
+//
+// A Silo is the highest level unit of isolation.
 type Silo struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
@@ -1614,11 +1466,11 @@ type Silo struct {
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
 }
 
-// SiloCreate is create-time parameters for a [`Silo`](crate::external_api::views::Silo)
+// SiloCreate is create-time parameters for a `Silo`
 type SiloCreate struct {
 	// AdminGroupName is if set, this group will be created during Silo creation and granted the "Silo Admin" role. Identity providers can assert that users belong to this group and those users can log in and further initialize the Silo.
 	//
-	// Note that if configuring a SAML based identity provider, group_attribute_name must be set for users to be considered part of a group. See [`SamlIdentityProviderCreate`] for more information.
+	// Note that if configuring a SAML based identity provider, group_attribute_name must be set for users to be considered part of a group. See `SamlIdentityProviderCreate` for more information.
 	AdminGroupName string `json:"admin_group_name,omitempty" yaml:"admin_group_name,omitempty"`
 	Description    string `json:"description,omitempty" yaml:"description,omitempty"`
 	Discoverable   bool   `json:"discoverable,omitempty" yaml:"discoverable,omitempty"`
@@ -1642,7 +1494,7 @@ type SiloResultsPage struct {
 // SiloRole is the type definition for a SiloRole.
 type SiloRole string
 
-// SiloRolePolicy is client view of a [`Policy`], which describes how this resource may be accessed
+// SiloRolePolicy is policy for a particular resource
 //
 // Note that the Policy only describes access granted explicitly for this resource.  The policies of parent resources can also cause a user to have access to this resource.
 type SiloRolePolicy struct {
@@ -1652,7 +1504,7 @@ type SiloRolePolicy struct {
 
 // SiloRoleRoleAssignment is describes the assignment of a particular role on a particular resource to a particular identity (user, group, etc.)
 //
-// The resource is not part of this structure.  Rather, [`RoleAssignment`]s are put into a [`Policy`] and that Policy is applied to a particular resource.
+// The resource is not part of this structure.  Rather, `RoleAssignment`s are put into a `Policy` and that Policy is applied to a particular resource.
 type SiloRoleRoleAssignment struct {
 	IdentityId string `json:"identity_id,omitempty" yaml:"identity_id,omitempty"`
 	// IdentityType is describes what kind of identity is described by an id
@@ -1686,7 +1538,7 @@ type SledResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// Snapshot is client view of a Snapshot
+// Snapshot is view of a Snapshot
 type Snapshot struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
@@ -1696,9 +1548,7 @@ type Snapshot struct {
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name      Name   `json:"name,omitempty" yaml:"name,omitempty"`
 	ProjectId string `json:"project_id,omitempty" yaml:"project_id,omitempty"`
-	// Size is a count of bytes, typically used either for memory or storage capacity
-	//
-	// The maximum supported byte count is [`i64::MAX`].  This makes it somewhat inconvenient to define constructors: a u32 constructor can be infallible, but an i64 constructor can fail (if the value is negative) and a u64 constructor can fail (if the value is larger than i64::MAX).  We provide all of these for consumers' convenience.
+	// Size is byte count to express memory or storage capacity.
 	Size  ByteCount     `json:"size,omitempty" yaml:"size,omitempty"`
 	State SnapshotState `json:"state,omitempty" yaml:"state,omitempty"`
 	// TimeCreated is timestamp when this resource was created
@@ -1707,7 +1557,7 @@ type Snapshot struct {
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
 }
 
-// SnapshotCreate is create-time parameters for a [`Snapshot`](crate::external_api::views::Snapshot)
+// SnapshotCreate is create-time parameters for a `Snapshot`
 type SnapshotCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Disk is the name of the disk to be snapshotted
@@ -1732,7 +1582,7 @@ type SpoofLoginBody struct {
 	Username string `json:"username,omitempty" yaml:"username,omitempty"`
 }
 
-// SshKey is client view of a [`SshKey`]
+// SshKey is view of an SSH Key
 type SshKey struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
@@ -1750,7 +1600,7 @@ type SshKey struct {
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
 }
 
-// SshKeyCreate is create-time parameters for an [`SshKey`](crate::external_api::views::SshKey)
+// SshKeyCreate is create-time parameters for an `SshKey`
 type SshKeyCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
@@ -1865,7 +1715,7 @@ type UpdateableComponentResultsPage struct {
 // UpdateableComponentType is the type definition for a UpdateableComponentType.
 type UpdateableComponentType string
 
-// User is client view of a [`User`]
+// User is view of a User
 type User struct {
 	// DisplayName is human-readable name that can identify the user
 	DisplayName string `json:"display_name,omitempty" yaml:"display_name,omitempty"`
@@ -1874,7 +1724,9 @@ type User struct {
 	SiloId string `json:"silo_id,omitempty" yaml:"silo_id,omitempty"`
 }
 
-// UserBuiltin is client view of a [`UserBuiltin`]
+// UserBuiltin is view of a Built-in User
+//
+// A Built-in User is explicitly created as opposed to being derived from an Identify Provider.
 type UserBuiltin struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
@@ -1896,7 +1748,7 @@ type UserBuiltinResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// UserCreate is create-time parameters for a [`User`](crate::external_api::views::User)
+// UserCreate is create-time parameters for a `User`
 type UserCreate struct {
 	// ExternalId is username used to log in
 	ExternalId UserId `json:"external_id,omitempty" yaml:"external_id,omitempty"`
@@ -1952,7 +1804,7 @@ type VersionRange struct {
 	Low  SemverVersion `json:"low,omitempty" yaml:"low,omitempty"`
 }
 
-// Vpc is client view of a [`Vpc`]
+// Vpc is view of a VPC
 type Vpc struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
@@ -1974,14 +1826,14 @@ type Vpc struct {
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
 }
 
-// VpcCreate is create-time parameters for a [`Vpc`](crate::external_api::views::Vpc)
+// VpcCreate is create-time parameters for a `Vpc`
 type VpcCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// DnsName is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	DnsName Name `json:"dns_name,omitempty" yaml:"dns_name,omitempty"`
-	// Ipv6Prefix is the IPv6 prefix for this VPC.
+	// Ipv6Prefix is the IPv6 prefix for this VPC
 	//
-	// All IPv6 subnets created from this VPC must be taken from this range, which sould be a Unique Local Address in the range `fd00::/48`. The default VPC Subnet will have the first `/64` range from this prefix.
+	// All IPv6 subnets created from this VPC must be taken from this range, which should be a Unique Local Address in the range `fd00::/48`. The default VPC Subnet will have the first `/64` range from this prefix.
 	Ipv6Prefix Ipv6Net `json:"ipv6_prefix,omitempty" yaml:"ipv6_prefix,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
@@ -2117,7 +1969,7 @@ type VpcFirewallRuleTargetIpNet struct {
 	Value IpNet                     `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-// VpcFirewallRuleTarget is a `VpcFirewallRuleTarget` is used to specify the set of [`Instance`]s to which a firewall rule applies.
+// VpcFirewallRuleTarget is a `VpcFirewallRuleTarget` is used to specify the set of `Instance`s to which a firewall rule applies.
 type VpcFirewallRuleTarget struct {
 	// Type is the type definition for a Type.
 	Type VpcFirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
@@ -2180,7 +2032,7 @@ type VpcRouter struct {
 	VpcId string `json:"vpc_id,omitempty" yaml:"vpc_id,omitempty"`
 }
 
-// VpcRouterCreate is create-time parameters for a [`VpcRouter`](crate::external_api::views::VpcRouter)
+// VpcRouterCreate is create-time parameters for a `VpcRouter`
 type VpcRouterCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
@@ -2198,7 +2050,7 @@ type VpcRouterResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// VpcRouterUpdate is updateable properties of a [`VpcRouter`](crate::external_api::views::VpcRouter)
+// VpcRouterUpdate is updateable properties of a `VpcRouter`
 type VpcRouterUpdate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
@@ -2224,7 +2076,7 @@ type VpcSubnet struct {
 	VpcId string `json:"vpc_id,omitempty" yaml:"vpc_id,omitempty"`
 }
 
-// VpcSubnetCreate is create-time parameters for a [`VpcSubnet`](crate::external_api::views::VpcSubnet)
+// VpcSubnetCreate is create-time parameters for a `VpcSubnet`
 type VpcSubnetCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Ipv4Block is the IPv4 address range for this subnet.
@@ -2247,13 +2099,13 @@ type VpcSubnetResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// VpcSubnetUpdate is updateable properties of a [`VpcSubnet`](crate::external_api::views::VpcSubnet)
+// VpcSubnetUpdate is updateable properties of a `VpcSubnet`
 type VpcSubnetUpdate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
-// VpcUpdate is updateable properties of a [`Vpc`](crate::external_api::views::Vpc)
+// VpcUpdate is updateable properties of a `Vpc`
 type VpcUpdate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	DnsName     Name   `json:"dns_name,omitempty" yaml:"dns_name,omitempty"`
@@ -2373,9 +2225,9 @@ type DiskBulkWriteImportStopParams struct {
 
 // DiskFinalizeImportParams is the request parameters for DiskFinalizeImport
 type DiskFinalizeImportParams struct {
-	Disk         NameOrId `json:"disk,omitempty" yaml:"disk,omitempty"`
-	Project      NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
-	SnapshotName string   `json:"snapshot_name,omitempty" yaml:"snapshot_name,omitempty"`
+	Disk    NameOrId      `json:"disk,omitempty" yaml:"disk,omitempty"`
+	Project NameOrId      `json:"project,omitempty" yaml:"project,omitempty"`
+	Body    *FinalizeDisk `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // DiskImportBlocksFromUrlParams is the request parameters for DiskImportBlocksFromUrl
@@ -2410,10 +2262,11 @@ type GroupViewParams struct {
 
 // ImageListParams is the request parameters for ImageList
 type ImageListParams struct {
-	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	IncludeSiloImages bool             `json:"include_silo_images,omitempty" yaml:"include_silo_images,omitempty"`
+	Limit             int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken         string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project           NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy            NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
 
 // ImageCreateParams is the request parameters for ImageCreate
@@ -2430,6 +2283,12 @@ type ImageDeleteParams struct {
 
 // ImageViewParams is the request parameters for ImageView
 type ImageViewParams struct {
+	Image   NameOrId `json:"image,omitempty" yaml:"image,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// ImagePromoteParams is the request parameters for ImagePromote
+type ImagePromoteParams struct {
 	Image   NameOrId `json:"image,omitempty" yaml:"image,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
@@ -2856,18 +2715,6 @@ type RoleListParams struct {
 // RoleViewParams is the request parameters for RoleView
 type RoleViewParams struct {
 	RoleName string `json:"role_name,omitempty" yaml:"role_name,omitempty"`
-}
-
-// SagaListParams is the request parameters for SagaList
-type SagaListParams struct {
-	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
-}
-
-// SagaViewParams is the request parameters for SagaView
-type SagaViewParams struct {
-	SagaId string `json:"saga_id,omitempty" yaml:"saga_id,omitempty"`
 }
 
 // SiloListParams is the request parameters for SiloList
@@ -3350,6 +3197,7 @@ func (p *DiskBulkWriteImportStopParams) Validate() error {
 // Validate verifies all required fields for DiskFinalizeImportParams are set
 func (p *DiskFinalizeImportParams) Validate() error {
 	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
 	v.HasRequiredStr(string(p.Disk), "Disk")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
@@ -3411,7 +3259,6 @@ func (p *ImageListParams) Validate() error {
 func (p *ImageCreateParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Project), "Project")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3430,6 +3277,16 @@ func (p *ImageDeleteParams) Validate() error {
 
 // Validate verifies all required fields for ImageViewParams are set
 func (p *ImageViewParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Image), "Image")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ImagePromoteParams are set
+func (p *ImagePromoteParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.Image), "Image")
 	if !v.IsValid() {
@@ -4107,25 +3964,6 @@ func (p *RoleListParams) Validate() error {
 func (p *RoleViewParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.RoleName), "RoleName")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for SagaListParams are set
-func (p *SagaListParams) Validate() error {
-	v := new(Validator)
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for SagaViewParams are set
-func (p *SagaViewParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredStr(string(p.SagaId), "SagaId")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4816,30 +4654,6 @@ const RouterRouteKindVpcPeering RouterRouteKind = "vpc_peering"
 // RouterRouteKindCustom represents the RouterRouteKind `"custom"`.
 const RouterRouteKindCustom RouterRouteKind = "custom"
 
-// SagaErrorInfoErrorActionFailed represents the SagaErrorInfoError `"action_failed"`.
-const SagaErrorInfoErrorActionFailed SagaErrorInfoError = "action_failed"
-
-// SagaErrorInfoErrorDeserializeFailed represents the SagaErrorInfoError `"deserialize_failed"`.
-const SagaErrorInfoErrorDeserializeFailed SagaErrorInfoError = "deserialize_failed"
-
-// SagaErrorInfoErrorInjectedError represents the SagaErrorInfoError `"injected_error"`.
-const SagaErrorInfoErrorInjectedError SagaErrorInfoError = "injected_error"
-
-// SagaErrorInfoErrorSerializeFailed represents the SagaErrorInfoError `"serialize_failed"`.
-const SagaErrorInfoErrorSerializeFailed SagaErrorInfoError = "serialize_failed"
-
-// SagaErrorInfoErrorSubsagaCreateFailed represents the SagaErrorInfoError `"subsaga_create_failed"`.
-const SagaErrorInfoErrorSubsagaCreateFailed SagaErrorInfoError = "subsaga_create_failed"
-
-// SagaStateStateRunning represents the SagaStateState `"running"`.
-const SagaStateStateRunning SagaStateState = "running"
-
-// SagaStateStateSucceeded represents the SagaStateState `"succeeded"`.
-const SagaStateStateSucceeded SagaStateState = "succeeded"
-
-// SagaStateStateFailed represents the SagaStateState `"failed"`.
-const SagaStateStateFailed SagaStateState = "failed"
-
 // ServiceUsingCertificateExternalApi represents the ServiceUsingCertificate `"external_api"`.
 const ServiceUsingCertificateExternalApi ServiceUsingCertificate = "external_api"
 
@@ -5179,22 +4993,6 @@ var RouterRouteKinds = []RouterRouteKind{
 	RouterRouteKindDefault,
 	RouterRouteKindVpcPeering,
 	RouterRouteKindVpcSubnet,
-}
-
-// SagaErrorInfoErrors is the collection of all SagaErrorInfoError values.
-var SagaErrorInfoErrors = []SagaErrorInfoError{
-	SagaErrorInfoErrorActionFailed,
-	SagaErrorInfoErrorDeserializeFailed,
-	SagaErrorInfoErrorInjectedError,
-	SagaErrorInfoErrorSerializeFailed,
-	SagaErrorInfoErrorSubsagaCreateFailed,
-}
-
-// SagaStateStates is the collection of all SagaStateState values.
-var SagaStateStates = []SagaStateState{
-	SagaStateStateFailed,
-	SagaStateStateRunning,
-	SagaStateStateSucceeded,
 }
 
 // ServiceUsingCertificates is the collection of all ServiceUsingCertificate values.

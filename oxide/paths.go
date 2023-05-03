@@ -14,7 +14,7 @@ import (
 	"strconv"
 )
 
-// LoginLocal: Authenticate a user (i.e., log in) via username and password
+// LoginLocal: Authenticate a user via username and password
 func (c *Client) LoginLocal(params LoginLocalParams) error {
 	if err := params.Validate(); err != nil {
 		return err
@@ -90,7 +90,7 @@ func (c *Client) LoginSamlBegin(params LoginSamlBeginParams) error {
 	return nil
 }
 
-// LoginSaml: Authenticate a user (i.e., log in) via SAML
+// LoginSaml: Authenticate a user via SAML
 func (c *Client) LoginSaml(params LoginSamlParams) error {
 	if err := params.Validate(); err != nil {
 		return err
@@ -632,7 +632,8 @@ func (c *Client) DiskBulkWriteImport(params DiskBulkWriteImportParams) error {
 	return nil
 }
 
-// DiskBulkWriteImportStart: Start the process of importing blocks into a disk
+// DiskBulkWriteImportStart: Start importing blocks into a disk
+// Start the process of importing blocks into a disk
 func (c *Client) DiskBulkWriteImportStart(params DiskBulkWriteImportStartParams) error {
 	if err := params.Validate(); err != nil {
 		return err
@@ -668,7 +669,8 @@ func (c *Client) DiskBulkWriteImportStart(params DiskBulkWriteImportStartParams)
 	return nil
 }
 
-// DiskBulkWriteImportStop: Stop the process of importing blocks into a disk
+// DiskBulkWriteImportStop: Stop importing blocks into a disk
+// Stop the process of importing blocks into a disk
 func (c *Client) DiskBulkWriteImportStop(params DiskBulkWriteImportStopParams) error {
 	if err := params.Validate(); err != nil {
 		return err
@@ -704,22 +706,27 @@ func (c *Client) DiskBulkWriteImportStop(params DiskBulkWriteImportStopParams) e
 	return nil
 }
 
-// DiskFinalizeImport: Finalize disk when imports are done
+// DiskFinalizeImport: Confirm disk block import completion
 func (c *Client) DiskFinalizeImport(params DiskFinalizeImportParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
 	// Create the request
 	req, err := buildRequest(
-		nil,
+		b,
 		"POST",
 		resolveRelative(c.server, "/v1/disks/{{.disk}}/finalize"),
 		map[string]string{
 			"disk": string(params.Disk),
 		},
 		map[string]string{
-			"project":       string(params.Project),
-			"snapshot_name": params.SnapshotName,
+			"project": string(params.Project),
 		},
 	)
 	if err != nil {
@@ -741,7 +748,7 @@ func (c *Client) DiskFinalizeImport(params DiskFinalizeImportParams) error {
 	return nil
 }
 
-// DiskImportBlocksFromUrl: Send request to import blocks from URL
+// DiskImportBlocksFromUrl: Request to import blocks from URL
 func (c *Client) DiskImportBlocksFromUrl(params DiskImportBlocksFromUrlParams) error {
 	if err := params.Validate(); err != nil {
 		return err
@@ -998,10 +1005,11 @@ func (c *Client) ImageList(params ImageListParams) (*ImageResultsPage, error) {
 		resolveRelative(c.server, "/v1/images"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
-			"page_token": params.PageToken,
-			"project":    string(params.Project),
-			"sort_by":    string(params.SortBy),
+			"include_silo_images": strconv.FormatBool(params.IncludeSiloImages),
+			"limit":               strconv.Itoa(params.Limit),
+			"page_token":          params.PageToken,
+			"project":             string(params.Project),
+			"sort_by":             string(params.SortBy),
 		},
 	)
 	if err != nil {
@@ -1196,6 +1204,54 @@ func (c *Client) ImageDelete(params ImageDeleteParams) error {
 	}
 
 	return nil
+}
+
+// ImagePromote: Promote a project image
+// Promote a project image to be visible to all projects in the silo
+func (c *Client) ImagePromote(params ImagePromoteParams) (*Image, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"POST",
+		resolveRelative(c.server, "/v1/images/{{.image}}/promote"),
+		map[string]string{
+			"image": string(params.Image),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body Image
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
 }
 
 // InstanceList: List instances
@@ -3241,7 +3297,7 @@ func (c *Client) CertificateListAllPages(params CertificateListParams) (*[]Certi
 	return &allPages, nil
 }
 
-// CertificateCreate: Create a new system-wide x.509 certificate.
+// CertificateCreate: Create a new system-wide x.509 certificate
 // This certificate is automatically used by the Oxide Control plane to serve external connections.
 func (c *Client) CertificateCreate(params CertificateCreateParams) (*Certificate, error) {
 	if err := params.Validate(); err != nil {
@@ -3764,7 +3820,7 @@ func (c *Client) SledPhysicalDiskListAllPages(params SledPhysicalDiskListParams)
 	return &allPages, nil
 }
 
-// SiloIdentityProviderList: List a silo's IDPs_name
+// SiloIdentityProviderList: List a silo's IdP's name
 //
 // To iterate over all pages, use the `SiloIdentityProviderListAllPages` method, instead.
 func (c *Client) SiloIdentityProviderList(params SiloIdentityProviderListParams) (*IdentityProviderResultsPage, error) {
@@ -3814,7 +3870,7 @@ func (c *Client) SiloIdentityProviderList(params SiloIdentityProviderListParams)
 	return &body, nil
 }
 
-// SiloIdentityProviderListAllPages: List a silo's IDPs_name
+// SiloIdentityProviderListAllPages: List a silo's IdP's name
 //
 // This method is a wrapper around the `SiloIdentityProviderList` method.
 // This method returns all the pages at once.
@@ -3971,7 +4027,7 @@ func (c *Client) LocalIdpUserSetPassword(params LocalIdpUserSetPasswordParams) e
 	return nil
 }
 
-// SamlIdentityProviderCreate: Create a SAML IDP
+// SamlIdentityProviderCreate: Create a SAML IdP
 func (c *Client) SamlIdentityProviderCreate(params SamlIdentityProviderCreateParams) (*SamlIdentityProvider, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -4022,7 +4078,7 @@ func (c *Client) SamlIdentityProviderCreate(params SamlIdentityProviderCreatePar
 	return &body, nil
 }
 
-// SamlIdentityProviderView: Fetch a SAML IDP
+// SamlIdentityProviderView: Fetch a SAML IdP
 func (c *Client) SamlIdentityProviderView(params SamlIdentityProviderViewParams) (*SamlIdentityProvider, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -4193,7 +4249,7 @@ func (c *Client) IpPoolCreate(params IpPoolCreateParams) (*IpPool, error) {
 	return &body, nil
 }
 
-// IpPoolServiceView: Fetch the IP pool used for Oxide services.
+// IpPoolServiceView: Fetch the IP pool used for Oxide services
 func (c *Client) IpPoolServiceView() (*IpPool, error) {
 	// Create the request
 	req, err := buildRequest(
@@ -4233,8 +4289,8 @@ func (c *Client) IpPoolServiceView() (*IpPool, error) {
 	return &body, nil
 }
 
-// IpPoolServiceRangeList: List ranges for the IP pool used for Oxide services.
-// Ranges are ordered by their first address.
+// IpPoolServiceRangeList: List ranges for the IP pool used for Oxide services
+// List ranges for the IP pool used for Oxide services. Ranges are ordered by their first address.
 //
 // To iterate over all pages, use the `IpPoolServiceRangeListAllPages` method, instead.
 func (c *Client) IpPoolServiceRangeList(params IpPoolServiceRangeListParams) (*IpPoolRangeResultsPage, error) {
@@ -4282,8 +4338,8 @@ func (c *Client) IpPoolServiceRangeList(params IpPoolServiceRangeListParams) (*I
 	return &body, nil
 }
 
-// IpPoolServiceRangeListAllPages: List ranges for the IP pool used for Oxide services.
-// Ranges are ordered by their first address.
+// IpPoolServiceRangeListAllPages: List ranges for the IP pool used for Oxide services
+// List ranges for the IP pool used for Oxide services. Ranges are ordered by their first address.
 //
 // This method is a wrapper around the `IpPoolServiceRangeList` method.
 // This method returns all the pages at once.
@@ -4309,7 +4365,7 @@ func (c *Client) IpPoolServiceRangeListAllPages(params IpPoolServiceRangeListPar
 	return &allPages, nil
 }
 
-// IpPoolServiceRangeAdd: Add a range to an IP pool used for Oxide services.
+// IpPoolServiceRangeAdd: Add a range to an IP pool used for Oxide services
 func (c *Client) IpPoolServiceRangeAdd(params IpPoolServiceRangeAddParams) (*IpPoolRange, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -4358,7 +4414,7 @@ func (c *Client) IpPoolServiceRangeAdd(params IpPoolServiceRangeAddParams) (*IpP
 	return &body, nil
 }
 
-// IpPoolServiceRangeRemove: Remove a range from an IP pool used for Oxide services.
+// IpPoolServiceRangeRemove: Remove a range from an IP pool used for Oxide services
 func (c *Client) IpPoolServiceRangeRemove(params IpPoolServiceRangeRemoveParams) error {
 	if err := params.Validate(); err != nil {
 		return err
@@ -4527,7 +4583,7 @@ func (c *Client) IpPoolDelete(params IpPoolDeleteParams) error {
 }
 
 // IpPoolRangeList: List ranges for an IP pool
-// Ranges are ordered by their first address.
+// List ranges for an IP pool. Ranges are ordered by their first address.
 //
 // To iterate over all pages, use the `IpPoolRangeListAllPages` method, instead.
 func (c *Client) IpPoolRangeList(params IpPoolRangeListParams) (*IpPoolRangeResultsPage, error) {
@@ -4578,7 +4634,7 @@ func (c *Client) IpPoolRangeList(params IpPoolRangeListParams) (*IpPoolRangeResu
 }
 
 // IpPoolRangeListAllPages: List ranges for an IP pool
-// Ranges are ordered by their first address.
+// List ranges for an IP pool. Ranges are ordered by their first address.
 //
 // This method is a wrapper around the `IpPoolRangeList` method.
 // This method returns all the pages at once.
@@ -4974,126 +5030,6 @@ func (c *Client) RoleView(params RoleViewParams) (*Role, error) {
 	}
 
 	var body Role
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// SagaList: List sagas
-//
-// To iterate over all pages, use the `SagaListAllPages` method, instead.
-func (c *Client) SagaList(params SagaListParams) (*SagaResultsPage, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Create the request
-	req, err := buildRequest(
-		nil,
-		"GET",
-		resolveRelative(c.server, "/v1/system/sagas"),
-		map[string]string{},
-		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body SagaResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// SagaListAllPages: List sagas
-//
-// This method is a wrapper around the `SagaList` method.
-// This method returns all the pages at once.
-func (c *Client) SagaListAllPages(params SagaListParams) (*[]Saga, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	var allPages []Saga
-	params.PageToken = ""
-	params.Limit = 100
-	for {
-		page, err := c.SagaList(params)
-		if err != nil {
-			return nil, err
-		}
-		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == params.PageToken {
-			break
-		}
-		params.PageToken = page.NextPage
-	}
-
-	return &allPages, nil
-}
-
-// SagaView: Fetch a saga
-func (c *Client) SagaView(params SagaViewParams) (*Saga, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Create the request
-	req, err := buildRequest(
-		nil,
-		"GET",
-		resolveRelative(c.server, "/v1/system/sagas/{{.saga_id}}"),
-		map[string]string{
-			"saga_id": params.SagaId,
-		},
-		map[string]string{},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body Saga
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -6734,7 +6670,7 @@ func (c *Client) VpcRouterCreate(params VpcRouterCreateParams) (*VpcRouter, erro
 	return &body, nil
 }
 
-// VpcRouterView: Get a router
+// VpcRouterView: Fetch a router
 func (c *Client) VpcRouterView(params VpcRouterViewParams) (*VpcRouter, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -6873,7 +6809,7 @@ func (c *Client) VpcRouterDelete(params VpcRouterDeleteParams) error {
 	return nil
 }
 
-// VpcSubnetList: Fetch a subnet
+// VpcSubnetList: List subnets
 //
 // To iterate over all pages, use the `VpcSubnetListAllPages` method, instead.
 func (c *Client) VpcSubnetList(params VpcSubnetListParams) (*VpcSubnetResultsPage, error) {
@@ -6924,7 +6860,7 @@ func (c *Client) VpcSubnetList(params VpcSubnetListParams) (*VpcSubnetResultsPag
 	return &body, nil
 }
 
-// VpcSubnetListAllPages: Fetch a subnet
+// VpcSubnetListAllPages: List subnets
 //
 // This method is a wrapper around the `VpcSubnetList` method.
 // This method returns all the pages at once.
