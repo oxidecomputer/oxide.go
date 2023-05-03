@@ -323,15 +323,18 @@ func buildPathOrQueryParams(paramType string, params map[string]*openapi3.Parame
 		sort.Strings(keys)
 		for _, name := range keys {
 			p := params[name]
-			t := convertToValidGoType(name, p.Schema)
 			n := "params." + strcase.ToCamel(name)
-			if t == "string" {
+
+			switch t := convertToValidGoType(name, p.Schema); t {
+			case "string":
 				pathParams = append(pathParams, fmt.Sprintf("%q: %s,", name, n))
-			} else if t == "int" {
+			case "bool":
+				pathParams = append(pathParams, fmt.Sprintf("%q: strconv.FormatBool(%s),", name, n))
+			case "int":
 				pathParams = append(pathParams, fmt.Sprintf("%q: strconv.Itoa(%s),", name, n))
-			} else if t == "*time.Time" {
+			case "*time.Time":
 				pathParams = append(pathParams, fmt.Sprintf("%q: %s.String(),", name, n))
-			} else {
+			default:
 				pathParams = append(pathParams, fmt.Sprintf("%q: string(%s),", name, n))
 			}
 		}
