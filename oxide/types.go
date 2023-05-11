@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-// Baseboard is properties that should uniquely identify a Sled.
+// Baseboard is properties that uniquely identify an Oxide hardware component
 type Baseboard struct {
 	Part     string `json:"part,omitempty" yaml:"part,omitempty"`
 	Revision int    `json:"revision,omitempty" yaml:"revision,omitempty"`
@@ -376,14 +376,8 @@ type DiskSourceSnapshot struct {
 	Type       DiskSourceType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
-// DiskSourceImage is create a disk from a project image
+// DiskSourceImage is create a disk from an image
 type DiskSourceImage struct {
-	ImageId string         `json:"image_id,omitempty" yaml:"image_id,omitempty"`
-	Type    DiskSourceType `json:"type,omitempty" yaml:"type,omitempty"`
-}
-
-// DiskSourceGlobalImage is create a disk from a global image
-type DiskSourceGlobalImage struct {
 	ImageId string         `json:"image_id,omitempty" yaml:"image_id,omitempty"`
 	Type    DiskSourceType `json:"type,omitempty" yaml:"type,omitempty"`
 }
@@ -480,14 +474,6 @@ type DiskState struct {
 	Instance string `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
 
-// Distribution is oS image distribution
-type Distribution struct {
-	// Name is the name of the distribution (e.g. "alpine" or "ubuntu")
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
-	// Version is the version of the distribution (e.g. "3.10" or "18.04")
-	Version string `json:"version,omitempty" yaml:"version,omitempty"`
-}
-
 // Error is error information from a response.
 type Error struct {
 	ErrorCode string `json:"error_code,omitempty" yaml:"error_code,omitempty"`
@@ -558,55 +544,6 @@ type FleetRoleRoleAssignment struct {
 	// IdentityType is describes what kind of identity is described by an id
 	IdentityType IdentityType `json:"identity_type,omitempty" yaml:"identity_type,omitempty"`
 	RoleName     FleetRole    `json:"role_name,omitempty" yaml:"role_name,omitempty"`
-}
-
-// GlobalImage is view of a Global Image
-//
-// Global images are visible to all users within a Silo.
-type GlobalImage struct {
-	// BlockSize is size of blocks in bytes
-	BlockSize ByteCount `json:"block_size,omitempty" yaml:"block_size,omitempty"`
-	// Description is human-readable free-form text about a resource
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// Digest is hash of the image contents, if applicable
-	Digest Digest `json:"digest,omitempty" yaml:"digest,omitempty"`
-	// Distribution is image distribution
-	Distribution string `json:"distribution,omitempty" yaml:"distribution,omitempty"`
-	// Id is unique, immutable, system-controlled identifier for each resource
-	Id string `json:"id,omitempty" yaml:"id,omitempty"`
-	// Name is unique, mutable, user-controlled identifier for each resource
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
-	// Size is total size in bytes
-	Size ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
-	// TimeCreated is timestamp when this resource was created
-	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
-	// TimeModified is timestamp when this resource was last modified
-	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
-	// Url is uRL source of this image, if any
-	Url string `json:"url,omitempty" yaml:"url,omitempty"`
-	// Version is image version
-	Version string `json:"version,omitempty" yaml:"version,omitempty"`
-}
-
-// GlobalImageCreate is create-time parameters for a `GlobalImage`
-type GlobalImageCreate struct {
-	// BlockSize is block size in bytes
-	BlockSize   BlockSize `json:"block_size,omitempty" yaml:"block_size,omitempty"`
-	Description string    `json:"description,omitempty" yaml:"description,omitempty"`
-	// Distribution is oS image distribution
-	Distribution Distribution `json:"distribution,omitempty" yaml:"distribution,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
-	// Source is the source of the image's contents.
-	Source ImageSource `json:"source,omitempty" yaml:"source,omitempty"`
-}
-
-// GlobalImageResultsPage is a single page of results
-type GlobalImageResultsPage struct {
-	// Items is list of items on this page of results
-	Items []GlobalImage `json:"items,omitempty" yaml:"items,omitempty"`
-	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
 // Group is view of a Group
@@ -706,9 +643,7 @@ type IdpMetadataSource struct {
 	Data string `json:"data,omitempty" yaml:"data,omitempty"`
 }
 
-// Image is view of an Image
-//
-// Images are local to their containing project.
+// Image is client view of images
 type Image struct {
 	// BlockSize is size of blocks in bytes
 	BlockSize ByteCount `json:"block_size,omitempty" yaml:"block_size,omitempty"`
@@ -1514,7 +1449,7 @@ type SiloRoleRoleAssignment struct {
 
 // Sled is an operator's view of a Sled.
 type Sled struct {
-	// Baseboard is properties that should uniquely identify a Sled.
+	// Baseboard is properties that uniquely identify an Oxide hardware component
 	Baseboard Baseboard `json:"baseboard,omitempty" yaml:"baseboard,omitempty"`
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
@@ -1613,6 +1548,28 @@ type SshKeyCreate struct {
 type SshKeyResultsPage struct {
 	// Items is list of items on this page of results
 	Items []SshKey `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// Switch is an operator's view of a Switch.
+type Switch struct {
+	// Baseboard is properties that uniquely identify an Oxide hardware component
+	Baseboard Baseboard `json:"baseboard,omitempty" yaml:"baseboard,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// RackId is the rack to which this Switch is currently attached
+	RackId string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
+	// TimeCreated is timestamp when this resource was created
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	// TimeModified is timestamp when this resource was last modified
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+}
+
+// SwitchResultsPage is a single page of results
+type SwitchResultsPage struct {
+	// Items is list of items on this page of results
+	Items []Switch `json:"items,omitempty" yaml:"items,omitempty"`
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
@@ -2151,33 +2108,6 @@ type LoginSamlParams struct {
 	Body         io.Reader `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
-// SystemImageViewByIdParams is the request parameters for SystemImageViewById
-type SystemImageViewByIdParams struct {
-	Id string `json:"id,omitempty" yaml:"id,omitempty"`
-}
-
-// SystemImageListParams is the request parameters for SystemImageList
-type SystemImageListParams struct {
-	Limit     int          `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string       `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    NameSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
-}
-
-// SystemImageCreateParams is the request parameters for SystemImageCreate
-type SystemImageCreateParams struct {
-	Body *GlobalImageCreate `json:"body,omitempty" yaml:"body,omitempty"`
-}
-
-// SystemImageDeleteParams is the request parameters for SystemImageDelete
-type SystemImageDeleteParams struct {
-	ImageName Name `json:"image_name,omitempty" yaml:"image_name,omitempty"`
-}
-
-// SystemImageViewParams is the request parameters for SystemImageView
-type SystemImageViewParams struct {
-	ImageName Name `json:"image_name,omitempty" yaml:"image_name,omitempty"`
-}
-
 // DiskListParams is the request parameters for DiskList
 type DiskListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -2257,7 +2187,7 @@ type GroupListParams struct {
 
 // GroupViewParams is the request parameters for GroupView
 type GroupViewParams struct {
-	Group string `json:"group,omitempty" yaml:"group,omitempty"`
+	GroupId string `json:"group_id,omitempty" yaml:"group_id,omitempty"`
 }
 
 // ImageListParams is the request parameters for ImageList
@@ -2283,6 +2213,12 @@ type ImageDeleteParams struct {
 
 // ImageViewParams is the request parameters for ImageView
 type ImageViewParams struct {
+	Image   NameOrId `json:"image,omitempty" yaml:"image,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// ImageDemoteParams is the request parameters for ImageDemote
+type ImageDemoteParams struct {
 	Image   NameOrId `json:"image,omitempty" yaml:"image,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
@@ -2587,6 +2523,18 @@ type SledPhysicalDiskListParams struct {
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// SwitchListParams is the request parameters for SwitchList
+type SwitchListParams struct {
+	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// SwitchViewParams is the request parameters for SwitchView
+type SwitchViewParams struct {
+	SwitchId string `json:"switch_id,omitempty" yaml:"switch_id,omitempty"`
 }
 
 // SiloIdentityProviderListParams is the request parameters for SiloIdentityProviderList
@@ -3074,55 +3022,6 @@ func (p *LoginSamlParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for SystemImageViewByIdParams are set
-func (p *SystemImageViewByIdParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredStr(string(p.Id), "Id")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for SystemImageListParams are set
-func (p *SystemImageListParams) Validate() error {
-	v := new(Validator)
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for SystemImageCreateParams are set
-func (p *SystemImageCreateParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for SystemImageDeleteParams are set
-func (p *SystemImageDeleteParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredStr(string(p.ImageName), "ImageName")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for SystemImageViewParams are set
-func (p *SystemImageViewParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredStr(string(p.ImageName), "ImageName")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
 // Validate verifies all required fields for DiskListParams are set
 func (p *DiskListParams) Validate() error {
 	v := new(Validator)
@@ -3239,7 +3138,7 @@ func (p *GroupListParams) Validate() error {
 // Validate verifies all required fields for GroupViewParams are set
 func (p *GroupViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Group), "Group")
+	v.HasRequiredStr(string(p.GroupId), "GroupId")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3279,6 +3178,17 @@ func (p *ImageDeleteParams) Validate() error {
 func (p *ImageViewParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.Image), "Image")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ImageDemoteParams are set
+func (p *ImageDemoteParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Image), "Image")
+	v.HasRequiredStr(string(p.Project), "Project")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3748,6 +3658,25 @@ func (p *SledViewParams) Validate() error {
 func (p *SledPhysicalDiskListParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.SledId), "SledId")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SwitchListParams are set
+func (p *SwitchListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SwitchViewParams are set
+func (p *SwitchViewParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.SwitchId), "SwitchId")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4456,9 +4385,6 @@ const DiskSourceTypeSnapshot DiskSourceType = "snapshot"
 // DiskSourceTypeImage represents the DiskSourceType `"image"`.
 const DiskSourceTypeImage DiskSourceType = "image"
 
-// DiskSourceTypeGlobalImage represents the DiskSourceType `"global_image"`.
-const DiskSourceTypeGlobalImage DiskSourceType = "global_image"
-
 // DiskSourceTypeImportingBlocks represents the DiskSourceType `"importing_blocks"`.
 const DiskSourceTypeImportingBlocks DiskSourceType = "importing_blocks"
 
@@ -4849,7 +4775,6 @@ var DiskMetricNames = []DiskMetricName{
 // DiskSourceTypes is the collection of all DiskSourceType values.
 var DiskSourceTypes = []DiskSourceType{
 	DiskSourceTypeBlank,
-	DiskSourceTypeGlobalImage,
 	DiskSourceTypeImage,
 	DiskSourceTypeImportingBlocks,
 	DiskSourceTypeSnapshot,
