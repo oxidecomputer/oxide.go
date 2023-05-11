@@ -127,259 +127,6 @@ func (c *Client) LoginSaml(params LoginSamlParams) error {
 	return nil
 }
 
-// SystemImageViewById: Fetch a system-wide image by id
-func (c *Client) SystemImageViewById(params SystemImageViewByIdParams) (*GlobalImage, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Create the request
-	req, err := buildRequest(
-		nil,
-		"GET",
-		resolveRelative(c.server, "/system/by-id/images/{{.id}}"),
-		map[string]string{
-			"id": params.Id,
-		},
-		map[string]string{},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body GlobalImage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// SystemImageList: List system-wide images
-// Returns a list of all the system-wide images. System-wide images are returned sorted by creation date, with the most recent images appearing first.
-//
-// To iterate over all pages, use the `SystemImageListAllPages` method, instead.
-func (c *Client) SystemImageList(params SystemImageListParams) (*GlobalImageResultsPage, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Create the request
-	req, err := buildRequest(
-		nil,
-		"GET",
-		resolveRelative(c.server, "/system/images"),
-		map[string]string{},
-		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body GlobalImageResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// SystemImageListAllPages: List system-wide images
-// Returns a list of all the system-wide images. System-wide images are returned sorted by creation date, with the most recent images appearing first.
-//
-// This method is a wrapper around the `SystemImageList` method.
-// This method returns all the pages at once.
-func (c *Client) SystemImageListAllPages(params SystemImageListParams) (*[]GlobalImage, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	var allPages []GlobalImage
-	params.PageToken = ""
-	params.Limit = 100
-	for {
-		page, err := c.SystemImageList(params)
-		if err != nil {
-			return nil, err
-		}
-		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == params.PageToken {
-			break
-		}
-		params.PageToken = page.NextPage
-	}
-
-	return &allPages, nil
-}
-
-// SystemImageCreate: Create a system-wide image
-// Create a new system-wide image. This image can then be used by any user in any silo as a base for instances.
-func (c *Client) SystemImageCreate(params SystemImageCreateParams) (*GlobalImage, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
-
-	// Create the request
-	req, err := buildRequest(
-		b,
-		"POST",
-		resolveRelative(c.server, "/system/images"),
-		map[string]string{},
-		map[string]string{},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body GlobalImage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// SystemImageView: Fetch a system-wide image
-// Returns the details of a specific system-wide image.
-func (c *Client) SystemImageView(params SystemImageViewParams) (*GlobalImage, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Create the request
-	req, err := buildRequest(
-		nil,
-		"GET",
-		resolveRelative(c.server, "/system/images/{{.image_name}}"),
-		map[string]string{
-			"image_name": string(params.ImageName),
-		},
-		map[string]string{},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body GlobalImage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// SystemImageDelete: Delete a system-wide image
-// Permanently delete a system-wide image. This operation cannot be undone. Any instances using the system-wide image will continue to run, however new instances can not be created with this image.
-func (c *Client) SystemImageDelete(params SystemImageDeleteParams) error {
-	if err := params.Validate(); err != nil {
-		return err
-	}
-	// Create the request
-	req, err := buildRequest(
-		nil,
-		"DELETE",
-		resolveRelative(c.server, "/system/images/{{.image_name}}"),
-		map[string]string{
-			"image_name": string(params.ImageName),
-		},
-		map[string]string{},
-	)
-	if err != nil {
-		return fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 // DiskList: List disks
 //
 // To iterate over all pages, use the `DiskListAllPages` method, instead.
@@ -954,9 +701,9 @@ func (c *Client) GroupView(params GroupViewParams) (*Group, error) {
 	req, err := buildRequest(
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/groups/{{.group}}"),
+		resolveRelative(c.server, "/v1/groups/{{.group_id}}"),
 		map[string]string{
-			"group": params.Group,
+			"group_id": params.GroupId,
 		},
 		map[string]string{},
 	)
@@ -1204,6 +951,54 @@ func (c *Client) ImageDelete(params ImageDeleteParams) error {
 	}
 
 	return nil
+}
+
+// ImageDemote: Demote a silo image
+// Demote a silo image to be visible only to a specified project
+func (c *Client) ImageDemote(params ImageDemoteParams) (*Image, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"POST",
+		resolveRelative(c.server, "/v1/images/{{.image}}/demote"),
+		map[string]string{
+			"image": string(params.Image),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body Image
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
 }
 
 // ImagePromote: Promote a project image
@@ -3818,6 +3613,126 @@ func (c *Client) SledPhysicalDiskListAllPages(params SledPhysicalDiskListParams)
 	}
 
 	return &allPages, nil
+}
+
+// SwitchList: List switches
+//
+// To iterate over all pages, use the `SwitchListAllPages` method, instead.
+func (c *Client) SwitchList(params SwitchListParams) (*SwitchResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/hardware/switches"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SwitchResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SwitchListAllPages: List switches
+//
+// This method is a wrapper around the `SwitchList` method.
+// This method returns all the pages at once.
+func (c *Client) SwitchListAllPages(params SwitchListParams) (*[]Switch, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []Switch
+	params.PageToken = ""
+	params.Limit = 100
+	for {
+		page, err := c.SwitchList(params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return &allPages, nil
+}
+
+// SwitchView: Fetch a switch
+func (c *Client) SwitchView(params SwitchViewParams) (*Switch, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/hardware/switches/{{.switch_id}}"),
+		map[string]string{
+			"switch_id": params.SwitchId,
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body Switch
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
 }
 
 // SiloIdentityProviderList: List a silo's IdP's name
