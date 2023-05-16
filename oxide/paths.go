@@ -752,7 +752,7 @@ func (c *Client) ImageList(params ImageListParams) (*ImageResultsPage, error) {
 		resolveRelative(c.server, "/v1/images"),
 		map[string]string{},
 		map[string]string{
-			"include_silo_images": strconv.FormatBool(params.IncludeSiloImages),
+			"include_silo_images": strconv.FormatBool(*params.IncludeSiloImages),
 			"limit":               strconv.Itoa(params.Limit),
 			"page_token":          params.PageToken,
 			"project":             string(params.Project),

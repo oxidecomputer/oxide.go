@@ -141,7 +141,8 @@ func convertToValidGoType(property string, r *openapi3.SchemaRef) string {
 	case "number":
 		schemaType = "float64"
 	case "boolean":
-		schemaType = "bool"
+		// Using a pointer here as the json encoder takes false as null
+		schemaType = "*bool"
 	case "array":
 		reference := getReferenceSchema(r.Value.Items)
 		if reference != "" {
