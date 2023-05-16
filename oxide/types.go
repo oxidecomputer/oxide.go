@@ -194,7 +194,7 @@ type DatumType string
 
 // DatumBool is the type definition for a DatumBool.
 type DatumBool struct {
-	Datum bool      `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Datum *bool     `json:"datum,omitempty" yaml:"datum,omitempty"`
 	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -261,7 +261,7 @@ type DatumHistogramF64 struct {
 // Datum is a `Datum` is a single sampled data point from a metric.
 type Datum struct {
 	// Datum is the type definition for a Datum.
-	Datum bool `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Datum *bool `json:"datum,omitempty" yaml:"datum,omitempty"`
 	// Type is the type definition for a Type.
 	Type DatumType `json:"type,omitempty" yaml:"type,omitempty"`
 }
@@ -787,7 +787,7 @@ type InstanceCreate struct {
 	// NetworkInterfaces is the network interfaces to be created for this instance.
 	NetworkInterfaces InstanceNetworkInterfaceAttachment `json:"network_interfaces,omitempty" yaml:"network_interfaces,omitempty"`
 	// Start is should this instance be started upon creation; true by default.
-	Start bool `json:"start,omitempty" yaml:"start,omitempty"`
+	Start *bool `json:"start,omitempty" yaml:"start,omitempty"`
 	// UserData is user data for instance initialization systems (such as cloud-init). Must be a Base64-encoded string, as specified in RFC 4648 § 4 (+ and / characters with padding). Maximum 32 KiB unencoded data.
 	UserData string `json:"user_data,omitempty" yaml:"user_data,omitempty"`
 }
@@ -848,7 +848,7 @@ type InstanceNetworkInterface struct {
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// Primary is true if this interface is the primary for the instance to which it's attached.
-	Primary bool `json:"primary,omitempty" yaml:"primary,omitempty"`
+	Primary *bool `json:"primary,omitempty" yaml:"primary,omitempty"`
 	// SubnetId is the subnet to which the interface belongs.
 	SubnetId string `json:"subnet_id,omitempty" yaml:"subnet_id,omitempty"`
 	// TimeCreated is timestamp when this resource was created
@@ -920,7 +920,7 @@ type InstanceNetworkInterfaceUpdate struct {
 	// If applied to a secondary interface, that interface will become the primary on the next reboot of the instance. Note that this may have implications for routing between instances, as the new primary interface will be on a distinct subnet from the previous primary interface.
 	//
 	// Note that this can only be used to select a new primary interface for an instance. Requests to change the primary interface into a secondary will return an error.
-	Primary bool `json:"primary,omitempty" yaml:"primary,omitempty"`
+	Primary *bool `json:"primary,omitempty" yaml:"primary,omitempty"`
 }
 
 // InstanceResultsPage is a single page of results
@@ -1388,7 +1388,7 @@ type Silo struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Discoverable is a silo where discoverable is false can be retrieved only by its id - it will not be part of the "list all silos" output.
-	Discoverable bool `json:"discoverable,omitempty" yaml:"discoverable,omitempty"`
+	Discoverable *bool `json:"discoverable,omitempty" yaml:"discoverable,omitempty"`
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 	// IdentityMode is how users and groups are managed in this Silo
@@ -1408,7 +1408,7 @@ type SiloCreate struct {
 	// Note that if configuring a SAML based identity provider, group_attribute_name must be set for users to be considered part of a group. See `SamlIdentityProviderCreate` for more information.
 	AdminGroupName string `json:"admin_group_name,omitempty" yaml:"admin_group_name,omitempty"`
 	Description    string `json:"description,omitempty" yaml:"description,omitempty"`
-	Discoverable   bool   `json:"discoverable,omitempty" yaml:"discoverable,omitempty"`
+	Discoverable   *bool  `json:"discoverable,omitempty" yaml:"discoverable,omitempty"`
 	// IdentityMode is describes how identities are managed and users are authenticated in this Silo
 	IdentityMode SiloIdentityMode `json:"identity_mode,omitempty" yaml:"identity_mode,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
@@ -2192,7 +2192,7 @@ type GroupViewParams struct {
 
 // ImageListParams is the request parameters for ImageList
 type ImageListParams struct {
-	IncludeSiloImages bool             `json:"include_silo_images,omitempty" yaml:"include_silo_images,omitempty"`
+	IncludeSiloImages *bool            `json:"include_silo_images,omitempty" yaml:"include_silo_images,omitempty"`
 	Limit             int              `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken         string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	Project           NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`

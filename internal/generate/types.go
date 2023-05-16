@@ -404,6 +404,7 @@ func populateTypeTemplates(name string, s *openapi3.Schema, enumFieldName string
 		typeTpl.Name = typeName
 	case "boolean":
 		typeTpl.Description = formatTypeDescription(typeName, s)
+		// Using a pointer here as the json encoder takes false as null
 		typeTpl.Type = "bool"
 		typeTpl.Name = typeName
 	case "array":
