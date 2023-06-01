@@ -12,11 +12,109 @@ import (
 	"time"
 )
 
+// Address is an address tied to an address lot.
+type Address struct {
+	// Address is the address and prefix length of this address.
+	Address IpNet `json:"address,omitempty" yaml:"address,omitempty"`
+	// AddressLot is the address lot this address is drawn from.
+	AddressLot NameOrId `json:"address_lot,omitempty" yaml:"address_lot,omitempty"`
+}
+
+// AddressConfig is a set of addresses associated with a port configuration.
+type AddressConfig struct {
+	// Addresses is the set of addresses assigned to the port configuration.
+	Addresses []Address `json:"addresses,omitempty" yaml:"addresses,omitempty"`
+}
+
+// AddressLot is represents an address lot object, containing the id of the lot that can be used in other API calls.
+type AddressLot struct {
+	// Description is human-readable free-form text about a resource
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Kind is desired use of `AddressLot`
+	Kind AddressLotKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+	// Name is unique, mutable, user-controlled identifier for each resource
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	// TimeCreated is timestamp when this resource was created
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	// TimeModified is timestamp when this resource was last modified
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+}
+
+// AddressLotBlock is an address lot block is a part of an address lot and contains a range of addresses. The range is inclusive.
+type AddressLotBlock struct {
+	// FirstAddress is the first address of the block (inclusive).
+	FirstAddress string `json:"first_address,omitempty" yaml:"first_address,omitempty"`
+	// Id is the id of the address lot block.
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// LastAddress is the last address of the block (inclusive).
+	LastAddress string `json:"last_address,omitempty" yaml:"last_address,omitempty"`
+}
+
+// AddressLotBlockCreate is parameters for creating an address lot block. Fist and last addresses are inclusive.
+type AddressLotBlockCreate struct {
+	// FirstAddress is the first address in the lot (inclusive).
+	FirstAddress string `json:"first_address,omitempty" yaml:"first_address,omitempty"`
+	// LastAddress is the last address in the lot (inclusive).
+	LastAddress string `json:"last_address,omitempty" yaml:"last_address,omitempty"`
+}
+
+// AddressLotBlockResultsPage is a single page of results
+type AddressLotBlockResultsPage struct {
+	// Items is list of items on this page of results
+	Items []AddressLotBlock `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// AddressLotCreate is parameters for creating an address lot.
+type AddressLotCreate struct {
+	// Blocks is the blocks to add along with the new address lot.
+	Blocks      []AddressLotBlockCreate `json:"blocks,omitempty" yaml:"blocks,omitempty"`
+	Description string                  `json:"description,omitempty" yaml:"description,omitempty"`
+	// Kind is the kind of address lot to create.
+	Kind AddressLotKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+}
+
+// AddressLotCreateResponse is an address lot and associated blocks resulting from creating an address lot.
+type AddressLotCreateResponse struct {
+	// Blocks is the address lot blocks that were created.
+	Blocks []AddressLotBlock `json:"blocks,omitempty" yaml:"blocks,omitempty"`
+	// Lot is the address lot that was created.
+	Lot AddressLot `json:"lot,omitempty" yaml:"lot,omitempty"`
+}
+
+// AddressLotKind is infrastructure address lots are used for network infrastructure like addresses assigned to rack switches.
+type AddressLotKind string
+
+// AddressLotResultsPage is a single page of results
+type AddressLotResultsPage struct {
+	// Items is list of items on this page of results
+	Items []AddressLot `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
 // Baseboard is properties that uniquely identify an Oxide hardware component
 type Baseboard struct {
 	Part     string `json:"part,omitempty" yaml:"part,omitempty"`
 	Revision int    `json:"revision,omitempty" yaml:"revision,omitempty"`
 	Serial   string `json:"serial,omitempty" yaml:"serial,omitempty"`
+}
+
+// BgpPeerConfig is a BGP peer configuration for an interface. Includes the set of announcements that will be advertised to the peer identified by `addr`. The `bgp_config` parameter is a reference to global BGP parameters. The `interface_name` indicates what interface the peer should be contacted on.
+type BgpPeerConfig struct {
+	// Addr is the address of the host to peer with.
+	Addr string `json:"addr,omitempty" yaml:"addr,omitempty"`
+	// BgpAnnounceSet is the set of announcements advertised by the peer.
+	BgpAnnounceSet NameOrId `json:"bgp_announce_set,omitempty" yaml:"bgp_announce_set,omitempty"`
+	// BgpConfig is the global BGP configuration used for establishing a session with this peer.
+	BgpConfig NameOrId `json:"bgp_config,omitempty" yaml:"bgp_config,omitempty"`
+	// InterfaceName is the name of interface to peer on. This is relative to the port configuration this BGP peer configuration is a part of. For example this value could be phy0 to refer to a primary physical interface. Or it could be vlan47 to refer to a VLAN interface.
+	InterfaceName string `json:"interface_name,omitempty" yaml:"interface_name,omitempty"`
 }
 
 // BinRangedoubleType is the type definition for a BinRangedoubleType.
@@ -643,7 +741,9 @@ type IdpMetadataSource struct {
 	Data string `json:"data,omitempty" yaml:"data,omitempty"`
 }
 
-// Image is client view of images
+// Image is view of an image
+//
+// If `project_id` is present then the image is only visible inside that project. If it's not present then the image is visible to all projects in the silo.
 type Image struct {
 	// BlockSize is size of blocks in bytes
 	BlockSize ByteCount `json:"block_size,omitempty" yaml:"block_size,omitempty"`
@@ -1026,6 +1126,58 @@ type Ipv6Range struct {
 // L4PortRange is an inclusive-inclusive range of IP ports. The second port may be omitted to represent a single port
 type L4PortRange string
 
+// LinkConfig is switch link configuration.
+type LinkConfig struct {
+	// Lldp is the link-layer discovery protocol (LLDP) configuration for the link.
+	Lldp LldpServiceConfig `json:"lldp,omitempty" yaml:"lldp,omitempty"`
+	// Mtu is maximum transmission unit for the link.
+	Mtu int `json:"mtu,omitempty" yaml:"mtu,omitempty"`
+}
+
+// LldpServiceConfig is the LLDP configuration associated with a port. LLDP may be either enabled or disabled, if enabled, an LLDP configuration must be provided by name or id.
+type LldpServiceConfig struct {
+	// Enabled is whether or not LLDP is enabled.
+	Enabled *bool `json:"enabled,omitempty" yaml:"enabled,omitempty"`
+	// LldpConfig is a reference to the LLDP configuration used. Must not be `None` when `enabled` is `true`.
+	LldpConfig NameOrId `json:"lldp_config,omitempty" yaml:"lldp_config,omitempty"`
+}
+
+// LoopbackAddress is a loopback address is an address that is assigned to a rack switch but is not associated with any particular port.
+type LoopbackAddress struct {
+	// Address is the loopback IP address and prefix length.
+	Address IpNet `json:"address,omitempty" yaml:"address,omitempty"`
+	// AddressLotBlockId is the address lot block this address came from.
+	AddressLotBlockId string `json:"address_lot_block_id,omitempty" yaml:"address_lot_block_id,omitempty"`
+	// Id is the id of the loopback address.
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// RackId is the id of the rack where this loopback address is assigned.
+	RackId string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
+	// SwitchLocation is switch location where this loopback address is assigned.
+	SwitchLocation string `json:"switch_location,omitempty" yaml:"switch_location,omitempty"`
+}
+
+// LoopbackAddressCreate is parameters for creating a loopback address on a particular rack switch.
+type LoopbackAddressCreate struct {
+	// Address is the address to create.
+	Address string `json:"address,omitempty" yaml:"address,omitempty"`
+	// AddressLot is the name or id of the address lot this loopback address will pull an address from.
+	AddressLot NameOrId `json:"address_lot,omitempty" yaml:"address_lot,omitempty"`
+	// Mask is the subnet mask to use for the address.
+	Mask int `json:"mask,omitempty" yaml:"mask,omitempty"`
+	// RackId is the containing the switch this loopback address will be configured on.
+	RackId string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
+	// SwitchLocation is the location of the switch within the rack this loopback address will be configured on.
+	SwitchLocation Name `json:"switch_location,omitempty" yaml:"switch_location,omitempty"`
+}
+
+// LoopbackAddressResultsPage is a single page of results
+type LoopbackAddressResultsPage struct {
+	// Items is list of items on this page of results
+	Items []LoopbackAddress `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
 // MacAddr is a Media Access Control address, in EUI-48 format
 type MacAddr string
 
@@ -1180,6 +1332,20 @@ type RoleResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+// Route is a route to a destination network through a gateway address.
+type Route struct {
+	// Dst is the route destination.
+	Dst IpNet `json:"dst,omitempty" yaml:"dst,omitempty"`
+	// Gw is the route gateway.
+	Gw string `json:"gw,omitempty" yaml:"gw,omitempty"`
+}
+
+// RouteConfig is route configuration data associated with a switch port configuration.
+type RouteConfig struct {
+	// Routes is the set of routes assigned to a switch port.
+	Routes []Route `json:"routes,omitempty" yaml:"routes,omitempty"`
+}
+
 // RouteDestinationType is the type definition for a RouteDestinationType.
 type RouteDestinationType string
 
@@ -1332,9 +1498,11 @@ type SamlIdentityProvider struct {
 	AcsUrl string `json:"acs_url,omitempty" yaml:"acs_url,omitempty"`
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// GroupAttributeName is if set, attributes with this name will be considered to denote a user's group membership, where the values will be the group names.
+	GroupAttributeName string `json:"group_attribute_name,omitempty" yaml:"group_attribute_name,omitempty"`
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
-	// IdpEntityId is idp's entity id
+	// IdpEntityId is idP's entity id
 	IdpEntityId string `json:"idp_entity_id,omitempty" yaml:"idp_entity_id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
@@ -1342,7 +1510,7 @@ type SamlIdentityProvider struct {
 	PublicCert string `json:"public_cert,omitempty" yaml:"public_cert,omitempty"`
 	// SloUrl is service provider endpoint where the idp should send log out requests
 	SloUrl string `json:"slo_url,omitempty" yaml:"slo_url,omitempty"`
-	// SpClientId is sp's client id
+	// SpClientId is sP's client id
 	SpClientId string `json:"sp_client_id,omitempty" yaml:"sp_client_id,omitempty"`
 	// TechnicalContactEmail is customer's technical contact for saml configuration
 	TechnicalContactEmail string `json:"technical_contact_email,omitempty" yaml:"technical_contact_email,omitempty"`
@@ -1413,6 +1581,8 @@ type SiloCreate struct {
 	IdentityMode SiloIdentityMode `json:"identity_mode,omitempty" yaml:"identity_mode,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	// TlsCertificates is initial TLS certificates to be used for the new Silo's console and API endpoints.  These should be valid for the Silo's DNS name(s).
+	TlsCertificates []CertificateCreate `json:"tls_certificates,omitempty" yaml:"tls_certificates,omitempty"`
 }
 
 // SiloIdentityMode is users are authenticated with SAML using an external authentication provider.  The system updates information about users and groups only during successful authentication (i.e,. "JIT provisioning" of users and groups).
@@ -1463,6 +1633,38 @@ type Sled struct {
 	UsableHardwareThreads int `json:"usable_hardware_threads,omitempty" yaml:"usable_hardware_threads,omitempty"`
 	// UsablePhysicalRam is amount of RAM which may be used by the Sled's OS
 	UsablePhysicalRam ByteCount `json:"usable_physical_ram,omitempty" yaml:"usable_physical_ram,omitempty"`
+}
+
+// SledInstance is an operator's view of an instance running on a given sled
+type SledInstance struct {
+	ActiveSledId string `json:"active_sled_id,omitempty" yaml:"active_sled_id,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id          string `json:"id,omitempty" yaml:"id,omitempty"`
+	Memory      int    `json:"memory,omitempty" yaml:"memory,omitempty"`
+	MigrationId string `json:"migration_id,omitempty" yaml:"migration_id,omitempty"`
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	Name  Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Ncpus int  `json:"ncpus,omitempty" yaml:"ncpus,omitempty"`
+	// ProjectName is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	ProjectName Name `json:"project_name,omitempty" yaml:"project_name,omitempty"`
+	// SiloName is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	SiloName Name `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
+	// State is running state of an Instance (primarily: booted or stopped)
+	//
+	// This typically reflects whether it's starting, running, stopping, or stopped, but also includes states related to the Instance's lifecycle
+	State InstanceState `json:"state,omitempty" yaml:"state,omitempty"`
+	// TimeCreated is timestamp when this resource was created
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	// TimeModified is timestamp when this resource was last modified
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+}
+
+// SledInstanceResultsPage is a single page of results
+type SledInstanceResultsPage struct {
+	// Items is list of items on this page of results
+	Items []SledInstance `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
 // SledResultsPage is a single page of results
@@ -1566,12 +1768,217 @@ type Switch struct {
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
 }
 
+// SwitchInterfaceConfig is a layer-3 switch interface configuration. When IPv6 is enabled, a link local address will be created for the interface.
+type SwitchInterfaceConfig struct {
+	// Kind is what kind of switch interface this configuration represents.
+	Kind SwitchInterfaceKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+	// V6Enabled is whether or not IPv6 is enabled.
+	V6Enabled *bool `json:"v6_enabled,omitempty" yaml:"v6_enabled,omitempty"`
+}
+
+// SwitchInterfaceKindType is the type definition for a SwitchInterfaceKindType.
+type SwitchInterfaceKindType string
+
+// SwitchInterfaceKindPrimary is primary interfaces are associated with physical links. There is exactly one primary interface per physical link.
+type SwitchInterfaceKindPrimary struct {
+	Type SwitchInterfaceKindType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// SwitchInterfaceKindVlan is vLAN interfaces allow physical interfaces to be multiplexed onto multiple logical links, each distinguished by a 12-bit 802.1Q Ethernet tag.
+type SwitchInterfaceKindVlan struct {
+	Type SwitchInterfaceKindType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Vid is the virtual network id (VID) that distinguishes this interface and is used for producing and consuming 802.1Q Ethernet tags. This field has a maximum value of 4095 as 802.1Q tags are twelve bits.
+	Vid int `json:"vid,omitempty" yaml:"vid,omitempty"`
+}
+
+// SwitchInterfaceKindLoopback is loopback interfaces are anchors for IP addresses that are not specific to any particular port.
+type SwitchInterfaceKindLoopback struct {
+	Type SwitchInterfaceKindType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// SwitchInterfaceKind is indicates the kind for a switch interface.
+type SwitchInterfaceKind struct {
+	// Type is the type definition for a Type.
+	Type SwitchInterfaceKindType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Vid is the virtual network id (VID) that distinguishes this interface and is used for producing and consuming 802.1Q Ethernet tags. This field has a maximum value of 4095 as 802.1Q tags are twelve bits.
+	Vid int `json:"vid,omitempty" yaml:"vid,omitempty"`
+}
+
+// SwitchPort is a switch port represents a physical external port on a rack switch.
+type SwitchPort struct {
+	// Id is the id of the switch port.
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// PortName is the name of this switch port.
+	PortName string `json:"port_name,omitempty" yaml:"port_name,omitempty"`
+	// PortSettingsId is the primary settings group of this switch port. Will be `None` until this switch port is configured.
+	PortSettingsId string `json:"port_settings_id,omitempty" yaml:"port_settings_id,omitempty"`
+	// RackId is the rack this switch port belongs to.
+	RackId string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
+	// SwitchLocation is the switch location of this switch port.
+	SwitchLocation string `json:"switch_location,omitempty" yaml:"switch_location,omitempty"`
+}
+
+// SwitchPortAddressConfig is an IP address configuration for a port settings object.
+type SwitchPortAddressConfig struct {
+	// Address is the IP address and prefix.
+	Address IpNet `json:"address,omitempty" yaml:"address,omitempty"`
+	// AddressLotBlockId is the id of the address lot block this address is drawn from.
+	AddressLotBlockId string `json:"address_lot_block_id,omitempty" yaml:"address_lot_block_id,omitempty"`
+	// InterfaceName is the interface name this address belongs to.
+	InterfaceName string `json:"interface_name,omitempty" yaml:"interface_name,omitempty"`
+	// PortSettingsId is the port settings object this address configuration belongs to.
+	PortSettingsId string `json:"port_settings_id,omitempty" yaml:"port_settings_id,omitempty"`
+}
+
+// SwitchPortApplySettings is parameters for applying settings to switch ports.
+type SwitchPortApplySettings struct {
+	// PortSettings is a name or id to use when applying switch port settings.
+	PortSettings NameOrId `json:"port_settings,omitempty" yaml:"port_settings,omitempty"`
+}
+
+// SwitchPortBgpPeerConfig is a BGP peer configuration for a port settings object.
+type SwitchPortBgpPeerConfig struct {
+	// Addr is the address of the peer.
+	Addr string `json:"addr,omitempty" yaml:"addr,omitempty"`
+	// BgpAnnounceSetId is the id for the set of prefixes announced in this peer configuration.
+	BgpAnnounceSetId string `json:"bgp_announce_set_id,omitempty" yaml:"bgp_announce_set_id,omitempty"`
+	// BgpConfigId is the id of the global BGP configuration referenced by this peer configuration.
+	BgpConfigId string `json:"bgp_config_id,omitempty" yaml:"bgp_config_id,omitempty"`
+	// InterfaceName is the interface name used to establish a peer session.
+	InterfaceName string `json:"interface_name,omitempty" yaml:"interface_name,omitempty"`
+	// PortSettingsId is the port settings object this BGP configuration belongs to.
+	PortSettingsId string `json:"port_settings_id,omitempty" yaml:"port_settings_id,omitempty"`
+}
+
+// SwitchPortConfig is physical switch port configuration.
+type SwitchPortConfig struct {
+	// Geometry is link geometry for the switch port.
+	Geometry SwitchPortGeometry `json:"geometry,omitempty" yaml:"geometry,omitempty"`
+}
+
+// SwitchPortGeometry is the port contains a single QSFP28 link with four lanes.
+type SwitchPortGeometry string
+
+// SwitchPortLinkConfig is a link configuration for a port settings object.
+type SwitchPortLinkConfig struct {
+	// LinkName is the name of this link.
+	LinkName string `json:"link_name,omitempty" yaml:"link_name,omitempty"`
+	// LldpServiceConfigId is the link-layer discovery protocol service configuration id for this link.
+	LldpServiceConfigId string `json:"lldp_service_config_id,omitempty" yaml:"lldp_service_config_id,omitempty"`
+	// Mtu is the maximum transmission unit for this link.
+	Mtu int `json:"mtu,omitempty" yaml:"mtu,omitempty"`
+	// PortSettingsId is the port settings this link configuration belongs to.
+	PortSettingsId string `json:"port_settings_id,omitempty" yaml:"port_settings_id,omitempty"`
+}
+
+// SwitchPortResultsPage is a single page of results
+type SwitchPortResultsPage struct {
+	// Items is list of items on this page of results
+	Items []SwitchPort `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// SwitchPortRouteConfig is a route configuration for a port settings object.
+type SwitchPortRouteConfig struct {
+	// Dst is the route's destination network.
+	Dst IpNet `json:"dst,omitempty" yaml:"dst,omitempty"`
+	// Gw is the route's gateway address.
+	Gw IpNet `json:"gw,omitempty" yaml:"gw,omitempty"`
+	// InterfaceName is the interface name this route configuration is assigned to.
+	InterfaceName string `json:"interface_name,omitempty" yaml:"interface_name,omitempty"`
+	// PortSettingsId is the port settings object this route configuration belongs to.
+	PortSettingsId string `json:"port_settings_id,omitempty" yaml:"port_settings_id,omitempty"`
+}
+
+// SwitchPortSettings is a switch port settings identity whose id may be used to view additional details.
+type SwitchPortSettings struct {
+	// Description is human-readable free-form text about a resource
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Name is unique, mutable, user-controlled identifier for each resource
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	// TimeCreated is timestamp when this resource was created
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	// TimeModified is timestamp when this resource was last modified
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+}
+
+// SwitchPortSettingsCreate is parameters for creating switch port settings. Switch port settings are the central data structure for setting up external networking. Switch port settings include link, interface, route, address and dynamic network protocol configuration.
+type SwitchPortSettingsCreate struct {
+	// Addresses is addresses indexed by interface name.
+	Addresses AddressConfig `json:"addresses,omitempty" yaml:"addresses,omitempty"`
+	// BgpPeers is bGP peers indexed by interface name.
+	BgpPeers    BgpPeerConfig `json:"bgp_peers,omitempty" yaml:"bgp_peers,omitempty"`
+	Description string        `json:"description,omitempty" yaml:"description,omitempty"`
+	Groups      []NameOrId    `json:"groups,omitempty" yaml:"groups,omitempty"`
+	// Interfaces is interfaces indexed by link name.
+	Interfaces SwitchInterfaceConfig `json:"interfaces,omitempty" yaml:"interfaces,omitempty"`
+	// Links is links indexed by phy name. On ports that are not broken out, this is always phy0. On a 2x breakout the options are phy0 and phy1, on 4x phy0-phy3, etc.
+	Links LinkConfig `json:"links,omitempty" yaml:"links,omitempty"`
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	// PortConfig is physical switch port configuration.
+	PortConfig SwitchPortConfig `json:"port_config,omitempty" yaml:"port_config,omitempty"`
+	// Routes is routes indexed by interface name.
+	Routes RouteConfig `json:"routes,omitempty" yaml:"routes,omitempty"`
+}
+
+// SwitchPortSettingsGroups is this structure maps a port settings object to a port settings groups. Port settings objects may inherit settings from groups. This mapping defines the relationship between settings objects and the groups they reference.
+type SwitchPortSettingsGroups struct {
+	// PortSettingsGroupId is the id of a port settings group being referenced by a port settings object.
+	PortSettingsGroupId string `json:"port_settings_group_id,omitempty" yaml:"port_settings_group_id,omitempty"`
+	// PortSettingsId is the id of a port settings object referencing a port settings group.
+	PortSettingsId string `json:"port_settings_id,omitempty" yaml:"port_settings_id,omitempty"`
+}
+
+// SwitchPortSettingsResultsPage is a single page of results
+type SwitchPortSettingsResultsPage struct {
+	// Items is list of items on this page of results
+	Items []SwitchPortSettings `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// SwitchPortSettingsView is this structure contains all port settings information in one place. It's a convenience data structure for getting a complete view of a particular port's settings.
+type SwitchPortSettingsView struct {
+	// Addresses is layer 3 IP address settings.
+	Addresses []SwitchPortAddressConfig `json:"addresses,omitempty" yaml:"addresses,omitempty"`
+	// BgpPeers is bGP peer settings.
+	BgpPeers []SwitchPortBgpPeerConfig `json:"bgp_peers,omitempty" yaml:"bgp_peers,omitempty"`
+	// Groups is switch port settings included from other switch port settings groups.
+	Groups []SwitchPortSettingsGroups `json:"groups,omitempty" yaml:"groups,omitempty"`
+	// Interfaces is layer 3 interface settings.
+	Interfaces []SwitchInterfaceConfig `json:"interfaces,omitempty" yaml:"interfaces,omitempty"`
+	// LinkLldp is link-layer discovery protocol (LLDP) settings.
+	LinkLldp []LldpServiceConfig `json:"link_lldp,omitempty" yaml:"link_lldp,omitempty"`
+	// Links is layer 2 link settings.
+	Links []SwitchPortLinkConfig `json:"links,omitempty" yaml:"links,omitempty"`
+	// Port is layer 1 physical port settings.
+	Port SwitchPortConfig `json:"port,omitempty" yaml:"port,omitempty"`
+	// Routes is iP route settings.
+	Routes []SwitchPortRouteConfig `json:"routes,omitempty" yaml:"routes,omitempty"`
+	// Settings is the primary switch port settings handle.
+	Settings SwitchPortSettings `json:"settings,omitempty" yaml:"settings,omitempty"`
+	// VlanInterfaces is vlan interface settings.
+	VlanInterfaces []SwitchVlanInterfaceConfig `json:"vlan_interfaces,omitempty" yaml:"vlan_interfaces,omitempty"`
+}
+
 // SwitchResultsPage is a single page of results
 type SwitchResultsPage struct {
 	// Items is list of items on this page of results
 	Items []Switch `json:"items,omitempty" yaml:"items,omitempty"`
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// SwitchVlanInterfaceConfig is a switch port VLAN interface configuration for a port settings object.
+type SwitchVlanInterfaceConfig struct {
+	// InterfaceConfigId is the switch interface configuration this VLAN interface configuration belongs to.
+	InterfaceConfigId string `json:"interface_config_id,omitempty" yaml:"interface_config_id,omitempty"`
+	// Vid is the virtual network id (VID) that distinguishes this interface and is used for producing and consuming 802.1Q Ethernet tags. This field has a maximum value of 4095 as 802.1Q tags are twelve bits.
+	Vid int `json:"vid,omitempty" yaml:"vid,omitempty"`
 }
 
 // SystemMetricName is the type definition for a SystemMetricName.
@@ -2089,12 +2496,6 @@ type LoginSpoofParams struct {
 	Body *SpoofLoginBody `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
-// LoginLocalParams is the request parameters for LoginLocal
-type LoginLocalParams struct {
-	SiloName Name                         `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
-	Body     *UsernamePasswordCredentials `json:"body,omitempty" yaml:"body,omitempty"`
-}
-
 // LoginSamlBeginParams is the request parameters for LoginSamlBegin
 type LoginSamlBeginParams struct {
 	ProviderName Name `json:"provider_name,omitempty" yaml:"provider_name,omitempty"`
@@ -2106,6 +2507,28 @@ type LoginSamlParams struct {
 	ProviderName Name      `json:"provider_name,omitempty" yaml:"provider_name,omitempty"`
 	SiloName     Name      `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
 	Body         io.Reader `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// CertificateListParams is the request parameters for CertificateList
+type CertificateListParams struct {
+	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// CertificateCreateParams is the request parameters for CertificateCreate
+type CertificateCreateParams struct {
+	Body *CertificateCreate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// CertificateDeleteParams is the request parameters for CertificateDelete
+type CertificateDeleteParams struct {
+	Certificate NameOrId `json:"certificate,omitempty" yaml:"certificate,omitempty"`
+}
+
+// CertificateViewParams is the request parameters for CertificateView
+type CertificateViewParams struct {
+	Certificate NameOrId `json:"certificate,omitempty" yaml:"certificate,omitempty"`
 }
 
 // DiskListParams is the request parameters for DiskList
@@ -2309,8 +2732,6 @@ type InstanceSerialConsoleParams struct {
 // InstanceSerialConsoleStreamParams is the request parameters for InstanceSerialConsoleStream
 type InstanceSerialConsoleStreamParams struct {
 	Instance   NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
-	FromStart  int      `json:"from_start,omitempty" yaml:"from_start,omitempty"`
-	MaxBytes   int      `json:"max_bytes,omitempty" yaml:"max_bytes,omitempty"`
 	MostRecent int      `json:"most_recent,omitempty" yaml:"most_recent,omitempty"`
 	Project    NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
@@ -2325,6 +2746,12 @@ type InstanceStartParams struct {
 type InstanceStopParams struct {
 	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+}
+
+// LoginLocalParams is the request parameters for LoginLocal
+type LoginLocalParams struct {
+	SiloName Name                         `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
+	Body     *UsernamePasswordCredentials `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // CurrentUserGroupsParams is the request parameters for CurrentUserGroups
@@ -2464,28 +2891,6 @@ type SnapshotViewParams struct {
 	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
-// CertificateListParams is the request parameters for CertificateList
-type CertificateListParams struct {
-	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
-}
-
-// CertificateCreateParams is the request parameters for CertificateCreate
-type CertificateCreateParams struct {
-	Body *CertificateCreate `json:"body,omitempty" yaml:"body,omitempty"`
-}
-
-// CertificateDeleteParams is the request parameters for CertificateDelete
-type CertificateDeleteParams struct {
-	Certificate NameOrId `json:"certificate,omitempty" yaml:"certificate,omitempty"`
-}
-
-// CertificateViewParams is the request parameters for CertificateView
-type CertificateViewParams struct {
-	Certificate NameOrId `json:"certificate,omitempty" yaml:"certificate,omitempty"`
-}
-
 // PhysicalDiskListParams is the request parameters for PhysicalDiskList
 type PhysicalDiskListParams struct {
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -2523,6 +2928,37 @@ type SledPhysicalDiskListParams struct {
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// SledInstanceListParams is the request parameters for SledInstanceList
+type SledInstanceListParams struct {
+	SledId    string     `json:"sled_id,omitempty" yaml:"sled_id,omitempty"`
+	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// NetworkingSwitchPortListParams is the request parameters for NetworkingSwitchPortList
+type NetworkingSwitchPortListParams struct {
+	Limit        int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken    string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy       IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	SwitchPortId string     `json:"switch_port_id,omitempty" yaml:"switch_port_id,omitempty"`
+}
+
+// NetworkingSwitchPortClearSettingsParams is the request parameters for NetworkingSwitchPortClearSettings
+type NetworkingSwitchPortClearSettingsParams struct {
+	Port           Name   `json:"port,omitempty" yaml:"port,omitempty"`
+	RackId         string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
+	SwitchLocation Name   `json:"switch_location,omitempty" yaml:"switch_location,omitempty"`
+}
+
+// NetworkingSwitchPortApplySettingsParams is the request parameters for NetworkingSwitchPortApplySettings
+type NetworkingSwitchPortApplySettingsParams struct {
+	Port           Name                     `json:"port,omitempty" yaml:"port,omitempty"`
+	RackId         string                   `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
+	SwitchLocation Name                     `json:"switch_location,omitempty" yaml:"switch_location,omitempty"`
+	Body           *SwitchPortApplySettings `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // SwitchListParams is the request parameters for SwitchList
@@ -2647,6 +3083,74 @@ type SystemMetricParams struct {
 	Limit      int              `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken  string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	StartTime  *time.Time       `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+}
+
+// NetworkingAddressLotListParams is the request parameters for NetworkingAddressLotList
+type NetworkingAddressLotListParams struct {
+	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// NetworkingAddressLotCreateParams is the request parameters for NetworkingAddressLotCreate
+type NetworkingAddressLotCreateParams struct {
+	Body *AddressLotCreate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// NetworkingAddressLotDeleteParams is the request parameters for NetworkingAddressLotDelete
+type NetworkingAddressLotDeleteParams struct {
+	AddressLot NameOrId `json:"address_lot,omitempty" yaml:"address_lot,omitempty"`
+}
+
+// NetworkingAddressLotBlockListParams is the request parameters for NetworkingAddressLotBlockList
+type NetworkingAddressLotBlockListParams struct {
+	AddressLot NameOrId   `json:"address_lot,omitempty" yaml:"address_lot,omitempty"`
+	Limit      int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken  string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy     IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// NetworkingLoopbackAddressListParams is the request parameters for NetworkingLoopbackAddressList
+type NetworkingLoopbackAddressListParams struct {
+	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// NetworkingLoopbackAddressCreateParams is the request parameters for NetworkingLoopbackAddressCreate
+type NetworkingLoopbackAddressCreateParams struct {
+	Body *LoopbackAddressCreate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// NetworkingLoopbackAddressDeleteParams is the request parameters for NetworkingLoopbackAddressDelete
+type NetworkingLoopbackAddressDeleteParams struct {
+	Address        string `json:"address,omitempty" yaml:"address,omitempty"`
+	RackId         string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
+	SubnetMask     int    `json:"subnet_mask,omitempty" yaml:"subnet_mask,omitempty"`
+	SwitchLocation Name   `json:"switch_location,omitempty" yaml:"switch_location,omitempty"`
+}
+
+// NetworkingSwitchPortSettingsDeleteParams is the request parameters for NetworkingSwitchPortSettingsDelete
+type NetworkingSwitchPortSettingsDeleteParams struct {
+	PortSettings NameOrId `json:"port_settings,omitempty" yaml:"port_settings,omitempty"`
+}
+
+// NetworkingSwitchPortSettingsListParams is the request parameters for NetworkingSwitchPortSettingsList
+type NetworkingSwitchPortSettingsListParams struct {
+	Limit        int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken    string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	PortSettings NameOrId         `json:"port_settings,omitempty" yaml:"port_settings,omitempty"`
+	SortBy       NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// NetworkingSwitchPortSettingsCreateParams is the request parameters for NetworkingSwitchPortSettingsCreate
+type NetworkingSwitchPortSettingsCreateParams struct {
+	Body *SwitchPortSettingsCreate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// NetworkingSwitchPortSettingsViewParams is the request parameters for NetworkingSwitchPortSettingsView
+type NetworkingSwitchPortSettingsViewParams struct {
+	Port NameOrId `json:"port,omitempty" yaml:"port,omitempty"`
 }
 
 // SystemPolicyUpdateParams is the request parameters for SystemPolicyUpdate
@@ -2988,17 +3492,6 @@ func (p *LoginSpoofParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for LoginLocalParams are set
-func (p *LoginLocalParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.SiloName), "SiloName")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
 // Validate verifies all required fields for LoginSamlBeginParams are set
 func (p *LoginSamlBeginParams) Validate() error {
 	v := new(Validator)
@@ -3016,6 +3509,45 @@ func (p *LoginSamlParams) Validate() error {
 	v.HasRequiredObj(p.Body, "Body")
 	v.HasRequiredStr(string(p.ProviderName), "ProviderName")
 	v.HasRequiredStr(string(p.SiloName), "SiloName")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for CertificateListParams are set
+func (p *CertificateListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for CertificateCreateParams are set
+func (p *CertificateCreateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for CertificateDeleteParams are set
+func (p *CertificateDeleteParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Certificate), "Certificate")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for CertificateViewParams are set
+func (p *CertificateViewParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Certificate), "Certificate")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3348,6 +3880,17 @@ func (p *InstanceStopParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for LoginLocalParams are set
+func (p *LoginLocalParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.SiloName), "SiloName")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for CurrentUserGroupsParams are set
 func (p *CurrentUserGroupsParams) Validate() error {
 	v := new(Validator)
@@ -3568,45 +4111,6 @@ func (p *SnapshotViewParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for CertificateListParams are set
-func (p *CertificateListParams) Validate() error {
-	v := new(Validator)
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for CertificateCreateParams are set
-func (p *CertificateCreateParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for CertificateDeleteParams are set
-func (p *CertificateDeleteParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredStr(string(p.Certificate), "Certificate")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for CertificateViewParams are set
-func (p *CertificateViewParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredStr(string(p.Certificate), "Certificate")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
 // Validate verifies all required fields for PhysicalDiskListParams are set
 func (p *PhysicalDiskListParams) Validate() error {
 	v := new(Validator)
@@ -3658,6 +4162,50 @@ func (p *SledViewParams) Validate() error {
 func (p *SledPhysicalDiskListParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.SledId), "SledId")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SledInstanceListParams are set
+func (p *SledInstanceListParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.SledId), "SledId")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingSwitchPortListParams are set
+func (p *NetworkingSwitchPortListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingSwitchPortClearSettingsParams are set
+func (p *NetworkingSwitchPortClearSettingsParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Port), "Port")
+	v.HasRequiredStr(string(p.RackId), "RackId")
+	v.HasRequiredStr(string(p.SwitchLocation), "SwitchLocation")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingSwitchPortApplySettingsParams are set
+func (p *NetworkingSwitchPortApplySettingsParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Port), "Port")
+	v.HasRequiredStr(string(p.RackId), "RackId")
+	v.HasRequiredStr(string(p.SwitchLocation), "SwitchLocation")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3864,6 +4412,115 @@ func (p *SystemMetricParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.MetricName), "MetricName")
 	v.HasRequiredStr(string(p.Id), "Id")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingAddressLotListParams are set
+func (p *NetworkingAddressLotListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingAddressLotCreateParams are set
+func (p *NetworkingAddressLotCreateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingAddressLotDeleteParams are set
+func (p *NetworkingAddressLotDeleteParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.AddressLot), "AddressLot")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingAddressLotBlockListParams are set
+func (p *NetworkingAddressLotBlockListParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.AddressLot), "AddressLot")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingLoopbackAddressListParams are set
+func (p *NetworkingLoopbackAddressListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingLoopbackAddressCreateParams are set
+func (p *NetworkingLoopbackAddressCreateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingLoopbackAddressDeleteParams are set
+func (p *NetworkingLoopbackAddressDeleteParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Address), "Address")
+	v.HasRequiredStr(string(p.RackId), "RackId")
+	v.HasRequiredStr(string(p.SwitchLocation), "SwitchLocation")
+	v.HasRequiredNum(int(p.SubnetMask), "SubnetMask")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingSwitchPortSettingsDeleteParams are set
+func (p *NetworkingSwitchPortSettingsDeleteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingSwitchPortSettingsListParams are set
+func (p *NetworkingSwitchPortSettingsListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingSwitchPortSettingsCreateParams are set
+func (p *NetworkingSwitchPortSettingsCreateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingSwitchPortSettingsViewParams are set
+func (p *NetworkingSwitchPortSettingsViewParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Port), "Port")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4310,6 +4967,12 @@ func (p *VpcUpdateParams) Validate() error {
 	return nil
 }
 
+// AddressLotKindInfra represents the AddressLotKind `"infra"`.
+const AddressLotKindInfra AddressLotKind = "infra"
+
+// AddressLotKindPool represents the AddressLotKind `"pool"`.
+const AddressLotKindPool AddressLotKind = "pool"
+
 // BinRangedoubleTypeRangeTo represents the BinRangedoubleType `"range_to"`.
 const BinRangedoubleTypeRangeTo BinRangedoubleType = "range_to"
 
@@ -4610,6 +5273,24 @@ const SnapshotStateFaulted SnapshotState = "faulted"
 // SnapshotStateDestroyed represents the SnapshotState `"destroyed"`.
 const SnapshotStateDestroyed SnapshotState = "destroyed"
 
+// SwitchInterfaceKindTypePrimary represents the SwitchInterfaceKindType `"primary"`.
+const SwitchInterfaceKindTypePrimary SwitchInterfaceKindType = "primary"
+
+// SwitchInterfaceKindTypeVlan represents the SwitchInterfaceKindType `"vlan"`.
+const SwitchInterfaceKindTypeVlan SwitchInterfaceKindType = "vlan"
+
+// SwitchInterfaceKindTypeLoopback represents the SwitchInterfaceKindType `"loopback"`.
+const SwitchInterfaceKindTypeLoopback SwitchInterfaceKindType = "loopback"
+
+// SwitchPortGeometryQsfp28X1 represents the SwitchPortGeometry `"qsfp28x1"`.
+const SwitchPortGeometryQsfp28X1 SwitchPortGeometry = "qsfp28x1"
+
+// SwitchPortGeometryQsfp28X2 represents the SwitchPortGeometry `"qsfp28x2"`.
+const SwitchPortGeometryQsfp28X2 SwitchPortGeometry = "qsfp28x2"
+
+// SwitchPortGeometrySfp28X4 represents the SwitchPortGeometry `"sfp28x4"`.
+const SwitchPortGeometrySfp28X4 SwitchPortGeometry = "sfp28x4"
+
 // SystemMetricNameVirtualDiskSpaceProvisioned represents the SystemMetricName `"virtual_disk_space_provisioned"`.
 const SystemMetricNameVirtualDiskSpaceProvisioned SystemMetricName = "virtual_disk_space_provisioned"
 
@@ -4729,6 +5410,12 @@ const VpcRouterKindSystem VpcRouterKind = "system"
 
 // VpcRouterKindCustom represents the VpcRouterKind `"custom"`.
 const VpcRouterKindCustom VpcRouterKind = "custom"
+
+// AddressLotKinds is the collection of all AddressLotKind values.
+var AddressLotKinds = []AddressLotKind{
+	AddressLotKindInfra,
+	AddressLotKindPool,
+}
 
 // BinRangedoubleTypes is the collection of all BinRangedoubleType values.
 var BinRangedoubleTypes = []BinRangedoubleType{
@@ -4944,6 +5631,20 @@ var SnapshotStates = []SnapshotState{
 	SnapshotStateDestroyed,
 	SnapshotStateFaulted,
 	SnapshotStateReady,
+}
+
+// SwitchInterfaceKindTypes is the collection of all SwitchInterfaceKindType values.
+var SwitchInterfaceKindTypes = []SwitchInterfaceKindType{
+	SwitchInterfaceKindTypeLoopback,
+	SwitchInterfaceKindTypePrimary,
+	SwitchInterfaceKindTypeVlan,
+}
+
+// SwitchPortGeometrys is the collection of all SwitchPortGeometry values.
+var SwitchPortGeometrys = []SwitchPortGeometry{
+	SwitchPortGeometryQsfp28X1,
+	SwitchPortGeometryQsfp28X2,
+	SwitchPortGeometrySfp28X4,
 }
 
 // SystemMetricNames is the collection of all SystemMetricName values.
