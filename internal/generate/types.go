@@ -56,6 +56,7 @@ type EnumTemplate struct {
 type ValidationTemplate struct {
 	RequiredObjects []string
 	RequiredStrings []string
+	RequiredNums    []string
 	AssociatedType  string
 }
 
@@ -195,17 +196,24 @@ func constructParamValidation(paths openapi3.Paths) []ValidationTemplate {
 
 					paramName := strcase.ToCamel(p.Value.Name)
 
-					// TODO: Add validation for required queries. This may be a bit tricky because of the types
 					if p.Value.In == "path" {
-						// If an a value is part of a path, our API requires it, so we can safely add it.
-						validationTpl.RequiredStrings = append(validationTpl.RequiredStrings, paramName)
+						if p.Value.Schema.Value.Type == "integer" {
+							// If an a value is part of a path, our API requires it, so we can safely add it.
+							validationTpl.RequiredNums = append(validationTpl.RequiredNums, paramName)
+						} else {
+							// If an a value is part of a path, our API requires it, so we can safely add it.
+							validationTpl.RequiredStrings = append(validationTpl.RequiredStrings, paramName)
+							//	continue
+						}
 					}
 
 					if p.Value.In == "query" && p.Value.Required {
 						// TODO: For now all required values are strings, check for other types
 						validationTpl.RequiredStrings = append(validationTpl.RequiredStrings, paramName)
+						//	continue
 					}
 				}
+
 				if o.RequestBody != nil {
 					// If an endpoint has a body, our API requires it, so we can safely add it.
 					validationTpl.RequiredObjects = append(validationTpl.RequiredObjects, "Body")
@@ -347,6 +355,9 @@ func writeTypes(f *os.File, typeCollection []TypeTemplate, typeValidationCollect
 		}
 		for _, s := range vm.RequiredStrings {
 			fmt.Fprintf(f, "v.HasRequiredStr(string(p.%s), \"%s\")\n", s, s)
+		}
+		for _, i := range vm.RequiredNums {
+			fmt.Fprintf(f, "v.HasRequiredNum(int(p.%s), \"%s\")\n", i, i)
 		}
 		fmt.Fprintln(f, "if !v.IsValid() {")
 		// Unfortunately I have to craft the following line this way as I get

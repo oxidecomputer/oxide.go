@@ -14,46 +14,6 @@ import (
 	"strconv"
 )
 
-// LoginLocal: Authenticate a user via username and password
-func (c *Client) LoginLocal(params LoginLocalParams) error {
-	if err := params.Validate(); err != nil {
-		return err
-	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return fmt.Errorf("encoding json body request failed: %v", err)
-	}
-
-	// Create the request
-	req, err := buildRequest(
-		b,
-		"POST",
-		resolveRelative(c.server, "/login/{{.silo_name}}/local"),
-		map[string]string{
-			"silo_name": string(params.SiloName),
-		},
-		map[string]string{},
-	)
-	if err != nil {
-		return fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 // LoginSamlBegin: Prompt user login
 // Either display a page asking a user for their credentials, or redirect them to their identity provider.
 func (c *Client) LoginSamlBegin(params LoginSamlBeginParams) error {
@@ -105,6 +65,214 @@ func (c *Client) LoginSaml(params LoginSamlParams) error {
 		map[string]string{
 			"provider_name": string(params.ProviderName),
 			"silo_name":     string(params.SiloName),
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// CertificateList: List certificates for external endpoints
+// Returns a list of TLS certificates used for the external API (for the current Silo).  These are sorted by creation date, with the most recent certificates appearing first.
+//
+// To iterate over all pages, use the `CertificateListAllPages` method, instead.
+func (c *Client) CertificateList(params CertificateListParams) (*CertificateResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/certificates"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body CertificateResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// CertificateListAllPages: List certificates for external endpoints
+// Returns a list of TLS certificates used for the external API (for the current Silo).  These are sorted by creation date, with the most recent certificates appearing first.
+//
+// This method is a wrapper around the `CertificateList` method.
+// This method returns all the pages at once.
+func (c *Client) CertificateListAllPages(params CertificateListParams) (*[]Certificate, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []Certificate
+	params.PageToken = ""
+	params.Limit = 100
+	for {
+		page, err := c.CertificateList(params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return &allPages, nil
+}
+
+// CertificateCreate: Create a new system-wide x.509 certificate
+// This certificate is automatically used by the Oxide Control plane to serve external connections.
+func (c *Client) CertificateCreate(params CertificateCreateParams) (*Certificate, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/certificates"),
+		map[string]string{},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body Certificate
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// CertificateView: Fetch a certificate
+// Returns the details of a specific certificate
+func (c *Client) CertificateView(params CertificateViewParams) (*Certificate, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/certificates/{{.certificate}}"),
+		map[string]string{
+			"certificate": string(params.Certificate),
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body Certificate
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// CertificateDelete: Delete a certificate
+// Permanently delete a certificate. This operation cannot be undone.
+func (c *Client) CertificateDelete(params CertificateDeleteParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"DELETE",
+		resolveRelative(c.server, "/v1/certificates/{{.certificate}}"),
+		map[string]string{
+			"certificate": string(params.Certificate),
 		},
 		map[string]string{},
 	)
@@ -1654,8 +1822,6 @@ func (c *Client) InstanceSerialConsoleStream(params InstanceSerialConsoleStreamP
 			"instance": string(params.Instance),
 		},
 		map[string]string{
-			"from_start":  strconv.Itoa(params.FromStart),
-			"max_bytes":   strconv.Itoa(params.MaxBytes),
 			"most_recent": strconv.Itoa(params.MostRecent),
 			"project":     string(params.Project),
 		},
@@ -1771,6 +1937,46 @@ func (c *Client) InstanceStop(params InstanceStopParams) (*Instance, error) {
 
 	// Return the response.
 	return &body, nil
+}
+
+// LoginLocal: Authenticate a user via username and password
+func (c *Client) LoginLocal(params LoginLocalParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/login/{{.silo_name}}/local"),
+		map[string]string{
+			"silo_name": string(params.SiloName),
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // CurrentUserView: Fetch the user associated with the current session
@@ -3015,214 +3221,6 @@ func (c *Client) SnapshotDelete(params SnapshotDeleteParams) error {
 	return nil
 }
 
-// CertificateList: List system-wide certificates
-// Returns a list of all the system-wide certificates. System-wide certificates are returned sorted by creation date, with the most recent certificates appearing first.
-//
-// To iterate over all pages, use the `CertificateListAllPages` method, instead.
-func (c *Client) CertificateList(params CertificateListParams) (*CertificateResultsPage, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Create the request
-	req, err := buildRequest(
-		nil,
-		"GET",
-		resolveRelative(c.server, "/v1/system/certificates"),
-		map[string]string{},
-		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body CertificateResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// CertificateListAllPages: List system-wide certificates
-// Returns a list of all the system-wide certificates. System-wide certificates are returned sorted by creation date, with the most recent certificates appearing first.
-//
-// This method is a wrapper around the `CertificateList` method.
-// This method returns all the pages at once.
-func (c *Client) CertificateListAllPages(params CertificateListParams) (*[]Certificate, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	var allPages []Certificate
-	params.PageToken = ""
-	params.Limit = 100
-	for {
-		page, err := c.CertificateList(params)
-		if err != nil {
-			return nil, err
-		}
-		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == params.PageToken {
-			break
-		}
-		params.PageToken = page.NextPage
-	}
-
-	return &allPages, nil
-}
-
-// CertificateCreate: Create a new system-wide x.509 certificate
-// This certificate is automatically used by the Oxide Control plane to serve external connections.
-func (c *Client) CertificateCreate(params CertificateCreateParams) (*Certificate, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
-
-	// Create the request
-	req, err := buildRequest(
-		b,
-		"POST",
-		resolveRelative(c.server, "/v1/system/certificates"),
-		map[string]string{},
-		map[string]string{},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body Certificate
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// CertificateView: Fetch a certificate
-// Returns the details of a specific certificate
-func (c *Client) CertificateView(params CertificateViewParams) (*Certificate, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Create the request
-	req, err := buildRequest(
-		nil,
-		"GET",
-		resolveRelative(c.server, "/v1/system/certificates/{{.certificate}}"),
-		map[string]string{
-			"certificate": string(params.Certificate),
-		},
-		map[string]string{},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body Certificate
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// CertificateDelete: Delete a certificate
-// Permanently delete a certificate. This operation cannot be undone.
-func (c *Client) CertificateDelete(params CertificateDeleteParams) error {
-	if err := params.Validate(); err != nil {
-		return err
-	}
-	// Create the request
-	req, err := buildRequest(
-		nil,
-		"DELETE",
-		resolveRelative(c.server, "/v1/system/certificates/{{.certificate}}"),
-		map[string]string{
-			"certificate": string(params.Certificate),
-		},
-		map[string]string{},
-	)
-	if err != nil {
-		return fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 // PhysicalDiskList: List physical disks
 //
 // To iterate over all pages, use the `PhysicalDiskListAllPages` method, instead.
@@ -3613,6 +3611,239 @@ func (c *Client) SledPhysicalDiskListAllPages(params SledPhysicalDiskListParams)
 	}
 
 	return &allPages, nil
+}
+
+// SledInstanceList: List instances running on a given sled
+//
+// To iterate over all pages, use the `SledInstanceListAllPages` method, instead.
+func (c *Client) SledInstanceList(params SledInstanceListParams) (*SledInstanceResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/hardware/sleds/{{.sled_id}}/instances"),
+		map[string]string{
+			"sled_id": params.SledId,
+		},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SledInstanceResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SledInstanceListAllPages: List instances running on a given sled
+//
+// This method is a wrapper around the `SledInstanceList` method.
+// This method returns all the pages at once.
+func (c *Client) SledInstanceListAllPages(params SledInstanceListParams) (*[]SledInstance, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []SledInstance
+	params.PageToken = ""
+	params.Limit = 100
+	for {
+		page, err := c.SledInstanceList(params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return &allPages, nil
+}
+
+// NetworkingSwitchPortList: List switch ports
+//
+// To iterate over all pages, use the `NetworkingSwitchPortListAllPages` method, instead.
+func (c *Client) NetworkingSwitchPortList(params NetworkingSwitchPortListParams) (*SwitchPortResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/hardware/switch-port"),
+		map[string]string{},
+		map[string]string{
+			"limit":          strconv.Itoa(params.Limit),
+			"page_token":     params.PageToken,
+			"sort_by":        string(params.SortBy),
+			"switch_port_id": params.SwitchPortId,
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SwitchPortResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// NetworkingSwitchPortListAllPages: List switch ports
+//
+// This method is a wrapper around the `NetworkingSwitchPortList` method.
+// This method returns all the pages at once.
+func (c *Client) NetworkingSwitchPortListAllPages(params NetworkingSwitchPortListParams) (*[]SwitchPort, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []SwitchPort
+	params.PageToken = ""
+	params.Limit = 100
+	for {
+		page, err := c.NetworkingSwitchPortList(params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return &allPages, nil
+}
+
+// NetworkingSwitchPortApplySettings: Apply switch port settings
+func (c *Client) NetworkingSwitchPortApplySettings(params NetworkingSwitchPortApplySettingsParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/system/hardware/switch-port/{{.port}}/settings"),
+		map[string]string{
+			"port": string(params.Port),
+		},
+		map[string]string{
+			"rack_id":         params.RackId,
+			"switch_location": string(params.SwitchLocation),
+		},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// NetworkingSwitchPortClearSettings: Clear switch port settings
+func (c *Client) NetworkingSwitchPortClearSettings(params NetworkingSwitchPortClearSettingsParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"DELETE",
+		resolveRelative(c.server, "/v1/system/hardware/switch-port/{{.port}}/settings"),
+		map[string]string{
+			"port": string(params.Port),
+		},
+		map[string]string{
+			"rack_id":         params.RackId,
+			"switch_location": string(params.SwitchLocation),
+		},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // SwitchList: List switches
@@ -4743,6 +4974,606 @@ func (c *Client) SystemMetricAllPages(params SystemMetricParams) (*[]Measurement
 	}
 
 	return &allPages, nil
+}
+
+// NetworkingAddressLotList: List address lots
+//
+// To iterate over all pages, use the `NetworkingAddressLotListAllPages` method, instead.
+func (c *Client) NetworkingAddressLotList(params NetworkingAddressLotListParams) (*AddressLotResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/networking/address-lot"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body AddressLotResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// NetworkingAddressLotListAllPages: List address lots
+//
+// This method is a wrapper around the `NetworkingAddressLotList` method.
+// This method returns all the pages at once.
+func (c *Client) NetworkingAddressLotListAllPages(params NetworkingAddressLotListParams) (*[]AddressLot, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []AddressLot
+	params.PageToken = ""
+	params.Limit = 100
+	for {
+		page, err := c.NetworkingAddressLotList(params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return &allPages, nil
+}
+
+// NetworkingAddressLotCreate: Create an address lot
+func (c *Client) NetworkingAddressLotCreate(params NetworkingAddressLotCreateParams) (*AddressLotCreateResponse, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/system/networking/address-lot"),
+		map[string]string{},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body AddressLotCreateResponse
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// NetworkingAddressLotDelete: Delete an address lot
+func (c *Client) NetworkingAddressLotDelete(params NetworkingAddressLotDeleteParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"DELETE",
+		resolveRelative(c.server, "/v1/system/networking/address-lot/{{.address_lot}}"),
+		map[string]string{
+			"address_lot": string(params.AddressLot),
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// NetworkingAddressLotBlockList: List the blocks in an address lot
+//
+// To iterate over all pages, use the `NetworkingAddressLotBlockListAllPages` method, instead.
+func (c *Client) NetworkingAddressLotBlockList(params NetworkingAddressLotBlockListParams) (*AddressLotBlockResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/networking/address-lot/{{.address_lot}}/blocks"),
+		map[string]string{
+			"address_lot": string(params.AddressLot),
+		},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body AddressLotBlockResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// NetworkingAddressLotBlockListAllPages: List the blocks in an address lot
+//
+// This method is a wrapper around the `NetworkingAddressLotBlockList` method.
+// This method returns all the pages at once.
+func (c *Client) NetworkingAddressLotBlockListAllPages(params NetworkingAddressLotBlockListParams) (*[]AddressLotBlock, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []AddressLotBlock
+	params.PageToken = ""
+	params.Limit = 100
+	for {
+		page, err := c.NetworkingAddressLotBlockList(params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return &allPages, nil
+}
+
+// NetworkingLoopbackAddressList: Get loopback addresses, optionally filtering by id
+//
+// To iterate over all pages, use the `NetworkingLoopbackAddressListAllPages` method, instead.
+func (c *Client) NetworkingLoopbackAddressList(params NetworkingLoopbackAddressListParams) (*LoopbackAddressResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/networking/loopback-address"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body LoopbackAddressResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// NetworkingLoopbackAddressListAllPages: Get loopback addresses, optionally filtering by id
+//
+// This method is a wrapper around the `NetworkingLoopbackAddressList` method.
+// This method returns all the pages at once.
+func (c *Client) NetworkingLoopbackAddressListAllPages(params NetworkingLoopbackAddressListParams) (*[]LoopbackAddress, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []LoopbackAddress
+	params.PageToken = ""
+	params.Limit = 100
+	for {
+		page, err := c.NetworkingLoopbackAddressList(params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return &allPages, nil
+}
+
+// NetworkingLoopbackAddressCreate: Create a loopback address
+func (c *Client) NetworkingLoopbackAddressCreate(params NetworkingLoopbackAddressCreateParams) (*LoopbackAddress, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/system/networking/loopback-address"),
+		map[string]string{},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body LoopbackAddress
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// NetworkingLoopbackAddressDelete: Delete a loopback address
+func (c *Client) NetworkingLoopbackAddressDelete(params NetworkingLoopbackAddressDeleteParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"DELETE",
+		resolveRelative(c.server, "/v1/system/networking/loopback-address/{{.rack_id}}/{{.switch_location}}/{{.address}}/{{.subnet_mask}}"),
+		map[string]string{
+			"address":         params.Address,
+			"rack_id":         params.RackId,
+			"subnet_mask":     strconv.Itoa(params.SubnetMask),
+			"switch_location": string(params.SwitchLocation),
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// NetworkingSwitchPortSettingsList: List switch port settings
+//
+// To iterate over all pages, use the `NetworkingSwitchPortSettingsListAllPages` method, instead.
+func (c *Client) NetworkingSwitchPortSettingsList(params NetworkingSwitchPortSettingsListParams) (*SwitchPortSettingsResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/networking/switch-port-settings"),
+		map[string]string{},
+		map[string]string{
+			"limit":         strconv.Itoa(params.Limit),
+			"page_token":    params.PageToken,
+			"port_settings": string(params.PortSettings),
+			"sort_by":       string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SwitchPortSettingsResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// NetworkingSwitchPortSettingsListAllPages: List switch port settings
+//
+// This method is a wrapper around the `NetworkingSwitchPortSettingsList` method.
+// This method returns all the pages at once.
+func (c *Client) NetworkingSwitchPortSettingsListAllPages(params NetworkingSwitchPortSettingsListParams) (*[]SwitchPortSettings, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []SwitchPortSettings
+	params.PageToken = ""
+	params.Limit = 100
+	for {
+		page, err := c.NetworkingSwitchPortSettingsList(params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return &allPages, nil
+}
+
+// NetworkingSwitchPortSettingsCreate: Create switch port settings
+func (c *Client) NetworkingSwitchPortSettingsCreate(params NetworkingSwitchPortSettingsCreateParams) (*SwitchPortSettingsView, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := buildRequest(
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/system/networking/switch-port-settings"),
+		map[string]string{},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SwitchPortSettingsView
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// NetworkingSwitchPortSettingsDelete: Delete switch port settings
+func (c *Client) NetworkingSwitchPortSettingsDelete(params NetworkingSwitchPortSettingsDeleteParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"DELETE",
+		resolveRelative(c.server, "/v1/system/networking/switch-port-settings"),
+		map[string]string{},
+		map[string]string{
+			"port_settings": string(params.PortSettings),
+		},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// NetworkingSwitchPortSettingsView: Get information about a switch port
+func (c *Client) NetworkingSwitchPortSettingsView(params NetworkingSwitchPortSettingsViewParams) (*SwitchPortSettingsView, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/networking/switch-port-settings/{{.port}}"),
+		map[string]string{
+			"port": string(params.Port),
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SwitchPortSettingsView
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
 }
 
 // SystemPolicyView: Fetch the top-level IAM policy

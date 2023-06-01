@@ -39,6 +39,7 @@ fmt: ## Verifies all files have been `gofmt`ed.
 		exit 1; \
 	fi
 
+# TODO: install golint if it doesn't exist
 .PHONY: lint
 lint: ## Verifies `golint` passes.
 	@echo "+ $@"

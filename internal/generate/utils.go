@@ -122,6 +122,12 @@ func convertToValidGoType(property string, r *openapi3.SchemaRef) string {
 		return getReferenceSchema(r)
 	}
 
+	if r.Value.AdditionalProperties.Schema != nil {
+		if r.Value.AdditionalProperties.Schema.Ref != "" {
+			return getReferenceSchema(r.Value.AdditionalProperties.Schema)
+		}
+	}
+
 	// TODO: Handle AllOf
 	if r.Value.AllOf != nil {
 		if len(r.Value.AllOf) > 1 {
