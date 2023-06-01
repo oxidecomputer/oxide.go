@@ -189,29 +189,18 @@ func constructParamValidation(paths openapi3.Paths) []ValidationTemplate {
 				}
 
 				for _, p := range o.Parameters {
-					if p.Ref != "" {
-						fmt.Printf("[WARN] TODO: skipping parameter for %q, since it is a reference\n", p.Value.Name)
+					if !p.Value.Required {
 						continue
 					}
 
 					paramName := strcase.ToCamel(p.Value.Name)
 
-					if p.Value.In == "path" {
-						if p.Value.Schema.Value.Type == "integer" {
-							// If an a value is part of a path, our API requires it, so we can safely add it.
-							validationTpl.RequiredNums = append(validationTpl.RequiredNums, paramName)
-						} else {
-							// If an a value is part of a path, our API requires it, so we can safely add it.
-							validationTpl.RequiredStrings = append(validationTpl.RequiredStrings, paramName)
-							//	continue
-						}
+					if p.Value.Schema.Value.Type == "integer" {
+						validationTpl.RequiredNums = append(validationTpl.RequiredNums, paramName)
+						continue
 					}
 
-					if p.Value.In == "query" && p.Value.Required {
-						// TODO: For now all required values are strings, check for other types
-						validationTpl.RequiredStrings = append(validationTpl.RequiredStrings, paramName)
-						//	continue
-					}
+					validationTpl.RequiredStrings = append(validationTpl.RequiredStrings, paramName)
 				}
 
 				if o.RequestBody != nil {
