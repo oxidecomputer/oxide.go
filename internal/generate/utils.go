@@ -125,6 +125,12 @@ func convertToValidGoType(property string, r *openapi3.SchemaRef) string {
 	if r.Value.AdditionalProperties.Schema != nil {
 		if r.Value.AdditionalProperties.Schema.Ref != "" {
 			return getReferenceSchema(r.Value.AdditionalProperties.Schema)
+		} else if r.Value.AdditionalProperties.Schema.Value.Items.Ref != "" {
+			ref := getReferenceSchema(r.Value.AdditionalProperties.Schema.Value.Items)
+			if r.Value.AdditionalProperties.Schema.Value.Items.Value.Type == "array" {
+				return "[]" + ref
+			}
+			return ref
 		}
 	}
 

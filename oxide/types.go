@@ -225,11 +225,11 @@ type Certificate struct {
 
 // CertificateCreate is create-time parameters for a `Certificate`
 type CertificateCreate struct {
-	// Cert is pEM file containing public certificate chain
-	Cert        []string `json:"cert,omitempty" yaml:"cert,omitempty"`
-	Description string   `json:"description,omitempty" yaml:"description,omitempty"`
-	// Key is pEM file containing private key
-	Key []string `json:"key,omitempty" yaml:"key,omitempty"`
+	// Cert is pEM-formatted string containing public certificate chain
+	Cert        string `json:"cert,omitempty" yaml:"cert,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Key is pEM-formatted string containing private key
+	Key string `json:"key,omitempty" yaml:"key,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// Service is the service using this certificate
@@ -240,26 +240,6 @@ type CertificateCreate struct {
 type CertificateResultsPage struct {
 	// Items is list of items on this page of results
 	Items []Certificate `json:"items,omitempty" yaml:"items,omitempty"`
-	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
-}
-
-// ComponentUpdate is identity-related metadata that's included in "asset" public API objects (which generally have no name or description)
-type ComponentUpdate struct {
-	ComponentType UpdateableComponentType `json:"component_type,omitempty" yaml:"component_type,omitempty"`
-	// Id is unique, immutable, system-controlled identifier for each resource
-	Id string `json:"id,omitempty" yaml:"id,omitempty"`
-	// TimeCreated is timestamp when this resource was created
-	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
-	// TimeModified is timestamp when this resource was last modified
-	TimeModified *time.Time    `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
-	Version      SemverVersion `json:"version,omitempty" yaml:"version,omitempty"`
-}
-
-// ComponentUpdateResultsPage is a single page of results
-type ComponentUpdateResultsPage struct {
-	// Items is list of items on this page of results
-	Items []ComponentUpdate `json:"items,omitempty" yaml:"items,omitempty"`
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
@@ -773,9 +753,7 @@ type Image struct {
 
 // ImageCreate is create-time parameters for an `Image`
 type ImageCreate struct {
-	// BlockSize is block size in bytes
-	BlockSize   BlockSize `json:"block_size,omitempty" yaml:"block_size,omitempty"`
-	Description string    `json:"description,omitempty" yaml:"description,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// Os is the family of the operating system (e.g. Debian, Ubuntu, etc.)
@@ -799,8 +777,10 @@ type ImageSourceType string
 
 // ImageSourceUrl is the type definition for a ImageSourceUrl.
 type ImageSourceUrl struct {
-	Type ImageSourceType `json:"type,omitempty" yaml:"type,omitempty"`
-	Url  string          `json:"url,omitempty" yaml:"url,omitempty"`
+	// BlockSize is the block size in bytes
+	BlockSize BlockSize       `json:"block_size,omitempty" yaml:"block_size,omitempty"`
+	Type      ImageSourceType `json:"type,omitempty" yaml:"type,omitempty"`
+	Url       string          `json:"url,omitempty" yaml:"url,omitempty"`
 }
 
 // ImageSourceSnapshot is the type definition for a ImageSourceSnapshot.
@@ -816,6 +796,8 @@ type ImageSourceYouCanBootAnythingAsLongAsItsAlpine struct {
 
 // ImageSource is the source of the underlying image.
 type ImageSource struct {
+	// BlockSize is the block size in bytes
+	BlockSize BlockSize `json:"block_size,omitempty" yaml:"block_size,omitempty"`
 	// Type is the type definition for a Type.
 	Type ImageSourceType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Url is the type definition for a Url.
@@ -1072,6 +1054,7 @@ type IpPoolCreate struct {
 // IpPoolRange is the type definition for a IpPoolRange.
 type IpPoolRange struct {
 	Id          string     `json:"id,omitempty" yaml:"id,omitempty"`
+	IpPoolId    string     `json:"ip_pool_id,omitempty" yaml:"ip_pool_id,omitempty"`
 	Range       IpRange    `json:"range,omitempty" yaml:"range,omitempty"`
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 }
@@ -1208,6 +1191,9 @@ type NameOrIdSortMode string
 // NameSortMode is sort in increasing order of "name"
 type NameSortMode string
 
+// PaginationOrder is the order in which the client wants to page through the requested collection
+type PaginationOrder string
+
 // Password is passwords may be subject to additional constraints.
 type Password string
 
@@ -1215,7 +1201,6 @@ type Password string
 //
 // Physical disks reside in a particular sled and are used to store both Instance Disk data as well as internal metadata.
 type PhysicalDisk struct {
-	DiskType PhysicalDiskType `json:"disk_type,omitempty" yaml:"disk_type,omitempty"`
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id     string `json:"id,omitempty" yaml:"id,omitempty"`
 	Model  string `json:"model,omitempty" yaml:"model,omitempty"`
@@ -1236,9 +1221,6 @@ type PhysicalDiskResultsPage struct {
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
-
-// PhysicalDiskType is the type definition for a PhysicalDiskType.
-type PhysicalDiskType string
 
 // Project is view of a Project
 type Project struct {
@@ -1338,6 +1320,8 @@ type Route struct {
 	Dst IpNet `json:"dst,omitempty" yaml:"dst,omitempty"`
 	// Gw is the route gateway.
 	Gw string `json:"gw,omitempty" yaml:"gw,omitempty"`
+	// Vid is vLAN id the gateway is reachable over.
+	Vid int `json:"vid,omitempty" yaml:"vid,omitempty"`
 }
 
 // RouteConfig is route configuration data associated with a switch port configuration.
@@ -1543,9 +1527,6 @@ type SamlIdentityProviderCreate struct {
 	TechnicalContactEmail string `json:"technical_contact_email,omitempty" yaml:"technical_contact_email,omitempty"`
 }
 
-// SemverVersion is the type definition for a SemverVersion.
-type SemverVersion string
-
 // ServiceUsingCertificate is this certificate is intended for access to the external API.
 type ServiceUsingCertificate string
 
@@ -1561,6 +1542,10 @@ type Silo struct {
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 	// IdentityMode is how users and groups are managed in this Silo
 	IdentityMode SiloIdentityMode `json:"identity_mode,omitempty" yaml:"identity_mode,omitempty"`
+	// MappedFleetRoles is mapping of which Fleet roles are conferred by each Silo role
+	//
+	// The default is that no Fleet roles are conferred by any Silo roles unless there's a corresponding entry in this map.
+	MappedFleetRoles FleetRole `json:"mapped_fleet_roles,omitempty" yaml:"mapped_fleet_roles,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// TimeCreated is timestamp when this resource was created
@@ -1579,6 +1564,10 @@ type SiloCreate struct {
 	Discoverable   *bool  `json:"discoverable,omitempty" yaml:"discoverable,omitempty"`
 	// IdentityMode is describes how identities are managed and users are authenticated in this Silo
 	IdentityMode SiloIdentityMode `json:"identity_mode,omitempty" yaml:"identity_mode,omitempty"`
+	// MappedFleetRoles is mapping of which Fleet roles are conferred by each Silo role
+	//
+	// The default is that no Fleet roles are conferred by any Silo roles unless there's a corresponding entry in this map.
+	MappedFleetRoles FleetRole `json:"mapped_fleet_roles,omitempty" yaml:"mapped_fleet_roles,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// TlsCertificates is initial TLS certificates to be used for the new Silo's console and API endpoints.  These should be valid for the Silo's DNS name(s).
@@ -1697,8 +1686,8 @@ type Snapshot struct {
 // SnapshotCreate is create-time parameters for a `Snapshot`
 type SnapshotCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// Disk is the name of the disk to be snapshotted
-	Disk Name `json:"disk,omitempty" yaml:"disk,omitempty"`
+	// Disk is the disk to be snapshotted
+	Disk NameOrId `json:"disk,omitempty" yaml:"disk,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 }
@@ -1713,11 +1702,6 @@ type SnapshotResultsPage struct {
 
 // SnapshotState is the type definition for a SnapshotState.
 type SnapshotState string
-
-// SpoofLoginBody is the type definition for a SpoofLoginBody.
-type SpoofLoginBody struct {
-	Username string `json:"username,omitempty" yaml:"username,omitempty"`
-}
 
 // SshKey is view of an SSH Key
 type SshKey struct {
@@ -1889,6 +1873,8 @@ type SwitchPortRouteConfig struct {
 	InterfaceName string `json:"interface_name,omitempty" yaml:"interface_name,omitempty"`
 	// PortSettingsId is the port settings object this route configuration belongs to.
 	PortSettingsId string `json:"port_settings_id,omitempty" yaml:"port_settings_id,omitempty"`
+	// VlanId is the VLAN identifier for the route. Use this if the gateway is reachable over an 802.1Q tagged L2 segment.
+	VlanId int `json:"vlan_id,omitempty" yaml:"vlan_id,omitempty"`
 }
 
 // SwitchPortSettings is a switch port settings identity whose id may be used to view additional details.
@@ -1977,107 +1963,12 @@ type SwitchResultsPage struct {
 type SwitchVlanInterfaceConfig struct {
 	// InterfaceConfigId is the switch interface configuration this VLAN interface configuration belongs to.
 	InterfaceConfigId string `json:"interface_config_id,omitempty" yaml:"interface_config_id,omitempty"`
-	// Vid is the virtual network id (VID) that distinguishes this interface and is used for producing and consuming 802.1Q Ethernet tags. This field has a maximum value of 4095 as 802.1Q tags are twelve bits.
-	Vid int `json:"vid,omitempty" yaml:"vid,omitempty"`
+	// VlanId is the virtual network id for this interface that is used for producing and consuming 802.1Q Ethernet tags. This field has a maximum value of 4095 as 802.1Q tags are twelve bits.
+	VlanId int `json:"vlan_id,omitempty" yaml:"vlan_id,omitempty"`
 }
 
 // SystemMetricName is the type definition for a SystemMetricName.
 type SystemMetricName string
-
-// SystemUpdate is identity-related metadata that's included in "asset" public API objects (which generally have no name or description)
-type SystemUpdate struct {
-	// Id is unique, immutable, system-controlled identifier for each resource
-	Id string `json:"id,omitempty" yaml:"id,omitempty"`
-	// TimeCreated is timestamp when this resource was created
-	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
-	// TimeModified is timestamp when this resource was last modified
-	TimeModified *time.Time    `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
-	Version      SemverVersion `json:"version,omitempty" yaml:"version,omitempty"`
-}
-
-// SystemUpdateResultsPage is a single page of results
-type SystemUpdateResultsPage struct {
-	// Items is list of items on this page of results
-	Items []SystemUpdate `json:"items,omitempty" yaml:"items,omitempty"`
-	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
-}
-
-// SystemUpdateStart is the type definition for a SystemUpdateStart.
-type SystemUpdateStart struct {
-	Version SemverVersion `json:"version,omitempty" yaml:"version,omitempty"`
-}
-
-// SystemVersion is the type definition for a SystemVersion.
-type SystemVersion struct {
-	Status       UpdateStatus `json:"status,omitempty" yaml:"status,omitempty"`
-	VersionRange VersionRange `json:"version_range,omitempty" yaml:"version_range,omitempty"`
-}
-
-// UpdateDeployment is identity-related metadata that's included in "asset" public API objects (which generally have no name or description)
-type UpdateDeployment struct {
-	// Id is unique, immutable, system-controlled identifier for each resource
-	Id     string       `json:"id,omitempty" yaml:"id,omitempty"`
-	Status UpdateStatus `json:"status,omitempty" yaml:"status,omitempty"`
-	// TimeCreated is timestamp when this resource was created
-	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
-	// TimeModified is timestamp when this resource was last modified
-	TimeModified *time.Time    `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
-	Version      SemverVersion `json:"version,omitempty" yaml:"version,omitempty"`
-}
-
-// UpdateDeploymentResultsPage is a single page of results
-type UpdateDeploymentResultsPage struct {
-	// Items is list of items on this page of results
-	Items []UpdateDeployment `json:"items,omitempty" yaml:"items,omitempty"`
-	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
-}
-
-// UpdateStatusStatus is the type definition for a UpdateStatusStatus.
-type UpdateStatusStatus string
-
-// UpdateStatusUpdating is the type definition for a UpdateStatusUpdating.
-type UpdateStatusUpdating struct {
-	Status UpdateStatusStatus `json:"status,omitempty" yaml:"status,omitempty"`
-}
-
-// UpdateStatusSteady is the type definition for a UpdateStatusSteady.
-type UpdateStatusSteady struct {
-	Status UpdateStatusStatus `json:"status,omitempty" yaml:"status,omitempty"`
-}
-
-// UpdateStatus is the type definition for a UpdateStatus.
-type UpdateStatus struct {
-	// Status is the type definition for a Status.
-	Status UpdateStatusStatus `json:"status,omitempty" yaml:"status,omitempty"`
-}
-
-// UpdateableComponent is identity-related metadata that's included in "asset" public API objects (which generally have no name or description)
-type UpdateableComponent struct {
-	ComponentType UpdateableComponentType `json:"component_type,omitempty" yaml:"component_type,omitempty"`
-	DeviceId      string                  `json:"device_id,omitempty" yaml:"device_id,omitempty"`
-	// Id is unique, immutable, system-controlled identifier for each resource
-	Id            string        `json:"id,omitempty" yaml:"id,omitempty"`
-	Status        UpdateStatus  `json:"status,omitempty" yaml:"status,omitempty"`
-	SystemVersion SemverVersion `json:"system_version,omitempty" yaml:"system_version,omitempty"`
-	// TimeCreated is timestamp when this resource was created
-	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
-	// TimeModified is timestamp when this resource was last modified
-	TimeModified *time.Time    `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
-	Version      SemverVersion `json:"version,omitempty" yaml:"version,omitempty"`
-}
-
-// UpdateableComponentResultsPage is a single page of results
-type UpdateableComponentResultsPage struct {
-	// Items is list of items on this page of results
-	Items []UpdateableComponent `json:"items,omitempty" yaml:"items,omitempty"`
-	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
-}
-
-// UpdateableComponentType is the type definition for a UpdateableComponentType.
-type UpdateableComponentType string
 
 // User is view of a User
 type User struct {
@@ -2160,12 +2051,6 @@ type UsernamePasswordCredentials struct {
 	Password Password `json:"password,omitempty" yaml:"password,omitempty"`
 	// Username is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Username UserId `json:"username,omitempty" yaml:"username,omitempty"`
-}
-
-// VersionRange is the type definition for a VersionRange.
-type VersionRange struct {
-	High SemverVersion `json:"high,omitempty" yaml:"high,omitempty"`
-	Low  SemverVersion `json:"low,omitempty" yaml:"low,omitempty"`
 }
 
 // Vpc is view of a VPC
@@ -2491,17 +2376,6 @@ type DeviceAccessTokenParams struct {
 	Body io.Reader `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
-// LoginSpoofParams is the request parameters for LoginSpoof
-type LoginSpoofParams struct {
-	Body *SpoofLoginBody `json:"body,omitempty" yaml:"body,omitempty"`
-}
-
-// LoginSamlBeginParams is the request parameters for LoginSamlBegin
-type LoginSamlBeginParams struct {
-	ProviderName Name `json:"provider_name,omitempty" yaml:"provider_name,omitempty"`
-	SiloName     Name `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
-}
-
 // LoginSamlParams is the request parameters for LoginSaml
 type LoginSamlParams struct {
 	ProviderName Name      `json:"provider_name,omitempty" yaml:"provider_name,omitempty"`
@@ -2592,13 +2466,14 @@ type DiskImportBlocksFromUrlParams struct {
 
 // DiskMetricsListParams is the request parameters for DiskMetricsList
 type DiskMetricsListParams struct {
-	Disk      NameOrId       `json:"disk,omitempty" yaml:"disk,omitempty"`
-	Metric    DiskMetricName `json:"metric,omitempty" yaml:"metric,omitempty"`
-	EndTime   *time.Time     `json:"end_time,omitempty" yaml:"end_time,omitempty"`
-	Limit     int            `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string         `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	StartTime *time.Time     `json:"start_time,omitempty" yaml:"start_time,omitempty"`
-	Project   NameOrId       `json:"project,omitempty" yaml:"project,omitempty"`
+	Disk      NameOrId        `json:"disk,omitempty" yaml:"disk,omitempty"`
+	Metric    DiskMetricName  `json:"metric,omitempty" yaml:"metric,omitempty"`
+	EndTime   *time.Time      `json:"end_time,omitempty" yaml:"end_time,omitempty"`
+	Limit     int             `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Order     PaginationOrder `json:"order,omitempty" yaml:"order,omitempty"`
+	PageToken string          `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	StartTime *time.Time      `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+	Project   NameOrId        `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
 // GroupListParams is the request parameters for GroupList
@@ -2615,11 +2490,10 @@ type GroupViewParams struct {
 
 // ImageListParams is the request parameters for ImageList
 type ImageListParams struct {
-	IncludeSiloImages *bool            `json:"include_silo_images,omitempty" yaml:"include_silo_images,omitempty"`
-	Limit             int              `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken         string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	Project           NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
-	SortBy            NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
 
 // ImageCreateParams is the request parameters for ImageCreate
@@ -2748,6 +2622,20 @@ type InstanceStopParams struct {
 	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
 
+// ProjectIpPoolListParams is the request parameters for ProjectIpPoolList
+type ProjectIpPoolListParams struct {
+	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// ProjectIpPoolViewParams is the request parameters for ProjectIpPoolView
+type ProjectIpPoolViewParams struct {
+	Pool    NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
 // LoginLocalParams is the request parameters for LoginLocal
 type LoginLocalParams struct {
 	SiloName Name                         `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
@@ -2781,6 +2669,17 @@ type CurrentUserSshKeyDeleteParams struct {
 // CurrentUserSshKeyViewParams is the request parameters for CurrentUserSshKeyView
 type CurrentUserSshKeyViewParams struct {
 	SshKey NameOrId `json:"ssh_key,omitempty" yaml:"ssh_key,omitempty"`
+}
+
+// SiloMetricParams is the request parameters for SiloMetric
+type SiloMetricParams struct {
+	MetricName SystemMetricName `json:"metric_name,omitempty" yaml:"metric_name,omitempty"`
+	EndTime    *time.Time       `json:"end_time,omitempty" yaml:"end_time,omitempty"`
+	Limit      int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Order      PaginationOrder  `json:"order,omitempty" yaml:"order,omitempty"`
+	PageToken  string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	StartTime  *time.Time       `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+	Project    NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
 // InstanceNetworkInterfaceListParams is the request parameters for InstanceNetworkInterfaceList
@@ -3079,10 +2978,11 @@ type IpPoolRangeRemoveParams struct {
 type SystemMetricParams struct {
 	MetricName SystemMetricName `json:"metric_name,omitempty" yaml:"metric_name,omitempty"`
 	EndTime    *time.Time       `json:"end_time,omitempty" yaml:"end_time,omitempty"`
-	Id         string           `json:"id,omitempty" yaml:"id,omitempty"`
 	Limit      int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Order      PaginationOrder  `json:"order,omitempty" yaml:"order,omitempty"`
 	PageToken  string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	StartTime  *time.Time       `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+	Silo       NameOrId         `json:"silo,omitempty" yaml:"silo,omitempty"`
 }
 
 // NetworkingAddressLotListParams is the request parameters for NetworkingAddressLotList
@@ -3200,47 +3100,6 @@ type SiloPolicyViewParams struct {
 type SiloPolicyUpdateParams struct {
 	Silo NameOrId        `json:"silo,omitempty" yaml:"silo,omitempty"`
 	Body *SiloRolePolicy `json:"body,omitempty" yaml:"body,omitempty"`
-}
-
-// SystemComponentVersionListParams is the request parameters for SystemComponentVersionList
-type SystemComponentVersionListParams struct {
-	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
-}
-
-// UpdateDeploymentsListParams is the request parameters for UpdateDeploymentsList
-type UpdateDeploymentsListParams struct {
-	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
-}
-
-// UpdateDeploymentViewParams is the request parameters for UpdateDeploymentView
-type UpdateDeploymentViewParams struct {
-	Id string `json:"id,omitempty" yaml:"id,omitempty"`
-}
-
-// SystemUpdateStartParams is the request parameters for SystemUpdateStart
-type SystemUpdateStartParams struct {
-	Body *SystemUpdateStart `json:"body,omitempty" yaml:"body,omitempty"`
-}
-
-// SystemUpdateListParams is the request parameters for SystemUpdateList
-type SystemUpdateListParams struct {
-	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
-}
-
-// SystemUpdateViewParams is the request parameters for SystemUpdateView
-type SystemUpdateViewParams struct {
-	Version SemverVersion `json:"version,omitempty" yaml:"version,omitempty"`
-}
-
-// SystemUpdateComponentsListParams is the request parameters for SystemUpdateComponentsList
-type SystemUpdateComponentsListParams struct {
-	Version SemverVersion `json:"version,omitempty" yaml:"version,omitempty"`
 }
 
 // SiloUserListParams is the request parameters for SiloUserList
@@ -3476,27 +3335,6 @@ func (p *DeviceAuthConfirmParams) Validate() error {
 func (p *DeviceAccessTokenParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredObj(p.Body, "Body")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for LoginSpoofParams are set
-func (p *LoginSpoofParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for LoginSamlBeginParams are set
-func (p *LoginSamlBeginParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredStr(string(p.ProviderName), "ProviderName")
-	v.HasRequiredStr(string(p.SiloName), "SiloName")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -3880,6 +3718,25 @@ func (p *InstanceStopParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for ProjectIpPoolListParams are set
+func (p *ProjectIpPoolListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ProjectIpPoolViewParams are set
+func (p *ProjectIpPoolViewParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Pool), "Pool")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for LoginLocalParams are set
 func (p *LoginLocalParams) Validate() error {
 	v := new(Validator)
@@ -3933,6 +3790,16 @@ func (p *CurrentUserSshKeyDeleteParams) Validate() error {
 func (p *CurrentUserSshKeyViewParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.SshKey), "SshKey")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloMetricParams are set
+func (p *SiloMetricParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.MetricName), "MetricName")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4411,7 +4278,6 @@ func (p *IpPoolRangeRemoveParams) Validate() error {
 func (p *SystemMetricParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.MetricName), "MetricName")
-	v.HasRequiredStr(string(p.Id), "Id")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -4610,73 +4476,6 @@ func (p *SiloPolicyUpdateParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredObj(p.Body, "Body")
 	v.HasRequiredStr(string(p.Silo), "Silo")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for SystemComponentVersionListParams are set
-func (p *SystemComponentVersionListParams) Validate() error {
-	v := new(Validator)
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for UpdateDeploymentsListParams are set
-func (p *UpdateDeploymentsListParams) Validate() error {
-	v := new(Validator)
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for UpdateDeploymentViewParams are set
-func (p *UpdateDeploymentViewParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredStr(string(p.Id), "Id")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for SystemUpdateStartParams are set
-func (p *SystemUpdateStartParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for SystemUpdateListParams are set
-func (p *SystemUpdateListParams) Validate() error {
-	v := new(Validator)
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for SystemUpdateViewParams are set
-func (p *SystemUpdateViewParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredStr(string(p.Version), "Version")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for SystemUpdateComponentsListParams are set
-func (p *SystemUpdateComponentsListParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredStr(string(p.Version), "Version")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -5189,11 +4988,11 @@ const NameOrIdSortModeIdAscending NameOrIdSortMode = "id_ascending"
 // NameSortModeNameAscending represents the NameSortMode `"name_ascending"`.
 const NameSortModeNameAscending NameSortMode = "name_ascending"
 
-// PhysicalDiskTypeInternal represents the PhysicalDiskType `"internal"`.
-const PhysicalDiskTypeInternal PhysicalDiskType = "internal"
+// PaginationOrderAscending represents the PaginationOrder `"ascending"`.
+const PaginationOrderAscending PaginationOrder = "ascending"
 
-// PhysicalDiskTypeExternal represents the PhysicalDiskType `"external"`.
-const PhysicalDiskTypeExternal PhysicalDiskType = "external"
+// PaginationOrderDescending represents the PaginationOrder `"descending"`.
+const PaginationOrderDescending PaginationOrder = "descending"
 
 // ProjectRoleAdmin represents the ProjectRole `"admin"`.
 const ProjectRoleAdmin ProjectRole = "admin"
@@ -5299,48 +5098,6 @@ const SystemMetricNameCpusProvisioned SystemMetricName = "cpus_provisioned"
 
 // SystemMetricNameRamProvisioned represents the SystemMetricName `"ram_provisioned"`.
 const SystemMetricNameRamProvisioned SystemMetricName = "ram_provisioned"
-
-// UpdateStatusStatusUpdating represents the UpdateStatusStatus `"updating"`.
-const UpdateStatusStatusUpdating UpdateStatusStatus = "updating"
-
-// UpdateStatusStatusSteady represents the UpdateStatusStatus `"steady"`.
-const UpdateStatusStatusSteady UpdateStatusStatus = "steady"
-
-// UpdateableComponentTypeBootloaderForRot represents the UpdateableComponentType `"bootloader_for_rot"`.
-const UpdateableComponentTypeBootloaderForRot UpdateableComponentType = "bootloader_for_rot"
-
-// UpdateableComponentTypeBootloaderForSp represents the UpdateableComponentType `"bootloader_for_sp"`.
-const UpdateableComponentTypeBootloaderForSp UpdateableComponentType = "bootloader_for_sp"
-
-// UpdateableComponentTypeBootloaderForHostProc represents the UpdateableComponentType `"bootloader_for_host_proc"`.
-const UpdateableComponentTypeBootloaderForHostProc UpdateableComponentType = "bootloader_for_host_proc"
-
-// UpdateableComponentTypeHubrisForPscRot represents the UpdateableComponentType `"hubris_for_psc_rot"`.
-const UpdateableComponentTypeHubrisForPscRot UpdateableComponentType = "hubris_for_psc_rot"
-
-// UpdateableComponentTypeHubrisForPscSp represents the UpdateableComponentType `"hubris_for_psc_sp"`.
-const UpdateableComponentTypeHubrisForPscSp UpdateableComponentType = "hubris_for_psc_sp"
-
-// UpdateableComponentTypeHubrisForSidecarRot represents the UpdateableComponentType `"hubris_for_sidecar_rot"`.
-const UpdateableComponentTypeHubrisForSidecarRot UpdateableComponentType = "hubris_for_sidecar_rot"
-
-// UpdateableComponentTypeHubrisForSidecarSp represents the UpdateableComponentType `"hubris_for_sidecar_sp"`.
-const UpdateableComponentTypeHubrisForSidecarSp UpdateableComponentType = "hubris_for_sidecar_sp"
-
-// UpdateableComponentTypeHubrisForGimletRot represents the UpdateableComponentType `"hubris_for_gimlet_rot"`.
-const UpdateableComponentTypeHubrisForGimletRot UpdateableComponentType = "hubris_for_gimlet_rot"
-
-// UpdateableComponentTypeHubrisForGimletSp represents the UpdateableComponentType `"hubris_for_gimlet_sp"`.
-const UpdateableComponentTypeHubrisForGimletSp UpdateableComponentType = "hubris_for_gimlet_sp"
-
-// UpdateableComponentTypeHeliosHostPhase1 represents the UpdateableComponentType `"helios_host_phase1"`.
-const UpdateableComponentTypeHeliosHostPhase1 UpdateableComponentType = "helios_host_phase1"
-
-// UpdateableComponentTypeHeliosHostPhase2 represents the UpdateableComponentType `"helios_host_phase2"`.
-const UpdateableComponentTypeHeliosHostPhase2 UpdateableComponentType = "helios_host_phase2"
-
-// UpdateableComponentTypeHostOmicron represents the UpdateableComponentType `"host_omicron"`.
-const UpdateableComponentTypeHostOmicron UpdateableComponentType = "host_omicron"
 
 // UserPasswordUserPasswordValuePassword represents the UserPasswordUserPasswordValue `"password"`.
 const UserPasswordUserPasswordValuePassword UserPasswordUserPasswordValue = "password"
@@ -5569,10 +5326,10 @@ var NameSortModes = []NameSortMode{
 	NameSortModeNameAscending,
 }
 
-// PhysicalDiskTypes is the collection of all PhysicalDiskType values.
-var PhysicalDiskTypes = []PhysicalDiskType{
-	PhysicalDiskTypeExternal,
-	PhysicalDiskTypeInternal,
+// PaginationOrders is the collection of all PaginationOrder values.
+var PaginationOrders = []PaginationOrder{
+	PaginationOrderAscending,
+	PaginationOrderDescending,
 }
 
 // ProjectRoles is the collection of all ProjectRole values.
@@ -5652,28 +5409,6 @@ var SystemMetricNames = []SystemMetricName{
 	SystemMetricNameCpusProvisioned,
 	SystemMetricNameRamProvisioned,
 	SystemMetricNameVirtualDiskSpaceProvisioned,
-}
-
-// UpdateStatusStatuses is the collection of all UpdateStatusStatus values.
-var UpdateStatusStatuses = []UpdateStatusStatus{
-	UpdateStatusStatusSteady,
-	UpdateStatusStatusUpdating,
-}
-
-// UpdateableComponentTypes is the collection of all UpdateableComponentType values.
-var UpdateableComponentTypes = []UpdateableComponentType{
-	UpdateableComponentTypeBootloaderForHostProc,
-	UpdateableComponentTypeBootloaderForRot,
-	UpdateableComponentTypeBootloaderForSp,
-	UpdateableComponentTypeHeliosHostPhase1,
-	UpdateableComponentTypeHeliosHostPhase2,
-	UpdateableComponentTypeHostOmicron,
-	UpdateableComponentTypeHubrisForGimletRot,
-	UpdateableComponentTypeHubrisForGimletSp,
-	UpdateableComponentTypeHubrisForPscRot,
-	UpdateableComponentTypeHubrisForPscSp,
-	UpdateableComponentTypeHubrisForSidecarRot,
-	UpdateableComponentTypeHubrisForSidecarSp,
 }
 
 // UserPasswordUserPasswordValues is the collection of all UserPasswordUserPasswordValue values.
