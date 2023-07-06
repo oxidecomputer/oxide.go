@@ -14,42 +14,6 @@ import (
 	"strconv"
 )
 
-// LoginSamlBegin: Prompt user login
-// Either display a page asking a user for their credentials, or redirect them to their identity provider.
-func (c *Client) LoginSamlBegin(params LoginSamlBeginParams) error {
-	if err := params.Validate(); err != nil {
-		return err
-	}
-	// Create the request
-	req, err := buildRequest(
-		nil,
-		"GET",
-		resolveRelative(c.server, "/login/{{.silo_name}}/saml/{{.provider_name}}"),
-		map[string]string{
-			"provider_name": string(params.ProviderName),
-			"silo_name":     string(params.SiloName),
-		},
-		map[string]string{},
-	)
-	if err != nil {
-		return fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 // LoginSaml: Authenticate a user via SAML
 func (c *Client) LoginSaml(params LoginSamlParams) error {
 	if err := params.Validate(); err != nil {
@@ -724,6 +688,7 @@ func (c *Client) DiskMetricsList(params DiskMetricsListParams) (*MeasurementResu
 		map[string]string{
 			"end_time":   params.EndTime.String(),
 			"limit":      strconv.Itoa(params.Limit),
+			"order":      string(params.Order),
 			"page_token": params.PageToken,
 			"project":    string(params.Project),
 			"start_time": params.StartTime.String(),
@@ -920,11 +885,10 @@ func (c *Client) ImageList(params ImageListParams) (*ImageResultsPage, error) {
 		resolveRelative(c.server, "/v1/images"),
 		map[string]string{},
 		map[string]string{
-			"include_silo_images": strconv.FormatBool(*params.IncludeSiloImages),
-			"limit":               strconv.Itoa(params.Limit),
-			"page_token":          params.PageToken,
-			"project":             string(params.Project),
-			"sort_by":             string(params.SortBy),
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"project":    string(params.Project),
+			"sort_by":    string(params.SortBy),
 		},
 	)
 	if err != nil {
@@ -1939,6 +1903,129 @@ func (c *Client) InstanceStop(params InstanceStopParams) (*Instance, error) {
 	return &body, nil
 }
 
+// ProjectIpPoolList: List all IP Pools that can be used by a given project.
+//
+// To iterate over all pages, use the `ProjectIpPoolListAllPages` method, instead.
+func (c *Client) ProjectIpPoolList(params ProjectIpPoolListParams) (*IpPoolResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/ip-pools"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"project":    string(params.Project),
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body IpPoolResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// ProjectIpPoolListAllPages: List all IP Pools that can be used by a given project.
+//
+// This method is a wrapper around the `ProjectIpPoolList` method.
+// This method returns all the pages at once.
+func (c *Client) ProjectIpPoolListAllPages(params ProjectIpPoolListParams) (*[]IpPool, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []IpPool
+	params.PageToken = ""
+	params.Limit = 100
+	for {
+		page, err := c.ProjectIpPoolList(params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return &allPages, nil
+}
+
+// ProjectIpPoolView: Fetch an IP pool
+func (c *Client) ProjectIpPoolView(params ProjectIpPoolViewParams) (*IpPool, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/ip-pools/{{.pool}}"),
+		map[string]string{
+			"pool": string(params.Pool),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body IpPool
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
 // LoginLocal: Authenticate a user via username and password
 func (c *Client) LoginLocal(params LoginLocalParams) error {
 	if err := params.Validate(); err != nil {
@@ -2300,6 +2387,86 @@ func (c *Client) CurrentUserSshKeyDelete(params CurrentUserSshKeyDeleteParams) e
 	}
 
 	return nil
+}
+
+// SiloMetric: Access metrics data
+//
+// To iterate over all pages, use the `SiloMetricAllPages` method, instead.
+func (c *Client) SiloMetric(params SiloMetricParams) (*MeasurementResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := buildRequest(
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/metrics/{{.metric_name}}"),
+		map[string]string{
+			"metric_name": string(params.MetricName),
+		},
+		map[string]string{
+			"end_time":   params.EndTime.String(),
+			"limit":      strconv.Itoa(params.Limit),
+			"order":      string(params.Order),
+			"page_token": params.PageToken,
+			"project":    string(params.Project),
+			"start_time": params.StartTime.String(),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Check the response.
+	if err := checkResponse(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body MeasurementResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SiloMetricAllPages: Access metrics data
+//
+// This method is a wrapper around the `SiloMetric` method.
+// This method returns all the pages at once.
+func (c *Client) SiloMetricAllPages(params SiloMetricParams) (*[]Measurement, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []Measurement
+	params.PageToken = ""
+	params.Limit = 100
+	for {
+		page, err := c.SiloMetric(params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return &allPages, nil
 }
 
 // InstanceNetworkInterfaceList: List network interfaces
@@ -4914,9 +5081,10 @@ func (c *Client) SystemMetric(params SystemMetricParams) (*MeasurementResultsPag
 		},
 		map[string]string{
 			"end_time":   params.EndTime.String(),
-			"id":         params.Id,
 			"limit":      strconv.Itoa(params.Limit),
+			"order":      string(params.Order),
 			"page_token": params.PageToken,
+			"silo":       string(params.Silo),
 			"start_time": params.StartTime.String(),
 		},
 	)
@@ -6087,515 +6255,7 @@ func (c *Client) SiloPolicyUpdate(params SiloPolicyUpdateParams) (*SiloRolePolic
 	return &body, nil
 }
 
-// SystemComponentVersionList: View version and update status of component tree
-//
-// To iterate over all pages, use the `SystemComponentVersionListAllPages` method, instead.
-func (c *Client) SystemComponentVersionList(params SystemComponentVersionListParams) (*UpdateableComponentResultsPage, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Create the request
-	req, err := buildRequest(
-		nil,
-		"GET",
-		resolveRelative(c.server, "/v1/system/update/components"),
-		map[string]string{},
-		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body UpdateableComponentResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// SystemComponentVersionListAllPages: View version and update status of component tree
-//
-// This method is a wrapper around the `SystemComponentVersionList` method.
-// This method returns all the pages at once.
-func (c *Client) SystemComponentVersionListAllPages(params SystemComponentVersionListParams) (*[]UpdateableComponent, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	var allPages []UpdateableComponent
-	params.PageToken = ""
-	params.Limit = 100
-	for {
-		page, err := c.SystemComponentVersionList(params)
-		if err != nil {
-			return nil, err
-		}
-		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == params.PageToken {
-			break
-		}
-		params.PageToken = page.NextPage
-	}
-
-	return &allPages, nil
-}
-
-// UpdateDeploymentsList: List all update deployments
-//
-// To iterate over all pages, use the `UpdateDeploymentsListAllPages` method, instead.
-func (c *Client) UpdateDeploymentsList(params UpdateDeploymentsListParams) (*UpdateDeploymentResultsPage, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Create the request
-	req, err := buildRequest(
-		nil,
-		"GET",
-		resolveRelative(c.server, "/v1/system/update/deployments"),
-		map[string]string{},
-		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body UpdateDeploymentResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// UpdateDeploymentsListAllPages: List all update deployments
-//
-// This method is a wrapper around the `UpdateDeploymentsList` method.
-// This method returns all the pages at once.
-func (c *Client) UpdateDeploymentsListAllPages(params UpdateDeploymentsListParams) (*[]UpdateDeployment, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	var allPages []UpdateDeployment
-	params.PageToken = ""
-	params.Limit = 100
-	for {
-		page, err := c.UpdateDeploymentsList(params)
-		if err != nil {
-			return nil, err
-		}
-		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == params.PageToken {
-			break
-		}
-		params.PageToken = page.NextPage
-	}
-
-	return &allPages, nil
-}
-
-// UpdateDeploymentView: Fetch a system update deployment
-func (c *Client) UpdateDeploymentView(params UpdateDeploymentViewParams) (*UpdateDeployment, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Create the request
-	req, err := buildRequest(
-		nil,
-		"GET",
-		resolveRelative(c.server, "/v1/system/update/deployments/{{.id}}"),
-		map[string]string{
-			"id": params.Id,
-		},
-		map[string]string{},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body UpdateDeployment
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// SystemUpdateRefresh: Refresh update data
-func (c *Client) SystemUpdateRefresh() error {
-	// Create the request
-	req, err := buildRequest(
-		nil,
-		"POST",
-		resolveRelative(c.server, "/v1/system/update/refresh"),
-		map[string]string{},
-		map[string]string{},
-	)
-	if err != nil {
-		return fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// SystemUpdateStart: Start system update
-func (c *Client) SystemUpdateStart(params SystemUpdateStartParams) (*UpdateDeployment, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
-
-	// Create the request
-	req, err := buildRequest(
-		b,
-		"POST",
-		resolveRelative(c.server, "/v1/system/update/start"),
-		map[string]string{},
-		map[string]string{},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body UpdateDeployment
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// SystemUpdateStop: Stop system update
-// If there is no update in progress, do nothing.
-func (c *Client) SystemUpdateStop() error {
-	// Create the request
-	req, err := buildRequest(
-		nil,
-		"POST",
-		resolveRelative(c.server, "/v1/system/update/stop"),
-		map[string]string{},
-		map[string]string{},
-	)
-	if err != nil {
-		return fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// SystemUpdateList: List all updates
-//
-// To iterate over all pages, use the `SystemUpdateListAllPages` method, instead.
-func (c *Client) SystemUpdateList(params SystemUpdateListParams) (*SystemUpdateResultsPage, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Create the request
-	req, err := buildRequest(
-		nil,
-		"GET",
-		resolveRelative(c.server, "/v1/system/update/updates"),
-		map[string]string{},
-		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body SystemUpdateResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// SystemUpdateListAllPages: List all updates
-//
-// This method is a wrapper around the `SystemUpdateList` method.
-// This method returns all the pages at once.
-func (c *Client) SystemUpdateListAllPages(params SystemUpdateListParams) (*[]SystemUpdate, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	var allPages []SystemUpdate
-	params.PageToken = ""
-	params.Limit = 100
-	for {
-		page, err := c.SystemUpdateList(params)
-		if err != nil {
-			return nil, err
-		}
-		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == params.PageToken {
-			break
-		}
-		params.PageToken = page.NextPage
-	}
-
-	return &allPages, nil
-}
-
-// SystemUpdateView: View system update
-func (c *Client) SystemUpdateView(params SystemUpdateViewParams) (*SystemUpdate, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Create the request
-	req, err := buildRequest(
-		nil,
-		"GET",
-		resolveRelative(c.server, "/v1/system/update/updates/{{.version}}"),
-		map[string]string{
-			"version": string(params.Version),
-		},
-		map[string]string{},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body SystemUpdate
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// SystemUpdateComponentsList: View system update component tree
-func (c *Client) SystemUpdateComponentsList(params SystemUpdateComponentsListParams) (*ComponentUpdateResultsPage, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Create the request
-	req, err := buildRequest(
-		nil,
-		"GET",
-		resolveRelative(c.server, "/v1/system/update/updates/{{.version}}/components"),
-		map[string]string{
-			"version": string(params.Version),
-		},
-		map[string]string{},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body ComponentUpdateResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// SystemVersion: View system version and update status
-func (c *Client) SystemVersion() (*SystemVersion, error) {
-	// Create the request
-	req, err := buildRequest(
-		nil,
-		"GET",
-		resolveRelative(c.server, "/v1/system/update/version"),
-		map[string]string{},
-		map[string]string{},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body SystemVersion
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// SiloUserList: List users in a silo
+// SiloUserList: List built-in (system) users in a silo
 //
 // To iterate over all pages, use the `SiloUserListAllPages` method, instead.
 func (c *Client) SiloUserList(params SiloUserListParams) (*UserResultsPage, error) {
@@ -6645,7 +6305,7 @@ func (c *Client) SiloUserList(params SiloUserListParams) (*UserResultsPage, erro
 	return &body, nil
 }
 
-// SiloUserListAllPages: List users in a silo
+// SiloUserListAllPages: List built-in (system) users in a silo
 //
 // This method is a wrapper around the `SiloUserList` method.
 // This method returns all the pages at once.
@@ -6791,7 +6451,7 @@ func (c *Client) UserBuiltinView(params UserBuiltinViewParams) (*UserBuiltin, er
 	return &body, nil
 }
 
-// SiloUserView: Fetch a user
+// SiloUserView: Fetch a built-in (system) user
 func (c *Client) SiloUserView(params SiloUserViewParams) (*User, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
