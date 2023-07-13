@@ -5132,14 +5132,14 @@ const VpcFirewallRuleHostFilterTypeIp VpcFirewallRuleHostFilterType = "ip"
 // VpcFirewallRuleHostFilterTypeIpNet represents the VpcFirewallRuleHostFilterType `"ip_net"`.
 const VpcFirewallRuleHostFilterTypeIpNet VpcFirewallRuleHostFilterType = "ip_net"
 
-// VpcFirewallRuleProtocolTCP represents the VpcFirewallRuleProtocol `"TCP"`.
-const VpcFirewallRuleProtocolTCP VpcFirewallRuleProtocol = "TCP"
+// VpcFirewallRuleProtocolTcp represents the VpcFirewallRuleProtocol `"TCP"`.
+const VpcFirewallRuleProtocolTcp VpcFirewallRuleProtocol = "TCP"
 
-// VpcFirewallRuleProtocolUDP represents the VpcFirewallRuleProtocol `"UDP"`.
-const VpcFirewallRuleProtocolUDP VpcFirewallRuleProtocol = "UDP"
+// VpcFirewallRuleProtocolUdp represents the VpcFirewallRuleProtocol `"UDP"`.
+const VpcFirewallRuleProtocolUdp VpcFirewallRuleProtocol = "UDP"
 
-// VpcFirewallRuleProtocolICMP represents the VpcFirewallRuleProtocol `"ICMP"`.
-const VpcFirewallRuleProtocolICMP VpcFirewallRuleProtocol = "ICMP"
+// VpcFirewallRuleProtocolIcmp represents the VpcFirewallRuleProtocol `"ICMP"`.
+const VpcFirewallRuleProtocolIcmp VpcFirewallRuleProtocol = "ICMP"
 
 // VpcFirewallRuleStatusDisabled represents the VpcFirewallRuleStatus `"disabled"`.
 const VpcFirewallRuleStatusDisabled VpcFirewallRuleStatus = "disabled"
@@ -5440,9 +5440,9 @@ var VpcFirewallRuleHostFilterTypes = []VpcFirewallRuleHostFilterType{
 
 // VpcFirewallRuleProtocols is the collection of all VpcFirewallRuleProtocol values.
 var VpcFirewallRuleProtocols = []VpcFirewallRuleProtocol{
-	VpcFirewallRuleProtocolICMP,
-	VpcFirewallRuleProtocolTCP,
-	VpcFirewallRuleProtocolUDP,
+	VpcFirewallRuleProtocolIcmp,
+	VpcFirewallRuleProtocolTcp,
+	VpcFirewallRuleProtocolUdp,
 }
 
 // VpcFirewallRuleStatuses is the collection of all VpcFirewallRuleStatus values.
