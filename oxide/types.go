@@ -1037,7 +1037,8 @@ type IpPool struct {
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name   Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	SiloId string `json:"silo_id,omitempty" yaml:"silo_id,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
@@ -1047,8 +1048,12 @@ type IpPool struct {
 // IpPoolCreate is create-time parameters for an `IpPool`
 type IpPoolCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// IsDefault is whether the IP pool is considered a default pool for its scope (fleet, or silo). If a pool is marked default and is associated with a silo, instances created in that silo will draw IPs from that pool unless another pool is specified at instance create time.
+	IsDefault *bool `json:"is_default,omitempty" yaml:"is_default,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	// Silo is if an IP pool is associated with a silo, instance IP allocations in that silo can draw from that pool.
+	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 }
 
 // IpPoolRange is the type definition for a IpPoolRange.
@@ -1145,6 +1150,8 @@ type LoopbackAddressCreate struct {
 	Address string `json:"address,omitempty" yaml:"address,omitempty"`
 	// AddressLot is the name or id of the address lot this loopback address will pull an address from.
 	AddressLot NameOrId `json:"address_lot,omitempty" yaml:"address_lot,omitempty"`
+	// Anycast is address is an anycast address. This allows the address to be assigned to multiple locations simultaneously.
+	Anycast *bool `json:"anycast,omitempty" yaml:"anycast,omitempty"`
 	// Mask is the subnet mask to use for the address.
 	Mask int `json:"mask,omitempty" yaml:"mask,omitempty"`
 	// RackId is the containing the switch this loopback address will be configured on.
@@ -1201,6 +1208,8 @@ type Password string
 //
 // Physical disks reside in a particular sled and are used to store both Instance Disk data as well as internal metadata.
 type PhysicalDisk struct {
+	// FormFactor is describes the form factor of physical disks.
+	FormFactor PhysicalDiskKind `json:"form_factor,omitempty" yaml:"form_factor,omitempty"`
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id     string `json:"id,omitempty" yaml:"id,omitempty"`
 	Model  string `json:"model,omitempty" yaml:"model,omitempty"`
@@ -1213,6 +1222,9 @@ type PhysicalDisk struct {
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
 	Vendor       string     `json:"vendor,omitempty" yaml:"vendor,omitempty"`
 }
+
+// PhysicalDiskKind is describes the form factor of physical disks.
+type PhysicalDiskKind string
 
 // PhysicalDiskResultsPage is a single page of results
 type PhysicalDiskResultsPage struct {
@@ -2007,34 +2019,34 @@ type UserBuiltinResultsPage struct {
 type UserCreate struct {
 	// ExternalId is username used to log in
 	ExternalId UserId `json:"external_id,omitempty" yaml:"external_id,omitempty"`
-	// Password is password used to log in
+	// Password is how to set the user's login password
 	Password UserPassword `json:"password,omitempty" yaml:"password,omitempty"`
 }
 
 // UserId is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 type UserId string
 
-// UserPasswordUserPasswordValue is the type definition for a UserPasswordUserPasswordValue.
-type UserPasswordUserPasswordValue string
+// UserPasswordMode is the type definition for a UserPasswordMode.
+type UserPasswordMode string
 
 // UserPasswordPassword is sets the user's password to the provided value
 type UserPasswordPassword struct {
-	// Details is passwords may be subject to additional constraints.
-	Details           Password                      `json:"details,omitempty" yaml:"details,omitempty"`
-	UserPasswordValue UserPasswordUserPasswordValue `json:"user_password_value,omitempty" yaml:"user_password_value,omitempty"`
+	Mode UserPasswordMode `json:"mode,omitempty" yaml:"mode,omitempty"`
+	// Value is passwords may be subject to additional constraints.
+	Value Password `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-// UserPasswordInvalidPassword is invalidates any current password (disabling password authentication)
-type UserPasswordInvalidPassword struct {
-	UserPasswordValue UserPasswordUserPasswordValue `json:"user_password_value,omitempty" yaml:"user_password_value,omitempty"`
+// UserPasswordLoginDisallowed is invalidates any current password (disabling password authentication)
+type UserPasswordLoginDisallowed struct {
+	Mode UserPasswordMode `json:"mode,omitempty" yaml:"mode,omitempty"`
 }
 
 // UserPassword is parameters for setting a user's password
 type UserPassword struct {
-	// Details is passwords may be subject to additional constraints.
-	Details Password `json:"details,omitempty" yaml:"details,omitempty"`
-	// UserPasswordValue is the type definition for a UserPasswordValue.
-	UserPasswordValue UserPasswordUserPasswordValue `json:"user_password_value,omitempty" yaml:"user_password_value,omitempty"`
+	// Mode is the type definition for a Mode.
+	Mode UserPasswordMode `json:"mode,omitempty" yaml:"mode,omitempty"`
+	// Value is passwords may be subject to additional constraints.
+	Value Password `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // UserResultsPage is a single page of results
@@ -4994,6 +5006,12 @@ const PaginationOrderAscending PaginationOrder = "ascending"
 // PaginationOrderDescending represents the PaginationOrder `"descending"`.
 const PaginationOrderDescending PaginationOrder = "descending"
 
+// PhysicalDiskKindM2 represents the PhysicalDiskKind `"m2"`.
+const PhysicalDiskKindM2 PhysicalDiskKind = "m2"
+
+// PhysicalDiskKindU2 represents the PhysicalDiskKind `"u2"`.
+const PhysicalDiskKindU2 PhysicalDiskKind = "u2"
+
 // ProjectRoleAdmin represents the ProjectRole `"admin"`.
 const ProjectRoleAdmin ProjectRole = "admin"
 
@@ -5099,11 +5117,11 @@ const SystemMetricNameCpusProvisioned SystemMetricName = "cpus_provisioned"
 // SystemMetricNameRamProvisioned represents the SystemMetricName `"ram_provisioned"`.
 const SystemMetricNameRamProvisioned SystemMetricName = "ram_provisioned"
 
-// UserPasswordUserPasswordValuePassword represents the UserPasswordUserPasswordValue `"password"`.
-const UserPasswordUserPasswordValuePassword UserPasswordUserPasswordValue = "password"
+// UserPasswordModePassword represents the UserPasswordMode `"password"`.
+const UserPasswordModePassword UserPasswordMode = "password"
 
-// UserPasswordUserPasswordValueInvalidPassword represents the UserPasswordUserPasswordValue `"invalid_password"`.
-const UserPasswordUserPasswordValueInvalidPassword UserPasswordUserPasswordValue = "invalid_password"
+// UserPasswordModeLoginDisallowed represents the UserPasswordMode `"login_disallowed"`.
+const UserPasswordModeLoginDisallowed UserPasswordMode = "login_disallowed"
 
 // VpcFirewallRuleActionAllow represents the VpcFirewallRuleAction `"allow"`.
 const VpcFirewallRuleActionAllow VpcFirewallRuleAction = "allow"
@@ -5332,6 +5350,12 @@ var PaginationOrders = []PaginationOrder{
 	PaginationOrderDescending,
 }
 
+// PhysicalDiskKinds is the collection of all PhysicalDiskKind values.
+var PhysicalDiskKinds = []PhysicalDiskKind{
+	PhysicalDiskKindM2,
+	PhysicalDiskKindU2,
+}
+
 // ProjectRoles is the collection of all ProjectRole values.
 var ProjectRoles = []ProjectRole{
 	ProjectRoleAdmin,
@@ -5411,10 +5435,10 @@ var SystemMetricNames = []SystemMetricName{
 	SystemMetricNameVirtualDiskSpaceProvisioned,
 }
 
-// UserPasswordUserPasswordValues is the collection of all UserPasswordUserPasswordValue values.
-var UserPasswordUserPasswordValues = []UserPasswordUserPasswordValue{
-	UserPasswordUserPasswordValueInvalidPassword,
-	UserPasswordUserPasswordValuePassword,
+// UserPasswordModes is the collection of all UserPasswordMode values.
+var UserPasswordModes = []UserPasswordMode{
+	UserPasswordModeLoginDisallowed,
+	UserPasswordModePassword,
 }
 
 // VpcFirewallRuleActions is the collection of all VpcFirewallRuleAction values.
