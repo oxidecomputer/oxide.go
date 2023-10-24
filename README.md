@@ -37,11 +37,13 @@ func main() {
 		panic(err)
 	}
 
-	resp, err := client.OrganizationCreate(
-		&oxide.OrganizationCreate{
-			Description: "sample org",
-			Name:        oxide.Name("sre"),
-		},
+	resp, err := client.ProjectCreate(
+		oxide.ProjectCreateParams{
+			Body: &oxide.ProjectCreate{
+				Description: "A sample project",
+				Name:        oxide.Name("my-project"),
+			},
+		}
 	)
 	if err != nil {
 		panic(err)
