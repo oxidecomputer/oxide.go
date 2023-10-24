@@ -202,10 +202,10 @@ type Binint64 struct {
 }
 
 // BlockSize is the type definition for a BlockSize.
-type BlockSize int64
+type BlockSize int
 
 // ByteCount is byte count to express memory or storage capacity.
-type ByteCount int64
+type ByteCount uint64
 
 // Certificate is view of a Certificate
 type Certificate struct {
@@ -848,7 +848,7 @@ type Instance struct {
 }
 
 // InstanceCpuCount is the number of CPUs in an Instance
-type InstanceCpuCount int64
+type InstanceCpuCount uint16
 
 // InstanceCreate is create-time parameters for an `Instance`
 type InstanceCreate struct {
