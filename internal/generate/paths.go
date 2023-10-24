@@ -144,7 +144,7 @@ func buildMethod(f *os.File, spec *openapi3.T, method string, path string, o *op
 	pInfo := buildParams(o, method, methodName)
 
 	// Adapt for ListAll methods
-	if isGetAllPages {
+	if isGetAllPages && len(pagedRespType) > 0 {
 		respType = pagedRespType
 	}
 
