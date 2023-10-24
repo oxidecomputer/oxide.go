@@ -385,26 +385,15 @@ func populateTypeTemplates(name string, s *openapi3.Schema, enumFieldName string
 	typeTpl := TypeTemplate{}
 
 	switch ot := getObjectType(s); ot {
-	case "string":
-		typeTpl.Description = formatTypeDescription(typeName, s)
-		typeTpl.Type = "string"
-		typeTpl.Name = typeName
 	case "string_enum":
 		enums, tt, et := createStringEnum(s, collectEnumStringTypes, name, typeName)
 		types = append(types, tt...)
 		enumTypes = append(enumTypes, et...)
 		collectEnumStringTypes = enums
-	case "integer":
+	case "string", "*bool", "int", "int8", "int16", "int32", "int64", "uint", "uint8",
+		"uint16", "uint32", "uint64", "uintptr", "float32", "float64":
 		typeTpl.Description = formatTypeDescription(typeName, s)
-		typeTpl.Type = "int64"
-		typeTpl.Name = typeName
-	case "number":
-		typeTpl.Description = formatTypeDescription(typeName, s)
-		typeTpl.Type = "float64"
-		typeTpl.Name = typeName
-	case "boolean":
-		typeTpl.Description = formatTypeDescription(typeName, s)
-		typeTpl.Type = "bool"
+		typeTpl.Type = ot
 		typeTpl.Name = typeName
 	case "array":
 		typeTpl.Description = formatTypeDescription(typeName, s)
@@ -519,7 +508,6 @@ func createStringEnum(s *openapi3.Schema, stringEnums map[string][]string, name,
 		}
 
 		typeTpls = append(typeTpls, typeTpl)
-		//
 		stringEnums[singularTypename] = []string{}
 	}
 
@@ -677,6 +665,25 @@ func getObjectType(s *openapi3.Schema) string {
 	// TODO: Support enums of other types
 	if s.Type == "string" && len(s.Enum) > 0 {
 		return "string_enum"
+	}
+
+	if s.Type == "integer" {
+		if isNumericType(s.Format) {
+			return s.Format
+		}
+		return "int"
+	}
+
+	if s.Type == "number" {
+		if isNumericType(s.Format) {
+			return s.Format
+		}
+		return "float64"
+	}
+
+	if s.Type == "boolean" {
+		// Using a pointer here as the json encoder takes false as null
+		return "*bool"
 	}
 
 	if s.Type != "" {
