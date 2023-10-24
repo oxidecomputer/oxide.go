@@ -144,7 +144,7 @@ func buildMethod(f *os.File, spec *openapi3.T, method string, path string, o *op
 	pInfo := buildParams(o, method, methodName)
 
 	// Adapt for ListAll methods
-	if pInfo.isPageResult && isGetAllPages && len(pagedRespType) > 0 {
+	if isGetAllPages && len(pagedRespType) > 0 {
 		respType = pagedRespType
 	}
 
@@ -364,7 +364,7 @@ func buildParams(operation *openapi3.Operation, method, opID string) paramsInfo 
 			paramName = verifyNotAGoType(paramName)
 
 			// Check if we have a page result.
-			if isPageParam(paramName) && method == http.MethodGet {
+			if isPageParam(paramName) {
 				pInfo.isPageResult = true
 			}
 
