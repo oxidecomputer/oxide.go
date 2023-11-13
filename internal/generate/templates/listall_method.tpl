@@ -1,4 +1,4 @@
-{{template "description" .}}func (c *Client) {{.FunctionName}}({{.ParamsString}}) (*{{.ResponseType}}, error) { {{if .HasParams}}
+{{template "description" .}}func (c *Client) {{.FunctionName}}(ctx context.Context, {{.ParamsString}}) (*{{.ResponseType}}, error) { {{if .HasParams}}
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}{{end}}
@@ -6,7 +6,7 @@
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.{{.WrappedFunction}}(params)
+		page, err := c.{{.WrappedFunction}}(ctx, params)
 		if err != nil {
 			return nil, err
 		}

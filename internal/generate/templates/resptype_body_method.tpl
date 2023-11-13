@@ -1,4 +1,4 @@
-{{template "description" .}}func (c *Client) {{.FunctionName}}({{.ParamsString}}) (*{{.ResponseType}}, error) { {{if .HasParams}}
+{{template "description" .}}func (c *Client) {{.FunctionName}}(ctx context.Context, {{.ParamsString}}) (*{{.ResponseType}}, error) { {{if .HasParams}}
     if err := params.Validate(); err != nil {
 		return nil, err
 	}{{end}}{{if .IsAppJSON}}
@@ -11,6 +11,7 @@
 
     // Create the request
     req, err := buildRequest(
+        ctx,
         b, 
         "{{.HTTPMethod}}", 
         resolveRelative(c.server, "{{.Path}}"), 

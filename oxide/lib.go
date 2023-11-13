@@ -5,6 +5,7 @@
 package oxide
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -144,9 +145,9 @@ func (t userAgentTransport) RoundTrip(req *http.Request) (*http.Response, error)
 	return t.base.RoundTrip(&newReq)
 }
 
-func buildRequest(body io.Reader, method, uri string, params, queries map[string]string) (*http.Request, error) {
+func buildRequest(ctx context.Context, body io.Reader, method, uri string, params, queries map[string]string) (*http.Request, error) {
 	// Create the request.
-	req, err := http.NewRequest(method, uri, body)
+	req, err := http.NewRequestWithContext(ctx, method, uri, body)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %v", err)
 	}

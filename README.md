@@ -37,14 +37,15 @@ func main() {
 		panic(err)
 	}
 
-	resp, err := client.ProjectCreate(
-		oxide.ProjectCreateParams{
-			Body: &oxide.ProjectCreate{
-				Description: "A sample project",
-				Name:        oxide.Name("my-project"),
-			},
-		}
-	)
+	ctx := context.Background()
+	params := oxide.ProjectCreateParams{
+		Body: &oxide.ProjectCreate{
+			Description: "A sample project",
+			Name:        oxide.Name("my-project"),
+		},
+	}
+
+	resp, err := client.ProjectCreate(ctx, params)
 	if err != nil {
 		panic(err)
 	}
