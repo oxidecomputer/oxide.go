@@ -8,6 +8,7 @@ package oxide
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -15,7 +16,7 @@ import (
 )
 
 // LoginSaml: Authenticate a user via SAML
-func (c *Client) LoginSaml(params LoginSamlParams) error {
+func (c *Client) LoginSaml(ctx context.Context, params LoginSamlParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -23,6 +24,7 @@ func (c *Client) LoginSaml(params LoginSamlParams) error {
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"POST",
 		resolveRelative(c.server, "/login/{{.silo_name}}/saml/{{.provider_name}}"),
@@ -55,12 +57,13 @@ func (c *Client) LoginSaml(params LoginSamlParams) error {
 // Returns a list of TLS certificates used for the external API (for the current Silo).  These are sorted by creation date, with the most recent certificates appearing first.
 //
 // To iterate over all pages, use the `CertificateListAllPages` method, instead.
-func (c *Client) CertificateList(params CertificateListParams) (*CertificateResultsPage, error) {
+func (c *Client) CertificateList(ctx context.Context, params CertificateListParams) (*CertificateResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/certificates"),
@@ -106,7 +109,7 @@ func (c *Client) CertificateList(params CertificateListParams) (*CertificateResu
 //
 // This method is a wrapper around the `CertificateList` method.
 // This method returns all the pages at once.
-func (c *Client) CertificateListAllPages(params CertificateListParams) (*[]Certificate, error) {
+func (c *Client) CertificateListAllPages(ctx context.Context, params CertificateListParams) (*[]Certificate, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -114,7 +117,7 @@ func (c *Client) CertificateListAllPages(params CertificateListParams) (*[]Certi
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.CertificateList(params)
+		page, err := c.CertificateList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -130,7 +133,7 @@ func (c *Client) CertificateListAllPages(params CertificateListParams) (*[]Certi
 
 // CertificateCreate: Create a new system-wide x.509 certificate
 // This certificate is automatically used by the Oxide Control plane to serve external connections.
-func (c *Client) CertificateCreate(params CertificateCreateParams) (*Certificate, error) {
+func (c *Client) CertificateCreate(ctx context.Context, params CertificateCreateParams) (*Certificate, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -142,6 +145,7 @@ func (c *Client) CertificateCreate(params CertificateCreateParams) (*Certificate
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"POST",
 		resolveRelative(c.server, "/v1/certificates"),
@@ -180,12 +184,13 @@ func (c *Client) CertificateCreate(params CertificateCreateParams) (*Certificate
 
 // CertificateView: Fetch a certificate
 // Returns the details of a specific certificate
-func (c *Client) CertificateView(params CertificateViewParams) (*Certificate, error) {
+func (c *Client) CertificateView(ctx context.Context, params CertificateViewParams) (*Certificate, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/certificates/{{.certificate}}"),
@@ -226,12 +231,13 @@ func (c *Client) CertificateView(params CertificateViewParams) (*Certificate, er
 
 // CertificateDelete: Delete a certificate
 // Permanently delete a certificate. This operation cannot be undone.
-func (c *Client) CertificateDelete(params CertificateDeleteParams) error {
+func (c *Client) CertificateDelete(ctx context.Context, params CertificateDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"DELETE",
 		resolveRelative(c.server, "/v1/certificates/{{.certificate}}"),
@@ -262,12 +268,13 @@ func (c *Client) CertificateDelete(params CertificateDeleteParams) error {
 // DiskList: List disks
 //
 // To iterate over all pages, use the `DiskListAllPages` method, instead.
-func (c *Client) DiskList(params DiskListParams) (*DiskResultsPage, error) {
+func (c *Client) DiskList(ctx context.Context, params DiskListParams) (*DiskResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/disks"),
@@ -313,7 +320,7 @@ func (c *Client) DiskList(params DiskListParams) (*DiskResultsPage, error) {
 //
 // This method is a wrapper around the `DiskList` method.
 // This method returns all the pages at once.
-func (c *Client) DiskListAllPages(params DiskListParams) (*[]Disk, error) {
+func (c *Client) DiskListAllPages(ctx context.Context, params DiskListParams) (*[]Disk, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -321,7 +328,7 @@ func (c *Client) DiskListAllPages(params DiskListParams) (*[]Disk, error) {
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.DiskList(params)
+		page, err := c.DiskList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -336,7 +343,7 @@ func (c *Client) DiskListAllPages(params DiskListParams) (*[]Disk, error) {
 }
 
 // DiskCreate: Create a disk
-func (c *Client) DiskCreate(params DiskCreateParams) (*Disk, error) {
+func (c *Client) DiskCreate(ctx context.Context, params DiskCreateParams) (*Disk, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -348,6 +355,7 @@ func (c *Client) DiskCreate(params DiskCreateParams) (*Disk, error) {
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"POST",
 		resolveRelative(c.server, "/v1/disks"),
@@ -387,12 +395,13 @@ func (c *Client) DiskCreate(params DiskCreateParams) (*Disk, error) {
 }
 
 // DiskView: Fetch a disk
-func (c *Client) DiskView(params DiskViewParams) (*Disk, error) {
+func (c *Client) DiskView(ctx context.Context, params DiskViewParams) (*Disk, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/disks/{{.disk}}"),
@@ -434,12 +443,13 @@ func (c *Client) DiskView(params DiskViewParams) (*Disk, error) {
 }
 
 // DiskDelete: Delete a disk
-func (c *Client) DiskDelete(params DiskDeleteParams) error {
+func (c *Client) DiskDelete(ctx context.Context, params DiskDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"DELETE",
 		resolveRelative(c.server, "/v1/disks/{{.disk}}"),
@@ -470,7 +480,7 @@ func (c *Client) DiskDelete(params DiskDeleteParams) error {
 }
 
 // DiskBulkWriteImport: Import blocks into a disk
-func (c *Client) DiskBulkWriteImport(params DiskBulkWriteImportParams) error {
+func (c *Client) DiskBulkWriteImport(ctx context.Context, params DiskBulkWriteImportParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -482,6 +492,7 @@ func (c *Client) DiskBulkWriteImport(params DiskBulkWriteImportParams) error {
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"POST",
 		resolveRelative(c.server, "/v1/disks/{{.disk}}/bulk-write"),
@@ -513,12 +524,13 @@ func (c *Client) DiskBulkWriteImport(params DiskBulkWriteImportParams) error {
 
 // DiskBulkWriteImportStart: Start importing blocks into a disk
 // Start the process of importing blocks into a disk
-func (c *Client) DiskBulkWriteImportStart(params DiskBulkWriteImportStartParams) error {
+func (c *Client) DiskBulkWriteImportStart(ctx context.Context, params DiskBulkWriteImportStartParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"POST",
 		resolveRelative(c.server, "/v1/disks/{{.disk}}/bulk-write-start"),
@@ -550,12 +562,13 @@ func (c *Client) DiskBulkWriteImportStart(params DiskBulkWriteImportStartParams)
 
 // DiskBulkWriteImportStop: Stop importing blocks into a disk
 // Stop the process of importing blocks into a disk
-func (c *Client) DiskBulkWriteImportStop(params DiskBulkWriteImportStopParams) error {
+func (c *Client) DiskBulkWriteImportStop(ctx context.Context, params DiskBulkWriteImportStopParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"POST",
 		resolveRelative(c.server, "/v1/disks/{{.disk}}/bulk-write-stop"),
@@ -586,7 +599,7 @@ func (c *Client) DiskBulkWriteImportStop(params DiskBulkWriteImportStopParams) e
 }
 
 // DiskFinalizeImport: Confirm disk block import completion
-func (c *Client) DiskFinalizeImport(params DiskFinalizeImportParams) error {
+func (c *Client) DiskFinalizeImport(ctx context.Context, params DiskFinalizeImportParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -598,6 +611,7 @@ func (c *Client) DiskFinalizeImport(params DiskFinalizeImportParams) error {
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"POST",
 		resolveRelative(c.server, "/v1/disks/{{.disk}}/finalize"),
@@ -628,7 +642,7 @@ func (c *Client) DiskFinalizeImport(params DiskFinalizeImportParams) error {
 }
 
 // DiskImportBlocksFromUrl: Request to import blocks from URL
-func (c *Client) DiskImportBlocksFromUrl(params DiskImportBlocksFromUrlParams) error {
+func (c *Client) DiskImportBlocksFromUrl(ctx context.Context, params DiskImportBlocksFromUrlParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -640,6 +654,7 @@ func (c *Client) DiskImportBlocksFromUrl(params DiskImportBlocksFromUrlParams) e
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"POST",
 		resolveRelative(c.server, "/v1/disks/{{.disk}}/import"),
@@ -672,12 +687,13 @@ func (c *Client) DiskImportBlocksFromUrl(params DiskImportBlocksFromUrlParams) e
 // DiskMetricsList: Fetch disk metrics
 //
 // To iterate over all pages, use the `DiskMetricsListAllPages` method, instead.
-func (c *Client) DiskMetricsList(params DiskMetricsListParams) (*MeasurementResultsPage, error) {
+func (c *Client) DiskMetricsList(ctx context.Context, params DiskMetricsListParams) (*MeasurementResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/disks/{{.disk}}/metrics/{{.metric}}"),
@@ -728,7 +744,7 @@ func (c *Client) DiskMetricsList(params DiskMetricsListParams) (*MeasurementResu
 //
 // This method is a wrapper around the `DiskMetricsList` method.
 // This method returns all the pages at once.
-func (c *Client) DiskMetricsListAllPages(params DiskMetricsListParams) (*[]Measurement, error) {
+func (c *Client) DiskMetricsListAllPages(ctx context.Context, params DiskMetricsListParams) (*[]Measurement, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -736,7 +752,7 @@ func (c *Client) DiskMetricsListAllPages(params DiskMetricsListParams) (*[]Measu
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.DiskMetricsList(params)
+		page, err := c.DiskMetricsList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -753,12 +769,13 @@ func (c *Client) DiskMetricsListAllPages(params DiskMetricsListParams) (*[]Measu
 // GroupList: List groups
 //
 // To iterate over all pages, use the `GroupListAllPages` method, instead.
-func (c *Client) GroupList(params GroupListParams) (*GroupResultsPage, error) {
+func (c *Client) GroupList(ctx context.Context, params GroupListParams) (*GroupResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/groups"),
@@ -803,7 +820,7 @@ func (c *Client) GroupList(params GroupListParams) (*GroupResultsPage, error) {
 //
 // This method is a wrapper around the `GroupList` method.
 // This method returns all the pages at once.
-func (c *Client) GroupListAllPages(params GroupListParams) (*[]Group, error) {
+func (c *Client) GroupListAllPages(ctx context.Context, params GroupListParams) (*[]Group, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -811,7 +828,7 @@ func (c *Client) GroupListAllPages(params GroupListParams) (*[]Group, error) {
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.GroupList(params)
+		page, err := c.GroupList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -826,12 +843,13 @@ func (c *Client) GroupListAllPages(params GroupListParams) (*[]Group, error) {
 }
 
 // GroupView: Fetch group
-func (c *Client) GroupView(params GroupViewParams) (*Group, error) {
+func (c *Client) GroupView(ctx context.Context, params GroupViewParams) (*Group, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/groups/{{.group_id}}"),
@@ -874,12 +892,13 @@ func (c *Client) GroupView(params GroupViewParams) (*Group, error) {
 // List images which are global or scoped to the specified project. The images are returned sorted by creation date, with the most recent images appearing first.
 //
 // To iterate over all pages, use the `ImageListAllPages` method, instead.
-func (c *Client) ImageList(params ImageListParams) (*ImageResultsPage, error) {
+func (c *Client) ImageList(ctx context.Context, params ImageListParams) (*ImageResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/images"),
@@ -926,7 +945,7 @@ func (c *Client) ImageList(params ImageListParams) (*ImageResultsPage, error) {
 //
 // This method is a wrapper around the `ImageList` method.
 // This method returns all the pages at once.
-func (c *Client) ImageListAllPages(params ImageListParams) (*[]Image, error) {
+func (c *Client) ImageListAllPages(ctx context.Context, params ImageListParams) (*[]Image, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -934,7 +953,7 @@ func (c *Client) ImageListAllPages(params ImageListParams) (*[]Image, error) {
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.ImageList(params)
+		page, err := c.ImageList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -950,7 +969,7 @@ func (c *Client) ImageListAllPages(params ImageListParams) (*[]Image, error) {
 
 // ImageCreate: Create an image
 // Create a new image in a project.
-func (c *Client) ImageCreate(params ImageCreateParams) (*Image, error) {
+func (c *Client) ImageCreate(ctx context.Context, params ImageCreateParams) (*Image, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -962,6 +981,7 @@ func (c *Client) ImageCreate(params ImageCreateParams) (*Image, error) {
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"POST",
 		resolveRelative(c.server, "/v1/images"),
@@ -1002,12 +1022,13 @@ func (c *Client) ImageCreate(params ImageCreateParams) (*Image, error) {
 
 // ImageView: Fetch an image
 // Fetch the details for a specific image in a project.
-func (c *Client) ImageView(params ImageViewParams) (*Image, error) {
+func (c *Client) ImageView(ctx context.Context, params ImageViewParams) (*Image, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/images/{{.image}}"),
@@ -1050,12 +1071,13 @@ func (c *Client) ImageView(params ImageViewParams) (*Image, error) {
 
 // ImageDelete: Delete an image
 // Permanently delete an image from a project. This operation cannot be undone. Any instances in the project using the image will continue to run, however new instances can not be created with this image.
-func (c *Client) ImageDelete(params ImageDeleteParams) error {
+func (c *Client) ImageDelete(ctx context.Context, params ImageDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"DELETE",
 		resolveRelative(c.server, "/v1/images/{{.image}}"),
@@ -1087,12 +1109,13 @@ func (c *Client) ImageDelete(params ImageDeleteParams) error {
 
 // ImageDemote: Demote a silo image
 // Demote a silo image to be visible only to a specified project
-func (c *Client) ImageDemote(params ImageDemoteParams) (*Image, error) {
+func (c *Client) ImageDemote(ctx context.Context, params ImageDemoteParams) (*Image, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"POST",
 		resolveRelative(c.server, "/v1/images/{{.image}}/demote"),
@@ -1135,12 +1158,13 @@ func (c *Client) ImageDemote(params ImageDemoteParams) (*Image, error) {
 
 // ImagePromote: Promote a project image
 // Promote a project image to be visible to all projects in the silo
-func (c *Client) ImagePromote(params ImagePromoteParams) (*Image, error) {
+func (c *Client) ImagePromote(ctx context.Context, params ImagePromoteParams) (*Image, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"POST",
 		resolveRelative(c.server, "/v1/images/{{.image}}/promote"),
@@ -1184,12 +1208,13 @@ func (c *Client) ImagePromote(params ImagePromoteParams) (*Image, error) {
 // InstanceList: List instances
 //
 // To iterate over all pages, use the `InstanceListAllPages` method, instead.
-func (c *Client) InstanceList(params InstanceListParams) (*InstanceResultsPage, error) {
+func (c *Client) InstanceList(ctx context.Context, params InstanceListParams) (*InstanceResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/instances"),
@@ -1235,7 +1260,7 @@ func (c *Client) InstanceList(params InstanceListParams) (*InstanceResultsPage, 
 //
 // This method is a wrapper around the `InstanceList` method.
 // This method returns all the pages at once.
-func (c *Client) InstanceListAllPages(params InstanceListParams) (*[]Instance, error) {
+func (c *Client) InstanceListAllPages(ctx context.Context, params InstanceListParams) (*[]Instance, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -1243,7 +1268,7 @@ func (c *Client) InstanceListAllPages(params InstanceListParams) (*[]Instance, e
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.InstanceList(params)
+		page, err := c.InstanceList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -1258,7 +1283,7 @@ func (c *Client) InstanceListAllPages(params InstanceListParams) (*[]Instance, e
 }
 
 // InstanceCreate: Create an instance
-func (c *Client) InstanceCreate(params InstanceCreateParams) (*Instance, error) {
+func (c *Client) InstanceCreate(ctx context.Context, params InstanceCreateParams) (*Instance, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -1270,6 +1295,7 @@ func (c *Client) InstanceCreate(params InstanceCreateParams) (*Instance, error) 
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"POST",
 		resolveRelative(c.server, "/v1/instances"),
@@ -1309,12 +1335,13 @@ func (c *Client) InstanceCreate(params InstanceCreateParams) (*Instance, error) 
 }
 
 // InstanceView: Fetch an instance
-func (c *Client) InstanceView(params InstanceViewParams) (*Instance, error) {
+func (c *Client) InstanceView(ctx context.Context, params InstanceViewParams) (*Instance, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/instances/{{.instance}}"),
@@ -1356,12 +1383,13 @@ func (c *Client) InstanceView(params InstanceViewParams) (*Instance, error) {
 }
 
 // InstanceDelete: Delete an instance
-func (c *Client) InstanceDelete(params InstanceDeleteParams) error {
+func (c *Client) InstanceDelete(ctx context.Context, params InstanceDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"DELETE",
 		resolveRelative(c.server, "/v1/instances/{{.instance}}"),
@@ -1394,12 +1422,13 @@ func (c *Client) InstanceDelete(params InstanceDeleteParams) error {
 // InstanceDiskList: List an instance's disks
 //
 // To iterate over all pages, use the `InstanceDiskListAllPages` method, instead.
-func (c *Client) InstanceDiskList(params InstanceDiskListParams) (*DiskResultsPage, error) {
+func (c *Client) InstanceDiskList(ctx context.Context, params InstanceDiskListParams) (*DiskResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/instances/{{.instance}}/disks"),
@@ -1447,7 +1476,7 @@ func (c *Client) InstanceDiskList(params InstanceDiskListParams) (*DiskResultsPa
 //
 // This method is a wrapper around the `InstanceDiskList` method.
 // This method returns all the pages at once.
-func (c *Client) InstanceDiskListAllPages(params InstanceDiskListParams) (*[]Disk, error) {
+func (c *Client) InstanceDiskListAllPages(ctx context.Context, params InstanceDiskListParams) (*[]Disk, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -1455,7 +1484,7 @@ func (c *Client) InstanceDiskListAllPages(params InstanceDiskListParams) (*[]Dis
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.InstanceDiskList(params)
+		page, err := c.InstanceDiskList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -1470,7 +1499,7 @@ func (c *Client) InstanceDiskListAllPages(params InstanceDiskListParams) (*[]Dis
 }
 
 // InstanceDiskAttach: Attach a disk to an instance
-func (c *Client) InstanceDiskAttach(params InstanceDiskAttachParams) (*Disk, error) {
+func (c *Client) InstanceDiskAttach(ctx context.Context, params InstanceDiskAttachParams) (*Disk, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -1482,6 +1511,7 @@ func (c *Client) InstanceDiskAttach(params InstanceDiskAttachParams) (*Disk, err
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"POST",
 		resolveRelative(c.server, "/v1/instances/{{.instance}}/disks/attach"),
@@ -1523,7 +1553,7 @@ func (c *Client) InstanceDiskAttach(params InstanceDiskAttachParams) (*Disk, err
 }
 
 // InstanceDiskDetach: Detach a disk from an instance
-func (c *Client) InstanceDiskDetach(params InstanceDiskDetachParams) (*Disk, error) {
+func (c *Client) InstanceDiskDetach(ctx context.Context, params InstanceDiskDetachParams) (*Disk, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -1535,6 +1565,7 @@ func (c *Client) InstanceDiskDetach(params InstanceDiskDetachParams) (*Disk, err
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"POST",
 		resolveRelative(c.server, "/v1/instances/{{.instance}}/disks/detach"),
@@ -1576,12 +1607,13 @@ func (c *Client) InstanceDiskDetach(params InstanceDiskDetachParams) (*Disk, err
 }
 
 // InstanceExternalIpList: List external IP addresses
-func (c *Client) InstanceExternalIpList(params InstanceExternalIpListParams) (*ExternalIpResultsPage, error) {
+func (c *Client) InstanceExternalIpList(ctx context.Context, params InstanceExternalIpListParams) (*ExternalIpResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/instances/{{.instance}}/external-ips"),
@@ -1623,7 +1655,7 @@ func (c *Client) InstanceExternalIpList(params InstanceExternalIpListParams) (*E
 }
 
 // InstanceMigrate: Migrate an instance
-func (c *Client) InstanceMigrate(params InstanceMigrateParams) (*Instance, error) {
+func (c *Client) InstanceMigrate(ctx context.Context, params InstanceMigrateParams) (*Instance, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -1635,6 +1667,7 @@ func (c *Client) InstanceMigrate(params InstanceMigrateParams) (*Instance, error
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"POST",
 		resolveRelative(c.server, "/v1/instances/{{.instance}}/migrate"),
@@ -1676,12 +1709,13 @@ func (c *Client) InstanceMigrate(params InstanceMigrateParams) (*Instance, error
 }
 
 // InstanceReboot: Reboot an instance
-func (c *Client) InstanceReboot(params InstanceRebootParams) (*Instance, error) {
+func (c *Client) InstanceReboot(ctx context.Context, params InstanceRebootParams) (*Instance, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"POST",
 		resolveRelative(c.server, "/v1/instances/{{.instance}}/reboot"),
@@ -1723,12 +1757,13 @@ func (c *Client) InstanceReboot(params InstanceRebootParams) (*Instance, error) 
 }
 
 // InstanceSerialConsole: Fetch an instance's serial console
-func (c *Client) InstanceSerialConsole(params InstanceSerialConsoleParams) (*InstanceSerialConsoleData, error) {
+func (c *Client) InstanceSerialConsole(ctx context.Context, params InstanceSerialConsoleParams) (*InstanceSerialConsoleData, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/instances/{{.instance}}/serial-console"),
@@ -1773,12 +1808,13 @@ func (c *Client) InstanceSerialConsole(params InstanceSerialConsoleParams) (*Ins
 }
 
 // InstanceSerialConsoleStream: Stream an instance's serial console
-func (c *Client) InstanceSerialConsoleStream(params InstanceSerialConsoleStreamParams) error {
+func (c *Client) InstanceSerialConsoleStream(ctx context.Context, params InstanceSerialConsoleStreamParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/instances/{{.instance}}/serial-console/stream"),
@@ -1810,12 +1846,13 @@ func (c *Client) InstanceSerialConsoleStream(params InstanceSerialConsoleStreamP
 }
 
 // InstanceStart: Boot an instance
-func (c *Client) InstanceStart(params InstanceStartParams) (*Instance, error) {
+func (c *Client) InstanceStart(ctx context.Context, params InstanceStartParams) (*Instance, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"POST",
 		resolveRelative(c.server, "/v1/instances/{{.instance}}/start"),
@@ -1857,12 +1894,13 @@ func (c *Client) InstanceStart(params InstanceStartParams) (*Instance, error) {
 }
 
 // InstanceStop: Stop an instance
-func (c *Client) InstanceStop(params InstanceStopParams) (*Instance, error) {
+func (c *Client) InstanceStop(ctx context.Context, params InstanceStopParams) (*Instance, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"POST",
 		resolveRelative(c.server, "/v1/instances/{{.instance}}/stop"),
@@ -1906,12 +1944,13 @@ func (c *Client) InstanceStop(params InstanceStopParams) (*Instance, error) {
 // ProjectIpPoolList: List all IP Pools that can be used by a given project.
 //
 // To iterate over all pages, use the `ProjectIpPoolListAllPages` method, instead.
-func (c *Client) ProjectIpPoolList(params ProjectIpPoolListParams) (*IpPoolResultsPage, error) {
+func (c *Client) ProjectIpPoolList(ctx context.Context, params ProjectIpPoolListParams) (*IpPoolResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/ip-pools"),
@@ -1957,7 +1996,7 @@ func (c *Client) ProjectIpPoolList(params ProjectIpPoolListParams) (*IpPoolResul
 //
 // This method is a wrapper around the `ProjectIpPoolList` method.
 // This method returns all the pages at once.
-func (c *Client) ProjectIpPoolListAllPages(params ProjectIpPoolListParams) (*[]IpPool, error) {
+func (c *Client) ProjectIpPoolListAllPages(ctx context.Context, params ProjectIpPoolListParams) (*[]IpPool, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -1965,7 +2004,7 @@ func (c *Client) ProjectIpPoolListAllPages(params ProjectIpPoolListParams) (*[]I
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.ProjectIpPoolList(params)
+		page, err := c.ProjectIpPoolList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -1980,12 +2019,13 @@ func (c *Client) ProjectIpPoolListAllPages(params ProjectIpPoolListParams) (*[]I
 }
 
 // ProjectIpPoolView: Fetch an IP pool
-func (c *Client) ProjectIpPoolView(params ProjectIpPoolViewParams) (*IpPool, error) {
+func (c *Client) ProjectIpPoolView(ctx context.Context, params ProjectIpPoolViewParams) (*IpPool, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/ip-pools/{{.pool}}"),
@@ -2027,7 +2067,7 @@ func (c *Client) ProjectIpPoolView(params ProjectIpPoolViewParams) (*IpPool, err
 }
 
 // LoginLocal: Authenticate a user via username and password
-func (c *Client) LoginLocal(params LoginLocalParams) error {
+func (c *Client) LoginLocal(ctx context.Context, params LoginLocalParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -2039,6 +2079,7 @@ func (c *Client) LoginLocal(params LoginLocalParams) error {
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"POST",
 		resolveRelative(c.server, "/v1/login/{{.silo_name}}/local"),
@@ -2067,9 +2108,10 @@ func (c *Client) LoginLocal(params LoginLocalParams) error {
 }
 
 // CurrentUserView: Fetch the user associated with the current session
-func (c *Client) CurrentUserView() (*CurrentUser, error) {
+func (c *Client) CurrentUserView(ctx context.Context) (*CurrentUser, error) {
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/me"),
@@ -2109,12 +2151,13 @@ func (c *Client) CurrentUserView() (*CurrentUser, error) {
 // CurrentUserGroups: Fetch the silo groups the current user belongs to
 //
 // To iterate over all pages, use the `CurrentUserGroupsAllPages` method, instead.
-func (c *Client) CurrentUserGroups(params CurrentUserGroupsParams) (*GroupResultsPage, error) {
+func (c *Client) CurrentUserGroups(ctx context.Context, params CurrentUserGroupsParams) (*GroupResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/me/groups"),
@@ -2159,7 +2202,7 @@ func (c *Client) CurrentUserGroups(params CurrentUserGroupsParams) (*GroupResult
 //
 // This method is a wrapper around the `CurrentUserGroups` method.
 // This method returns all the pages at once.
-func (c *Client) CurrentUserGroupsAllPages(params CurrentUserGroupsParams) (*[]Group, error) {
+func (c *Client) CurrentUserGroupsAllPages(ctx context.Context, params CurrentUserGroupsParams) (*[]Group, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2167,7 +2210,7 @@ func (c *Client) CurrentUserGroupsAllPages(params CurrentUserGroupsParams) (*[]G
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.CurrentUserGroups(params)
+		page, err := c.CurrentUserGroups(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -2185,12 +2228,13 @@ func (c *Client) CurrentUserGroupsAllPages(params CurrentUserGroupsParams) (*[]G
 // Lists SSH public keys for the currently authenticated user.
 //
 // To iterate over all pages, use the `CurrentUserSshKeyListAllPages` method, instead.
-func (c *Client) CurrentUserSshKeyList(params CurrentUserSshKeyListParams) (*SshKeyResultsPage, error) {
+func (c *Client) CurrentUserSshKeyList(ctx context.Context, params CurrentUserSshKeyListParams) (*SshKeyResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/me/ssh-keys"),
@@ -2236,7 +2280,7 @@ func (c *Client) CurrentUserSshKeyList(params CurrentUserSshKeyListParams) (*Ssh
 //
 // This method is a wrapper around the `CurrentUserSshKeyList` method.
 // This method returns all the pages at once.
-func (c *Client) CurrentUserSshKeyListAllPages(params CurrentUserSshKeyListParams) (*[]SshKey, error) {
+func (c *Client) CurrentUserSshKeyListAllPages(ctx context.Context, params CurrentUserSshKeyListParams) (*[]SshKey, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2244,7 +2288,7 @@ func (c *Client) CurrentUserSshKeyListAllPages(params CurrentUserSshKeyListParam
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.CurrentUserSshKeyList(params)
+		page, err := c.CurrentUserSshKeyList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -2260,7 +2304,7 @@ func (c *Client) CurrentUserSshKeyListAllPages(params CurrentUserSshKeyListParam
 
 // CurrentUserSshKeyCreate: Create an SSH public key
 // Create an SSH public key for the currently authenticated user.
-func (c *Client) CurrentUserSshKeyCreate(params CurrentUserSshKeyCreateParams) (*SshKey, error) {
+func (c *Client) CurrentUserSshKeyCreate(ctx context.Context, params CurrentUserSshKeyCreateParams) (*SshKey, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2272,6 +2316,7 @@ func (c *Client) CurrentUserSshKeyCreate(params CurrentUserSshKeyCreateParams) (
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"POST",
 		resolveRelative(c.server, "/v1/me/ssh-keys"),
@@ -2310,12 +2355,13 @@ func (c *Client) CurrentUserSshKeyCreate(params CurrentUserSshKeyCreateParams) (
 
 // CurrentUserSshKeyView: Fetch an SSH public key
 // Fetch an SSH public key associated with the currently authenticated user.
-func (c *Client) CurrentUserSshKeyView(params CurrentUserSshKeyViewParams) (*SshKey, error) {
+func (c *Client) CurrentUserSshKeyView(ctx context.Context, params CurrentUserSshKeyViewParams) (*SshKey, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/me/ssh-keys/{{.ssh_key}}"),
@@ -2356,12 +2402,13 @@ func (c *Client) CurrentUserSshKeyView(params CurrentUserSshKeyViewParams) (*Ssh
 
 // CurrentUserSshKeyDelete: Delete an SSH public key
 // Delete an SSH public key associated with the currently authenticated user.
-func (c *Client) CurrentUserSshKeyDelete(params CurrentUserSshKeyDeleteParams) error {
+func (c *Client) CurrentUserSshKeyDelete(ctx context.Context, params CurrentUserSshKeyDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"DELETE",
 		resolveRelative(c.server, "/v1/me/ssh-keys/{{.ssh_key}}"),
@@ -2392,12 +2439,13 @@ func (c *Client) CurrentUserSshKeyDelete(params CurrentUserSshKeyDeleteParams) e
 // SiloMetric: Access metrics data
 //
 // To iterate over all pages, use the `SiloMetricAllPages` method, instead.
-func (c *Client) SiloMetric(params SiloMetricParams) (*MeasurementResultsPage, error) {
+func (c *Client) SiloMetric(ctx context.Context, params SiloMetricParams) (*MeasurementResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/metrics/{{.metric_name}}"),
@@ -2447,7 +2495,7 @@ func (c *Client) SiloMetric(params SiloMetricParams) (*MeasurementResultsPage, e
 //
 // This method is a wrapper around the `SiloMetric` method.
 // This method returns all the pages at once.
-func (c *Client) SiloMetricAllPages(params SiloMetricParams) (*[]Measurement, error) {
+func (c *Client) SiloMetricAllPages(ctx context.Context, params SiloMetricParams) (*[]Measurement, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2455,7 +2503,7 @@ func (c *Client) SiloMetricAllPages(params SiloMetricParams) (*[]Measurement, er
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.SiloMetric(params)
+		page, err := c.SiloMetric(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -2472,12 +2520,13 @@ func (c *Client) SiloMetricAllPages(params SiloMetricParams) (*[]Measurement, er
 // InstanceNetworkInterfaceList: List network interfaces
 //
 // To iterate over all pages, use the `InstanceNetworkInterfaceListAllPages` method, instead.
-func (c *Client) InstanceNetworkInterfaceList(params InstanceNetworkInterfaceListParams) (*InstanceNetworkInterfaceResultsPage, error) {
+func (c *Client) InstanceNetworkInterfaceList(ctx context.Context, params InstanceNetworkInterfaceListParams) (*InstanceNetworkInterfaceResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/network-interfaces"),
@@ -2524,7 +2573,7 @@ func (c *Client) InstanceNetworkInterfaceList(params InstanceNetworkInterfaceLis
 //
 // This method is a wrapper around the `InstanceNetworkInterfaceList` method.
 // This method returns all the pages at once.
-func (c *Client) InstanceNetworkInterfaceListAllPages(params InstanceNetworkInterfaceListParams) (*[]InstanceNetworkInterface, error) {
+func (c *Client) InstanceNetworkInterfaceListAllPages(ctx context.Context, params InstanceNetworkInterfaceListParams) (*[]InstanceNetworkInterface, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2532,7 +2581,7 @@ func (c *Client) InstanceNetworkInterfaceListAllPages(params InstanceNetworkInte
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.InstanceNetworkInterfaceList(params)
+		page, err := c.InstanceNetworkInterfaceList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -2547,7 +2596,7 @@ func (c *Client) InstanceNetworkInterfaceListAllPages(params InstanceNetworkInte
 }
 
 // InstanceNetworkInterfaceCreate: Create a network interface
-func (c *Client) InstanceNetworkInterfaceCreate(params InstanceNetworkInterfaceCreateParams) (*InstanceNetworkInterface, error) {
+func (c *Client) InstanceNetworkInterfaceCreate(ctx context.Context, params InstanceNetworkInterfaceCreateParams) (*InstanceNetworkInterface, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2559,6 +2608,7 @@ func (c *Client) InstanceNetworkInterfaceCreate(params InstanceNetworkInterfaceC
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"POST",
 		resolveRelative(c.server, "/v1/network-interfaces"),
@@ -2599,12 +2649,13 @@ func (c *Client) InstanceNetworkInterfaceCreate(params InstanceNetworkInterfaceC
 }
 
 // InstanceNetworkInterfaceView: Fetch a network interface
-func (c *Client) InstanceNetworkInterfaceView(params InstanceNetworkInterfaceViewParams) (*InstanceNetworkInterface, error) {
+func (c *Client) InstanceNetworkInterfaceView(ctx context.Context, params InstanceNetworkInterfaceViewParams) (*InstanceNetworkInterface, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/network-interfaces/{{.interface}}"),
@@ -2647,7 +2698,7 @@ func (c *Client) InstanceNetworkInterfaceView(params InstanceNetworkInterfaceVie
 }
 
 // InstanceNetworkInterfaceUpdate: Update a network interface
-func (c *Client) InstanceNetworkInterfaceUpdate(params InstanceNetworkInterfaceUpdateParams) (*InstanceNetworkInterface, error) {
+func (c *Client) InstanceNetworkInterfaceUpdate(ctx context.Context, params InstanceNetworkInterfaceUpdateParams) (*InstanceNetworkInterface, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2659,6 +2710,7 @@ func (c *Client) InstanceNetworkInterfaceUpdate(params InstanceNetworkInterfaceU
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"PUT",
 		resolveRelative(c.server, "/v1/network-interfaces/{{.interface}}"),
@@ -2702,12 +2754,13 @@ func (c *Client) InstanceNetworkInterfaceUpdate(params InstanceNetworkInterfaceU
 
 // InstanceNetworkInterfaceDelete: Delete a network interface
 // Note that the primary interface for an instance cannot be deleted if there are any secondary interfaces. A new primary interface must be designated first. The primary interface can be deleted if there are no secondary interfaces.
-func (c *Client) InstanceNetworkInterfaceDelete(params InstanceNetworkInterfaceDeleteParams) error {
+func (c *Client) InstanceNetworkInterfaceDelete(ctx context.Context, params InstanceNetworkInterfaceDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"DELETE",
 		resolveRelative(c.server, "/v1/network-interfaces/{{.interface}}"),
@@ -2739,9 +2792,10 @@ func (c *Client) InstanceNetworkInterfaceDelete(params InstanceNetworkInterfaceD
 }
 
 // PolicyView: Fetch the current silo's IAM policy
-func (c *Client) PolicyView() (*SiloRolePolicy, error) {
+func (c *Client) PolicyView(ctx context.Context) (*SiloRolePolicy, error) {
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/policy"),
@@ -2779,7 +2833,7 @@ func (c *Client) PolicyView() (*SiloRolePolicy, error) {
 }
 
 // PolicyUpdate: Update the current silo's IAM policy
-func (c *Client) PolicyUpdate(params PolicyUpdateParams) (*SiloRolePolicy, error) {
+func (c *Client) PolicyUpdate(ctx context.Context, params PolicyUpdateParams) (*SiloRolePolicy, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2791,6 +2845,7 @@ func (c *Client) PolicyUpdate(params PolicyUpdateParams) (*SiloRolePolicy, error
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"PUT",
 		resolveRelative(c.server, "/v1/policy"),
@@ -2830,12 +2885,13 @@ func (c *Client) PolicyUpdate(params PolicyUpdateParams) (*SiloRolePolicy, error
 // ProjectList: List projects
 //
 // To iterate over all pages, use the `ProjectListAllPages` method, instead.
-func (c *Client) ProjectList(params ProjectListParams) (*ProjectResultsPage, error) {
+func (c *Client) ProjectList(ctx context.Context, params ProjectListParams) (*ProjectResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/projects"),
@@ -2880,7 +2936,7 @@ func (c *Client) ProjectList(params ProjectListParams) (*ProjectResultsPage, err
 //
 // This method is a wrapper around the `ProjectList` method.
 // This method returns all the pages at once.
-func (c *Client) ProjectListAllPages(params ProjectListParams) (*[]Project, error) {
+func (c *Client) ProjectListAllPages(ctx context.Context, params ProjectListParams) (*[]Project, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2888,7 +2944,7 @@ func (c *Client) ProjectListAllPages(params ProjectListParams) (*[]Project, erro
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.ProjectList(params)
+		page, err := c.ProjectList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -2903,7 +2959,7 @@ func (c *Client) ProjectListAllPages(params ProjectListParams) (*[]Project, erro
 }
 
 // ProjectCreate: Create a project
-func (c *Client) ProjectCreate(params ProjectCreateParams) (*Project, error) {
+func (c *Client) ProjectCreate(ctx context.Context, params ProjectCreateParams) (*Project, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2915,6 +2971,7 @@ func (c *Client) ProjectCreate(params ProjectCreateParams) (*Project, error) {
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"POST",
 		resolveRelative(c.server, "/v1/projects"),
@@ -2952,12 +3009,13 @@ func (c *Client) ProjectCreate(params ProjectCreateParams) (*Project, error) {
 }
 
 // ProjectView: Fetch a project
-func (c *Client) ProjectView(params ProjectViewParams) (*Project, error) {
+func (c *Client) ProjectView(ctx context.Context, params ProjectViewParams) (*Project, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/projects/{{.project}}"),
@@ -2997,7 +3055,7 @@ func (c *Client) ProjectView(params ProjectViewParams) (*Project, error) {
 }
 
 // ProjectUpdate: Update a project
-func (c *Client) ProjectUpdate(params ProjectUpdateParams) (*Project, error) {
+func (c *Client) ProjectUpdate(ctx context.Context, params ProjectUpdateParams) (*Project, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3009,6 +3067,7 @@ func (c *Client) ProjectUpdate(params ProjectUpdateParams) (*Project, error) {
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"PUT",
 		resolveRelative(c.server, "/v1/projects/{{.project}}"),
@@ -3048,12 +3107,13 @@ func (c *Client) ProjectUpdate(params ProjectUpdateParams) (*Project, error) {
 }
 
 // ProjectDelete: Delete a project
-func (c *Client) ProjectDelete(params ProjectDeleteParams) error {
+func (c *Client) ProjectDelete(ctx context.Context, params ProjectDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"DELETE",
 		resolveRelative(c.server, "/v1/projects/{{.project}}"),
@@ -3082,12 +3142,13 @@ func (c *Client) ProjectDelete(params ProjectDeleteParams) error {
 }
 
 // ProjectPolicyView: Fetch a project's IAM policy
-func (c *Client) ProjectPolicyView(params ProjectPolicyViewParams) (*ProjectRolePolicy, error) {
+func (c *Client) ProjectPolicyView(ctx context.Context, params ProjectPolicyViewParams) (*ProjectRolePolicy, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/projects/{{.project}}/policy"),
@@ -3127,7 +3188,7 @@ func (c *Client) ProjectPolicyView(params ProjectPolicyViewParams) (*ProjectRole
 }
 
 // ProjectPolicyUpdate: Update a project's IAM policy
-func (c *Client) ProjectPolicyUpdate(params ProjectPolicyUpdateParams) (*ProjectRolePolicy, error) {
+func (c *Client) ProjectPolicyUpdate(ctx context.Context, params ProjectPolicyUpdateParams) (*ProjectRolePolicy, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3139,6 +3200,7 @@ func (c *Client) ProjectPolicyUpdate(params ProjectPolicyUpdateParams) (*Project
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"PUT",
 		resolveRelative(c.server, "/v1/projects/{{.project}}/policy"),
@@ -3180,12 +3242,13 @@ func (c *Client) ProjectPolicyUpdate(params ProjectPolicyUpdateParams) (*Project
 // SnapshotList: List snapshots
 //
 // To iterate over all pages, use the `SnapshotListAllPages` method, instead.
-func (c *Client) SnapshotList(params SnapshotListParams) (*SnapshotResultsPage, error) {
+func (c *Client) SnapshotList(ctx context.Context, params SnapshotListParams) (*SnapshotResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/snapshots"),
@@ -3231,7 +3294,7 @@ func (c *Client) SnapshotList(params SnapshotListParams) (*SnapshotResultsPage, 
 //
 // This method is a wrapper around the `SnapshotList` method.
 // This method returns all the pages at once.
-func (c *Client) SnapshotListAllPages(params SnapshotListParams) (*[]Snapshot, error) {
+func (c *Client) SnapshotListAllPages(ctx context.Context, params SnapshotListParams) (*[]Snapshot, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3239,7 +3302,7 @@ func (c *Client) SnapshotListAllPages(params SnapshotListParams) (*[]Snapshot, e
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.SnapshotList(params)
+		page, err := c.SnapshotList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -3255,7 +3318,7 @@ func (c *Client) SnapshotListAllPages(params SnapshotListParams) (*[]Snapshot, e
 
 // SnapshotCreate: Create a snapshot
 // Creates a point-in-time snapshot from a disk.
-func (c *Client) SnapshotCreate(params SnapshotCreateParams) (*Snapshot, error) {
+func (c *Client) SnapshotCreate(ctx context.Context, params SnapshotCreateParams) (*Snapshot, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3267,6 +3330,7 @@ func (c *Client) SnapshotCreate(params SnapshotCreateParams) (*Snapshot, error) 
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"POST",
 		resolveRelative(c.server, "/v1/snapshots"),
@@ -3306,12 +3370,13 @@ func (c *Client) SnapshotCreate(params SnapshotCreateParams) (*Snapshot, error) 
 }
 
 // SnapshotView: Fetch a snapshot
-func (c *Client) SnapshotView(params SnapshotViewParams) (*Snapshot, error) {
+func (c *Client) SnapshotView(ctx context.Context, params SnapshotViewParams) (*Snapshot, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/snapshots/{{.snapshot}}"),
@@ -3353,12 +3418,13 @@ func (c *Client) SnapshotView(params SnapshotViewParams) (*Snapshot, error) {
 }
 
 // SnapshotDelete: Delete a snapshot
-func (c *Client) SnapshotDelete(params SnapshotDeleteParams) error {
+func (c *Client) SnapshotDelete(ctx context.Context, params SnapshotDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"DELETE",
 		resolveRelative(c.server, "/v1/snapshots/{{.snapshot}}"),
@@ -3391,12 +3457,13 @@ func (c *Client) SnapshotDelete(params SnapshotDeleteParams) error {
 // PhysicalDiskList: List physical disks
 //
 // To iterate over all pages, use the `PhysicalDiskListAllPages` method, instead.
-func (c *Client) PhysicalDiskList(params PhysicalDiskListParams) (*PhysicalDiskResultsPage, error) {
+func (c *Client) PhysicalDiskList(ctx context.Context, params PhysicalDiskListParams) (*PhysicalDiskResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/system/hardware/disks"),
@@ -3441,7 +3508,7 @@ func (c *Client) PhysicalDiskList(params PhysicalDiskListParams) (*PhysicalDiskR
 //
 // This method is a wrapper around the `PhysicalDiskList` method.
 // This method returns all the pages at once.
-func (c *Client) PhysicalDiskListAllPages(params PhysicalDiskListParams) (*[]PhysicalDisk, error) {
+func (c *Client) PhysicalDiskListAllPages(ctx context.Context, params PhysicalDiskListParams) (*[]PhysicalDisk, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3449,7 +3516,7 @@ func (c *Client) PhysicalDiskListAllPages(params PhysicalDiskListParams) (*[]Phy
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.PhysicalDiskList(params)
+		page, err := c.PhysicalDiskList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -3466,12 +3533,13 @@ func (c *Client) PhysicalDiskListAllPages(params PhysicalDiskListParams) (*[]Phy
 // RackList: List racks
 //
 // To iterate over all pages, use the `RackListAllPages` method, instead.
-func (c *Client) RackList(params RackListParams) (*RackResultsPage, error) {
+func (c *Client) RackList(ctx context.Context, params RackListParams) (*RackResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/system/hardware/racks"),
@@ -3516,7 +3584,7 @@ func (c *Client) RackList(params RackListParams) (*RackResultsPage, error) {
 //
 // This method is a wrapper around the `RackList` method.
 // This method returns all the pages at once.
-func (c *Client) RackListAllPages(params RackListParams) (*[]Rack, error) {
+func (c *Client) RackListAllPages(ctx context.Context, params RackListParams) (*[]Rack, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3524,7 +3592,7 @@ func (c *Client) RackListAllPages(params RackListParams) (*[]Rack, error) {
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.RackList(params)
+		page, err := c.RackList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -3539,12 +3607,13 @@ func (c *Client) RackListAllPages(params RackListParams) (*[]Rack, error) {
 }
 
 // RackView: Fetch a rack
-func (c *Client) RackView(params RackViewParams) (*Rack, error) {
+func (c *Client) RackView(ctx context.Context, params RackViewParams) (*Rack, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/system/hardware/racks/{{.rack_id}}"),
@@ -3586,12 +3655,13 @@ func (c *Client) RackView(params RackViewParams) (*Rack, error) {
 // SledList: List sleds
 //
 // To iterate over all pages, use the `SledListAllPages` method, instead.
-func (c *Client) SledList(params SledListParams) (*SledResultsPage, error) {
+func (c *Client) SledList(ctx context.Context, params SledListParams) (*SledResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/system/hardware/sleds"),
@@ -3636,7 +3706,7 @@ func (c *Client) SledList(params SledListParams) (*SledResultsPage, error) {
 //
 // This method is a wrapper around the `SledList` method.
 // This method returns all the pages at once.
-func (c *Client) SledListAllPages(params SledListParams) (*[]Sled, error) {
+func (c *Client) SledListAllPages(ctx context.Context, params SledListParams) (*[]Sled, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3644,7 +3714,7 @@ func (c *Client) SledListAllPages(params SledListParams) (*[]Sled, error) {
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.SledList(params)
+		page, err := c.SledList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -3659,12 +3729,13 @@ func (c *Client) SledListAllPages(params SledListParams) (*[]Sled, error) {
 }
 
 // SledView: Fetch a sled
-func (c *Client) SledView(params SledViewParams) (*Sled, error) {
+func (c *Client) SledView(ctx context.Context, params SledViewParams) (*Sled, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/system/hardware/sleds/{{.sled_id}}"),
@@ -3706,12 +3777,13 @@ func (c *Client) SledView(params SledViewParams) (*Sled, error) {
 // SledPhysicalDiskList: List physical disks attached to sleds
 //
 // To iterate over all pages, use the `SledPhysicalDiskListAllPages` method, instead.
-func (c *Client) SledPhysicalDiskList(params SledPhysicalDiskListParams) (*PhysicalDiskResultsPage, error) {
+func (c *Client) SledPhysicalDiskList(ctx context.Context, params SledPhysicalDiskListParams) (*PhysicalDiskResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/system/hardware/sleds/{{.sled_id}}/disks"),
@@ -3758,7 +3830,7 @@ func (c *Client) SledPhysicalDiskList(params SledPhysicalDiskListParams) (*Physi
 //
 // This method is a wrapper around the `SledPhysicalDiskList` method.
 // This method returns all the pages at once.
-func (c *Client) SledPhysicalDiskListAllPages(params SledPhysicalDiskListParams) (*[]PhysicalDisk, error) {
+func (c *Client) SledPhysicalDiskListAllPages(ctx context.Context, params SledPhysicalDiskListParams) (*[]PhysicalDisk, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3766,7 +3838,7 @@ func (c *Client) SledPhysicalDiskListAllPages(params SledPhysicalDiskListParams)
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.SledPhysicalDiskList(params)
+		page, err := c.SledPhysicalDiskList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -3783,12 +3855,13 @@ func (c *Client) SledPhysicalDiskListAllPages(params SledPhysicalDiskListParams)
 // SledInstanceList: List instances running on a given sled
 //
 // To iterate over all pages, use the `SledInstanceListAllPages` method, instead.
-func (c *Client) SledInstanceList(params SledInstanceListParams) (*SledInstanceResultsPage, error) {
+func (c *Client) SledInstanceList(ctx context.Context, params SledInstanceListParams) (*SledInstanceResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/system/hardware/sleds/{{.sled_id}}/instances"),
@@ -3835,7 +3908,7 @@ func (c *Client) SledInstanceList(params SledInstanceListParams) (*SledInstanceR
 //
 // This method is a wrapper around the `SledInstanceList` method.
 // This method returns all the pages at once.
-func (c *Client) SledInstanceListAllPages(params SledInstanceListParams) (*[]SledInstance, error) {
+func (c *Client) SledInstanceListAllPages(ctx context.Context, params SledInstanceListParams) (*[]SledInstance, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3843,7 +3916,7 @@ func (c *Client) SledInstanceListAllPages(params SledInstanceListParams) (*[]Sle
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.SledInstanceList(params)
+		page, err := c.SledInstanceList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -3860,12 +3933,13 @@ func (c *Client) SledInstanceListAllPages(params SledInstanceListParams) (*[]Sle
 // NetworkingSwitchPortList: List switch ports
 //
 // To iterate over all pages, use the `NetworkingSwitchPortListAllPages` method, instead.
-func (c *Client) NetworkingSwitchPortList(params NetworkingSwitchPortListParams) (*SwitchPortResultsPage, error) {
+func (c *Client) NetworkingSwitchPortList(ctx context.Context, params NetworkingSwitchPortListParams) (*SwitchPortResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/system/hardware/switch-port"),
@@ -3911,7 +3985,7 @@ func (c *Client) NetworkingSwitchPortList(params NetworkingSwitchPortListParams)
 //
 // This method is a wrapper around the `NetworkingSwitchPortList` method.
 // This method returns all the pages at once.
-func (c *Client) NetworkingSwitchPortListAllPages(params NetworkingSwitchPortListParams) (*[]SwitchPort, error) {
+func (c *Client) NetworkingSwitchPortListAllPages(ctx context.Context, params NetworkingSwitchPortListParams) (*[]SwitchPort, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3919,7 +3993,7 @@ func (c *Client) NetworkingSwitchPortListAllPages(params NetworkingSwitchPortLis
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.NetworkingSwitchPortList(params)
+		page, err := c.NetworkingSwitchPortList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -3934,7 +4008,7 @@ func (c *Client) NetworkingSwitchPortListAllPages(params NetworkingSwitchPortLis
 }
 
 // NetworkingSwitchPortApplySettings: Apply switch port settings
-func (c *Client) NetworkingSwitchPortApplySettings(params NetworkingSwitchPortApplySettingsParams) error {
+func (c *Client) NetworkingSwitchPortApplySettings(ctx context.Context, params NetworkingSwitchPortApplySettingsParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -3946,6 +4020,7 @@ func (c *Client) NetworkingSwitchPortApplySettings(params NetworkingSwitchPortAp
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"POST",
 		resolveRelative(c.server, "/v1/system/hardware/switch-port/{{.port}}/settings"),
@@ -3977,12 +4052,13 @@ func (c *Client) NetworkingSwitchPortApplySettings(params NetworkingSwitchPortAp
 }
 
 // NetworkingSwitchPortClearSettings: Clear switch port settings
-func (c *Client) NetworkingSwitchPortClearSettings(params NetworkingSwitchPortClearSettingsParams) error {
+func (c *Client) NetworkingSwitchPortClearSettings(ctx context.Context, params NetworkingSwitchPortClearSettingsParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"DELETE",
 		resolveRelative(c.server, "/v1/system/hardware/switch-port/{{.port}}/settings"),
@@ -4016,12 +4092,13 @@ func (c *Client) NetworkingSwitchPortClearSettings(params NetworkingSwitchPortCl
 // SwitchList: List switches
 //
 // To iterate over all pages, use the `SwitchListAllPages` method, instead.
-func (c *Client) SwitchList(params SwitchListParams) (*SwitchResultsPage, error) {
+func (c *Client) SwitchList(ctx context.Context, params SwitchListParams) (*SwitchResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/system/hardware/switches"),
@@ -4066,7 +4143,7 @@ func (c *Client) SwitchList(params SwitchListParams) (*SwitchResultsPage, error)
 //
 // This method is a wrapper around the `SwitchList` method.
 // This method returns all the pages at once.
-func (c *Client) SwitchListAllPages(params SwitchListParams) (*[]Switch, error) {
+func (c *Client) SwitchListAllPages(ctx context.Context, params SwitchListParams) (*[]Switch, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4074,7 +4151,7 @@ func (c *Client) SwitchListAllPages(params SwitchListParams) (*[]Switch, error) 
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.SwitchList(params)
+		page, err := c.SwitchList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -4089,12 +4166,13 @@ func (c *Client) SwitchListAllPages(params SwitchListParams) (*[]Switch, error) 
 }
 
 // SwitchView: Fetch a switch
-func (c *Client) SwitchView(params SwitchViewParams) (*Switch, error) {
+func (c *Client) SwitchView(ctx context.Context, params SwitchViewParams) (*Switch, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/system/hardware/switches/{{.switch_id}}"),
@@ -4136,12 +4214,13 @@ func (c *Client) SwitchView(params SwitchViewParams) (*Switch, error) {
 // SiloIdentityProviderList: List a silo's IdP's name
 //
 // To iterate over all pages, use the `SiloIdentityProviderListAllPages` method, instead.
-func (c *Client) SiloIdentityProviderList(params SiloIdentityProviderListParams) (*IdentityProviderResultsPage, error) {
+func (c *Client) SiloIdentityProviderList(ctx context.Context, params SiloIdentityProviderListParams) (*IdentityProviderResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/system/identity-providers"),
@@ -4187,7 +4266,7 @@ func (c *Client) SiloIdentityProviderList(params SiloIdentityProviderListParams)
 //
 // This method is a wrapper around the `SiloIdentityProviderList` method.
 // This method returns all the pages at once.
-func (c *Client) SiloIdentityProviderListAllPages(params SiloIdentityProviderListParams) (*[]IdentityProvider, error) {
+func (c *Client) SiloIdentityProviderListAllPages(ctx context.Context, params SiloIdentityProviderListParams) (*[]IdentityProvider, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4195,7 +4274,7 @@ func (c *Client) SiloIdentityProviderListAllPages(params SiloIdentityProviderLis
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.SiloIdentityProviderList(params)
+		page, err := c.SiloIdentityProviderList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -4211,7 +4290,7 @@ func (c *Client) SiloIdentityProviderListAllPages(params SiloIdentityProviderLis
 
 // LocalIdpUserCreate: Create a user
 // Users can only be created in Silos with `provision_type` == `Fixed`. Otherwise, Silo users are just-in-time (JIT) provisioned when a user first logs in using an external Identity Provider.
-func (c *Client) LocalIdpUserCreate(params LocalIdpUserCreateParams) (*User, error) {
+func (c *Client) LocalIdpUserCreate(ctx context.Context, params LocalIdpUserCreateParams) (*User, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4223,6 +4302,7 @@ func (c *Client) LocalIdpUserCreate(params LocalIdpUserCreateParams) (*User, err
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"POST",
 		resolveRelative(c.server, "/v1/system/identity-providers/local/users"),
@@ -4262,12 +4342,13 @@ func (c *Client) LocalIdpUserCreate(params LocalIdpUserCreateParams) (*User, err
 }
 
 // LocalIdpUserDelete: Delete a user
-func (c *Client) LocalIdpUserDelete(params LocalIdpUserDeleteParams) error {
+func (c *Client) LocalIdpUserDelete(ctx context.Context, params LocalIdpUserDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"DELETE",
 		resolveRelative(c.server, "/v1/system/identity-providers/local/users/{{.user_id}}"),
@@ -4299,7 +4380,7 @@ func (c *Client) LocalIdpUserDelete(params LocalIdpUserDeleteParams) error {
 
 // LocalIdpUserSetPassword: Set or invalidate a user's password
 // Passwords can only be updated for users in Silos with identity mode `LocalOnly`.
-func (c *Client) LocalIdpUserSetPassword(params LocalIdpUserSetPasswordParams) error {
+func (c *Client) LocalIdpUserSetPassword(ctx context.Context, params LocalIdpUserSetPasswordParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -4311,6 +4392,7 @@ func (c *Client) LocalIdpUserSetPassword(params LocalIdpUserSetPasswordParams) e
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"POST",
 		resolveRelative(c.server, "/v1/system/identity-providers/local/users/{{.user_id}}/set-password"),
@@ -4341,7 +4423,7 @@ func (c *Client) LocalIdpUserSetPassword(params LocalIdpUserSetPasswordParams) e
 }
 
 // SamlIdentityProviderCreate: Create a SAML IdP
-func (c *Client) SamlIdentityProviderCreate(params SamlIdentityProviderCreateParams) (*SamlIdentityProvider, error) {
+func (c *Client) SamlIdentityProviderCreate(ctx context.Context, params SamlIdentityProviderCreateParams) (*SamlIdentityProvider, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4353,6 +4435,7 @@ func (c *Client) SamlIdentityProviderCreate(params SamlIdentityProviderCreatePar
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"POST",
 		resolveRelative(c.server, "/v1/system/identity-providers/saml"),
@@ -4392,12 +4475,13 @@ func (c *Client) SamlIdentityProviderCreate(params SamlIdentityProviderCreatePar
 }
 
 // SamlIdentityProviderView: Fetch a SAML IdP
-func (c *Client) SamlIdentityProviderView(params SamlIdentityProviderViewParams) (*SamlIdentityProvider, error) {
+func (c *Client) SamlIdentityProviderView(ctx context.Context, params SamlIdentityProviderViewParams) (*SamlIdentityProvider, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/system/identity-providers/saml/{{.provider}}"),
@@ -4441,12 +4525,13 @@ func (c *Client) SamlIdentityProviderView(params SamlIdentityProviderViewParams)
 // IpPoolList: List IP pools
 //
 // To iterate over all pages, use the `IpPoolListAllPages` method, instead.
-func (c *Client) IpPoolList(params IpPoolListParams) (*IpPoolResultsPage, error) {
+func (c *Client) IpPoolList(ctx context.Context, params IpPoolListParams) (*IpPoolResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/system/ip-pools"),
@@ -4491,7 +4576,7 @@ func (c *Client) IpPoolList(params IpPoolListParams) (*IpPoolResultsPage, error)
 //
 // This method is a wrapper around the `IpPoolList` method.
 // This method returns all the pages at once.
-func (c *Client) IpPoolListAllPages(params IpPoolListParams) (*[]IpPool, error) {
+func (c *Client) IpPoolListAllPages(ctx context.Context, params IpPoolListParams) (*[]IpPool, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4499,7 +4584,7 @@ func (c *Client) IpPoolListAllPages(params IpPoolListParams) (*[]IpPool, error) 
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.IpPoolList(params)
+		page, err := c.IpPoolList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -4514,7 +4599,7 @@ func (c *Client) IpPoolListAllPages(params IpPoolListParams) (*[]IpPool, error) 
 }
 
 // IpPoolCreate: Create an IP pool
-func (c *Client) IpPoolCreate(params IpPoolCreateParams) (*IpPool, error) {
+func (c *Client) IpPoolCreate(ctx context.Context, params IpPoolCreateParams) (*IpPool, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4526,6 +4611,7 @@ func (c *Client) IpPoolCreate(params IpPoolCreateParams) (*IpPool, error) {
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"POST",
 		resolveRelative(c.server, "/v1/system/ip-pools"),
@@ -4563,9 +4649,10 @@ func (c *Client) IpPoolCreate(params IpPoolCreateParams) (*IpPool, error) {
 }
 
 // IpPoolServiceView: Fetch the IP pool used for Oxide services
-func (c *Client) IpPoolServiceView() (*IpPool, error) {
+func (c *Client) IpPoolServiceView(ctx context.Context) (*IpPool, error) {
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/system/ip-pools-service"),
@@ -4606,12 +4693,13 @@ func (c *Client) IpPoolServiceView() (*IpPool, error) {
 // List ranges for the IP pool used for Oxide services. Ranges are ordered by their first address.
 //
 // To iterate over all pages, use the `IpPoolServiceRangeListAllPages` method, instead.
-func (c *Client) IpPoolServiceRangeList(params IpPoolServiceRangeListParams) (*IpPoolRangeResultsPage, error) {
+func (c *Client) IpPoolServiceRangeList(ctx context.Context, params IpPoolServiceRangeListParams) (*IpPoolRangeResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/system/ip-pools-service/ranges"),
@@ -4656,7 +4744,7 @@ func (c *Client) IpPoolServiceRangeList(params IpPoolServiceRangeListParams) (*I
 //
 // This method is a wrapper around the `IpPoolServiceRangeList` method.
 // This method returns all the pages at once.
-func (c *Client) IpPoolServiceRangeListAllPages(params IpPoolServiceRangeListParams) (*[]IpPoolRange, error) {
+func (c *Client) IpPoolServiceRangeListAllPages(ctx context.Context, params IpPoolServiceRangeListParams) (*[]IpPoolRange, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4664,7 +4752,7 @@ func (c *Client) IpPoolServiceRangeListAllPages(params IpPoolServiceRangeListPar
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.IpPoolServiceRangeList(params)
+		page, err := c.IpPoolServiceRangeList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -4679,7 +4767,7 @@ func (c *Client) IpPoolServiceRangeListAllPages(params IpPoolServiceRangeListPar
 }
 
 // IpPoolServiceRangeAdd: Add a range to an IP pool used for Oxide services
-func (c *Client) IpPoolServiceRangeAdd(params IpPoolServiceRangeAddParams) (*IpPoolRange, error) {
+func (c *Client) IpPoolServiceRangeAdd(ctx context.Context, params IpPoolServiceRangeAddParams) (*IpPoolRange, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4691,6 +4779,7 @@ func (c *Client) IpPoolServiceRangeAdd(params IpPoolServiceRangeAddParams) (*IpP
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"POST",
 		resolveRelative(c.server, "/v1/system/ip-pools-service/ranges/add"),
@@ -4728,7 +4817,7 @@ func (c *Client) IpPoolServiceRangeAdd(params IpPoolServiceRangeAddParams) (*IpP
 }
 
 // IpPoolServiceRangeRemove: Remove a range from an IP pool used for Oxide services
-func (c *Client) IpPoolServiceRangeRemove(params IpPoolServiceRangeRemoveParams) error {
+func (c *Client) IpPoolServiceRangeRemove(ctx context.Context, params IpPoolServiceRangeRemoveParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -4740,6 +4829,7 @@ func (c *Client) IpPoolServiceRangeRemove(params IpPoolServiceRangeRemoveParams)
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"POST",
 		resolveRelative(c.server, "/v1/system/ip-pools-service/ranges/remove"),
@@ -4766,12 +4856,13 @@ func (c *Client) IpPoolServiceRangeRemove(params IpPoolServiceRangeRemoveParams)
 }
 
 // IpPoolView: Fetch an IP pool
-func (c *Client) IpPoolView(params IpPoolViewParams) (*IpPool, error) {
+func (c *Client) IpPoolView(ctx context.Context, params IpPoolViewParams) (*IpPool, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/system/ip-pools/{{.pool}}"),
@@ -4811,7 +4902,7 @@ func (c *Client) IpPoolView(params IpPoolViewParams) (*IpPool, error) {
 }
 
 // IpPoolUpdate: Update an IP Pool
-func (c *Client) IpPoolUpdate(params IpPoolUpdateParams) (*IpPool, error) {
+func (c *Client) IpPoolUpdate(ctx context.Context, params IpPoolUpdateParams) (*IpPool, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4823,6 +4914,7 @@ func (c *Client) IpPoolUpdate(params IpPoolUpdateParams) (*IpPool, error) {
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"PUT",
 		resolveRelative(c.server, "/v1/system/ip-pools/{{.pool}}"),
@@ -4862,12 +4954,13 @@ func (c *Client) IpPoolUpdate(params IpPoolUpdateParams) (*IpPool, error) {
 }
 
 // IpPoolDelete: Delete an IP Pool
-func (c *Client) IpPoolDelete(params IpPoolDeleteParams) error {
+func (c *Client) IpPoolDelete(ctx context.Context, params IpPoolDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"DELETE",
 		resolveRelative(c.server, "/v1/system/ip-pools/{{.pool}}"),
@@ -4899,12 +4992,13 @@ func (c *Client) IpPoolDelete(params IpPoolDeleteParams) error {
 // List ranges for an IP pool. Ranges are ordered by their first address.
 //
 // To iterate over all pages, use the `IpPoolRangeListAllPages` method, instead.
-func (c *Client) IpPoolRangeList(params IpPoolRangeListParams) (*IpPoolRangeResultsPage, error) {
+func (c *Client) IpPoolRangeList(ctx context.Context, params IpPoolRangeListParams) (*IpPoolRangeResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/system/ip-pools/{{.pool}}/ranges"),
@@ -4951,7 +5045,7 @@ func (c *Client) IpPoolRangeList(params IpPoolRangeListParams) (*IpPoolRangeResu
 //
 // This method is a wrapper around the `IpPoolRangeList` method.
 // This method returns all the pages at once.
-func (c *Client) IpPoolRangeListAllPages(params IpPoolRangeListParams) (*[]IpPoolRange, error) {
+func (c *Client) IpPoolRangeListAllPages(ctx context.Context, params IpPoolRangeListParams) (*[]IpPoolRange, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4959,7 +5053,7 @@ func (c *Client) IpPoolRangeListAllPages(params IpPoolRangeListParams) (*[]IpPoo
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.IpPoolRangeList(params)
+		page, err := c.IpPoolRangeList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -4974,7 +5068,7 @@ func (c *Client) IpPoolRangeListAllPages(params IpPoolRangeListParams) (*[]IpPoo
 }
 
 // IpPoolRangeAdd: Add a range to an IP pool
-func (c *Client) IpPoolRangeAdd(params IpPoolRangeAddParams) (*IpPoolRange, error) {
+func (c *Client) IpPoolRangeAdd(ctx context.Context, params IpPoolRangeAddParams) (*IpPoolRange, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4986,6 +5080,7 @@ func (c *Client) IpPoolRangeAdd(params IpPoolRangeAddParams) (*IpPoolRange, erro
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"POST",
 		resolveRelative(c.server, "/v1/system/ip-pools/{{.pool}}/ranges/add"),
@@ -5025,7 +5120,7 @@ func (c *Client) IpPoolRangeAdd(params IpPoolRangeAddParams) (*IpPoolRange, erro
 }
 
 // IpPoolRangeRemove: Remove a range from an IP pool
-func (c *Client) IpPoolRangeRemove(params IpPoolRangeRemoveParams) error {
+func (c *Client) IpPoolRangeRemove(ctx context.Context, params IpPoolRangeRemoveParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -5037,6 +5132,7 @@ func (c *Client) IpPoolRangeRemove(params IpPoolRangeRemoveParams) error {
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"POST",
 		resolveRelative(c.server, "/v1/system/ip-pools/{{.pool}}/ranges/remove"),
@@ -5067,12 +5163,13 @@ func (c *Client) IpPoolRangeRemove(params IpPoolRangeRemoveParams) error {
 // SystemMetric: Access metrics data
 //
 // To iterate over all pages, use the `SystemMetricAllPages` method, instead.
-func (c *Client) SystemMetric(params SystemMetricParams) (*MeasurementResultsPage, error) {
+func (c *Client) SystemMetric(ctx context.Context, params SystemMetricParams) (*MeasurementResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/system/metrics/{{.metric_name}}"),
@@ -5122,7 +5219,7 @@ func (c *Client) SystemMetric(params SystemMetricParams) (*MeasurementResultsPag
 //
 // This method is a wrapper around the `SystemMetric` method.
 // This method returns all the pages at once.
-func (c *Client) SystemMetricAllPages(params SystemMetricParams) (*[]Measurement, error) {
+func (c *Client) SystemMetricAllPages(ctx context.Context, params SystemMetricParams) (*[]Measurement, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5130,7 +5227,7 @@ func (c *Client) SystemMetricAllPages(params SystemMetricParams) (*[]Measurement
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.SystemMetric(params)
+		page, err := c.SystemMetric(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -5147,12 +5244,13 @@ func (c *Client) SystemMetricAllPages(params SystemMetricParams) (*[]Measurement
 // NetworkingAddressLotList: List address lots
 //
 // To iterate over all pages, use the `NetworkingAddressLotListAllPages` method, instead.
-func (c *Client) NetworkingAddressLotList(params NetworkingAddressLotListParams) (*AddressLotResultsPage, error) {
+func (c *Client) NetworkingAddressLotList(ctx context.Context, params NetworkingAddressLotListParams) (*AddressLotResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/system/networking/address-lot"),
@@ -5197,7 +5295,7 @@ func (c *Client) NetworkingAddressLotList(params NetworkingAddressLotListParams)
 //
 // This method is a wrapper around the `NetworkingAddressLotList` method.
 // This method returns all the pages at once.
-func (c *Client) NetworkingAddressLotListAllPages(params NetworkingAddressLotListParams) (*[]AddressLot, error) {
+func (c *Client) NetworkingAddressLotListAllPages(ctx context.Context, params NetworkingAddressLotListParams) (*[]AddressLot, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5205,7 +5303,7 @@ func (c *Client) NetworkingAddressLotListAllPages(params NetworkingAddressLotLis
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.NetworkingAddressLotList(params)
+		page, err := c.NetworkingAddressLotList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -5220,7 +5318,7 @@ func (c *Client) NetworkingAddressLotListAllPages(params NetworkingAddressLotLis
 }
 
 // NetworkingAddressLotCreate: Create an address lot
-func (c *Client) NetworkingAddressLotCreate(params NetworkingAddressLotCreateParams) (*AddressLotCreateResponse, error) {
+func (c *Client) NetworkingAddressLotCreate(ctx context.Context, params NetworkingAddressLotCreateParams) (*AddressLotCreateResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5232,6 +5330,7 @@ func (c *Client) NetworkingAddressLotCreate(params NetworkingAddressLotCreatePar
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"POST",
 		resolveRelative(c.server, "/v1/system/networking/address-lot"),
@@ -5269,12 +5368,13 @@ func (c *Client) NetworkingAddressLotCreate(params NetworkingAddressLotCreatePar
 }
 
 // NetworkingAddressLotDelete: Delete an address lot
-func (c *Client) NetworkingAddressLotDelete(params NetworkingAddressLotDeleteParams) error {
+func (c *Client) NetworkingAddressLotDelete(ctx context.Context, params NetworkingAddressLotDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"DELETE",
 		resolveRelative(c.server, "/v1/system/networking/address-lot/{{.address_lot}}"),
@@ -5305,12 +5405,13 @@ func (c *Client) NetworkingAddressLotDelete(params NetworkingAddressLotDeletePar
 // NetworkingAddressLotBlockList: List the blocks in an address lot
 //
 // To iterate over all pages, use the `NetworkingAddressLotBlockListAllPages` method, instead.
-func (c *Client) NetworkingAddressLotBlockList(params NetworkingAddressLotBlockListParams) (*AddressLotBlockResultsPage, error) {
+func (c *Client) NetworkingAddressLotBlockList(ctx context.Context, params NetworkingAddressLotBlockListParams) (*AddressLotBlockResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/system/networking/address-lot/{{.address_lot}}/blocks"),
@@ -5357,7 +5458,7 @@ func (c *Client) NetworkingAddressLotBlockList(params NetworkingAddressLotBlockL
 //
 // This method is a wrapper around the `NetworkingAddressLotBlockList` method.
 // This method returns all the pages at once.
-func (c *Client) NetworkingAddressLotBlockListAllPages(params NetworkingAddressLotBlockListParams) (*[]AddressLotBlock, error) {
+func (c *Client) NetworkingAddressLotBlockListAllPages(ctx context.Context, params NetworkingAddressLotBlockListParams) (*[]AddressLotBlock, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5365,7 +5466,7 @@ func (c *Client) NetworkingAddressLotBlockListAllPages(params NetworkingAddressL
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.NetworkingAddressLotBlockList(params)
+		page, err := c.NetworkingAddressLotBlockList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -5382,12 +5483,13 @@ func (c *Client) NetworkingAddressLotBlockListAllPages(params NetworkingAddressL
 // NetworkingLoopbackAddressList: Get loopback addresses, optionally filtering by id
 //
 // To iterate over all pages, use the `NetworkingLoopbackAddressListAllPages` method, instead.
-func (c *Client) NetworkingLoopbackAddressList(params NetworkingLoopbackAddressListParams) (*LoopbackAddressResultsPage, error) {
+func (c *Client) NetworkingLoopbackAddressList(ctx context.Context, params NetworkingLoopbackAddressListParams) (*LoopbackAddressResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/system/networking/loopback-address"),
@@ -5432,7 +5534,7 @@ func (c *Client) NetworkingLoopbackAddressList(params NetworkingLoopbackAddressL
 //
 // This method is a wrapper around the `NetworkingLoopbackAddressList` method.
 // This method returns all the pages at once.
-func (c *Client) NetworkingLoopbackAddressListAllPages(params NetworkingLoopbackAddressListParams) (*[]LoopbackAddress, error) {
+func (c *Client) NetworkingLoopbackAddressListAllPages(ctx context.Context, params NetworkingLoopbackAddressListParams) (*[]LoopbackAddress, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5440,7 +5542,7 @@ func (c *Client) NetworkingLoopbackAddressListAllPages(params NetworkingLoopback
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.NetworkingLoopbackAddressList(params)
+		page, err := c.NetworkingLoopbackAddressList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -5455,7 +5557,7 @@ func (c *Client) NetworkingLoopbackAddressListAllPages(params NetworkingLoopback
 }
 
 // NetworkingLoopbackAddressCreate: Create a loopback address
-func (c *Client) NetworkingLoopbackAddressCreate(params NetworkingLoopbackAddressCreateParams) (*LoopbackAddress, error) {
+func (c *Client) NetworkingLoopbackAddressCreate(ctx context.Context, params NetworkingLoopbackAddressCreateParams) (*LoopbackAddress, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5467,6 +5569,7 @@ func (c *Client) NetworkingLoopbackAddressCreate(params NetworkingLoopbackAddres
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"POST",
 		resolveRelative(c.server, "/v1/system/networking/loopback-address"),
@@ -5504,12 +5607,13 @@ func (c *Client) NetworkingLoopbackAddressCreate(params NetworkingLoopbackAddres
 }
 
 // NetworkingLoopbackAddressDelete: Delete a loopback address
-func (c *Client) NetworkingLoopbackAddressDelete(params NetworkingLoopbackAddressDeleteParams) error {
+func (c *Client) NetworkingLoopbackAddressDelete(ctx context.Context, params NetworkingLoopbackAddressDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"DELETE",
 		resolveRelative(c.server, "/v1/system/networking/loopback-address/{{.rack_id}}/{{.switch_location}}/{{.address}}/{{.subnet_mask}}"),
@@ -5543,12 +5647,13 @@ func (c *Client) NetworkingLoopbackAddressDelete(params NetworkingLoopbackAddres
 // NetworkingSwitchPortSettingsList: List switch port settings
 //
 // To iterate over all pages, use the `NetworkingSwitchPortSettingsListAllPages` method, instead.
-func (c *Client) NetworkingSwitchPortSettingsList(params NetworkingSwitchPortSettingsListParams) (*SwitchPortSettingsResultsPage, error) {
+func (c *Client) NetworkingSwitchPortSettingsList(ctx context.Context, params NetworkingSwitchPortSettingsListParams) (*SwitchPortSettingsResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/system/networking/switch-port-settings"),
@@ -5594,7 +5699,7 @@ func (c *Client) NetworkingSwitchPortSettingsList(params NetworkingSwitchPortSet
 //
 // This method is a wrapper around the `NetworkingSwitchPortSettingsList` method.
 // This method returns all the pages at once.
-func (c *Client) NetworkingSwitchPortSettingsListAllPages(params NetworkingSwitchPortSettingsListParams) (*[]SwitchPortSettings, error) {
+func (c *Client) NetworkingSwitchPortSettingsListAllPages(ctx context.Context, params NetworkingSwitchPortSettingsListParams) (*[]SwitchPortSettings, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5602,7 +5707,7 @@ func (c *Client) NetworkingSwitchPortSettingsListAllPages(params NetworkingSwitc
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.NetworkingSwitchPortSettingsList(params)
+		page, err := c.NetworkingSwitchPortSettingsList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -5617,7 +5722,7 @@ func (c *Client) NetworkingSwitchPortSettingsListAllPages(params NetworkingSwitc
 }
 
 // NetworkingSwitchPortSettingsCreate: Create switch port settings
-func (c *Client) NetworkingSwitchPortSettingsCreate(params NetworkingSwitchPortSettingsCreateParams) (*SwitchPortSettingsView, error) {
+func (c *Client) NetworkingSwitchPortSettingsCreate(ctx context.Context, params NetworkingSwitchPortSettingsCreateParams) (*SwitchPortSettingsView, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5629,6 +5734,7 @@ func (c *Client) NetworkingSwitchPortSettingsCreate(params NetworkingSwitchPortS
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"POST",
 		resolveRelative(c.server, "/v1/system/networking/switch-port-settings"),
@@ -5666,12 +5772,13 @@ func (c *Client) NetworkingSwitchPortSettingsCreate(params NetworkingSwitchPortS
 }
 
 // NetworkingSwitchPortSettingsDelete: Delete switch port settings
-func (c *Client) NetworkingSwitchPortSettingsDelete(params NetworkingSwitchPortSettingsDeleteParams) error {
+func (c *Client) NetworkingSwitchPortSettingsDelete(ctx context.Context, params NetworkingSwitchPortSettingsDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"DELETE",
 		resolveRelative(c.server, "/v1/system/networking/switch-port-settings"),
@@ -5700,12 +5807,13 @@ func (c *Client) NetworkingSwitchPortSettingsDelete(params NetworkingSwitchPortS
 }
 
 // NetworkingSwitchPortSettingsView: Get information about a switch port
-func (c *Client) NetworkingSwitchPortSettingsView(params NetworkingSwitchPortSettingsViewParams) (*SwitchPortSettingsView, error) {
+func (c *Client) NetworkingSwitchPortSettingsView(ctx context.Context, params NetworkingSwitchPortSettingsViewParams) (*SwitchPortSettingsView, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/system/networking/switch-port-settings/{{.port}}"),
@@ -5745,9 +5853,10 @@ func (c *Client) NetworkingSwitchPortSettingsView(params NetworkingSwitchPortSet
 }
 
 // SystemPolicyView: Fetch the top-level IAM policy
-func (c *Client) SystemPolicyView() (*FleetRolePolicy, error) {
+func (c *Client) SystemPolicyView(ctx context.Context) (*FleetRolePolicy, error) {
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/system/policy"),
@@ -5785,7 +5894,7 @@ func (c *Client) SystemPolicyView() (*FleetRolePolicy, error) {
 }
 
 // SystemPolicyUpdate: Update the top-level IAM policy
-func (c *Client) SystemPolicyUpdate(params SystemPolicyUpdateParams) (*FleetRolePolicy, error) {
+func (c *Client) SystemPolicyUpdate(ctx context.Context, params SystemPolicyUpdateParams) (*FleetRolePolicy, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5797,6 +5906,7 @@ func (c *Client) SystemPolicyUpdate(params SystemPolicyUpdateParams) (*FleetRole
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"PUT",
 		resolveRelative(c.server, "/v1/system/policy"),
@@ -5836,12 +5946,13 @@ func (c *Client) SystemPolicyUpdate(params SystemPolicyUpdateParams) (*FleetRole
 // RoleList: List built-in roles
 //
 // To iterate over all pages, use the `RoleListAllPages` method, instead.
-func (c *Client) RoleList(params RoleListParams) (*RoleResultsPage, error) {
+func (c *Client) RoleList(ctx context.Context, params RoleListParams) (*RoleResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/system/roles"),
@@ -5885,7 +5996,7 @@ func (c *Client) RoleList(params RoleListParams) (*RoleResultsPage, error) {
 //
 // This method is a wrapper around the `RoleList` method.
 // This method returns all the pages at once.
-func (c *Client) RoleListAllPages(params RoleListParams) (*[]Role, error) {
+func (c *Client) RoleListAllPages(ctx context.Context, params RoleListParams) (*[]Role, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5893,7 +6004,7 @@ func (c *Client) RoleListAllPages(params RoleListParams) (*[]Role, error) {
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.RoleList(params)
+		page, err := c.RoleList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -5908,12 +6019,13 @@ func (c *Client) RoleListAllPages(params RoleListParams) (*[]Role, error) {
 }
 
 // RoleView: Fetch a built-in role
-func (c *Client) RoleView(params RoleViewParams) (*Role, error) {
+func (c *Client) RoleView(ctx context.Context, params RoleViewParams) (*Role, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/system/roles/{{.role_name}}"),
@@ -5956,12 +6068,13 @@ func (c *Client) RoleView(params RoleViewParams) (*Role, error) {
 // Lists silos that are discoverable based on the current permissions.
 //
 // To iterate over all pages, use the `SiloListAllPages` method, instead.
-func (c *Client) SiloList(params SiloListParams) (*SiloResultsPage, error) {
+func (c *Client) SiloList(ctx context.Context, params SiloListParams) (*SiloResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/system/silos"),
@@ -6007,7 +6120,7 @@ func (c *Client) SiloList(params SiloListParams) (*SiloResultsPage, error) {
 //
 // This method is a wrapper around the `SiloList` method.
 // This method returns all the pages at once.
-func (c *Client) SiloListAllPages(params SiloListParams) (*[]Silo, error) {
+func (c *Client) SiloListAllPages(ctx context.Context, params SiloListParams) (*[]Silo, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6015,7 +6128,7 @@ func (c *Client) SiloListAllPages(params SiloListParams) (*[]Silo, error) {
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.SiloList(params)
+		page, err := c.SiloList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -6030,7 +6143,7 @@ func (c *Client) SiloListAllPages(params SiloListParams) (*[]Silo, error) {
 }
 
 // SiloCreate: Create a silo
-func (c *Client) SiloCreate(params SiloCreateParams) (*Silo, error) {
+func (c *Client) SiloCreate(ctx context.Context, params SiloCreateParams) (*Silo, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6042,6 +6155,7 @@ func (c *Client) SiloCreate(params SiloCreateParams) (*Silo, error) {
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"POST",
 		resolveRelative(c.server, "/v1/system/silos"),
@@ -6080,12 +6194,13 @@ func (c *Client) SiloCreate(params SiloCreateParams) (*Silo, error) {
 
 // SiloView: Fetch a silo
 // Fetch a silo by name.
-func (c *Client) SiloView(params SiloViewParams) (*Silo, error) {
+func (c *Client) SiloView(ctx context.Context, params SiloViewParams) (*Silo, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/system/silos/{{.silo}}"),
@@ -6126,12 +6241,13 @@ func (c *Client) SiloView(params SiloViewParams) (*Silo, error) {
 
 // SiloDelete: Delete a silo
 // Delete a silo by name.
-func (c *Client) SiloDelete(params SiloDeleteParams) error {
+func (c *Client) SiloDelete(ctx context.Context, params SiloDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"DELETE",
 		resolveRelative(c.server, "/v1/system/silos/{{.silo}}"),
@@ -6160,12 +6276,13 @@ func (c *Client) SiloDelete(params SiloDeleteParams) error {
 }
 
 // SiloPolicyView: Fetch a silo's IAM policy
-func (c *Client) SiloPolicyView(params SiloPolicyViewParams) (*SiloRolePolicy, error) {
+func (c *Client) SiloPolicyView(ctx context.Context, params SiloPolicyViewParams) (*SiloRolePolicy, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/system/silos/{{.silo}}/policy"),
@@ -6205,7 +6322,7 @@ func (c *Client) SiloPolicyView(params SiloPolicyViewParams) (*SiloRolePolicy, e
 }
 
 // SiloPolicyUpdate: Update a silo's IAM policy
-func (c *Client) SiloPolicyUpdate(params SiloPolicyUpdateParams) (*SiloRolePolicy, error) {
+func (c *Client) SiloPolicyUpdate(ctx context.Context, params SiloPolicyUpdateParams) (*SiloRolePolicy, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6217,6 +6334,7 @@ func (c *Client) SiloPolicyUpdate(params SiloPolicyUpdateParams) (*SiloRolePolic
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"PUT",
 		resolveRelative(c.server, "/v1/system/silos/{{.silo}}/policy"),
@@ -6258,12 +6376,13 @@ func (c *Client) SiloPolicyUpdate(params SiloPolicyUpdateParams) (*SiloRolePolic
 // SiloUserList: List built-in (system) users in a silo
 //
 // To iterate over all pages, use the `SiloUserListAllPages` method, instead.
-func (c *Client) SiloUserList(params SiloUserListParams) (*UserResultsPage, error) {
+func (c *Client) SiloUserList(ctx context.Context, params SiloUserListParams) (*UserResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/system/users"),
@@ -6309,7 +6428,7 @@ func (c *Client) SiloUserList(params SiloUserListParams) (*UserResultsPage, erro
 //
 // This method is a wrapper around the `SiloUserList` method.
 // This method returns all the pages at once.
-func (c *Client) SiloUserListAllPages(params SiloUserListParams) (*[]User, error) {
+func (c *Client) SiloUserListAllPages(ctx context.Context, params SiloUserListParams) (*[]User, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6317,7 +6436,7 @@ func (c *Client) SiloUserListAllPages(params SiloUserListParams) (*[]User, error
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.SiloUserList(params)
+		page, err := c.SiloUserList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -6334,12 +6453,13 @@ func (c *Client) SiloUserListAllPages(params SiloUserListParams) (*[]User, error
 // UserBuiltinList: List built-in users
 //
 // To iterate over all pages, use the `UserBuiltinListAllPages` method, instead.
-func (c *Client) UserBuiltinList(params UserBuiltinListParams) (*UserBuiltinResultsPage, error) {
+func (c *Client) UserBuiltinList(ctx context.Context, params UserBuiltinListParams) (*UserBuiltinResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/system/users-builtin"),
@@ -6384,7 +6504,7 @@ func (c *Client) UserBuiltinList(params UserBuiltinListParams) (*UserBuiltinResu
 //
 // This method is a wrapper around the `UserBuiltinList` method.
 // This method returns all the pages at once.
-func (c *Client) UserBuiltinListAllPages(params UserBuiltinListParams) (*[]UserBuiltin, error) {
+func (c *Client) UserBuiltinListAllPages(ctx context.Context, params UserBuiltinListParams) (*[]UserBuiltin, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6392,7 +6512,7 @@ func (c *Client) UserBuiltinListAllPages(params UserBuiltinListParams) (*[]UserB
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.UserBuiltinList(params)
+		page, err := c.UserBuiltinList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -6407,12 +6527,13 @@ func (c *Client) UserBuiltinListAllPages(params UserBuiltinListParams) (*[]UserB
 }
 
 // UserBuiltinView: Fetch a built-in user
-func (c *Client) UserBuiltinView(params UserBuiltinViewParams) (*UserBuiltin, error) {
+func (c *Client) UserBuiltinView(ctx context.Context, params UserBuiltinViewParams) (*UserBuiltin, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/system/users-builtin/{{.user}}"),
@@ -6452,12 +6573,13 @@ func (c *Client) UserBuiltinView(params UserBuiltinViewParams) (*UserBuiltin, er
 }
 
 // SiloUserView: Fetch a built-in (system) user
-func (c *Client) SiloUserView(params SiloUserViewParams) (*User, error) {
+func (c *Client) SiloUserView(ctx context.Context, params SiloUserViewParams) (*User, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/system/users/{{.user_id}}"),
@@ -6501,12 +6623,13 @@ func (c *Client) SiloUserView(params SiloUserViewParams) (*User, error) {
 // UserList: List users
 //
 // To iterate over all pages, use the `UserListAllPages` method, instead.
-func (c *Client) UserList(params UserListParams) (*UserResultsPage, error) {
+func (c *Client) UserList(ctx context.Context, params UserListParams) (*UserResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/users"),
@@ -6552,7 +6675,7 @@ func (c *Client) UserList(params UserListParams) (*UserResultsPage, error) {
 //
 // This method is a wrapper around the `UserList` method.
 // This method returns all the pages at once.
-func (c *Client) UserListAllPages(params UserListParams) (*[]User, error) {
+func (c *Client) UserListAllPages(ctx context.Context, params UserListParams) (*[]User, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6560,7 +6683,7 @@ func (c *Client) UserListAllPages(params UserListParams) (*[]User, error) {
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.UserList(params)
+		page, err := c.UserList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -6575,12 +6698,13 @@ func (c *Client) UserListAllPages(params UserListParams) (*[]User, error) {
 }
 
 // VpcFirewallRulesView: List firewall rules
-func (c *Client) VpcFirewallRulesView(params VpcFirewallRulesViewParams) (*VpcFirewallRules, error) {
+func (c *Client) VpcFirewallRulesView(ctx context.Context, params VpcFirewallRulesViewParams) (*VpcFirewallRules, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/vpc-firewall-rules"),
@@ -6621,7 +6745,7 @@ func (c *Client) VpcFirewallRulesView(params VpcFirewallRulesViewParams) (*VpcFi
 }
 
 // VpcFirewallRulesUpdate: Replace firewall rules
-func (c *Client) VpcFirewallRulesUpdate(params VpcFirewallRulesUpdateParams) (*VpcFirewallRules, error) {
+func (c *Client) VpcFirewallRulesUpdate(ctx context.Context, params VpcFirewallRulesUpdateParams) (*VpcFirewallRules, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6633,6 +6757,7 @@ func (c *Client) VpcFirewallRulesUpdate(params VpcFirewallRulesUpdateParams) (*V
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"PUT",
 		resolveRelative(c.server, "/v1/vpc-firewall-rules"),
@@ -6676,12 +6801,13 @@ func (c *Client) VpcFirewallRulesUpdate(params VpcFirewallRulesUpdateParams) (*V
 // List the routes associated with a router in a particular VPC.
 //
 // To iterate over all pages, use the `VpcRouterRouteListAllPages` method, instead.
-func (c *Client) VpcRouterRouteList(params VpcRouterRouteListParams) (*RouterRouteResultsPage, error) {
+func (c *Client) VpcRouterRouteList(ctx context.Context, params VpcRouterRouteListParams) (*RouterRouteResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/vpc-router-routes"),
@@ -6730,7 +6856,7 @@ func (c *Client) VpcRouterRouteList(params VpcRouterRouteListParams) (*RouterRou
 //
 // This method is a wrapper around the `VpcRouterRouteList` method.
 // This method returns all the pages at once.
-func (c *Client) VpcRouterRouteListAllPages(params VpcRouterRouteListParams) (*[]RouterRoute, error) {
+func (c *Client) VpcRouterRouteListAllPages(ctx context.Context, params VpcRouterRouteListParams) (*[]RouterRoute, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6738,7 +6864,7 @@ func (c *Client) VpcRouterRouteListAllPages(params VpcRouterRouteListParams) (*[
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.VpcRouterRouteList(params)
+		page, err := c.VpcRouterRouteList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -6753,7 +6879,7 @@ func (c *Client) VpcRouterRouteListAllPages(params VpcRouterRouteListParams) (*[
 }
 
 // VpcRouterRouteCreate: Create a router
-func (c *Client) VpcRouterRouteCreate(params VpcRouterRouteCreateParams) (*RouterRoute, error) {
+func (c *Client) VpcRouterRouteCreate(ctx context.Context, params VpcRouterRouteCreateParams) (*RouterRoute, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6765,6 +6891,7 @@ func (c *Client) VpcRouterRouteCreate(params VpcRouterRouteCreateParams) (*Route
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"POST",
 		resolveRelative(c.server, "/v1/vpc-router-routes"),
@@ -6806,12 +6933,13 @@ func (c *Client) VpcRouterRouteCreate(params VpcRouterRouteCreateParams) (*Route
 }
 
 // VpcRouterRouteView: Fetch a route
-func (c *Client) VpcRouterRouteView(params VpcRouterRouteViewParams) (*RouterRoute, error) {
+func (c *Client) VpcRouterRouteView(ctx context.Context, params VpcRouterRouteViewParams) (*RouterRoute, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/vpc-router-routes/{{.route}}"),
@@ -6855,7 +6983,7 @@ func (c *Client) VpcRouterRouteView(params VpcRouterRouteViewParams) (*RouterRou
 }
 
 // VpcRouterRouteUpdate: Update a route
-func (c *Client) VpcRouterRouteUpdate(params VpcRouterRouteUpdateParams) (*RouterRoute, error) {
+func (c *Client) VpcRouterRouteUpdate(ctx context.Context, params VpcRouterRouteUpdateParams) (*RouterRoute, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6867,6 +6995,7 @@ func (c *Client) VpcRouterRouteUpdate(params VpcRouterRouteUpdateParams) (*Route
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"PUT",
 		resolveRelative(c.server, "/v1/vpc-router-routes/{{.route}}"),
@@ -6910,12 +7039,13 @@ func (c *Client) VpcRouterRouteUpdate(params VpcRouterRouteUpdateParams) (*Route
 }
 
 // VpcRouterRouteDelete: Delete a route
-func (c *Client) VpcRouterRouteDelete(params VpcRouterRouteDeleteParams) error {
+func (c *Client) VpcRouterRouteDelete(ctx context.Context, params VpcRouterRouteDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"DELETE",
 		resolveRelative(c.server, "/v1/vpc-router-routes/{{.route}}"),
@@ -6950,12 +7080,13 @@ func (c *Client) VpcRouterRouteDelete(params VpcRouterRouteDeleteParams) error {
 // VpcRouterList: List routers
 //
 // To iterate over all pages, use the `VpcRouterListAllPages` method, instead.
-func (c *Client) VpcRouterList(params VpcRouterListParams) (*VpcRouterResultsPage, error) {
+func (c *Client) VpcRouterList(ctx context.Context, params VpcRouterListParams) (*VpcRouterResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/vpc-routers"),
@@ -7002,7 +7133,7 @@ func (c *Client) VpcRouterList(params VpcRouterListParams) (*VpcRouterResultsPag
 //
 // This method is a wrapper around the `VpcRouterList` method.
 // This method returns all the pages at once.
-func (c *Client) VpcRouterListAllPages(params VpcRouterListParams) (*[]VpcRouter, error) {
+func (c *Client) VpcRouterListAllPages(ctx context.Context, params VpcRouterListParams) (*[]VpcRouter, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7010,7 +7141,7 @@ func (c *Client) VpcRouterListAllPages(params VpcRouterListParams) (*[]VpcRouter
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.VpcRouterList(params)
+		page, err := c.VpcRouterList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -7025,7 +7156,7 @@ func (c *Client) VpcRouterListAllPages(params VpcRouterListParams) (*[]VpcRouter
 }
 
 // VpcRouterCreate: Create a VPC router
-func (c *Client) VpcRouterCreate(params VpcRouterCreateParams) (*VpcRouter, error) {
+func (c *Client) VpcRouterCreate(ctx context.Context, params VpcRouterCreateParams) (*VpcRouter, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7037,6 +7168,7 @@ func (c *Client) VpcRouterCreate(params VpcRouterCreateParams) (*VpcRouter, erro
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"POST",
 		resolveRelative(c.server, "/v1/vpc-routers"),
@@ -7077,12 +7209,13 @@ func (c *Client) VpcRouterCreate(params VpcRouterCreateParams) (*VpcRouter, erro
 }
 
 // VpcRouterView: Fetch a router
-func (c *Client) VpcRouterView(params VpcRouterViewParams) (*VpcRouter, error) {
+func (c *Client) VpcRouterView(ctx context.Context, params VpcRouterViewParams) (*VpcRouter, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/vpc-routers/{{.router}}"),
@@ -7125,7 +7258,7 @@ func (c *Client) VpcRouterView(params VpcRouterViewParams) (*VpcRouter, error) {
 }
 
 // VpcRouterUpdate: Update a router
-func (c *Client) VpcRouterUpdate(params VpcRouterUpdateParams) (*VpcRouter, error) {
+func (c *Client) VpcRouterUpdate(ctx context.Context, params VpcRouterUpdateParams) (*VpcRouter, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7137,6 +7270,7 @@ func (c *Client) VpcRouterUpdate(params VpcRouterUpdateParams) (*VpcRouter, erro
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"PUT",
 		resolveRelative(c.server, "/v1/vpc-routers/{{.router}}"),
@@ -7179,12 +7313,13 @@ func (c *Client) VpcRouterUpdate(params VpcRouterUpdateParams) (*VpcRouter, erro
 }
 
 // VpcRouterDelete: Delete a router
-func (c *Client) VpcRouterDelete(params VpcRouterDeleteParams) error {
+func (c *Client) VpcRouterDelete(ctx context.Context, params VpcRouterDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"DELETE",
 		resolveRelative(c.server, "/v1/vpc-routers/{{.router}}"),
@@ -7218,12 +7353,13 @@ func (c *Client) VpcRouterDelete(params VpcRouterDeleteParams) error {
 // VpcSubnetList: List subnets
 //
 // To iterate over all pages, use the `VpcSubnetListAllPages` method, instead.
-func (c *Client) VpcSubnetList(params VpcSubnetListParams) (*VpcSubnetResultsPage, error) {
+func (c *Client) VpcSubnetList(ctx context.Context, params VpcSubnetListParams) (*VpcSubnetResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/vpc-subnets"),
@@ -7270,7 +7406,7 @@ func (c *Client) VpcSubnetList(params VpcSubnetListParams) (*VpcSubnetResultsPag
 //
 // This method is a wrapper around the `VpcSubnetList` method.
 // This method returns all the pages at once.
-func (c *Client) VpcSubnetListAllPages(params VpcSubnetListParams) (*[]VpcSubnet, error) {
+func (c *Client) VpcSubnetListAllPages(ctx context.Context, params VpcSubnetListParams) (*[]VpcSubnet, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7278,7 +7414,7 @@ func (c *Client) VpcSubnetListAllPages(params VpcSubnetListParams) (*[]VpcSubnet
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.VpcSubnetList(params)
+		page, err := c.VpcSubnetList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -7293,7 +7429,7 @@ func (c *Client) VpcSubnetListAllPages(params VpcSubnetListParams) (*[]VpcSubnet
 }
 
 // VpcSubnetCreate: Create a subnet
-func (c *Client) VpcSubnetCreate(params VpcSubnetCreateParams) (*VpcSubnet, error) {
+func (c *Client) VpcSubnetCreate(ctx context.Context, params VpcSubnetCreateParams) (*VpcSubnet, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7305,6 +7441,7 @@ func (c *Client) VpcSubnetCreate(params VpcSubnetCreateParams) (*VpcSubnet, erro
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"POST",
 		resolveRelative(c.server, "/v1/vpc-subnets"),
@@ -7345,12 +7482,13 @@ func (c *Client) VpcSubnetCreate(params VpcSubnetCreateParams) (*VpcSubnet, erro
 }
 
 // VpcSubnetView: Fetch a subnet
-func (c *Client) VpcSubnetView(params VpcSubnetViewParams) (*VpcSubnet, error) {
+func (c *Client) VpcSubnetView(ctx context.Context, params VpcSubnetViewParams) (*VpcSubnet, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/vpc-subnets/{{.subnet}}"),
@@ -7393,7 +7531,7 @@ func (c *Client) VpcSubnetView(params VpcSubnetViewParams) (*VpcSubnet, error) {
 }
 
 // VpcSubnetUpdate: Update a subnet
-func (c *Client) VpcSubnetUpdate(params VpcSubnetUpdateParams) (*VpcSubnet, error) {
+func (c *Client) VpcSubnetUpdate(ctx context.Context, params VpcSubnetUpdateParams) (*VpcSubnet, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7405,6 +7543,7 @@ func (c *Client) VpcSubnetUpdate(params VpcSubnetUpdateParams) (*VpcSubnet, erro
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"PUT",
 		resolveRelative(c.server, "/v1/vpc-subnets/{{.subnet}}"),
@@ -7447,12 +7586,13 @@ func (c *Client) VpcSubnetUpdate(params VpcSubnetUpdateParams) (*VpcSubnet, erro
 }
 
 // VpcSubnetDelete: Delete a subnet
-func (c *Client) VpcSubnetDelete(params VpcSubnetDeleteParams) error {
+func (c *Client) VpcSubnetDelete(ctx context.Context, params VpcSubnetDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"DELETE",
 		resolveRelative(c.server, "/v1/vpc-subnets/{{.subnet}}"),
@@ -7486,12 +7626,13 @@ func (c *Client) VpcSubnetDelete(params VpcSubnetDeleteParams) error {
 // VpcSubnetListNetworkInterfaces: List network interfaces
 //
 // To iterate over all pages, use the `VpcSubnetListNetworkInterfacesAllPages` method, instead.
-func (c *Client) VpcSubnetListNetworkInterfaces(params VpcSubnetListNetworkInterfacesParams) (*InstanceNetworkInterfaceResultsPage, error) {
+func (c *Client) VpcSubnetListNetworkInterfaces(ctx context.Context, params VpcSubnetListNetworkInterfacesParams) (*InstanceNetworkInterfaceResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/vpc-subnets/{{.subnet}}/network-interfaces"),
@@ -7540,7 +7681,7 @@ func (c *Client) VpcSubnetListNetworkInterfaces(params VpcSubnetListNetworkInter
 //
 // This method is a wrapper around the `VpcSubnetListNetworkInterfaces` method.
 // This method returns all the pages at once.
-func (c *Client) VpcSubnetListNetworkInterfacesAllPages(params VpcSubnetListNetworkInterfacesParams) (*[]InstanceNetworkInterface, error) {
+func (c *Client) VpcSubnetListNetworkInterfacesAllPages(ctx context.Context, params VpcSubnetListNetworkInterfacesParams) (*[]InstanceNetworkInterface, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7548,7 +7689,7 @@ func (c *Client) VpcSubnetListNetworkInterfacesAllPages(params VpcSubnetListNetw
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.VpcSubnetListNetworkInterfaces(params)
+		page, err := c.VpcSubnetListNetworkInterfaces(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -7565,12 +7706,13 @@ func (c *Client) VpcSubnetListNetworkInterfacesAllPages(params VpcSubnetListNetw
 // VpcList: List VPCs
 //
 // To iterate over all pages, use the `VpcListAllPages` method, instead.
-func (c *Client) VpcList(params VpcListParams) (*VpcResultsPage, error) {
+func (c *Client) VpcList(ctx context.Context, params VpcListParams) (*VpcResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/vpcs"),
@@ -7616,7 +7758,7 @@ func (c *Client) VpcList(params VpcListParams) (*VpcResultsPage, error) {
 //
 // This method is a wrapper around the `VpcList` method.
 // This method returns all the pages at once.
-func (c *Client) VpcListAllPages(params VpcListParams) (*[]Vpc, error) {
+func (c *Client) VpcListAllPages(ctx context.Context, params VpcListParams) (*[]Vpc, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7624,7 +7766,7 @@ func (c *Client) VpcListAllPages(params VpcListParams) (*[]Vpc, error) {
 	params.PageToken = ""
 	params.Limit = 100
 	for {
-		page, err := c.VpcList(params)
+		page, err := c.VpcList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -7639,7 +7781,7 @@ func (c *Client) VpcListAllPages(params VpcListParams) (*[]Vpc, error) {
 }
 
 // VpcCreate: Create a VPC
-func (c *Client) VpcCreate(params VpcCreateParams) (*Vpc, error) {
+func (c *Client) VpcCreate(ctx context.Context, params VpcCreateParams) (*Vpc, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7651,6 +7793,7 @@ func (c *Client) VpcCreate(params VpcCreateParams) (*Vpc, error) {
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"POST",
 		resolveRelative(c.server, "/v1/vpcs"),
@@ -7690,12 +7833,13 @@ func (c *Client) VpcCreate(params VpcCreateParams) (*Vpc, error) {
 }
 
 // VpcView: Fetch a VPC
-func (c *Client) VpcView(params VpcViewParams) (*Vpc, error) {
+func (c *Client) VpcView(ctx context.Context, params VpcViewParams) (*Vpc, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"GET",
 		resolveRelative(c.server, "/v1/vpcs/{{.vpc}}"),
@@ -7737,7 +7881,7 @@ func (c *Client) VpcView(params VpcViewParams) (*Vpc, error) {
 }
 
 // VpcUpdate: Update a VPC
-func (c *Client) VpcUpdate(params VpcUpdateParams) (*Vpc, error) {
+func (c *Client) VpcUpdate(ctx context.Context, params VpcUpdateParams) (*Vpc, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7749,6 +7893,7 @@ func (c *Client) VpcUpdate(params VpcUpdateParams) (*Vpc, error) {
 
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		b,
 		"PUT",
 		resolveRelative(c.server, "/v1/vpcs/{{.vpc}}"),
@@ -7790,12 +7935,13 @@ func (c *Client) VpcUpdate(params VpcUpdateParams) (*Vpc, error) {
 }
 
 // VpcDelete: Delete a VPC
-func (c *Client) VpcDelete(params VpcDeleteParams) error {
+func (c *Client) VpcDelete(ctx context.Context, params VpcDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
 	// Create the request
 	req, err := buildRequest(
+		ctx,
 		nil,
 		"DELETE",
 		resolveRelative(c.server, "/v1/vpcs/{{.vpc}}"),

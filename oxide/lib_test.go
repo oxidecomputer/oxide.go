@@ -6,6 +6,7 @@ package oxide
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -128,7 +129,7 @@ func Test_buildRequest(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := buildRequest(tt.args.body, tt.args.method, tt.args.uri, tt.args.params, tt.args.queries)
+			got, err := buildRequest(context.TODO(), tt.args.body, tt.args.method, tt.args.uri, tt.args.params, tt.args.queries)
 			if err != nil {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
