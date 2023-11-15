@@ -1,54 +1,78 @@
 package oxide
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
-	"net/url"
 )
 
 // HTTPError is an error returned by a failed API call.
 type HTTPError struct {
-	// URL is the URL that was being accessed when the error occurred.
-	// It will always be populated.
-	URL *url.URL
-	// StatusCode is the HTTP response status code and will always be populated.
-	StatusCode int
-	// Message is the server response message and is only populated when
-	// explicitly referenced by the JSON server response.
-	Message string
-	// Body is the raw response returned by the server.
-	// It is often but not always JSON, depending on how the request fails.
-	Body string
-	// Header contains the response header fields from the server.
-	Header http.Header
+	// ErrorResponse is the API's Error response type.
+	ErrorResponse *ErrorResponse
+
+	// HTTPResponse is the raw HTTP response returned by the server.
+	HTTPResponse *http.Response
+
+	// RawBody is the raw response body returned by the server.
+	RawBody string
 }
 
-// Error converts the Error type to a readable string.
+// Error converts the HTTPError type to a readable string.
 func (err HTTPError) Error() string {
-	if err.Message != "" {
-		return fmt.Sprintf("HTTP %d: %s (%s)", err.StatusCode, err.Message, err.URL)
+	output := new(bytes.Buffer)
+	if err.HTTPResponse.Request.URL != nil {
+		fmt.Fprintf(output, "%s %s\n", err.HTTPResponse.Request.Method, err.HTTPResponse.Request.URL)
+	} else {
+		// This case is extremely unlikely, just adding to avoid a panic due to a nil pointer
+		fmt.Fprintf(output, "%s <URL unavailable>\n", err.HTTPResponse.Request.Method)
+	}
+	fmt.Fprintln(output, "----------- RESPONSE -----------")
+	if err.ErrorResponse != nil {
+		fmt.Fprintf(output, "Status: %d %s\n", err.HTTPResponse.StatusCode, err.ErrorResponse.ErrorCode)
+		fmt.Fprintf(output, "Message: %s\n", err.ErrorResponse.Message)
+		fmt.Fprintf(output, "RequestID: %s\n", err.ErrorResponse.RequestId)
+	} else {
+		// In the very unlikely case that the error response was not able to be parsed
+		// into oxide.Error, we will return the raw body of the response.
+		fmt.Fprintf(output, "Status: %d\n", err.HTTPResponse.StatusCode)
+		fmt.Fprintf(output, "Response Body: %v\n", err.RawBody)
 	}
 
-	return fmt.Sprintf("HTTP %d (%s) BODY -> %v", err.StatusCode, err.URL, err.Body)
+	fmt.Fprintln(output, "------- RESPONSE HEADERS -------")
+	for k, v := range err.HTTPResponse.Header {
+		fmt.Fprintf(output, "%s: %s\n", k, v)
+	}
+
+	return fmt.Sprintf("%v", output.String())
 }
 
-// checkResponse returns an error (of type *HTTPError) if the response
-// status code is not 2xx.
-func checkResponse(res *http.Response) error {
-	if res.StatusCode >= 200 && res.StatusCode <= 299 {
+// NewHTTPError returns an error of type *HTTPError if the response
+// status code is 3xx or greater.
+func NewHTTPError(res *http.Response) error {
+	if res.StatusCode <= 299 {
 		return nil
 	}
 
+	// We want the API error to be returned, so in the unlikely case
+	// that io.ReadAll returns with an error we'll leave it as an empty string
 	slurp, _ := io.ReadAll(res.Body)
-	// TODO: We could optionally decode the response body as JSON if there is a
-	// standardized error format.
 
-	return &HTTPError{
-		URL:        res.Request.URL,
-		StatusCode: res.StatusCode,
-		Body:       string(slurp),
-		Header:     res.Header,
-		Message:    "",
+	e := HTTPError{
+		HTTPResponse: res,
+		RawBody:      string(slurp),
 	}
+
+	var apiError ErrorResponse
+	if err := json.Unmarshal(slurp, &apiError); err != nil {
+		// We return the error as is even with an unmarshal error,
+		// as it already contains the RawBody.
+		return &e
+	}
+
+	e.ErrorResponse = &apiError
+
+	return &e
 }

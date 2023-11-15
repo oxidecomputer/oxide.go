@@ -45,8 +45,8 @@ func (c *Client) LoginSaml(ctx context.Context, params LoginSamlParams) error {
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return err
 	}
 
@@ -85,8 +85,8 @@ func (c *Client) CertificateList(ctx context.Context, params CertificateListPara
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -163,8 +163,8 @@ func (c *Client) CertificateCreate(ctx context.Context, params CertificateCreate
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -210,8 +210,8 @@ func (c *Client) CertificateView(ctx context.Context, params CertificateViewPara
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -257,8 +257,8 @@ func (c *Client) CertificateDelete(ctx context.Context, params CertificateDelete
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return err
 	}
 
@@ -297,8 +297,8 @@ func (c *Client) DiskList(ctx context.Context, params DiskListParams) (*DiskResu
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -375,8 +375,8 @@ func (c *Client) DiskCreate(ctx context.Context, params DiskCreateParams) (*Disk
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -423,8 +423,8 @@ func (c *Client) DiskView(ctx context.Context, params DiskViewParams) (*Disk, er
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -471,8 +471,8 @@ func (c *Client) DiskDelete(ctx context.Context, params DiskDeleteParams) error 
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return err
 	}
 
@@ -514,8 +514,8 @@ func (c *Client) DiskBulkWriteImport(ctx context.Context, params DiskBulkWriteIm
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return err
 	}
 
@@ -552,8 +552,8 @@ func (c *Client) DiskBulkWriteImportStart(ctx context.Context, params DiskBulkWr
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return err
 	}
 
@@ -590,8 +590,8 @@ func (c *Client) DiskBulkWriteImportStop(ctx context.Context, params DiskBulkWri
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return err
 	}
 
@@ -633,8 +633,8 @@ func (c *Client) DiskFinalizeImport(ctx context.Context, params DiskFinalizeImpo
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return err
 	}
 
@@ -676,8 +676,8 @@ func (c *Client) DiskImportBlocksFromUrl(ctx context.Context, params DiskImportB
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return err
 	}
 
@@ -721,8 +721,8 @@ func (c *Client) DiskMetricsList(ctx context.Context, params DiskMetricsListPara
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -797,8 +797,8 @@ func (c *Client) GroupList(ctx context.Context, params GroupListParams) (*GroupR
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -869,8 +869,8 @@ func (c *Client) GroupView(ctx context.Context, params GroupViewParams) (*Group,
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -921,8 +921,8 @@ func (c *Client) ImageList(ctx context.Context, params ImageListParams) (*ImageR
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -1001,8 +1001,8 @@ func (c *Client) ImageCreate(ctx context.Context, params ImageCreateParams) (*Im
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -1050,8 +1050,8 @@ func (c *Client) ImageView(ctx context.Context, params ImageViewParams) (*Image,
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -1099,8 +1099,8 @@ func (c *Client) ImageDelete(ctx context.Context, params ImageDeleteParams) erro
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return err
 	}
 
@@ -1137,8 +1137,8 @@ func (c *Client) ImageDemote(ctx context.Context, params ImageDemoteParams) (*Im
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -1186,8 +1186,8 @@ func (c *Client) ImagePromote(ctx context.Context, params ImagePromoteParams) (*
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -1237,8 +1237,8 @@ func (c *Client) InstanceList(ctx context.Context, params InstanceListParams) (*
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -1315,8 +1315,8 @@ func (c *Client) InstanceCreate(ctx context.Context, params InstanceCreateParams
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -1363,8 +1363,8 @@ func (c *Client) InstanceView(ctx context.Context, params InstanceViewParams) (*
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -1411,8 +1411,8 @@ func (c *Client) InstanceDelete(ctx context.Context, params InstanceDeleteParams
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return err
 	}
 
@@ -1453,8 +1453,8 @@ func (c *Client) InstanceDiskList(ctx context.Context, params InstanceDiskListPa
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -1533,8 +1533,8 @@ func (c *Client) InstanceDiskAttach(ctx context.Context, params InstanceDiskAtta
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -1587,8 +1587,8 @@ func (c *Client) InstanceDiskDetach(ctx context.Context, params InstanceDiskDeta
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -1635,8 +1635,8 @@ func (c *Client) InstanceExternalIpList(ctx context.Context, params InstanceExte
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -1689,8 +1689,8 @@ func (c *Client) InstanceMigrate(ctx context.Context, params InstanceMigratePara
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -1737,8 +1737,8 @@ func (c *Client) InstanceReboot(ctx context.Context, params InstanceRebootParams
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -1788,8 +1788,8 @@ func (c *Client) InstanceSerialConsole(ctx context.Context, params InstanceSeria
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -1837,8 +1837,8 @@ func (c *Client) InstanceSerialConsoleStream(ctx context.Context, params Instanc
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return err
 	}
 
@@ -1874,8 +1874,8 @@ func (c *Client) InstanceStart(ctx context.Context, params InstanceStartParams) 
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -1922,8 +1922,8 @@ func (c *Client) InstanceStop(ctx context.Context, params InstanceStopParams) (*
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -1973,8 +1973,8 @@ func (c *Client) ProjectIpPoolList(ctx context.Context, params ProjectIpPoolList
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -2047,8 +2047,8 @@ func (c *Client) ProjectIpPoolView(ctx context.Context, params ProjectIpPoolView
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -2099,8 +2099,8 @@ func (c *Client) LoginLocal(ctx context.Context, params LoginLocalParams) error 
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return err
 	}
 
@@ -2129,8 +2129,8 @@ func (c *Client) CurrentUserView(ctx context.Context) (*CurrentUser, error) {
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -2179,8 +2179,8 @@ func (c *Client) CurrentUserGroups(ctx context.Context, params CurrentUserGroups
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -2256,8 +2256,8 @@ func (c *Client) CurrentUserSshKeyList(ctx context.Context, params CurrentUserSs
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -2334,8 +2334,8 @@ func (c *Client) CurrentUserSshKeyCreate(ctx context.Context, params CurrentUser
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -2381,8 +2381,8 @@ func (c *Client) CurrentUserSshKeyView(ctx context.Context, params CurrentUserSs
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -2428,8 +2428,8 @@ func (c *Client) CurrentUserSshKeyDelete(ctx context.Context, params CurrentUser
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return err
 	}
 
@@ -2472,8 +2472,8 @@ func (c *Client) SiloMetric(ctx context.Context, params SiloMetricParams) (*Meas
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -2550,8 +2550,8 @@ func (c *Client) InstanceNetworkInterfaceList(ctx context.Context, params Instan
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -2629,8 +2629,8 @@ func (c *Client) InstanceNetworkInterfaceCreate(ctx context.Context, params Inst
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -2678,8 +2678,8 @@ func (c *Client) InstanceNetworkInterfaceView(ctx context.Context, params Instan
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -2733,8 +2733,8 @@ func (c *Client) InstanceNetworkInterfaceUpdate(ctx context.Context, params Inst
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -2783,8 +2783,8 @@ func (c *Client) InstanceNetworkInterfaceDelete(ctx context.Context, params Inst
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return err
 	}
 
@@ -2813,8 +2813,8 @@ func (c *Client) PolicyView(ctx context.Context) (*SiloRolePolicy, error) {
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -2863,8 +2863,8 @@ func (c *Client) PolicyUpdate(ctx context.Context, params PolicyUpdateParams) (*
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -2913,8 +2913,8 @@ func (c *Client) ProjectList(ctx context.Context, params ProjectListParams) (*Pr
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -2989,8 +2989,8 @@ func (c *Client) ProjectCreate(ctx context.Context, params ProjectCreateParams) 
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -3035,8 +3035,8 @@ func (c *Client) ProjectView(ctx context.Context, params ProjectViewParams) (*Pr
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -3087,8 +3087,8 @@ func (c *Client) ProjectUpdate(ctx context.Context, params ProjectUpdateParams) 
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -3133,8 +3133,8 @@ func (c *Client) ProjectDelete(ctx context.Context, params ProjectDeleteParams) 
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return err
 	}
 
@@ -3168,8 +3168,8 @@ func (c *Client) ProjectPolicyView(ctx context.Context, params ProjectPolicyView
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -3220,8 +3220,8 @@ func (c *Client) ProjectPolicyUpdate(ctx context.Context, params ProjectPolicyUp
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -3271,8 +3271,8 @@ func (c *Client) SnapshotList(ctx context.Context, params SnapshotListParams) (*
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -3350,8 +3350,8 @@ func (c *Client) SnapshotCreate(ctx context.Context, params SnapshotCreateParams
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -3398,8 +3398,8 @@ func (c *Client) SnapshotView(ctx context.Context, params SnapshotViewParams) (*
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -3446,8 +3446,8 @@ func (c *Client) SnapshotDelete(ctx context.Context, params SnapshotDeleteParams
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return err
 	}
 
@@ -3485,8 +3485,8 @@ func (c *Client) PhysicalDiskList(ctx context.Context, params PhysicalDiskListPa
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -3561,8 +3561,8 @@ func (c *Client) RackList(ctx context.Context, params RackListParams) (*RackResu
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -3633,8 +3633,8 @@ func (c *Client) RackView(ctx context.Context, params RackViewParams) (*Rack, er
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -3683,8 +3683,8 @@ func (c *Client) SledList(ctx context.Context, params SledListParams) (*SledResu
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -3755,8 +3755,8 @@ func (c *Client) SledView(ctx context.Context, params SledViewParams) (*Sled, er
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -3807,8 +3807,8 @@ func (c *Client) SledPhysicalDiskList(ctx context.Context, params SledPhysicalDi
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -3885,8 +3885,8 @@ func (c *Client) SledInstanceList(ctx context.Context, params SledInstanceListPa
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -3962,8 +3962,8 @@ func (c *Client) NetworkingSwitchPortList(ctx context.Context, params Networking
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -4043,8 +4043,8 @@ func (c *Client) NetworkingSwitchPortApplySettings(ctx context.Context, params N
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return err
 	}
 
@@ -4081,8 +4081,8 @@ func (c *Client) NetworkingSwitchPortClearSettings(ctx context.Context, params N
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return err
 	}
 
@@ -4120,8 +4120,8 @@ func (c *Client) SwitchList(ctx context.Context, params SwitchListParams) (*Swit
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -4192,8 +4192,8 @@ func (c *Client) SwitchView(ctx context.Context, params SwitchViewParams) (*Swit
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -4243,8 +4243,8 @@ func (c *Client) SiloIdentityProviderList(ctx context.Context, params SiloIdenti
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -4322,8 +4322,8 @@ func (c *Client) LocalIdpUserCreate(ctx context.Context, params LocalIdpUserCrea
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -4370,8 +4370,8 @@ func (c *Client) LocalIdpUserDelete(ctx context.Context, params LocalIdpUserDele
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return err
 	}
 
@@ -4414,8 +4414,8 @@ func (c *Client) LocalIdpUserSetPassword(ctx context.Context, params LocalIdpUse
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return err
 	}
 
@@ -4455,8 +4455,8 @@ func (c *Client) SamlIdentityProviderCreate(ctx context.Context, params SamlIden
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -4503,8 +4503,8 @@ func (c *Client) SamlIdentityProviderView(ctx context.Context, params SamlIdenti
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -4553,8 +4553,8 @@ func (c *Client) IpPoolList(ctx context.Context, params IpPoolListParams) (*IpPo
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -4629,8 +4629,8 @@ func (c *Client) IpPoolCreate(ctx context.Context, params IpPoolCreateParams) (*
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -4670,8 +4670,8 @@ func (c *Client) IpPoolServiceView(ctx context.Context) (*IpPool, error) {
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -4720,8 +4720,8 @@ func (c *Client) IpPoolServiceRangeList(ctx context.Context, params IpPoolServic
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -4797,8 +4797,8 @@ func (c *Client) IpPoolServiceRangeAdd(ctx context.Context, params IpPoolService
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -4847,8 +4847,8 @@ func (c *Client) IpPoolServiceRangeRemove(ctx context.Context, params IpPoolServ
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return err
 	}
 
@@ -4882,8 +4882,8 @@ func (c *Client) IpPoolView(ctx context.Context, params IpPoolViewParams) (*IpPo
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -4934,8 +4934,8 @@ func (c *Client) IpPoolUpdate(ctx context.Context, params IpPoolUpdateParams) (*
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -4980,8 +4980,8 @@ func (c *Client) IpPoolDelete(ctx context.Context, params IpPoolDeleteParams) er
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return err
 	}
 
@@ -5021,8 +5021,8 @@ func (c *Client) IpPoolRangeList(ctx context.Context, params IpPoolRangeListPara
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -5100,8 +5100,8 @@ func (c *Client) IpPoolRangeAdd(ctx context.Context, params IpPoolRangeAddParams
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -5152,8 +5152,8 @@ func (c *Client) IpPoolRangeRemove(ctx context.Context, params IpPoolRangeRemove
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return err
 	}
 
@@ -5196,8 +5196,8 @@ func (c *Client) SystemMetric(ctx context.Context, params SystemMetricParams) (*
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -5272,8 +5272,8 @@ func (c *Client) NetworkingAddressLotList(ctx context.Context, params Networking
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -5348,8 +5348,8 @@ func (c *Client) NetworkingAddressLotCreate(ctx context.Context, params Networki
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -5394,8 +5394,8 @@ func (c *Client) NetworkingAddressLotDelete(ctx context.Context, params Networki
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return err
 	}
 
@@ -5435,8 +5435,8 @@ func (c *Client) NetworkingAddressLotBlockList(ctx context.Context, params Netwo
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -5511,8 +5511,8 @@ func (c *Client) NetworkingLoopbackAddressList(ctx context.Context, params Netwo
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -5587,8 +5587,8 @@ func (c *Client) NetworkingLoopbackAddressCreate(ctx context.Context, params Net
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -5636,8 +5636,8 @@ func (c *Client) NetworkingLoopbackAddressDelete(ctx context.Context, params Net
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return err
 	}
 
@@ -5676,8 +5676,8 @@ func (c *Client) NetworkingSwitchPortSettingsList(ctx context.Context, params Ne
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -5752,8 +5752,8 @@ func (c *Client) NetworkingSwitchPortSettingsCreate(ctx context.Context, params 
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -5798,8 +5798,8 @@ func (c *Client) NetworkingSwitchPortSettingsDelete(ctx context.Context, params 
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return err
 	}
 
@@ -5833,8 +5833,8 @@ func (c *Client) NetworkingSwitchPortSettingsView(ctx context.Context, params Ne
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -5874,8 +5874,8 @@ func (c *Client) SystemPolicyView(ctx context.Context) (*FleetRolePolicy, error)
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -5924,8 +5924,8 @@ func (c *Client) SystemPolicyUpdate(ctx context.Context, params SystemPolicyUpda
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -5973,8 +5973,8 @@ func (c *Client) RoleList(ctx context.Context, params RoleListParams) (*RoleResu
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -6045,8 +6045,8 @@ func (c *Client) RoleView(ctx context.Context, params RoleViewParams) (*Role, er
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -6096,8 +6096,8 @@ func (c *Client) SiloList(ctx context.Context, params SiloListParams) (*SiloResu
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -6173,8 +6173,8 @@ func (c *Client) SiloCreate(ctx context.Context, params SiloCreateParams) (*Silo
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -6220,8 +6220,8 @@ func (c *Client) SiloView(ctx context.Context, params SiloViewParams) (*Silo, er
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -6267,8 +6267,8 @@ func (c *Client) SiloDelete(ctx context.Context, params SiloDeleteParams) error 
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return err
 	}
 
@@ -6302,8 +6302,8 @@ func (c *Client) SiloPolicyView(ctx context.Context, params SiloPolicyViewParams
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -6354,8 +6354,8 @@ func (c *Client) SiloPolicyUpdate(ctx context.Context, params SiloPolicyUpdatePa
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -6405,8 +6405,8 @@ func (c *Client) SiloUserList(ctx context.Context, params SiloUserListParams) (*
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -6481,8 +6481,8 @@ func (c *Client) UserBuiltinList(ctx context.Context, params UserBuiltinListPara
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -6553,8 +6553,8 @@ func (c *Client) UserBuiltinView(ctx context.Context, params UserBuiltinViewPara
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -6601,8 +6601,8 @@ func (c *Client) SiloUserView(ctx context.Context, params SiloUserViewParams) (*
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -6652,8 +6652,8 @@ func (c *Client) UserList(ctx context.Context, params UserListParams) (*UserResu
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -6725,8 +6725,8 @@ func (c *Client) VpcFirewallRulesView(ctx context.Context, params VpcFirewallRul
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -6778,8 +6778,8 @@ func (c *Client) VpcFirewallRulesUpdate(ctx context.Context, params VpcFirewallR
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -6832,8 +6832,8 @@ func (c *Client) VpcRouterRouteList(ctx context.Context, params VpcRouterRouteLi
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -6913,8 +6913,8 @@ func (c *Client) VpcRouterRouteCreate(ctx context.Context, params VpcRouterRoute
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -6963,8 +6963,8 @@ func (c *Client) VpcRouterRouteView(ctx context.Context, params VpcRouterRouteVi
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -7019,8 +7019,8 @@ func (c *Client) VpcRouterRouteUpdate(ctx context.Context, params VpcRouterRoute
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -7069,8 +7069,8 @@ func (c *Client) VpcRouterRouteDelete(ctx context.Context, params VpcRouterRoute
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return err
 	}
 
@@ -7110,8 +7110,8 @@ func (c *Client) VpcRouterList(ctx context.Context, params VpcRouterListParams) 
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -7189,8 +7189,8 @@ func (c *Client) VpcRouterCreate(ctx context.Context, params VpcRouterCreatePara
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -7238,8 +7238,8 @@ func (c *Client) VpcRouterView(ctx context.Context, params VpcRouterViewParams) 
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -7293,8 +7293,8 @@ func (c *Client) VpcRouterUpdate(ctx context.Context, params VpcRouterUpdatePara
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -7342,8 +7342,8 @@ func (c *Client) VpcRouterDelete(ctx context.Context, params VpcRouterDeletePara
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return err
 	}
 
@@ -7383,8 +7383,8 @@ func (c *Client) VpcSubnetList(ctx context.Context, params VpcSubnetListParams) 
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -7462,8 +7462,8 @@ func (c *Client) VpcSubnetCreate(ctx context.Context, params VpcSubnetCreatePara
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -7511,8 +7511,8 @@ func (c *Client) VpcSubnetView(ctx context.Context, params VpcSubnetViewParams) 
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -7566,8 +7566,8 @@ func (c *Client) VpcSubnetUpdate(ctx context.Context, params VpcSubnetUpdatePara
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -7615,8 +7615,8 @@ func (c *Client) VpcSubnetDelete(ctx context.Context, params VpcSubnetDeletePara
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return err
 	}
 
@@ -7658,8 +7658,8 @@ func (c *Client) VpcSubnetListNetworkInterfaces(ctx context.Context, params VpcS
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -7735,8 +7735,8 @@ func (c *Client) VpcList(ctx context.Context, params VpcListParams) (*VpcResults
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -7813,8 +7813,8 @@ func (c *Client) VpcCreate(ctx context.Context, params VpcCreateParams) (*Vpc, e
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -7861,8 +7861,8 @@ func (c *Client) VpcView(ctx context.Context, params VpcViewParams) (*Vpc, error
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -7915,8 +7915,8 @@ func (c *Client) VpcUpdate(ctx context.Context, params VpcUpdateParams) (*Vpc, e
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return nil, err
 	}
 
@@ -7963,8 +7963,8 @@ func (c *Client) VpcDelete(ctx context.Context, params VpcDeleteParams) error {
 	}
 	defer resp.Body.Close()
 
-	// Check the response.
-	if err := checkResponse(resp); err != nil {
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
 		return err
 	}
 
