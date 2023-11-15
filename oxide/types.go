@@ -105,6 +105,97 @@ type Baseboard struct {
 	Serial   string `json:"serial,omitempty" yaml:"serial,omitempty"`
 }
 
+// BgpAnnounceSet is represents a BGP announce set by id. The id can be used with other API calls to view and manage the announce set.
+type BgpAnnounceSet struct {
+	// Description is human-readable free-form text about a resource
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Name is unique, mutable, user-controlled identifier for each resource
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	// TimeCreated is timestamp when this resource was created
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	// TimeModified is timestamp when this resource was last modified
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+}
+
+// BgpAnnounceSetCreate is parameters for creating a named set of BGP announcements.
+type BgpAnnounceSetCreate struct {
+	// Announcement is the announcements in this set.
+	Announcement []BgpAnnouncementCreate `json:"announcement,omitempty" yaml:"announcement,omitempty"`
+	Description  string                  `json:"description,omitempty" yaml:"description,omitempty"`
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+}
+
+// BgpAnnouncement is a BGP announcement tied to an address lot block.
+type BgpAnnouncement struct {
+	// AddressLotBlockId is the address block the IP network being announced is drawn from.
+	AddressLotBlockId string `json:"address_lot_block_id,omitempty" yaml:"address_lot_block_id,omitempty"`
+	// AnnounceSetId is the id of the set this announcement is a part of.
+	AnnounceSetId string `json:"announce_set_id,omitempty" yaml:"announce_set_id,omitempty"`
+	// Network is the IP network being announced.
+	Network IpNet `json:"network,omitempty" yaml:"network,omitempty"`
+}
+
+// BgpAnnouncementCreate is a BGP announcement tied to a particular address lot block.
+type BgpAnnouncementCreate struct {
+	// AddressLotBlock is address lot this announcement is drawn from.
+	AddressLotBlock NameOrId `json:"address_lot_block,omitempty" yaml:"address_lot_block,omitempty"`
+	// Network is the network being announced.
+	Network IpNet `json:"network,omitempty" yaml:"network,omitempty"`
+}
+
+// BgpConfig is a base BGP configuration.
+type BgpConfig struct {
+	// Asn is the autonomous system number of this BGP configuration.
+	Asn int `json:"asn,omitempty" yaml:"asn,omitempty"`
+	// Description is human-readable free-form text about a resource
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Name is unique, mutable, user-controlled identifier for each resource
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	// TimeCreated is timestamp when this resource was created
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	// TimeModified is timestamp when this resource was last modified
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+	// Vrf is optional virtual routing and forwarding identifier for this BGP configuration.
+	Vrf string `json:"vrf,omitempty" yaml:"vrf,omitempty"`
+}
+
+// BgpConfigCreate is parameters for creating a BGP configuration. This includes and autonomous system number (ASN) and a virtual routing and forwarding (VRF) identifier.
+type BgpConfigCreate struct {
+	// Asn is the autonomous system number of this BGP configuration.
+	Asn              int      `json:"asn,omitempty" yaml:"asn,omitempty"`
+	BgpAnnounceSetId NameOrId `json:"bgp_announce_set_id,omitempty" yaml:"bgp_announce_set_id,omitempty"`
+	Description      string   `json:"description,omitempty" yaml:"description,omitempty"`
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	// Vrf is optional virtual routing and forwarding identifier for this BGP configuration.
+	Vrf Name `json:"vrf,omitempty" yaml:"vrf,omitempty"`
+}
+
+// BgpConfigResultsPage is a single page of results
+type BgpConfigResultsPage struct {
+	// Items is list of items on this page of results
+	Items []BgpConfig `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// BgpImportedRouteIpv4 is a route imported from a BGP peer.
+type BgpImportedRouteIpv4 struct {
+	// Id is bGP identifier of the originating router.
+	Id int `json:"id,omitempty" yaml:"id,omitempty"`
+	// Nexthop is the nexthop the prefix is reachable through.
+	Nexthop string `json:"nexthop,omitempty" yaml:"nexthop,omitempty"`
+	// Prefix is the destination network prefix.
+	Prefix Ipv4Net `json:"prefix,omitempty" yaml:"prefix,omitempty"`
+	// Switch is switch the route is imported into.
+	Switch SwitchLocation `json:"switch,omitempty" yaml:"switch,omitempty"`
+}
+
 // BgpPeerConfig is a BGP peer configuration for an interface. Includes the set of announcements that will be advertised to the peer identified by `addr`. The `bgp_config` parameter is a reference to global BGP parameters. The `interface_name` indicates what interface the peer should be contacted on.
 type BgpPeerConfig struct {
 	// Addr is the address of the host to peer with.
@@ -113,8 +204,37 @@ type BgpPeerConfig struct {
 	BgpAnnounceSet NameOrId `json:"bgp_announce_set,omitempty" yaml:"bgp_announce_set,omitempty"`
 	// BgpConfig is the global BGP configuration used for establishing a session with this peer.
 	BgpConfig NameOrId `json:"bgp_config,omitempty" yaml:"bgp_config,omitempty"`
+	// ConnectRetry is how long to to wait between TCP connection retries (seconds).
+	ConnectRetry int `json:"connect_retry,omitempty" yaml:"connect_retry,omitempty"`
+	// DelayOpen is how long to delay sending an open request after establishing a TCP session (seconds).
+	DelayOpen int `json:"delay_open,omitempty" yaml:"delay_open,omitempty"`
+	// HoldTime is how long to hold peer connections between keppalives (seconds).
+	HoldTime int `json:"hold_time,omitempty" yaml:"hold_time,omitempty"`
+	// IdleHoldTime is how long to hold a peer in idle before attempting a new session (seconds).
+	IdleHoldTime int `json:"idle_hold_time,omitempty" yaml:"idle_hold_time,omitempty"`
 	// InterfaceName is the name of interface to peer on. This is relative to the port configuration this BGP peer configuration is a part of. For example this value could be phy0 to refer to a primary physical interface. Or it could be vlan47 to refer to a VLAN interface.
 	InterfaceName string `json:"interface_name,omitempty" yaml:"interface_name,omitempty"`
+	// Keepalive is how often to send keepalive requests (seconds).
+	Keepalive int `json:"keepalive,omitempty" yaml:"keepalive,omitempty"`
+}
+
+// BgpPeerState is initial state. Refuse all incomming BGP connections. No resources allocated to peer.
+type BgpPeerState string
+
+// BgpPeerStatus is the current status of a BGP peer.
+type BgpPeerStatus struct {
+	// Addr is iP address of the peer.
+	Addr string `json:"addr,omitempty" yaml:"addr,omitempty"`
+	// LocalAsn is local autonomous system number.
+	LocalAsn int `json:"local_asn,omitempty" yaml:"local_asn,omitempty"`
+	// RemoteAsn is remote autonomous system number.
+	RemoteAsn int `json:"remote_asn,omitempty" yaml:"remote_asn,omitempty"`
+	// State is state of the peer.
+	State BgpPeerState `json:"state,omitempty" yaml:"state,omitempty"`
+	// StateDurationMillis is time of last state change.
+	StateDurationMillis int `json:"state_duration_millis,omitempty" yaml:"state_duration_millis,omitempty"`
+	// Switch is switch with the peer session.
+	Switch SwitchLocation `json:"switch,omitempty" yaml:"switch,omitempty"`
 }
 
 // BinRangedoubleType is the type definition for a BinRangedoubleType.
@@ -151,6 +271,108 @@ type BinRangedouble struct {
 	Start float64 `json:"start,omitempty" yaml:"start,omitempty"`
 }
 
+// BinRangefloatType is the type definition for a BinRangefloatType.
+type BinRangefloatType string
+
+// BinRangefloatRangeTo is a range unbounded below and exclusively above, `..end`.
+type BinRangefloatRangeTo struct {
+	End  float64           `json:"end,omitempty" yaml:"end,omitempty"`
+	Type BinRangefloatType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// BinRangefloatRange is a range bounded inclusively below and exclusively above, `start..end`.
+type BinRangefloatRange struct {
+	End   float64           `json:"end,omitempty" yaml:"end,omitempty"`
+	Start float64           `json:"start,omitempty" yaml:"start,omitempty"`
+	Type  BinRangefloatType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// BinRangefloatRangeFrom is a range bounded inclusively below and unbounded above, `start..`.
+type BinRangefloatRangeFrom struct {
+	Start float64           `json:"start,omitempty" yaml:"start,omitempty"`
+	Type  BinRangefloatType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// BinRangefloat is a type storing a range over `T`.
+//
+// This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those cover `(..end)`, `(start..end)`, and `(start..)` respectively.
+type BinRangefloat struct {
+	// End is the type definition for a End.
+	End float64 `json:"end,omitempty" yaml:"end,omitempty"`
+	// Type is the type definition for a Type.
+	Type BinRangefloatType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Start is the type definition for a Start.
+	Start float64 `json:"start,omitempty" yaml:"start,omitempty"`
+}
+
+// BinRangeint16Type is the type definition for a BinRangeint16Type.
+type BinRangeint16Type string
+
+// BinRangeint16RangeTo is a range unbounded below and exclusively above, `..end`.
+type BinRangeint16RangeTo struct {
+	End  int               `json:"end,omitempty" yaml:"end,omitempty"`
+	Type BinRangeint16Type `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// BinRangeint16Range is a range bounded inclusively below and exclusively above, `start..end`.
+type BinRangeint16Range struct {
+	End   int               `json:"end,omitempty" yaml:"end,omitempty"`
+	Start int               `json:"start,omitempty" yaml:"start,omitempty"`
+	Type  BinRangeint16Type `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// BinRangeint16RangeFrom is a range bounded inclusively below and unbounded above, `start..`.
+type BinRangeint16RangeFrom struct {
+	Start int               `json:"start,omitempty" yaml:"start,omitempty"`
+	Type  BinRangeint16Type `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// BinRangeint16 is a type storing a range over `T`.
+//
+// This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those cover `(..end)`, `(start..end)`, and `(start..)` respectively.
+type BinRangeint16 struct {
+	// End is the type definition for a End.
+	End int `json:"end,omitempty" yaml:"end,omitempty"`
+	// Type is the type definition for a Type.
+	Type BinRangeint16Type `json:"type,omitempty" yaml:"type,omitempty"`
+	// Start is the type definition for a Start.
+	Start int `json:"start,omitempty" yaml:"start,omitempty"`
+}
+
+// BinRangeint32Type is the type definition for a BinRangeint32Type.
+type BinRangeint32Type string
+
+// BinRangeint32RangeTo is a range unbounded below and exclusively above, `..end`.
+type BinRangeint32RangeTo struct {
+	End  int               `json:"end,omitempty" yaml:"end,omitempty"`
+	Type BinRangeint32Type `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// BinRangeint32Range is a range bounded inclusively below and exclusively above, `start..end`.
+type BinRangeint32Range struct {
+	End   int               `json:"end,omitempty" yaml:"end,omitempty"`
+	Start int               `json:"start,omitempty" yaml:"start,omitempty"`
+	Type  BinRangeint32Type `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// BinRangeint32RangeFrom is a range bounded inclusively below and unbounded above, `start..`.
+type BinRangeint32RangeFrom struct {
+	Start int               `json:"start,omitempty" yaml:"start,omitempty"`
+	Type  BinRangeint32Type `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// BinRangeint32 is a type storing a range over `T`.
+//
+// This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those cover `(..end)`, `(start..end)`, and `(start..)` respectively.
+type BinRangeint32 struct {
+	// End is the type definition for a End.
+	End int `json:"end,omitempty" yaml:"end,omitempty"`
+	// Type is the type definition for a Type.
+	Type BinRangeint32Type `json:"type,omitempty" yaml:"type,omitempty"`
+	// Start is the type definition for a Start.
+	Start int `json:"start,omitempty" yaml:"start,omitempty"`
+}
+
 // BinRangeint64Type is the type definition for a BinRangeint64Type.
 type BinRangeint64Type string
 
@@ -185,6 +407,176 @@ type BinRangeint64 struct {
 	Start int `json:"start,omitempty" yaml:"start,omitempty"`
 }
 
+// BinRangeint8Type is the type definition for a BinRangeint8Type.
+type BinRangeint8Type string
+
+// BinRangeint8RangeTo is a range unbounded below and exclusively above, `..end`.
+type BinRangeint8RangeTo struct {
+	End  int              `json:"end,omitempty" yaml:"end,omitempty"`
+	Type BinRangeint8Type `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// BinRangeint8Range is a range bounded inclusively below and exclusively above, `start..end`.
+type BinRangeint8Range struct {
+	End   int              `json:"end,omitempty" yaml:"end,omitempty"`
+	Start int              `json:"start,omitempty" yaml:"start,omitempty"`
+	Type  BinRangeint8Type `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// BinRangeint8RangeFrom is a range bounded inclusively below and unbounded above, `start..`.
+type BinRangeint8RangeFrom struct {
+	Start int              `json:"start,omitempty" yaml:"start,omitempty"`
+	Type  BinRangeint8Type `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// BinRangeint8 is a type storing a range over `T`.
+//
+// This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those cover `(..end)`, `(start..end)`, and `(start..)` respectively.
+type BinRangeint8 struct {
+	// End is the type definition for a End.
+	End int `json:"end,omitempty" yaml:"end,omitempty"`
+	// Type is the type definition for a Type.
+	Type BinRangeint8Type `json:"type,omitempty" yaml:"type,omitempty"`
+	// Start is the type definition for a Start.
+	Start int `json:"start,omitempty" yaml:"start,omitempty"`
+}
+
+// BinRangeuint16Type is the type definition for a BinRangeuint16Type.
+type BinRangeuint16Type string
+
+// BinRangeuint16RangeTo is a range unbounded below and exclusively above, `..end`.
+type BinRangeuint16RangeTo struct {
+	End  int                `json:"end,omitempty" yaml:"end,omitempty"`
+	Type BinRangeuint16Type `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// BinRangeuint16Range is a range bounded inclusively below and exclusively above, `start..end`.
+type BinRangeuint16Range struct {
+	End   int                `json:"end,omitempty" yaml:"end,omitempty"`
+	Start int                `json:"start,omitempty" yaml:"start,omitempty"`
+	Type  BinRangeuint16Type `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// BinRangeuint16RangeFrom is a range bounded inclusively below and unbounded above, `start..`.
+type BinRangeuint16RangeFrom struct {
+	Start int                `json:"start,omitempty" yaml:"start,omitempty"`
+	Type  BinRangeuint16Type `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// BinRangeuint16 is a type storing a range over `T`.
+//
+// This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those cover `(..end)`, `(start..end)`, and `(start..)` respectively.
+type BinRangeuint16 struct {
+	// End is the type definition for a End.
+	End int `json:"end,omitempty" yaml:"end,omitempty"`
+	// Type is the type definition for a Type.
+	Type BinRangeuint16Type `json:"type,omitempty" yaml:"type,omitempty"`
+	// Start is the type definition for a Start.
+	Start int `json:"start,omitempty" yaml:"start,omitempty"`
+}
+
+// BinRangeuint32Type is the type definition for a BinRangeuint32Type.
+type BinRangeuint32Type string
+
+// BinRangeuint32RangeTo is a range unbounded below and exclusively above, `..end`.
+type BinRangeuint32RangeTo struct {
+	End  int                `json:"end,omitempty" yaml:"end,omitempty"`
+	Type BinRangeuint32Type `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// BinRangeuint32Range is a range bounded inclusively below and exclusively above, `start..end`.
+type BinRangeuint32Range struct {
+	End   int                `json:"end,omitempty" yaml:"end,omitempty"`
+	Start int                `json:"start,omitempty" yaml:"start,omitempty"`
+	Type  BinRangeuint32Type `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// BinRangeuint32RangeFrom is a range bounded inclusively below and unbounded above, `start..`.
+type BinRangeuint32RangeFrom struct {
+	Start int                `json:"start,omitempty" yaml:"start,omitempty"`
+	Type  BinRangeuint32Type `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// BinRangeuint32 is a type storing a range over `T`.
+//
+// This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those cover `(..end)`, `(start..end)`, and `(start..)` respectively.
+type BinRangeuint32 struct {
+	// End is the type definition for a End.
+	End int `json:"end,omitempty" yaml:"end,omitempty"`
+	// Type is the type definition for a Type.
+	Type BinRangeuint32Type `json:"type,omitempty" yaml:"type,omitempty"`
+	// Start is the type definition for a Start.
+	Start int `json:"start,omitempty" yaml:"start,omitempty"`
+}
+
+// BinRangeuint64Type is the type definition for a BinRangeuint64Type.
+type BinRangeuint64Type string
+
+// BinRangeuint64RangeTo is a range unbounded below and exclusively above, `..end`.
+type BinRangeuint64RangeTo struct {
+	End  int                `json:"end,omitempty" yaml:"end,omitempty"`
+	Type BinRangeuint64Type `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// BinRangeuint64Range is a range bounded inclusively below and exclusively above, `start..end`.
+type BinRangeuint64Range struct {
+	End   int                `json:"end,omitempty" yaml:"end,omitempty"`
+	Start int                `json:"start,omitempty" yaml:"start,omitempty"`
+	Type  BinRangeuint64Type `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// BinRangeuint64RangeFrom is a range bounded inclusively below and unbounded above, `start..`.
+type BinRangeuint64RangeFrom struct {
+	Start int                `json:"start,omitempty" yaml:"start,omitempty"`
+	Type  BinRangeuint64Type `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// BinRangeuint64 is a type storing a range over `T`.
+//
+// This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those cover `(..end)`, `(start..end)`, and `(start..)` respectively.
+type BinRangeuint64 struct {
+	// End is the type definition for a End.
+	End int `json:"end,omitempty" yaml:"end,omitempty"`
+	// Type is the type definition for a Type.
+	Type BinRangeuint64Type `json:"type,omitempty" yaml:"type,omitempty"`
+	// Start is the type definition for a Start.
+	Start int `json:"start,omitempty" yaml:"start,omitempty"`
+}
+
+// BinRangeuint8Type is the type definition for a BinRangeuint8Type.
+type BinRangeuint8Type string
+
+// BinRangeuint8RangeTo is a range unbounded below and exclusively above, `..end`.
+type BinRangeuint8RangeTo struct {
+	End  int               `json:"end,omitempty" yaml:"end,omitempty"`
+	Type BinRangeuint8Type `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// BinRangeuint8Range is a range bounded inclusively below and exclusively above, `start..end`.
+type BinRangeuint8Range struct {
+	End   int               `json:"end,omitempty" yaml:"end,omitempty"`
+	Start int               `json:"start,omitempty" yaml:"start,omitempty"`
+	Type  BinRangeuint8Type `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// BinRangeuint8RangeFrom is a range bounded inclusively below and unbounded above, `start..`.
+type BinRangeuint8RangeFrom struct {
+	Start int               `json:"start,omitempty" yaml:"start,omitempty"`
+	Type  BinRangeuint8Type `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// BinRangeuint8 is a type storing a range over `T`.
+//
+// This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those cover `(..end)`, `(start..end)`, and `(start..)` respectively.
+type BinRangeuint8 struct {
+	// End is the type definition for a End.
+	End int `json:"end,omitempty" yaml:"end,omitempty"`
+	// Type is the type definition for a Type.
+	Type BinRangeuint8Type `json:"type,omitempty" yaml:"type,omitempty"`
+	// Start is the type definition for a Start.
+	Start int `json:"start,omitempty" yaml:"start,omitempty"`
+}
+
 // Bindouble is type storing bin edges and a count of samples within it.
 type Bindouble struct {
 	// Count is the total count of samples in this bin.
@@ -193,12 +585,76 @@ type Bindouble struct {
 	Range BinRangedouble `json:"range,omitempty" yaml:"range,omitempty"`
 }
 
+// Binfloat is type storing bin edges and a count of samples within it.
+type Binfloat struct {
+	// Count is the total count of samples in this bin.
+	Count int `json:"count,omitempty" yaml:"count,omitempty"`
+	// Range is the range of the support covered by this bin.
+	Range BinRangefloat `json:"range,omitempty" yaml:"range,omitempty"`
+}
+
+// Binint16 is type storing bin edges and a count of samples within it.
+type Binint16 struct {
+	// Count is the total count of samples in this bin.
+	Count int `json:"count,omitempty" yaml:"count,omitempty"`
+	// Range is the range of the support covered by this bin.
+	Range BinRangeint16 `json:"range,omitempty" yaml:"range,omitempty"`
+}
+
+// Binint32 is type storing bin edges and a count of samples within it.
+type Binint32 struct {
+	// Count is the total count of samples in this bin.
+	Count int `json:"count,omitempty" yaml:"count,omitempty"`
+	// Range is the range of the support covered by this bin.
+	Range BinRangeint32 `json:"range,omitempty" yaml:"range,omitempty"`
+}
+
 // Binint64 is type storing bin edges and a count of samples within it.
 type Binint64 struct {
 	// Count is the total count of samples in this bin.
 	Count int `json:"count,omitempty" yaml:"count,omitempty"`
 	// Range is the range of the support covered by this bin.
 	Range BinRangeint64 `json:"range,omitempty" yaml:"range,omitempty"`
+}
+
+// Binint8 is type storing bin edges and a count of samples within it.
+type Binint8 struct {
+	// Count is the total count of samples in this bin.
+	Count int `json:"count,omitempty" yaml:"count,omitempty"`
+	// Range is the range of the support covered by this bin.
+	Range BinRangeint8 `json:"range,omitempty" yaml:"range,omitempty"`
+}
+
+// Binuint16 is type storing bin edges and a count of samples within it.
+type Binuint16 struct {
+	// Count is the total count of samples in this bin.
+	Count int `json:"count,omitempty" yaml:"count,omitempty"`
+	// Range is the range of the support covered by this bin.
+	Range BinRangeuint16 `json:"range,omitempty" yaml:"range,omitempty"`
+}
+
+// Binuint32 is type storing bin edges and a count of samples within it.
+type Binuint32 struct {
+	// Count is the total count of samples in this bin.
+	Count int `json:"count,omitempty" yaml:"count,omitempty"`
+	// Range is the range of the support covered by this bin.
+	Range BinRangeuint32 `json:"range,omitempty" yaml:"range,omitempty"`
+}
+
+// Binuint64 is type storing bin edges and a count of samples within it.
+type Binuint64 struct {
+	// Count is the total count of samples in this bin.
+	Count int `json:"count,omitempty" yaml:"count,omitempty"`
+	// Range is the range of the support covered by this bin.
+	Range BinRangeuint64 `json:"range,omitempty" yaml:"range,omitempty"`
+}
+
+// Binuint8 is type storing bin edges and a count of samples within it.
+type Binuint8 struct {
+	// Count is the total count of samples in this bin.
+	Count int `json:"count,omitempty" yaml:"count,omitempty"`
+	// Range is the range of the support covered by this bin.
+	Range BinRangeuint8 `json:"range,omitempty" yaml:"range,omitempty"`
 }
 
 // BlockSize is the type definition for a BlockSize.
@@ -250,8 +706,20 @@ type Cumulativedouble struct {
 	Value     float64    `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
+// Cumulativefloat is a cumulative or counter data type.
+type Cumulativefloat struct {
+	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+	Value     float64    `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
 // Cumulativeint64 is a cumulative or counter data type.
 type Cumulativeint64 struct {
+	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+	Value     int        `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// Cumulativeuint64 is a cumulative or counter data type.
+type Cumulativeuint64 struct {
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
 	Value     int        `json:"value,omitempty" yaml:"value,omitempty"`
 }
@@ -276,9 +744,57 @@ type DatumBool struct {
 	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
+// DatumI8 is the type definition for a DatumI8.
+type DatumI8 struct {
+	Datum int       `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// DatumU8 is the type definition for a DatumU8.
+type DatumU8 struct {
+	Datum int       `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// DatumI16 is the type definition for a DatumI16.
+type DatumI16 struct {
+	Datum int       `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// DatumU16 is the type definition for a DatumU16.
+type DatumU16 struct {
+	Datum int       `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// DatumI32 is the type definition for a DatumI32.
+type DatumI32 struct {
+	Datum int       `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// DatumU32 is the type definition for a DatumU32.
+type DatumU32 struct {
+	Datum int       `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
 // DatumI64 is the type definition for a DatumI64.
 type DatumI64 struct {
 	Datum int       `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// DatumU64 is the type definition for a DatumU64.
+type DatumU64 struct {
+	Datum int       `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// DatumF32 is the type definition for a DatumF32.
+type DatumF32 struct {
+	Datum float64   `json:"datum,omitempty" yaml:"datum,omitempty"`
 	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -307,11 +823,91 @@ type DatumCumulativeI64 struct {
 	Type  DatumType       `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
+// DatumCumulativeU64 is the type definition for a DatumCumulativeU64.
+type DatumCumulativeU64 struct {
+	// Datum is a cumulative or counter data type.
+	Datum Cumulativeuint64 `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Type  DatumType        `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// DatumCumulativeF32 is the type definition for a DatumCumulativeF32.
+type DatumCumulativeF32 struct {
+	// Datum is a cumulative or counter data type.
+	Datum Cumulativefloat `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Type  DatumType       `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
 // DatumCumulativeF64 is the type definition for a DatumCumulativeF64.
 type DatumCumulativeF64 struct {
 	// Datum is a cumulative or counter data type.
 	Datum Cumulativedouble `json:"datum,omitempty" yaml:"datum,omitempty"`
 	Type  DatumType        `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// DatumHistogramI8 is the type definition for a DatumHistogramI8.
+type DatumHistogramI8 struct {
+	// Datum is histogram metric
+	//
+	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+	//
+	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
+	Datum Histogramint8 `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Type  DatumType     `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// DatumHistogramU8 is the type definition for a DatumHistogramU8.
+type DatumHistogramU8 struct {
+	// Datum is histogram metric
+	//
+	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+	//
+	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
+	Datum Histogramuint8 `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Type  DatumType      `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// DatumHistogramI16 is the type definition for a DatumHistogramI16.
+type DatumHistogramI16 struct {
+	// Datum is histogram metric
+	//
+	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+	//
+	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
+	Datum Histogramint16 `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Type  DatumType      `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// DatumHistogramU16 is the type definition for a DatumHistogramU16.
+type DatumHistogramU16 struct {
+	// Datum is histogram metric
+	//
+	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+	//
+	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
+	Datum Histogramuint16 `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Type  DatumType       `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// DatumHistogramI32 is the type definition for a DatumHistogramI32.
+type DatumHistogramI32 struct {
+	// Datum is histogram metric
+	//
+	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+	//
+	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
+	Datum Histogramint32 `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Type  DatumType      `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// DatumHistogramU32 is the type definition for a DatumHistogramU32.
+type DatumHistogramU32 struct {
+	// Datum is histogram metric
+	//
+	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+	//
+	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
+	Datum Histogramuint32 `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Type  DatumType       `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // DatumHistogramI64 is the type definition for a DatumHistogramI64.
@@ -322,6 +918,28 @@ type DatumHistogramI64 struct {
 	//
 	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
 	Datum Histogramint64 `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Type  DatumType      `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// DatumHistogramU64 is the type definition for a DatumHistogramU64.
+type DatumHistogramU64 struct {
+	// Datum is histogram metric
+	//
+	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+	//
+	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
+	Datum Histogramuint64 `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Type  DatumType       `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// DatumHistogramF32 is the type definition for a DatumHistogramF32.
+type DatumHistogramF32 struct {
+	// Datum is histogram metric
+	//
+	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+	//
+	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
+	Datum Histogramfloat `json:"datum,omitempty" yaml:"datum,omitempty"`
 	Type  DatumType      `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -394,14 +1012,16 @@ type Disk struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	DevicePath  string `json:"device_path,omitempty" yaml:"device_path,omitempty"`
 	// Id is unique, immutable, system-controlled identifier for each resource
-	Id      string `json:"id,omitempty" yaml:"id,omitempty"`
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// ImageId is iD of image from which disk was created, if any
 	ImageId string `json:"image_id,omitempty" yaml:"image_id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name      Name   `json:"name,omitempty" yaml:"name,omitempty"`
 	ProjectId string `json:"project_id,omitempty" yaml:"project_id,omitempty"`
 	// Size is byte count to express memory or storage capacity.
-	Size       ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
-	SnapshotId string    `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
+	Size ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
+	// SnapshotId is iD of snapshot from which disk was created, if any
+	SnapshotId string `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
 	// State is state of a Disk
 	State DiskState `json:"state,omitempty" yaml:"state,omitempty"`
 	// TimeCreated is timestamp when this resource was created
@@ -652,6 +1272,39 @@ type Histogramdouble struct {
 	StartTime *time.Time  `json:"start_time,omitempty" yaml:"start_time,omitempty"`
 }
 
+// Histogramfloat is histogram metric
+//
+// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+//
+// Note that any gaps, unsorted bins, or non-finite values will result in an error.
+type Histogramfloat struct {
+	Bins      []Binfloat `json:"bins,omitempty" yaml:"bins,omitempty"`
+	NSamples  int        `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
+	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+}
+
+// Histogramint16 is histogram metric
+//
+// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+//
+// Note that any gaps, unsorted bins, or non-finite values will result in an error.
+type Histogramint16 struct {
+	Bins      []Binint16 `json:"bins,omitempty" yaml:"bins,omitempty"`
+	NSamples  int        `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
+	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+}
+
+// Histogramint32 is histogram metric
+//
+// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+//
+// Note that any gaps, unsorted bins, or non-finite values will result in an error.
+type Histogramint32 struct {
+	Bins      []Binint32 `json:"bins,omitempty" yaml:"bins,omitempty"`
+	NSamples  int        `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
+	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+}
+
 // Histogramint64 is histogram metric
 //
 // A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
@@ -659,6 +1312,61 @@ type Histogramdouble struct {
 // Note that any gaps, unsorted bins, or non-finite values will result in an error.
 type Histogramint64 struct {
 	Bins      []Binint64 `json:"bins,omitempty" yaml:"bins,omitempty"`
+	NSamples  int        `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
+	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+}
+
+// Histogramint8 is histogram metric
+//
+// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+//
+// Note that any gaps, unsorted bins, or non-finite values will result in an error.
+type Histogramint8 struct {
+	Bins      []Binint8  `json:"bins,omitempty" yaml:"bins,omitempty"`
+	NSamples  int        `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
+	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+}
+
+// Histogramuint16 is histogram metric
+//
+// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+//
+// Note that any gaps, unsorted bins, or non-finite values will result in an error.
+type Histogramuint16 struct {
+	Bins      []Binuint16 `json:"bins,omitempty" yaml:"bins,omitempty"`
+	NSamples  int         `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
+	StartTime *time.Time  `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+}
+
+// Histogramuint32 is histogram metric
+//
+// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+//
+// Note that any gaps, unsorted bins, or non-finite values will result in an error.
+type Histogramuint32 struct {
+	Bins      []Binuint32 `json:"bins,omitempty" yaml:"bins,omitempty"`
+	NSamples  int         `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
+	StartTime *time.Time  `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+}
+
+// Histogramuint64 is histogram metric
+//
+// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+//
+// Note that any gaps, unsorted bins, or non-finite values will result in an error.
+type Histogramuint64 struct {
+	Bins      []Binuint64 `json:"bins,omitempty" yaml:"bins,omitempty"`
+	NSamples  int         `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
+	StartTime *time.Time  `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+}
+
+// Histogramuint8 is histogram metric
+//
+// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+//
+// Note that any gaps, unsorted bins, or non-finite values will result in an error.
+type Histogramuint8 struct {
+	Bins      []Binuint8 `json:"bins,omitempty" yaml:"bins,omitempty"`
 	NSamples  int        `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
 }
@@ -1035,7 +1743,8 @@ type IpPool struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Id is unique, immutable, system-controlled identifier for each resource
-	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	Id        string `json:"id,omitempty" yaml:"id,omitempty"`
+	IsDefault *bool  `json:"is_default,omitempty" yaml:"is_default,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name   Name   `json:"name,omitempty" yaml:"name,omitempty"`
 	SiloId string `json:"silo_id,omitempty" yaml:"silo_id,omitempty"`
@@ -1048,7 +1757,7 @@ type IpPool struct {
 // IpPoolCreate is create-time parameters for an `IpPool`
 type IpPoolCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// IsDefault is whether the IP pool is considered a default pool for its scope (fleet, or silo). If a pool is marked default and is associated with a silo, instances created in that silo will draw IPs from that pool unless another pool is specified at instance create time.
+	// IsDefault is whether the IP pool is considered a default pool for its scope (fleet or silo). If a pool is marked default and is associated with a silo, instances created in that silo will draw IPs from that pool unless another pool is specified at instance create time.
 	IsDefault *bool `json:"is_default,omitempty" yaml:"is_default,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
@@ -1116,11 +1825,21 @@ type L4PortRange string
 
 // LinkConfig is switch link configuration.
 type LinkConfig struct {
+	// Fec is the forward error correction mode of the link.
+	Fec LinkFec `json:"fec,omitempty" yaml:"fec,omitempty"`
 	// Lldp is the link-layer discovery protocol (LLDP) configuration for the link.
 	Lldp LldpServiceConfig `json:"lldp,omitempty" yaml:"lldp,omitempty"`
 	// Mtu is maximum transmission unit for the link.
 	Mtu int `json:"mtu,omitempty" yaml:"mtu,omitempty"`
+	// Speed is the speed of the link.
+	Speed LinkSpeed `json:"speed,omitempty" yaml:"speed,omitempty"`
 }
+
+// LinkFec is firecode foward error correction.
+type LinkFec string
+
+// LinkSpeed is zero gigabits per second.
+type LinkSpeed string
 
 // LldpServiceConfig is the LLDP configuration associated with a port. LLDP may be either enabled or disabled, if enabled, an LLDP configuration must be provided by name or id.
 type LldpServiceConfig struct {
@@ -1234,6 +1953,15 @@ type PhysicalDiskResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+// Ping is the type definition for a Ping.
+type Ping struct {
+	// Status is whether the external API is reachable. Will always be Ok if the endpoint returns anything at all.
+	Status PingStatus `json:"status,omitempty" yaml:"status,omitempty"`
+}
+
+// PingStatus is the type definition for a PingStatus.
+type PingStatus string
+
 // Project is view of a Project
 type Project struct {
 	// Description is human-readable free-form text about a resource
@@ -1340,152 +2068,6 @@ type Route struct {
 type RouteConfig struct {
 	// Routes is the set of routes assigned to a switch port.
 	Routes []Route `json:"routes,omitempty" yaml:"routes,omitempty"`
-}
-
-// RouteDestinationType is the type definition for a RouteDestinationType.
-type RouteDestinationType string
-
-// RouteDestinationIp is route applies to traffic destined for a specific IP address
-type RouteDestinationIp struct {
-	Type  RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
-	Value string               `json:"value,omitempty" yaml:"value,omitempty"`
-}
-
-// RouteDestinationIpNet is route applies to traffic destined for a specific IP subnet
-type RouteDestinationIpNet struct {
-	Type  RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
-	Value IpNet                `json:"value,omitempty" yaml:"value,omitempty"`
-}
-
-// RouteDestinationVpc is route applies to traffic destined for the given VPC.
-type RouteDestinationVpc struct {
-	Type RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
-}
-
-// RouteDestinationSubnet is route applies to traffic
-type RouteDestinationSubnet struct {
-	Type RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
-}
-
-// RouteDestination is a `RouteDestination` is used to match traffic with a routing rule, on the destination of that traffic.
-//
-// When traffic is to be sent to a destination that is within a given `RouteDestination`, the corresponding `RouterRoute` applies, and traffic will be forward to the `RouteTarget` for that rule.
-type RouteDestination struct {
-	// Type is the type definition for a Type.
-	Type RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is the type definition for a Value.
-	Value string `json:"value,omitempty" yaml:"value,omitempty"`
-}
-
-// RouteTargetType is the type definition for a RouteTargetType.
-type RouteTargetType string
-
-// RouteTargetIp is forward traffic to a particular IP address.
-type RouteTargetIp struct {
-	Type  RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
-	Value string          `json:"value,omitempty" yaml:"value,omitempty"`
-}
-
-// RouteTargetVpc is forward traffic to a VPC
-type RouteTargetVpc struct {
-	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
-}
-
-// RouteTargetSubnet is forward traffic to a VPC Subnet
-type RouteTargetSubnet struct {
-	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
-}
-
-// RouteTargetInstance is forward traffic to a specific instance
-type RouteTargetInstance struct {
-	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
-}
-
-// RouteTargetInternetGateway is forward traffic to an internet gateway
-type RouteTargetInternetGateway struct {
-	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
-}
-
-// RouteTarget is a `RouteTarget` describes the possible locations that traffic matching a route destination can be sent.
-type RouteTarget struct {
-	// Type is the type definition for a Type.
-	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is the type definition for a Value.
-	Value string `json:"value,omitempty" yaml:"value,omitempty"`
-}
-
-// RouterRoute is a route defines a rule that governs where traffic should be sent based on its destination.
-type RouterRoute struct {
-	// Description is human-readable free-form text about a resource
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// Destination is a `RouteDestination` is used to match traffic with a routing rule, on the destination of that traffic.
-	//
-	// When traffic is to be sent to a destination that is within a given `RouteDestination`, the corresponding `RouterRoute` applies, and traffic will be forward to the `RouteTarget` for that rule.
-	Destination RouteDestination `json:"destination,omitempty" yaml:"destination,omitempty"`
-	// Id is unique, immutable, system-controlled identifier for each resource
-	Id string `json:"id,omitempty" yaml:"id,omitempty"`
-	// Kind is describes the kind of router. Set at creation. `read-only`
-	Kind RouterRouteKind `json:"kind,omitempty" yaml:"kind,omitempty"`
-	// Name is unique, mutable, user-controlled identifier for each resource
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
-	// Target is a `RouteTarget` describes the possible locations that traffic matching a route destination can be sent.
-	Target RouteTarget `json:"target,omitempty" yaml:"target,omitempty"`
-	// TimeCreated is timestamp when this resource was created
-	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
-	// TimeModified is timestamp when this resource was last modified
-	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
-	// VpcRouterId is the ID of the VPC Router to which the route belongs
-	VpcRouterId string `json:"vpc_router_id,omitempty" yaml:"vpc_router_id,omitempty"`
-}
-
-// RouterRouteCreate is create-time parameters for a `RouterRoute`
-type RouterRouteCreate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// Destination is a `RouteDestination` is used to match traffic with a routing rule, on the destination of that traffic.
-	//
-	// When traffic is to be sent to a destination that is within a given `RouteDestination`, the corresponding `RouterRoute` applies, and traffic will be forward to the `RouteTarget` for that rule.
-	Destination RouteDestination `json:"destination,omitempty" yaml:"destination,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
-	// Target is a `RouteTarget` describes the possible locations that traffic matching a route destination can be sent.
-	Target RouteTarget `json:"target,omitempty" yaml:"target,omitempty"`
-}
-
-// RouterRouteKind is determines the default destination of traffic, such as whether it goes to the internet or not.
-//
-// `Destination: An Internet Gateway` `Modifiable: true`
-type RouterRouteKind string
-
-// RouterRouteResultsPage is a single page of results
-type RouterRouteResultsPage struct {
-	// Items is list of items on this page of results
-	Items []RouterRoute `json:"items,omitempty" yaml:"items,omitempty"`
-	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
-}
-
-// RouterRouteUpdate is updateable properties of a `RouterRoute`
-type RouterRouteUpdate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// Destination is a `RouteDestination` is used to match traffic with a routing rule, on the destination of that traffic.
-	//
-	// When traffic is to be sent to a destination that is within a given `RouteDestination`, the corresponding `RouterRoute` applies, and traffic will be forward to the `RouteTarget` for that rule.
-	Destination RouteDestination `json:"destination,omitempty" yaml:"destination,omitempty"`
-	Name        Name             `json:"name,omitempty" yaml:"name,omitempty"`
-	// Target is a `RouteTarget` describes the possible locations that traffic matching a route destination can be sent.
-	Target RouteTarget `json:"target,omitempty" yaml:"target,omitempty"`
 }
 
 // SamlIdentityProvider is identity-related metadata that's included in nearly all public API objects
@@ -1800,6 +2382,9 @@ type SwitchInterfaceKind struct {
 	Vid int `json:"vid,omitempty" yaml:"vid,omitempty"`
 }
 
+// SwitchLocation is switch in upper slot
+type SwitchLocation string
+
 // SwitchPort is a switch port represents a physical external port on a rack switch.
 type SwitchPort struct {
 	// Id is the id of the switch port.
@@ -1836,8 +2421,6 @@ type SwitchPortApplySettings struct {
 type SwitchPortBgpPeerConfig struct {
 	// Addr is the address of the peer.
 	Addr string `json:"addr,omitempty" yaml:"addr,omitempty"`
-	// BgpAnnounceSetId is the id for the set of prefixes announced in this peer configuration.
-	BgpAnnounceSetId string `json:"bgp_announce_set_id,omitempty" yaml:"bgp_announce_set_id,omitempty"`
 	// BgpConfigId is the id of the global BGP configuration referenced by this peer configuration.
 	BgpConfigId string `json:"bgp_config_id,omitempty" yaml:"bgp_config_id,omitempty"`
 	// InterfaceName is the interface name used to establish a peer session.
@@ -2274,47 +2857,6 @@ type VpcResultsPage struct {
 	Items []Vpc `json:"items,omitempty" yaml:"items,omitempty"`
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
-}
-
-// VpcRouter is a VPC router defines a series of rules that indicate where traffic should be sent depending on its destination.
-type VpcRouter struct {
-	// Description is human-readable free-form text about a resource
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// Id is unique, immutable, system-controlled identifier for each resource
-	Id   string        `json:"id,omitempty" yaml:"id,omitempty"`
-	Kind VpcRouterKind `json:"kind,omitempty" yaml:"kind,omitempty"`
-	// Name is unique, mutable, user-controlled identifier for each resource
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
-	// TimeCreated is timestamp when this resource was created
-	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
-	// TimeModified is timestamp when this resource was last modified
-	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
-	// VpcId is the VPC to which the router belongs.
-	VpcId string `json:"vpc_id,omitempty" yaml:"vpc_id,omitempty"`
-}
-
-// VpcRouterCreate is create-time parameters for a `VpcRouter`
-type VpcRouterCreate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
-}
-
-// VpcRouterKind is the type definition for a VpcRouterKind.
-type VpcRouterKind string
-
-// VpcRouterResultsPage is a single page of results
-type VpcRouterResultsPage struct {
-	// Items is list of items on this page of results
-	Items []VpcRouter `json:"items,omitempty" yaml:"items,omitempty"`
-	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
-}
-
-// VpcRouterUpdate is updateable properties of a `VpcRouter`
-type VpcRouterUpdate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
 // VpcSubnet is a VPC subnet represents a logical grouping for instances that allows network traffic between them, within a IPv4 subnetwork or optionall an IPv6 subnetwork.
@@ -3022,6 +3564,44 @@ type NetworkingAddressLotBlockListParams struct {
 	SortBy     IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
 
+// NetworkingBgpConfigDeleteParams is the request parameters for NetworkingBgpConfigDelete
+type NetworkingBgpConfigDeleteParams struct {
+	NameOrId NameOrId `json:"name_or_id,omitempty" yaml:"name_or_id,omitempty"`
+}
+
+// NetworkingBgpConfigListParams is the request parameters for NetworkingBgpConfigList
+type NetworkingBgpConfigListParams struct {
+	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	NameOrId  NameOrId         `json:"name_or_id,omitempty" yaml:"name_or_id,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// NetworkingBgpConfigCreateParams is the request parameters for NetworkingBgpConfigCreate
+type NetworkingBgpConfigCreateParams struct {
+	Body *BgpConfigCreate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// NetworkingBgpAnnounceSetDeleteParams is the request parameters for NetworkingBgpAnnounceSetDelete
+type NetworkingBgpAnnounceSetDeleteParams struct {
+	NameOrId NameOrId `json:"name_or_id,omitempty" yaml:"name_or_id,omitempty"`
+}
+
+// NetworkingBgpAnnounceSetListParams is the request parameters for NetworkingBgpAnnounceSetList
+type NetworkingBgpAnnounceSetListParams struct {
+	NameOrId NameOrId `json:"name_or_id,omitempty" yaml:"name_or_id,omitempty"`
+}
+
+// NetworkingBgpAnnounceSetCreateParams is the request parameters for NetworkingBgpAnnounceSetCreate
+type NetworkingBgpAnnounceSetCreateParams struct {
+	Body *BgpAnnounceSetCreate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// NetworkingBgpImportedRoutesIpv4Params is the request parameters for NetworkingBgpImportedRoutesIpv4
+type NetworkingBgpImportedRoutesIpv4Params struct {
+	Asn int `json:"asn,omitempty" yaml:"asn,omitempty"`
+}
+
 // NetworkingLoopbackAddressListParams is the request parameters for NetworkingLoopbackAddressList
 type NetworkingLoopbackAddressListParams struct {
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -3159,87 +3739,6 @@ type VpcFirewallRulesUpdateParams struct {
 	Project NameOrId                     `json:"project,omitempty" yaml:"project,omitempty"`
 	Vpc     NameOrId                     `json:"vpc,omitempty" yaml:"vpc,omitempty"`
 	Body    *VpcFirewallRuleUpdateParams `json:"body,omitempty" yaml:"body,omitempty"`
-}
-
-// VpcRouterRouteListParams is the request parameters for VpcRouterRouteList
-type VpcRouterRouteListParams struct {
-	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
-	Router    NameOrId         `json:"router,omitempty" yaml:"router,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
-	Vpc       NameOrId         `json:"vpc,omitempty" yaml:"vpc,omitempty"`
-}
-
-// VpcRouterRouteCreateParams is the request parameters for VpcRouterRouteCreate
-type VpcRouterRouteCreateParams struct {
-	Project NameOrId           `json:"project,omitempty" yaml:"project,omitempty"`
-	Router  NameOrId           `json:"router,omitempty" yaml:"router,omitempty"`
-	Vpc     NameOrId           `json:"vpc,omitempty" yaml:"vpc,omitempty"`
-	Body    *RouterRouteCreate `json:"body,omitempty" yaml:"body,omitempty"`
-}
-
-// VpcRouterRouteDeleteParams is the request parameters for VpcRouterRouteDelete
-type VpcRouterRouteDeleteParams struct {
-	Route   NameOrId `json:"route,omitempty" yaml:"route,omitempty"`
-	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
-	Router  NameOrId `json:"router,omitempty" yaml:"router,omitempty"`
-	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
-}
-
-// VpcRouterRouteViewParams is the request parameters for VpcRouterRouteView
-type VpcRouterRouteViewParams struct {
-	Route   NameOrId `json:"route,omitempty" yaml:"route,omitempty"`
-	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
-	Router  NameOrId `json:"router,omitempty" yaml:"router,omitempty"`
-	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
-}
-
-// VpcRouterRouteUpdateParams is the request parameters for VpcRouterRouteUpdate
-type VpcRouterRouteUpdateParams struct {
-	Route   NameOrId           `json:"route,omitempty" yaml:"route,omitempty"`
-	Project NameOrId           `json:"project,omitempty" yaml:"project,omitempty"`
-	Router  NameOrId           `json:"router,omitempty" yaml:"router,omitempty"`
-	Vpc     NameOrId           `json:"vpc,omitempty" yaml:"vpc,omitempty"`
-	Body    *RouterRouteUpdate `json:"body,omitempty" yaml:"body,omitempty"`
-}
-
-// VpcRouterListParams is the request parameters for VpcRouterList
-type VpcRouterListParams struct {
-	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
-	Vpc       NameOrId         `json:"vpc,omitempty" yaml:"vpc,omitempty"`
-}
-
-// VpcRouterCreateParams is the request parameters for VpcRouterCreate
-type VpcRouterCreateParams struct {
-	Project NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
-	Vpc     NameOrId         `json:"vpc,omitempty" yaml:"vpc,omitempty"`
-	Body    *VpcRouterCreate `json:"body,omitempty" yaml:"body,omitempty"`
-}
-
-// VpcRouterDeleteParams is the request parameters for VpcRouterDelete
-type VpcRouterDeleteParams struct {
-	Router  NameOrId `json:"router,omitempty" yaml:"router,omitempty"`
-	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
-	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
-}
-
-// VpcRouterViewParams is the request parameters for VpcRouterView
-type VpcRouterViewParams struct {
-	Router  NameOrId `json:"router,omitempty" yaml:"router,omitempty"`
-	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
-	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
-}
-
-// VpcRouterUpdateParams is the request parameters for VpcRouterUpdate
-type VpcRouterUpdateParams struct {
-	Router  NameOrId         `json:"router,omitempty" yaml:"router,omitempty"`
-	Project NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
-	Vpc     NameOrId         `json:"vpc,omitempty" yaml:"vpc,omitempty"`
-	Body    *VpcRouterUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // VpcSubnetListParams is the request parameters for VpcSubnetList
@@ -4335,6 +4834,75 @@ func (p *NetworkingAddressLotBlockListParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for NetworkingBgpConfigDeleteParams are set
+func (p *NetworkingBgpConfigDeleteParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.NameOrId), "NameOrId")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingBgpConfigListParams are set
+func (p *NetworkingBgpConfigListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingBgpConfigCreateParams are set
+func (p *NetworkingBgpConfigCreateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingBgpAnnounceSetDeleteParams are set
+func (p *NetworkingBgpAnnounceSetDeleteParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.NameOrId), "NameOrId")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingBgpAnnounceSetListParams are set
+func (p *NetworkingBgpAnnounceSetListParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.NameOrId), "NameOrId")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingBgpAnnounceSetCreateParams are set
+func (p *NetworkingBgpAnnounceSetCreateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingBgpImportedRoutesIpv4Params are set
+func (p *NetworkingBgpImportedRoutesIpv4Params) Validate() error {
+	v := new(Validator)
+	v.HasRequiredNum(int(p.Asn), "Asn")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for NetworkingLoopbackAddressListParams are set
 func (p *NetworkingLoopbackAddressListParams) Validate() error {
 	v := new(Validator)
@@ -4563,109 +5131,6 @@ func (p *VpcFirewallRulesUpdateParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for VpcRouterRouteListParams are set
-func (p *VpcRouterRouteListParams) Validate() error {
-	v := new(Validator)
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for VpcRouterRouteCreateParams are set
-func (p *VpcRouterRouteCreateParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Router), "Router")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for VpcRouterRouteDeleteParams are set
-func (p *VpcRouterRouteDeleteParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredStr(string(p.Route), "Route")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for VpcRouterRouteViewParams are set
-func (p *VpcRouterRouteViewParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredStr(string(p.Route), "Route")
-	v.HasRequiredStr(string(p.Router), "Router")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for VpcRouterRouteUpdateParams are set
-func (p *VpcRouterRouteUpdateParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Route), "Route")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for VpcRouterListParams are set
-func (p *VpcRouterListParams) Validate() error {
-	v := new(Validator)
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for VpcRouterCreateParams are set
-func (p *VpcRouterCreateParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Vpc), "Vpc")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for VpcRouterDeleteParams are set
-func (p *VpcRouterDeleteParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredStr(string(p.Router), "Router")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for VpcRouterViewParams are set
-func (p *VpcRouterViewParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredStr(string(p.Router), "Router")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for VpcRouterUpdateParams are set
-func (p *VpcRouterUpdateParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Router), "Router")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
 // Validate verifies all required fields for VpcSubnetListParams are set
 func (p *VpcSubnetListParams) Validate() error {
 	v := new(Validator)
@@ -4784,6 +5249,27 @@ const AddressLotKindInfra AddressLotKind = "infra"
 // AddressLotKindPool represents the AddressLotKind `"pool"`.
 const AddressLotKindPool AddressLotKind = "pool"
 
+// BgpPeerStateIdle represents the BgpPeerState `"idle"`.
+const BgpPeerStateIdle BgpPeerState = "idle"
+
+// BgpPeerStateConnect represents the BgpPeerState `"connect"`.
+const BgpPeerStateConnect BgpPeerState = "connect"
+
+// BgpPeerStateActive represents the BgpPeerState `"active"`.
+const BgpPeerStateActive BgpPeerState = "active"
+
+// BgpPeerStateOpenSent represents the BgpPeerState `"open_sent"`.
+const BgpPeerStateOpenSent BgpPeerState = "open_sent"
+
+// BgpPeerStateOpenConfirm represents the BgpPeerState `"open_confirm"`.
+const BgpPeerStateOpenConfirm BgpPeerState = "open_confirm"
+
+// BgpPeerStateSessionSetup represents the BgpPeerState `"session_setup"`.
+const BgpPeerStateSessionSetup BgpPeerState = "session_setup"
+
+// BgpPeerStateEstablished represents the BgpPeerState `"established"`.
+const BgpPeerStateEstablished BgpPeerState = "established"
+
 // BinRangedoubleTypeRangeTo represents the BinRangedoubleType `"range_to"`.
 const BinRangedoubleTypeRangeTo BinRangedoubleType = "range_to"
 
@@ -4792,6 +5278,33 @@ const BinRangedoubleTypeRange BinRangedoubleType = "range"
 
 // BinRangedoubleTypeRangeFrom represents the BinRangedoubleType `"range_from"`.
 const BinRangedoubleTypeRangeFrom BinRangedoubleType = "range_from"
+
+// BinRangefloatTypeRangeTo represents the BinRangefloatType `"range_to"`.
+const BinRangefloatTypeRangeTo BinRangefloatType = "range_to"
+
+// BinRangefloatTypeRange represents the BinRangefloatType `"range"`.
+const BinRangefloatTypeRange BinRangefloatType = "range"
+
+// BinRangefloatTypeRangeFrom represents the BinRangefloatType `"range_from"`.
+const BinRangefloatTypeRangeFrom BinRangefloatType = "range_from"
+
+// BinRangeint16TypeRangeTo represents the BinRangeint16Type `"range_to"`.
+const BinRangeint16TypeRangeTo BinRangeint16Type = "range_to"
+
+// BinRangeint16TypeRange represents the BinRangeint16Type `"range"`.
+const BinRangeint16TypeRange BinRangeint16Type = "range"
+
+// BinRangeint16TypeRangeFrom represents the BinRangeint16Type `"range_from"`.
+const BinRangeint16TypeRangeFrom BinRangeint16Type = "range_from"
+
+// BinRangeint32TypeRangeTo represents the BinRangeint32Type `"range_to"`.
+const BinRangeint32TypeRangeTo BinRangeint32Type = "range_to"
+
+// BinRangeint32TypeRange represents the BinRangeint32Type `"range"`.
+const BinRangeint32TypeRange BinRangeint32Type = "range"
+
+// BinRangeint32TypeRangeFrom represents the BinRangeint32Type `"range_from"`.
+const BinRangeint32TypeRangeFrom BinRangeint32Type = "range_from"
 
 // BinRangeint64TypeRangeTo represents the BinRangeint64Type `"range_to"`.
 const BinRangeint64TypeRangeTo BinRangeint64Type = "range_to"
@@ -4802,11 +5315,80 @@ const BinRangeint64TypeRange BinRangeint64Type = "range"
 // BinRangeint64TypeRangeFrom represents the BinRangeint64Type `"range_from"`.
 const BinRangeint64TypeRangeFrom BinRangeint64Type = "range_from"
 
+// BinRangeint8TypeRangeTo represents the BinRangeint8Type `"range_to"`.
+const BinRangeint8TypeRangeTo BinRangeint8Type = "range_to"
+
+// BinRangeint8TypeRange represents the BinRangeint8Type `"range"`.
+const BinRangeint8TypeRange BinRangeint8Type = "range"
+
+// BinRangeint8TypeRangeFrom represents the BinRangeint8Type `"range_from"`.
+const BinRangeint8TypeRangeFrom BinRangeint8Type = "range_from"
+
+// BinRangeuint16TypeRangeTo represents the BinRangeuint16Type `"range_to"`.
+const BinRangeuint16TypeRangeTo BinRangeuint16Type = "range_to"
+
+// BinRangeuint16TypeRange represents the BinRangeuint16Type `"range"`.
+const BinRangeuint16TypeRange BinRangeuint16Type = "range"
+
+// BinRangeuint16TypeRangeFrom represents the BinRangeuint16Type `"range_from"`.
+const BinRangeuint16TypeRangeFrom BinRangeuint16Type = "range_from"
+
+// BinRangeuint32TypeRangeTo represents the BinRangeuint32Type `"range_to"`.
+const BinRangeuint32TypeRangeTo BinRangeuint32Type = "range_to"
+
+// BinRangeuint32TypeRange represents the BinRangeuint32Type `"range"`.
+const BinRangeuint32TypeRange BinRangeuint32Type = "range"
+
+// BinRangeuint32TypeRangeFrom represents the BinRangeuint32Type `"range_from"`.
+const BinRangeuint32TypeRangeFrom BinRangeuint32Type = "range_from"
+
+// BinRangeuint64TypeRangeTo represents the BinRangeuint64Type `"range_to"`.
+const BinRangeuint64TypeRangeTo BinRangeuint64Type = "range_to"
+
+// BinRangeuint64TypeRange represents the BinRangeuint64Type `"range"`.
+const BinRangeuint64TypeRange BinRangeuint64Type = "range"
+
+// BinRangeuint64TypeRangeFrom represents the BinRangeuint64Type `"range_from"`.
+const BinRangeuint64TypeRangeFrom BinRangeuint64Type = "range_from"
+
+// BinRangeuint8TypeRangeTo represents the BinRangeuint8Type `"range_to"`.
+const BinRangeuint8TypeRangeTo BinRangeuint8Type = "range_to"
+
+// BinRangeuint8TypeRange represents the BinRangeuint8Type `"range"`.
+const BinRangeuint8TypeRange BinRangeuint8Type = "range"
+
+// BinRangeuint8TypeRangeFrom represents the BinRangeuint8Type `"range_from"`.
+const BinRangeuint8TypeRangeFrom BinRangeuint8Type = "range_from"
+
 // DatumTypeBool represents the DatumType `"bool"`.
 const DatumTypeBool DatumType = "bool"
 
+// DatumTypeI8 represents the DatumType `"i8"`.
+const DatumTypeI8 DatumType = "i8"
+
+// DatumTypeU8 represents the DatumType `"u8"`.
+const DatumTypeU8 DatumType = "u8"
+
+// DatumTypeI16 represents the DatumType `"i16"`.
+const DatumTypeI16 DatumType = "i16"
+
+// DatumTypeU16 represents the DatumType `"u16"`.
+const DatumTypeU16 DatumType = "u16"
+
+// DatumTypeI32 represents the DatumType `"i32"`.
+const DatumTypeI32 DatumType = "i32"
+
+// DatumTypeU32 represents the DatumType `"u32"`.
+const DatumTypeU32 DatumType = "u32"
+
 // DatumTypeI64 represents the DatumType `"i64"`.
 const DatumTypeI64 DatumType = "i64"
+
+// DatumTypeU64 represents the DatumType `"u64"`.
+const DatumTypeU64 DatumType = "u64"
+
+// DatumTypeF32 represents the DatumType `"f32"`.
+const DatumTypeF32 DatumType = "f32"
 
 // DatumTypeF64 represents the DatumType `"f64"`.
 const DatumTypeF64 DatumType = "f64"
@@ -4820,11 +5402,41 @@ const DatumTypeBytes DatumType = "bytes"
 // DatumTypeCumulativeI64 represents the DatumType `"cumulative_i64"`.
 const DatumTypeCumulativeI64 DatumType = "cumulative_i64"
 
+// DatumTypeCumulativeU64 represents the DatumType `"cumulative_u64"`.
+const DatumTypeCumulativeU64 DatumType = "cumulative_u64"
+
+// DatumTypeCumulativeF32 represents the DatumType `"cumulative_f32"`.
+const DatumTypeCumulativeF32 DatumType = "cumulative_f32"
+
 // DatumTypeCumulativeF64 represents the DatumType `"cumulative_f64"`.
 const DatumTypeCumulativeF64 DatumType = "cumulative_f64"
 
+// DatumTypeHistogramI8 represents the DatumType `"histogram_i8"`.
+const DatumTypeHistogramI8 DatumType = "histogram_i8"
+
+// DatumTypeHistogramU8 represents the DatumType `"histogram_u8"`.
+const DatumTypeHistogramU8 DatumType = "histogram_u8"
+
+// DatumTypeHistogramI16 represents the DatumType `"histogram_i16"`.
+const DatumTypeHistogramI16 DatumType = "histogram_i16"
+
+// DatumTypeHistogramU16 represents the DatumType `"histogram_u16"`.
+const DatumTypeHistogramU16 DatumType = "histogram_u16"
+
+// DatumTypeHistogramI32 represents the DatumType `"histogram_i32"`.
+const DatumTypeHistogramI32 DatumType = "histogram_i32"
+
+// DatumTypeHistogramU32 represents the DatumType `"histogram_u32"`.
+const DatumTypeHistogramU32 DatumType = "histogram_u32"
+
 // DatumTypeHistogramI64 represents the DatumType `"histogram_i64"`.
 const DatumTypeHistogramI64 DatumType = "histogram_i64"
+
+// DatumTypeHistogramU64 represents the DatumType `"histogram_u64"`.
+const DatumTypeHistogramU64 DatumType = "histogram_u64"
+
+// DatumTypeHistogramF32 represents the DatumType `"histogram_f32"`.
+const DatumTypeHistogramF32 DatumType = "histogram_f32"
 
 // DatumTypeHistogramF64 represents the DatumType `"histogram_f64"`.
 const DatumTypeHistogramF64 DatumType = "histogram_f64"
@@ -4988,6 +5600,42 @@ const IpKindEphemeral IpKind = "ephemeral"
 // IpKindFloating represents the IpKind `"floating"`.
 const IpKindFloating IpKind = "floating"
 
+// LinkFecFirecode represents the LinkFec `"firecode"`.
+const LinkFecFirecode LinkFec = "firecode"
+
+// LinkFecNone represents the LinkFec `"none"`.
+const LinkFecNone LinkFec = "none"
+
+// LinkFecRs represents the LinkFec `"rs"`.
+const LinkFecRs LinkFec = "rs"
+
+// LinkSpeedSpeed0G represents the LinkSpeed `"speed0_g"`.
+const LinkSpeedSpeed0G LinkSpeed = "speed0_g"
+
+// LinkSpeedSpeed1G represents the LinkSpeed `"speed1_g"`.
+const LinkSpeedSpeed1G LinkSpeed = "speed1_g"
+
+// LinkSpeedSpeed10G represents the LinkSpeed `"speed10_g"`.
+const LinkSpeedSpeed10G LinkSpeed = "speed10_g"
+
+// LinkSpeedSpeed25G represents the LinkSpeed `"speed25_g"`.
+const LinkSpeedSpeed25G LinkSpeed = "speed25_g"
+
+// LinkSpeedSpeed40G represents the LinkSpeed `"speed40_g"`.
+const LinkSpeedSpeed40G LinkSpeed = "speed40_g"
+
+// LinkSpeedSpeed50G represents the LinkSpeed `"speed50_g"`.
+const LinkSpeedSpeed50G LinkSpeed = "speed50_g"
+
+// LinkSpeedSpeed100G represents the LinkSpeed `"speed100_g"`.
+const LinkSpeedSpeed100G LinkSpeed = "speed100_g"
+
+// LinkSpeedSpeed200G represents the LinkSpeed `"speed200_g"`.
+const LinkSpeedSpeed200G LinkSpeed = "speed200_g"
+
+// LinkSpeedSpeed400G represents the LinkSpeed `"speed400_g"`.
+const LinkSpeedSpeed400G LinkSpeed = "speed400_g"
+
 // NameOrIdSortModeNameAscending represents the NameOrIdSortMode `"name_ascending"`.
 const NameOrIdSortModeNameAscending NameOrIdSortMode = "name_ascending"
 
@@ -5012,6 +5660,9 @@ const PhysicalDiskKindM2 PhysicalDiskKind = "m2"
 // PhysicalDiskKindU2 represents the PhysicalDiskKind `"u2"`.
 const PhysicalDiskKindU2 PhysicalDiskKind = "u2"
 
+// PingStatusOk represents the PingStatus `"ok"`.
+const PingStatusOk PingStatus = "ok"
+
 // ProjectRoleAdmin represents the ProjectRole `"admin"`.
 const ProjectRoleAdmin ProjectRole = "admin"
 
@@ -5020,45 +5671,6 @@ const ProjectRoleCollaborator ProjectRole = "collaborator"
 
 // ProjectRoleViewer represents the ProjectRole `"viewer"`.
 const ProjectRoleViewer ProjectRole = "viewer"
-
-// RouteDestinationTypeIp represents the RouteDestinationType `"ip"`.
-const RouteDestinationTypeIp RouteDestinationType = "ip"
-
-// RouteDestinationTypeIpNet represents the RouteDestinationType `"ip_net"`.
-const RouteDestinationTypeIpNet RouteDestinationType = "ip_net"
-
-// RouteDestinationTypeVpc represents the RouteDestinationType `"vpc"`.
-const RouteDestinationTypeVpc RouteDestinationType = "vpc"
-
-// RouteDestinationTypeSubnet represents the RouteDestinationType `"subnet"`.
-const RouteDestinationTypeSubnet RouteDestinationType = "subnet"
-
-// RouteTargetTypeIp represents the RouteTargetType `"ip"`.
-const RouteTargetTypeIp RouteTargetType = "ip"
-
-// RouteTargetTypeVpc represents the RouteTargetType `"vpc"`.
-const RouteTargetTypeVpc RouteTargetType = "vpc"
-
-// RouteTargetTypeSubnet represents the RouteTargetType `"subnet"`.
-const RouteTargetTypeSubnet RouteTargetType = "subnet"
-
-// RouteTargetTypeInstance represents the RouteTargetType `"instance"`.
-const RouteTargetTypeInstance RouteTargetType = "instance"
-
-// RouteTargetTypeInternetGateway represents the RouteTargetType `"internet_gateway"`.
-const RouteTargetTypeInternetGateway RouteTargetType = "internet_gateway"
-
-// RouterRouteKindDefault represents the RouterRouteKind `"default"`.
-const RouterRouteKindDefault RouterRouteKind = "default"
-
-// RouterRouteKindVpcSubnet represents the RouterRouteKind `"vpc_subnet"`.
-const RouterRouteKindVpcSubnet RouterRouteKind = "vpc_subnet"
-
-// RouterRouteKindVpcPeering represents the RouterRouteKind `"vpc_peering"`.
-const RouterRouteKindVpcPeering RouterRouteKind = "vpc_peering"
-
-// RouterRouteKindCustom represents the RouterRouteKind `"custom"`.
-const RouterRouteKindCustom RouterRouteKind = "custom"
 
 // ServiceUsingCertificateExternalApi represents the ServiceUsingCertificate `"external_api"`.
 const ServiceUsingCertificateExternalApi ServiceUsingCertificate = "external_api"
@@ -5098,6 +5710,12 @@ const SwitchInterfaceKindTypeVlan SwitchInterfaceKindType = "vlan"
 
 // SwitchInterfaceKindTypeLoopback represents the SwitchInterfaceKindType `"loopback"`.
 const SwitchInterfaceKindTypeLoopback SwitchInterfaceKindType = "loopback"
+
+// SwitchLocationSwitch0 represents the SwitchLocation `"switch0"`.
+const SwitchLocationSwitch0 SwitchLocation = "switch0"
+
+// SwitchLocationSwitch1 represents the SwitchLocation `"switch1"`.
+const SwitchLocationSwitch1 SwitchLocation = "switch1"
 
 // SwitchPortGeometryQsfp28X1 represents the SwitchPortGeometry `"qsfp28x1"`.
 const SwitchPortGeometryQsfp28X1 SwitchPortGeometry = "qsfp28x1"
@@ -5180,16 +5798,21 @@ const VpcFirewallRuleTargetTypeIp VpcFirewallRuleTargetType = "ip"
 // VpcFirewallRuleTargetTypeIpNet represents the VpcFirewallRuleTargetType `"ip_net"`.
 const VpcFirewallRuleTargetTypeIpNet VpcFirewallRuleTargetType = "ip_net"
 
-// VpcRouterKindSystem represents the VpcRouterKind `"system"`.
-const VpcRouterKindSystem VpcRouterKind = "system"
-
-// VpcRouterKindCustom represents the VpcRouterKind `"custom"`.
-const VpcRouterKindCustom VpcRouterKind = "custom"
-
 // AddressLotKinds is the collection of all AddressLotKind values.
 var AddressLotKinds = []AddressLotKind{
 	AddressLotKindInfra,
 	AddressLotKindPool,
+}
+
+// BgpPeerStates is the collection of all BgpPeerState values.
+var BgpPeerStates = []BgpPeerState{
+	BgpPeerStateActive,
+	BgpPeerStateConnect,
+	BgpPeerStateEstablished,
+	BgpPeerStateIdle,
+	BgpPeerStateOpenConfirm,
+	BgpPeerStateOpenSent,
+	BgpPeerStateSessionSetup,
 }
 
 // BinRangedoubleTypes is the collection of all BinRangedoubleType values.
@@ -5199,6 +5822,27 @@ var BinRangedoubleTypes = []BinRangedoubleType{
 	BinRangedoubleTypeRangeTo,
 }
 
+// BinRangefloatTypes is the collection of all BinRangefloatType values.
+var BinRangefloatTypes = []BinRangefloatType{
+	BinRangefloatTypeRange,
+	BinRangefloatTypeRangeFrom,
+	BinRangefloatTypeRangeTo,
+}
+
+// BinRangeint16Types is the collection of all BinRangeint16Type values.
+var BinRangeint16Types = []BinRangeint16Type{
+	BinRangeint16TypeRange,
+	BinRangeint16TypeRangeFrom,
+	BinRangeint16TypeRangeTo,
+}
+
+// BinRangeint32Types is the collection of all BinRangeint32Type values.
+var BinRangeint32Types = []BinRangeint32Type{
+	BinRangeint32TypeRange,
+	BinRangeint32TypeRangeFrom,
+	BinRangeint32TypeRangeTo,
+}
+
 // BinRangeint64Types is the collection of all BinRangeint64Type values.
 var BinRangeint64Types = []BinRangeint64Type{
 	BinRangeint64TypeRange,
@@ -5206,17 +5850,70 @@ var BinRangeint64Types = []BinRangeint64Type{
 	BinRangeint64TypeRangeTo,
 }
 
+// BinRangeint8Types is the collection of all BinRangeint8Type values.
+var BinRangeint8Types = []BinRangeint8Type{
+	BinRangeint8TypeRange,
+	BinRangeint8TypeRangeFrom,
+	BinRangeint8TypeRangeTo,
+}
+
+// BinRangeuint16Types is the collection of all BinRangeuint16Type values.
+var BinRangeuint16Types = []BinRangeuint16Type{
+	BinRangeuint16TypeRange,
+	BinRangeuint16TypeRangeFrom,
+	BinRangeuint16TypeRangeTo,
+}
+
+// BinRangeuint32Types is the collection of all BinRangeuint32Type values.
+var BinRangeuint32Types = []BinRangeuint32Type{
+	BinRangeuint32TypeRange,
+	BinRangeuint32TypeRangeFrom,
+	BinRangeuint32TypeRangeTo,
+}
+
+// BinRangeuint64Types is the collection of all BinRangeuint64Type values.
+var BinRangeuint64Types = []BinRangeuint64Type{
+	BinRangeuint64TypeRange,
+	BinRangeuint64TypeRangeFrom,
+	BinRangeuint64TypeRangeTo,
+}
+
+// BinRangeuint8Types is the collection of all BinRangeuint8Type values.
+var BinRangeuint8Types = []BinRangeuint8Type{
+	BinRangeuint8TypeRange,
+	BinRangeuint8TypeRangeFrom,
+	BinRangeuint8TypeRangeTo,
+}
+
 // DatumTypes is the collection of all DatumType values.
 var DatumTypes = []DatumType{
 	DatumTypeBool,
 	DatumTypeBytes,
+	DatumTypeCumulativeF32,
 	DatumTypeCumulativeF64,
 	DatumTypeCumulativeI64,
+	DatumTypeCumulativeU64,
+	DatumTypeF32,
 	DatumTypeF64,
+	DatumTypeHistogramF32,
 	DatumTypeHistogramF64,
+	DatumTypeHistogramI16,
+	DatumTypeHistogramI32,
 	DatumTypeHistogramI64,
+	DatumTypeHistogramI8,
+	DatumTypeHistogramU16,
+	DatumTypeHistogramU32,
+	DatumTypeHistogramU64,
+	DatumTypeHistogramU8,
+	DatumTypeI16,
+	DatumTypeI32,
 	DatumTypeI64,
+	DatumTypeI8,
 	DatumTypeString,
+	DatumTypeU16,
+	DatumTypeU32,
+	DatumTypeU64,
+	DatumTypeU8,
 }
 
 // DigestTypes is the collection of all DigestType values.
@@ -5332,6 +6029,26 @@ var IpKinds = []IpKind{
 	IpKindFloating,
 }
 
+// LinkFecs is the collection of all LinkFec values.
+var LinkFecs = []LinkFec{
+	LinkFecFirecode,
+	LinkFecNone,
+	LinkFecRs,
+}
+
+// LinkSpeeds is the collection of all LinkSpeed values.
+var LinkSpeeds = []LinkSpeed{
+	LinkSpeedSpeed0G,
+	LinkSpeedSpeed100G,
+	LinkSpeedSpeed10G,
+	LinkSpeedSpeed1G,
+	LinkSpeedSpeed200G,
+	LinkSpeedSpeed25G,
+	LinkSpeedSpeed400G,
+	LinkSpeedSpeed40G,
+	LinkSpeedSpeed50G,
+}
+
 // NameOrIdSortModes is the collection of all NameOrIdSortMode values.
 var NameOrIdSortModes = []NameOrIdSortMode{
 	NameOrIdSortModeIdAscending,
@@ -5356,36 +6073,16 @@ var PhysicalDiskKinds = []PhysicalDiskKind{
 	PhysicalDiskKindU2,
 }
 
+// PingStatuses is the collection of all PingStatus values.
+var PingStatuses = []PingStatus{
+	PingStatusOk,
+}
+
 // ProjectRoles is the collection of all ProjectRole values.
 var ProjectRoles = []ProjectRole{
 	ProjectRoleAdmin,
 	ProjectRoleCollaborator,
 	ProjectRoleViewer,
-}
-
-// RouteDestinationTypes is the collection of all RouteDestinationType values.
-var RouteDestinationTypes = []RouteDestinationType{
-	RouteDestinationTypeIp,
-	RouteDestinationTypeIpNet,
-	RouteDestinationTypeSubnet,
-	RouteDestinationTypeVpc,
-}
-
-// RouteTargetTypes is the collection of all RouteTargetType values.
-var RouteTargetTypes = []RouteTargetType{
-	RouteTargetTypeInstance,
-	RouteTargetTypeInternetGateway,
-	RouteTargetTypeIp,
-	RouteTargetTypeSubnet,
-	RouteTargetTypeVpc,
-}
-
-// RouterRouteKinds is the collection of all RouterRouteKind values.
-var RouterRouteKinds = []RouterRouteKind{
-	RouterRouteKindCustom,
-	RouterRouteKindDefault,
-	RouterRouteKindVpcPeering,
-	RouterRouteKindVpcSubnet,
 }
 
 // ServiceUsingCertificates is the collection of all ServiceUsingCertificate values.
@@ -5419,6 +6116,12 @@ var SwitchInterfaceKindTypes = []SwitchInterfaceKindType{
 	SwitchInterfaceKindTypeLoopback,
 	SwitchInterfaceKindTypePrimary,
 	SwitchInterfaceKindTypeVlan,
+}
+
+// SwitchLocations is the collection of all SwitchLocation values.
+var SwitchLocations = []SwitchLocation{
+	SwitchLocationSwitch0,
+	SwitchLocationSwitch1,
 }
 
 // SwitchPortGeometrys is the collection of all SwitchPortGeometry values.
@@ -5482,10 +6185,4 @@ var VpcFirewallRuleTargetTypes = []VpcFirewallRuleTargetType{
 	VpcFirewallRuleTargetTypeIpNet,
 	VpcFirewallRuleTargetTypeSubnet,
 	VpcFirewallRuleTargetTypeVpc,
-}
-
-// VpcRouterKinds is the collection of all VpcRouterKind values.
-var VpcRouterKinds = []VpcRouterKind{
-	VpcRouterKindCustom,
-	VpcRouterKindSystem,
 }
