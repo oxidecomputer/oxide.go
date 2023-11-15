@@ -26,8 +26,8 @@
     }
     defer resp.Body.Close()
 
-    // Check the response.
-    if err := checkResponse(resp); err != nil {
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
         return nil, err
     }
 

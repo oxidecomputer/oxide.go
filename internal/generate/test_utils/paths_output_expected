@@ -37,8 +37,8 @@ func (c *Client) IpPoolList(ctx context.Context, params IpPoolListParams, ) (*Ip
     }
     defer resp.Body.Close()
 
-    // Check the response.
-    if err := checkResponse(resp); err != nil {
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
         return nil, err
     }
 
@@ -115,8 +115,8 @@ func (c *Client) IpPoolCreate(ctx context.Context, params IpPoolCreateParams, ) 
     }
     defer resp.Body.Close()
 
-    // Check the response.
-    if err := checkResponse(resp); err != nil {
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
         return nil, err
     }
 
@@ -162,8 +162,8 @@ func (c *Client) IpPoolView(ctx context.Context, params IpPoolViewParams, ) (*Ip
     }
     defer resp.Body.Close()
 
-    // Check the response.
-    if err := checkResponse(resp); err != nil {
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
         return nil, err
     }
 
@@ -215,8 +215,8 @@ func (c *Client) IpPoolUpdate(ctx context.Context, params IpPoolUpdateParams, ) 
     }
     defer resp.Body.Close()
 
-    // Check the response.
-    if err := checkResponse(resp); err != nil {
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
         return nil, err
     }
 
@@ -262,8 +262,8 @@ func (c *Client) IpPoolDelete(ctx context.Context, params IpPoolDeleteParams, ) 
     }
     defer resp.Body.Close()
 
-    // Check the response.
-    if err := checkResponse(resp); err != nil {
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
         return err
     }
 

@@ -1,6 +1,7 @@
 package oxide
 
 import (
+	"errors"
 	"io"
 	"net/http"
 	"net/url"
@@ -82,7 +83,7 @@ Content-Type: [application/json]
 	}
 }
 
-func Test_checkResponse(t *testing.T) {
+func Test_NewHTTPError(t *testing.T) {
 	url, _ := url.Parse("http://127.0.0.1:12220/v1/disks/my-disk")
 	// Go map iteration is random so we only add a single header
 	header := make(http.Header)
@@ -121,7 +122,7 @@ func Test_checkResponse(t *testing.T) {
 		{
 			name: "returns an error without populated oxide.Error type",
 			args: &res,
-			want: HTTPError{
+			want: &HTTPError{
 				HTTPResponse:  &res,
 				RawBody:       "some error",
 				ErrorResponse: nil,
@@ -130,7 +131,7 @@ func Test_checkResponse(t *testing.T) {
 		{
 			name: "returns an error with populated oxide.Error type",
 			args: &res2,
-			want: HTTPError{
+			want: &HTTPError{
 				HTTPResponse: &res2,
 				RawBody: `{
   "request_id": "37a8ed33-b7ad-43b0-b2ce-1171d03f5324",
@@ -161,8 +162,82 @@ func Test_checkResponse(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := checkResponse(tt.args)
+			err := NewHTTPError(tt.args)
 			assert.Equal(t, tt.want, err)
+		})
+	}
+}
+
+func Test_NewHTTPError_correct_type(t *testing.T) {
+	url, _ := url.Parse("http://127.0.0.1:12220/v1/disks/my-disk")
+	// Go map iteration is random so we only add a single header
+	header := make(http.Header)
+	header.Add("Content-Type", "application/json")
+
+	res := http.Response{
+		StatusCode: 300,
+		Header:     header,
+		Body:       io.NopCloser(strings.NewReader("some error")),
+		Request: &http.Request{
+			Method: http.MethodPost,
+			URL:    url,
+		},
+	}
+
+	res2 := http.Response{
+		StatusCode: 400,
+		Header:     header,
+		Body: io.NopCloser(strings.NewReader(`{
+  "request_id": "37a8ed33-b7ad-43b0-b2ce-1171d03f5324",
+  "error_code": "ObjectAlreadyExists",
+  "message": "already exists: project \"my-project\""
+}
+`)),
+		Request: &http.Request{
+			Method: http.MethodPost,
+			URL:    url,
+		},
+	}
+
+	tests := []struct {
+		name string
+		args *http.Response
+		want error
+	}{
+		{
+			name: "returns an error without populated oxide.Error type",
+			args: &res,
+			want: &HTTPError{
+				HTTPResponse:  &res,
+				RawBody:       "some error",
+				ErrorResponse: nil,
+			},
+		},
+		{
+			name: "returns an error with populated oxide.Error type",
+			args: &res2,
+			want: &HTTPError{
+				HTTPResponse: &res2,
+				RawBody: `{
+  "request_id": "37a8ed33-b7ad-43b0-b2ce-1171d03f5324",
+  "error_code": "ObjectAlreadyExists",
+  "message": "already exists: project \"my-project\""
+}
+`,
+				ErrorResponse: &ErrorResponse{
+					Message:   "already exists: project \"my-project\"",
+					ErrorCode: "ObjectAlreadyExists",
+					RequestId: "37a8ed33-b7ad-43b0-b2ce-1171d03f5324",
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := NewHTTPError(tt.args)
+
+			var apiError *HTTPError
+			assert.Equal(t, errors.As(err, &apiError), true)
 		})
 	}
 }

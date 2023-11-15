@@ -23,8 +23,12 @@ type HTTPError struct {
 // Error converts the HTTPError type to a readable string.
 func (err HTTPError) Error() string {
 	output := new(bytes.Buffer)
-	fmt.Fprintf(output, "%s %s\n", err.HTTPResponse.Request.Method, err.HTTPResponse.Request.URL)
-
+	if err.HTTPResponse.Request.URL != nil {
+		fmt.Fprintf(output, "%s %s\n", err.HTTPResponse.Request.Method, err.HTTPResponse.Request.URL)
+	} else {
+		// This case is extremely unlikely, just adding to avoid a panic due to a nil pointer
+		fmt.Fprintf(output, "%s <URL unavailable>\n", err.HTTPResponse.Request.Method)
+	}
 	fmt.Fprintln(output, "----------- RESPONSE -----------")
 	if err.ErrorResponse != nil {
 		fmt.Fprintf(output, "Status: %d %s\n", err.HTTPResponse.StatusCode, err.ErrorResponse.ErrorCode)
@@ -45,10 +49,9 @@ func (err HTTPError) Error() string {
 	return fmt.Sprintf("%v", output.String())
 }
 
-// TODO: export this function and change name
-// checkResponse returns an error (of type *HTTPError) if the response
+// NewHTTPError returns an error of type *HTTPError if the response
 // status code is 3xx or greater.
-func checkResponse(res *http.Response) error {
+func NewHTTPError(res *http.Response) error {
 	if res.StatusCode <= 299 {
 		return nil
 	}
@@ -66,10 +69,10 @@ func checkResponse(res *http.Response) error {
 	if err := json.Unmarshal(slurp, &apiError); err != nil {
 		// We return the error as is even with an unmarshal error,
 		// as it already contains the RawBody.
-		return e
+		return &e
 	}
 
 	e.ErrorResponse = &apiError
 
-	return e
+	return &e
 }
