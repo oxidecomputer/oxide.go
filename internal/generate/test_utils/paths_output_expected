@@ -60,7 +60,7 @@ func (c *Client) IpPoolList(ctx context.Context, params IpPoolListParams, ) (*Ip
 //
 // This method is a wrapper around the `IpPoolList` method.
 // This method returns all the pages at once.
-func (c *Client) IpPoolListAllPages(ctx context.Context, params IpPoolListParams, ) (*IpPoolResultsPage, error) { 
+func (c *Client) IpPoolListAllPages(ctx context.Context, params IpPoolListParams, ) (IpPoolResultsPage, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -79,7 +79,7 @@ func (c *Client) IpPoolListAllPages(ctx context.Context, params IpPoolListParams
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // IpPoolCreate
