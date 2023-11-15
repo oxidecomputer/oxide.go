@@ -109,7 +109,7 @@ func (c *Client) CertificateList(ctx context.Context, params CertificateListPara
 //
 // This method is a wrapper around the `CertificateList` method.
 // This method returns all the pages at once.
-func (c *Client) CertificateListAllPages(ctx context.Context, params CertificateListParams) (*[]Certificate, error) {
+func (c *Client) CertificateListAllPages(ctx context.Context, params CertificateListParams) ([]Certificate, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -128,7 +128,7 @@ func (c *Client) CertificateListAllPages(ctx context.Context, params Certificate
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // CertificateCreate: Create a new system-wide x.509 certificate
@@ -320,7 +320,7 @@ func (c *Client) DiskList(ctx context.Context, params DiskListParams) (*DiskResu
 //
 // This method is a wrapper around the `DiskList` method.
 // This method returns all the pages at once.
-func (c *Client) DiskListAllPages(ctx context.Context, params DiskListParams) (*[]Disk, error) {
+func (c *Client) DiskListAllPages(ctx context.Context, params DiskListParams) ([]Disk, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -339,7 +339,7 @@ func (c *Client) DiskListAllPages(ctx context.Context, params DiskListParams) (*
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // DiskCreate: Create a disk
@@ -744,7 +744,7 @@ func (c *Client) DiskMetricsList(ctx context.Context, params DiskMetricsListPara
 //
 // This method is a wrapper around the `DiskMetricsList` method.
 // This method returns all the pages at once.
-func (c *Client) DiskMetricsListAllPages(ctx context.Context, params DiskMetricsListParams) (*[]Measurement, error) {
+func (c *Client) DiskMetricsListAllPages(ctx context.Context, params DiskMetricsListParams) ([]Measurement, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -763,7 +763,7 @@ func (c *Client) DiskMetricsListAllPages(ctx context.Context, params DiskMetrics
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // GroupList: List groups
@@ -820,7 +820,7 @@ func (c *Client) GroupList(ctx context.Context, params GroupListParams) (*GroupR
 //
 // This method is a wrapper around the `GroupList` method.
 // This method returns all the pages at once.
-func (c *Client) GroupListAllPages(ctx context.Context, params GroupListParams) (*[]Group, error) {
+func (c *Client) GroupListAllPages(ctx context.Context, params GroupListParams) ([]Group, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -839,7 +839,7 @@ func (c *Client) GroupListAllPages(ctx context.Context, params GroupListParams) 
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // GroupView: Fetch group
@@ -945,7 +945,7 @@ func (c *Client) ImageList(ctx context.Context, params ImageListParams) (*ImageR
 //
 // This method is a wrapper around the `ImageList` method.
 // This method returns all the pages at once.
-func (c *Client) ImageListAllPages(ctx context.Context, params ImageListParams) (*[]Image, error) {
+func (c *Client) ImageListAllPages(ctx context.Context, params ImageListParams) ([]Image, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -964,7 +964,7 @@ func (c *Client) ImageListAllPages(ctx context.Context, params ImageListParams) 
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // ImageCreate: Create an image
@@ -1260,7 +1260,7 @@ func (c *Client) InstanceList(ctx context.Context, params InstanceListParams) (*
 //
 // This method is a wrapper around the `InstanceList` method.
 // This method returns all the pages at once.
-func (c *Client) InstanceListAllPages(ctx context.Context, params InstanceListParams) (*[]Instance, error) {
+func (c *Client) InstanceListAllPages(ctx context.Context, params InstanceListParams) ([]Instance, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -1279,7 +1279,7 @@ func (c *Client) InstanceListAllPages(ctx context.Context, params InstanceListPa
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // InstanceCreate: Create an instance
@@ -1476,7 +1476,7 @@ func (c *Client) InstanceDiskList(ctx context.Context, params InstanceDiskListPa
 //
 // This method is a wrapper around the `InstanceDiskList` method.
 // This method returns all the pages at once.
-func (c *Client) InstanceDiskListAllPages(ctx context.Context, params InstanceDiskListParams) (*[]Disk, error) {
+func (c *Client) InstanceDiskListAllPages(ctx context.Context, params InstanceDiskListParams) ([]Disk, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -1495,7 +1495,7 @@ func (c *Client) InstanceDiskListAllPages(ctx context.Context, params InstanceDi
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // InstanceDiskAttach: Attach a disk to an instance
@@ -1996,7 +1996,7 @@ func (c *Client) ProjectIpPoolList(ctx context.Context, params ProjectIpPoolList
 //
 // This method is a wrapper around the `ProjectIpPoolList` method.
 // This method returns all the pages at once.
-func (c *Client) ProjectIpPoolListAllPages(ctx context.Context, params ProjectIpPoolListParams) (*[]IpPool, error) {
+func (c *Client) ProjectIpPoolListAllPages(ctx context.Context, params ProjectIpPoolListParams) ([]IpPool, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2015,7 +2015,7 @@ func (c *Client) ProjectIpPoolListAllPages(ctx context.Context, params ProjectIp
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // ProjectIpPoolView: Fetch an IP pool
@@ -2202,7 +2202,7 @@ func (c *Client) CurrentUserGroups(ctx context.Context, params CurrentUserGroups
 //
 // This method is a wrapper around the `CurrentUserGroups` method.
 // This method returns all the pages at once.
-func (c *Client) CurrentUserGroupsAllPages(ctx context.Context, params CurrentUserGroupsParams) (*[]Group, error) {
+func (c *Client) CurrentUserGroupsAllPages(ctx context.Context, params CurrentUserGroupsParams) ([]Group, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2221,7 +2221,7 @@ func (c *Client) CurrentUserGroupsAllPages(ctx context.Context, params CurrentUs
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // CurrentUserSshKeyList: List SSH public keys
@@ -2280,7 +2280,7 @@ func (c *Client) CurrentUserSshKeyList(ctx context.Context, params CurrentUserSs
 //
 // This method is a wrapper around the `CurrentUserSshKeyList` method.
 // This method returns all the pages at once.
-func (c *Client) CurrentUserSshKeyListAllPages(ctx context.Context, params CurrentUserSshKeyListParams) (*[]SshKey, error) {
+func (c *Client) CurrentUserSshKeyListAllPages(ctx context.Context, params CurrentUserSshKeyListParams) ([]SshKey, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2299,7 +2299,7 @@ func (c *Client) CurrentUserSshKeyListAllPages(ctx context.Context, params Curre
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // CurrentUserSshKeyCreate: Create an SSH public key
@@ -2495,7 +2495,7 @@ func (c *Client) SiloMetric(ctx context.Context, params SiloMetricParams) (*Meas
 //
 // This method is a wrapper around the `SiloMetric` method.
 // This method returns all the pages at once.
-func (c *Client) SiloMetricAllPages(ctx context.Context, params SiloMetricParams) (*[]Measurement, error) {
+func (c *Client) SiloMetricAllPages(ctx context.Context, params SiloMetricParams) ([]Measurement, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2514,7 +2514,7 @@ func (c *Client) SiloMetricAllPages(ctx context.Context, params SiloMetricParams
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // InstanceNetworkInterfaceList: List network interfaces
@@ -2573,7 +2573,7 @@ func (c *Client) InstanceNetworkInterfaceList(ctx context.Context, params Instan
 //
 // This method is a wrapper around the `InstanceNetworkInterfaceList` method.
 // This method returns all the pages at once.
-func (c *Client) InstanceNetworkInterfaceListAllPages(ctx context.Context, params InstanceNetworkInterfaceListParams) (*[]InstanceNetworkInterface, error) {
+func (c *Client) InstanceNetworkInterfaceListAllPages(ctx context.Context, params InstanceNetworkInterfaceListParams) ([]InstanceNetworkInterface, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2592,7 +2592,7 @@ func (c *Client) InstanceNetworkInterfaceListAllPages(ctx context.Context, param
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // InstanceNetworkInterfaceCreate: Create a network interface
@@ -2978,7 +2978,7 @@ func (c *Client) ProjectList(ctx context.Context, params ProjectListParams) (*Pr
 //
 // This method is a wrapper around the `ProjectList` method.
 // This method returns all the pages at once.
-func (c *Client) ProjectListAllPages(ctx context.Context, params ProjectListParams) (*[]Project, error) {
+func (c *Client) ProjectListAllPages(ctx context.Context, params ProjectListParams) ([]Project, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2997,7 +2997,7 @@ func (c *Client) ProjectListAllPages(ctx context.Context, params ProjectListPara
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // ProjectCreate: Create a project
@@ -3336,7 +3336,7 @@ func (c *Client) SnapshotList(ctx context.Context, params SnapshotListParams) (*
 //
 // This method is a wrapper around the `SnapshotList` method.
 // This method returns all the pages at once.
-func (c *Client) SnapshotListAllPages(ctx context.Context, params SnapshotListParams) (*[]Snapshot, error) {
+func (c *Client) SnapshotListAllPages(ctx context.Context, params SnapshotListParams) ([]Snapshot, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3355,7 +3355,7 @@ func (c *Client) SnapshotListAllPages(ctx context.Context, params SnapshotListPa
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // SnapshotCreate: Create a snapshot
@@ -3550,7 +3550,7 @@ func (c *Client) PhysicalDiskList(ctx context.Context, params PhysicalDiskListPa
 //
 // This method is a wrapper around the `PhysicalDiskList` method.
 // This method returns all the pages at once.
-func (c *Client) PhysicalDiskListAllPages(ctx context.Context, params PhysicalDiskListParams) (*[]PhysicalDisk, error) {
+func (c *Client) PhysicalDiskListAllPages(ctx context.Context, params PhysicalDiskListParams) ([]PhysicalDisk, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3569,7 +3569,7 @@ func (c *Client) PhysicalDiskListAllPages(ctx context.Context, params PhysicalDi
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // RackList: List racks
@@ -3626,7 +3626,7 @@ func (c *Client) RackList(ctx context.Context, params RackListParams) (*RackResu
 //
 // This method is a wrapper around the `RackList` method.
 // This method returns all the pages at once.
-func (c *Client) RackListAllPages(ctx context.Context, params RackListParams) (*[]Rack, error) {
+func (c *Client) RackListAllPages(ctx context.Context, params RackListParams) ([]Rack, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3645,7 +3645,7 @@ func (c *Client) RackListAllPages(ctx context.Context, params RackListParams) (*
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // RackView: Fetch a rack
@@ -3748,7 +3748,7 @@ func (c *Client) SledList(ctx context.Context, params SledListParams) (*SledResu
 //
 // This method is a wrapper around the `SledList` method.
 // This method returns all the pages at once.
-func (c *Client) SledListAllPages(ctx context.Context, params SledListParams) (*[]Sled, error) {
+func (c *Client) SledListAllPages(ctx context.Context, params SledListParams) ([]Sled, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3767,7 +3767,7 @@ func (c *Client) SledListAllPages(ctx context.Context, params SledListParams) (*
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // SledView: Fetch a sled
@@ -3872,7 +3872,7 @@ func (c *Client) SledPhysicalDiskList(ctx context.Context, params SledPhysicalDi
 //
 // This method is a wrapper around the `SledPhysicalDiskList` method.
 // This method returns all the pages at once.
-func (c *Client) SledPhysicalDiskListAllPages(ctx context.Context, params SledPhysicalDiskListParams) (*[]PhysicalDisk, error) {
+func (c *Client) SledPhysicalDiskListAllPages(ctx context.Context, params SledPhysicalDiskListParams) ([]PhysicalDisk, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3891,7 +3891,7 @@ func (c *Client) SledPhysicalDiskListAllPages(ctx context.Context, params SledPh
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // SledInstanceList: List instances running on a given sled
@@ -3950,7 +3950,7 @@ func (c *Client) SledInstanceList(ctx context.Context, params SledInstanceListPa
 //
 // This method is a wrapper around the `SledInstanceList` method.
 // This method returns all the pages at once.
-func (c *Client) SledInstanceListAllPages(ctx context.Context, params SledInstanceListParams) (*[]SledInstance, error) {
+func (c *Client) SledInstanceListAllPages(ctx context.Context, params SledInstanceListParams) ([]SledInstance, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3969,7 +3969,7 @@ func (c *Client) SledInstanceListAllPages(ctx context.Context, params SledInstan
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // NetworkingSwitchPortList: List switch ports
@@ -4027,7 +4027,7 @@ func (c *Client) NetworkingSwitchPortList(ctx context.Context, params Networking
 //
 // This method is a wrapper around the `NetworkingSwitchPortList` method.
 // This method returns all the pages at once.
-func (c *Client) NetworkingSwitchPortListAllPages(ctx context.Context, params NetworkingSwitchPortListParams) (*[]SwitchPort, error) {
+func (c *Client) NetworkingSwitchPortListAllPages(ctx context.Context, params NetworkingSwitchPortListParams) ([]SwitchPort, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4046,7 +4046,7 @@ func (c *Client) NetworkingSwitchPortListAllPages(ctx context.Context, params Ne
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // NetworkingSwitchPortApplySettings: Apply switch port settings
@@ -4185,7 +4185,7 @@ func (c *Client) SwitchList(ctx context.Context, params SwitchListParams) (*Swit
 //
 // This method is a wrapper around the `SwitchList` method.
 // This method returns all the pages at once.
-func (c *Client) SwitchListAllPages(ctx context.Context, params SwitchListParams) (*[]Switch, error) {
+func (c *Client) SwitchListAllPages(ctx context.Context, params SwitchListParams) ([]Switch, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4204,7 +4204,7 @@ func (c *Client) SwitchListAllPages(ctx context.Context, params SwitchListParams
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // SwitchView: Fetch a switch
@@ -4308,7 +4308,7 @@ func (c *Client) SiloIdentityProviderList(ctx context.Context, params SiloIdenti
 //
 // This method is a wrapper around the `SiloIdentityProviderList` method.
 // This method returns all the pages at once.
-func (c *Client) SiloIdentityProviderListAllPages(ctx context.Context, params SiloIdentityProviderListParams) (*[]IdentityProvider, error) {
+func (c *Client) SiloIdentityProviderListAllPages(ctx context.Context, params SiloIdentityProviderListParams) ([]IdentityProvider, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4327,7 +4327,7 @@ func (c *Client) SiloIdentityProviderListAllPages(ctx context.Context, params Si
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // LocalIdpUserCreate: Create a user
@@ -4618,7 +4618,7 @@ func (c *Client) IpPoolList(ctx context.Context, params IpPoolListParams) (*IpPo
 //
 // This method is a wrapper around the `IpPoolList` method.
 // This method returns all the pages at once.
-func (c *Client) IpPoolListAllPages(ctx context.Context, params IpPoolListParams) (*[]IpPool, error) {
+func (c *Client) IpPoolListAllPages(ctx context.Context, params IpPoolListParams) ([]IpPool, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4637,7 +4637,7 @@ func (c *Client) IpPoolListAllPages(ctx context.Context, params IpPoolListParams
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // IpPoolCreate: Create an IP pool
@@ -4786,7 +4786,7 @@ func (c *Client) IpPoolServiceRangeList(ctx context.Context, params IpPoolServic
 //
 // This method is a wrapper around the `IpPoolServiceRangeList` method.
 // This method returns all the pages at once.
-func (c *Client) IpPoolServiceRangeListAllPages(ctx context.Context, params IpPoolServiceRangeListParams) (*[]IpPoolRange, error) {
+func (c *Client) IpPoolServiceRangeListAllPages(ctx context.Context, params IpPoolServiceRangeListParams) ([]IpPoolRange, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4805,7 +4805,7 @@ func (c *Client) IpPoolServiceRangeListAllPages(ctx context.Context, params IpPo
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // IpPoolServiceRangeAdd: Add a range to an IP pool used for Oxide services
@@ -5087,7 +5087,7 @@ func (c *Client) IpPoolRangeList(ctx context.Context, params IpPoolRangeListPara
 //
 // This method is a wrapper around the `IpPoolRangeList` method.
 // This method returns all the pages at once.
-func (c *Client) IpPoolRangeListAllPages(ctx context.Context, params IpPoolRangeListParams) (*[]IpPoolRange, error) {
+func (c *Client) IpPoolRangeListAllPages(ctx context.Context, params IpPoolRangeListParams) ([]IpPoolRange, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5106,7 +5106,7 @@ func (c *Client) IpPoolRangeListAllPages(ctx context.Context, params IpPoolRange
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // IpPoolRangeAdd: Add a range to an IP pool
@@ -5261,7 +5261,7 @@ func (c *Client) SystemMetric(ctx context.Context, params SystemMetricParams) (*
 //
 // This method is a wrapper around the `SystemMetric` method.
 // This method returns all the pages at once.
-func (c *Client) SystemMetricAllPages(ctx context.Context, params SystemMetricParams) (*[]Measurement, error) {
+func (c *Client) SystemMetricAllPages(ctx context.Context, params SystemMetricParams) ([]Measurement, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5280,7 +5280,7 @@ func (c *Client) SystemMetricAllPages(ctx context.Context, params SystemMetricPa
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // NetworkingAddressLotList: List address lots
@@ -5337,7 +5337,7 @@ func (c *Client) NetworkingAddressLotList(ctx context.Context, params Networking
 //
 // This method is a wrapper around the `NetworkingAddressLotList` method.
 // This method returns all the pages at once.
-func (c *Client) NetworkingAddressLotListAllPages(ctx context.Context, params NetworkingAddressLotListParams) (*[]AddressLot, error) {
+func (c *Client) NetworkingAddressLotListAllPages(ctx context.Context, params NetworkingAddressLotListParams) ([]AddressLot, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5356,7 +5356,7 @@ func (c *Client) NetworkingAddressLotListAllPages(ctx context.Context, params Ne
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // NetworkingAddressLotCreate: Create an address lot
@@ -5500,7 +5500,7 @@ func (c *Client) NetworkingAddressLotBlockList(ctx context.Context, params Netwo
 //
 // This method is a wrapper around the `NetworkingAddressLotBlockList` method.
 // This method returns all the pages at once.
-func (c *Client) NetworkingAddressLotBlockListAllPages(ctx context.Context, params NetworkingAddressLotBlockListParams) (*[]AddressLotBlock, error) {
+func (c *Client) NetworkingAddressLotBlockListAllPages(ctx context.Context, params NetworkingAddressLotBlockListParams) ([]AddressLotBlock, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5519,7 +5519,7 @@ func (c *Client) NetworkingAddressLotBlockListAllPages(ctx context.Context, para
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // NetworkingBgpConfigList: List BGP configurations
@@ -5577,7 +5577,7 @@ func (c *Client) NetworkingBgpConfigList(ctx context.Context, params NetworkingB
 //
 // This method is a wrapper around the `NetworkingBgpConfigList` method.
 // This method returns all the pages at once.
-func (c *Client) NetworkingBgpConfigListAllPages(ctx context.Context, params NetworkingBgpConfigListParams) (*[]BgpConfig, error) {
+func (c *Client) NetworkingBgpConfigListAllPages(ctx context.Context, params NetworkingBgpConfigListParams) ([]BgpConfig, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5596,7 +5596,7 @@ func (c *Client) NetworkingBgpConfigListAllPages(ctx context.Context, params Net
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // NetworkingBgpConfigCreate: Create a new BGP configuration
@@ -5956,7 +5956,7 @@ func (c *Client) NetworkingLoopbackAddressList(ctx context.Context, params Netwo
 //
 // This method is a wrapper around the `NetworkingLoopbackAddressList` method.
 // This method returns all the pages at once.
-func (c *Client) NetworkingLoopbackAddressListAllPages(ctx context.Context, params NetworkingLoopbackAddressListParams) (*[]LoopbackAddress, error) {
+func (c *Client) NetworkingLoopbackAddressListAllPages(ctx context.Context, params NetworkingLoopbackAddressListParams) ([]LoopbackAddress, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5975,7 +5975,7 @@ func (c *Client) NetworkingLoopbackAddressListAllPages(ctx context.Context, para
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // NetworkingLoopbackAddressCreate: Create a loopback address
@@ -6121,7 +6121,7 @@ func (c *Client) NetworkingSwitchPortSettingsList(ctx context.Context, params Ne
 //
 // This method is a wrapper around the `NetworkingSwitchPortSettingsList` method.
 // This method returns all the pages at once.
-func (c *Client) NetworkingSwitchPortSettingsListAllPages(ctx context.Context, params NetworkingSwitchPortSettingsListParams) (*[]SwitchPortSettings, error) {
+func (c *Client) NetworkingSwitchPortSettingsListAllPages(ctx context.Context, params NetworkingSwitchPortSettingsListParams) ([]SwitchPortSettings, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6140,7 +6140,7 @@ func (c *Client) NetworkingSwitchPortSettingsListAllPages(ctx context.Context, p
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // NetworkingSwitchPortSettingsCreate: Create switch port settings
@@ -6418,7 +6418,7 @@ func (c *Client) RoleList(ctx context.Context, params RoleListParams) (*RoleResu
 //
 // This method is a wrapper around the `RoleList` method.
 // This method returns all the pages at once.
-func (c *Client) RoleListAllPages(ctx context.Context, params RoleListParams) (*[]Role, error) {
+func (c *Client) RoleListAllPages(ctx context.Context, params RoleListParams) ([]Role, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6437,7 +6437,7 @@ func (c *Client) RoleListAllPages(ctx context.Context, params RoleListParams) (*
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // RoleView: Fetch a built-in role
@@ -6542,7 +6542,7 @@ func (c *Client) SiloList(ctx context.Context, params SiloListParams) (*SiloResu
 //
 // This method is a wrapper around the `SiloList` method.
 // This method returns all the pages at once.
-func (c *Client) SiloListAllPages(ctx context.Context, params SiloListParams) (*[]Silo, error) {
+func (c *Client) SiloListAllPages(ctx context.Context, params SiloListParams) ([]Silo, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6561,7 +6561,7 @@ func (c *Client) SiloListAllPages(ctx context.Context, params SiloListParams) (*
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // SiloCreate: Create a silo
@@ -6850,7 +6850,7 @@ func (c *Client) SiloUserList(ctx context.Context, params SiloUserListParams) (*
 //
 // This method is a wrapper around the `SiloUserList` method.
 // This method returns all the pages at once.
-func (c *Client) SiloUserListAllPages(ctx context.Context, params SiloUserListParams) (*[]User, error) {
+func (c *Client) SiloUserListAllPages(ctx context.Context, params SiloUserListParams) ([]User, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6869,7 +6869,7 @@ func (c *Client) SiloUserListAllPages(ctx context.Context, params SiloUserListPa
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // UserBuiltinList: List built-in users
@@ -6926,7 +6926,7 @@ func (c *Client) UserBuiltinList(ctx context.Context, params UserBuiltinListPara
 //
 // This method is a wrapper around the `UserBuiltinList` method.
 // This method returns all the pages at once.
-func (c *Client) UserBuiltinListAllPages(ctx context.Context, params UserBuiltinListParams) (*[]UserBuiltin, error) {
+func (c *Client) UserBuiltinListAllPages(ctx context.Context, params UserBuiltinListParams) ([]UserBuiltin, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6945,7 +6945,7 @@ func (c *Client) UserBuiltinListAllPages(ctx context.Context, params UserBuiltin
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // UserBuiltinView: Fetch a built-in user
@@ -7097,7 +7097,7 @@ func (c *Client) UserList(ctx context.Context, params UserListParams) (*UserResu
 //
 // This method is a wrapper around the `UserList` method.
 // This method returns all the pages at once.
-func (c *Client) UserListAllPages(ctx context.Context, params UserListParams) (*[]User, error) {
+func (c *Client) UserListAllPages(ctx context.Context, params UserListParams) ([]User, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7116,7 +7116,7 @@ func (c *Client) UserListAllPages(ctx context.Context, params UserListParams) (*
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // VpcFirewallRulesView: List firewall rules
@@ -7275,7 +7275,7 @@ func (c *Client) VpcSubnetList(ctx context.Context, params VpcSubnetListParams) 
 //
 // This method is a wrapper around the `VpcSubnetList` method.
 // This method returns all the pages at once.
-func (c *Client) VpcSubnetListAllPages(ctx context.Context, params VpcSubnetListParams) (*[]VpcSubnet, error) {
+func (c *Client) VpcSubnetListAllPages(ctx context.Context, params VpcSubnetListParams) ([]VpcSubnet, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7294,7 +7294,7 @@ func (c *Client) VpcSubnetListAllPages(ctx context.Context, params VpcSubnetList
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // VpcSubnetCreate: Create a subnet
@@ -7550,7 +7550,7 @@ func (c *Client) VpcSubnetListNetworkInterfaces(ctx context.Context, params VpcS
 //
 // This method is a wrapper around the `VpcSubnetListNetworkInterfaces` method.
 // This method returns all the pages at once.
-func (c *Client) VpcSubnetListNetworkInterfacesAllPages(ctx context.Context, params VpcSubnetListNetworkInterfacesParams) (*[]InstanceNetworkInterface, error) {
+func (c *Client) VpcSubnetListNetworkInterfacesAllPages(ctx context.Context, params VpcSubnetListNetworkInterfacesParams) ([]InstanceNetworkInterface, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7569,7 +7569,7 @@ func (c *Client) VpcSubnetListNetworkInterfacesAllPages(ctx context.Context, par
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // VpcList: List VPCs
@@ -7627,7 +7627,7 @@ func (c *Client) VpcList(ctx context.Context, params VpcListParams) (*VpcResults
 //
 // This method is a wrapper around the `VpcList` method.
 // This method returns all the pages at once.
-func (c *Client) VpcListAllPages(ctx context.Context, params VpcListParams) (*[]Vpc, error) {
+func (c *Client) VpcListAllPages(ctx context.Context, params VpcListParams) ([]Vpc, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7646,7 +7646,7 @@ func (c *Client) VpcListAllPages(ctx context.Context, params VpcListParams) (*[]
 		params.PageToken = page.NextPage
 	}
 
-	return &allPages, nil
+	return allPages, nil
 }
 
 // VpcCreate: Create a VPC
