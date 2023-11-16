@@ -1,3 +1,4 @@
+SHELL := /bin/bash
 NAME := oxide
 
 # If this session isn't interactive, then we don't want to allocate a
@@ -15,10 +16,14 @@ VERSION := $(shell cat $(CURDIR)/VERSION)
 
 .PHONY: generate
 generate: tools
-	go generate ./...
-	goimports -w oxide/*.go
-	gofmt -s -w oxide/*.go
-	go mod tidy
+	@ echo "+ Generating SDK..."
+	@ go generate ./...
+	@ echo "+ Updating imports..."
+	@ goimports -w oxide/*.go
+	@ echo "+ Formatting generated SDK..."
+	@ gofmt -s -w oxide/*.go
+	@ echo "+ Tidying up modules..."
+	@ go mod tidy
 
 .PHONY: build
 build: $(NAME) ## Builds a dynamic package.
@@ -32,7 +37,9 @@ all: generate test fmt lint staticcheck vet ## Runs a fmt, lint, test, staticche
 .PHONY: fmt
 fmt: ## Verifies all files have been `gofmt`ed.
 	@ echo "+ Verifying all files have been gofmt-ed..."
-	@ gofmt -s -d . | grep -v '.pb.go:' | grep -v '.twirp.go:' | grep -v vendor | grep -v internal/generate/test_generated | grep -v internal/generate/test_utils | tee /dev/stderr
+	@if [[ ! -z "$(shell gofmt -s -d . | grep -v '.pb.go:' | grep -v '.twirp.go:' | grep -v vendor | grep -v internal/generate/test_generated | grep -v internal/generate/test_utils | tee /dev/stderr)" ]]; then \
+		exit 1; \
+	fi
 
 .PHONY: lint
 lint: tools ## Verifies `golangci-lint` passes.
@@ -47,12 +54,16 @@ test: ## Runs the go tests.
 .PHONY: vet
 vet: ## Verifies `go vet` passes.
 	@ echo "+ Verifying go vet passes..."
-	@ $(GO) vet $(shell $(GO) list ./... | grep -v vendor) | tee /dev/stderr
+	@if [[ ! -z "$(shell $(GO) vet $(shell $(GO) list ./... | grep -v vendor) | tee /dev/stderr)" ]]; then \
+		exit 1; \
+	fi
 
 .PHONY: staticcheck
 staticcheck: tools ## Verifies `staticcheck` passes.
 	@ echo "+ Verifying staticcheck passes..."
-	@ staticcheck $(shell $(GO) list ./... | grep -v vendor) | tee /dev/stderr
+	@if [[ ! -z "$(shell staticcheck $(shell $(GO) list ./... | grep -v vendor) | tee /dev/stderr)" ]]; then \
+		exit 1; \
+	fi
 
 .PHONY: install
 install: ## Installs the executable or package.
@@ -68,7 +79,7 @@ tag: ## Create a new git tag to prepare to build a release.
 ## Creates a changelog prior to a release
 changelog: tools-private
 	@ echo "+ Creating changelog..."
-	@ $(GOBIN)/whatsit changelog create --repository oxidecomputer/oxide.go --new-version $(VERSION)
+	@ $(GOBIN)/whatsit changelog create --repository oxidecomputer/oxide.go --new-version $(VERSION) --config ./.changelog/$(VERSION).toml
 
 .PHONY: help
 help:
