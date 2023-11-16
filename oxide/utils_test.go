@@ -40,7 +40,10 @@ func TestExpandURL(t *testing.T) {
 		if err != nil {
 			t.Fatalf("parsing url %q failed: %v", test.in, err)
 		}
-		expandURL(u, test.expansions)
+		err = expandURL(u, test.expansions)
+		if err != nil {
+			t.Fatalf("expanding url with %v failed: %v", test.expansions, err)
+		}
 		got := u.String()
 		if got != test.want {
 			t.Errorf("got %q expected %q in test %d", got, test.want, i+1)
