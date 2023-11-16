@@ -1,1 +1,4 @@
 internal/generate/test_utils/tpl_method*
+bin/
+.crates.toml
+.crates2.json

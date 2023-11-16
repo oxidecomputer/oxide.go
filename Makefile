@@ -10,14 +10,11 @@ endif
 
 # Set our default go compiler
 GO := go
-
+export GOBIN = $(shell pwd)/bin
 VERSION := $(shell cat $(CURDIR)/VERSION)
 
 .PHONY: generate
-generate:
-	go get github.com/getkin/kin-openapi/openapi3
-	go get github.com/iancoleman/strcase
-	go install golang.org/x/tools/cmd/goimports@latest
+generate: tools
 	go generate ./...
 	goimports -w oxide/*.go
 	gofmt -s -w oxide/*.go
@@ -30,52 +27,32 @@ $(NAME): $(wildcard *.go) $(wildcard */*.go)
 	@echo "+ $@"
 	$(GO) build -tags "$(BUILDTAGS)" ${GO_LDFLAGS} -o $(NAME) .
 
-all: generate fmt lint test staticcheck vet ## Runs a fmt, lint, test, staticcheck, and vet.
+all: generate test fmt lint staticcheck vet ## Runs a fmt, lint, test, staticcheck, and vet.
 
 .PHONY: fmt
 fmt: ## Verifies all files have been `gofmt`ed.
-	@echo "+ $@"
-	@if [[ ! -z "$(shell gofmt -s -l . | grep -v '.pb.go:' | grep -v '.twirp.go:' | grep -v vendor | grep -v internal/generate/test_generated | grep -v internal/generate/test_utils | tee /dev/stderr)" ]]; then \
-		exit 1; \
-	fi
+	@ echo "+ Verifying all files have been gofmt-ed..."
+	@ gofmt -s -d . | grep -v '.pb.go:' | grep -v '.twirp.go:' | grep -v vendor | grep -v internal/generate/test_generated | grep -v internal/generate/test_utils | tee /dev/stderr
 
-# TODO: install golint if it doesn't exist
 .PHONY: lint
-lint: ## Verifies `golint` passes.
-	@echo "+ $@"
-	@if [[ ! -z "$(shell golint ./... | grep -v '.pb.go:' | grep -v '.twirp.go:' | grep -v vendor | tee /dev/stderr)" ]]; then \
-		exit 1; \
-	fi
+lint: tools ## Verifies `golangci-lint` passes.
+	@ echo "+ Running Go linters..."
+	@ $(GOBIN)/golangci-lint run -E gofmt
 
 .PHONY: test
 test: ## Runs the go tests.
-	@echo "+ $@"
-	@$(GO) test -v -tags "$(BUILDTAGS) cgo" $(shell $(GO) list ./... | grep -v vendor)
+	@ echo "+ Running Go tests..."
+	@ $(GO) test -v -tags "$(BUILDTAGS) cgo" $(shell $(GO) list ./... | grep -v vendor)
 
 .PHONY: vet
 vet: ## Verifies `go vet` passes.
-	@echo "+ $@"
-	@if [[ ! -z "$(shell $(GO) vet $(shell $(GO) list ./... | grep -v vendor) | tee /dev/stderr)" ]]; then \
-		exit 1; \
-	fi
+	@ echo "+ Verifying go vet passes..."
+	@ $(GO) vet $(shell $(GO) list ./... | grep -v vendor) | tee /dev/stderr
 
 .PHONY: staticcheck
-staticcheck: ## Verifies `staticcheck` passes.
-	@echo "+ $@"
-	@if [[ ! -z "$(shell staticcheck $(shell $(GO) list ./... | grep -v vendor) | tee /dev/stderr)" ]]; then \
-		exit 1; \
-	fi
-
-.PHONY: cover
-cover: ## Runs go test with coverage.
-	@echo "" > coverage.txt
-	@for d in $(shell $(GO) list ./... | grep -v vendor); do \
-		$(GO) test -race -coverprofile=profile.out -covermode=atomic "$$d"; \
-		if [ -f profile.out ]; then \
-			cat profile.out >> coverage.txt; \
-			rm profile.out; \
-		fi; \
-	done;
+staticcheck: tools ## Verifies `staticcheck` passes.
+	@ echo "+ Verifying staticcheck passes..."
+	@ staticcheck $(shell $(GO) list ./... | grep -v vendor) | tee /dev/stderr
 
 .PHONY: install
 install: ## Installs the executable or package.
@@ -87,25 +64,64 @@ tag: ## Create a new git tag to prepare to build a release.
 	git tag -sa $(VERSION) -m "$(VERSION)"
 	@echo "Run git push origin $(VERSION) to push your new tag to GitHub and trigger a release."
 
-.PHONY: bump-version
-BUMP := patch
-bump-version: ## Bump the version in the version file. Set BUMP to [ patch | major | minor ].
-	@$(GO) get -u github.com/jessfraz/junk/sembump || true # update sembump tool
-	$(eval NEW_VERSION = $(shell sembump --kind $(BUMP) $(VERSION)))
-	@echo "Bumping VERSION from $(VERSION) to $(NEW_VERSION)"
-	echo $(NEW_VERSION) > VERSION
-	@echo "Updating links to download binaries in README.md"
-	sed -i s/$(VERSION)/$(NEW_VERSION)/g README.md
-	git add VERSION README.md
-	git commit -vsam "Bump version to $(NEW_VERSION)"
-	@echo "Run make tag to create and push the tag for new version $(NEW_VERSION)"
-
-.PHONY: AUTHORS
-AUTHORS:
-	@$(file >$@,# This file lists all individuals having contributed content to the repository.)
-	@$(file >>$@,# For how it is generated, see `make AUTHORS`.)
-	@echo "$(shell git log --format='\n%aN <%aE>' | LC_ALL=C.UTF-8 sort -uf)" >> $@
+.PHONY: changelog
+## Creates a changelog prior to a release
+changelog: tools-private
+	@ echo "+ Creating changelog..."
+	@ $(GOBIN)/whatsit changelog create --repository oxidecomputer/oxide.go --new-version $(VERSION)
 
 .PHONY: help
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
+# The following installs the necessary tools within the local /bin directory.
+# This way linting tools don't need to be downloaded/installed every time you
+# want to run the linters or generate the SDK.
+VERSION_DIR:=$(GOBIN)/versions
+VERSION_GOIMPORTS:=v0.15.0
+VERSION_GOLANGCILINT:=v1.55.2
+VERSION_STATICCHECK:=v0.4.6
+VERSION_WHATSIT:=7fd2b385f
+
+tools: $(GOBIN)/golangci-lint $(GOBIN)/goimports $(GOBIN)/staticcheck
+
+tools-private: $(GOBIN)/whatsit
+
+$(GOBIN):
+	@ mkdir -p $(GOBIN)
+
+$(VERSION_DIR): | $(GOBIN)
+	@ mkdir -p $(GOBIN)/versions
+
+$(VERSION_DIR)/.version-golangci-lint-$(VERSION_GOLANGCILINT): | $(VERSION_DIR)
+	@ rm -f $(VERSION_DIR)/.version-golangci-lint-*
+	@ echo $(VERSION_GOLANGCILINT) > $(VERSION_DIR)/.version-golangci-lint-$(VERSION_GOLANGCILINT)
+
+$(GOBIN)/golangci-lint: $(VERSION_DIR)/.version-golangci-lint-$(VERSION_GOLANGCILINT) | $(GOBIN)
+	@ echo "-> Installing golangci-lint..."
+	@ curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(GOBIN) $(VERSION_GOLANGCILINT)
+
+$(VERSION_DIR)/.version-goimports-$(VERSION_GOIMPORTS): | $(VERSION_DIR)
+	@ rm -f $(VERSION_DIR)/.version-goimports-*
+	@ echo $(VERSION_GOIMPORTS) > $(VERSION_DIR)/.version-goimports-$(VERSION_GOIMPORTS)
+
+$(GOBIN)/goimports: $(VERSION_DIR)/.version-goimports-$(VERSION_GOIMPORTS) | $(GOBIN)
+	@ echo "-> Installing goimports..."
+	@ go install golang.org/x/tools/cmd/goimports@$(VERSION_GOIMPORTS)
+
+$(VERSION_DIR)/.version-staticcheck-$(VERSION_STATICCHECK): | $(VERSION_DIR)
+	@ rm -f $(VERSION_DIR)/.version-staticcheck-*
+	@ echo $(VERSION_STATICCHECK) > $(VERSION_DIR)/.version-staticcheck-$(VERSION_STATICCHECK)
+
+$(GOBIN)/staticcheck: $(VERSION_DIR)/.version-staticcheck-$(VERSION_STATICCHECK) | $(GOBIN)
+	@ echo "-> Installing staticcheck..."
+	@ go install honnef.co/go/tools/cmd/staticcheck@$(VERSION_STATICCHECK)
+
+$(VERSION_DIR)/.version-whatsit-$(VERSION_WHATSIT): | $(VERSION_DIR)
+	@ rm -f $(VERSION_DIR)/.version-whatsit-*
+	@ echo $(VERSION_WHATSIT) > $(VERSION_DIR)/.version-whatsit-$(VERSION_WHATSIT)
+
+# TODO: actually release a version of whatsit to use the tag flag
+$(GOBIN)/whatsit: $(VERSION_DIR)/.version-whatsit-$(VERSION_WHATSIT) | $(GOBIN)
+	@ echo "-> Installing whatsit..."
+	@ cargo install --git ssh://git@github.com/oxidecomputer/whatsit.git --rev $(VERSION_WHATSIT) --branch main --root ./ 
