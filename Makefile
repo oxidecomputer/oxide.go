@@ -61,7 +61,7 @@ vet: ## Verifies `go vet` passes.
 .PHONY: staticcheck
 staticcheck: tools ## Verifies `staticcheck` passes.
 	@ echo "+ Verifying staticcheck passes..."
-	@if [[ ! -z "$(shell staticcheck $(shell $(GO) list ./... | grep -v vendor) | tee /dev/stderr)" ]]; then \
+	@if [[ ! -z "$(shell $(GOBIN)/staticcheck $(shell $(GO) list ./... | grep -v vendor) | tee /dev/stderr)" ]]; then \
 		exit 1; \
 	fi
 
