@@ -2843,7 +2843,7 @@ type VpcFirewallRuleUpdate struct {
 
 // VpcFirewallRuleUpdateParams is updateable properties of a `Vpc`'s firewall Note that VpcFirewallRules are implicitly created along with a Vpc, so there is no explicit creation.
 type VpcFirewallRuleUpdateParams struct {
-	Rules []VpcFirewallRuleUpdate `json:"rules,omitempty" yaml:"rules,omitempty"`
+	Rules []VpcFirewallRuleUpdate `json:"rules" yaml:"rules"`
 }
 
 // VpcFirewallRules is collection of a Vpc's firewall rules

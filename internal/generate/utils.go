@@ -223,3 +223,12 @@ func isNumericType(str string) bool {
 	}
 	return false
 }
+
+func sliceContains[T comparable](s []T, str T) bool {
+	for _, a := range s {
+		if a == str {
+			return true
+		}
+	}
+	return false
+}

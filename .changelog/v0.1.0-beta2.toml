@@ -1,7 +1,3 @@
 [[bugs]]
-
-[[features]]
-
-[[enhancements]]
-
-[[breaking]]
+title = "Fix delete VPC firewall rules"
+description = "By removing `omitempty` when parsing the rules, we are able to pass an emtpy array to delete all firewall rules. [#XXX](https://github.com/oxidecomputer/terraform-provider-oxide/pull/XXX)"
