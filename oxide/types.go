@@ -196,8 +196,8 @@ type BgpImportedRouteIpv4 struct {
 	Switch SwitchLocation `json:"switch,omitempty" yaml:"switch,omitempty"`
 }
 
-// BgpPeerConfig is a BGP peer configuration for an interface. Includes the set of announcements that will be advertised to the peer identified by `addr`. The `bgp_config` parameter is a reference to global BGP parameters. The `interface_name` indicates what interface the peer should be contacted on.
-type BgpPeerConfig struct {
+// BgpPeer is a BGP peer configuration for an interface. Includes the set of announcements that will be advertised to the peer identified by `addr`. The `bgp_config` parameter is a reference to global BGP parameters. The `interface_name` indicates what interface the peer should be contacted on.
+type BgpPeer struct {
 	// Addr is the address of the host to peer with.
 	Addr string `json:"addr,omitempty" yaml:"addr,omitempty"`
 	// BgpAnnounceSet is the set of announcements advertised by the peer.
@@ -216,6 +216,11 @@ type BgpPeerConfig struct {
 	InterfaceName string `json:"interface_name,omitempty" yaml:"interface_name,omitempty"`
 	// Keepalive is how often to send keepalive requests (seconds).
 	Keepalive int `json:"keepalive,omitempty" yaml:"keepalive,omitempty"`
+}
+
+// BgpPeerConfig is the type definition for a BgpPeerConfig.
+type BgpPeerConfig struct {
+	Peers []BgpPeer `json:"peers,omitempty" yaml:"peers,omitempty"`
 }
 
 // BgpPeerState is initial state. Refuse all incomming BGP connections. No resources allocated to peer.
@@ -954,6 +959,12 @@ type DatumHistogramF64 struct {
 	Type  DatumType       `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
+// DatumMissing is the type definition for a DatumMissing.
+type DatumMissing struct {
+	Datum MissingDatum `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Type  DatumType    `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
 // Datum is a `Datum` is a single sampled data point from a metric.
 type Datum struct {
 	// Datum is the type definition for a Datum.
@@ -1201,12 +1212,23 @@ type ExternalIpCreateEphemeral struct {
 	Type     ExternalIpCreateType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
+// ExternalIpCreateFloating is an IP address providing both inbound and outbound access. The address is an existing Floating IP object assigned to the current project.
+//
+// The floating IP must not be in use by another instance or service.
+type ExternalIpCreateFloating struct {
+	// FloatingIpName is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	FloatingIpName Name                 `json:"floating_ip_name,omitempty" yaml:"floating_ip_name,omitempty"`
+	Type           ExternalIpCreateType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
 // ExternalIpCreate is parameters for creating an external IP address for instances.
 type ExternalIpCreate struct {
 	// PoolName is the type definition for a PoolName.
 	PoolName Name `json:"pool_name,omitempty" yaml:"pool_name,omitempty"`
 	// Type is the type definition for a Type.
 	Type ExternalIpCreateType `json:"type,omitempty" yaml:"type,omitempty"`
+	// FloatingIpName is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	FloatingIpName Name `json:"floating_ip_name,omitempty" yaml:"floating_ip_name,omitempty"`
 }
 
 // ExternalIpResultsPage is a single page of results
@@ -1242,6 +1264,45 @@ type FleetRoleRoleAssignment struct {
 	// IdentityType is describes what kind of identity is described by an id
 	IdentityType IdentityType `json:"identity_type,omitempty" yaml:"identity_type,omitempty"`
 	RoleName     FleetRole    `json:"role_name,omitempty" yaml:"role_name,omitempty"`
+}
+
+// FloatingIp is a Floating IP is a well-known IP address which can be attached and detached from instances.
+type FloatingIp struct {
+	// Description is human-readable free-form text about a resource
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// InstanceId is the ID of the instance that this Floating IP is attached to, if it is presently in use.
+	InstanceId string `json:"instance_id,omitempty" yaml:"instance_id,omitempty"`
+	// Ip is the IP address held by this resource.
+	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
+	// Name is unique, mutable, user-controlled identifier for each resource
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	// ProjectId is the project this resource exists within.
+	ProjectId string `json:"project_id,omitempty" yaml:"project_id,omitempty"`
+	// TimeCreated is timestamp when this resource was created
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	// TimeModified is timestamp when this resource was last modified
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+}
+
+// FloatingIpCreate is parameters for creating a new floating IP address for instances.
+type FloatingIpCreate struct {
+	// Address is an IP address to reserve for use as a floating IP. This field is optional: when not set, an address will be automatically chosen from `pool`. If set, then the IP must be available in the resolved `pool`.
+	Address     string `json:"address,omitempty" yaml:"address,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	// Pool is the parent IP pool that a floating IP is pulled from. If unset, the default pool is selected.
+	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
+}
+
+// FloatingIpResultsPage is a single page of results
+type FloatingIpResultsPage struct {
+	// Items is list of items on this page of results
+	Items []FloatingIp `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
 // Group is view of a Group
@@ -1825,6 +1886,8 @@ type L4PortRange string
 
 // LinkConfig is switch link configuration.
 type LinkConfig struct {
+	// Autoneg is whether or not to set autonegotiation
+	Autoneg *bool `json:"autoneg,omitempty" yaml:"autoneg,omitempty"`
 	// Fec is the forward error correction mode of the link.
 	Fec LinkFec `json:"fec,omitempty" yaml:"fec,omitempty"`
 	// Lldp is the link-layer discovery protocol (LLDP) configuration for the link.
@@ -1903,6 +1966,13 @@ type MeasurementResultsPage struct {
 	Items []Measurement `json:"items,omitempty" yaml:"items,omitempty"`
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// MissingDatum is the type definition for a MissingDatum.
+type MissingDatum struct {
+	// DatumType is the type of an individual datum of a metric.
+	DatumType DatumType  `json:"datum_type,omitempty" yaml:"datum_type,omitempty"`
+	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
 }
 
 // Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
@@ -2206,6 +2276,8 @@ type Sled struct {
 	Baseboard Baseboard `json:"baseboard,omitempty" yaml:"baseboard,omitempty"`
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// ProvisionState is the provision state of the sled.
+	ProvisionState SledProvisionState `json:"provision_state,omitempty" yaml:"provision_state,omitempty"`
 	// RackId is the rack to which this Sled is currently attached
 	RackId string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
 	// TimeCreated is timestamp when this resource was created
@@ -2248,6 +2320,23 @@ type SledInstanceResultsPage struct {
 	Items []SledInstance `json:"items,omitempty" yaml:"items,omitempty"`
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// SledProvisionState is new resources will be provisioned on this sled.
+type SledProvisionState string
+
+// SledProvisionStateParams is parameters for `sled_set_provision_state`.
+type SledProvisionStateParams struct {
+	// State is the provision state.
+	State SledProvisionState `json:"state,omitempty" yaml:"state,omitempty"`
+}
+
+// SledProvisionStateResponse is response to `sled_set_provision_state`.
+type SledProvisionStateResponse struct {
+	// NewState is the new provision state.
+	NewState SledProvisionState `json:"new_state,omitempty" yaml:"new_state,omitempty"`
+	// OldState is the old provision state.
+	OldState SledProvisionState `json:"old_state,omitempty" yaml:"old_state,omitempty"`
 }
 
 // SledResultsPage is a single page of results
@@ -2564,6 +2653,14 @@ type SwitchVlanInterfaceConfig struct {
 
 // SystemMetricName is the type definition for a SystemMetricName.
 type SystemMetricName string
+
+// UninitializedSled is a sled that has not been added to an initialized rack yet
+type UninitializedSled struct {
+	// Baseboard is properties that uniquely identify an Oxide hardware component
+	Baseboard Baseboard `json:"baseboard,omitempty" yaml:"baseboard,omitempty"`
+	Cubby     int       `json:"cubby,omitempty" yaml:"cubby,omitempty"`
+	RackId    string    `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
+}
 
 // User is view of a User
 type User struct {
@@ -3030,6 +3127,32 @@ type DiskMetricsListParams struct {
 	Project   NameOrId        `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
+// FloatingIpListParams is the request parameters for FloatingIpList
+type FloatingIpListParams struct {
+	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// FloatingIpCreateParams is the request parameters for FloatingIpCreate
+type FloatingIpCreateParams struct {
+	Project NameOrId          `json:"project,omitempty" yaml:"project,omitempty"`
+	Body    *FloatingIpCreate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// FloatingIpDeleteParams is the request parameters for FloatingIpDelete
+type FloatingIpDeleteParams struct {
+	FloatingIp NameOrId `json:"floating_ip,omitempty" yaml:"floating_ip,omitempty"`
+	Project    NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// FloatingIpViewParams is the request parameters for FloatingIpView
+type FloatingIpViewParams struct {
+	FloatingIp NameOrId `json:"floating_ip,omitempty" yaml:"floating_ip,omitempty"`
+	Project    NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
 // GroupListParams is the request parameters for GroupList
 type GroupListParams struct {
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -3370,6 +3493,11 @@ type SledListParams struct {
 	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
 
+// AddSledToInitializedRackParams is the request parameters for AddSledToInitializedRack
+type AddSledToInitializedRackParams struct {
+	Body *UninitializedSled `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
 // SledViewParams is the request parameters for SledView
 type SledViewParams struct {
 	SledId string `json:"sled_id,omitempty" yaml:"sled_id,omitempty"`
@@ -3389,6 +3517,12 @@ type SledInstanceListParams struct {
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// SledSetProvisionStateParams is the request parameters for SledSetProvisionState
+type SledSetProvisionStateParams struct {
+	SledId string                    `json:"sled_id,omitempty" yaml:"sled_id,omitempty"`
+	Body   *SledProvisionStateParams `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // NetworkingSwitchPortListParams is the request parameters for NetworkingSwitchPortList
@@ -4007,6 +4141,46 @@ func (p *DiskMetricsListParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for FloatingIpListParams are set
+func (p *FloatingIpListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for FloatingIpCreateParams are set
+func (p *FloatingIpCreateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Project), "Project")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for FloatingIpDeleteParams are set
+func (p *FloatingIpDeleteParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.FloatingIp), "FloatingIp")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for FloatingIpViewParams are set
+func (p *FloatingIpViewParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.FloatingIp), "FloatingIp")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for GroupListParams are set
 func (p *GroupListParams) Validate() error {
 	v := new(Validator)
@@ -4526,6 +4700,16 @@ func (p *SledListParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for AddSledToInitializedRackParams are set
+func (p *AddSledToInitializedRackParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for SledViewParams are set
 func (p *SledViewParams) Validate() error {
 	v := new(Validator)
@@ -4549,6 +4733,17 @@ func (p *SledPhysicalDiskListParams) Validate() error {
 // Validate verifies all required fields for SledInstanceListParams are set
 func (p *SledInstanceListParams) Validate() error {
 	v := new(Validator)
+	v.HasRequiredStr(string(p.SledId), "SledId")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SledSetProvisionStateParams are set
+func (p *SledSetProvisionStateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
 	v.HasRequiredStr(string(p.SledId), "SledId")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
@@ -5441,6 +5636,9 @@ const DatumTypeHistogramF32 DatumType = "histogram_f32"
 // DatumTypeHistogramF64 represents the DatumType `"histogram_f64"`.
 const DatumTypeHistogramF64 DatumType = "histogram_f64"
 
+// DatumTypeMissing represents the DatumType `"missing"`.
+const DatumTypeMissing DatumType = "missing"
+
 // DigestTypeSha256 represents the DigestType `"sha256"`.
 const DigestTypeSha256 DigestType = "sha256"
 
@@ -5512,6 +5710,9 @@ const DiskStateStateFaulted DiskStateState = "faulted"
 
 // ExternalIpCreateTypeEphemeral represents the ExternalIpCreateType `"ephemeral"`.
 const ExternalIpCreateTypeEphemeral ExternalIpCreateType = "ephemeral"
+
+// ExternalIpCreateTypeFloating represents the ExternalIpCreateType `"floating"`.
+const ExternalIpCreateTypeFloating ExternalIpCreateType = "floating"
 
 // FleetRoleAdmin represents the FleetRole `"admin"`.
 const FleetRoleAdmin FleetRole = "admin"
@@ -5689,6 +5890,12 @@ const SiloRoleCollaborator SiloRole = "collaborator"
 
 // SiloRoleViewer represents the SiloRole `"viewer"`.
 const SiloRoleViewer SiloRole = "viewer"
+
+// SledProvisionStateProvisionable represents the SledProvisionState `"provisionable"`.
+const SledProvisionStateProvisionable SledProvisionState = "provisionable"
+
+// SledProvisionStateNonProvisionable represents the SledProvisionState `"non_provisionable"`.
+const SledProvisionStateNonProvisionable SledProvisionState = "non_provisionable"
 
 // SnapshotStateCreating represents the SnapshotState `"creating"`.
 const SnapshotStateCreating SnapshotState = "creating"
@@ -5909,6 +6116,7 @@ var DatumTypes = []DatumType{
 	DatumTypeI32,
 	DatumTypeI64,
 	DatumTypeI8,
+	DatumTypeMissing,
 	DatumTypeString,
 	DatumTypeU16,
 	DatumTypeU32,
@@ -5958,6 +6166,7 @@ var DiskStateStates = []DiskStateState{
 // ExternalIpCreateTypes is the collection of all ExternalIpCreateType values.
 var ExternalIpCreateTypes = []ExternalIpCreateType{
 	ExternalIpCreateTypeEphemeral,
+	ExternalIpCreateTypeFloating,
 }
 
 // FleetRoles is the collection of all FleetRole values.
@@ -6101,6 +6310,12 @@ var SiloRoles = []SiloRole{
 	SiloRoleAdmin,
 	SiloRoleCollaborator,
 	SiloRoleViewer,
+}
+
+// SledProvisionStates is the collection of all SledProvisionState values.
+var SledProvisionStates = []SledProvisionState{
+	SledProvisionStateNonProvisionable,
+	SledProvisionStateProvisionable,
 }
 
 // SnapshotStates is the collection of all SnapshotState values.

@@ -766,6 +766,220 @@ func (c *Client) DiskMetricsListAllPages(ctx context.Context, params DiskMetrics
 	return allPages, nil
 }
 
+// FloatingIpList: List all Floating IPs
+//
+// To iterate over all pages, use the `FloatingIpListAllPages` method, instead.
+func (c *Client) FloatingIpList(ctx context.Context, params FloatingIpListParams) (*FloatingIpResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/floating-ips"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"project":    string(params.Project),
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body FloatingIpResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// FloatingIpListAllPages: List all Floating IPs
+//
+// This method is a wrapper around the `FloatingIpList` method.
+// This method returns all the pages at once.
+func (c *Client) FloatingIpListAllPages(ctx context.Context, params FloatingIpListParams) ([]FloatingIp, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []FloatingIp
+	params.PageToken = ""
+	params.Limit = 100
+	for {
+		page, err := c.FloatingIpList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
+}
+
+// FloatingIpCreate: Create a Floating IP
+func (c *Client) FloatingIpCreate(ctx context.Context, params FloatingIpCreateParams) (*FloatingIp, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := buildRequest(
+		ctx,
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/floating-ips"),
+		map[string]string{},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body FloatingIp
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// FloatingIpView: Fetch a floating IP
+func (c *Client) FloatingIpView(ctx context.Context, params FloatingIpViewParams) (*FloatingIp, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/floating-ips/{{.floating_ip}}"),
+		map[string]string{
+			"floating_ip": string(params.FloatingIp),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body FloatingIp
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// FloatingIpDelete: Delete a Floating IP
+func (c *Client) FloatingIpDelete(ctx context.Context, params FloatingIpDeleteParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := buildRequest(
+		ctx,
+		nil,
+		"DELETE",
+		resolveRelative(c.server, "/v1/floating-ips/{{.floating_ip}}"),
+		map[string]string{
+			"floating_ip": string(params.FloatingIp),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // GroupList: List groups
 //
 // To iterate over all pages, use the `GroupListAllPages` method, instead.
@@ -3770,6 +3984,45 @@ func (c *Client) SledListAllPages(ctx context.Context, params SledListParams) ([
 	return allPages, nil
 }
 
+// AddSledToInitializedRack: Add a sled to an initialized rack
+func (c *Client) AddSledToInitializedRack(ctx context.Context, params AddSledToInitializedRackParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := buildRequest(
+		ctx,
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/system/hardware/sleds"),
+		map[string]string{},
+		map[string]string{},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // SledView: Fetch a sled
 func (c *Client) SledView(ctx context.Context, params SledViewParams) (*Sled, error) {
 	if err := params.Validate(); err != nil {
@@ -3970,6 +4223,58 @@ func (c *Client) SledInstanceListAllPages(ctx context.Context, params SledInstan
 	}
 
 	return allPages, nil
+}
+
+// SledSetProvisionState: Set the sled's provision state.
+func (c *Client) SledSetProvisionState(ctx context.Context, params SledSetProvisionStateParams) (*SledProvisionStateResponse, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := buildRequest(
+		ctx,
+		b,
+		"PUT",
+		resolveRelative(c.server, "/v1/system/hardware/sleds/{{.sled_id}}/provision-state"),
+		map[string]string{
+			"sled_id": params.SledId,
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SledProvisionStateResponse
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
 }
 
 // NetworkingSwitchPortList: List switch ports
@@ -4245,6 +4550,47 @@ func (c *Client) SwitchView(ctx context.Context, params SwitchViewParams) (*Swit
 	}
 
 	var body Switch
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// UninitializedSledList: List uninitialized sleds in a given rack
+func (c *Client) UninitializedSledList(ctx context.Context) (*[]UninitializedSled, error) {
+	// Create the request
+	req, err := buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/hardware/uninitialized-sleds"),
+		map[string]string{},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body []UninitializedSled
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
