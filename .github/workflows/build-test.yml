@@ -2,11 +2,6 @@ name: build & test
 on:
   push:
     branches: main
-    paths:
-      - "**.go"
-      - .github/workflows/build-test.yml
-      - "go.mod"
-      - "go.sum"
   pull_request:
     branches: main
 jobs:

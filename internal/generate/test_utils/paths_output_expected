@@ -6,7 +6,7 @@
 
 package oxide
 
-// IpPoolList
+// IpPoolList: List IP pools
 //
 // To iterate over all pages, use the `IpPoolListAllPages` method, instead.
 func (c *Client) IpPoolList(ctx context.Context, params IpPoolListParams, ) (*IpPoolResultsPage, error) { 
@@ -18,12 +18,13 @@ func (c *Client) IpPoolList(ctx context.Context, params IpPoolListParams, ) (*Ip
         ctx,
         nil, 
         "GET", 
-        resolveRelative(c.server, "/v1/ip-pools"), 
+        resolveRelative(c.server, "/v1/system/ip-pools"), 
         map[string]string{ 
         }, 
         map[string]string{ 
             "limit": strconv.Itoa(params.Limit),
             "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
         },
     )
 	if err != nil {
@@ -56,7 +57,7 @@ func (c *Client) IpPoolList(ctx context.Context, params IpPoolListParams, ) (*Ip
     return &body, nil
 }
 
-// IpPoolListAllPages
+// IpPoolListAllPages: List IP pools
 //
 // This method is a wrapper around the `IpPoolList` method.
 // This method returns all the pages at once.
@@ -82,7 +83,7 @@ func (c *Client) IpPoolListAllPages(ctx context.Context, params IpPoolListParams
 	return allPages, nil
 }
 
-// IpPoolCreate
+// IpPoolCreate: Create an IP pool
 func (c *Client) IpPoolCreate(ctx context.Context, params IpPoolCreateParams, ) (*IpPool, error) { 
     if err := params.Validate(); err != nil {
 		return nil, err
@@ -98,7 +99,7 @@ func (c *Client) IpPoolCreate(ctx context.Context, params IpPoolCreateParams, ) 
         ctx,
         b, 
         "POST", 
-        resolveRelative(c.server, "/v1/ip-pools"), 
+        resolveRelative(c.server, "/v1/system/ip-pools"), 
         map[string]string{ 
         }, 
         map[string]string{ 
@@ -134,7 +135,7 @@ func (c *Client) IpPoolCreate(ctx context.Context, params IpPoolCreateParams, ) 
     return &body, nil
 }
 
-// IpPoolView
+// IpPoolView: Fetch an IP pool
 func (c *Client) IpPoolView(ctx context.Context, params IpPoolViewParams, ) (*IpPool, error) { 
     if err := params.Validate(); err != nil {
 		return nil, err
@@ -144,9 +145,9 @@ func (c *Client) IpPoolView(ctx context.Context, params IpPoolViewParams, ) (*Ip
         ctx,
         nil, 
         "GET", 
-        resolveRelative(c.server, "/v1/ip-pools{{.pool_name}}"), 
+        resolveRelative(c.server, "/v1/system/ip-pools/{{.pool}}"), 
         map[string]string{ 
-            "pool_name": string(params.PoolName),
+            "pool": string(params.Pool),
         }, 
         map[string]string{ 
         },
@@ -181,7 +182,7 @@ func (c *Client) IpPoolView(ctx context.Context, params IpPoolViewParams, ) (*Ip
     return &body, nil
 }
 
-// IpPoolUpdate
+// IpPoolUpdate: Update an IP Pool
 func (c *Client) IpPoolUpdate(ctx context.Context, params IpPoolUpdateParams, ) (*IpPool, error) { 
     if err := params.Validate(); err != nil {
 		return nil, err
@@ -197,9 +198,9 @@ func (c *Client) IpPoolUpdate(ctx context.Context, params IpPoolUpdateParams, ) 
         ctx,
         b, 
         "PUT", 
-        resolveRelative(c.server, "/v1/ip-pools{{.pool_name}}"), 
+        resolveRelative(c.server, "/v1/system/ip-pools/{{.pool}}"), 
         map[string]string{ 
-            "pool_name": string(params.PoolName),
+            "pool": string(params.Pool),
         }, 
         map[string]string{ 
         },
@@ -234,7 +235,7 @@ func (c *Client) IpPoolUpdate(ctx context.Context, params IpPoolUpdateParams, ) 
     return &body, nil
 }
 
-// IpPoolDelete
+// IpPoolDelete: Delete an IP Pool
 func (c *Client) IpPoolDelete(ctx context.Context, params IpPoolDeleteParams, ) error { 
     if err := params.Validate(); err != nil {
 		return err
@@ -244,9 +245,9 @@ func (c *Client) IpPoolDelete(ctx context.Context, params IpPoolDeleteParams, ) 
         ctx,
         nil, 
         "DELETE", 
-        resolveRelative(c.server, "/v1/ip-pools{{.pool_name}}"), 
+        resolveRelative(c.server, "/v1/system/ip-pools/{{.pool}}"), 
         map[string]string{ 
-            "pool_name": string(params.PoolName),
+            "pool": string(params.Pool),
         }, 
         map[string]string{ 
         },
