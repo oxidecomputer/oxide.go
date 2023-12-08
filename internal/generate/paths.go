@@ -55,12 +55,12 @@ func generatePaths(file string, spec *openapi3.T) error {
 	// Iterate over all the paths in the spec and write the methods.
 	// We want to ensure we keep the order.
 	keys := make([]string, 0)
-	for k := range spec.Paths {
+	for k := range spec.Paths.Map() {
 		keys = append(keys, k)
 	}
 	sort.Strings(keys)
 	for _, path := range keys {
-		p := spec.Paths[path]
+		p := spec.Paths.Map()[path]
 		if p.Ref != "" {
 			fmt.Printf("[WARN] TODO: skipping path for %q, since it is a reference\n", path)
 			continue
@@ -219,7 +219,7 @@ func buildMethod(f *os.File, spec *openapi3.T, method string, path string, o *op
 }
 
 func getSuccessResponseType(o *openapi3.Operation, isGetAllPages bool) (string, string, error) {
-	for name, response := range o.Responses {
+	for name, response := range o.Responses.Map() {
 		if name == "default" {
 			name = "200"
 		}

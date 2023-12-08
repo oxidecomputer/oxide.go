@@ -70,15 +70,15 @@ func generateTypes(file string, spec *openapi3.T) error {
 
 	typeCollection, enumCollection := constructTypes(spec.Components.Schemas)
 	enumCollection = append(enumCollection, constructEnums(collectEnumStringTypes)...)
-	typeCollection = append(typeCollection, constructParamTypes(spec.Paths)...)
-	v := constructParamValidation(spec.Paths)
+	typeCollection = append(typeCollection, constructParamTypes(spec.Paths.Map())...)
+	v := constructParamValidation(spec.Paths.Map())
 
 	writeTypes(f, typeCollection, v, enumCollection)
 
 	return nil
 }
 
-func constructParamTypes(paths openapi3.Paths) []TypeTemplate {
+func constructParamTypes(paths map[string]*openapi3.PathItem) []TypeTemplate {
 	paramTypes := make([]TypeTemplate, 0)
 
 	keys := make([]string, 0)
@@ -159,7 +159,7 @@ func constructParamTypes(paths openapi3.Paths) []TypeTemplate {
 	return paramTypes
 }
 
-func constructParamValidation(paths openapi3.Paths) []ValidationTemplate {
+func constructParamValidation(paths map[string]*openapi3.PathItem) []ValidationTemplate {
 	validationMethods := make([]ValidationTemplate, 0)
 
 	keys := make([]string, 0)
@@ -486,7 +486,7 @@ func createTypeObject(schemas map[string]*openapi3.SchemaRef, name, typeName, de
 		field.Type = typeName
 		serInfo := fmt.Sprintf("`json:\"%s,omitempty\" yaml:\"%s,omitempty\"`", k, k)
 		// There are a few types we do not want to omit if empty
-		// TODO: Keep an eye out to see if there is a way to identify all of these
+		// TODO: Keep an eye out to see if there is a way to identify all of
 		if sliceContains(omitemptyExceptions(), typeName) {
 			serInfo = fmt.Sprintf("`json:\"%s\" yaml:\"%s\"`", k, k)
 		}
