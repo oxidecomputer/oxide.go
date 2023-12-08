@@ -19,7 +19,7 @@ generate: tools
 	@ echo "+ Generating SDK..."
 	@ go generate ./...
 	@ echo "+ Updating imports..."
-	@ goimports -w oxide/*.go
+	@ $(GOBIN)/goimports -w oxide/*.go
 	@ echo "+ Formatting generated SDK..."
 	@ gofmt -s -w oxide/*.go
 	@ echo "+ Tidying up modules..."
