@@ -641,49 +641,6 @@ func (c *Client) DiskFinalizeImport(ctx context.Context, params DiskFinalizeImpo
 	return nil
 }
 
-// DiskImportBlocksFromUrl: Request to import blocks from URL
-func (c *Client) DiskImportBlocksFromUrl(ctx context.Context, params DiskImportBlocksFromUrlParams) error {
-	if err := params.Validate(); err != nil {
-		return err
-	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return fmt.Errorf("encoding json body request failed: %v", err)
-	}
-
-	// Create the request
-	req, err := buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.server, "/v1/disks/{{.disk}}/import"),
-		map[string]string{
-			"disk": string(params.Disk),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
-	if err != nil {
-		return fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 // DiskMetricsList: Fetch disk metrics
 //
 // To iterate over all pages, use the `DiskMetricsListAllPages` method, instead.
@@ -6832,6 +6789,82 @@ func (c *Client) RoleView(ctx context.Context, params RoleViewParams) (*Role, er
 	return &body, nil
 }
 
+// SystemQuotasList: Lists resource quotas for all silos
+//
+// To iterate over all pages, use the `SystemQuotasListAllPages` method, instead.
+func (c *Client) SystemQuotasList(ctx context.Context, params SystemQuotasListParams) (*SiloQuotasResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/silo-quotas"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SiloQuotasResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SystemQuotasListAllPages: Lists resource quotas for all silos
+//
+// This method is a wrapper around the `SystemQuotasList` method.
+// This method returns all the pages at once.
+func (c *Client) SystemQuotasListAllPages(ctx context.Context, params SystemQuotasListParams) ([]SiloQuotas, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []SiloQuotas
+	params.PageToken = ""
+	params.Limit = 100
+	for {
+		page, err := c.SystemQuotasList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
+}
+
 // SiloList: List silos
 // Lists silos that are discoverable based on the current permissions.
 //
@@ -7141,6 +7174,105 @@ func (c *Client) SiloPolicyUpdate(ctx context.Context, params SiloPolicyUpdatePa
 	return &body, nil
 }
 
+// SiloQuotasView: View the resource quotas of a given silo
+func (c *Client) SiloQuotasView(ctx context.Context, params SiloQuotasViewParams) (*SiloQuotas, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/silos/{{.silo}}/quotas"),
+		map[string]string{
+			"silo": string(params.Silo),
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SiloQuotas
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SiloQuotasUpdate: Update the resource quotas of a given silo
+// If a quota value is not specified, it will remain unchanged.
+func (c *Client) SiloQuotasUpdate(ctx context.Context, params SiloQuotasUpdateParams) (*SiloQuotas, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := buildRequest(
+		ctx,
+		b,
+		"PUT",
+		resolveRelative(c.server, "/v1/system/silos/{{.silo}}/quotas"),
+		map[string]string{
+			"silo": string(params.Silo),
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SiloQuotas
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
 // SiloUserList: List built-in (system) users in a silo
 //
 // To iterate over all pages, use the `SiloUserListAllPages` method, instead.
@@ -7388,6 +7520,128 @@ func (c *Client) SiloUserView(ctx context.Context, params SiloUserViewParams) (*
 	return &body, nil
 }
 
+// SiloUtilizationList: List current utilization state for all silos
+//
+// To iterate over all pages, use the `SiloUtilizationListAllPages` method, instead.
+func (c *Client) SiloUtilizationList(ctx context.Context, params SiloUtilizationListParams) (*SiloUtilizationResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/utilization/silos"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SiloUtilizationResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SiloUtilizationListAllPages: List current utilization state for all silos
+//
+// This method is a wrapper around the `SiloUtilizationList` method.
+// This method returns all the pages at once.
+func (c *Client) SiloUtilizationListAllPages(ctx context.Context, params SiloUtilizationListParams) ([]SiloUtilization, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []SiloUtilization
+	params.PageToken = ""
+	params.Limit = 100
+	for {
+		page, err := c.SiloUtilizationList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
+}
+
+// SiloUtilizationView: View the current utilization of a given silo
+func (c *Client) SiloUtilizationView(ctx context.Context, params SiloUtilizationViewParams) (*SiloUtilization, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/utilization/silos/{{.silo}}"),
+		map[string]string{
+			"silo": string(params.Silo),
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SiloUtilization
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
 // UserList: List users
 //
 // To iterate over all pages, use the `UserListAllPages` method, instead.
@@ -7463,6 +7717,47 @@ func (c *Client) UserListAllPages(ctx context.Context, params UserListParams) ([
 	}
 
 	return allPages, nil
+}
+
+// UtilizationView: View the resource utilization of the user's current silo
+func (c *Client) UtilizationView(ctx context.Context) (*Utilization, error) {
+	// Create the request
+	req, err := buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/utilization"),
+		map[string]string{},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body Utilization
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
 }
 
 // VpcFirewallRulesView: List firewall rules

@@ -1190,12 +1190,6 @@ type Error struct {
 	RequestId string `json:"request_id,omitempty" yaml:"request_id,omitempty"`
 }
 
-// ExpectedDigest is the type definition for a ExpectedDigest.
-type ExpectedDigest struct {
-	// Sha256 is the type definition for a Sha256.
-	Sha256 string `json:"sha256,omitempty" yaml:"sha256,omitempty"`
-}
-
 // ExternalIp is the type definition for a ExternalIp.
 type ExternalIp struct {
 	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
@@ -1514,8 +1508,6 @@ type Image struct {
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
-	// Url is uRL source of this image, if any
-	Url string `json:"url,omitempty" yaml:"url,omitempty"`
 	// Version is version of the operating system
 	Version string `json:"version,omitempty" yaml:"version,omitempty"`
 }
@@ -1544,14 +1536,6 @@ type ImageResultsPage struct {
 // ImageSourceType is the type definition for a ImageSourceType.
 type ImageSourceType string
 
-// ImageSourceUrl is the type definition for a ImageSourceUrl.
-type ImageSourceUrl struct {
-	// BlockSize is the block size in bytes
-	BlockSize BlockSize       `json:"block_size,omitempty" yaml:"block_size,omitempty"`
-	Type      ImageSourceType `json:"type,omitempty" yaml:"type,omitempty"`
-	Url       string          `json:"url,omitempty" yaml:"url,omitempty"`
-}
-
 // ImageSourceSnapshot is the type definition for a ImageSourceSnapshot.
 type ImageSourceSnapshot struct {
 	Id   string          `json:"id,omitempty" yaml:"id,omitempty"`
@@ -1565,28 +1549,16 @@ type ImageSourceYouCanBootAnythingAsLongAsItsAlpine struct {
 
 // ImageSource is the source of the underlying image.
 type ImageSource struct {
-	// BlockSize is the block size in bytes
-	BlockSize BlockSize `json:"block_size,omitempty" yaml:"block_size,omitempty"`
-	// Type is the type definition for a Type.
-	Type ImageSourceType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Url is the type definition for a Url.
-	Url string `json:"url,omitempty" yaml:"url,omitempty"`
 	// Id is the type definition for a Id.
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Type is the type definition for a Type.
+	Type ImageSourceType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // ImportBlocksBulkWrite is parameters for importing blocks with a bulk write
 type ImportBlocksBulkWrite struct {
 	Base64EncodedData string `json:"base64_encoded_data,omitempty" yaml:"base64_encoded_data,omitempty"`
 	Offset            int    `json:"offset,omitempty" yaml:"offset,omitempty"`
-}
-
-// ImportBlocksFromUrl is parameters for importing blocks from a URL to a disk
-type ImportBlocksFromUrl struct {
-	// ExpectedDigest is expected digest of all blocks when importing from a URL
-	ExpectedDigest ExpectedDigest `json:"expected_digest,omitempty" yaml:"expected_digest,omitempty"`
-	// Url is the source to pull blocks from
-	Url string `json:"url,omitempty" yaml:"url,omitempty"`
 }
 
 // Instance is view of an Instance
@@ -2234,12 +2206,53 @@ type SiloCreate struct {
 	MappedFleetRoles FleetRole `json:"mapped_fleet_roles,omitempty" yaml:"mapped_fleet_roles,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	// Quotas is limits the amount of provisionable CPU, memory, and storage in the Silo. CPU and memory are only consumed by running instances, while storage is consumed by any disk or snapshot. A value of 0 means that resource is *not* provisionable.
+	Quotas SiloQuotasCreate `json:"quotas,omitempty" yaml:"quotas,omitempty"`
 	// TlsCertificates is initial TLS certificates to be used for the new Silo's console and API endpoints.  These should be valid for the Silo's DNS name(s).
 	TlsCertificates []CertificateCreate `json:"tls_certificates,omitempty" yaml:"tls_certificates,omitempty"`
 }
 
 // SiloIdentityMode is users are authenticated with SAML using an external authentication provider.  The system updates information about users and groups only during successful authentication (i.e,. "JIT provisioning" of users and groups).
 type SiloIdentityMode string
+
+// SiloQuotas is a collection of resource counts used to set the virtual capacity of a silo
+type SiloQuotas struct {
+	// Cpus is number of virtual CPUs
+	Cpus int `json:"cpus,omitempty" yaml:"cpus,omitempty"`
+	// Memory is amount of memory in bytes
+	Memory ByteCount `json:"memory,omitempty" yaml:"memory,omitempty"`
+	SiloId string    `json:"silo_id,omitempty" yaml:"silo_id,omitempty"`
+	// Storage is amount of disk storage in bytes
+	Storage ByteCount `json:"storage,omitempty" yaml:"storage,omitempty"`
+}
+
+// SiloQuotasCreate is the amount of provisionable resources for a Silo
+type SiloQuotasCreate struct {
+	// Cpus is the amount of virtual CPUs available for running instances in the Silo
+	Cpus int `json:"cpus,omitempty" yaml:"cpus,omitempty"`
+	// Memory is the amount of RAM (in bytes) available for running instances in the Silo
+	Memory ByteCount `json:"memory,omitempty" yaml:"memory,omitempty"`
+	// Storage is the amount of storage (in bytes) available for disks or snapshots
+	Storage ByteCount `json:"storage,omitempty" yaml:"storage,omitempty"`
+}
+
+// SiloQuotasResultsPage is a single page of results
+type SiloQuotasResultsPage struct {
+	// Items is list of items on this page of results
+	Items []SiloQuotas `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// SiloQuotasUpdate is updateable properties of a Silo's resource limits. If a value is omitted it will not be updated.
+type SiloQuotasUpdate struct {
+	// Cpus is the amount of virtual CPUs available for running instances in the Silo
+	Cpus int `json:"cpus,omitempty" yaml:"cpus,omitempty"`
+	// Memory is the amount of RAM (in bytes) available for running instances in the Silo
+	Memory ByteCount `json:"memory,omitempty" yaml:"memory,omitempty"`
+	// Storage is the amount of storage (in bytes) available for disks or snapshots
+	Storage ByteCount `json:"storage,omitempty" yaml:"storage,omitempty"`
+}
 
 // SiloResultsPage is a single page of results
 type SiloResultsPage struct {
@@ -2268,6 +2281,25 @@ type SiloRoleRoleAssignment struct {
 	// IdentityType is describes what kind of identity is described by an id
 	IdentityType IdentityType `json:"identity_type,omitempty" yaml:"identity_type,omitempty"`
 	RoleName     SiloRole     `json:"role_name,omitempty" yaml:"role_name,omitempty"`
+}
+
+// SiloUtilization is view of a silo's resource utilization and capacity
+type SiloUtilization struct {
+	// Allocated is accounts for the total amount of resources reserved for silos via their quotas
+	Allocated VirtualResourceCounts `json:"allocated,omitempty" yaml:"allocated,omitempty"`
+	// Provisioned is accounts for resources allocated by in silos like CPU or memory for running instances and storage for disks and snapshots Note that CPU and memory resources associated with a stopped instances are not counted here
+	Provisioned VirtualResourceCounts `json:"provisioned,omitempty" yaml:"provisioned,omitempty"`
+	SiloId      string                `json:"silo_id,omitempty" yaml:"silo_id,omitempty"`
+	// SiloName is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	SiloName Name `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
+}
+
+// SiloUtilizationResultsPage is a single page of results
+type SiloUtilizationResultsPage struct {
+	// Items is list of items on this page of results
+	Items []SiloUtilization `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
 // Sled is an operator's view of a Sled.
@@ -2745,6 +2777,24 @@ type UsernamePasswordCredentials struct {
 	Username UserId `json:"username,omitempty" yaml:"username,omitempty"`
 }
 
+// Utilization is view of the current silo's resource utilization and capacity
+type Utilization struct {
+	// Capacity is the total amount of resources that can be provisioned in this silo Actions that would exceed this limit will fail
+	Capacity VirtualResourceCounts `json:"capacity,omitempty" yaml:"capacity,omitempty"`
+	// Provisioned is accounts for resources allocated to running instances or storage allocated via disks or snapshots Note that CPU and memory resources associated with a stopped instances are not counted here whereas associated disks will still be counted
+	Provisioned VirtualResourceCounts `json:"provisioned,omitempty" yaml:"provisioned,omitempty"`
+}
+
+// VirtualResourceCounts is a collection of resource counts used to describe capacity and utilization
+type VirtualResourceCounts struct {
+	// Cpus is number of virtual CPUs
+	Cpus int `json:"cpus,omitempty" yaml:"cpus,omitempty"`
+	// Memory is amount of memory in bytes
+	Memory ByteCount `json:"memory,omitempty" yaml:"memory,omitempty"`
+	// Storage is amount of disk storage in bytes
+	Storage ByteCount `json:"storage,omitempty" yaml:"storage,omitempty"`
+}
+
 // Vpc is view of a VPC
 type Vpc struct {
 	// Description is human-readable free-form text about a resource
@@ -3106,13 +3156,6 @@ type DiskFinalizeImportParams struct {
 	Disk    NameOrId      `json:"disk,omitempty" yaml:"disk,omitempty"`
 	Project NameOrId      `json:"project,omitempty" yaml:"project,omitempty"`
 	Body    *FinalizeDisk `json:"body,omitempty" yaml:"body,omitempty"`
-}
-
-// DiskImportBlocksFromUrlParams is the request parameters for DiskImportBlocksFromUrl
-type DiskImportBlocksFromUrlParams struct {
-	Disk    NameOrId             `json:"disk,omitempty" yaml:"disk,omitempty"`
-	Project NameOrId             `json:"project,omitempty" yaml:"project,omitempty"`
-	Body    *ImportBlocksFromUrl `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // DiskMetricsListParams is the request parameters for DiskMetricsList
@@ -3795,6 +3838,13 @@ type RoleViewParams struct {
 	RoleName string `json:"role_name,omitempty" yaml:"role_name,omitempty"`
 }
 
+// SystemQuotasListParams is the request parameters for SystemQuotasList
+type SystemQuotasListParams struct {
+	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
 // SiloListParams is the request parameters for SiloList
 type SiloListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -3828,6 +3878,17 @@ type SiloPolicyUpdateParams struct {
 	Body *SiloRolePolicy `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+// SiloQuotasViewParams is the request parameters for SiloQuotasView
+type SiloQuotasViewParams struct {
+	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
+}
+
+// SiloQuotasUpdateParams is the request parameters for SiloQuotasUpdate
+type SiloQuotasUpdateParams struct {
+	Silo NameOrId          `json:"silo,omitempty" yaml:"silo,omitempty"`
+	Body *SiloQuotasUpdate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
 // SiloUserListParams is the request parameters for SiloUserList
 type SiloUserListParams struct {
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -3852,6 +3913,18 @@ type UserBuiltinViewParams struct {
 type SiloUserViewParams struct {
 	UserId string   `json:"user_id,omitempty" yaml:"user_id,omitempty"`
 	Silo   NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
+}
+
+// SiloUtilizationListParams is the request parameters for SiloUtilizationList
+type SiloUtilizationListParams struct {
+	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// SiloUtilizationViewParams is the request parameters for SiloUtilizationView
+type SiloUtilizationViewParams struct {
+	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 }
 
 // UserListParams is the request parameters for UserList
@@ -4110,17 +4183,6 @@ func (p *DiskBulkWriteImportStopParams) Validate() error {
 
 // Validate verifies all required fields for DiskFinalizeImportParams are set
 func (p *DiskFinalizeImportParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Disk), "Disk")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for DiskImportBlocksFromUrlParams are set
-func (p *DiskImportBlocksFromUrlParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredObj(p.Body, "Body")
 	v.HasRequiredStr(string(p.Disk), "Disk")
@@ -5197,6 +5259,15 @@ func (p *RoleViewParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for SystemQuotasListParams are set
+func (p *SystemQuotasListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for SiloListParams are set
 func (p *SiloListParams) Validate() error {
 	v := new(Validator)
@@ -5257,6 +5328,27 @@ func (p *SiloPolicyUpdateParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for SiloQuotasViewParams are set
+func (p *SiloQuotasViewParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Silo), "Silo")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloQuotasUpdateParams are set
+func (p *SiloQuotasUpdateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Silo), "Silo")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for SiloUserListParams are set
 func (p *SiloUserListParams) Validate() error {
 	v := new(Validator)
@@ -5289,6 +5381,25 @@ func (p *UserBuiltinViewParams) Validate() error {
 func (p *SiloUserViewParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.UserId), "UserId")
+	v.HasRequiredStr(string(p.Silo), "Silo")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloUtilizationListParams are set
+func (p *SiloUtilizationListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloUtilizationViewParams are set
+func (p *SiloUtilizationViewParams) Validate() error {
+	v := new(Validator)
 	v.HasRequiredStr(string(p.Silo), "Silo")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
@@ -5740,9 +5851,6 @@ const IdpMetadataSourceTypeUrl IdpMetadataSourceType = "url"
 
 // IdpMetadataSourceTypeBase64EncodedXml represents the IdpMetadataSourceType `"base64_encoded_xml"`.
 const IdpMetadataSourceTypeBase64EncodedXml IdpMetadataSourceType = "base64_encoded_xml"
-
-// ImageSourceTypeUrl represents the ImageSourceType `"url"`.
-const ImageSourceTypeUrl ImageSourceType = "url"
 
 // ImageSourceTypeSnapshot represents the ImageSourceType `"snapshot"`.
 const ImageSourceTypeSnapshot ImageSourceType = "snapshot"
@@ -6201,7 +6309,6 @@ var IdpMetadataSourceTypes = []IdpMetadataSourceType{
 // ImageSourceTypes is the collection of all ImageSourceType values.
 var ImageSourceTypes = []ImageSourceType{
 	ImageSourceTypeSnapshot,
-	ImageSourceTypeUrl,
 	ImageSourceTypeYouCanBootAnythingAsLongAsItsAlpine,
 }
 
