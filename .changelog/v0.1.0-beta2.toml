@@ -1,3 +1,19 @@
 [[bugs]]
 title = "Fix delete VPC firewall rules"
-description = "By removing `omitempty` when parsing the rules, we are able to pass an emtpy array to delete all firewall rules. [#158](https://github.com/oxidecomputer/terraform-provider-oxide/pull/158)"
+description = "By removing `omitempty` when parsing the rules, we are able to pass an empty array to delete all firewall rules. [#158](https://github.com/oxidecomputer/terraform-provider-oxide/pull/158)"
+
+[[breaking]]
+title = "ListAll methods"
+description = "These methods now return slices instead of a pointer to a slice. [#150](https://github.com/oxidecomputer/oxide.go/pull/150)"
+
+[[breaking]]
+title = "Error handling"
+description = "The HTTPError type has been modified to include the HTTP response and the API's ErrorResponse type. [#145](https://github.com/oxidecomputer/oxide.go/pull/145)"
+
+[[breaking]]
+title = "context.Context support"
+description = "Callers are now able to specify cancellation or timeout logic. Method signatures have been modified to enable this feature. [#144](https://github.com/oxidecomputer/oxide.go/pull/144)"
+
+[[breaking]]
+title = "Fix generated numeric types"
+description = "Some numeric types differed to the OpenAPI spec. They are now consistent. [#142](https://github.com/oxidecomputer/oxide.go/pull/142)"
