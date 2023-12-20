@@ -11,5 +11,5 @@ title = ""
 description = ""
 
 [[breaking]]
-title = ""
-description = ""
+title = "Go verrsion"
+description = "Minimum required Go version has been updated to 1.21. [#179](https://github.com/oxidecomputer/oxide.go/pull/179)"
