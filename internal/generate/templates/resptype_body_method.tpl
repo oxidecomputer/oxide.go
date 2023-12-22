@@ -10,7 +10,7 @@
     b := params.Body{{end}}
 
     // Create the request
-    req, err := buildRequest(
+    req, err := c.buildRequest(
         ctx,
         b, 
         "{{.HTTPMethod}}", 

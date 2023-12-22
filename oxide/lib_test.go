@@ -11,6 +11,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -127,9 +128,19 @@ func Test_buildRequest(t *testing.T) {
 		//			wantErr: "Some error that doesn't exist yet",
 		//		},
 	}
+
+	// Just to get a client to call buildRequest on.
+	c, err := NewClient(&Config{
+		Address: "http://localhost:3000",
+		Token:   "foo",
+	})
+	if err != nil {
+		t.Fatalf("failed creating api client: %v", err)
+	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := buildRequest(context.TODO(), tt.args.body, tt.args.method, tt.args.uri, tt.args.params, tt.args.queries)
+			got, err := c.buildRequest(context.TODO(), tt.args.body, tt.args.method, tt.args.uri, tt.args.params, tt.args.queries)
 			if err != nil {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
@@ -142,5 +153,60 @@ func Test_buildRequest(t *testing.T) {
 			assert.Equal(t, tt.want.URL.RawPath, got.URL.RawPath)
 			assert.Equal(t, tt.want.URL.RawQuery, got.URL.RawQuery)
 		})
+	}
+}
+
+func Test_Client(t *testing.T) {
+	tt := map[string]struct {
+		config    *Config
+		env       map[string]string
+		wantError bool
+	}{
+		"valid client from config": {
+			config: &Config{
+				Address: "http://localhost",
+				Token:   "foo",
+			},
+		},
+		"valid client from env": {
+			env: map[string]string{
+				"OXIDE_HOST":  "http://localhost",
+				"OXIDE_TOKEN": "foo",
+			},
+		},
+		"missing address": {
+			config: &Config{
+				Token: "foo",
+			},
+			wantError: true,
+		},
+		"missing token": {
+			config: &Config{
+				Address: "http://localhost",
+			},
+			wantError: true,
+		},
+	}
+
+	for testName, testCase := range tt {
+		t.Run(testName, func(t *testing.T) {
+			for key, val := range testCase.env {
+				os.Setenv(key, val)
+			}
+
+			t.Cleanup(func() {
+				for key := range testCase.env {
+					os.Unsetenv(key)
+				}
+			})
+
+			_, err := NewClient(testCase.config)
+			if testCase.wantError {
+				assert.Error(t, err, "")
+			} else {
+				assert.NoError(t, err, "")
+			}
+		})
+
 	}
 }
