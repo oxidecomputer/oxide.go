@@ -26,7 +26,7 @@ const HostEnvVar = "OXIDE_HOST"
 type Config struct {
 	// Base URL of the Oxide API including the scheme. For example,
 	// https://api.oxide.computer.
-	Address string
+	Host string
 
 	// Oxide API authentication token.
 	Token string
@@ -55,8 +55,11 @@ type Client struct {
 	userAgent string
 }
 
-// NewClient creates a new client for the Oxide API. Pass in a non-nil *Config
-// to set the various configuration options on a Client.
+// NewClient creates a new client for the Oxide API. To authenticate with
+// environment variables, set OXIDE_HOST and OXIDE_TOKEN accordingly. Pass in a
+// non-nil *Config to set the various configuration options on a Client. When
+// setting the host and token through the *Config, these will override any set
+// environment variables.
 func NewClient(cfg *Config) (*Client, error) {
 	token := os.Getenv(TokenEnvVar)
 	server := os.Getenv(HostEnvVar)
@@ -67,8 +70,8 @@ func NewClient(cfg *Config) (*Client, error) {
 
 	// Layer in the user-provided configuration if provided.
 	if cfg != nil {
-		if cfg.Address != "" {
-			server = cfg.Address
+		if cfg.Host != "" {
+			server = cfg.Host
 		}
 
 		if cfg.Token != "" {
@@ -84,13 +87,20 @@ func NewClient(cfg *Config) (*Client, error) {
 		}
 	}
 
+	var errServer error
 	server, err := parseBaseURL(server)
 	if err != nil {
-		return nil, fmt.Errorf("failed parsing client address: %w", err)
+		errServer = fmt.Errorf("failed parsing host address: %w", err)
 	}
 
+	var errToken error
 	if token == "" {
-		return nil, errors.New("invalid client configuration: token is required")
+		errToken = errors.New("token is required")
+	}
+
+	// To aggregate the validation errors above.
+	if err := errors.Join(errServer, errToken); err != nil {
+		return nil, fmt.Errorf("invalid client configuration: %w", err)
 	}
 
 	client := &Client{
@@ -111,7 +121,7 @@ func defaultUserAgent() string {
 // parseBaseURL parses the base URL from the server URL.
 func parseBaseURL(baseURL string) (string, error) {
 	if baseURL == "" {
-		return "", errors.New("address is empty")
+		return "", errors.New("host address is empty")
 	}
 
 	if !strings.HasPrefix(baseURL, "http://") && !strings.HasPrefix(baseURL, "https://") {

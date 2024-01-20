@@ -13,6 +13,7 @@ import (
 	"net/url"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -131,8 +132,8 @@ func Test_buildRequest(t *testing.T) {
 
 	// Just to get a client to call buildRequest on.
 	c, err := NewClient(&Config{
-		Address: "http://localhost:3000",
-		Token:   "foo",
+		Host:  "http://localhost:3000",
+		Token: "foo",
 	})
 	if err != nil {
 		t.Fatalf("failed creating api client: %v", err)
@@ -156,16 +157,25 @@ func Test_buildRequest(t *testing.T) {
 	}
 }
 
-func Test_Client(t *testing.T) {
+func Test_NewClient(t *testing.T) {
 	tt := map[string]struct {
-		config    *Config
-		env       map[string]string
-		wantError bool
+		config         *Config
+		env            map[string]string
+		expectedClient *Client
+		expectedError  string
 	}{
 		"valid client from config": {
 			config: &Config{
-				Address: "http://localhost",
-				Token:   "foo",
+				Host:  "http://localhost",
+				Token: "foo",
+			},
+			expectedClient: &Client{
+				server: "http://localhost/",
+				token:  "foo",
+				client: &http.Client{
+					Timeout: 600 * time.Second,
+				},
+				userAgent: defaultUserAgent(),
 			},
 		},
 		"valid client from env": {
@@ -173,18 +183,29 @@ func Test_Client(t *testing.T) {
 				"OXIDE_HOST":  "http://localhost",
 				"OXIDE_TOKEN": "foo",
 			},
+			expectedClient: &Client{
+				server: "http://localhost/",
+				token:  "foo",
+				client: &http.Client{
+					Timeout: 600 * time.Second,
+				},
+				userAgent: defaultUserAgent(),
+			},
 		},
 		"missing address": {
 			config: &Config{
 				Token: "foo",
 			},
-			wantError: true,
+			expectedError: "invalid client configuration: failed parsing host address: host address is empty",
 		},
 		"missing token": {
 			config: &Config{
-				Address: "http://localhost",
+				Host: "http://localhost",
 			},
-			wantError: true,
+			expectedError: "invalid client configuration: token is required",
+		},
+		"missing address and token": {
+			expectedError: "invalid client configuration: failed parsing host address: host address is empty\ntoken is required",
 		},
 	}
 
@@ -200,12 +221,14 @@ func Test_Client(t *testing.T) {
 				}
 			})
 
-			_, err := NewClient(testCase.config)
-			if testCase.wantError {
-				assert.Error(t, err, "")
-			} else {
-				assert.NoError(t, err, "")
+			c, err := NewClient(testCase.config)
+
+			if testCase.expectedError != "" {
+				assert.Error(t, err)
+				assert.Equal(t, testCase.expectedError, err.Error())
 			}
+
+			assert.Equal(t, testCase.expectedClient, c)
 		})
 
 	}
