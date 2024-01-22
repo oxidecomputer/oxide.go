@@ -196,16 +196,16 @@ func Test_NewClient(t *testing.T) {
 			config: &Config{
 				Token: "foo",
 			},
-			expectedError: "invalid client configuration: failed parsing host address: host address is empty",
+			expectedError: "invalid client configuration:\nfailed parsing host address: host address is empty",
 		},
 		"missing token": {
 			config: &Config{
 				Host: "http://localhost",
 			},
-			expectedError: "invalid client configuration: token is required",
+			expectedError: "invalid client configuration:\ntoken is required",
 		},
 		"missing address and token": {
-			expectedError: "invalid client configuration: failed parsing host address: host address is empty\ntoken is required",
+			expectedError: "invalid client configuration:\nfailed parsing host address: host address is empty\ntoken is required",
 		},
 	}
 

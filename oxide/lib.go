@@ -100,7 +100,7 @@ func NewClient(cfg *Config) (*Client, error) {
 
 	// To aggregate the validation errors above.
 	if err := errors.Join(errServer, errToken); err != nil {
-		return nil, fmt.Errorf("invalid client configuration: %w", err)
+		return nil, fmt.Errorf("invalid client configuration:\n%w", err)
 	}
 
 	client := &Client{
@@ -157,7 +157,7 @@ func (c *Client) buildRequest(ctx context.Context, body io.Reader, method, uri s
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", c.token)
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.token))
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, params); err != nil {
