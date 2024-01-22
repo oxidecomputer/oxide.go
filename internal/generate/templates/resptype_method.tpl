@@ -3,7 +3,7 @@
 		return nil, err
 	}{{end}}
     // Create the request
-    req, err := buildRequest(
+    req, err := c.buildRequest(
         ctx,
         nil, 
         "{{.HTTPMethod}}", 

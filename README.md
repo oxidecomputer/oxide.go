@@ -32,7 +32,11 @@ import (
 )
 
 func main() {
-	client, err := oxide.NewClient("<auth token>", "<user-agent>", "<host>")
+	cfg := oxide.Config{
+		Address: "https://api.oxide.computer",
+		Token:   "oxide-abc123",
+	}
+	client, err := oxide.NewClient(&cfg)
 	if err != nil {
 		panic(err)
 	}

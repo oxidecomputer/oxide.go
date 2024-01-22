@@ -14,7 +14,7 @@ func (c *Client) IpPoolList(ctx context.Context, params IpPoolListParams, ) (*Ip
 		return nil, err
 	}
     // Create the request
-    req, err := buildRequest(
+    req, err := c.buildRequest(
         ctx,
         nil, 
         "GET", 
@@ -95,7 +95,7 @@ func (c *Client) IpPoolCreate(ctx context.Context, params IpPoolCreateParams, ) 
     }
 
     // Create the request
-    req, err := buildRequest(
+    req, err := c.buildRequest(
         ctx,
         b, 
         "POST", 
@@ -141,7 +141,7 @@ func (c *Client) IpPoolView(ctx context.Context, params IpPoolViewParams, ) (*Ip
 		return nil, err
 	}
     // Create the request
-    req, err := buildRequest(
+    req, err := c.buildRequest(
         ctx,
         nil, 
         "GET", 
@@ -194,7 +194,7 @@ func (c *Client) IpPoolUpdate(ctx context.Context, params IpPoolUpdateParams, ) 
     }
 
     // Create the request
-    req, err := buildRequest(
+    req, err := c.buildRequest(
         ctx,
         b, 
         "PUT", 
@@ -241,7 +241,7 @@ func (c *Client) IpPoolDelete(ctx context.Context, params IpPoolDeleteParams, ) 
 		return err
 	}
     // Create the request
-    req, err := buildRequest(
+    req, err := c.buildRequest(
         ctx,
         nil, 
         "DELETE", 

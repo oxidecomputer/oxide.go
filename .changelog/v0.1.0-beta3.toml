@@ -11,5 +11,13 @@ title = ""
 description = ""
 
 [[breaking]]
-title = "Go verrsion"
+title = "Go version"
 description = "Minimum required Go version has been updated to 1.21. [#179](https://github.com/oxidecomputer/oxide.go/pull/179)"
+
+[[breaking]]
+title = "NewClient API change"
+description = "The `NewClient` function has been updated to no longer require a user agent parameter. [#180](https://github.com/oxidecomputer/oxide.go/pull/180)"
+
+[[breaking]]
+title = "NewClientFromEnv removal"
+description = "The `NewClientFromEnv` function has been removed. Users should use `NewClient` instead. [#180](https://github.com/oxidecomputer/oxide.go/pull/180)"

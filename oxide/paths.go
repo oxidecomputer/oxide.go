@@ -23,7 +23,7 @@ func (c *Client) LoginSaml(ctx context.Context, params LoginSamlParams) error {
 	b := params.Body
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"POST",
@@ -62,7 +62,7 @@ func (c *Client) CertificateList(ctx context.Context, params CertificateListPara
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -144,7 +144,7 @@ func (c *Client) CertificateCreate(ctx context.Context, params CertificateCreate
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"POST",
@@ -189,7 +189,7 @@ func (c *Client) CertificateView(ctx context.Context, params CertificateViewPara
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -236,7 +236,7 @@ func (c *Client) CertificateDelete(ctx context.Context, params CertificateDelete
 		return err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"DELETE",
@@ -273,7 +273,7 @@ func (c *Client) DiskList(ctx context.Context, params DiskListParams) (*DiskResu
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -354,7 +354,7 @@ func (c *Client) DiskCreate(ctx context.Context, params DiskCreateParams) (*Disk
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"POST",
@@ -400,7 +400,7 @@ func (c *Client) DiskView(ctx context.Context, params DiskViewParams) (*Disk, er
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -448,7 +448,7 @@ func (c *Client) DiskDelete(ctx context.Context, params DiskDeleteParams) error 
 		return err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"DELETE",
@@ -491,7 +491,7 @@ func (c *Client) DiskBulkWriteImport(ctx context.Context, params DiskBulkWriteIm
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"POST",
@@ -529,7 +529,7 @@ func (c *Client) DiskBulkWriteImportStart(ctx context.Context, params DiskBulkWr
 		return err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"POST",
@@ -567,7 +567,7 @@ func (c *Client) DiskBulkWriteImportStop(ctx context.Context, params DiskBulkWri
 		return err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"POST",
@@ -610,7 +610,7 @@ func (c *Client) DiskFinalizeImport(ctx context.Context, params DiskFinalizeImpo
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"POST",
@@ -649,7 +649,7 @@ func (c *Client) DiskMetricsList(ctx context.Context, params DiskMetricsListPara
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -731,7 +731,7 @@ func (c *Client) FloatingIpList(ctx context.Context, params FloatingIpListParams
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -812,7 +812,7 @@ func (c *Client) FloatingIpCreate(ctx context.Context, params FloatingIpCreatePa
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"POST",
@@ -858,7 +858,7 @@ func (c *Client) FloatingIpView(ctx context.Context, params FloatingIpViewParams
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -906,7 +906,7 @@ func (c *Client) FloatingIpDelete(ctx context.Context, params FloatingIpDeletePa
 		return err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"DELETE",
@@ -945,7 +945,7 @@ func (c *Client) GroupList(ctx context.Context, params GroupListParams) (*GroupR
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -1019,7 +1019,7 @@ func (c *Client) GroupView(ctx context.Context, params GroupViewParams) (*Group,
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -1068,7 +1068,7 @@ func (c *Client) ImageList(ctx context.Context, params ImageListParams) (*ImageR
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -1151,7 +1151,7 @@ func (c *Client) ImageCreate(ctx context.Context, params ImageCreateParams) (*Im
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"POST",
@@ -1198,7 +1198,7 @@ func (c *Client) ImageView(ctx context.Context, params ImageViewParams) (*Image,
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -1247,7 +1247,7 @@ func (c *Client) ImageDelete(ctx context.Context, params ImageDeleteParams) erro
 		return err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"DELETE",
@@ -1285,7 +1285,7 @@ func (c *Client) ImageDemote(ctx context.Context, params ImageDemoteParams) (*Im
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"POST",
@@ -1334,7 +1334,7 @@ func (c *Client) ImagePromote(ctx context.Context, params ImagePromoteParams) (*
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"POST",
@@ -1384,7 +1384,7 @@ func (c *Client) InstanceList(ctx context.Context, params InstanceListParams) (*
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -1465,7 +1465,7 @@ func (c *Client) InstanceCreate(ctx context.Context, params InstanceCreateParams
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"POST",
@@ -1511,7 +1511,7 @@ func (c *Client) InstanceView(ctx context.Context, params InstanceViewParams) (*
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -1559,7 +1559,7 @@ func (c *Client) InstanceDelete(ctx context.Context, params InstanceDeleteParams
 		return err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"DELETE",
@@ -1598,7 +1598,7 @@ func (c *Client) InstanceDiskList(ctx context.Context, params InstanceDiskListPa
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -1681,7 +1681,7 @@ func (c *Client) InstanceDiskAttach(ctx context.Context, params InstanceDiskAtta
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"POST",
@@ -1735,7 +1735,7 @@ func (c *Client) InstanceDiskDetach(ctx context.Context, params InstanceDiskDeta
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"POST",
@@ -1783,7 +1783,7 @@ func (c *Client) InstanceExternalIpList(ctx context.Context, params InstanceExte
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -1837,7 +1837,7 @@ func (c *Client) InstanceMigrate(ctx context.Context, params InstanceMigratePara
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"POST",
@@ -1885,7 +1885,7 @@ func (c *Client) InstanceReboot(ctx context.Context, params InstanceRebootParams
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"POST",
@@ -1933,7 +1933,7 @@ func (c *Client) InstanceSerialConsole(ctx context.Context, params InstanceSeria
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -1984,7 +1984,7 @@ func (c *Client) InstanceSerialConsoleStream(ctx context.Context, params Instanc
 		return err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -2022,7 +2022,7 @@ func (c *Client) InstanceStart(ctx context.Context, params InstanceStartParams) 
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"POST",
@@ -2070,7 +2070,7 @@ func (c *Client) InstanceStop(ctx context.Context, params InstanceStopParams) (*
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"POST",
@@ -2120,7 +2120,7 @@ func (c *Client) ProjectIpPoolList(ctx context.Context, params ProjectIpPoolList
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -2195,7 +2195,7 @@ func (c *Client) ProjectIpPoolView(ctx context.Context, params ProjectIpPoolView
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -2249,7 +2249,7 @@ func (c *Client) LoginLocal(ctx context.Context, params LoginLocalParams) error 
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"POST",
@@ -2281,7 +2281,7 @@ func (c *Client) LoginLocal(ctx context.Context, params LoginLocalParams) error 
 // CurrentUserView: Fetch the user associated with the current session
 func (c *Client) CurrentUserView(ctx context.Context) (*CurrentUser, error) {
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -2327,7 +2327,7 @@ func (c *Client) CurrentUserGroups(ctx context.Context, params CurrentUserGroups
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -2404,7 +2404,7 @@ func (c *Client) CurrentUserSshKeyList(ctx context.Context, params CurrentUserSs
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -2486,7 +2486,7 @@ func (c *Client) CurrentUserSshKeyCreate(ctx context.Context, params CurrentUser
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"POST",
@@ -2531,7 +2531,7 @@ func (c *Client) CurrentUserSshKeyView(ctx context.Context, params CurrentUserSs
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -2578,7 +2578,7 @@ func (c *Client) CurrentUserSshKeyDelete(ctx context.Context, params CurrentUser
 		return err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"DELETE",
@@ -2615,7 +2615,7 @@ func (c *Client) SiloMetric(ctx context.Context, params SiloMetricParams) (*Meas
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -2696,7 +2696,7 @@ func (c *Client) InstanceNetworkInterfaceList(ctx context.Context, params Instan
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -2778,7 +2778,7 @@ func (c *Client) InstanceNetworkInterfaceCreate(ctx context.Context, params Inst
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"POST",
@@ -2825,7 +2825,7 @@ func (c *Client) InstanceNetworkInterfaceView(ctx context.Context, params Instan
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -2880,7 +2880,7 @@ func (c *Client) InstanceNetworkInterfaceUpdate(ctx context.Context, params Inst
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"PUT",
@@ -2930,7 +2930,7 @@ func (c *Client) InstanceNetworkInterfaceDelete(ctx context.Context, params Inst
 		return err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"DELETE",
@@ -2966,7 +2966,7 @@ func (c *Client) InstanceNetworkInterfaceDelete(ctx context.Context, params Inst
 // Always responds with Ok if it responds at all.
 func (c *Client) Ping(ctx context.Context) (*Ping, error) {
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -3007,7 +3007,7 @@ func (c *Client) Ping(ctx context.Context) (*Ping, error) {
 // PolicyView: Fetch the current silo's IAM policy
 func (c *Client) PolicyView(ctx context.Context) (*SiloRolePolicy, error) {
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -3057,7 +3057,7 @@ func (c *Client) PolicyUpdate(ctx context.Context, params PolicyUpdateParams) (*
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"PUT",
@@ -3103,7 +3103,7 @@ func (c *Client) ProjectList(ctx context.Context, params ProjectListParams) (*Pr
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -3183,7 +3183,7 @@ func (c *Client) ProjectCreate(ctx context.Context, params ProjectCreateParams) 
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"POST",
@@ -3227,7 +3227,7 @@ func (c *Client) ProjectView(ctx context.Context, params ProjectViewParams) (*Pr
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -3279,7 +3279,7 @@ func (c *Client) ProjectUpdate(ctx context.Context, params ProjectUpdateParams) 
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"PUT",
@@ -3325,7 +3325,7 @@ func (c *Client) ProjectDelete(ctx context.Context, params ProjectDeleteParams) 
 		return err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"DELETE",
@@ -3360,7 +3360,7 @@ func (c *Client) ProjectPolicyView(ctx context.Context, params ProjectPolicyView
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -3412,7 +3412,7 @@ func (c *Client) ProjectPolicyUpdate(ctx context.Context, params ProjectPolicyUp
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"PUT",
@@ -3460,7 +3460,7 @@ func (c *Client) SnapshotList(ctx context.Context, params SnapshotListParams) (*
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -3542,7 +3542,7 @@ func (c *Client) SnapshotCreate(ctx context.Context, params SnapshotCreateParams
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"POST",
@@ -3588,7 +3588,7 @@ func (c *Client) SnapshotView(ctx context.Context, params SnapshotViewParams) (*
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -3636,7 +3636,7 @@ func (c *Client) SnapshotDelete(ctx context.Context, params SnapshotDeleteParams
 		return err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"DELETE",
@@ -3675,7 +3675,7 @@ func (c *Client) PhysicalDiskList(ctx context.Context, params PhysicalDiskListPa
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -3751,7 +3751,7 @@ func (c *Client) RackList(ctx context.Context, params RackListParams) (*RackResu
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -3825,7 +3825,7 @@ func (c *Client) RackView(ctx context.Context, params RackViewParams) (*Rack, er
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -3873,7 +3873,7 @@ func (c *Client) SledList(ctx context.Context, params SledListParams) (*SledResu
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -3953,7 +3953,7 @@ func (c *Client) AddSledToInitializedRack(ctx context.Context, params AddSledToI
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"POST",
@@ -3986,7 +3986,7 @@ func (c *Client) SledView(ctx context.Context, params SledViewParams) (*Sled, er
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -4034,7 +4034,7 @@ func (c *Client) SledPhysicalDiskList(ctx context.Context, params SledPhysicalDi
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -4112,7 +4112,7 @@ func (c *Client) SledInstanceList(ctx context.Context, params SledInstanceListPa
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -4194,7 +4194,7 @@ func (c *Client) SledSetProvisionState(ctx context.Context, params SledSetProvis
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"PUT",
@@ -4242,7 +4242,7 @@ func (c *Client) NetworkingSwitchPortList(ctx context.Context, params Networking
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -4323,7 +4323,7 @@ func (c *Client) NetworkingSwitchPortApplySettings(ctx context.Context, params N
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"POST",
@@ -4361,7 +4361,7 @@ func (c *Client) NetworkingSwitchPortClearSettings(ctx context.Context, params N
 		return err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"DELETE",
@@ -4401,7 +4401,7 @@ func (c *Client) SwitchList(ctx context.Context, params SwitchListParams) (*Swit
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -4475,7 +4475,7 @@ func (c *Client) SwitchView(ctx context.Context, params SwitchViewParams) (*Swit
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -4518,7 +4518,7 @@ func (c *Client) SwitchView(ctx context.Context, params SwitchViewParams) (*Swit
 // UninitializedSledList: List uninitialized sleds in a given rack
 func (c *Client) UninitializedSledList(ctx context.Context) (*[]UninitializedSled, error) {
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -4564,7 +4564,7 @@ func (c *Client) SiloIdentityProviderList(ctx context.Context, params SiloIdenti
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -4646,7 +4646,7 @@ func (c *Client) LocalIdpUserCreate(ctx context.Context, params LocalIdpUserCrea
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"POST",
@@ -4692,7 +4692,7 @@ func (c *Client) LocalIdpUserDelete(ctx context.Context, params LocalIdpUserDele
 		return err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"DELETE",
@@ -4736,7 +4736,7 @@ func (c *Client) LocalIdpUserSetPassword(ctx context.Context, params LocalIdpUse
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"POST",
@@ -4779,7 +4779,7 @@ func (c *Client) SamlIdentityProviderCreate(ctx context.Context, params SamlIden
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"POST",
@@ -4825,7 +4825,7 @@ func (c *Client) SamlIdentityProviderView(ctx context.Context, params SamlIdenti
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -4875,7 +4875,7 @@ func (c *Client) IpPoolList(ctx context.Context, params IpPoolListParams) (*IpPo
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -4955,7 +4955,7 @@ func (c *Client) IpPoolCreate(ctx context.Context, params IpPoolCreateParams) (*
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"POST",
@@ -4996,7 +4996,7 @@ func (c *Client) IpPoolCreate(ctx context.Context, params IpPoolCreateParams) (*
 // IpPoolServiceView: Fetch the IP pool used for Oxide services
 func (c *Client) IpPoolServiceView(ctx context.Context) (*IpPool, error) {
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -5043,7 +5043,7 @@ func (c *Client) IpPoolServiceRangeList(ctx context.Context, params IpPoolServic
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -5123,7 +5123,7 @@ func (c *Client) IpPoolServiceRangeAdd(ctx context.Context, params IpPoolService
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"POST",
@@ -5173,7 +5173,7 @@ func (c *Client) IpPoolServiceRangeRemove(ctx context.Context, params IpPoolServ
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"POST",
@@ -5206,7 +5206,7 @@ func (c *Client) IpPoolView(ctx context.Context, params IpPoolViewParams) (*IpPo
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -5258,7 +5258,7 @@ func (c *Client) IpPoolUpdate(ctx context.Context, params IpPoolUpdateParams) (*
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"PUT",
@@ -5304,7 +5304,7 @@ func (c *Client) IpPoolDelete(ctx context.Context, params IpPoolDeleteParams) er
 		return err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"DELETE",
@@ -5342,7 +5342,7 @@ func (c *Client) IpPoolRangeList(ctx context.Context, params IpPoolRangeListPara
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -5424,7 +5424,7 @@ func (c *Client) IpPoolRangeAdd(ctx context.Context, params IpPoolRangeAddParams
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"POST",
@@ -5476,7 +5476,7 @@ func (c *Client) IpPoolRangeRemove(ctx context.Context, params IpPoolRangeRemove
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"POST",
@@ -5513,7 +5513,7 @@ func (c *Client) SystemMetric(ctx context.Context, params SystemMetricParams) (*
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -5594,7 +5594,7 @@ func (c *Client) NetworkingAddressLotList(ctx context.Context, params Networking
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -5674,7 +5674,7 @@ func (c *Client) NetworkingAddressLotCreate(ctx context.Context, params Networki
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"POST",
@@ -5718,7 +5718,7 @@ func (c *Client) NetworkingAddressLotDelete(ctx context.Context, params Networki
 		return err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"DELETE",
@@ -5755,7 +5755,7 @@ func (c *Client) NetworkingAddressLotBlockList(ctx context.Context, params Netwo
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -5833,7 +5833,7 @@ func (c *Client) NetworkingBgpConfigList(ctx context.Context, params NetworkingB
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -5914,7 +5914,7 @@ func (c *Client) NetworkingBgpConfigCreate(ctx context.Context, params Networkin
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"POST",
@@ -5958,7 +5958,7 @@ func (c *Client) NetworkingBgpConfigDelete(ctx context.Context, params Networkin
 		return err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"DELETE",
@@ -5993,7 +5993,7 @@ func (c *Client) NetworkingBgpAnnounceSetList(ctx context.Context, params Networ
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -6045,7 +6045,7 @@ func (c *Client) NetworkingBgpAnnounceSetCreate(ctx context.Context, params Netw
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"POST",
@@ -6089,7 +6089,7 @@ func (c *Client) NetworkingBgpAnnounceSetDelete(ctx context.Context, params Netw
 		return err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"DELETE",
@@ -6124,7 +6124,7 @@ func (c *Client) NetworkingBgpImportedRoutesIpv4(ctx context.Context, params Net
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -6167,7 +6167,7 @@ func (c *Client) NetworkingBgpImportedRoutesIpv4(ctx context.Context, params Net
 // NetworkingBgpStatus: Get BGP peer status
 func (c *Client) NetworkingBgpStatus(ctx context.Context) (*[]BgpPeerStatus, error) {
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -6213,7 +6213,7 @@ func (c *Client) NetworkingLoopbackAddressList(ctx context.Context, params Netwo
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -6293,7 +6293,7 @@ func (c *Client) NetworkingLoopbackAddressCreate(ctx context.Context, params Net
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"POST",
@@ -6337,7 +6337,7 @@ func (c *Client) NetworkingLoopbackAddressDelete(ctx context.Context, params Net
 		return err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"DELETE",
@@ -6377,7 +6377,7 @@ func (c *Client) NetworkingSwitchPortSettingsList(ctx context.Context, params Ne
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -6458,7 +6458,7 @@ func (c *Client) NetworkingSwitchPortSettingsCreate(ctx context.Context, params 
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"POST",
@@ -6502,7 +6502,7 @@ func (c *Client) NetworkingSwitchPortSettingsDelete(ctx context.Context, params 
 		return err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"DELETE",
@@ -6537,7 +6537,7 @@ func (c *Client) NetworkingSwitchPortSettingsView(ctx context.Context, params Ne
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -6580,7 +6580,7 @@ func (c *Client) NetworkingSwitchPortSettingsView(ctx context.Context, params Ne
 // SystemPolicyView: Fetch the top-level IAM policy
 func (c *Client) SystemPolicyView(ctx context.Context) (*FleetRolePolicy, error) {
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -6630,7 +6630,7 @@ func (c *Client) SystemPolicyUpdate(ctx context.Context, params SystemPolicyUpda
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"PUT",
@@ -6676,7 +6676,7 @@ func (c *Client) RoleList(ctx context.Context, params RoleListParams) (*RoleResu
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -6749,7 +6749,7 @@ func (c *Client) RoleView(ctx context.Context, params RoleViewParams) (*Role, er
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -6797,7 +6797,7 @@ func (c *Client) SystemQuotasList(ctx context.Context, params SystemQuotasListPa
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -6874,7 +6874,7 @@ func (c *Client) SiloList(ctx context.Context, params SiloListParams) (*SiloResu
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -6955,7 +6955,7 @@ func (c *Client) SiloCreate(ctx context.Context, params SiloCreateParams) (*Silo
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"POST",
@@ -7000,7 +7000,7 @@ func (c *Client) SiloView(ctx context.Context, params SiloViewParams) (*Silo, er
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -7047,7 +7047,7 @@ func (c *Client) SiloDelete(ctx context.Context, params SiloDeleteParams) error 
 		return err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"DELETE",
@@ -7082,7 +7082,7 @@ func (c *Client) SiloPolicyView(ctx context.Context, params SiloPolicyViewParams
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -7134,7 +7134,7 @@ func (c *Client) SiloPolicyUpdate(ctx context.Context, params SiloPolicyUpdatePa
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"PUT",
@@ -7180,7 +7180,7 @@ func (c *Client) SiloQuotasView(ctx context.Context, params SiloQuotasViewParams
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -7233,7 +7233,7 @@ func (c *Client) SiloQuotasUpdate(ctx context.Context, params SiloQuotasUpdatePa
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"PUT",
@@ -7281,7 +7281,7 @@ func (c *Client) SiloUserList(ctx context.Context, params SiloUserListParams) (*
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -7358,7 +7358,7 @@ func (c *Client) UserBuiltinList(ctx context.Context, params UserBuiltinListPara
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -7432,7 +7432,7 @@ func (c *Client) UserBuiltinView(ctx context.Context, params UserBuiltinViewPara
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -7478,7 +7478,7 @@ func (c *Client) SiloUserView(ctx context.Context, params SiloUserViewParams) (*
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -7528,7 +7528,7 @@ func (c *Client) SiloUtilizationList(ctx context.Context, params SiloUtilization
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -7602,7 +7602,7 @@ func (c *Client) SiloUtilizationView(ctx context.Context, params SiloUtilization
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -7650,7 +7650,7 @@ func (c *Client) UserList(ctx context.Context, params UserListParams) (*UserResu
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -7722,7 +7722,7 @@ func (c *Client) UserListAllPages(ctx context.Context, params UserListParams) ([
 // UtilizationView: View the resource utilization of the user's current silo
 func (c *Client) UtilizationView(ctx context.Context) (*Utilization, error) {
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -7766,7 +7766,7 @@ func (c *Client) VpcFirewallRulesView(ctx context.Context, params VpcFirewallRul
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -7819,7 +7819,7 @@ func (c *Client) VpcFirewallRulesUpdate(ctx context.Context, params VpcFirewallR
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"PUT",
@@ -7868,7 +7868,7 @@ func (c *Client) VpcSubnetList(ctx context.Context, params VpcSubnetListParams) 
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -7950,7 +7950,7 @@ func (c *Client) VpcSubnetCreate(ctx context.Context, params VpcSubnetCreatePara
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"POST",
@@ -7997,7 +7997,7 @@ func (c *Client) VpcSubnetView(ctx context.Context, params VpcSubnetViewParams) 
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -8052,7 +8052,7 @@ func (c *Client) VpcSubnetUpdate(ctx context.Context, params VpcSubnetUpdatePara
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"PUT",
@@ -8101,7 +8101,7 @@ func (c *Client) VpcSubnetDelete(ctx context.Context, params VpcSubnetDeletePara
 		return err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"DELETE",
@@ -8141,7 +8141,7 @@ func (c *Client) VpcSubnetListNetworkInterfaces(ctx context.Context, params VpcS
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -8221,7 +8221,7 @@ func (c *Client) VpcList(ctx context.Context, params VpcListParams) (*VpcResults
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -8302,7 +8302,7 @@ func (c *Client) VpcCreate(ctx context.Context, params VpcCreateParams) (*Vpc, e
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"POST",
@@ -8348,7 +8348,7 @@ func (c *Client) VpcView(ctx context.Context, params VpcViewParams) (*Vpc, error
 		return nil, err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
@@ -8402,7 +8402,7 @@ func (c *Client) VpcUpdate(ctx context.Context, params VpcUpdateParams) (*Vpc, e
 	}
 
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		b,
 		"PUT",
@@ -8450,7 +8450,7 @@ func (c *Client) VpcDelete(ctx context.Context, params VpcDeleteParams) error {
 		return err
 	}
 	// Create the request
-	req, err := buildRequest(
+	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"DELETE",
