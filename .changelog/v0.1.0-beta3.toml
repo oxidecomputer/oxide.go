@@ -2,10 +2,6 @@
 title = ""
 description = ""
 
-[[features]]
-title = ""
-description = ""
-
 [[enhancements]]
 title = ""
 description = ""
@@ -21,3 +17,19 @@ description = "The `NewClient` function has been updated to no longer require a 
 [[breaking]]
 title = "NewClientFromEnv removal"
 description = "The `NewClientFromEnv` function has been removed. Users should use `NewClient` instead. [#180](https://github.com/oxidecomputer/oxide.go/pull/180)"
+
+[[features]]
+title = "New APIs"
+description = "Live attach and detach of external IPs to an instance. [#182](https://github.com/oxidecomputer/oxide.go/pull/182)"
+
+[[features]]
+title = "New APIs"
+description = "Several silo IP pool maintenance endpoints. [#182](https://github.com/oxidecomputer/oxide.go/pull/182)"
+
+[[breaking]]
+title = "Method renames"
+description = "Several methods have had slight name changes to better reflect their functionality.[#182](https://github.com/oxidecomputer/oxide.go/pull/182)"
+
+[[breaking]]
+title = "Types"
+description = "Several types have added fields and/or renames.[#182](https://github.com/oxidecomputer/oxide.go/pull/182)"

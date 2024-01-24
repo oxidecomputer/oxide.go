@@ -1183,6 +1183,12 @@ type DiskState struct {
 	Instance string `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
 
+// EphemeralIpCreate is parameters for creating an ephemeral IP address for an instance.
+type EphemeralIpCreate struct {
+	// Pool is name or ID of the IP pool used to allocate an address
+	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
+}
+
 // Error is error information from a response.
 type Error struct {
 	ErrorCode string `json:"error_code,omitempty" yaml:"error_code,omitempty"`
@@ -1190,39 +1196,83 @@ type Error struct {
 	RequestId string `json:"request_id,omitempty" yaml:"request_id,omitempty"`
 }
 
+// ExternalIpKind is the type definition for a ExternalIpKind.
+type ExternalIpKind string
+
+// ExternalIpEphemeral is the type definition for a ExternalIpEphemeral.
+type ExternalIpEphemeral struct {
+	Ip   string         `json:"ip,omitempty" yaml:"ip,omitempty"`
+	Kind ExternalIpKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+}
+
+// ExternalIpFloating is a Floating IP is a well-known IP address which can be attached and detached from instances.
+type ExternalIpFloating struct {
+	// Description is human-readable free-form text about a resource
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// InstanceId is the ID of the instance that this Floating IP is attached to, if it is presently in use.
+	InstanceId string `json:"instance_id,omitempty" yaml:"instance_id,omitempty"`
+	// Ip is the IP address held by this resource.
+	Ip   string         `json:"ip,omitempty" yaml:"ip,omitempty"`
+	Kind ExternalIpKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+	// Name is unique, mutable, user-controlled identifier for each resource
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	// ProjectId is the project this resource exists within.
+	ProjectId string `json:"project_id,omitempty" yaml:"project_id,omitempty"`
+	// TimeCreated is timestamp when this resource was created
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	// TimeModified is timestamp when this resource was last modified
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+}
+
 // ExternalIp is the type definition for a ExternalIp.
 type ExternalIp struct {
+	// Ip is the type definition for a Ip.
 	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
-	// Kind is the kind of an external IP address for an instance
-	Kind IpKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+	// Kind is the type definition for a Kind.
+	Kind ExternalIpKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+	// Description is human-readable free-form text about a resource
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// InstanceId is the ID of the instance that this Floating IP is attached to, if it is presently in use.
+	InstanceId string `json:"instance_id,omitempty" yaml:"instance_id,omitempty"`
+	// Name is unique, mutable, user-controlled identifier for each resource
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	// ProjectId is the project this resource exists within.
+	ProjectId string `json:"project_id,omitempty" yaml:"project_id,omitempty"`
+	// TimeCreated is timestamp when this resource was created
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	// TimeModified is timestamp when this resource was last modified
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
 }
 
 // ExternalIpCreateType is the type definition for a ExternalIpCreateType.
 type ExternalIpCreateType string
 
-// ExternalIpCreateEphemeral is an IP address providing both inbound and outbound access. The address is automatically-assigned from the provided IP Pool, or all available pools if not specified.
+// ExternalIpCreateEphemeral is an IP address providing both inbound and outbound access. The address is automatically-assigned from the provided IP Pool, or the current silo's default pool if not specified.
 type ExternalIpCreateEphemeral struct {
-	PoolName Name                 `json:"pool_name,omitempty" yaml:"pool_name,omitempty"`
-	Type     ExternalIpCreateType `json:"type,omitempty" yaml:"type,omitempty"`
+	Pool NameOrId             `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Type ExternalIpCreateType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
-// ExternalIpCreateFloating is an IP address providing both inbound and outbound access. The address is an existing Floating IP object assigned to the current project.
+// ExternalIpCreateFloating is an IP address providing both inbound and outbound access. The address is an existing floating IP object assigned to the current project.
 //
 // The floating IP must not be in use by another instance or service.
 type ExternalIpCreateFloating struct {
-	// FloatingIpName is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
-	FloatingIpName Name                 `json:"floating_ip_name,omitempty" yaml:"floating_ip_name,omitempty"`
-	Type           ExternalIpCreateType `json:"type,omitempty" yaml:"type,omitempty"`
+	FloatingIp NameOrId             `json:"floating_ip,omitempty" yaml:"floating_ip,omitempty"`
+	Type       ExternalIpCreateType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // ExternalIpCreate is parameters for creating an external IP address for instances.
 type ExternalIpCreate struct {
-	// PoolName is the type definition for a PoolName.
-	PoolName Name `json:"pool_name,omitempty" yaml:"pool_name,omitempty"`
+	// Pool is the type definition for a Pool.
+	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 	// Type is the type definition for a Type.
 	Type ExternalIpCreateType `json:"type,omitempty" yaml:"type,omitempty"`
-	// FloatingIpName is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
-	FloatingIpName Name `json:"floating_ip_name,omitempty" yaml:"floating_ip_name,omitempty"`
+	// FloatingIp is the type definition for a FloatingIp.
+	FloatingIp NameOrId `json:"floating_ip,omitempty" yaml:"floating_ip,omitempty"`
 }
 
 // ExternalIpResultsPage is a single page of results
@@ -1280,6 +1330,14 @@ type FloatingIp struct {
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
 }
 
+// FloatingIpAttach is parameters for attaching a floating IP address to another resource
+type FloatingIpAttach struct {
+	// Kind is the type of `parent`'s resource
+	Kind FloatingIpParentKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+	// Parent is name or ID of the resource that this IP address should be attached to
+	Parent NameOrId `json:"parent,omitempty" yaml:"parent,omitempty"`
+}
+
 // FloatingIpCreate is parameters for creating a new floating IP address for instances.
 type FloatingIpCreate struct {
 	// Address is an IP address to reserve for use as a floating IP. This field is optional: when not set, an address will be automatically chosen from `pool`. If set, then the IP must be available in the resolved `pool`.
@@ -1290,6 +1348,9 @@ type FloatingIpCreate struct {
 	// Pool is the parent IP pool that a floating IP is pulled from. If unset, the default pool is selected.
 	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 }
+
+// FloatingIpParentKind is the type of resource that a floating IP is attached to
+type FloatingIpParentKind string
 
 // FloatingIpResultsPage is a single page of results
 type FloatingIpResultsPage struct {
@@ -1765,22 +1826,17 @@ type InstanceSerialConsoleData struct {
 // InstanceState is the instance is being created.
 type InstanceState string
 
-// IpKind is the kind of an external IP address for an instance
-type IpKind string
-
 // IpNet is the type definition for a IpNet.
 type IpNet interface{}
 
-// IpPool is identity-related metadata that's included in nearly all public API objects
+// IpPool is a collection of IP ranges. If a pool is linked to a silo, IP addresses from the pool can be allocated within that silo
 type IpPool struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Id is unique, immutable, system-controlled identifier for each resource
-	Id        string `json:"id,omitempty" yaml:"id,omitempty"`
-	IsDefault *bool  `json:"is_default,omitempty" yaml:"is_default,omitempty"`
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
-	Name   Name   `json:"name,omitempty" yaml:"name,omitempty"`
-	SiloId string `json:"silo_id,omitempty" yaml:"silo_id,omitempty"`
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
@@ -1790,12 +1846,15 @@ type IpPool struct {
 // IpPoolCreate is create-time parameters for an `IpPool`
 type IpPoolCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// IsDefault is whether the IP pool is considered a default pool for its scope (fleet or silo). If a pool is marked default and is associated with a silo, instances created in that silo will draw IPs from that pool unless another pool is specified at instance create time.
-	IsDefault *bool `json:"is_default,omitempty" yaml:"is_default,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
-	// Silo is if an IP pool is associated with a silo, instance IP allocations in that silo can draw from that pool.
-	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
+}
+
+// IpPoolLinkSilo is the type definition for a IpPoolLinkSilo.
+type IpPoolLinkSilo struct {
+	// IsDefault is when a pool is the default for a silo, floating IPs and instance ephemeral IPs will come from that pool when no other pool is specified. There can be at most one default for a given silo.
+	IsDefault *bool    `json:"is_default,omitempty" yaml:"is_default,omitempty"`
+	Silo      NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 }
 
 // IpPoolRange is the type definition for a IpPoolRange.
@@ -1820,6 +1879,28 @@ type IpPoolResultsPage struct {
 	Items []IpPool `json:"items,omitempty" yaml:"items,omitempty"`
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// IpPoolSiloLink is a link between an IP pool and a silo that allows one to allocate IPs from the pool within the silo
+type IpPoolSiloLink struct {
+	IpPoolId string `json:"ip_pool_id,omitempty" yaml:"ip_pool_id,omitempty"`
+	// IsDefault is when a pool is the default for a silo, floating IPs and instance ephemeral IPs will come from that pool when no other pool is specified. There can be at most one default for a given silo.
+	IsDefault *bool  `json:"is_default,omitempty" yaml:"is_default,omitempty"`
+	SiloId    string `json:"silo_id,omitempty" yaml:"silo_id,omitempty"`
+}
+
+// IpPoolSiloLinkResultsPage is a single page of results
+type IpPoolSiloLinkResultsPage struct {
+	// Items is list of items on this page of results
+	Items []IpPoolSiloLink `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// IpPoolSiloUpdate is the type definition for a IpPoolSiloUpdate.
+type IpPoolSiloUpdate struct {
+	// IsDefault is when a pool is the default for a silo, floating IPs and instance ephemeral IPs will come from that pool when no other pool is specified. There can be at most one default for a given silo, so when a pool is made default, an existing default will remain linked but will no longer be the default.
+	IsDefault *bool `json:"is_default,omitempty" yaml:"is_default,omitempty"`
 }
 
 // IpPoolUpdate is parameters for updating an IP Pool
@@ -1856,14 +1937,14 @@ type Ipv6Range struct {
 // L4PortRange is an inclusive-inclusive range of IP ports. The second port may be omitted to represent a single port
 type L4PortRange string
 
-// LinkConfig is switch link configuration.
-type LinkConfig struct {
+// LinkConfigCreate is switch link configuration.
+type LinkConfigCreate struct {
 	// Autoneg is whether or not to set autonegotiation
 	Autoneg *bool `json:"autoneg,omitempty" yaml:"autoneg,omitempty"`
 	// Fec is the forward error correction mode of the link.
 	Fec LinkFec `json:"fec,omitempty" yaml:"fec,omitempty"`
 	// Lldp is the link-layer discovery protocol (LLDP) configuration for the link.
-	Lldp LldpServiceConfig `json:"lldp,omitempty" yaml:"lldp,omitempty"`
+	Lldp LldpServiceConfigCreate `json:"lldp,omitempty" yaml:"lldp,omitempty"`
 	// Mtu is maximum transmission unit for the link.
 	Mtu int `json:"mtu,omitempty" yaml:"mtu,omitempty"`
 	// Speed is the speed of the link.
@@ -1876,8 +1957,18 @@ type LinkFec string
 // LinkSpeed is zero gigabits per second.
 type LinkSpeed string
 
-// LldpServiceConfig is the LLDP configuration associated with a port. LLDP may be either enabled or disabled, if enabled, an LLDP configuration must be provided by name or id.
+// LldpServiceConfig is a link layer discovery protocol (LLDP) service configuration.
 type LldpServiceConfig struct {
+	// Enabled is whether or not the LLDP service is enabled.
+	Enabled *bool `json:"enabled,omitempty" yaml:"enabled,omitempty"`
+	// Id is the id of this LLDP service instance.
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// LldpConfigId is the link-layer discovery protocol configuration for this service.
+	LldpConfigId string `json:"lldp_config_id,omitempty" yaml:"lldp_config_id,omitempty"`
+}
+
+// LldpServiceConfigCreate is the LLDP configuration associated with a port. LLDP may be either enabled or disabled, if enabled, an LLDP configuration must be provided by name or id.
+type LldpServiceConfigCreate struct {
 	// Enabled is whether or not LLDP is enabled.
 	Enabled *bool `json:"enabled,omitempty" yaml:"enabled,omitempty"`
 	// LldpConfig is a reference to the LLDP configuration used. Must not be `None` when `enabled` is `true`.
@@ -2215,6 +2306,30 @@ type SiloCreate struct {
 // SiloIdentityMode is users are authenticated with SAML using an external authentication provider.  The system updates information about users and groups only during successful authentication (i.e,. "JIT provisioning" of users and groups).
 type SiloIdentityMode string
 
+// SiloIpPool is an IP pool in the context of a silo
+type SiloIpPool struct {
+	// Description is human-readable free-form text about a resource
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// IsDefault is when a pool is the default for a silo, floating IPs and instance ephemeral IPs will come from that pool when no other pool is specified. There can be at most one default for a given silo.
+	IsDefault *bool `json:"is_default,omitempty" yaml:"is_default,omitempty"`
+	// Name is unique, mutable, user-controlled identifier for each resource
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	// TimeCreated is timestamp when this resource was created
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	// TimeModified is timestamp when this resource was last modified
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+}
+
+// SiloIpPoolResultsPage is a single page of results
+type SiloIpPoolResultsPage struct {
+	// Items is list of items on this page of results
+	Items []SiloIpPool `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
 // SiloQuotas is a collection of resource counts used to set the virtual capacity of a silo
 type SiloQuotas struct {
 	// Cpus is number of virtual CPUs
@@ -2467,8 +2582,22 @@ type Switch struct {
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
 }
 
-// SwitchInterfaceConfig is a layer-3 switch interface configuration. When IPv6 is enabled, a link local address will be created for the interface.
+// SwitchInterfaceConfig is a switch port interface configuration for a port settings object.
 type SwitchInterfaceConfig struct {
+	// Id is a unique identifier for this switch interface.
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// InterfaceName is the name of this switch interface.
+	InterfaceName string `json:"interface_name,omitempty" yaml:"interface_name,omitempty"`
+	// Kind is the switch interface kind.
+	Kind SwitchInterfaceKind2 `json:"kind,omitempty" yaml:"kind,omitempty"`
+	// PortSettingsId is the port settings object this switch interface configuration belongs to.
+	PortSettingsId string `json:"port_settings_id,omitempty" yaml:"port_settings_id,omitempty"`
+	// V6Enabled is whether or not IPv6 is enabled on this interface.
+	V6Enabled *bool `json:"v6_enabled,omitempty" yaml:"v6_enabled,omitempty"`
+}
+
+// SwitchInterfaceConfigCreate is a layer-3 switch interface configuration. When IPv6 is enabled, a link local address will be created for the interface.
+type SwitchInterfaceConfigCreate struct {
 	// Kind is what kind of switch interface this configuration represents.
 	Kind SwitchInterfaceKind `json:"kind,omitempty" yaml:"kind,omitempty"`
 	// V6Enabled is whether or not IPv6 is enabled.
@@ -2502,6 +2631,9 @@ type SwitchInterfaceKind struct {
 	// Vid is the virtual network id (VID) that distinguishes this interface and is used for producing and consuming 802.1Q Ethernet tags. This field has a maximum value of 4095 as 802.1Q tags are twelve bits.
 	Vid int `json:"vid,omitempty" yaml:"vid,omitempty"`
 }
+
+// SwitchInterfaceKind2 is primary interfaces are associated with physical links. There is exactly one primary interface per physical link.
+type SwitchInterfaceKind2 string
 
 // SwitchLocation is switch in upper slot
 type SwitchLocation string
@@ -2550,14 +2682,25 @@ type SwitchPortBgpPeerConfig struct {
 	PortSettingsId string `json:"port_settings_id,omitempty" yaml:"port_settings_id,omitempty"`
 }
 
-// SwitchPortConfig is physical switch port configuration.
+// SwitchPortConfig is a physical port configuration for a port settings object.
 type SwitchPortConfig struct {
+	// Geometry is the physical link geometry of the port.
+	Geometry SwitchPortGeometry2 `json:"geometry,omitempty" yaml:"geometry,omitempty"`
+	// PortSettingsId is the id of the port settings object this configuration belongs to.
+	PortSettingsId string `json:"port_settings_id,omitempty" yaml:"port_settings_id,omitempty"`
+}
+
+// SwitchPortConfigCreate is physical switch port configuration.
+type SwitchPortConfigCreate struct {
 	// Geometry is link geometry for the switch port.
 	Geometry SwitchPortGeometry `json:"geometry,omitempty" yaml:"geometry,omitempty"`
 }
 
 // SwitchPortGeometry is the port contains a single QSFP28 link with four lanes.
 type SwitchPortGeometry string
+
+// SwitchPortGeometry2 is the port contains a single QSFP28 link with four lanes.
+type SwitchPortGeometry2 string
 
 // SwitchPortLinkConfig is a link configuration for a port settings object.
 type SwitchPortLinkConfig struct {
@@ -2616,13 +2759,13 @@ type SwitchPortSettingsCreate struct {
 	Description string        `json:"description,omitempty" yaml:"description,omitempty"`
 	Groups      []NameOrId    `json:"groups,omitempty" yaml:"groups,omitempty"`
 	// Interfaces is interfaces indexed by link name.
-	Interfaces SwitchInterfaceConfig `json:"interfaces,omitempty" yaml:"interfaces,omitempty"`
+	Interfaces SwitchInterfaceConfigCreate `json:"interfaces,omitempty" yaml:"interfaces,omitempty"`
 	// Links is links indexed by phy name. On ports that are not broken out, this is always phy0. On a 2x breakout the options are phy0 and phy1, on 4x phy0-phy3, etc.
-	Links LinkConfig `json:"links,omitempty" yaml:"links,omitempty"`
+	Links LinkConfigCreate `json:"links,omitempty" yaml:"links,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// PortConfig is physical switch port configuration.
-	PortConfig SwitchPortConfig `json:"port_config,omitempty" yaml:"port_config,omitempty"`
+	PortConfig SwitchPortConfigCreate `json:"port_config,omitempty" yaml:"port_config,omitempty"`
 	// Routes is routes indexed by interface name.
 	Routes RouteConfig `json:"routes,omitempty" yaml:"routes,omitempty"`
 }
@@ -2692,6 +2835,20 @@ type UninitializedSled struct {
 	Baseboard Baseboard `json:"baseboard,omitempty" yaml:"baseboard,omitempty"`
 	Cubby     int       `json:"cubby,omitempty" yaml:"cubby,omitempty"`
 	RackId    string    `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
+}
+
+// UninitializedSledId is the unique hardware ID for a sled
+type UninitializedSledId struct {
+	Part   string `json:"part,omitempty" yaml:"part,omitempty"`
+	Serial string `json:"serial,omitempty" yaml:"serial,omitempty"`
+}
+
+// UninitializedSledResultsPage is a single page of results
+type UninitializedSledResultsPage struct {
+	// Items is list of items on this page of results
+	Items []UninitializedSled `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
 // User is view of a User
@@ -3196,6 +3353,19 @@ type FloatingIpViewParams struct {
 	Project    NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
+// FloatingIpAttachParams is the request parameters for FloatingIpAttach
+type FloatingIpAttachParams struct {
+	FloatingIp NameOrId          `json:"floating_ip,omitempty" yaml:"floating_ip,omitempty"`
+	Project    NameOrId          `json:"project,omitempty" yaml:"project,omitempty"`
+	Body       *FloatingIpAttach `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// FloatingIpDetachParams is the request parameters for FloatingIpDetach
+type FloatingIpDetachParams struct {
+	FloatingIp NameOrId `json:"floating_ip,omitempty" yaml:"floating_ip,omitempty"`
+	Project    NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
 // GroupListParams is the request parameters for GroupList
 type GroupListParams struct {
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -3301,6 +3471,19 @@ type InstanceExternalIpListParams struct {
 	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
 
+// InstanceEphemeralIpDetachParams is the request parameters for InstanceEphemeralIpDetach
+type InstanceEphemeralIpDetachParams struct {
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// InstanceEphemeralIpAttachParams is the request parameters for InstanceEphemeralIpAttach
+type InstanceEphemeralIpAttachParams struct {
+	Instance NameOrId           `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Project  NameOrId           `json:"project,omitempty" yaml:"project,omitempty"`
+	Body     *EphemeralIpCreate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
 // InstanceMigrateParams is the request parameters for InstanceMigrate
 type InstanceMigrateParams struct {
 	Project  NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
@@ -3346,14 +3529,12 @@ type InstanceStopParams struct {
 type ProjectIpPoolListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
 
 // ProjectIpPoolViewParams is the request parameters for ProjectIpPoolView
 type ProjectIpPoolViewParams struct {
-	Pool    NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
-	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 }
 
 // LoginLocalParams is the request parameters for LoginLocal
@@ -3536,9 +3717,15 @@ type SledListParams struct {
 	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
 
-// AddSledToInitializedRackParams is the request parameters for AddSledToInitializedRack
-type AddSledToInitializedRackParams struct {
-	Body *UninitializedSled `json:"body,omitempty" yaml:"body,omitempty"`
+// SledAddParams is the request parameters for SledAdd
+type SledAddParams struct {
+	Body *UninitializedSledId `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// SledListUninitializedParams is the request parameters for SledListUninitialized
+type SledListUninitializedParams struct {
+	Limit     int    `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 }
 
 // SledViewParams is the request parameters for SledView
@@ -3705,6 +3892,33 @@ type IpPoolRangeRemoveParams struct {
 	Body *IpRange `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+// IpPoolSiloListParams is the request parameters for IpPoolSiloList
+type IpPoolSiloListParams struct {
+	Pool      NameOrId   `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// IpPoolSiloLinkParams is the request parameters for IpPoolSiloLink
+type IpPoolSiloLinkParams struct {
+	Pool NameOrId        `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Body *IpPoolLinkSilo `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// IpPoolSiloUnlinkParams is the request parameters for IpPoolSiloUnlink
+type IpPoolSiloUnlinkParams struct {
+	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
+}
+
+// IpPoolSiloUpdateParams is the request parameters for IpPoolSiloUpdate
+type IpPoolSiloUpdateParams struct {
+	Pool NameOrId          `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Silo NameOrId          `json:"silo,omitempty" yaml:"silo,omitempty"`
+	Body *IpPoolSiloUpdate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
 // SystemMetricParams is the request parameters for SystemMetric
 type SystemMetricParams struct {
 	MetricName SystemMetricName `json:"metric_name,omitempty" yaml:"metric_name,omitempty"`
@@ -3865,6 +4079,14 @@ type SiloDeleteParams struct {
 // SiloViewParams is the request parameters for SiloView
 type SiloViewParams struct {
 	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
+}
+
+// SiloIpPoolListParams is the request parameters for SiloIpPoolList
+type SiloIpPoolListParams struct {
+	Silo      NameOrId         `json:"silo,omitempty" yaml:"silo,omitempty"`
+	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
 
 // SiloPolicyViewParams is the request parameters for SiloPolicyView
@@ -4243,6 +4465,27 @@ func (p *FloatingIpViewParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for FloatingIpAttachParams are set
+func (p *FloatingIpAttachParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.FloatingIp), "FloatingIp")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for FloatingIpDetachParams are set
+func (p *FloatingIpDetachParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.FloatingIp), "FloatingIp")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for GroupListParams are set
 func (p *GroupListParams) Validate() error {
 	v := new(Validator)
@@ -4397,6 +4640,27 @@ func (p *InstanceDiskDetachParams) Validate() error {
 // Validate verifies all required fields for InstanceExternalIpListParams are set
 func (p *InstanceExternalIpListParams) Validate() error {
 	v := new(Validator)
+	v.HasRequiredStr(string(p.Instance), "Instance")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceEphemeralIpDetachParams are set
+func (p *InstanceEphemeralIpDetachParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Instance), "Instance")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceEphemeralIpAttachParams are set
+func (p *InstanceEphemeralIpAttachParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
 	v.HasRequiredStr(string(p.Instance), "Instance")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
@@ -4762,10 +5026,19 @@ func (p *SledListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for AddSledToInitializedRackParams are set
-func (p *AddSledToInitializedRackParams) Validate() error {
+// Validate verifies all required fields for SledAddParams are set
+func (p *SledAddParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredObj(p.Body, "Body")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SledListUninitializedParams are set
+func (p *SledListUninitializedParams) Validate() error {
+	v := new(Validator)
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -5042,6 +5315,50 @@ func (p *IpPoolRangeRemoveParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for IpPoolSiloListParams are set
+func (p *IpPoolSiloListParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Pool), "Pool")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for IpPoolSiloLinkParams are set
+func (p *IpPoolSiloLinkParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Pool), "Pool")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for IpPoolSiloUnlinkParams are set
+func (p *IpPoolSiloUnlinkParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Pool), "Pool")
+	v.HasRequiredStr(string(p.Silo), "Silo")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for IpPoolSiloUpdateParams are set
+func (p *IpPoolSiloUpdateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Pool), "Pool")
+	v.HasRequiredStr(string(p.Silo), "Silo")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for SystemMetricParams are set
 func (p *SystemMetricParams) Validate() error {
 	v := new(Validator)
@@ -5299,6 +5616,16 @@ func (p *SiloDeleteParams) Validate() error {
 
 // Validate verifies all required fields for SiloViewParams are set
 func (p *SiloViewParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Silo), "Silo")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloIpPoolListParams are set
+func (p *SiloIpPoolListParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.Silo), "Silo")
 	if !v.IsValid() {
@@ -5819,6 +6146,12 @@ const DiskStateStateDestroyed DiskStateState = "destroyed"
 // DiskStateStateFaulted represents the DiskStateState `"faulted"`.
 const DiskStateStateFaulted DiskStateState = "faulted"
 
+// ExternalIpKindEphemeral represents the ExternalIpKind `"ephemeral"`.
+const ExternalIpKindEphemeral ExternalIpKind = "ephemeral"
+
+// ExternalIpKindFloating represents the ExternalIpKind `"floating"`.
+const ExternalIpKindFloating ExternalIpKind = "floating"
+
 // ExternalIpCreateTypeEphemeral represents the ExternalIpCreateType `"ephemeral"`.
 const ExternalIpCreateTypeEphemeral ExternalIpCreateType = "ephemeral"
 
@@ -5833,6 +6166,9 @@ const FleetRoleCollaborator FleetRole = "collaborator"
 
 // FleetRoleViewer represents the FleetRole `"viewer"`.
 const FleetRoleViewer FleetRole = "viewer"
+
+// FloatingIpParentKindInstance represents the FloatingIpParentKind `"instance"`.
+const FloatingIpParentKindInstance FloatingIpParentKind = "instance"
 
 // IdSortModeIdAscending represents the IdSortMode `"id_ascending"`.
 const IdSortModeIdAscending IdSortMode = "id_ascending"
@@ -5902,12 +6238,6 @@ const InstanceStateFailed InstanceState = "failed"
 
 // InstanceStateDestroyed represents the InstanceState `"destroyed"`.
 const InstanceStateDestroyed InstanceState = "destroyed"
-
-// IpKindEphemeral represents the IpKind `"ephemeral"`.
-const IpKindEphemeral IpKind = "ephemeral"
-
-// IpKindFloating represents the IpKind `"floating"`.
-const IpKindFloating IpKind = "floating"
 
 // LinkFecFirecode represents the LinkFec `"firecode"`.
 const LinkFecFirecode LinkFec = "firecode"
@@ -6026,6 +6356,15 @@ const SwitchInterfaceKindTypeVlan SwitchInterfaceKindType = "vlan"
 // SwitchInterfaceKindTypeLoopback represents the SwitchInterfaceKindType `"loopback"`.
 const SwitchInterfaceKindTypeLoopback SwitchInterfaceKindType = "loopback"
 
+// SwitchInterfaceKind2Primary represents the SwitchInterfaceKind2 `"primary"`.
+const SwitchInterfaceKind2Primary SwitchInterfaceKind2 = "primary"
+
+// SwitchInterfaceKind2Vlan represents the SwitchInterfaceKind2 `"vlan"`.
+const SwitchInterfaceKind2Vlan SwitchInterfaceKind2 = "vlan"
+
+// SwitchInterfaceKind2Loopback represents the SwitchInterfaceKind2 `"loopback"`.
+const SwitchInterfaceKind2Loopback SwitchInterfaceKind2 = "loopback"
+
 // SwitchLocationSwitch0 represents the SwitchLocation `"switch0"`.
 const SwitchLocationSwitch0 SwitchLocation = "switch0"
 
@@ -6040,6 +6379,15 @@ const SwitchPortGeometryQsfp28X2 SwitchPortGeometry = "qsfp28x2"
 
 // SwitchPortGeometrySfp28X4 represents the SwitchPortGeometry `"sfp28x4"`.
 const SwitchPortGeometrySfp28X4 SwitchPortGeometry = "sfp28x4"
+
+// SwitchPortGeometry2Qsfp28X1 represents the SwitchPortGeometry2 `"qsfp28x1"`.
+const SwitchPortGeometry2Qsfp28X1 SwitchPortGeometry2 = "qsfp28x1"
+
+// SwitchPortGeometry2Qsfp28X2 represents the SwitchPortGeometry2 `"qsfp28x2"`.
+const SwitchPortGeometry2Qsfp28X2 SwitchPortGeometry2 = "qsfp28x2"
+
+// SwitchPortGeometry2Sfp28X4 represents the SwitchPortGeometry2 `"sfp28x4"`.
+const SwitchPortGeometry2Sfp28X4 SwitchPortGeometry2 = "sfp28x4"
 
 // SystemMetricNameVirtualDiskSpaceProvisioned represents the SystemMetricName `"virtual_disk_space_provisioned"`.
 const SystemMetricNameVirtualDiskSpaceProvisioned SystemMetricName = "virtual_disk_space_provisioned"
@@ -6277,11 +6625,22 @@ var ExternalIpCreateTypes = []ExternalIpCreateType{
 	ExternalIpCreateTypeFloating,
 }
 
+// ExternalIpKinds is the collection of all ExternalIpKind values.
+var ExternalIpKinds = []ExternalIpKind{
+	ExternalIpKindEphemeral,
+	ExternalIpKindFloating,
+}
+
 // FleetRoles is the collection of all FleetRole values.
 var FleetRoles = []FleetRole{
 	FleetRoleAdmin,
 	FleetRoleCollaborator,
 	FleetRoleViewer,
+}
+
+// FloatingIpParentKinds is the collection of all FloatingIpParentKind values.
+var FloatingIpParentKinds = []FloatingIpParentKind{
+	FloatingIpParentKindInstance,
 }
 
 // IdSortModes is the collection of all IdSortMode values.
@@ -6337,12 +6696,6 @@ var InstanceStates = []InstanceState{
 	InstanceStateStarting,
 	InstanceStateStopped,
 	InstanceStateStopping,
-}
-
-// IpKinds is the collection of all IpKind values.
-var IpKinds = []IpKind{
-	IpKindEphemeral,
-	IpKindFloating,
 }
 
 // LinkFecs is the collection of all LinkFec values.
@@ -6433,6 +6786,13 @@ var SnapshotStates = []SnapshotState{
 	SnapshotStateReady,
 }
 
+// SwitchInterfaceKind2s is the collection of all SwitchInterfaceKind2 values.
+var SwitchInterfaceKind2s = []SwitchInterfaceKind2{
+	SwitchInterfaceKind2Loopback,
+	SwitchInterfaceKind2Primary,
+	SwitchInterfaceKind2Vlan,
+}
+
 // SwitchInterfaceKindTypes is the collection of all SwitchInterfaceKindType values.
 var SwitchInterfaceKindTypes = []SwitchInterfaceKindType{
 	SwitchInterfaceKindTypeLoopback,
@@ -6451,6 +6811,13 @@ var SwitchPortGeometrys = []SwitchPortGeometry{
 	SwitchPortGeometryQsfp28X1,
 	SwitchPortGeometryQsfp28X2,
 	SwitchPortGeometrySfp28X4,
+}
+
+// SwitchPortGeometry2s is the collection of all SwitchPortGeometry2 values.
+var SwitchPortGeometry2s = []SwitchPortGeometry2{
+	SwitchPortGeometry2Qsfp28X1,
+	SwitchPortGeometry2Qsfp28X2,
+	SwitchPortGeometry2Sfp28X4,
 }
 
 // SystemMetricNames is the collection of all SystemMetricName values.
