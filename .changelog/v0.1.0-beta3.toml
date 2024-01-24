@@ -29,3 +29,7 @@ description = "Several silo IP pool maintenance endpoints. [#182](https://github
 [[breaking]]
 title = "Method renames"
 description = "Several methods have had slight name changes to better reflect their functionality.[#182](https://github.com/oxidecomputer/oxide.go/pull/182)"
+
+[[breaking]]
+title = "Types"
+description = "Several types have added fields and/or renames.[#182](https://github.com/oxidecomputer/oxide.go/pull/182)"
