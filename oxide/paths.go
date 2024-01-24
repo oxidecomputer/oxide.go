@@ -723,7 +723,7 @@ func (c *Client) DiskMetricsListAllPages(ctx context.Context, params DiskMetrics
 	return allPages, nil
 }
 
-// FloatingIpList: List all Floating IPs
+// FloatingIpList: List all floating IPs
 //
 // To iterate over all pages, use the `FloatingIpListAllPages` method, instead.
 func (c *Client) FloatingIpList(ctx context.Context, params FloatingIpListParams) (*FloatingIpResultsPage, error) {
@@ -774,7 +774,7 @@ func (c *Client) FloatingIpList(ctx context.Context, params FloatingIpListParams
 	return &body, nil
 }
 
-// FloatingIpListAllPages: List all Floating IPs
+// FloatingIpListAllPages: List all floating IPs
 //
 // This method is a wrapper around the `FloatingIpList` method.
 // This method returns all the pages at once.
@@ -800,7 +800,7 @@ func (c *Client) FloatingIpListAllPages(ctx context.Context, params FloatingIpLi
 	return allPages, nil
 }
 
-// FloatingIpCreate: Create a Floating IP
+// FloatingIpCreate: Create a floating IP
 func (c *Client) FloatingIpCreate(ctx context.Context, params FloatingIpCreateParams) (*FloatingIp, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -900,7 +900,7 @@ func (c *Client) FloatingIpView(ctx context.Context, params FloatingIpViewParams
 	return &body, nil
 }
 
-// FloatingIpDelete: Delete a Floating IP
+// FloatingIpDelete: Delete a floating IP
 func (c *Client) FloatingIpDelete(ctx context.Context, params FloatingIpDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
@@ -935,6 +935,108 @@ func (c *Client) FloatingIpDelete(ctx context.Context, params FloatingIpDeletePa
 	}
 
 	return nil
+}
+
+// FloatingIpAttach: Attach a floating IP to an instance or other resource
+func (c *Client) FloatingIpAttach(ctx context.Context, params FloatingIpAttachParams) (*FloatingIp, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/floating-ips/{{.floating_ip}}/attach"),
+		map[string]string{
+			"floating_ip": string(params.FloatingIp),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body FloatingIp
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// FloatingIpDetach: Detach a floating IP from an instance or other resource
+func (c *Client) FloatingIpDetach(ctx context.Context, params FloatingIpDetachParams) (*FloatingIp, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"POST",
+		resolveRelative(c.server, "/v1/floating-ips/{{.floating_ip}}/detach"),
+		map[string]string{
+			"floating_ip": string(params.FloatingIp),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body FloatingIp
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
 }
 
 // GroupList: List groups
@@ -1825,6 +1927,97 @@ func (c *Client) InstanceExternalIpList(ctx context.Context, params InstanceExte
 	return &body, nil
 }
 
+// InstanceEphemeralIpAttach: Allocate and attach an ephemeral IP to an instance
+func (c *Client) InstanceEphemeralIpAttach(ctx context.Context, params InstanceEphemeralIpAttachParams) (*ExternalIp, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/instances/{{.instance}}/external-ips/ephemeral"),
+		map[string]string{
+			"instance": string(params.Instance),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body ExternalIp
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// InstanceEphemeralIpDetach: Detach and deallocate an ephemeral IP from an instance
+func (c *Client) InstanceEphemeralIpDetach(ctx context.Context, params InstanceEphemeralIpDetachParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"DELETE",
+		resolveRelative(c.server, "/v1/instances/{{.instance}}/external-ips/ephemeral"),
+		map[string]string{
+			"instance": string(params.Instance),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // InstanceMigrate: Migrate an instance
 func (c *Client) InstanceMigrate(ctx context.Context, params InstanceMigrateParams) (*Instance, error) {
 	if err := params.Validate(); err != nil {
@@ -2112,10 +2305,10 @@ func (c *Client) InstanceStop(ctx context.Context, params InstanceStopParams) (*
 	return &body, nil
 }
 
-// ProjectIpPoolList: List all IP Pools that can be used by a given project.
+// ProjectIpPoolList: List all IP pools
 //
 // To iterate over all pages, use the `ProjectIpPoolListAllPages` method, instead.
-func (c *Client) ProjectIpPoolList(ctx context.Context, params ProjectIpPoolListParams) (*IpPoolResultsPage, error) {
+func (c *Client) ProjectIpPoolList(ctx context.Context, params ProjectIpPoolListParams) (*SiloIpPoolResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2129,7 +2322,6 @@ func (c *Client) ProjectIpPoolList(ctx context.Context, params ProjectIpPoolList
 		map[string]string{
 			"limit":      strconv.Itoa(params.Limit),
 			"page_token": params.PageToken,
-			"project":    string(params.Project),
 			"sort_by":    string(params.SortBy),
 		},
 	)
@@ -2154,7 +2346,7 @@ func (c *Client) ProjectIpPoolList(ctx context.Context, params ProjectIpPoolList
 		return nil, errors.New("request returned an empty body in the response")
 	}
 
-	var body IpPoolResultsPage
+	var body SiloIpPoolResultsPage
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -2163,15 +2355,15 @@ func (c *Client) ProjectIpPoolList(ctx context.Context, params ProjectIpPoolList
 	return &body, nil
 }
 
-// ProjectIpPoolListAllPages: List all IP Pools that can be used by a given project.
+// ProjectIpPoolListAllPages: List all IP pools
 //
 // This method is a wrapper around the `ProjectIpPoolList` method.
 // This method returns all the pages at once.
-func (c *Client) ProjectIpPoolListAllPages(ctx context.Context, params ProjectIpPoolListParams) ([]IpPool, error) {
+func (c *Client) ProjectIpPoolListAllPages(ctx context.Context, params ProjectIpPoolListParams) ([]SiloIpPool, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	var allPages []IpPool
+	var allPages []SiloIpPool
 	params.PageToken = ""
 	params.Limit = 100
 	for {
@@ -2190,7 +2382,7 @@ func (c *Client) ProjectIpPoolListAllPages(ctx context.Context, params ProjectIp
 }
 
 // ProjectIpPoolView: Fetch an IP pool
-func (c *Client) ProjectIpPoolView(ctx context.Context, params ProjectIpPoolViewParams) (*IpPool, error) {
+func (c *Client) ProjectIpPoolView(ctx context.Context, params ProjectIpPoolViewParams) (*SiloIpPool, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2203,9 +2395,7 @@ func (c *Client) ProjectIpPoolView(ctx context.Context, params ProjectIpPoolView
 		map[string]string{
 			"pool": string(params.Pool),
 		},
-		map[string]string{
-			"project": string(params.Project),
-		},
+		map[string]string{},
 	)
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
@@ -2228,7 +2418,7 @@ func (c *Client) ProjectIpPoolView(ctx context.Context, params ProjectIpPoolView
 		return nil, errors.New("request returned an empty body in the response")
 	}
 
-	var body IpPool
+	var body SiloIpPool
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -3941,8 +4131,8 @@ func (c *Client) SledListAllPages(ctx context.Context, params SledListParams) ([
 	return allPages, nil
 }
 
-// AddSledToInitializedRack: Add a sled to an initialized rack
-func (c *Client) AddSledToInitializedRack(ctx context.Context, params AddSledToInitializedRackParams) error {
+// SledAdd: Add a sled to an initialized rack
+func (c *Client) SledAdd(ctx context.Context, params SledAddParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -3978,6 +4168,81 @@ func (c *Client) AddSledToInitializedRack(ctx context.Context, params AddSledToI
 	}
 
 	return nil
+}
+
+// SledListUninitialized: List uninitialized sleds in a given rack
+//
+// To iterate over all pages, use the `SledListUninitializedAllPages` method, instead.
+func (c *Client) SledListUninitialized(ctx context.Context, params SledListUninitializedParams) (*UninitializedSledResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/hardware/sleds-uninitialized"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body UninitializedSledResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SledListUninitializedAllPages: List uninitialized sleds in a given rack
+//
+// This method is a wrapper around the `SledListUninitialized` method.
+// This method returns all the pages at once.
+func (c *Client) SledListUninitializedAllPages(ctx context.Context, params SledListUninitializedParams) ([]UninitializedSled, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []UninitializedSled
+	params.PageToken = ""
+	params.Limit = 100
+	for {
+		page, err := c.SledListUninitialized(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
 }
 
 // SledView: Fetch a sled
@@ -4182,7 +4447,7 @@ func (c *Client) SledInstanceListAllPages(ctx context.Context, params SledInstan
 	return allPages, nil
 }
 
-// SledSetProvisionState: Set the sled's provision state.
+// SledSetProvisionState: Set the sled's provision state
 func (c *Client) SledSetProvisionState(ctx context.Context, params SledSetProvisionStateParams) (*SledProvisionStateResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -4507,47 +4772,6 @@ func (c *Client) SwitchView(ctx context.Context, params SwitchViewParams) (*Swit
 	}
 
 	var body Switch
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// UninitializedSledList: List uninitialized sleds in a given rack
-func (c *Client) UninitializedSledList(ctx context.Context) (*[]UninitializedSled, error) {
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.server, "/v1/system/hardware/uninitialized-sleds"),
-		map[string]string{},
-		map[string]string{},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body []UninitializedSled
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -5246,7 +5470,7 @@ func (c *Client) IpPoolView(ctx context.Context, params IpPoolViewParams) (*IpPo
 	return &body, nil
 }
 
-// IpPoolUpdate: Update an IP Pool
+// IpPoolUpdate: Update an IP pool
 func (c *Client) IpPoolUpdate(ctx context.Context, params IpPoolUpdateParams) (*IpPool, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -5298,7 +5522,7 @@ func (c *Client) IpPoolUpdate(ctx context.Context, params IpPoolUpdateParams) (*
 	return &body, nil
 }
 
-// IpPoolDelete: Delete an IP Pool
+// IpPoolDelete: Delete an IP pool
 func (c *Client) IpPoolDelete(ctx context.Context, params IpPoolDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
@@ -5483,6 +5707,227 @@ func (c *Client) IpPoolRangeRemove(ctx context.Context, params IpPoolRangeRemove
 		resolveRelative(c.server, "/v1/system/ip-pools/{{.pool}}/ranges/remove"),
 		map[string]string{
 			"pool": string(params.Pool),
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// IpPoolSiloList: List an IP pool's linked silos
+//
+// To iterate over all pages, use the `IpPoolSiloListAllPages` method, instead.
+func (c *Client) IpPoolSiloList(ctx context.Context, params IpPoolSiloListParams) (*IpPoolSiloLinkResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/ip-pools/{{.pool}}/silos"),
+		map[string]string{
+			"pool": string(params.Pool),
+		},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body IpPoolSiloLinkResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// IpPoolSiloListAllPages: List an IP pool's linked silos
+//
+// This method is a wrapper around the `IpPoolSiloList` method.
+// This method returns all the pages at once.
+func (c *Client) IpPoolSiloListAllPages(ctx context.Context, params IpPoolSiloListParams) ([]IpPoolSiloLink, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []IpPoolSiloLink
+	params.PageToken = ""
+	params.Limit = 100
+	for {
+		page, err := c.IpPoolSiloList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
+}
+
+// IpPoolSiloLink: Make an IP pool available within a silo
+func (c *Client) IpPoolSiloLink(ctx context.Context, params IpPoolSiloLinkParams) (*IpPoolSiloLink, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"POST",
+		resolveRelative(c.server, "/v1/system/ip-pools/{{.pool}}/silos"),
+		map[string]string{
+			"pool": string(params.Pool),
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body IpPoolSiloLink
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// IpPoolSiloUpdate: Make an IP pool default or not-default for a silo
+// When a pool is made default for a silo, any existing default will remain linked to the silo, but will no longer be the default.
+func (c *Client) IpPoolSiloUpdate(ctx context.Context, params IpPoolSiloUpdateParams) (*IpPoolSiloLink, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"PUT",
+		resolveRelative(c.server, "/v1/system/ip-pools/{{.pool}}/silos/{{.silo}}"),
+		map[string]string{
+			"pool": string(params.Pool),
+			"silo": string(params.Silo),
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body IpPoolSiloLink
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// IpPoolSiloUnlink: Unlink an IP pool from a silo
+// Will fail if there are any outstanding IPs allocated in the silo.
+func (c *Client) IpPoolSiloUnlink(ctx context.Context, params IpPoolSiloUnlinkParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"DELETE",
+		resolveRelative(c.server, "/v1/system/ip-pools/{{.pool}}/silos/{{.silo}}"),
+		map[string]string{
+			"pool": string(params.Pool),
+			"silo": string(params.Silo),
 		},
 		map[string]string{},
 	)
@@ -6994,7 +7439,7 @@ func (c *Client) SiloCreate(ctx context.Context, params SiloCreateParams) (*Silo
 }
 
 // SiloView: Fetch a silo
-// Fetch a silo by name.
+// Fetch a silo by name or ID.
 func (c *Client) SiloView(ctx context.Context, params SiloViewParams) (*Silo, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -7074,6 +7519,84 @@ func (c *Client) SiloDelete(ctx context.Context, params SiloDeleteParams) error 
 	}
 
 	return nil
+}
+
+// SiloIpPoolList: List IP pools available within silo
+//
+// To iterate over all pages, use the `SiloIpPoolListAllPages` method, instead.
+func (c *Client) SiloIpPoolList(ctx context.Context, params SiloIpPoolListParams) (*SiloIpPoolResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/system/silos/{{.silo}}/ip-pools"),
+		map[string]string{
+			"silo": string(params.Silo),
+		},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SiloIpPoolResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SiloIpPoolListAllPages: List IP pools available within silo
+//
+// This method is a wrapper around the `SiloIpPoolList` method.
+// This method returns all the pages at once.
+func (c *Client) SiloIpPoolListAllPages(ctx context.Context, params SiloIpPoolListParams) ([]SiloIpPool, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []SiloIpPool
+	params.PageToken = ""
+	params.Limit = 100
+	for {
+		page, err := c.SiloIpPoolList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
 }
 
 // SiloPolicyView: Fetch a silo's IAM policy
