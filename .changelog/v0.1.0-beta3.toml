@@ -19,12 +19,16 @@ title = "NewClientFromEnv removal"
 description = "The `NewClientFromEnv` function has been removed. Users should use `NewClient` instead. [#180](https://github.com/oxidecomputer/oxide.go/pull/180)"
 
 [[features]]
-title = "New APIs"
+title = "New Instance APIs"
 description = "Live attach and detach of external IPs to an instance. [#182](https://github.com/oxidecomputer/oxide.go/pull/182)"
 
 [[features]]
-title = "New APIs"
+title = "New IP pool APIs"
 description = "Several silo IP pool maintenance endpoints. [#182](https://github.com/oxidecomputer/oxide.go/pull/182)"
+
+[[features]]
+title = "New SSH keys APIs"
+description = "Endpoint to list SSH keys that were added to an instance on create. [#185](https://github.com/oxidecomputer/oxide.go/pull/185)"
 
 [[breaking]]
 title = "Method renames"
@@ -32,4 +36,4 @@ description = "Several methods have had slight name changes to better reflect th
 
 [[breaking]]
 title = "Types"
-description = "Several types have added fields and/or renames.[#182](https://github.com/oxidecomputer/oxide.go/pull/182)"
+description = "Several types have added fields and/or renames.[#182](https://github.com/oxidecomputer/oxide.go/pull/182), [#185](https://github.com/oxidecomputer/oxide.go/pull/185)"
