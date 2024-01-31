@@ -1670,6 +1670,10 @@ type InstanceCreate struct {
 	Ncpus InstanceCpuCount `json:"ncpus,omitempty" yaml:"ncpus,omitempty"`
 	// NetworkInterfaces is the network interfaces to be created for this instance.
 	NetworkInterfaces InstanceNetworkInterfaceAttachment `json:"network_interfaces,omitempty" yaml:"network_interfaces,omitempty"`
+	// SshKeys is an allowlist of SSH public keys to be transferred to the instance via cloud-init during instance creation.
+	//
+	// If not provided, all SSH public keys from the user's profile will be sent. If an empty list is provided, no public keys will be transmitted to the instance.
+	SshKeys []NameOrId `json:"ssh_keys,omitempty" yaml:"ssh_keys,omitempty"`
 	// Start is should this instance be started upon creation; true by default.
 	Start *bool `json:"start,omitempty" yaml:"start,omitempty"`
 	// UserData is user data for instance initialization systems (such as cloud-init). Must be a Base64-encoded string, as specified in RFC 4648 § 4 (+ and / characters with padding). Maximum 32 KiB unencoded data.
@@ -3513,6 +3517,15 @@ type InstanceSerialConsoleStreamParams struct {
 	Project    NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
+// InstanceSshPublicKeyListParams is the request parameters for InstanceSshPublicKeyList
+type InstanceSshPublicKeyListParams struct {
+	Instance  NameOrId         `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
 // InstanceStartParams is the request parameters for InstanceStart
 type InstanceStartParams struct {
 	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
@@ -4701,6 +4714,16 @@ func (p *InstanceSerialConsoleParams) Validate() error {
 
 // Validate verifies all required fields for InstanceSerialConsoleStreamParams are set
 func (p *InstanceSerialConsoleStreamParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Instance), "Instance")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceSshPublicKeyListParams are set
+func (p *InstanceSshPublicKeyListParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.Instance), "Instance")
 	if !v.IsValid() {

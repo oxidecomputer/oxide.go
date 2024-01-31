@@ -2209,6 +2209,87 @@ func (c *Client) InstanceSerialConsoleStream(ctx context.Context, params Instanc
 	return nil
 }
 
+// InstanceSshPublicKeyList: List the SSH public keys added to the instance via cloud-init during instance creation
+// Note that this list is a snapshot in time and will not reflect updates made after the instance is created.
+//
+// To iterate over all pages, use the `InstanceSshPublicKeyListAllPages` method, instead.
+func (c *Client) InstanceSshPublicKeyList(ctx context.Context, params InstanceSshPublicKeyListParams) (*SshKeyResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.server, "/v1/instances/{{.instance}}/ssh-public-keys"),
+		map[string]string{
+			"instance": string(params.Instance),
+		},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"project":    string(params.Project),
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SshKeyResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// InstanceSshPublicKeyListAllPages: List the SSH public keys added to the instance via cloud-init during instance creation
+// Note that this list is a snapshot in time and will not reflect updates made after the instance is created.
+//
+// This method is a wrapper around the `InstanceSshPublicKeyList` method.
+// This method returns all the pages at once.
+func (c *Client) InstanceSshPublicKeyListAllPages(ctx context.Context, params InstanceSshPublicKeyListParams) ([]SshKey, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []SshKey
+	params.PageToken = ""
+	params.Limit = 100
+	for {
+		page, err := c.InstanceSshPublicKeyList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
+}
+
 // InstanceStart: Boot an instance
 func (c *Client) InstanceStart(ctx context.Context, params InstanceStartParams) (*Instance, error) {
 	if err := params.Validate(); err != nil {
