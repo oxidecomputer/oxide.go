@@ -18,7 +18,7 @@ func (c *Client) IpPoolList(ctx context.Context, params IpPoolListParams, ) (*Ip
         ctx,
         nil, 
         "GET", 
-        resolveRelative(c.server, "/v1/system/ip-pools"), 
+        resolveRelative(c.host, "/v1/system/ip-pools"), 
         map[string]string{ 
         }, 
         map[string]string{ 
@@ -99,7 +99,7 @@ func (c *Client) IpPoolCreate(ctx context.Context, params IpPoolCreateParams, ) 
         ctx,
         b, 
         "POST", 
-        resolveRelative(c.server, "/v1/system/ip-pools"), 
+        resolveRelative(c.host, "/v1/system/ip-pools"), 
         map[string]string{ 
         }, 
         map[string]string{ 
@@ -145,7 +145,7 @@ func (c *Client) IpPoolView(ctx context.Context, params IpPoolViewParams, ) (*Ip
         ctx,
         nil, 
         "GET", 
-        resolveRelative(c.server, "/v1/system/ip-pools/{{.pool}}"), 
+        resolveRelative(c.host, "/v1/system/ip-pools/{{.pool}}"), 
         map[string]string{ 
             "pool": string(params.Pool),
         }, 
@@ -198,7 +198,7 @@ func (c *Client) IpPoolUpdate(ctx context.Context, params IpPoolUpdateParams, ) 
         ctx,
         b, 
         "PUT", 
-        resolveRelative(c.server, "/v1/system/ip-pools/{{.pool}}"), 
+        resolveRelative(c.host, "/v1/system/ip-pools/{{.pool}}"), 
         map[string]string{ 
             "pool": string(params.Pool),
         }, 
@@ -245,7 +245,7 @@ func (c *Client) IpPoolDelete(ctx context.Context, params IpPoolDeleteParams, ) 
         ctx,
         nil, 
         "DELETE", 
-        resolveRelative(c.server, "/v1/system/ip-pools/{{.pool}}"), 
+        resolveRelative(c.host, "/v1/system/ip-pools/{{.pool}}"), 
         map[string]string{ 
             "pool": string(params.Pool),
         }, 

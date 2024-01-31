@@ -170,8 +170,8 @@ func Test_NewClient(t *testing.T) {
 				Token: "foo",
 			},
 			expectedClient: &Client{
-				server: "http://localhost/",
-				token:  "foo",
+				host:  "http://localhost/",
+				token: "foo",
 				client: &http.Client{
 					Timeout: 600 * time.Second,
 				},
@@ -184,8 +184,8 @@ func Test_NewClient(t *testing.T) {
 				"OXIDE_TOKEN": "foo",
 			},
 			expectedClient: &Client{
-				server: "http://localhost/",
-				token:  "foo",
+				host:  "http://localhost/",
+				token: "foo",
 				client: &http.Client{
 					Timeout: 600 * time.Second,
 				},
@@ -204,8 +204,8 @@ func Test_NewClient(t *testing.T) {
 				},
 			},
 			expectedClient: &Client{
-				server: "http://localhost/",
-				token:  "foo",
+				host:  "http://localhost/",
+				token: "foo",
 				client: &http.Client{
 					Timeout: 500 * time.Second,
 				},
