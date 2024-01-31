@@ -27,7 +27,7 @@ func (c *Client) LoginSaml(ctx context.Context, params LoginSamlParams) error {
 		ctx,
 		b,
 		"POST",
-		resolveRelative(c.server, "/login/{{.silo_name}}/saml/{{.provider_name}}"),
+		resolveRelative(c.host, "/login/{{.silo_name}}/saml/{{.provider_name}}"),
 		map[string]string{
 			"provider_name": string(params.ProviderName),
 			"silo_name":     string(params.SiloName),
@@ -66,7 +66,7 @@ func (c *Client) CertificateList(ctx context.Context, params CertificateListPara
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/certificates"),
+		resolveRelative(c.host, "/v1/certificates"),
 		map[string]string{},
 		map[string]string{
 			"limit":      strconv.Itoa(params.Limit),
@@ -148,7 +148,7 @@ func (c *Client) CertificateCreate(ctx context.Context, params CertificateCreate
 		ctx,
 		b,
 		"POST",
-		resolveRelative(c.server, "/v1/certificates"),
+		resolveRelative(c.host, "/v1/certificates"),
 		map[string]string{},
 		map[string]string{},
 	)
@@ -193,7 +193,7 @@ func (c *Client) CertificateView(ctx context.Context, params CertificateViewPara
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/certificates/{{.certificate}}"),
+		resolveRelative(c.host, "/v1/certificates/{{.certificate}}"),
 		map[string]string{
 			"certificate": string(params.Certificate),
 		},
@@ -240,7 +240,7 @@ func (c *Client) CertificateDelete(ctx context.Context, params CertificateDelete
 		ctx,
 		nil,
 		"DELETE",
-		resolveRelative(c.server, "/v1/certificates/{{.certificate}}"),
+		resolveRelative(c.host, "/v1/certificates/{{.certificate}}"),
 		map[string]string{
 			"certificate": string(params.Certificate),
 		},
@@ -277,7 +277,7 @@ func (c *Client) DiskList(ctx context.Context, params DiskListParams) (*DiskResu
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/disks"),
+		resolveRelative(c.host, "/v1/disks"),
 		map[string]string{},
 		map[string]string{
 			"limit":      strconv.Itoa(params.Limit),
@@ -358,7 +358,7 @@ func (c *Client) DiskCreate(ctx context.Context, params DiskCreateParams) (*Disk
 		ctx,
 		b,
 		"POST",
-		resolveRelative(c.server, "/v1/disks"),
+		resolveRelative(c.host, "/v1/disks"),
 		map[string]string{},
 		map[string]string{
 			"project": string(params.Project),
@@ -404,7 +404,7 @@ func (c *Client) DiskView(ctx context.Context, params DiskViewParams) (*Disk, er
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/disks/{{.disk}}"),
+		resolveRelative(c.host, "/v1/disks/{{.disk}}"),
 		map[string]string{
 			"disk": string(params.Disk),
 		},
@@ -452,7 +452,7 @@ func (c *Client) DiskDelete(ctx context.Context, params DiskDeleteParams) error 
 		ctx,
 		nil,
 		"DELETE",
-		resolveRelative(c.server, "/v1/disks/{{.disk}}"),
+		resolveRelative(c.host, "/v1/disks/{{.disk}}"),
 		map[string]string{
 			"disk": string(params.Disk),
 		},
@@ -495,7 +495,7 @@ func (c *Client) DiskBulkWriteImport(ctx context.Context, params DiskBulkWriteIm
 		ctx,
 		b,
 		"POST",
-		resolveRelative(c.server, "/v1/disks/{{.disk}}/bulk-write"),
+		resolveRelative(c.host, "/v1/disks/{{.disk}}/bulk-write"),
 		map[string]string{
 			"disk": string(params.Disk),
 		},
@@ -533,7 +533,7 @@ func (c *Client) DiskBulkWriteImportStart(ctx context.Context, params DiskBulkWr
 		ctx,
 		nil,
 		"POST",
-		resolveRelative(c.server, "/v1/disks/{{.disk}}/bulk-write-start"),
+		resolveRelative(c.host, "/v1/disks/{{.disk}}/bulk-write-start"),
 		map[string]string{
 			"disk": string(params.Disk),
 		},
@@ -571,7 +571,7 @@ func (c *Client) DiskBulkWriteImportStop(ctx context.Context, params DiskBulkWri
 		ctx,
 		nil,
 		"POST",
-		resolveRelative(c.server, "/v1/disks/{{.disk}}/bulk-write-stop"),
+		resolveRelative(c.host, "/v1/disks/{{.disk}}/bulk-write-stop"),
 		map[string]string{
 			"disk": string(params.Disk),
 		},
@@ -614,7 +614,7 @@ func (c *Client) DiskFinalizeImport(ctx context.Context, params DiskFinalizeImpo
 		ctx,
 		b,
 		"POST",
-		resolveRelative(c.server, "/v1/disks/{{.disk}}/finalize"),
+		resolveRelative(c.host, "/v1/disks/{{.disk}}/finalize"),
 		map[string]string{
 			"disk": string(params.Disk),
 		},
@@ -653,7 +653,7 @@ func (c *Client) DiskMetricsList(ctx context.Context, params DiskMetricsListPara
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/disks/{{.disk}}/metrics/{{.metric}}"),
+		resolveRelative(c.host, "/v1/disks/{{.disk}}/metrics/{{.metric}}"),
 		map[string]string{
 			"disk":   string(params.Disk),
 			"metric": string(params.Metric),
@@ -735,7 +735,7 @@ func (c *Client) FloatingIpList(ctx context.Context, params FloatingIpListParams
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/floating-ips"),
+		resolveRelative(c.host, "/v1/floating-ips"),
 		map[string]string{},
 		map[string]string{
 			"limit":      strconv.Itoa(params.Limit),
@@ -816,7 +816,7 @@ func (c *Client) FloatingIpCreate(ctx context.Context, params FloatingIpCreatePa
 		ctx,
 		b,
 		"POST",
-		resolveRelative(c.server, "/v1/floating-ips"),
+		resolveRelative(c.host, "/v1/floating-ips"),
 		map[string]string{},
 		map[string]string{
 			"project": string(params.Project),
@@ -862,7 +862,7 @@ func (c *Client) FloatingIpView(ctx context.Context, params FloatingIpViewParams
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/floating-ips/{{.floating_ip}}"),
+		resolveRelative(c.host, "/v1/floating-ips/{{.floating_ip}}"),
 		map[string]string{
 			"floating_ip": string(params.FloatingIp),
 		},
@@ -910,7 +910,7 @@ func (c *Client) FloatingIpDelete(ctx context.Context, params FloatingIpDeletePa
 		ctx,
 		nil,
 		"DELETE",
-		resolveRelative(c.server, "/v1/floating-ips/{{.floating_ip}}"),
+		resolveRelative(c.host, "/v1/floating-ips/{{.floating_ip}}"),
 		map[string]string{
 			"floating_ip": string(params.FloatingIp),
 		},
@@ -953,7 +953,7 @@ func (c *Client) FloatingIpAttach(ctx context.Context, params FloatingIpAttachPa
 		ctx,
 		b,
 		"POST",
-		resolveRelative(c.server, "/v1/floating-ips/{{.floating_ip}}/attach"),
+		resolveRelative(c.host, "/v1/floating-ips/{{.floating_ip}}/attach"),
 		map[string]string{
 			"floating_ip": string(params.FloatingIp),
 		},
@@ -1001,7 +1001,7 @@ func (c *Client) FloatingIpDetach(ctx context.Context, params FloatingIpDetachPa
 		ctx,
 		nil,
 		"POST",
-		resolveRelative(c.server, "/v1/floating-ips/{{.floating_ip}}/detach"),
+		resolveRelative(c.host, "/v1/floating-ips/{{.floating_ip}}/detach"),
 		map[string]string{
 			"floating_ip": string(params.FloatingIp),
 		},
@@ -1051,7 +1051,7 @@ func (c *Client) GroupList(ctx context.Context, params GroupListParams) (*GroupR
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/groups"),
+		resolveRelative(c.host, "/v1/groups"),
 		map[string]string{},
 		map[string]string{
 			"limit":      strconv.Itoa(params.Limit),
@@ -1125,7 +1125,7 @@ func (c *Client) GroupView(ctx context.Context, params GroupViewParams) (*Group,
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/groups/{{.group_id}}"),
+		resolveRelative(c.host, "/v1/groups/{{.group_id}}"),
 		map[string]string{
 			"group_id": params.GroupId,
 		},
@@ -1174,7 +1174,7 @@ func (c *Client) ImageList(ctx context.Context, params ImageListParams) (*ImageR
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/images"),
+		resolveRelative(c.host, "/v1/images"),
 		map[string]string{},
 		map[string]string{
 			"limit":      strconv.Itoa(params.Limit),
@@ -1257,7 +1257,7 @@ func (c *Client) ImageCreate(ctx context.Context, params ImageCreateParams) (*Im
 		ctx,
 		b,
 		"POST",
-		resolveRelative(c.server, "/v1/images"),
+		resolveRelative(c.host, "/v1/images"),
 		map[string]string{},
 		map[string]string{
 			"project": string(params.Project),
@@ -1304,7 +1304,7 @@ func (c *Client) ImageView(ctx context.Context, params ImageViewParams) (*Image,
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/images/{{.image}}"),
+		resolveRelative(c.host, "/v1/images/{{.image}}"),
 		map[string]string{
 			"image": string(params.Image),
 		},
@@ -1353,7 +1353,7 @@ func (c *Client) ImageDelete(ctx context.Context, params ImageDeleteParams) erro
 		ctx,
 		nil,
 		"DELETE",
-		resolveRelative(c.server, "/v1/images/{{.image}}"),
+		resolveRelative(c.host, "/v1/images/{{.image}}"),
 		map[string]string{
 			"image": string(params.Image),
 		},
@@ -1391,7 +1391,7 @@ func (c *Client) ImageDemote(ctx context.Context, params ImageDemoteParams) (*Im
 		ctx,
 		nil,
 		"POST",
-		resolveRelative(c.server, "/v1/images/{{.image}}/demote"),
+		resolveRelative(c.host, "/v1/images/{{.image}}/demote"),
 		map[string]string{
 			"image": string(params.Image),
 		},
@@ -1440,7 +1440,7 @@ func (c *Client) ImagePromote(ctx context.Context, params ImagePromoteParams) (*
 		ctx,
 		nil,
 		"POST",
-		resolveRelative(c.server, "/v1/images/{{.image}}/promote"),
+		resolveRelative(c.host, "/v1/images/{{.image}}/promote"),
 		map[string]string{
 			"image": string(params.Image),
 		},
@@ -1490,7 +1490,7 @@ func (c *Client) InstanceList(ctx context.Context, params InstanceListParams) (*
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/instances"),
+		resolveRelative(c.host, "/v1/instances"),
 		map[string]string{},
 		map[string]string{
 			"limit":      strconv.Itoa(params.Limit),
@@ -1571,7 +1571,7 @@ func (c *Client) InstanceCreate(ctx context.Context, params InstanceCreateParams
 		ctx,
 		b,
 		"POST",
-		resolveRelative(c.server, "/v1/instances"),
+		resolveRelative(c.host, "/v1/instances"),
 		map[string]string{},
 		map[string]string{
 			"project": string(params.Project),
@@ -1617,7 +1617,7 @@ func (c *Client) InstanceView(ctx context.Context, params InstanceViewParams) (*
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/instances/{{.instance}}"),
+		resolveRelative(c.host, "/v1/instances/{{.instance}}"),
 		map[string]string{
 			"instance": string(params.Instance),
 		},
@@ -1665,7 +1665,7 @@ func (c *Client) InstanceDelete(ctx context.Context, params InstanceDeleteParams
 		ctx,
 		nil,
 		"DELETE",
-		resolveRelative(c.server, "/v1/instances/{{.instance}}"),
+		resolveRelative(c.host, "/v1/instances/{{.instance}}"),
 		map[string]string{
 			"instance": string(params.Instance),
 		},
@@ -1704,7 +1704,7 @@ func (c *Client) InstanceDiskList(ctx context.Context, params InstanceDiskListPa
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/instances/{{.instance}}/disks"),
+		resolveRelative(c.host, "/v1/instances/{{.instance}}/disks"),
 		map[string]string{
 			"instance": string(params.Instance),
 		},
@@ -1787,7 +1787,7 @@ func (c *Client) InstanceDiskAttach(ctx context.Context, params InstanceDiskAtta
 		ctx,
 		b,
 		"POST",
-		resolveRelative(c.server, "/v1/instances/{{.instance}}/disks/attach"),
+		resolveRelative(c.host, "/v1/instances/{{.instance}}/disks/attach"),
 		map[string]string{
 			"instance": string(params.Instance),
 		},
@@ -1841,7 +1841,7 @@ func (c *Client) InstanceDiskDetach(ctx context.Context, params InstanceDiskDeta
 		ctx,
 		b,
 		"POST",
-		resolveRelative(c.server, "/v1/instances/{{.instance}}/disks/detach"),
+		resolveRelative(c.host, "/v1/instances/{{.instance}}/disks/detach"),
 		map[string]string{
 			"instance": string(params.Instance),
 		},
@@ -1889,7 +1889,7 @@ func (c *Client) InstanceExternalIpList(ctx context.Context, params InstanceExte
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/instances/{{.instance}}/external-ips"),
+		resolveRelative(c.host, "/v1/instances/{{.instance}}/external-ips"),
 		map[string]string{
 			"instance": string(params.Instance),
 		},
@@ -1943,7 +1943,7 @@ func (c *Client) InstanceEphemeralIpAttach(ctx context.Context, params InstanceE
 		ctx,
 		b,
 		"POST",
-		resolveRelative(c.server, "/v1/instances/{{.instance}}/external-ips/ephemeral"),
+		resolveRelative(c.host, "/v1/instances/{{.instance}}/external-ips/ephemeral"),
 		map[string]string{
 			"instance": string(params.Instance),
 		},
@@ -1991,7 +1991,7 @@ func (c *Client) InstanceEphemeralIpDetach(ctx context.Context, params InstanceE
 		ctx,
 		nil,
 		"DELETE",
-		resolveRelative(c.server, "/v1/instances/{{.instance}}/external-ips/ephemeral"),
+		resolveRelative(c.host, "/v1/instances/{{.instance}}/external-ips/ephemeral"),
 		map[string]string{
 			"instance": string(params.Instance),
 		},
@@ -2034,7 +2034,7 @@ func (c *Client) InstanceMigrate(ctx context.Context, params InstanceMigratePara
 		ctx,
 		b,
 		"POST",
-		resolveRelative(c.server, "/v1/instances/{{.instance}}/migrate"),
+		resolveRelative(c.host, "/v1/instances/{{.instance}}/migrate"),
 		map[string]string{
 			"instance": string(params.Instance),
 		},
@@ -2082,7 +2082,7 @@ func (c *Client) InstanceReboot(ctx context.Context, params InstanceRebootParams
 		ctx,
 		nil,
 		"POST",
-		resolveRelative(c.server, "/v1/instances/{{.instance}}/reboot"),
+		resolveRelative(c.host, "/v1/instances/{{.instance}}/reboot"),
 		map[string]string{
 			"instance": string(params.Instance),
 		},
@@ -2130,7 +2130,7 @@ func (c *Client) InstanceSerialConsole(ctx context.Context, params InstanceSeria
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/instances/{{.instance}}/serial-console"),
+		resolveRelative(c.host, "/v1/instances/{{.instance}}/serial-console"),
 		map[string]string{
 			"instance": string(params.Instance),
 		},
@@ -2181,7 +2181,7 @@ func (c *Client) InstanceSerialConsoleStream(ctx context.Context, params Instanc
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/instances/{{.instance}}/serial-console/stream"),
+		resolveRelative(c.host, "/v1/instances/{{.instance}}/serial-console/stream"),
 		map[string]string{
 			"instance": string(params.Instance),
 		},
@@ -2222,7 +2222,7 @@ func (c *Client) InstanceSshPublicKeyList(ctx context.Context, params InstanceSs
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/instances/{{.instance}}/ssh-public-keys"),
+		resolveRelative(c.host, "/v1/instances/{{.instance}}/ssh-public-keys"),
 		map[string]string{
 			"instance": string(params.Instance),
 		},
@@ -2300,7 +2300,7 @@ func (c *Client) InstanceStart(ctx context.Context, params InstanceStartParams) 
 		ctx,
 		nil,
 		"POST",
-		resolveRelative(c.server, "/v1/instances/{{.instance}}/start"),
+		resolveRelative(c.host, "/v1/instances/{{.instance}}/start"),
 		map[string]string{
 			"instance": string(params.Instance),
 		},
@@ -2348,7 +2348,7 @@ func (c *Client) InstanceStop(ctx context.Context, params InstanceStopParams) (*
 		ctx,
 		nil,
 		"POST",
-		resolveRelative(c.server, "/v1/instances/{{.instance}}/stop"),
+		resolveRelative(c.host, "/v1/instances/{{.instance}}/stop"),
 		map[string]string{
 			"instance": string(params.Instance),
 		},
@@ -2398,7 +2398,7 @@ func (c *Client) ProjectIpPoolList(ctx context.Context, params ProjectIpPoolList
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/ip-pools"),
+		resolveRelative(c.host, "/v1/ip-pools"),
 		map[string]string{},
 		map[string]string{
 			"limit":      strconv.Itoa(params.Limit),
@@ -2472,7 +2472,7 @@ func (c *Client) ProjectIpPoolView(ctx context.Context, params ProjectIpPoolView
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/ip-pools/{{.pool}}"),
+		resolveRelative(c.host, "/v1/ip-pools/{{.pool}}"),
 		map[string]string{
 			"pool": string(params.Pool),
 		},
@@ -2524,7 +2524,7 @@ func (c *Client) LoginLocal(ctx context.Context, params LoginLocalParams) error 
 		ctx,
 		b,
 		"POST",
-		resolveRelative(c.server, "/v1/login/{{.silo_name}}/local"),
+		resolveRelative(c.host, "/v1/login/{{.silo_name}}/local"),
 		map[string]string{
 			"silo_name": string(params.SiloName),
 		},
@@ -2556,7 +2556,7 @@ func (c *Client) CurrentUserView(ctx context.Context) (*CurrentUser, error) {
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/me"),
+		resolveRelative(c.host, "/v1/me"),
 		map[string]string{},
 		map[string]string{},
 	)
@@ -2602,7 +2602,7 @@ func (c *Client) CurrentUserGroups(ctx context.Context, params CurrentUserGroups
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/me/groups"),
+		resolveRelative(c.host, "/v1/me/groups"),
 		map[string]string{},
 		map[string]string{
 			"limit":      strconv.Itoa(params.Limit),
@@ -2679,7 +2679,7 @@ func (c *Client) CurrentUserSshKeyList(ctx context.Context, params CurrentUserSs
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/me/ssh-keys"),
+		resolveRelative(c.host, "/v1/me/ssh-keys"),
 		map[string]string{},
 		map[string]string{
 			"limit":      strconv.Itoa(params.Limit),
@@ -2761,7 +2761,7 @@ func (c *Client) CurrentUserSshKeyCreate(ctx context.Context, params CurrentUser
 		ctx,
 		b,
 		"POST",
-		resolveRelative(c.server, "/v1/me/ssh-keys"),
+		resolveRelative(c.host, "/v1/me/ssh-keys"),
 		map[string]string{},
 		map[string]string{},
 	)
@@ -2806,7 +2806,7 @@ func (c *Client) CurrentUserSshKeyView(ctx context.Context, params CurrentUserSs
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/me/ssh-keys/{{.ssh_key}}"),
+		resolveRelative(c.host, "/v1/me/ssh-keys/{{.ssh_key}}"),
 		map[string]string{
 			"ssh_key": string(params.SshKey),
 		},
@@ -2853,7 +2853,7 @@ func (c *Client) CurrentUserSshKeyDelete(ctx context.Context, params CurrentUser
 		ctx,
 		nil,
 		"DELETE",
-		resolveRelative(c.server, "/v1/me/ssh-keys/{{.ssh_key}}"),
+		resolveRelative(c.host, "/v1/me/ssh-keys/{{.ssh_key}}"),
 		map[string]string{
 			"ssh_key": string(params.SshKey),
 		},
@@ -2890,7 +2890,7 @@ func (c *Client) SiloMetric(ctx context.Context, params SiloMetricParams) (*Meas
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/metrics/{{.metric_name}}"),
+		resolveRelative(c.host, "/v1/metrics/{{.metric_name}}"),
 		map[string]string{
 			"metric_name": string(params.MetricName),
 		},
@@ -2971,7 +2971,7 @@ func (c *Client) InstanceNetworkInterfaceList(ctx context.Context, params Instan
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/network-interfaces"),
+		resolveRelative(c.host, "/v1/network-interfaces"),
 		map[string]string{},
 		map[string]string{
 			"instance":   string(params.Instance),
@@ -3053,7 +3053,7 @@ func (c *Client) InstanceNetworkInterfaceCreate(ctx context.Context, params Inst
 		ctx,
 		b,
 		"POST",
-		resolveRelative(c.server, "/v1/network-interfaces"),
+		resolveRelative(c.host, "/v1/network-interfaces"),
 		map[string]string{},
 		map[string]string{
 			"instance": string(params.Instance),
@@ -3100,7 +3100,7 @@ func (c *Client) InstanceNetworkInterfaceView(ctx context.Context, params Instan
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/network-interfaces/{{.interface}}"),
+		resolveRelative(c.host, "/v1/network-interfaces/{{.interface}}"),
 		map[string]string{
 			"interface": string(params.Interface),
 		},
@@ -3155,7 +3155,7 @@ func (c *Client) InstanceNetworkInterfaceUpdate(ctx context.Context, params Inst
 		ctx,
 		b,
 		"PUT",
-		resolveRelative(c.server, "/v1/network-interfaces/{{.interface}}"),
+		resolveRelative(c.host, "/v1/network-interfaces/{{.interface}}"),
 		map[string]string{
 			"interface": string(params.Interface),
 		},
@@ -3205,7 +3205,7 @@ func (c *Client) InstanceNetworkInterfaceDelete(ctx context.Context, params Inst
 		ctx,
 		nil,
 		"DELETE",
-		resolveRelative(c.server, "/v1/network-interfaces/{{.interface}}"),
+		resolveRelative(c.host, "/v1/network-interfaces/{{.interface}}"),
 		map[string]string{
 			"interface": string(params.Interface),
 		},
@@ -3241,7 +3241,7 @@ func (c *Client) Ping(ctx context.Context) (*Ping, error) {
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/ping"),
+		resolveRelative(c.host, "/v1/ping"),
 		map[string]string{},
 		map[string]string{},
 	)
@@ -3282,7 +3282,7 @@ func (c *Client) PolicyView(ctx context.Context) (*SiloRolePolicy, error) {
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/policy"),
+		resolveRelative(c.host, "/v1/policy"),
 		map[string]string{},
 		map[string]string{},
 	)
@@ -3332,7 +3332,7 @@ func (c *Client) PolicyUpdate(ctx context.Context, params PolicyUpdateParams) (*
 		ctx,
 		b,
 		"PUT",
-		resolveRelative(c.server, "/v1/policy"),
+		resolveRelative(c.host, "/v1/policy"),
 		map[string]string{},
 		map[string]string{},
 	)
@@ -3378,7 +3378,7 @@ func (c *Client) ProjectList(ctx context.Context, params ProjectListParams) (*Pr
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/projects"),
+		resolveRelative(c.host, "/v1/projects"),
 		map[string]string{},
 		map[string]string{
 			"limit":      strconv.Itoa(params.Limit),
@@ -3458,7 +3458,7 @@ func (c *Client) ProjectCreate(ctx context.Context, params ProjectCreateParams) 
 		ctx,
 		b,
 		"POST",
-		resolveRelative(c.server, "/v1/projects"),
+		resolveRelative(c.host, "/v1/projects"),
 		map[string]string{},
 		map[string]string{},
 	)
@@ -3502,7 +3502,7 @@ func (c *Client) ProjectView(ctx context.Context, params ProjectViewParams) (*Pr
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/projects/{{.project}}"),
+		resolveRelative(c.host, "/v1/projects/{{.project}}"),
 		map[string]string{
 			"project": string(params.Project),
 		},
@@ -3554,7 +3554,7 @@ func (c *Client) ProjectUpdate(ctx context.Context, params ProjectUpdateParams) 
 		ctx,
 		b,
 		"PUT",
-		resolveRelative(c.server, "/v1/projects/{{.project}}"),
+		resolveRelative(c.host, "/v1/projects/{{.project}}"),
 		map[string]string{
 			"project": string(params.Project),
 		},
@@ -3600,7 +3600,7 @@ func (c *Client) ProjectDelete(ctx context.Context, params ProjectDeleteParams) 
 		ctx,
 		nil,
 		"DELETE",
-		resolveRelative(c.server, "/v1/projects/{{.project}}"),
+		resolveRelative(c.host, "/v1/projects/{{.project}}"),
 		map[string]string{
 			"project": string(params.Project),
 		},
@@ -3635,7 +3635,7 @@ func (c *Client) ProjectPolicyView(ctx context.Context, params ProjectPolicyView
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/projects/{{.project}}/policy"),
+		resolveRelative(c.host, "/v1/projects/{{.project}}/policy"),
 		map[string]string{
 			"project": string(params.Project),
 		},
@@ -3687,7 +3687,7 @@ func (c *Client) ProjectPolicyUpdate(ctx context.Context, params ProjectPolicyUp
 		ctx,
 		b,
 		"PUT",
-		resolveRelative(c.server, "/v1/projects/{{.project}}/policy"),
+		resolveRelative(c.host, "/v1/projects/{{.project}}/policy"),
 		map[string]string{
 			"project": string(params.Project),
 		},
@@ -3735,7 +3735,7 @@ func (c *Client) SnapshotList(ctx context.Context, params SnapshotListParams) (*
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/snapshots"),
+		resolveRelative(c.host, "/v1/snapshots"),
 		map[string]string{},
 		map[string]string{
 			"limit":      strconv.Itoa(params.Limit),
@@ -3817,7 +3817,7 @@ func (c *Client) SnapshotCreate(ctx context.Context, params SnapshotCreateParams
 		ctx,
 		b,
 		"POST",
-		resolveRelative(c.server, "/v1/snapshots"),
+		resolveRelative(c.host, "/v1/snapshots"),
 		map[string]string{},
 		map[string]string{
 			"project": string(params.Project),
@@ -3863,7 +3863,7 @@ func (c *Client) SnapshotView(ctx context.Context, params SnapshotViewParams) (*
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/snapshots/{{.snapshot}}"),
+		resolveRelative(c.host, "/v1/snapshots/{{.snapshot}}"),
 		map[string]string{
 			"snapshot": string(params.Snapshot),
 		},
@@ -3911,7 +3911,7 @@ func (c *Client) SnapshotDelete(ctx context.Context, params SnapshotDeleteParams
 		ctx,
 		nil,
 		"DELETE",
-		resolveRelative(c.server, "/v1/snapshots/{{.snapshot}}"),
+		resolveRelative(c.host, "/v1/snapshots/{{.snapshot}}"),
 		map[string]string{
 			"snapshot": string(params.Snapshot),
 		},
@@ -3950,7 +3950,7 @@ func (c *Client) PhysicalDiskList(ctx context.Context, params PhysicalDiskListPa
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/hardware/disks"),
+		resolveRelative(c.host, "/v1/system/hardware/disks"),
 		map[string]string{},
 		map[string]string{
 			"limit":      strconv.Itoa(params.Limit),
@@ -4026,7 +4026,7 @@ func (c *Client) RackList(ctx context.Context, params RackListParams) (*RackResu
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/hardware/racks"),
+		resolveRelative(c.host, "/v1/system/hardware/racks"),
 		map[string]string{},
 		map[string]string{
 			"limit":      strconv.Itoa(params.Limit),
@@ -4100,7 +4100,7 @@ func (c *Client) RackView(ctx context.Context, params RackViewParams) (*Rack, er
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/hardware/racks/{{.rack_id}}"),
+		resolveRelative(c.host, "/v1/system/hardware/racks/{{.rack_id}}"),
 		map[string]string{
 			"rack_id": params.RackId,
 		},
@@ -4148,7 +4148,7 @@ func (c *Client) SledList(ctx context.Context, params SledListParams) (*SledResu
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/hardware/sleds"),
+		resolveRelative(c.host, "/v1/system/hardware/sleds"),
 		map[string]string{},
 		map[string]string{
 			"limit":      strconv.Itoa(params.Limit),
@@ -4228,7 +4228,7 @@ func (c *Client) SledAdd(ctx context.Context, params SledAddParams) error {
 		ctx,
 		b,
 		"POST",
-		resolveRelative(c.server, "/v1/system/hardware/sleds"),
+		resolveRelative(c.host, "/v1/system/hardware/sleds"),
 		map[string]string{},
 		map[string]string{},
 	)
@@ -4263,7 +4263,7 @@ func (c *Client) SledListUninitialized(ctx context.Context, params SledListUnini
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/hardware/sleds-uninitialized"),
+		resolveRelative(c.host, "/v1/system/hardware/sleds-uninitialized"),
 		map[string]string{},
 		map[string]string{
 			"limit":      strconv.Itoa(params.Limit),
@@ -4336,7 +4336,7 @@ func (c *Client) SledView(ctx context.Context, params SledViewParams) (*Sled, er
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/hardware/sleds/{{.sled_id}}"),
+		resolveRelative(c.host, "/v1/system/hardware/sleds/{{.sled_id}}"),
 		map[string]string{
 			"sled_id": params.SledId,
 		},
@@ -4384,7 +4384,7 @@ func (c *Client) SledPhysicalDiskList(ctx context.Context, params SledPhysicalDi
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/hardware/sleds/{{.sled_id}}/disks"),
+		resolveRelative(c.host, "/v1/system/hardware/sleds/{{.sled_id}}/disks"),
 		map[string]string{
 			"sled_id": params.SledId,
 		},
@@ -4462,7 +4462,7 @@ func (c *Client) SledInstanceList(ctx context.Context, params SledInstanceListPa
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/hardware/sleds/{{.sled_id}}/instances"),
+		resolveRelative(c.host, "/v1/system/hardware/sleds/{{.sled_id}}/instances"),
 		map[string]string{
 			"sled_id": params.SledId,
 		},
@@ -4544,7 +4544,7 @@ func (c *Client) SledSetProvisionState(ctx context.Context, params SledSetProvis
 		ctx,
 		b,
 		"PUT",
-		resolveRelative(c.server, "/v1/system/hardware/sleds/{{.sled_id}}/provision-state"),
+		resolveRelative(c.host, "/v1/system/hardware/sleds/{{.sled_id}}/provision-state"),
 		map[string]string{
 			"sled_id": params.SledId,
 		},
@@ -4592,7 +4592,7 @@ func (c *Client) NetworkingSwitchPortList(ctx context.Context, params Networking
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/hardware/switch-port"),
+		resolveRelative(c.host, "/v1/system/hardware/switch-port"),
 		map[string]string{},
 		map[string]string{
 			"limit":          strconv.Itoa(params.Limit),
@@ -4673,7 +4673,7 @@ func (c *Client) NetworkingSwitchPortApplySettings(ctx context.Context, params N
 		ctx,
 		b,
 		"POST",
-		resolveRelative(c.server, "/v1/system/hardware/switch-port/{{.port}}/settings"),
+		resolveRelative(c.host, "/v1/system/hardware/switch-port/{{.port}}/settings"),
 		map[string]string{
 			"port": string(params.Port),
 		},
@@ -4711,7 +4711,7 @@ func (c *Client) NetworkingSwitchPortClearSettings(ctx context.Context, params N
 		ctx,
 		nil,
 		"DELETE",
-		resolveRelative(c.server, "/v1/system/hardware/switch-port/{{.port}}/settings"),
+		resolveRelative(c.host, "/v1/system/hardware/switch-port/{{.port}}/settings"),
 		map[string]string{
 			"port": string(params.Port),
 		},
@@ -4751,7 +4751,7 @@ func (c *Client) SwitchList(ctx context.Context, params SwitchListParams) (*Swit
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/hardware/switches"),
+		resolveRelative(c.host, "/v1/system/hardware/switches"),
 		map[string]string{},
 		map[string]string{
 			"limit":      strconv.Itoa(params.Limit),
@@ -4825,7 +4825,7 @@ func (c *Client) SwitchView(ctx context.Context, params SwitchViewParams) (*Swit
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/hardware/switches/{{.switch_id}}"),
+		resolveRelative(c.host, "/v1/system/hardware/switches/{{.switch_id}}"),
 		map[string]string{
 			"switch_id": params.SwitchId,
 		},
@@ -4873,7 +4873,7 @@ func (c *Client) SiloIdentityProviderList(ctx context.Context, params SiloIdenti
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/identity-providers"),
+		resolveRelative(c.host, "/v1/system/identity-providers"),
 		map[string]string{},
 		map[string]string{
 			"limit":      strconv.Itoa(params.Limit),
@@ -4955,7 +4955,7 @@ func (c *Client) LocalIdpUserCreate(ctx context.Context, params LocalIdpUserCrea
 		ctx,
 		b,
 		"POST",
-		resolveRelative(c.server, "/v1/system/identity-providers/local/users"),
+		resolveRelative(c.host, "/v1/system/identity-providers/local/users"),
 		map[string]string{},
 		map[string]string{
 			"silo": string(params.Silo),
@@ -5001,7 +5001,7 @@ func (c *Client) LocalIdpUserDelete(ctx context.Context, params LocalIdpUserDele
 		ctx,
 		nil,
 		"DELETE",
-		resolveRelative(c.server, "/v1/system/identity-providers/local/users/{{.user_id}}"),
+		resolveRelative(c.host, "/v1/system/identity-providers/local/users/{{.user_id}}"),
 		map[string]string{
 			"user_id": params.UserId,
 		},
@@ -5045,7 +5045,7 @@ func (c *Client) LocalIdpUserSetPassword(ctx context.Context, params LocalIdpUse
 		ctx,
 		b,
 		"POST",
-		resolveRelative(c.server, "/v1/system/identity-providers/local/users/{{.user_id}}/set-password"),
+		resolveRelative(c.host, "/v1/system/identity-providers/local/users/{{.user_id}}/set-password"),
 		map[string]string{
 			"user_id": params.UserId,
 		},
@@ -5088,7 +5088,7 @@ func (c *Client) SamlIdentityProviderCreate(ctx context.Context, params SamlIden
 		ctx,
 		b,
 		"POST",
-		resolveRelative(c.server, "/v1/system/identity-providers/saml"),
+		resolveRelative(c.host, "/v1/system/identity-providers/saml"),
 		map[string]string{},
 		map[string]string{
 			"silo": string(params.Silo),
@@ -5134,7 +5134,7 @@ func (c *Client) SamlIdentityProviderView(ctx context.Context, params SamlIdenti
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/identity-providers/saml/{{.provider}}"),
+		resolveRelative(c.host, "/v1/system/identity-providers/saml/{{.provider}}"),
 		map[string]string{
 			"provider": string(params.Provider),
 		},
@@ -5184,7 +5184,7 @@ func (c *Client) IpPoolList(ctx context.Context, params IpPoolListParams) (*IpPo
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/ip-pools"),
+		resolveRelative(c.host, "/v1/system/ip-pools"),
 		map[string]string{},
 		map[string]string{
 			"limit":      strconv.Itoa(params.Limit),
@@ -5264,7 +5264,7 @@ func (c *Client) IpPoolCreate(ctx context.Context, params IpPoolCreateParams) (*
 		ctx,
 		b,
 		"POST",
-		resolveRelative(c.server, "/v1/system/ip-pools"),
+		resolveRelative(c.host, "/v1/system/ip-pools"),
 		map[string]string{},
 		map[string]string{},
 	)
@@ -5305,7 +5305,7 @@ func (c *Client) IpPoolServiceView(ctx context.Context) (*IpPool, error) {
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/ip-pools-service"),
+		resolveRelative(c.host, "/v1/system/ip-pools-service"),
 		map[string]string{},
 		map[string]string{},
 	)
@@ -5352,7 +5352,7 @@ func (c *Client) IpPoolServiceRangeList(ctx context.Context, params IpPoolServic
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/ip-pools-service/ranges"),
+		resolveRelative(c.host, "/v1/system/ip-pools-service/ranges"),
 		map[string]string{},
 		map[string]string{
 			"limit":      strconv.Itoa(params.Limit),
@@ -5432,7 +5432,7 @@ func (c *Client) IpPoolServiceRangeAdd(ctx context.Context, params IpPoolService
 		ctx,
 		b,
 		"POST",
-		resolveRelative(c.server, "/v1/system/ip-pools-service/ranges/add"),
+		resolveRelative(c.host, "/v1/system/ip-pools-service/ranges/add"),
 		map[string]string{},
 		map[string]string{},
 	)
@@ -5482,7 +5482,7 @@ func (c *Client) IpPoolServiceRangeRemove(ctx context.Context, params IpPoolServ
 		ctx,
 		b,
 		"POST",
-		resolveRelative(c.server, "/v1/system/ip-pools-service/ranges/remove"),
+		resolveRelative(c.host, "/v1/system/ip-pools-service/ranges/remove"),
 		map[string]string{},
 		map[string]string{},
 	)
@@ -5515,7 +5515,7 @@ func (c *Client) IpPoolView(ctx context.Context, params IpPoolViewParams) (*IpPo
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/ip-pools/{{.pool}}"),
+		resolveRelative(c.host, "/v1/system/ip-pools/{{.pool}}"),
 		map[string]string{
 			"pool": string(params.Pool),
 		},
@@ -5567,7 +5567,7 @@ func (c *Client) IpPoolUpdate(ctx context.Context, params IpPoolUpdateParams) (*
 		ctx,
 		b,
 		"PUT",
-		resolveRelative(c.server, "/v1/system/ip-pools/{{.pool}}"),
+		resolveRelative(c.host, "/v1/system/ip-pools/{{.pool}}"),
 		map[string]string{
 			"pool": string(params.Pool),
 		},
@@ -5613,7 +5613,7 @@ func (c *Client) IpPoolDelete(ctx context.Context, params IpPoolDeleteParams) er
 		ctx,
 		nil,
 		"DELETE",
-		resolveRelative(c.server, "/v1/system/ip-pools/{{.pool}}"),
+		resolveRelative(c.host, "/v1/system/ip-pools/{{.pool}}"),
 		map[string]string{
 			"pool": string(params.Pool),
 		},
@@ -5651,7 +5651,7 @@ func (c *Client) IpPoolRangeList(ctx context.Context, params IpPoolRangeListPara
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/ip-pools/{{.pool}}/ranges"),
+		resolveRelative(c.host, "/v1/system/ip-pools/{{.pool}}/ranges"),
 		map[string]string{
 			"pool": string(params.Pool),
 		},
@@ -5733,7 +5733,7 @@ func (c *Client) IpPoolRangeAdd(ctx context.Context, params IpPoolRangeAddParams
 		ctx,
 		b,
 		"POST",
-		resolveRelative(c.server, "/v1/system/ip-pools/{{.pool}}/ranges/add"),
+		resolveRelative(c.host, "/v1/system/ip-pools/{{.pool}}/ranges/add"),
 		map[string]string{
 			"pool": string(params.Pool),
 		},
@@ -5785,7 +5785,7 @@ func (c *Client) IpPoolRangeRemove(ctx context.Context, params IpPoolRangeRemove
 		ctx,
 		b,
 		"POST",
-		resolveRelative(c.server, "/v1/system/ip-pools/{{.pool}}/ranges/remove"),
+		resolveRelative(c.host, "/v1/system/ip-pools/{{.pool}}/ranges/remove"),
 		map[string]string{
 			"pool": string(params.Pool),
 		},
@@ -5822,7 +5822,7 @@ func (c *Client) IpPoolSiloList(ctx context.Context, params IpPoolSiloListParams
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/ip-pools/{{.pool}}/silos"),
+		resolveRelative(c.host, "/v1/system/ip-pools/{{.pool}}/silos"),
 		map[string]string{
 			"pool": string(params.Pool),
 		},
@@ -5904,7 +5904,7 @@ func (c *Client) IpPoolSiloLink(ctx context.Context, params IpPoolSiloLinkParams
 		ctx,
 		b,
 		"POST",
-		resolveRelative(c.server, "/v1/system/ip-pools/{{.pool}}/silos"),
+		resolveRelative(c.host, "/v1/system/ip-pools/{{.pool}}/silos"),
 		map[string]string{
 			"pool": string(params.Pool),
 		},
@@ -5957,7 +5957,7 @@ func (c *Client) IpPoolSiloUpdate(ctx context.Context, params IpPoolSiloUpdatePa
 		ctx,
 		b,
 		"PUT",
-		resolveRelative(c.server, "/v1/system/ip-pools/{{.pool}}/silos/{{.silo}}"),
+		resolveRelative(c.host, "/v1/system/ip-pools/{{.pool}}/silos/{{.silo}}"),
 		map[string]string{
 			"pool": string(params.Pool),
 			"silo": string(params.Silo),
@@ -6005,7 +6005,7 @@ func (c *Client) IpPoolSiloUnlink(ctx context.Context, params IpPoolSiloUnlinkPa
 		ctx,
 		nil,
 		"DELETE",
-		resolveRelative(c.server, "/v1/system/ip-pools/{{.pool}}/silos/{{.silo}}"),
+		resolveRelative(c.host, "/v1/system/ip-pools/{{.pool}}/silos/{{.silo}}"),
 		map[string]string{
 			"pool": string(params.Pool),
 			"silo": string(params.Silo),
@@ -6043,7 +6043,7 @@ func (c *Client) SystemMetric(ctx context.Context, params SystemMetricParams) (*
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/metrics/{{.metric_name}}"),
+		resolveRelative(c.host, "/v1/system/metrics/{{.metric_name}}"),
 		map[string]string{
 			"metric_name": string(params.MetricName),
 		},
@@ -6124,7 +6124,7 @@ func (c *Client) NetworkingAddressLotList(ctx context.Context, params Networking
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/networking/address-lot"),
+		resolveRelative(c.host, "/v1/system/networking/address-lot"),
 		map[string]string{},
 		map[string]string{
 			"limit":      strconv.Itoa(params.Limit),
@@ -6204,7 +6204,7 @@ func (c *Client) NetworkingAddressLotCreate(ctx context.Context, params Networki
 		ctx,
 		b,
 		"POST",
-		resolveRelative(c.server, "/v1/system/networking/address-lot"),
+		resolveRelative(c.host, "/v1/system/networking/address-lot"),
 		map[string]string{},
 		map[string]string{},
 	)
@@ -6248,7 +6248,7 @@ func (c *Client) NetworkingAddressLotDelete(ctx context.Context, params Networki
 		ctx,
 		nil,
 		"DELETE",
-		resolveRelative(c.server, "/v1/system/networking/address-lot/{{.address_lot}}"),
+		resolveRelative(c.host, "/v1/system/networking/address-lot/{{.address_lot}}"),
 		map[string]string{
 			"address_lot": string(params.AddressLot),
 		},
@@ -6285,7 +6285,7 @@ func (c *Client) NetworkingAddressLotBlockList(ctx context.Context, params Netwo
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/networking/address-lot/{{.address_lot}}/blocks"),
+		resolveRelative(c.host, "/v1/system/networking/address-lot/{{.address_lot}}/blocks"),
 		map[string]string{
 			"address_lot": string(params.AddressLot),
 		},
@@ -6363,7 +6363,7 @@ func (c *Client) NetworkingBgpConfigList(ctx context.Context, params NetworkingB
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/networking/bgp"),
+		resolveRelative(c.host, "/v1/system/networking/bgp"),
 		map[string]string{},
 		map[string]string{
 			"limit":      strconv.Itoa(params.Limit),
@@ -6444,7 +6444,7 @@ func (c *Client) NetworkingBgpConfigCreate(ctx context.Context, params Networkin
 		ctx,
 		b,
 		"POST",
-		resolveRelative(c.server, "/v1/system/networking/bgp"),
+		resolveRelative(c.host, "/v1/system/networking/bgp"),
 		map[string]string{},
 		map[string]string{},
 	)
@@ -6488,7 +6488,7 @@ func (c *Client) NetworkingBgpConfigDelete(ctx context.Context, params Networkin
 		ctx,
 		nil,
 		"DELETE",
-		resolveRelative(c.server, "/v1/system/networking/bgp"),
+		resolveRelative(c.host, "/v1/system/networking/bgp"),
 		map[string]string{},
 		map[string]string{
 			"name_or_id": string(params.NameOrId),
@@ -6523,7 +6523,7 @@ func (c *Client) NetworkingBgpAnnounceSetList(ctx context.Context, params Networ
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/networking/bgp-announce"),
+		resolveRelative(c.host, "/v1/system/networking/bgp-announce"),
 		map[string]string{},
 		map[string]string{
 			"name_or_id": string(params.NameOrId),
@@ -6575,7 +6575,7 @@ func (c *Client) NetworkingBgpAnnounceSetCreate(ctx context.Context, params Netw
 		ctx,
 		b,
 		"POST",
-		resolveRelative(c.server, "/v1/system/networking/bgp-announce"),
+		resolveRelative(c.host, "/v1/system/networking/bgp-announce"),
 		map[string]string{},
 		map[string]string{},
 	)
@@ -6619,7 +6619,7 @@ func (c *Client) NetworkingBgpAnnounceSetDelete(ctx context.Context, params Netw
 		ctx,
 		nil,
 		"DELETE",
-		resolveRelative(c.server, "/v1/system/networking/bgp-announce"),
+		resolveRelative(c.host, "/v1/system/networking/bgp-announce"),
 		map[string]string{},
 		map[string]string{
 			"name_or_id": string(params.NameOrId),
@@ -6654,7 +6654,7 @@ func (c *Client) NetworkingBgpImportedRoutesIpv4(ctx context.Context, params Net
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/networking/bgp-routes-ipv4"),
+		resolveRelative(c.host, "/v1/system/networking/bgp-routes-ipv4"),
 		map[string]string{},
 		map[string]string{
 			"asn": strconv.Itoa(params.Asn),
@@ -6697,7 +6697,7 @@ func (c *Client) NetworkingBgpStatus(ctx context.Context) (*[]BgpPeerStatus, err
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/networking/bgp-status"),
+		resolveRelative(c.host, "/v1/system/networking/bgp-status"),
 		map[string]string{},
 		map[string]string{},
 	)
@@ -6743,7 +6743,7 @@ func (c *Client) NetworkingLoopbackAddressList(ctx context.Context, params Netwo
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/networking/loopback-address"),
+		resolveRelative(c.host, "/v1/system/networking/loopback-address"),
 		map[string]string{},
 		map[string]string{
 			"limit":      strconv.Itoa(params.Limit),
@@ -6823,7 +6823,7 @@ func (c *Client) NetworkingLoopbackAddressCreate(ctx context.Context, params Net
 		ctx,
 		b,
 		"POST",
-		resolveRelative(c.server, "/v1/system/networking/loopback-address"),
+		resolveRelative(c.host, "/v1/system/networking/loopback-address"),
 		map[string]string{},
 		map[string]string{},
 	)
@@ -6867,7 +6867,7 @@ func (c *Client) NetworkingLoopbackAddressDelete(ctx context.Context, params Net
 		ctx,
 		nil,
 		"DELETE",
-		resolveRelative(c.server, "/v1/system/networking/loopback-address/{{.rack_id}}/{{.switch_location}}/{{.address}}/{{.subnet_mask}}"),
+		resolveRelative(c.host, "/v1/system/networking/loopback-address/{{.rack_id}}/{{.switch_location}}/{{.address}}/{{.subnet_mask}}"),
 		map[string]string{
 			"address":         params.Address,
 			"rack_id":         params.RackId,
@@ -6907,7 +6907,7 @@ func (c *Client) NetworkingSwitchPortSettingsList(ctx context.Context, params Ne
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/networking/switch-port-settings"),
+		resolveRelative(c.host, "/v1/system/networking/switch-port-settings"),
 		map[string]string{},
 		map[string]string{
 			"limit":         strconv.Itoa(params.Limit),
@@ -6988,7 +6988,7 @@ func (c *Client) NetworkingSwitchPortSettingsCreate(ctx context.Context, params 
 		ctx,
 		b,
 		"POST",
-		resolveRelative(c.server, "/v1/system/networking/switch-port-settings"),
+		resolveRelative(c.host, "/v1/system/networking/switch-port-settings"),
 		map[string]string{},
 		map[string]string{},
 	)
@@ -7032,7 +7032,7 @@ func (c *Client) NetworkingSwitchPortSettingsDelete(ctx context.Context, params 
 		ctx,
 		nil,
 		"DELETE",
-		resolveRelative(c.server, "/v1/system/networking/switch-port-settings"),
+		resolveRelative(c.host, "/v1/system/networking/switch-port-settings"),
 		map[string]string{},
 		map[string]string{
 			"port_settings": string(params.PortSettings),
@@ -7067,7 +7067,7 @@ func (c *Client) NetworkingSwitchPortSettingsView(ctx context.Context, params Ne
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/networking/switch-port-settings/{{.port}}"),
+		resolveRelative(c.host, "/v1/system/networking/switch-port-settings/{{.port}}"),
 		map[string]string{
 			"port": string(params.Port),
 		},
@@ -7110,7 +7110,7 @@ func (c *Client) SystemPolicyView(ctx context.Context) (*FleetRolePolicy, error)
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/policy"),
+		resolveRelative(c.host, "/v1/system/policy"),
 		map[string]string{},
 		map[string]string{},
 	)
@@ -7160,7 +7160,7 @@ func (c *Client) SystemPolicyUpdate(ctx context.Context, params SystemPolicyUpda
 		ctx,
 		b,
 		"PUT",
-		resolveRelative(c.server, "/v1/system/policy"),
+		resolveRelative(c.host, "/v1/system/policy"),
 		map[string]string{},
 		map[string]string{},
 	)
@@ -7206,7 +7206,7 @@ func (c *Client) RoleList(ctx context.Context, params RoleListParams) (*RoleResu
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/roles"),
+		resolveRelative(c.host, "/v1/system/roles"),
 		map[string]string{},
 		map[string]string{
 			"limit":      strconv.Itoa(params.Limit),
@@ -7279,7 +7279,7 @@ func (c *Client) RoleView(ctx context.Context, params RoleViewParams) (*Role, er
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/roles/{{.role_name}}"),
+		resolveRelative(c.host, "/v1/system/roles/{{.role_name}}"),
 		map[string]string{
 			"role_name": params.RoleName,
 		},
@@ -7327,7 +7327,7 @@ func (c *Client) SystemQuotasList(ctx context.Context, params SystemQuotasListPa
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/silo-quotas"),
+		resolveRelative(c.host, "/v1/system/silo-quotas"),
 		map[string]string{},
 		map[string]string{
 			"limit":      strconv.Itoa(params.Limit),
@@ -7404,7 +7404,7 @@ func (c *Client) SiloList(ctx context.Context, params SiloListParams) (*SiloResu
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/silos"),
+		resolveRelative(c.host, "/v1/system/silos"),
 		map[string]string{},
 		map[string]string{
 			"limit":      strconv.Itoa(params.Limit),
@@ -7485,7 +7485,7 @@ func (c *Client) SiloCreate(ctx context.Context, params SiloCreateParams) (*Silo
 		ctx,
 		b,
 		"POST",
-		resolveRelative(c.server, "/v1/system/silos"),
+		resolveRelative(c.host, "/v1/system/silos"),
 		map[string]string{},
 		map[string]string{},
 	)
@@ -7530,7 +7530,7 @@ func (c *Client) SiloView(ctx context.Context, params SiloViewParams) (*Silo, er
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/silos/{{.silo}}"),
+		resolveRelative(c.host, "/v1/system/silos/{{.silo}}"),
 		map[string]string{
 			"silo": string(params.Silo),
 		},
@@ -7577,7 +7577,7 @@ func (c *Client) SiloDelete(ctx context.Context, params SiloDeleteParams) error 
 		ctx,
 		nil,
 		"DELETE",
-		resolveRelative(c.server, "/v1/system/silos/{{.silo}}"),
+		resolveRelative(c.host, "/v1/system/silos/{{.silo}}"),
 		map[string]string{
 			"silo": string(params.Silo),
 		},
@@ -7614,7 +7614,7 @@ func (c *Client) SiloIpPoolList(ctx context.Context, params SiloIpPoolListParams
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/silos/{{.silo}}/ip-pools"),
+		resolveRelative(c.host, "/v1/system/silos/{{.silo}}/ip-pools"),
 		map[string]string{
 			"silo": string(params.Silo),
 		},
@@ -7690,7 +7690,7 @@ func (c *Client) SiloPolicyView(ctx context.Context, params SiloPolicyViewParams
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/silos/{{.silo}}/policy"),
+		resolveRelative(c.host, "/v1/system/silos/{{.silo}}/policy"),
 		map[string]string{
 			"silo": string(params.Silo),
 		},
@@ -7742,7 +7742,7 @@ func (c *Client) SiloPolicyUpdate(ctx context.Context, params SiloPolicyUpdatePa
 		ctx,
 		b,
 		"PUT",
-		resolveRelative(c.server, "/v1/system/silos/{{.silo}}/policy"),
+		resolveRelative(c.host, "/v1/system/silos/{{.silo}}/policy"),
 		map[string]string{
 			"silo": string(params.Silo),
 		},
@@ -7788,7 +7788,7 @@ func (c *Client) SiloQuotasView(ctx context.Context, params SiloQuotasViewParams
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/silos/{{.silo}}/quotas"),
+		resolveRelative(c.host, "/v1/system/silos/{{.silo}}/quotas"),
 		map[string]string{
 			"silo": string(params.Silo),
 		},
@@ -7841,7 +7841,7 @@ func (c *Client) SiloQuotasUpdate(ctx context.Context, params SiloQuotasUpdatePa
 		ctx,
 		b,
 		"PUT",
-		resolveRelative(c.server, "/v1/system/silos/{{.silo}}/quotas"),
+		resolveRelative(c.host, "/v1/system/silos/{{.silo}}/quotas"),
 		map[string]string{
 			"silo": string(params.Silo),
 		},
@@ -7889,7 +7889,7 @@ func (c *Client) SiloUserList(ctx context.Context, params SiloUserListParams) (*
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/users"),
+		resolveRelative(c.host, "/v1/system/users"),
 		map[string]string{},
 		map[string]string{
 			"limit":      strconv.Itoa(params.Limit),
@@ -7966,7 +7966,7 @@ func (c *Client) UserBuiltinList(ctx context.Context, params UserBuiltinListPara
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/users-builtin"),
+		resolveRelative(c.host, "/v1/system/users-builtin"),
 		map[string]string{},
 		map[string]string{
 			"limit":      strconv.Itoa(params.Limit),
@@ -8040,7 +8040,7 @@ func (c *Client) UserBuiltinView(ctx context.Context, params UserBuiltinViewPara
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/users-builtin/{{.user}}"),
+		resolveRelative(c.host, "/v1/system/users-builtin/{{.user}}"),
 		map[string]string{
 			"user": string(params.User),
 		},
@@ -8086,7 +8086,7 @@ func (c *Client) SiloUserView(ctx context.Context, params SiloUserViewParams) (*
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/users/{{.user_id}}"),
+		resolveRelative(c.host, "/v1/system/users/{{.user_id}}"),
 		map[string]string{
 			"user_id": params.UserId,
 		},
@@ -8136,7 +8136,7 @@ func (c *Client) SiloUtilizationList(ctx context.Context, params SiloUtilization
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/utilization/silos"),
+		resolveRelative(c.host, "/v1/system/utilization/silos"),
 		map[string]string{},
 		map[string]string{
 			"limit":      strconv.Itoa(params.Limit),
@@ -8210,7 +8210,7 @@ func (c *Client) SiloUtilizationView(ctx context.Context, params SiloUtilization
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/system/utilization/silos/{{.silo}}"),
+		resolveRelative(c.host, "/v1/system/utilization/silos/{{.silo}}"),
 		map[string]string{
 			"silo": string(params.Silo),
 		},
@@ -8258,7 +8258,7 @@ func (c *Client) UserList(ctx context.Context, params UserListParams) (*UserResu
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/users"),
+		resolveRelative(c.host, "/v1/users"),
 		map[string]string{},
 		map[string]string{
 			"group":      params.Group,
@@ -8330,7 +8330,7 @@ func (c *Client) UtilizationView(ctx context.Context) (*Utilization, error) {
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/utilization"),
+		resolveRelative(c.host, "/v1/utilization"),
 		map[string]string{},
 		map[string]string{},
 	)
@@ -8374,7 +8374,7 @@ func (c *Client) VpcFirewallRulesView(ctx context.Context, params VpcFirewallRul
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/vpc-firewall-rules"),
+		resolveRelative(c.host, "/v1/vpc-firewall-rules"),
 		map[string]string{},
 		map[string]string{
 			"project": string(params.Project),
@@ -8427,7 +8427,7 @@ func (c *Client) VpcFirewallRulesUpdate(ctx context.Context, params VpcFirewallR
 		ctx,
 		b,
 		"PUT",
-		resolveRelative(c.server, "/v1/vpc-firewall-rules"),
+		resolveRelative(c.host, "/v1/vpc-firewall-rules"),
 		map[string]string{},
 		map[string]string{
 			"project": string(params.Project),
@@ -8476,7 +8476,7 @@ func (c *Client) VpcSubnetList(ctx context.Context, params VpcSubnetListParams) 
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/vpc-subnets"),
+		resolveRelative(c.host, "/v1/vpc-subnets"),
 		map[string]string{},
 		map[string]string{
 			"limit":      strconv.Itoa(params.Limit),
@@ -8558,7 +8558,7 @@ func (c *Client) VpcSubnetCreate(ctx context.Context, params VpcSubnetCreatePara
 		ctx,
 		b,
 		"POST",
-		resolveRelative(c.server, "/v1/vpc-subnets"),
+		resolveRelative(c.host, "/v1/vpc-subnets"),
 		map[string]string{},
 		map[string]string{
 			"project": string(params.Project),
@@ -8605,7 +8605,7 @@ func (c *Client) VpcSubnetView(ctx context.Context, params VpcSubnetViewParams) 
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/vpc-subnets/{{.subnet}}"),
+		resolveRelative(c.host, "/v1/vpc-subnets/{{.subnet}}"),
 		map[string]string{
 			"subnet": string(params.Subnet),
 		},
@@ -8660,7 +8660,7 @@ func (c *Client) VpcSubnetUpdate(ctx context.Context, params VpcSubnetUpdatePara
 		ctx,
 		b,
 		"PUT",
-		resolveRelative(c.server, "/v1/vpc-subnets/{{.subnet}}"),
+		resolveRelative(c.host, "/v1/vpc-subnets/{{.subnet}}"),
 		map[string]string{
 			"subnet": string(params.Subnet),
 		},
@@ -8709,7 +8709,7 @@ func (c *Client) VpcSubnetDelete(ctx context.Context, params VpcSubnetDeletePara
 		ctx,
 		nil,
 		"DELETE",
-		resolveRelative(c.server, "/v1/vpc-subnets/{{.subnet}}"),
+		resolveRelative(c.host, "/v1/vpc-subnets/{{.subnet}}"),
 		map[string]string{
 			"subnet": string(params.Subnet),
 		},
@@ -8749,7 +8749,7 @@ func (c *Client) VpcSubnetListNetworkInterfaces(ctx context.Context, params VpcS
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/vpc-subnets/{{.subnet}}/network-interfaces"),
+		resolveRelative(c.host, "/v1/vpc-subnets/{{.subnet}}/network-interfaces"),
 		map[string]string{
 			"subnet": string(params.Subnet),
 		},
@@ -8829,7 +8829,7 @@ func (c *Client) VpcList(ctx context.Context, params VpcListParams) (*VpcResults
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/vpcs"),
+		resolveRelative(c.host, "/v1/vpcs"),
 		map[string]string{},
 		map[string]string{
 			"limit":      strconv.Itoa(params.Limit),
@@ -8910,7 +8910,7 @@ func (c *Client) VpcCreate(ctx context.Context, params VpcCreateParams) (*Vpc, e
 		ctx,
 		b,
 		"POST",
-		resolveRelative(c.server, "/v1/vpcs"),
+		resolveRelative(c.host, "/v1/vpcs"),
 		map[string]string{},
 		map[string]string{
 			"project": string(params.Project),
@@ -8956,7 +8956,7 @@ func (c *Client) VpcView(ctx context.Context, params VpcViewParams) (*Vpc, error
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.server, "/v1/vpcs/{{.vpc}}"),
+		resolveRelative(c.host, "/v1/vpcs/{{.vpc}}"),
 		map[string]string{
 			"vpc": string(params.Vpc),
 		},
@@ -9010,7 +9010,7 @@ func (c *Client) VpcUpdate(ctx context.Context, params VpcUpdateParams) (*Vpc, e
 		ctx,
 		b,
 		"PUT",
-		resolveRelative(c.server, "/v1/vpcs/{{.vpc}}"),
+		resolveRelative(c.host, "/v1/vpcs/{{.vpc}}"),
 		map[string]string{
 			"vpc": string(params.Vpc),
 		},
@@ -9058,7 +9058,7 @@ func (c *Client) VpcDelete(ctx context.Context, params VpcDeleteParams) error {
 		ctx,
 		nil,
 		"DELETE",
-		resolveRelative(c.server, "/v1/vpcs/{{.vpc}}"),
+		resolveRelative(c.host, "/v1/vpcs/{{.vpc}}"),
 		map[string]string{
 			"vpc": string(params.Vpc),
 		},

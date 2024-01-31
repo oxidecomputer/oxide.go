@@ -43,7 +43,7 @@ type Config struct {
 type Client struct {
 	// Base URL of the Oxide API including the scheme. For example,
 	// https://api.oxide.computer.
-	server string
+	host string
 
 	// Oxide API authentication token.
 	token string
@@ -62,7 +62,7 @@ type Client struct {
 // environment variables.
 func NewClient(cfg *Config) (*Client, error) {
 	token := os.Getenv(TokenEnvVar)
-	server := os.Getenv(HostEnvVar)
+	host := os.Getenv(HostEnvVar)
 	userAgent := defaultUserAgent()
 	httpClient := &http.Client{
 		Timeout: 600 * time.Second,
@@ -71,7 +71,7 @@ func NewClient(cfg *Config) (*Client, error) {
 	// Layer in the user-provided configuration if provided.
 	if cfg != nil {
 		if cfg.Host != "" {
-			server = cfg.Host
+			host = cfg.Host
 		}
 
 		if cfg.Token != "" {
@@ -87,10 +87,10 @@ func NewClient(cfg *Config) (*Client, error) {
 		}
 	}
 
-	var errServer error
-	server, err := parseBaseURL(server)
+	var errHost error
+	host, err := parseBaseURL(host)
 	if err != nil {
-		errServer = fmt.Errorf("failed parsing host address: %w", err)
+		errHost = fmt.Errorf("failed parsing host address: %w", err)
 	}
 
 	var errToken error
@@ -99,13 +99,13 @@ func NewClient(cfg *Config) (*Client, error) {
 	}
 
 	// To aggregate the validation errors above.
-	if err := errors.Join(errServer, errToken); err != nil {
+	if err := errors.Join(errHost, errToken); err != nil {
 		return nil, fmt.Errorf("invalid client configuration:\n%w", err)
 	}
 
 	client := &Client{
 		token:     token,
-		server:    server,
+		host:      host,
 		userAgent: userAgent,
 		client:    httpClient,
 	}
@@ -118,7 +118,7 @@ func defaultUserAgent() string {
 	return fmt.Sprintf("oxide.go/%s", version)
 }
 
-// parseBaseURL parses the base URL from the server URL.
+// parseBaseURL parses the base URL from the host URL.
 func parseBaseURL(baseURL string) (string, error) {
 	if baseURL == "" {
 		return "", errors.New("host address is empty")
@@ -136,7 +136,7 @@ func parseBaseURL(baseURL string) (string, error) {
 
 	b := newBaseURL.String()
 
-	// Ensure the server URL always has a trailing slash.
+	// Ensure the host URL always has a trailing slash.
 	if !strings.HasSuffix(b, "/") {
 		b += "/"
 	}

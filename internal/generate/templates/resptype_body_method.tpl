@@ -14,7 +14,7 @@
         ctx,
         b, 
         "{{.HTTPMethod}}", 
-        resolveRelative(c.server, "{{.Path}}"), 
+        resolveRelative(c.host, "{{.Path}}"), 
         map[string]string{ {{range .PathParams}}
             {{.}}{{end}}
         }, 
