@@ -1670,10 +1670,10 @@ type InstanceCreate struct {
 	Ncpus InstanceCpuCount `json:"ncpus,omitempty" yaml:"ncpus,omitempty"`
 	// NetworkInterfaces is the network interfaces to be created for this instance.
 	NetworkInterfaces InstanceNetworkInterfaceAttachment `json:"network_interfaces,omitempty" yaml:"network_interfaces,omitempty"`
-	// SshKeys is an allowlist of SSH public keys to be transferred to the instance via cloud-init during instance creation.
+	// SshPublicKeys is an allowlist of SSH public keys to be transferred to the instance via cloud-init during instance creation.
 	//
 	// If not provided, all SSH public keys from the user's profile will be sent. If an empty list is provided, no public keys will be transmitted to the instance.
-	SshKeys []NameOrId `json:"ssh_keys,omitempty" yaml:"ssh_keys,omitempty"`
+	SshPublicKeys []NameOrId `json:"ssh_public_keys,omitempty" yaml:"ssh_public_keys,omitempty"`
 	// Start is should this instance be started upon creation; true by default.
 	Start *bool `json:"start,omitempty" yaml:"start,omitempty"`
 	// UserData is user data for instance initialization systems (such as cloud-init). Must be a Base64-encoded string, as specified in RFC 4648 § 4 (+ and / characters with padding). Maximum 32 KiB unencoded data.
