@@ -24,7 +24,7 @@ description = "Live attach and detach of external IPs to an instance. [#182](htt
 
 [[features]]
 title = "New IP pool APIs"
-description = "Several silo IP pool maintenance endpoints. [#182](https://github.com/oxidecomputer/oxide.go/pull/182)"
+description = "Several silo IP pool maintenance endpoints. [#182](https://github.com/oxidecomputer/oxide.go/pull/182), [#187](https://github.com/oxidecomputer/oxide.go/pull/187)"
 
 [[features]]
 title = "New SSH keys APIs"
