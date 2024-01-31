@@ -164,7 +164,7 @@ func Test_NewClient(t *testing.T) {
 		expectedClient *Client
 		expectedError  string
 	}{
-		"valid client from config": {
+		"succeeds with valid client from config": {
 			config: &Config{
 				Host:  "http://localhost",
 				Token: "foo",
@@ -178,7 +178,7 @@ func Test_NewClient(t *testing.T) {
 				userAgent: defaultUserAgent(),
 			},
 		},
-		"valid client from env": {
+		"succeeds with valid client from env": {
 			env: map[string]string{
 				"OXIDE_HOST":  "http://localhost",
 				"OXIDE_TOKEN": "foo",
@@ -192,19 +192,67 @@ func Test_NewClient(t *testing.T) {
 				userAgent: defaultUserAgent(),
 			},
 		},
-		"missing address": {
+		"succeeds with valid client from env and config": {
+			env: map[string]string{
+				"OXIDE_HOST":  "http://localhost",
+				"OXIDE_TOKEN": "foo",
+			},
+			config: &Config{
+				UserAgent: "bob",
+				HTTPClient: &http.Client{
+					Timeout: 500 * time.Second,
+				},
+			},
+			expectedClient: &Client{
+				server: "http://localhost/",
+				token:  "foo",
+				client: &http.Client{
+					Timeout: 500 * time.Second,
+				},
+				userAgent: "bob",
+			},
+		},
+		"fails with missing address using config": {
+			env: map[string]string{
+				"OXIDE_HOST":  "",
+				"OXIDE_TOKEN": "",
+			},
 			config: &Config{
 				Token: "foo",
 			},
 			expectedError: "invalid client configuration:\nfailed parsing host address: host address is empty",
 		},
-		"missing token": {
+		"fails with missing token using config": {
+			env: map[string]string{
+				"OXIDE_HOST":  "",
+				"OXIDE_TOKEN": "",
+			},
 			config: &Config{
 				Host: "http://localhost",
 			},
 			expectedError: "invalid client configuration:\ntoken is required",
 		},
-		"missing address and token": {
+		"fails with missing address using env variables": {
+			env: map[string]string{
+				"OXIDE_HOST":  "",
+				"OXIDE_TOKEN": "foo",
+			},
+			config:        nil,
+			expectedError: "invalid client configuration:\nfailed parsing host address: host address is empty",
+		},
+		"fails with missing token using env variables": {
+			env: map[string]string{
+				"OXIDE_HOST":  "http://localhost",
+				"OXIDE_TOKEN": "",
+			},
+			config:        nil,
+			expectedError: "invalid client configuration:\ntoken is required",
+		},
+		"fails with missing address and token": {
+			env: map[string]string{
+				"OXIDE_HOST":  "",
+				"OXIDE_TOKEN": "",
+			},
 			expectedError: "invalid client configuration:\nfailed parsing host address: host address is empty\ntoken is required",
 		},
 	}
