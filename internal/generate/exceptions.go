@@ -9,5 +9,6 @@ package main
 func omitemptyExceptions() []string {
 	return []string{
 		"[]VpcFirewallRuleUpdate",
+		"[]NameOrId",
 	}
 }
