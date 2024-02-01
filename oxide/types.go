@@ -1673,7 +1673,7 @@ type InstanceCreate struct {
 	// SshPublicKeys is an allowlist of SSH public keys to be transferred to the instance via cloud-init during instance creation.
 	//
 	// If not provided, all SSH public keys from the user's profile will be sent. If an empty list is provided, no public keys will be transmitted to the instance.
-	SshPublicKeys []NameOrId `json:"ssh_public_keys,omitempty" yaml:"ssh_public_keys,omitempty"`
+	SshPublicKeys []NameOrId `json:"ssh_public_keys" yaml:"ssh_public_keys"`
 	// Start is should this instance be started upon creation; true by default.
 	Start *bool `json:"start,omitempty" yaml:"start,omitempty"`
 	// UserData is user data for instance initialization systems (such as cloud-init). Must be a Base64-encoded string, as specified in RFC 4648 § 4 (+ and / characters with padding). Maximum 32 KiB unencoded data.
@@ -2761,7 +2761,7 @@ type SwitchPortSettingsCreate struct {
 	// BgpPeers is bGP peers indexed by interface name.
 	BgpPeers    BgpPeerConfig `json:"bgp_peers,omitempty" yaml:"bgp_peers,omitempty"`
 	Description string        `json:"description,omitempty" yaml:"description,omitempty"`
-	Groups      []NameOrId    `json:"groups,omitempty" yaml:"groups,omitempty"`
+	Groups      []NameOrId    `json:"groups" yaml:"groups"`
 	// Interfaces is interfaces indexed by link name.
 	Interfaces SwitchInterfaceConfigCreate `json:"interfaces,omitempty" yaml:"interfaces,omitempty"`
 	// Links is links indexed by phy name. On ports that are not broken out, this is always phy0. On a 2x breakout the options are phy0 and phy1, on 4x phy0-phy3, etc.
