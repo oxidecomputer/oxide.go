@@ -5298,7 +5298,7 @@ func (c *Client) IpPoolCreate(ctx context.Context, params IpPoolCreateParams) (*
 	return &body, nil
 }
 
-// IpPoolServiceView: Fetch the IP pool used for Oxide services
+// IpPoolServiceView: Fetch the Oxide service IP pool
 func (c *Client) IpPoolServiceView(ctx context.Context) (*IpPool, error) {
 	// Create the request
 	req, err := c.buildRequest(
@@ -5339,8 +5339,8 @@ func (c *Client) IpPoolServiceView(ctx context.Context) (*IpPool, error) {
 	return &body, nil
 }
 
-// IpPoolServiceRangeList: List ranges for the IP pool used for Oxide services
-// List ranges for the IP pool used for Oxide services. Ranges are ordered by their first address.
+// IpPoolServiceRangeList: List IP ranges for the Oxide service pool
+// Ranges are ordered by their first address.
 //
 // To iterate over all pages, use the `IpPoolServiceRangeListAllPages` method, instead.
 func (c *Client) IpPoolServiceRangeList(ctx context.Context, params IpPoolServiceRangeListParams) (*IpPoolRangeResultsPage, error) {
@@ -5389,8 +5389,8 @@ func (c *Client) IpPoolServiceRangeList(ctx context.Context, params IpPoolServic
 	return &body, nil
 }
 
-// IpPoolServiceRangeListAllPages: List ranges for the IP pool used for Oxide services
-// List ranges for the IP pool used for Oxide services. Ranges are ordered by their first address.
+// IpPoolServiceRangeListAllPages: List IP ranges for the Oxide service pool
+// Ranges are ordered by their first address.
 //
 // This method is a wrapper around the `IpPoolServiceRangeList` method.
 // This method returns all the pages at once.
@@ -5416,7 +5416,7 @@ func (c *Client) IpPoolServiceRangeListAllPages(ctx context.Context, params IpPo
 	return allPages, nil
 }
 
-// IpPoolServiceRangeAdd: Add a range to an IP pool used for Oxide services
+// IpPoolServiceRangeAdd: Add IP range to Oxide service pool
 func (c *Client) IpPoolServiceRangeAdd(ctx context.Context, params IpPoolServiceRangeAddParams) (*IpPoolRange, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -5466,7 +5466,7 @@ func (c *Client) IpPoolServiceRangeAdd(ctx context.Context, params IpPoolService
 	return &body, nil
 }
 
-// IpPoolServiceRangeRemove: Remove a range from an IP pool used for Oxide services
+// IpPoolServiceRangeRemove: Remove IP range from Oxide service pool
 func (c *Client) IpPoolServiceRangeRemove(ctx context.Context, params IpPoolServiceRangeRemoveParams) error {
 	if err := params.Validate(); err != nil {
 		return err
@@ -5888,7 +5888,8 @@ func (c *Client) IpPoolSiloListAllPages(ctx context.Context, params IpPoolSiloLi
 	return allPages, nil
 }
 
-// IpPoolSiloLink: Make an IP pool available within a silo
+// IpPoolSiloLink: Link an IP pool to a silo
+// Users in linked silos can allocate external IPs from this pool for their instances. A silo can have at most one default pool. IPs are allocated from the default pool when users ask for one without specifying a pool.
 func (c *Client) IpPoolSiloLink(ctx context.Context, params IpPoolSiloLinkParams) (*IpPoolSiloLink, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -5940,8 +5941,8 @@ func (c *Client) IpPoolSiloLink(ctx context.Context, params IpPoolSiloLinkParams
 	return &body, nil
 }
 
-// IpPoolSiloUpdate: Make an IP pool default or not-default for a silo
-// When a pool is made default for a silo, any existing default will remain linked to the silo, but will no longer be the default.
+// IpPoolSiloUpdate: Make IP pool default for silo
+// When a user asks for an IP (e.g., at instance create time) without specifying a pool, the IP comes from the default pool if a default is configured. When a pool is made the default for a silo, any existing default will remain linked to the silo, but will no longer be the default.
 func (c *Client) IpPoolSiloUpdate(ctx context.Context, params IpPoolSiloUpdateParams) (*IpPoolSiloLink, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -6349,6 +6350,125 @@ func (c *Client) NetworkingAddressLotBlockListAllPages(ctx context.Context, para
 	}
 
 	return allPages, nil
+}
+
+// NetworkingBfdDisable: Disable a BFD session
+func (c *Client) NetworkingBfdDisable(ctx context.Context, params NetworkingBfdDisableParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"POST",
+		resolveRelative(c.host, "/v1/system/networking/bfd-disable"),
+		map[string]string{},
+		map[string]string{},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// NetworkingBfdEnable: Enable a BFD session
+func (c *Client) NetworkingBfdEnable(ctx context.Context, params NetworkingBfdEnableParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"POST",
+		resolveRelative(c.host, "/v1/system/networking/bfd-enable"),
+		map[string]string{},
+		map[string]string{},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// NetworkingBfdStatus: Get BFD status
+func (c *Client) NetworkingBfdStatus(ctx context.Context) (*[]BfdStatus, error) {
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/networking/bfd-status"),
+		map[string]string{},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body []BfdStatus
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
 }
 
 // NetworkingBgpConfigList: List BGP configurations
@@ -7567,7 +7687,7 @@ func (c *Client) SiloView(ctx context.Context, params SiloViewParams) (*Silo, er
 }
 
 // SiloDelete: Delete a silo
-// Delete a silo by name.
+// Delete a silo by name or ID.
 func (c *Client) SiloDelete(ctx context.Context, params SiloDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
@@ -7602,7 +7722,8 @@ func (c *Client) SiloDelete(ctx context.Context, params SiloDeleteParams) error 
 	return nil
 }
 
-// SiloIpPoolList: List IP pools available within silo
+// SiloIpPoolList: List IP pools linked to silo
+// Linked IP pools are available to users in the specified silo. A silo can have at most one default pool. IPs are allocated from the default pool when users ask for one without specifying a pool.
 //
 // To iterate over all pages, use the `SiloIpPoolListAllPages` method, instead.
 func (c *Client) SiloIpPoolList(ctx context.Context, params SiloIpPoolListParams) (*SiloIpPoolResultsPage, error) {
@@ -7654,7 +7775,8 @@ func (c *Client) SiloIpPoolList(ctx context.Context, params SiloIpPoolListParams
 	return &body, nil
 }
 
-// SiloIpPoolListAllPages: List IP pools available within silo
+// SiloIpPoolListAllPages: List IP pools linked to silo
+// Linked IP pools are available to users in the specified silo. A silo can have at most one default pool. IPs are allocated from the default pool when users ask for one without specifying a pool.
 //
 // This method is a wrapper around the `SiloIpPoolList` method.
 // This method returns all the pages at once.

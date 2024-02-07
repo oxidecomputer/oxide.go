@@ -105,6 +105,48 @@ type Baseboard struct {
 	Serial   string `json:"serial,omitempty" yaml:"serial,omitempty"`
 }
 
+// BfdMode is the type definition for a BfdMode.
+type BfdMode string
+
+// BfdSessionDisable is information needed to disable a BFD session
+type BfdSessionDisable struct {
+	// Remote is address of the remote peer to disable a BFD session for.
+	Remote string `json:"remote,omitempty" yaml:"remote,omitempty"`
+	// Switch is the switch to enable this session on. Must be `switch0` or `switch1`.
+	Switch Name `json:"switch,omitempty" yaml:"switch,omitempty"`
+}
+
+// BfdSessionEnable is information about a bidirectional forwarding detection (BFD) session.
+type BfdSessionEnable struct {
+	// DetectionThreshold is the negotiated Control packet transmission interval, multiplied by this variable, will be the Detection Time for this session (as seen by the remote system)
+	DetectionThreshold int `json:"detection_threshold,omitempty" yaml:"detection_threshold,omitempty"`
+	// Local is address the Oxide switch will listen on for BFD traffic. If `None` then the unspecified address (0.0.0.0 or ::) is used.
+	Local string `json:"local,omitempty" yaml:"local,omitempty"`
+	// Mode is select either single-hop (RFC 5881) or multi-hop (RFC 5883)
+	Mode BfdMode `json:"mode,omitempty" yaml:"mode,omitempty"`
+	// Remote is address of the remote peer to establish a BFD session with.
+	Remote string `json:"remote,omitempty" yaml:"remote,omitempty"`
+	// RequiredRx is the minimum interval, in microseconds, between received BFD Control packets that this system requires
+	RequiredRx int `json:"required_rx,omitempty" yaml:"required_rx,omitempty"`
+	// Switch is the switch to enable this session on. Must be `switch0` or `switch1`.
+	Switch Name `json:"switch,omitempty" yaml:"switch,omitempty"`
+}
+
+// BfdState is a stable down state. Non-responsive to incoming messages.
+type BfdState string
+
+// BfdStatus is the type definition for a BfdStatus.
+type BfdStatus struct {
+	DetectionThreshold int      `json:"detection_threshold,omitempty" yaml:"detection_threshold,omitempty"`
+	Local              string   `json:"local,omitempty" yaml:"local,omitempty"`
+	Mode               BfdMode  `json:"mode,omitempty" yaml:"mode,omitempty"`
+	Peer               string   `json:"peer,omitempty" yaml:"peer,omitempty"`
+	RequiredRx         int      `json:"required_rx,omitempty" yaml:"required_rx,omitempty"`
+	State              BfdState `json:"state,omitempty" yaml:"state,omitempty"`
+	// Switch is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	Switch Name `json:"switch,omitempty" yaml:"switch,omitempty"`
+}
+
 // BgpAnnounceSet is represents a BGP announce set by id. The id can be used with other API calls to view and manage the announce set.
 type BgpAnnounceSet struct {
 	// Description is human-readable free-form text about a resource
@@ -1487,6 +1529,9 @@ type Histogramuint8 struct {
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
 }
 
+// Hostname is a hostname identifies a host on a network, and is usually a dot-delimited sequence of labels, where each label contains only letters, digits, or the hyphen. See RFCs 1035 and 952 for more details.
+type Hostname string
+
 // IdSortMode is sort in increasing order of "id"
 type IdSortMode string
 
@@ -1661,7 +1706,8 @@ type InstanceCreate struct {
 	//
 	// By default, all instances have outbound connectivity, but no inbound connectivity. These external addresses can be used to provide a fixed, known IP address for making inbound connections to the instance.
 	ExternalIps []ExternalIpCreate `json:"external_ips,omitempty" yaml:"external_ips,omitempty"`
-	Hostname    string             `json:"hostname,omitempty" yaml:"hostname,omitempty"`
+	// Hostname is a hostname identifies a host on a network, and is usually a dot-delimited sequence of labels, where each label contains only letters, digits, or the hyphen. See RFCs 1035 and 952 for more details.
+	Hostname Hostname `json:"hostname,omitempty" yaml:"hostname,omitempty"`
 	// Memory is byte count to express memory or storage capacity.
 	Memory ByteCount `json:"memory,omitempty" yaml:"memory,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
@@ -3968,6 +4014,16 @@ type NetworkingAddressLotBlockListParams struct {
 	SortBy     IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
 
+// NetworkingBfdDisableParams is the request parameters for NetworkingBfdDisable
+type NetworkingBfdDisableParams struct {
+	Body *BfdSessionDisable `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// NetworkingBfdEnableParams is the request parameters for NetworkingBfdEnable
+type NetworkingBfdEnableParams struct {
+	Body *BfdSessionEnable `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
 // NetworkingBgpConfigDeleteParams is the request parameters for NetworkingBgpConfigDelete
 type NetworkingBgpConfigDeleteParams struct {
 	NameOrId NameOrId `json:"name_or_id,omitempty" yaml:"name_or_id,omitempty"`
@@ -5431,6 +5487,26 @@ func (p *NetworkingAddressLotBlockListParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for NetworkingBfdDisableParams are set
+func (p *NetworkingBfdDisableParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingBfdEnableParams are set
+func (p *NetworkingBfdEnableParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for NetworkingBgpConfigDeleteParams are set
 func (p *NetworkingBgpConfigDeleteParams) Validate() error {
 	v := new(Validator)
@@ -5904,6 +5980,24 @@ const AddressLotKindInfra AddressLotKind = "infra"
 
 // AddressLotKindPool represents the AddressLotKind `"pool"`.
 const AddressLotKindPool AddressLotKind = "pool"
+
+// BfdModeSingleHop represents the BfdMode `"single_hop"`.
+const BfdModeSingleHop BfdMode = "single_hop"
+
+// BfdModeMultiHop represents the BfdMode `"multi_hop"`.
+const BfdModeMultiHop BfdMode = "multi_hop"
+
+// BfdStateAdminDown represents the BfdState `"admin_down"`.
+const BfdStateAdminDown BfdState = "admin_down"
+
+// BfdStateDown represents the BfdState `"down"`.
+const BfdStateDown BfdState = "down"
+
+// BfdStateInit represents the BfdState `"init"`.
+const BfdStateInit BfdState = "init"
+
+// BfdStateUp represents the BfdState `"up"`.
+const BfdStateUp BfdState = "up"
 
 // BgpPeerStateIdle represents the BgpPeerState `"idle"`.
 const BgpPeerStateIdle BgpPeerState = "idle"
@@ -6488,6 +6582,20 @@ const VpcFirewallRuleTargetTypeIpNet VpcFirewallRuleTargetType = "ip_net"
 var AddressLotKinds = []AddressLotKind{
 	AddressLotKindInfra,
 	AddressLotKindPool,
+}
+
+// BfdModes is the collection of all BfdMode values.
+var BfdModes = []BfdMode{
+	BfdModeMultiHop,
+	BfdModeSingleHop,
+}
+
+// BfdStates is the collection of all BfdState values.
+var BfdStates = []BfdState{
+	BfdStateAdminDown,
+	BfdStateDown,
+	BfdStateInit,
+	BfdStateUp,
 }
 
 // BgpPeerStates is the collection of all BgpPeerState values.
