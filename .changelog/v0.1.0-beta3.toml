@@ -19,7 +19,7 @@ title = "NewClientFromEnv removal"
 description = "The `NewClientFromEnv` function has been removed. Users should use `NewClient` instead. [#180](https://github.com/oxidecomputer/oxide.go/pull/180)"
 
 [[features]]
-title = "New Instance APIs"
+title = "New instance APIs"
 description = "Live attach and detach of external IPs to an instance. [#182](https://github.com/oxidecomputer/oxide.go/pull/182)"
 
 [[features]]
@@ -32,8 +32,12 @@ description = "Endpoint to list SSH keys that were added to an instance on creat
 
 [[breaking]]
 title = "Method renames"
-description = "Several methods have had slight name changes to better reflect their functionality.[#182](https://github.com/oxidecomputer/oxide.go/pull/182)"
+description = "Several methods have had slight name changes to better reflect their functionality. [#182](https://github.com/oxidecomputer/oxide.go/pull/182)"
 
 [[breaking]]
 title = "Types"
-description = "Several types have added fields and/or renames.[#182](https://github.com/oxidecomputer/oxide.go/pull/182), [#185](https://github.com/oxidecomputer/oxide.go/pull/185)"
+description = "Several types have added fields and/or renames. [#182](https://github.com/oxidecomputer/oxide.go/pull/182), [#185](https://github.com/oxidecomputer/oxide.go/pull/185), [#190](https://github.com/oxidecomputer/oxide.go/pull/190)"
+
+[[features]]
+title = "New networking APIs"
+description = "Enable, disable and see status of BFD sessions. [#190](https://github.com/oxidecomputer/oxide.go/pull/190)"
