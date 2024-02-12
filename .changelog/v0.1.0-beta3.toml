@@ -1,11 +1,3 @@
-[[bugs]]
-title = ""
-description = ""
-
-[[enhancements]]
-title = ""
-description = ""
-
 [[breaking]]
 title = "Go version"
 description = "Minimum required Go version has been updated to 1.21. [#179](https://github.com/oxidecomputer/oxide.go/pull/179)"
