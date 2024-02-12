@@ -1,4 +1,4 @@
-# v0.1.0-beta3 (2023/Feb/13)
+# v0.1.0-beta3 (2024/Feb/13)
 
 ### Breaking changes
 
