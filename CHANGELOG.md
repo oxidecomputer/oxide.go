@@ -15,12 +15,6 @@
 - **New SSH keys APIs:** Endpoint to list SSH keys that were added to an instance on create. [#185](https://github.com/oxidecomputer/oxide.go/pull/185)
 - **New networking APIs:** Enable, disable and see status of BFD sessions. [#190](https://github.com/oxidecomputer/oxide.go/pull/190)
 
-### Enhancements
-
-
-### Bug fixes
-
-
 ### List of commits
 
 - [428a544](https://github.com/oxidecomputer/oxide.go/commit/428a544) Update to omicron 7e0ce99 (#190)
