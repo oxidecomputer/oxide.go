@@ -1382,9 +1382,9 @@ type FloatingIpAttach struct {
 
 // FloatingIpCreate is parameters for creating a new floating IP address for instances.
 type FloatingIpCreate struct {
-	// Address is an IP address to reserve for use as a floating IP. This field is optional: when not set, an address will be automatically chosen from `pool`. If set, then the IP must be available in the resolved `pool`.
-	Address     string `json:"address,omitempty" yaml:"address,omitempty"`
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Ip is an IP address to reserve for use as a floating IP. This field is optional: when not set, an address will be automatically chosen from `pool`. If set, then the IP must be available in the resolved `pool`.
+	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// Pool is the parent IP pool that a floating IP is pulled from. If unset, the default pool is selected.
@@ -1400,6 +1400,12 @@ type FloatingIpResultsPage struct {
 	Items []FloatingIp `json:"items,omitempty" yaml:"items,omitempty"`
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// FloatingIpUpdate is updateable identity-related parameters
+type FloatingIpUpdate struct {
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
 // Group is view of a Group
@@ -2473,10 +2479,12 @@ type Sled struct {
 	Baseboard Baseboard `json:"baseboard,omitempty" yaml:"baseboard,omitempty"`
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
-	// ProvisionState is the provision state of the sled.
-	ProvisionState SledProvisionState `json:"provision_state,omitempty" yaml:"provision_state,omitempty"`
+	// Policy is the operator-defined policy of a sled.
+	Policy SledPolicy `json:"policy,omitempty" yaml:"policy,omitempty"`
 	// RackId is the rack to which this Sled is currently attached
 	RackId string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
+	// State is the current state Nexus believes the sled to be in.
+	State SledState `json:"state,omitempty" yaml:"state,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
@@ -2519,21 +2527,48 @@ type SledInstanceResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// SledProvisionState is new resources will be provisioned on this sled.
-type SledProvisionState string
+// SledPolicyKind is the type definition for a SledPolicyKind.
+type SledPolicyKind string
 
-// SledProvisionStateParams is parameters for `sled_set_provision_state`.
-type SledProvisionStateParams struct {
-	// State is the provision state.
-	State SledProvisionState `json:"state,omitempty" yaml:"state,omitempty"`
+// SledPolicyInService is the operator has indicated that the sled is in-service.
+type SledPolicyInService struct {
+	Kind SledPolicyKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+	// ProvisionPolicy is determines whether new resources can be provisioned onto the sled.
+	ProvisionPolicy SledProvisionPolicy `json:"provision_policy,omitempty" yaml:"provision_policy,omitempty"`
 }
 
-// SledProvisionStateResponse is response to `sled_set_provision_state`.
-type SledProvisionStateResponse struct {
+// SledPolicyExpunged is the operator has indicated that the sled has been permanently removed from service.
+//
+// This is a terminal state: once a particular sled ID is expunged, it will never return to service. (The actual hardware may be reused, but it will be treated as a brand-new sled.)
+//
+// An expunged sled is always non-provisionable.
+type SledPolicyExpunged struct {
+	Kind SledPolicyKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+}
+
+// SledPolicy is the operator-defined policy of a sled.
+type SledPolicy struct {
+	// Kind is the type definition for a Kind.
+	Kind SledPolicyKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+	// ProvisionPolicy is determines whether new resources can be provisioned onto the sled.
+	ProvisionPolicy SledProvisionPolicy `json:"provision_policy,omitempty" yaml:"provision_policy,omitempty"`
+}
+
+// SledProvisionPolicy is new resources will be provisioned on this sled.
+type SledProvisionPolicy string
+
+// SledProvisionPolicyParams is parameters for `sled_set_provision_policy`.
+type SledProvisionPolicyParams struct {
+	// State is the provision state.
+	State SledProvisionPolicy `json:"state,omitempty" yaml:"state,omitempty"`
+}
+
+// SledProvisionPolicyResponse is response to `sled_set_provision_policy`.
+type SledProvisionPolicyResponse struct {
 	// NewState is the new provision state.
-	NewState SledProvisionState `json:"new_state,omitempty" yaml:"new_state,omitempty"`
+	NewState SledProvisionPolicy `json:"new_state,omitempty" yaml:"new_state,omitempty"`
 	// OldState is the old provision state.
-	OldState SledProvisionState `json:"old_state,omitempty" yaml:"old_state,omitempty"`
+	OldState SledProvisionPolicy `json:"old_state,omitempty" yaml:"old_state,omitempty"`
 }
 
 // SledResultsPage is a single page of results
@@ -2543,6 +2578,9 @@ type SledResultsPage struct {
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
+
+// SledState is the sled is currently active, and has resources allocated on it.
+type SledState string
 
 // Snapshot is view of a Snapshot
 type Snapshot struct {
@@ -3403,6 +3441,13 @@ type FloatingIpViewParams struct {
 	Project    NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
+// FloatingIpUpdateParams is the request parameters for FloatingIpUpdate
+type FloatingIpUpdateParams struct {
+	FloatingIp NameOrId          `json:"floating_ip,omitempty" yaml:"floating_ip,omitempty"`
+	Project    NameOrId          `json:"project,omitempty" yaml:"project,omitempty"`
+	Body       *FloatingIpUpdate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
 // FloatingIpAttachParams is the request parameters for FloatingIpAttach
 type FloatingIpAttachParams struct {
 	FloatingIp NameOrId          `json:"floating_ip,omitempty" yaml:"floating_ip,omitempty"`
@@ -3808,10 +3853,10 @@ type SledInstanceListParams struct {
 	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
 
-// SledSetProvisionStateParams is the request parameters for SledSetProvisionState
-type SledSetProvisionStateParams struct {
-	SledId string                    `json:"sled_id,omitempty" yaml:"sled_id,omitempty"`
-	Body   *SledProvisionStateParams `json:"body,omitempty" yaml:"body,omitempty"`
+// SledSetProvisionPolicyParams is the request parameters for SledSetProvisionPolicy
+type SledSetProvisionPolicyParams struct {
+	SledId string                     `json:"sled_id,omitempty" yaml:"sled_id,omitempty"`
+	Body   *SledProvisionPolicyParams `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // NetworkingSwitchPortListParams is the request parameters for NetworkingSwitchPortList
@@ -4534,6 +4579,17 @@ func (p *FloatingIpViewParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for FloatingIpUpdateParams are set
+func (p *FloatingIpUpdateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.FloatingIp), "FloatingIp")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for FloatingIpAttachParams are set
 func (p *FloatingIpAttachParams) Validate() error {
 	v := new(Validator)
@@ -5154,8 +5210,8 @@ func (p *SledInstanceListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for SledSetProvisionStateParams are set
-func (p *SledSetProvisionStateParams) Validate() error {
+// Validate verifies all required fields for SledSetProvisionPolicyParams are set
+func (p *SledSetProvisionPolicyParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredObj(p.Body, "Body")
 	v.HasRequiredStr(string(p.SledId), "SledId")
@@ -6446,11 +6502,23 @@ const SiloRoleCollaborator SiloRole = "collaborator"
 // SiloRoleViewer represents the SiloRole `"viewer"`.
 const SiloRoleViewer SiloRole = "viewer"
 
-// SledProvisionStateProvisionable represents the SledProvisionState `"provisionable"`.
-const SledProvisionStateProvisionable SledProvisionState = "provisionable"
+// SledPolicyKindInService represents the SledPolicyKind `"in_service"`.
+const SledPolicyKindInService SledPolicyKind = "in_service"
 
-// SledProvisionStateNonProvisionable represents the SledProvisionState `"non_provisionable"`.
-const SledProvisionStateNonProvisionable SledProvisionState = "non_provisionable"
+// SledPolicyKindExpunged represents the SledPolicyKind `"expunged"`.
+const SledPolicyKindExpunged SledPolicyKind = "expunged"
+
+// SledProvisionPolicyProvisionable represents the SledProvisionPolicy `"provisionable"`.
+const SledProvisionPolicyProvisionable SledProvisionPolicy = "provisionable"
+
+// SledProvisionPolicyNonProvisionable represents the SledProvisionPolicy `"non_provisionable"`.
+const SledProvisionPolicyNonProvisionable SledProvisionPolicy = "non_provisionable"
+
+// SledStateActive represents the SledState `"active"`.
+const SledStateActive SledState = "active"
+
+// SledStateDecommissioned represents the SledState `"decommissioned"`.
+const SledStateDecommissioned SledState = "decommissioned"
 
 // SnapshotStateCreating represents the SnapshotState `"creating"`.
 const SnapshotStateCreating SnapshotState = "creating"
@@ -6903,10 +6971,22 @@ var SiloRoles = []SiloRole{
 	SiloRoleViewer,
 }
 
-// SledProvisionStates is the collection of all SledProvisionState values.
-var SledProvisionStates = []SledProvisionState{
-	SledProvisionStateNonProvisionable,
-	SledProvisionStateProvisionable,
+// SledPolicyKinds is the collection of all SledPolicyKind values.
+var SledPolicyKinds = []SledPolicyKind{
+	SledPolicyKindExpunged,
+	SledPolicyKindInService,
+}
+
+// SledProvisionPolicys is the collection of all SledProvisionPolicy values.
+var SledProvisionPolicys = []SledProvisionPolicy{
+	SledProvisionPolicyNonProvisionable,
+	SledProvisionPolicyProvisionable,
+}
+
+// SledStates is the collection of all SledState values.
+var SledStates = []SledState{
+	SledStateActive,
+	SledStateDecommissioned,
 }
 
 // SnapshotStates is the collection of all SnapshotState values.

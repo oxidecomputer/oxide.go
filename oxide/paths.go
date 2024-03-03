@@ -131,7 +131,7 @@ func (c *Client) CertificateListAllPages(ctx context.Context, params Certificate
 	return allPages, nil
 }
 
-// CertificateCreate: Create a new system-wide x.509 certificate
+// CertificateCreate: Create new system-wide x.509 certificate
 // This certificate is automatically used by the Oxide Control plane to serve external connections.
 func (c *Client) CertificateCreate(ctx context.Context, params CertificateCreateParams) (*Certificate, error) {
 	if err := params.Validate(); err != nil {
@@ -182,7 +182,7 @@ func (c *Client) CertificateCreate(ctx context.Context, params CertificateCreate
 	return &body, nil
 }
 
-// CertificateView: Fetch a certificate
+// CertificateView: Fetch certificate
 // Returns the details of a specific certificate
 func (c *Client) CertificateView(ctx context.Context, params CertificateViewParams) (*Certificate, error) {
 	if err := params.Validate(); err != nil {
@@ -229,7 +229,7 @@ func (c *Client) CertificateView(ctx context.Context, params CertificateViewPara
 	return &body, nil
 }
 
-// CertificateDelete: Delete a certificate
+// CertificateDelete: Delete certificate
 // Permanently delete a certificate. This operation cannot be undone.
 func (c *Client) CertificateDelete(ctx context.Context, params CertificateDeleteParams) error {
 	if err := params.Validate(); err != nil {
@@ -394,7 +394,7 @@ func (c *Client) DiskCreate(ctx context.Context, params DiskCreateParams) (*Disk
 	return &body, nil
 }
 
-// DiskView: Fetch a disk
+// DiskView: Fetch disk
 func (c *Client) DiskView(ctx context.Context, params DiskViewParams) (*Disk, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -442,7 +442,7 @@ func (c *Client) DiskView(ctx context.Context, params DiskViewParams) (*Disk, er
 	return &body, nil
 }
 
-// DiskDelete: Delete a disk
+// DiskDelete: Delete disk
 func (c *Client) DiskDelete(ctx context.Context, params DiskDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
@@ -479,7 +479,7 @@ func (c *Client) DiskDelete(ctx context.Context, params DiskDeleteParams) error 
 	return nil
 }
 
-// DiskBulkWriteImport: Import blocks into a disk
+// DiskBulkWriteImport: Import blocks into disk
 func (c *Client) DiskBulkWriteImport(ctx context.Context, params DiskBulkWriteImportParams) error {
 	if err := params.Validate(); err != nil {
 		return err
@@ -522,7 +522,7 @@ func (c *Client) DiskBulkWriteImport(ctx context.Context, params DiskBulkWriteIm
 	return nil
 }
 
-// DiskBulkWriteImportStart: Start importing blocks into a disk
+// DiskBulkWriteImportStart: Start importing blocks into disk
 // Start the process of importing blocks into a disk
 func (c *Client) DiskBulkWriteImportStart(ctx context.Context, params DiskBulkWriteImportStartParams) error {
 	if err := params.Validate(); err != nil {
@@ -560,7 +560,7 @@ func (c *Client) DiskBulkWriteImportStart(ctx context.Context, params DiskBulkWr
 	return nil
 }
 
-// DiskBulkWriteImportStop: Stop importing blocks into a disk
+// DiskBulkWriteImportStop: Stop importing blocks into disk
 // Stop the process of importing blocks into a disk
 func (c *Client) DiskBulkWriteImportStop(ctx context.Context, params DiskBulkWriteImportStopParams) error {
 	if err := params.Validate(); err != nil {
@@ -800,7 +800,7 @@ func (c *Client) FloatingIpListAllPages(ctx context.Context, params FloatingIpLi
 	return allPages, nil
 }
 
-// FloatingIpCreate: Create a floating IP
+// FloatingIpCreate: Create floating IP
 func (c *Client) FloatingIpCreate(ctx context.Context, params FloatingIpCreateParams) (*FloatingIp, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -852,7 +852,7 @@ func (c *Client) FloatingIpCreate(ctx context.Context, params FloatingIpCreatePa
 	return &body, nil
 }
 
-// FloatingIpView: Fetch a floating IP
+// FloatingIpView: Fetch floating IP
 func (c *Client) FloatingIpView(ctx context.Context, params FloatingIpViewParams) (*FloatingIp, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -900,7 +900,61 @@ func (c *Client) FloatingIpView(ctx context.Context, params FloatingIpViewParams
 	return &body, nil
 }
 
-// FloatingIpDelete: Delete a floating IP
+// FloatingIpUpdate: Update floating IP
+func (c *Client) FloatingIpUpdate(ctx context.Context, params FloatingIpUpdateParams) (*FloatingIp, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"PUT",
+		resolveRelative(c.host, "/v1/floating-ips/{{.floating_ip}}"),
+		map[string]string{
+			"floating_ip": string(params.FloatingIp),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body FloatingIp
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// FloatingIpDelete: Delete floating IP
 func (c *Client) FloatingIpDelete(ctx context.Context, params FloatingIpDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
@@ -937,7 +991,8 @@ func (c *Client) FloatingIpDelete(ctx context.Context, params FloatingIpDeletePa
 	return nil
 }
 
-// FloatingIpAttach: Attach a floating IP to an instance or other resource
+// FloatingIpAttach: Attach floating IP
+// Attach floating IP to an instance or other resource.
 func (c *Client) FloatingIpAttach(ctx context.Context, params FloatingIpAttachParams) (*FloatingIp, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -991,7 +1046,7 @@ func (c *Client) FloatingIpAttach(ctx context.Context, params FloatingIpAttachPa
 	return &body, nil
 }
 
-// FloatingIpDetach: Detach a floating IP from an instance or other resource
+// FloatingIpDetach: Detach floating IP
 func (c *Client) FloatingIpDetach(ctx context.Context, params FloatingIpDetachParams) (*FloatingIp, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -1240,7 +1295,7 @@ func (c *Client) ImageListAllPages(ctx context.Context, params ImageListParams) 
 	return allPages, nil
 }
 
-// ImageCreate: Create an image
+// ImageCreate: Create image
 // Create a new image in a project.
 func (c *Client) ImageCreate(ctx context.Context, params ImageCreateParams) (*Image, error) {
 	if err := params.Validate(); err != nil {
@@ -1293,7 +1348,7 @@ func (c *Client) ImageCreate(ctx context.Context, params ImageCreateParams) (*Im
 	return &body, nil
 }
 
-// ImageView: Fetch an image
+// ImageView: Fetch image
 // Fetch the details for a specific image in a project.
 func (c *Client) ImageView(ctx context.Context, params ImageViewParams) (*Image, error) {
 	if err := params.Validate(); err != nil {
@@ -1342,7 +1397,7 @@ func (c *Client) ImageView(ctx context.Context, params ImageViewParams) (*Image,
 	return &body, nil
 }
 
-// ImageDelete: Delete an image
+// ImageDelete: Delete image
 // Permanently delete an image from a project. This operation cannot be undone. Any instances in the project using the image will continue to run, however new instances can not be created with this image.
 func (c *Client) ImageDelete(ctx context.Context, params ImageDeleteParams) error {
 	if err := params.Validate(); err != nil {
@@ -1380,8 +1435,8 @@ func (c *Client) ImageDelete(ctx context.Context, params ImageDeleteParams) erro
 	return nil
 }
 
-// ImageDemote: Demote a silo image
-// Demote a silo image to be visible only to a specified project
+// ImageDemote: Demote silo image
+// Demote silo image to be visible only to a specified project
 func (c *Client) ImageDemote(ctx context.Context, params ImageDemoteParams) (*Image, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -1429,8 +1484,8 @@ func (c *Client) ImageDemote(ctx context.Context, params ImageDemoteParams) (*Im
 	return &body, nil
 }
 
-// ImagePromote: Promote a project image
-// Promote a project image to be visible to all projects in the silo
+// ImagePromote: Promote project image
+// Promote project image to be visible to all projects in the silo
 func (c *Client) ImagePromote(ctx context.Context, params ImagePromoteParams) (*Image, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -1555,7 +1610,7 @@ func (c *Client) InstanceListAllPages(ctx context.Context, params InstanceListPa
 	return allPages, nil
 }
 
-// InstanceCreate: Create an instance
+// InstanceCreate: Create instance
 func (c *Client) InstanceCreate(ctx context.Context, params InstanceCreateParams) (*Instance, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -1607,7 +1662,7 @@ func (c *Client) InstanceCreate(ctx context.Context, params InstanceCreateParams
 	return &body, nil
 }
 
-// InstanceView: Fetch an instance
+// InstanceView: Fetch instance
 func (c *Client) InstanceView(ctx context.Context, params InstanceViewParams) (*Instance, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -1655,7 +1710,7 @@ func (c *Client) InstanceView(ctx context.Context, params InstanceViewParams) (*
 	return &body, nil
 }
 
-// InstanceDelete: Delete an instance
+// InstanceDelete: Delete instance
 func (c *Client) InstanceDelete(ctx context.Context, params InstanceDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
@@ -1692,7 +1747,7 @@ func (c *Client) InstanceDelete(ctx context.Context, params InstanceDeleteParams
 	return nil
 }
 
-// InstanceDiskList: List an instance's disks
+// InstanceDiskList: List disks for instance
 //
 // To iterate over all pages, use the `InstanceDiskListAllPages` method, instead.
 func (c *Client) InstanceDiskList(ctx context.Context, params InstanceDiskListParams) (*DiskResultsPage, error) {
@@ -1745,7 +1800,7 @@ func (c *Client) InstanceDiskList(ctx context.Context, params InstanceDiskListPa
 	return &body, nil
 }
 
-// InstanceDiskListAllPages: List an instance's disks
+// InstanceDiskListAllPages: List disks for instance
 //
 // This method is a wrapper around the `InstanceDiskList` method.
 // This method returns all the pages at once.
@@ -1771,7 +1826,7 @@ func (c *Client) InstanceDiskListAllPages(ctx context.Context, params InstanceDi
 	return allPages, nil
 }
 
-// InstanceDiskAttach: Attach a disk to an instance
+// InstanceDiskAttach: Attach disk to instance
 func (c *Client) InstanceDiskAttach(ctx context.Context, params InstanceDiskAttachParams) (*Disk, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -1825,7 +1880,7 @@ func (c *Client) InstanceDiskAttach(ctx context.Context, params InstanceDiskAtta
 	return &body, nil
 }
 
-// InstanceDiskDetach: Detach a disk from an instance
+// InstanceDiskDetach: Detach disk from instance
 func (c *Client) InstanceDiskDetach(ctx context.Context, params InstanceDiskDetachParams) (*Disk, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -1927,7 +1982,7 @@ func (c *Client) InstanceExternalIpList(ctx context.Context, params InstanceExte
 	return &body, nil
 }
 
-// InstanceEphemeralIpAttach: Allocate and attach an ephemeral IP to an instance
+// InstanceEphemeralIpAttach: Allocate and attach ephemeral IP to instance
 func (c *Client) InstanceEphemeralIpAttach(ctx context.Context, params InstanceEphemeralIpAttachParams) (*ExternalIp, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -1981,7 +2036,7 @@ func (c *Client) InstanceEphemeralIpAttach(ctx context.Context, params InstanceE
 	return &body, nil
 }
 
-// InstanceEphemeralIpDetach: Detach and deallocate an ephemeral IP from an instance
+// InstanceEphemeralIpDetach: Detach and deallocate ephemeral IP from instance
 func (c *Client) InstanceEphemeralIpDetach(ctx context.Context, params InstanceEphemeralIpDetachParams) error {
 	if err := params.Validate(); err != nil {
 		return err
@@ -2120,7 +2175,7 @@ func (c *Client) InstanceReboot(ctx context.Context, params InstanceRebootParams
 	return &body, nil
 }
 
-// InstanceSerialConsole: Fetch an instance's serial console
+// InstanceSerialConsole: Fetch instance serial console
 func (c *Client) InstanceSerialConsole(ctx context.Context, params InstanceSerialConsoleParams) (*InstanceSerialConsoleData, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -2171,7 +2226,7 @@ func (c *Client) InstanceSerialConsole(ctx context.Context, params InstanceSeria
 	return &body, nil
 }
 
-// InstanceSerialConsoleStream: Stream an instance's serial console
+// InstanceSerialConsoleStream: Stream instance serial console
 func (c *Client) InstanceSerialConsoleStream(ctx context.Context, params InstanceSerialConsoleStreamParams) error {
 	if err := params.Validate(); err != nil {
 		return err
@@ -2209,8 +2264,8 @@ func (c *Client) InstanceSerialConsoleStream(ctx context.Context, params Instanc
 	return nil
 }
 
-// InstanceSshPublicKeyList: List the SSH public keys added to the instance via cloud-init during instance creation
-// Note that this list is a snapshot in time and will not reflect updates made after the instance is created.
+// InstanceSshPublicKeyList: List SSH public keys for instance
+// List SSH public keys injected via cloud-init during instance creation. Note that this list is a snapshot in time and will not reflect updates made after the instance is created.
 //
 // To iterate over all pages, use the `InstanceSshPublicKeyListAllPages` method, instead.
 func (c *Client) InstanceSshPublicKeyList(ctx context.Context, params InstanceSshPublicKeyListParams) (*SshKeyResultsPage, error) {
@@ -2263,8 +2318,8 @@ func (c *Client) InstanceSshPublicKeyList(ctx context.Context, params InstanceSs
 	return &body, nil
 }
 
-// InstanceSshPublicKeyListAllPages: List the SSH public keys added to the instance via cloud-init during instance creation
-// Note that this list is a snapshot in time and will not reflect updates made after the instance is created.
+// InstanceSshPublicKeyListAllPages: List SSH public keys for instance
+// List SSH public keys injected via cloud-init during instance creation. Note that this list is a snapshot in time and will not reflect updates made after the instance is created.
 //
 // This method is a wrapper around the `InstanceSshPublicKeyList` method.
 // This method returns all the pages at once.
@@ -2290,7 +2345,7 @@ func (c *Client) InstanceSshPublicKeyListAllPages(ctx context.Context, params In
 	return allPages, nil
 }
 
-// InstanceStart: Boot an instance
+// InstanceStart: Boot instance
 func (c *Client) InstanceStart(ctx context.Context, params InstanceStartParams) (*Instance, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -2338,7 +2393,7 @@ func (c *Client) InstanceStart(ctx context.Context, params InstanceStartParams) 
 	return &body, nil
 }
 
-// InstanceStop: Stop an instance
+// InstanceStop: Stop instance
 func (c *Client) InstanceStop(ctx context.Context, params InstanceStopParams) (*Instance, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -2462,7 +2517,7 @@ func (c *Client) ProjectIpPoolListAllPages(ctx context.Context, params ProjectIp
 	return allPages, nil
 }
 
-// ProjectIpPoolView: Fetch an IP pool
+// ProjectIpPoolView: Fetch IP pool
 func (c *Client) ProjectIpPoolView(ctx context.Context, params ProjectIpPoolViewParams) (*SiloIpPool, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -2549,7 +2604,7 @@ func (c *Client) LoginLocal(ctx context.Context, params LoginLocalParams) error 
 	return nil
 }
 
-// CurrentUserView: Fetch the user associated with the current session
+// CurrentUserView: Fetch user for current session
 func (c *Client) CurrentUserView(ctx context.Context) (*CurrentUser, error) {
 	// Create the request
 	req, err := c.buildRequest(
@@ -2590,7 +2645,7 @@ func (c *Client) CurrentUserView(ctx context.Context) (*CurrentUser, error) {
 	return &body, nil
 }
 
-// CurrentUserGroups: Fetch the silo groups the current user belongs to
+// CurrentUserGroups: Fetch current user's groups
 //
 // To iterate over all pages, use the `CurrentUserGroupsAllPages` method, instead.
 func (c *Client) CurrentUserGroups(ctx context.Context, params CurrentUserGroupsParams) (*GroupResultsPage, error) {
@@ -2640,7 +2695,7 @@ func (c *Client) CurrentUserGroups(ctx context.Context, params CurrentUserGroups
 	return &body, nil
 }
 
-// CurrentUserGroupsAllPages: Fetch the silo groups the current user belongs to
+// CurrentUserGroupsAllPages: Fetch current user's groups
 //
 // This method is a wrapper around the `CurrentUserGroups` method.
 // This method returns all the pages at once.
@@ -2744,7 +2799,7 @@ func (c *Client) CurrentUserSshKeyListAllPages(ctx context.Context, params Curre
 	return allPages, nil
 }
 
-// CurrentUserSshKeyCreate: Create an SSH public key
+// CurrentUserSshKeyCreate: Create SSH public key
 // Create an SSH public key for the currently authenticated user.
 func (c *Client) CurrentUserSshKeyCreate(ctx context.Context, params CurrentUserSshKeyCreateParams) (*SshKey, error) {
 	if err := params.Validate(); err != nil {
@@ -2795,8 +2850,8 @@ func (c *Client) CurrentUserSshKeyCreate(ctx context.Context, params CurrentUser
 	return &body, nil
 }
 
-// CurrentUserSshKeyView: Fetch an SSH public key
-// Fetch an SSH public key associated with the currently authenticated user.
+// CurrentUserSshKeyView: Fetch SSH public key
+// Fetch SSH public key associated with the currently authenticated user.
 func (c *Client) CurrentUserSshKeyView(ctx context.Context, params CurrentUserSshKeyViewParams) (*SshKey, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -2842,7 +2897,7 @@ func (c *Client) CurrentUserSshKeyView(ctx context.Context, params CurrentUserSs
 	return &body, nil
 }
 
-// CurrentUserSshKeyDelete: Delete an SSH public key
+// CurrentUserSshKeyDelete: Delete SSH public key
 // Delete an SSH public key associated with the currently authenticated user.
 func (c *Client) CurrentUserSshKeyDelete(ctx context.Context, params CurrentUserSshKeyDeleteParams) error {
 	if err := params.Validate(); err != nil {
@@ -3037,7 +3092,7 @@ func (c *Client) InstanceNetworkInterfaceListAllPages(ctx context.Context, param
 	return allPages, nil
 }
 
-// InstanceNetworkInterfaceCreate: Create a network interface
+// InstanceNetworkInterfaceCreate: Create network interface
 func (c *Client) InstanceNetworkInterfaceCreate(ctx context.Context, params InstanceNetworkInterfaceCreateParams) (*InstanceNetworkInterface, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -3090,7 +3145,7 @@ func (c *Client) InstanceNetworkInterfaceCreate(ctx context.Context, params Inst
 	return &body, nil
 }
 
-// InstanceNetworkInterfaceView: Fetch a network interface
+// InstanceNetworkInterfaceView: Fetch network interface
 func (c *Client) InstanceNetworkInterfaceView(ctx context.Context, params InstanceNetworkInterfaceViewParams) (*InstanceNetworkInterface, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -3139,7 +3194,7 @@ func (c *Client) InstanceNetworkInterfaceView(ctx context.Context, params Instan
 	return &body, nil
 }
 
-// InstanceNetworkInterfaceUpdate: Update a network interface
+// InstanceNetworkInterfaceUpdate: Update network interface
 func (c *Client) InstanceNetworkInterfaceUpdate(ctx context.Context, params InstanceNetworkInterfaceUpdateParams) (*InstanceNetworkInterface, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -3194,7 +3249,7 @@ func (c *Client) InstanceNetworkInterfaceUpdate(ctx context.Context, params Inst
 	return &body, nil
 }
 
-// InstanceNetworkInterfaceDelete: Delete a network interface
+// InstanceNetworkInterfaceDelete: Delete network interface
 // Note that the primary interface for an instance cannot be deleted if there are any secondary interfaces. A new primary interface must be designated first. The primary interface can be deleted if there are no secondary interfaces.
 func (c *Client) InstanceNetworkInterfaceDelete(ctx context.Context, params InstanceNetworkInterfaceDeleteParams) error {
 	if err := params.Validate(); err != nil {
@@ -3275,7 +3330,7 @@ func (c *Client) Ping(ctx context.Context) (*Ping, error) {
 	return &body, nil
 }
 
-// PolicyView: Fetch the current silo's IAM policy
+// PolicyView: Fetch current silo's IAM policy
 func (c *Client) PolicyView(ctx context.Context) (*SiloRolePolicy, error) {
 	// Create the request
 	req, err := c.buildRequest(
@@ -3316,7 +3371,7 @@ func (c *Client) PolicyView(ctx context.Context) (*SiloRolePolicy, error) {
 	return &body, nil
 }
 
-// PolicyUpdate: Update the current silo's IAM policy
+// PolicyUpdate: Update current silo's IAM policy
 func (c *Client) PolicyUpdate(ctx context.Context, params PolicyUpdateParams) (*SiloRolePolicy, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -3442,7 +3497,7 @@ func (c *Client) ProjectListAllPages(ctx context.Context, params ProjectListPara
 	return allPages, nil
 }
 
-// ProjectCreate: Create a project
+// ProjectCreate: Create project
 func (c *Client) ProjectCreate(ctx context.Context, params ProjectCreateParams) (*Project, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -3492,7 +3547,7 @@ func (c *Client) ProjectCreate(ctx context.Context, params ProjectCreateParams) 
 	return &body, nil
 }
 
-// ProjectView: Fetch a project
+// ProjectView: Fetch project
 func (c *Client) ProjectView(ctx context.Context, params ProjectViewParams) (*Project, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -3590,7 +3645,7 @@ func (c *Client) ProjectUpdate(ctx context.Context, params ProjectUpdateParams) 
 	return &body, nil
 }
 
-// ProjectDelete: Delete a project
+// ProjectDelete: Delete project
 func (c *Client) ProjectDelete(ctx context.Context, params ProjectDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
@@ -3625,7 +3680,7 @@ func (c *Client) ProjectDelete(ctx context.Context, params ProjectDeleteParams) 
 	return nil
 }
 
-// ProjectPolicyView: Fetch a project's IAM policy
+// ProjectPolicyView: Fetch project's IAM policy
 func (c *Client) ProjectPolicyView(ctx context.Context, params ProjectPolicyViewParams) (*ProjectRolePolicy, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -3671,7 +3726,7 @@ func (c *Client) ProjectPolicyView(ctx context.Context, params ProjectPolicyView
 	return &body, nil
 }
 
-// ProjectPolicyUpdate: Update a project's IAM policy
+// ProjectPolicyUpdate: Update project's IAM policy
 func (c *Client) ProjectPolicyUpdate(ctx context.Context, params ProjectPolicyUpdateParams) (*ProjectRolePolicy, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -3800,7 +3855,7 @@ func (c *Client) SnapshotListAllPages(ctx context.Context, params SnapshotListPa
 	return allPages, nil
 }
 
-// SnapshotCreate: Create a snapshot
+// SnapshotCreate: Create snapshot
 // Creates a point-in-time snapshot from a disk.
 func (c *Client) SnapshotCreate(ctx context.Context, params SnapshotCreateParams) (*Snapshot, error) {
 	if err := params.Validate(); err != nil {
@@ -3853,7 +3908,7 @@ func (c *Client) SnapshotCreate(ctx context.Context, params SnapshotCreateParams
 	return &body, nil
 }
 
-// SnapshotView: Fetch a snapshot
+// SnapshotView: Fetch snapshot
 func (c *Client) SnapshotView(ctx context.Context, params SnapshotViewParams) (*Snapshot, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -3901,7 +3956,7 @@ func (c *Client) SnapshotView(ctx context.Context, params SnapshotViewParams) (*
 	return &body, nil
 }
 
-// SnapshotDelete: Delete a snapshot
+// SnapshotDelete: Delete snapshot
 func (c *Client) SnapshotDelete(ctx context.Context, params SnapshotDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
@@ -4090,7 +4145,7 @@ func (c *Client) RackListAllPages(ctx context.Context, params RackListParams) ([
 	return allPages, nil
 }
 
-// RackView: Fetch a rack
+// RackView: Fetch rack
 func (c *Client) RackView(ctx context.Context, params RackViewParams) (*Rack, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -4212,7 +4267,7 @@ func (c *Client) SledListAllPages(ctx context.Context, params SledListParams) ([
 	return allPages, nil
 }
 
-// SledAdd: Add a sled to an initialized rack
+// SledAdd: Add sled to initialized rack
 func (c *Client) SledAdd(ctx context.Context, params SledAddParams) error {
 	if err := params.Validate(); err != nil {
 		return err
@@ -4251,7 +4306,7 @@ func (c *Client) SledAdd(ctx context.Context, params SledAddParams) error {
 	return nil
 }
 
-// SledListUninitialized: List uninitialized sleds in a given rack
+// SledListUninitialized: List uninitialized sleds
 //
 // To iterate over all pages, use the `SledListUninitializedAllPages` method, instead.
 func (c *Client) SledListUninitialized(ctx context.Context, params SledListUninitializedParams) (*UninitializedSledResultsPage, error) {
@@ -4300,7 +4355,7 @@ func (c *Client) SledListUninitialized(ctx context.Context, params SledListUnini
 	return &body, nil
 }
 
-// SledListUninitializedAllPages: List uninitialized sleds in a given rack
+// SledListUninitializedAllPages: List uninitialized sleds
 //
 // This method is a wrapper around the `SledListUninitialized` method.
 // This method returns all the pages at once.
@@ -4326,7 +4381,7 @@ func (c *Client) SledListUninitializedAllPages(ctx context.Context, params SledL
 	return allPages, nil
 }
 
-// SledView: Fetch a sled
+// SledView: Fetch sled
 func (c *Client) SledView(ctx context.Context, params SledViewParams) (*Sled, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -4450,7 +4505,7 @@ func (c *Client) SledPhysicalDiskListAllPages(ctx context.Context, params SledPh
 	return allPages, nil
 }
 
-// SledInstanceList: List instances running on a given sled
+// SledInstanceList: List instances running on given sled
 //
 // To iterate over all pages, use the `SledInstanceListAllPages` method, instead.
 func (c *Client) SledInstanceList(ctx context.Context, params SledInstanceListParams) (*SledInstanceResultsPage, error) {
@@ -4502,7 +4557,7 @@ func (c *Client) SledInstanceList(ctx context.Context, params SledInstanceListPa
 	return &body, nil
 }
 
-// SledInstanceListAllPages: List instances running on a given sled
+// SledInstanceListAllPages: List instances running on given sled
 //
 // This method is a wrapper around the `SledInstanceList` method.
 // This method returns all the pages at once.
@@ -4528,8 +4583,8 @@ func (c *Client) SledInstanceListAllPages(ctx context.Context, params SledInstan
 	return allPages, nil
 }
 
-// SledSetProvisionState: Set the sled's provision state
-func (c *Client) SledSetProvisionState(ctx context.Context, params SledSetProvisionStateParams) (*SledProvisionStateResponse, error) {
+// SledSetProvisionPolicy: Set sled provision policy
+func (c *Client) SledSetProvisionPolicy(ctx context.Context, params SledSetProvisionPolicyParams) (*SledProvisionPolicyResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4544,7 +4599,7 @@ func (c *Client) SledSetProvisionState(ctx context.Context, params SledSetProvis
 		ctx,
 		b,
 		"PUT",
-		resolveRelative(c.host, "/v1/system/hardware/sleds/{{.sled_id}}/provision-state"),
+		resolveRelative(c.host, "/v1/system/hardware/sleds/{{.sled_id}}/provision-policy"),
 		map[string]string{
 			"sled_id": params.SledId,
 		},
@@ -4571,7 +4626,7 @@ func (c *Client) SledSetProvisionState(ctx context.Context, params SledSetProvis
 		return nil, errors.New("request returned an empty body in the response")
 	}
 
-	var body SledProvisionStateResponse
+	var body SledProvisionPolicyResponse
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -4815,7 +4870,7 @@ func (c *Client) SwitchListAllPages(ctx context.Context, params SwitchListParams
 	return allPages, nil
 }
 
-// SwitchView: Fetch a switch
+// SwitchView: Fetch switch
 func (c *Client) SwitchView(ctx context.Context, params SwitchViewParams) (*Switch, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -4938,7 +4993,7 @@ func (c *Client) SiloIdentityProviderListAllPages(ctx context.Context, params Si
 	return allPages, nil
 }
 
-// LocalIdpUserCreate: Create a user
+// LocalIdpUserCreate: Create user
 // Users can only be created in Silos with `provision_type` == `Fixed`. Otherwise, Silo users are just-in-time (JIT) provisioned when a user first logs in using an external Identity Provider.
 func (c *Client) LocalIdpUserCreate(ctx context.Context, params LocalIdpUserCreateParams) (*User, error) {
 	if err := params.Validate(); err != nil {
@@ -4991,7 +5046,7 @@ func (c *Client) LocalIdpUserCreate(ctx context.Context, params LocalIdpUserCrea
 	return &body, nil
 }
 
-// LocalIdpUserDelete: Delete a user
+// LocalIdpUserDelete: Delete user
 func (c *Client) LocalIdpUserDelete(ctx context.Context, params LocalIdpUserDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
@@ -5028,7 +5083,7 @@ func (c *Client) LocalIdpUserDelete(ctx context.Context, params LocalIdpUserDele
 	return nil
 }
 
-// LocalIdpUserSetPassword: Set or invalidate a user's password
+// LocalIdpUserSetPassword: Set or invalidate user's password
 // Passwords can only be updated for users in Silos with identity mode `LocalOnly`.
 func (c *Client) LocalIdpUserSetPassword(ctx context.Context, params LocalIdpUserSetPasswordParams) error {
 	if err := params.Validate(); err != nil {
@@ -5072,7 +5127,7 @@ func (c *Client) LocalIdpUserSetPassword(ctx context.Context, params LocalIdpUse
 	return nil
 }
 
-// SamlIdentityProviderCreate: Create a SAML IdP
+// SamlIdentityProviderCreate: Create SAML IdP
 func (c *Client) SamlIdentityProviderCreate(ctx context.Context, params SamlIdentityProviderCreateParams) (*SamlIdentityProvider, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -5124,7 +5179,7 @@ func (c *Client) SamlIdentityProviderCreate(ctx context.Context, params SamlIden
 	return &body, nil
 }
 
-// SamlIdentityProviderView: Fetch a SAML IdP
+// SamlIdentityProviderView: Fetch SAML IdP
 func (c *Client) SamlIdentityProviderView(ctx context.Context, params SamlIdentityProviderViewParams) (*SamlIdentityProvider, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -5248,7 +5303,7 @@ func (c *Client) IpPoolListAllPages(ctx context.Context, params IpPoolListParams
 	return allPages, nil
 }
 
-// IpPoolCreate: Create an IP pool
+// IpPoolCreate: Create IP pool
 func (c *Client) IpPoolCreate(ctx context.Context, params IpPoolCreateParams) (*IpPool, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -5298,7 +5353,7 @@ func (c *Client) IpPoolCreate(ctx context.Context, params IpPoolCreateParams) (*
 	return &body, nil
 }
 
-// IpPoolServiceView: Fetch the Oxide service IP pool
+// IpPoolServiceView: Fetch Oxide service IP pool
 func (c *Client) IpPoolServiceView(ctx context.Context) (*IpPool, error) {
 	// Create the request
 	req, err := c.buildRequest(
@@ -5505,7 +5560,7 @@ func (c *Client) IpPoolServiceRangeRemove(ctx context.Context, params IpPoolServ
 	return nil
 }
 
-// IpPoolView: Fetch an IP pool
+// IpPoolView: Fetch IP pool
 func (c *Client) IpPoolView(ctx context.Context, params IpPoolViewParams) (*IpPool, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -5551,7 +5606,7 @@ func (c *Client) IpPoolView(ctx context.Context, params IpPoolViewParams) (*IpPo
 	return &body, nil
 }
 
-// IpPoolUpdate: Update an IP pool
+// IpPoolUpdate: Update IP pool
 func (c *Client) IpPoolUpdate(ctx context.Context, params IpPoolUpdateParams) (*IpPool, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -5603,7 +5658,7 @@ func (c *Client) IpPoolUpdate(ctx context.Context, params IpPoolUpdateParams) (*
 	return &body, nil
 }
 
-// IpPoolDelete: Delete an IP pool
+// IpPoolDelete: Delete IP pool
 func (c *Client) IpPoolDelete(ctx context.Context, params IpPoolDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
@@ -5638,8 +5693,8 @@ func (c *Client) IpPoolDelete(ctx context.Context, params IpPoolDeleteParams) er
 	return nil
 }
 
-// IpPoolRangeList: List ranges for an IP pool
-// List ranges for an IP pool. Ranges are ordered by their first address.
+// IpPoolRangeList: List ranges for IP pool
+// Ranges are ordered by their first address.
 //
 // To iterate over all pages, use the `IpPoolRangeListAllPages` method, instead.
 func (c *Client) IpPoolRangeList(ctx context.Context, params IpPoolRangeListParams) (*IpPoolRangeResultsPage, error) {
@@ -5690,8 +5745,8 @@ func (c *Client) IpPoolRangeList(ctx context.Context, params IpPoolRangeListPara
 	return &body, nil
 }
 
-// IpPoolRangeListAllPages: List ranges for an IP pool
-// List ranges for an IP pool. Ranges are ordered by their first address.
+// IpPoolRangeListAllPages: List ranges for IP pool
+// Ranges are ordered by their first address.
 //
 // This method is a wrapper around the `IpPoolRangeList` method.
 // This method returns all the pages at once.
@@ -5717,7 +5772,7 @@ func (c *Client) IpPoolRangeListAllPages(ctx context.Context, params IpPoolRange
 	return allPages, nil
 }
 
-// IpPoolRangeAdd: Add a range to an IP pool
+// IpPoolRangeAdd: Add range to IP pool
 func (c *Client) IpPoolRangeAdd(ctx context.Context, params IpPoolRangeAddParams) (*IpPoolRange, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -5769,7 +5824,7 @@ func (c *Client) IpPoolRangeAdd(ctx context.Context, params IpPoolRangeAddParams
 	return &body, nil
 }
 
-// IpPoolRangeRemove: Remove a range from an IP pool
+// IpPoolRangeRemove: Remove range from IP pool
 func (c *Client) IpPoolRangeRemove(ctx context.Context, params IpPoolRangeRemoveParams) error {
 	if err := params.Validate(); err != nil {
 		return err
@@ -5810,7 +5865,7 @@ func (c *Client) IpPoolRangeRemove(ctx context.Context, params IpPoolRangeRemove
 	return nil
 }
 
-// IpPoolSiloList: List an IP pool's linked silos
+// IpPoolSiloList: List IP pool's linked silos
 //
 // To iterate over all pages, use the `IpPoolSiloListAllPages` method, instead.
 func (c *Client) IpPoolSiloList(ctx context.Context, params IpPoolSiloListParams) (*IpPoolSiloLinkResultsPage, error) {
@@ -5862,7 +5917,7 @@ func (c *Client) IpPoolSiloList(ctx context.Context, params IpPoolSiloListParams
 	return &body, nil
 }
 
-// IpPoolSiloListAllPages: List an IP pool's linked silos
+// IpPoolSiloListAllPages: List IP pool's linked silos
 //
 // This method is a wrapper around the `IpPoolSiloList` method.
 // This method returns all the pages at once.
@@ -5888,7 +5943,7 @@ func (c *Client) IpPoolSiloListAllPages(ctx context.Context, params IpPoolSiloLi
 	return allPages, nil
 }
 
-// IpPoolSiloLink: Link an IP pool to a silo
+// IpPoolSiloLink: Link IP pool to silo
 // Users in linked silos can allocate external IPs from this pool for their instances. A silo can have at most one default pool. IPs are allocated from the default pool when users ask for one without specifying a pool.
 func (c *Client) IpPoolSiloLink(ctx context.Context, params IpPoolSiloLinkParams) (*IpPoolSiloLink, error) {
 	if err := params.Validate(); err != nil {
@@ -5995,7 +6050,7 @@ func (c *Client) IpPoolSiloUpdate(ctx context.Context, params IpPoolSiloUpdatePa
 	return &body, nil
 }
 
-// IpPoolSiloUnlink: Unlink an IP pool from a silo
+// IpPoolSiloUnlink: Unlink IP pool from silo
 // Will fail if there are any outstanding IPs allocated in the silo.
 func (c *Client) IpPoolSiloUnlink(ctx context.Context, params IpPoolSiloUnlinkParams) error {
 	if err := params.Validate(); err != nil {
@@ -6189,7 +6244,7 @@ func (c *Client) NetworkingAddressLotListAllPages(ctx context.Context, params Ne
 	return allPages, nil
 }
 
-// NetworkingAddressLotCreate: Create an address lot
+// NetworkingAddressLotCreate: Create address lot
 func (c *Client) NetworkingAddressLotCreate(ctx context.Context, params NetworkingAddressLotCreateParams) (*AddressLotCreateResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -6239,7 +6294,7 @@ func (c *Client) NetworkingAddressLotCreate(ctx context.Context, params Networki
 	return &body, nil
 }
 
-// NetworkingAddressLotDelete: Delete an address lot
+// NetworkingAddressLotDelete: Delete address lot
 func (c *Client) NetworkingAddressLotDelete(ctx context.Context, params NetworkingAddressLotDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
@@ -6274,7 +6329,7 @@ func (c *Client) NetworkingAddressLotDelete(ctx context.Context, params Networki
 	return nil
 }
 
-// NetworkingAddressLotBlockList: List the blocks in an address lot
+// NetworkingAddressLotBlockList: List blocks in address lot
 //
 // To iterate over all pages, use the `NetworkingAddressLotBlockListAllPages` method, instead.
 func (c *Client) NetworkingAddressLotBlockList(ctx context.Context, params NetworkingAddressLotBlockListParams) (*AddressLotBlockResultsPage, error) {
@@ -6326,7 +6381,7 @@ func (c *Client) NetworkingAddressLotBlockList(ctx context.Context, params Netwo
 	return &body, nil
 }
 
-// NetworkingAddressLotBlockListAllPages: List the blocks in an address lot
+// NetworkingAddressLotBlockListAllPages: List blocks in address lot
 //
 // This method is a wrapper around the `NetworkingAddressLotBlockList` method.
 // This method returns all the pages at once.
@@ -6548,7 +6603,7 @@ func (c *Client) NetworkingBgpConfigListAllPages(ctx context.Context, params Net
 	return allPages, nil
 }
 
-// NetworkingBgpConfigCreate: Create a new BGP configuration
+// NetworkingBgpConfigCreate: Create new BGP configuration
 func (c *Client) NetworkingBgpConfigCreate(ctx context.Context, params NetworkingBgpConfigCreateParams) (*BgpConfig, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -6598,7 +6653,7 @@ func (c *Client) NetworkingBgpConfigCreate(ctx context.Context, params Networkin
 	return &body, nil
 }
 
-// NetworkingBgpConfigDelete: Delete a BGP configuration
+// NetworkingBgpConfigDelete: Delete BGP configuration
 func (c *Client) NetworkingBgpConfigDelete(ctx context.Context, params NetworkingBgpConfigDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
@@ -6679,7 +6734,7 @@ func (c *Client) NetworkingBgpAnnounceSetList(ctx context.Context, params Networ
 	return &body, nil
 }
 
-// NetworkingBgpAnnounceSetCreate: Create a new BGP announce set
+// NetworkingBgpAnnounceSetCreate: Create new BGP announce set
 func (c *Client) NetworkingBgpAnnounceSetCreate(ctx context.Context, params NetworkingBgpAnnounceSetCreateParams) (*BgpAnnounceSet, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -6729,7 +6784,7 @@ func (c *Client) NetworkingBgpAnnounceSetCreate(ctx context.Context, params Netw
 	return &body, nil
 }
 
-// NetworkingBgpAnnounceSetDelete: Delete a BGP announce set
+// NetworkingBgpAnnounceSetDelete: Delete BGP announce set
 func (c *Client) NetworkingBgpAnnounceSetDelete(ctx context.Context, params NetworkingBgpAnnounceSetDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
@@ -6927,7 +6982,7 @@ func (c *Client) NetworkingLoopbackAddressListAllPages(ctx context.Context, para
 	return allPages, nil
 }
 
-// NetworkingLoopbackAddressCreate: Create a loopback address
+// NetworkingLoopbackAddressCreate: Create loopback address
 func (c *Client) NetworkingLoopbackAddressCreate(ctx context.Context, params NetworkingLoopbackAddressCreateParams) (*LoopbackAddress, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -6977,7 +7032,7 @@ func (c *Client) NetworkingLoopbackAddressCreate(ctx context.Context, params Net
 	return &body, nil
 }
 
-// NetworkingLoopbackAddressDelete: Delete a loopback address
+// NetworkingLoopbackAddressDelete: Delete loopback address
 func (c *Client) NetworkingLoopbackAddressDelete(ctx context.Context, params NetworkingLoopbackAddressDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
@@ -7177,7 +7232,7 @@ func (c *Client) NetworkingSwitchPortSettingsDelete(ctx context.Context, params 
 	return nil
 }
 
-// NetworkingSwitchPortSettingsView: Get information about a switch port
+// NetworkingSwitchPortSettingsView: Get information about switch port
 func (c *Client) NetworkingSwitchPortSettingsView(ctx context.Context, params NetworkingSwitchPortSettingsViewParams) (*SwitchPortSettingsView, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -7223,7 +7278,7 @@ func (c *Client) NetworkingSwitchPortSettingsView(ctx context.Context, params Ne
 	return &body, nil
 }
 
-// SystemPolicyView: Fetch the top-level IAM policy
+// SystemPolicyView: Fetch top-level IAM policy
 func (c *Client) SystemPolicyView(ctx context.Context) (*FleetRolePolicy, error) {
 	// Create the request
 	req, err := c.buildRequest(
@@ -7264,7 +7319,7 @@ func (c *Client) SystemPolicyView(ctx context.Context) (*FleetRolePolicy, error)
 	return &body, nil
 }
 
-// SystemPolicyUpdate: Update the top-level IAM policy
+// SystemPolicyUpdate: Update top-level IAM policy
 func (c *Client) SystemPolicyUpdate(ctx context.Context, params SystemPolicyUpdateParams) (*FleetRolePolicy, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -7389,7 +7444,7 @@ func (c *Client) RoleListAllPages(ctx context.Context, params RoleListParams) ([
 	return allPages, nil
 }
 
-// RoleView: Fetch a built-in role
+// RoleView: Fetch built-in role
 func (c *Client) RoleView(ctx context.Context, params RoleViewParams) (*Role, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -7639,8 +7694,8 @@ func (c *Client) SiloCreate(ctx context.Context, params SiloCreateParams) (*Silo
 	return &body, nil
 }
 
-// SiloView: Fetch a silo
-// Fetch a silo by name or ID.
+// SiloView: Fetch silo
+// Fetch silo by name or ID.
 func (c *Client) SiloView(ctx context.Context, params SiloViewParams) (*Silo, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -7802,7 +7857,7 @@ func (c *Client) SiloIpPoolListAllPages(ctx context.Context, params SiloIpPoolLi
 	return allPages, nil
 }
 
-// SiloPolicyView: Fetch a silo's IAM policy
+// SiloPolicyView: Fetch silo IAM policy
 func (c *Client) SiloPolicyView(ctx context.Context, params SiloPolicyViewParams) (*SiloRolePolicy, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -7848,7 +7903,7 @@ func (c *Client) SiloPolicyView(ctx context.Context, params SiloPolicyViewParams
 	return &body, nil
 }
 
-// SiloPolicyUpdate: Update a silo's IAM policy
+// SiloPolicyUpdate: Update silo IAM policy
 func (c *Client) SiloPolicyUpdate(ctx context.Context, params SiloPolicyUpdateParams) (*SiloRolePolicy, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -7900,7 +7955,7 @@ func (c *Client) SiloPolicyUpdate(ctx context.Context, params SiloPolicyUpdatePa
 	return &body, nil
 }
 
-// SiloQuotasView: View the resource quotas of a given silo
+// SiloQuotasView: Fetch resource quotas for silo
 func (c *Client) SiloQuotasView(ctx context.Context, params SiloQuotasViewParams) (*SiloQuotas, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -7946,7 +8001,7 @@ func (c *Client) SiloQuotasView(ctx context.Context, params SiloQuotasViewParams
 	return &body, nil
 }
 
-// SiloQuotasUpdate: Update the resource quotas of a given silo
+// SiloQuotasUpdate: Update resource quotas for silo
 // If a quota value is not specified, it will remain unchanged.
 func (c *Client) SiloQuotasUpdate(ctx context.Context, params SiloQuotasUpdateParams) (*SiloQuotas, error) {
 	if err := params.Validate(); err != nil {
@@ -7999,7 +8054,7 @@ func (c *Client) SiloQuotasUpdate(ctx context.Context, params SiloQuotasUpdatePa
 	return &body, nil
 }
 
-// SiloUserList: List built-in (system) users in a silo
+// SiloUserList: List built-in (system) users in silo
 //
 // To iterate over all pages, use the `SiloUserListAllPages` method, instead.
 func (c *Client) SiloUserList(ctx context.Context, params SiloUserListParams) (*UserResultsPage, error) {
@@ -8050,7 +8105,7 @@ func (c *Client) SiloUserList(ctx context.Context, params SiloUserListParams) (*
 	return &body, nil
 }
 
-// SiloUserListAllPages: List built-in (system) users in a silo
+// SiloUserListAllPages: List built-in (system) users in silo
 //
 // This method is a wrapper around the `SiloUserList` method.
 // This method returns all the pages at once.
@@ -8152,7 +8207,7 @@ func (c *Client) UserBuiltinListAllPages(ctx context.Context, params UserBuiltin
 	return allPages, nil
 }
 
-// UserBuiltinView: Fetch a built-in user
+// UserBuiltinView: Fetch built-in user
 func (c *Client) UserBuiltinView(ctx context.Context, params UserBuiltinViewParams) (*UserBuiltin, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -8198,7 +8253,7 @@ func (c *Client) UserBuiltinView(ctx context.Context, params UserBuiltinViewPara
 	return &body, nil
 }
 
-// SiloUserView: Fetch a built-in (system) user
+// SiloUserView: Fetch built-in (system) user
 func (c *Client) SiloUserView(ctx context.Context, params SiloUserViewParams) (*User, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -8322,7 +8377,7 @@ func (c *Client) SiloUtilizationListAllPages(ctx context.Context, params SiloUti
 	return allPages, nil
 }
 
-// SiloUtilizationView: View the current utilization of a given silo
+// SiloUtilizationView: Fetch current utilization for given silo
 func (c *Client) SiloUtilizationView(ctx context.Context, params SiloUtilizationViewParams) (*SiloUtilization, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -8445,7 +8500,7 @@ func (c *Client) UserListAllPages(ctx context.Context, params UserListParams) ([
 	return allPages, nil
 }
 
-// UtilizationView: View the resource utilization of the user's current silo
+// UtilizationView: Fetch resource utilization for user's current silo
 func (c *Client) UtilizationView(ctx context.Context) (*Utilization, error) {
 	// Create the request
 	req, err := c.buildRequest(
@@ -8664,7 +8719,7 @@ func (c *Client) VpcSubnetListAllPages(ctx context.Context, params VpcSubnetList
 	return allPages, nil
 }
 
-// VpcSubnetCreate: Create a subnet
+// VpcSubnetCreate: Create subnet
 func (c *Client) VpcSubnetCreate(ctx context.Context, params VpcSubnetCreateParams) (*VpcSubnet, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -8717,7 +8772,7 @@ func (c *Client) VpcSubnetCreate(ctx context.Context, params VpcSubnetCreatePara
 	return &body, nil
 }
 
-// VpcSubnetView: Fetch a subnet
+// VpcSubnetView: Fetch subnet
 func (c *Client) VpcSubnetView(ctx context.Context, params VpcSubnetViewParams) (*VpcSubnet, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -8766,7 +8821,7 @@ func (c *Client) VpcSubnetView(ctx context.Context, params VpcSubnetViewParams) 
 	return &body, nil
 }
 
-// VpcSubnetUpdate: Update a subnet
+// VpcSubnetUpdate: Update subnet
 func (c *Client) VpcSubnetUpdate(ctx context.Context, params VpcSubnetUpdateParams) (*VpcSubnet, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -8821,7 +8876,7 @@ func (c *Client) VpcSubnetUpdate(ctx context.Context, params VpcSubnetUpdatePara
 	return &body, nil
 }
 
-// VpcSubnetDelete: Delete a subnet
+// VpcSubnetDelete: Delete subnet
 func (c *Client) VpcSubnetDelete(ctx context.Context, params VpcSubnetDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
@@ -9016,7 +9071,7 @@ func (c *Client) VpcListAllPages(ctx context.Context, params VpcListParams) ([]V
 	return allPages, nil
 }
 
-// VpcCreate: Create a VPC
+// VpcCreate: Create VPC
 func (c *Client) VpcCreate(ctx context.Context, params VpcCreateParams) (*Vpc, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -9068,7 +9123,7 @@ func (c *Client) VpcCreate(ctx context.Context, params VpcCreateParams) (*Vpc, e
 	return &body, nil
 }
 
-// VpcView: Fetch a VPC
+// VpcView: Fetch VPC
 func (c *Client) VpcView(ctx context.Context, params VpcViewParams) (*Vpc, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -9170,7 +9225,7 @@ func (c *Client) VpcUpdate(ctx context.Context, params VpcUpdateParams) (*Vpc, e
 	return &body, nil
 }
 
-// VpcDelete: Delete a VPC
+// VpcDelete: Delete VPC
 func (c *Client) VpcDelete(ctx context.Context, params VpcDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
