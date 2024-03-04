@@ -20,8 +20,6 @@ jobs:
         shell: bash
         run: |
           make test
-        env:
-          OXIDE_API_TOKEN: ${{secrets.OXIDE_API_TOKEN}}
       - name: lint
         shell: bash
         run: |
