@@ -103,17 +103,19 @@ func Test_generateTypes(t *testing.T) {
 }
 
 func Test_createTypeObject(t *testing.T) {
-	typesSpec := map[string]*openapi3.SchemaRef{
-		"snapshot_id": {
-			Value: &openapi3.Schema{Type: "string", Format: "uuid"},
-		},
-		"type": {
-			Value: &openapi3.Schema{Type: "string", Enum: []interface{}{"snapshot"}},
-		},
-	}
+	typesSpec := openapi3.Schema{
+		Required: []string{"type"},
+		Properties: map[string]*openapi3.SchemaRef{
+			"snapshot_id": {
+				Value: &openapi3.Schema{Type: "string", Format: "uuid"},
+			},
+			"type": {
+				Value: &openapi3.Schema{Type: "string", Enum: []interface{}{"snapshot"}},
+			},
+		}}
 
 	type args struct {
-		s        map[string]*openapi3.SchemaRef
+		s        openapi3.Schema
 		name     string
 		typeName string
 	}
@@ -126,7 +128,7 @@ func Test_createTypeObject(t *testing.T) {
 			name: "success",
 			args: args{typesSpec, "DiskSource", "DiskSourceSnapshot"},
 			want: TypeTemplate{
-				Description: "Create a disk from a disk snapshot",
+				Description: "Create a disk from a disk snapshot\n//\n// Required fields:\n// - Type",
 				Name:        "DiskSourceSnapshot",
 				Type:        "struct", Fields: []TypeFields{
 					{
@@ -147,7 +149,7 @@ func Test_createTypeObject(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := createTypeObject(tt.args.s, tt.args.name, tt.args.typeName, "Create a disk from a disk snapshot")
+			got := createTypeObject(&tt.args.s, tt.args.name, tt.args.typeName, "Create a disk from a disk snapshot")
 			assert.Equal(t, tt.want, got)
 		})
 	}
@@ -245,7 +247,10 @@ func Test_createOneOf(t *testing.T) {
 					Description: "// ImageSourceType is the type definition for a ImageSourceType.", Name: "ImageSourceType", Type: "string",
 				},
 				{
-					Description: "// ImageSourceUrl is the type definition for a ImageSourceUrl.", Name: "ImageSourceUrl", Type: "struct", Fields: []TypeFields{
+					Description: "// ImageSourceUrl is the type definition for a ImageSourceUrl.\n//\n// Required fields:\n// - Type\n// - Url",
+					Name:        "ImageSourceUrl",
+					Type:        "struct",
+					Fields: []TypeFields{
 						{
 							Description: "", Name: "Type", Type: "ImageSourceType", SerializationInfo: "`json:\"type,omitempty\" yaml:\"type,omitempty\"`",
 						},
@@ -255,7 +260,10 @@ func Test_createOneOf(t *testing.T) {
 					},
 				},
 				{
-					Description: "// ImageSourceSnapshot is the type definition for a ImageSourceSnapshot.", Name: "ImageSourceSnapshot", Type: "struct", Fields: []TypeFields{
+					Description: "// ImageSourceSnapshot is the type definition for a ImageSourceSnapshot.\n//\n// Required fields:\n// - Id\n// - Type",
+					Name:        "ImageSourceSnapshot",
+					Type:        "struct",
+					Fields: []TypeFields{
 						{
 							Description: "", Name: "Id", Type: "string", SerializationInfo: "`json:\"id,omitempty\" yaml:\"id,omitempty\"`",
 						},

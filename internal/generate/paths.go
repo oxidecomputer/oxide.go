@@ -141,7 +141,7 @@ func buildMethod(f *os.File, spec *openapi3.T, method string, path string, o *op
 	}
 
 	methodName := strcase.ToCamel(o.OperationID)
-	pInfo := buildParams(o, method, methodName)
+	pInfo := buildParams(o, methodName)
 
 	// Adapt for ListAll methods
 	if isGetAllPages && len(pagedRespType) > 0 {
@@ -348,7 +348,7 @@ func buildPathOrQueryParams(paramType string, params map[string]*openapi3.Parame
 	return pathParams, nil
 }
 
-func buildParams(operation *openapi3.Operation, method, opID string) paramsInfo {
+func buildParams(operation *openapi3.Operation, opID string) paramsInfo {
 	pInfo := paramsInfo{
 		parameters: make(map[string]*openapi3.Parameter, 0),
 	}

@@ -103,12 +103,12 @@ func constructParamTypes(paths map[string]*openapi3.PathItem) []TypeTemplate {
 			if len(o.Parameters) > 0 || o.RequestBody != nil {
 				paramsTypeName := strcase.ToCamel(o.OperationID) + "Params"
 				paramsTpl := TypeTemplate{
-					Type:        "struct",
-					Name:        paramsTypeName,
-					Description: "// " + paramsTypeName + " is the request parameters for " + strcase.ToCamel(o.OperationID),
+					Type: "struct",
+					Name: paramsTypeName,
 				}
 
 				fields := make([]TypeFields, 0)
+				requiredFields := ""
 				for _, p := range o.Parameters {
 					if p.Ref != "" {
 						fmt.Printf("[WARN] TODO: skipping parameter for %q, since it is a reference\n", p.Value.Name)
@@ -119,6 +119,10 @@ func constructParamTypes(paths map[string]*openapi3.PathItem) []TypeTemplate {
 					field := TypeFields{
 						Name: paramName,
 						Type: convertToValidGoType("", p.Value.Schema),
+					}
+
+					if p.Value.Required {
+						requiredFields = requiredFields + fmt.Sprintf("\n// - %s", paramName)
 					}
 
 					serInfo := fmt.Sprintf("`json:\"%s,omitempty\" yaml:\"%s,omitempty\"`", p.Value.Name, p.Value.Name)
@@ -147,9 +151,13 @@ func constructParamTypes(paths map[string]*openapi3.PathItem) []TypeTemplate {
 							SerializationInfo: "`json:\"body,omitempty\" yaml:\"body,omitempty\"`",
 						}
 					}
+					// Body is always a required field
+					requiredFields = requiredFields + "\n// - Body"
 					fields = append(fields, field)
 				}
 				paramsTpl.Fields = fields
+				paramsTpl.Description = "// " + paramsTypeName + " is the request parameters for " +
+					strcase.ToCamel(o.OperationID) + "\n// Required fields:" + requiredFields
 				paramTypes = append(paramTypes, paramsTpl)
 			}
 		}
@@ -400,7 +408,7 @@ func populateTypeTemplates(name string, s *openapi3.Schema, enumFieldName string
 		typeTpl.Type = fmt.Sprintf("[]%s", s.Items.Value.Type)
 		typeTpl.Name = typeName
 	case "object":
-		typeTpl = createTypeObject(s.Properties, name, typeName, formatTypeDescription(typeName, s))
+		typeTpl = createTypeObject(s, name, typeName, formatTypeDescription(typeName, s))
 
 		// Iterate over the properties and append the types, if we need to.
 		for k, v := range s.Properties {
@@ -439,7 +447,7 @@ func populateTypeTemplates(name string, s *openapi3.Schema, enumFieldName string
 	return types, enumTypes
 }
 
-func createTypeObject(schemas map[string]*openapi3.SchemaRef, name, typeName, description string) TypeTemplate {
+func createTypeObject(schema *openapi3.Schema, name, typeName, description string) TypeTemplate {
 	// TODO: Create types out of the schemas instead of plucking them out of the objects
 	// will leave this for another PR, because the yak shaving is getting ridiculous.
 	// Tracked -> https://github.com/oxidecomputer/oxide.go/issues/110
@@ -450,11 +458,11 @@ func createTypeObject(schemas map[string]*openapi3.SchemaRef, name, typeName, de
 	}
 
 	typeTpl := TypeTemplate{
-		Description: description,
-		Name:        typeName,
-		Type:        "struct",
+		Name: typeName,
+		Type: "struct",
 	}
 
+	schemas := schema.Properties
 	// We want to ensure we keep the order
 	keys := make([]string, 0)
 	for k := range schemas {
@@ -495,6 +503,14 @@ func createTypeObject(schemas map[string]*openapi3.SchemaRef, name, typeName, de
 
 	}
 	typeTpl.Fields = fields
+
+	if len(schema.Required) > 0 {
+		description = description + "\n//\n// Required fields:"
+		for _, r := range schema.Required {
+			description = description + fmt.Sprintf("\n// - %s", strcase.ToCamel(r))
+		}
+	}
+	typeTpl.Description = description
 
 	return typeTpl
 }
