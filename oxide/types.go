@@ -4719,8 +4719,6 @@ type LoginSamlParams struct {
 }
 
 // CertificateListParams is the request parameters for CertificateList
-//
-// Required fields:
 type CertificateListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -4754,6 +4752,7 @@ type CertificateViewParams struct {
 // DiskListParams is the request parameters for DiskList
 //
 // Required fields:
+// - Project
 type DiskListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -4832,6 +4831,8 @@ type DiskFinalizeImportParams struct {
 // DiskMetricsListParams is the request parameters for DiskMetricsList
 //
 // Required fields:
+// - EndTime
+// - StartTime
 // - Disk
 // - Metric
 type DiskMetricsListParams struct {
@@ -4848,6 +4849,7 @@ type DiskMetricsListParams struct {
 // FloatingIpListParams is the request parameters for FloatingIpList
 //
 // Required fields:
+// - Project
 type FloatingIpListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -4915,8 +4917,6 @@ type FloatingIpDetachParams struct {
 }
 
 // GroupListParams is the request parameters for GroupList
-//
-// Required fields:
 type GroupListParams struct {
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -4932,8 +4932,6 @@ type GroupViewParams struct {
 }
 
 // ImageListParams is the request parameters for ImageList
-//
-// Required fields:
 type ImageListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -4990,6 +4988,7 @@ type ImagePromoteParams struct {
 // InstanceListParams is the request parameters for InstanceList
 //
 // Required fields:
+// - Project
 type InstanceListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -5161,8 +5160,6 @@ type InstanceStopParams struct {
 }
 
 // ProjectIpPoolListParams is the request parameters for ProjectIpPoolList
-//
-// Required fields:
 type ProjectIpPoolListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -5188,8 +5185,6 @@ type LoginLocalParams struct {
 }
 
 // CurrentUserGroupsParams is the request parameters for CurrentUserGroups
-//
-// Required fields:
 type CurrentUserGroupsParams struct {
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -5197,8 +5192,6 @@ type CurrentUserGroupsParams struct {
 }
 
 // CurrentUserSshKeyListParams is the request parameters for CurrentUserSshKeyList
-//
-// Required fields:
 type CurrentUserSshKeyListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -5232,6 +5225,8 @@ type CurrentUserSshKeyViewParams struct {
 // SiloMetricParams is the request parameters for SiloMetric
 //
 // Required fields:
+// - EndTime
+// - StartTime
 // - MetricName
 type SiloMetricParams struct {
 	MetricName SystemMetricName `json:"metric_name,omitempty" yaml:"metric_name,omitempty"`
@@ -5246,6 +5241,7 @@ type SiloMetricParams struct {
 // InstanceNetworkInterfaceListParams is the request parameters for InstanceNetworkInterfaceList
 //
 // Required fields:
+// - Instance
 type InstanceNetworkInterfaceListParams struct {
 	Instance  NameOrId         `json:"instance,omitempty" yaml:"instance,omitempty"`
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -5306,8 +5302,6 @@ type PolicyUpdateParams struct {
 }
 
 // ProjectListParams is the request parameters for ProjectList
-//
-// Required fields:
 type ProjectListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -5369,6 +5363,7 @@ type ProjectPolicyUpdateParams struct {
 // SnapshotListParams is the request parameters for SnapshotList
 //
 // Required fields:
+// - Project
 type SnapshotListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -5405,8 +5400,6 @@ type SnapshotViewParams struct {
 }
 
 // PhysicalDiskListParams is the request parameters for PhysicalDiskList
-//
-// Required fields:
 type PhysicalDiskListParams struct {
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -5414,8 +5407,6 @@ type PhysicalDiskListParams struct {
 }
 
 // RackListParams is the request parameters for RackList
-//
-// Required fields:
 type RackListParams struct {
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -5431,8 +5422,6 @@ type RackViewParams struct {
 }
 
 // SledListParams is the request parameters for SledList
-//
-// Required fields:
 type SledListParams struct {
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -5448,8 +5437,6 @@ type SledAddParams struct {
 }
 
 // SledListUninitializedParams is the request parameters for SledListUninitialized
-//
-// Required fields:
 type SledListUninitializedParams struct {
 	Limit     int    `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -5496,8 +5483,6 @@ type SledSetProvisionPolicyParams struct {
 }
 
 // NetworkingSwitchPortListParams is the request parameters for NetworkingSwitchPortList
-//
-// Required fields:
 type NetworkingSwitchPortListParams struct {
 	Limit        int        `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken    string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -5532,8 +5517,6 @@ type NetworkingSwitchPortApplySettingsParams struct {
 }
 
 // SwitchListParams is the request parameters for SwitchList
-//
-// Required fields:
 type SwitchListParams struct {
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -5551,6 +5534,7 @@ type SwitchViewParams struct {
 // SiloIdentityProviderListParams is the request parameters for SiloIdentityProviderList
 //
 // Required fields:
+// - Silo
 type SiloIdentityProviderListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -5611,8 +5595,6 @@ type SamlIdentityProviderViewParams struct {
 }
 
 // IpPoolListParams is the request parameters for IpPoolList
-//
-// Required fields:
 type IpPoolListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -5628,8 +5610,6 @@ type IpPoolCreateParams struct {
 }
 
 // IpPoolServiceRangeListParams is the request parameters for IpPoolServiceRangeList
-//
-// Required fields:
 type IpPoolServiceRangeListParams struct {
 	Limit     int    `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -5753,6 +5733,8 @@ type IpPoolSiloUpdateParams struct {
 // SystemMetricParams is the request parameters for SystemMetric
 //
 // Required fields:
+// - EndTime
+// - StartTime
 // - MetricName
 type SystemMetricParams struct {
 	MetricName SystemMetricName `json:"metric_name,omitempty" yaml:"metric_name,omitempty"`
@@ -5765,8 +5747,6 @@ type SystemMetricParams struct {
 }
 
 // NetworkingAddressLotListParams is the request parameters for NetworkingAddressLotList
-//
-// Required fields:
 type NetworkingAddressLotListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -5825,8 +5805,6 @@ type NetworkingBgpConfigDeleteParams struct {
 }
 
 // NetworkingBgpConfigListParams is the request parameters for NetworkingBgpConfigList
-//
-// Required fields:
 type NetworkingBgpConfigListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
 	NameOrId  NameOrId         `json:"name_or_id,omitempty" yaml:"name_or_id,omitempty"`
@@ -5875,8 +5853,6 @@ type NetworkingBgpImportedRoutesIpv4Params struct {
 }
 
 // NetworkingLoopbackAddressListParams is the request parameters for NetworkingLoopbackAddressList
-//
-// Required fields:
 type NetworkingLoopbackAddressListParams struct {
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -5906,15 +5882,11 @@ type NetworkingLoopbackAddressDeleteParams struct {
 }
 
 // NetworkingSwitchPortSettingsDeleteParams is the request parameters for NetworkingSwitchPortSettingsDelete
-//
-// Required fields:
 type NetworkingSwitchPortSettingsDeleteParams struct {
 	PortSettings NameOrId `json:"port_settings,omitempty" yaml:"port_settings,omitempty"`
 }
 
 // NetworkingSwitchPortSettingsListParams is the request parameters for NetworkingSwitchPortSettingsList
-//
-// Required fields:
 type NetworkingSwitchPortSettingsListParams struct {
 	Limit        int              `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken    string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -5947,8 +5919,6 @@ type SystemPolicyUpdateParams struct {
 }
 
 // RoleListParams is the request parameters for RoleList
-//
-// Required fields:
 type RoleListParams struct {
 	Limit     int    `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -5963,8 +5933,6 @@ type RoleViewParams struct {
 }
 
 // SystemQuotasListParams is the request parameters for SystemQuotasList
-//
-// Required fields:
 type SystemQuotasListParams struct {
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -5972,8 +5940,6 @@ type SystemQuotasListParams struct {
 }
 
 // SiloListParams is the request parameters for SiloList
-//
-// Required fields:
 type SiloListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -6054,6 +6020,7 @@ type SiloQuotasUpdateParams struct {
 // SiloUserListParams is the request parameters for SiloUserList
 //
 // Required fields:
+// - Silo
 type SiloUserListParams struct {
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -6062,8 +6029,6 @@ type SiloUserListParams struct {
 }
 
 // UserBuiltinListParams is the request parameters for UserBuiltinList
-//
-// Required fields:
 type UserBuiltinListParams struct {
 	Limit     int          `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string       `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -6089,8 +6054,6 @@ type SiloUserViewParams struct {
 }
 
 // SiloUtilizationListParams is the request parameters for SiloUtilizationList
-//
-// Required fields:
 type SiloUtilizationListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -6106,8 +6069,6 @@ type SiloUtilizationViewParams struct {
 }
 
 // UserListParams is the request parameters for UserList
-//
-// Required fields:
 type UserListParams struct {
 	Group     string     `json:"group,omitempty" yaml:"group,omitempty"`
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -6138,6 +6099,7 @@ type VpcFirewallRulesUpdateParams struct {
 // VpcSubnetListParams is the request parameters for VpcSubnetList
 //
 // Required fields:
+// - Vpc
 type VpcSubnetListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -6205,6 +6167,7 @@ type VpcSubnetListNetworkInterfacesParams struct {
 // VpcListParams is the request parameters for VpcList
 //
 // Required fields:
+// - Project
 type VpcListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`

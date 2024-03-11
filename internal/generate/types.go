@@ -100,6 +100,27 @@ func constructParamTypes(paths map[string]*openapi3.PathItem) []TypeTemplate {
 		sort.Strings(keys)
 		for _, op := range keys {
 			o := ops[op]
+			requiredFields := ""
+
+			// Some required fields are defined in vendor extensions
+			for k, v := range o.Extensions {
+				if k == "x-dropshot-pagination" {
+					for i, j := range v.(map[string]interface{}) {
+						if i == "required" {
+							values, ok := j.([]interface{})
+							if ok {
+								for _, field := range values {
+									str, ok := field.(string)
+									if ok {
+										requiredFields = requiredFields + fmt.Sprintf("\n// - %v", strcase.ToCamel(str))
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
 			if len(o.Parameters) > 0 || o.RequestBody != nil {
 				paramsTypeName := strcase.ToCamel(o.OperationID) + "Params"
 				paramsTpl := TypeTemplate{
@@ -108,7 +129,6 @@ func constructParamTypes(paths map[string]*openapi3.PathItem) []TypeTemplate {
 				}
 
 				fields := make([]TypeFields, 0)
-				requiredFields := ""
 				for _, p := range o.Parameters {
 					if p.Ref != "" {
 						fmt.Printf("[WARN] TODO: skipping parameter for %q, since it is a reference\n", p.Value.Name)
@@ -156,8 +176,13 @@ func constructParamTypes(paths map[string]*openapi3.PathItem) []TypeTemplate {
 					fields = append(fields, field)
 				}
 				paramsTpl.Fields = fields
-				paramsTpl.Description = "// " + paramsTypeName + " is the request parameters for " +
-					strcase.ToCamel(o.OperationID) + "\n//\n// Required fields:" + requiredFields
+
+				description := "// " + paramsTypeName + " is the request parameters for " +
+					strcase.ToCamel(o.OperationID)
+				if requiredFields != "" {
+					description = description + "\n//\n// Required fields:" + requiredFields
+				}
+				paramsTpl.Description = description
 				paramTypes = append(paramTypes, paramsTpl)
 			}
 		}
