@@ -4683,6 +4683,7 @@ type VpcUpdate struct {
 }
 
 // DeviceAuthRequestParams is the request parameters for DeviceAuthRequest
+//
 // Required fields:
 // - Body
 type DeviceAuthRequestParams struct {
@@ -4690,6 +4691,7 @@ type DeviceAuthRequestParams struct {
 }
 
 // DeviceAuthConfirmParams is the request parameters for DeviceAuthConfirm
+//
 // Required fields:
 // - Body
 type DeviceAuthConfirmParams struct {
@@ -4697,6 +4699,7 @@ type DeviceAuthConfirmParams struct {
 }
 
 // DeviceAccessTokenParams is the request parameters for DeviceAccessToken
+//
 // Required fields:
 // - Body
 type DeviceAccessTokenParams struct {
@@ -4704,6 +4707,7 @@ type DeviceAccessTokenParams struct {
 }
 
 // LoginSamlParams is the request parameters for LoginSaml
+//
 // Required fields:
 // - ProviderName
 // - SiloName
@@ -4715,6 +4719,7 @@ type LoginSamlParams struct {
 }
 
 // CertificateListParams is the request parameters for CertificateList
+//
 // Required fields:
 type CertificateListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -4723,6 +4728,7 @@ type CertificateListParams struct {
 }
 
 // CertificateCreateParams is the request parameters for CertificateCreate
+//
 // Required fields:
 // - Body
 type CertificateCreateParams struct {
@@ -4730,6 +4736,7 @@ type CertificateCreateParams struct {
 }
 
 // CertificateDeleteParams is the request parameters for CertificateDelete
+//
 // Required fields:
 // - Certificate
 type CertificateDeleteParams struct {
@@ -4737,6 +4744,7 @@ type CertificateDeleteParams struct {
 }
 
 // CertificateViewParams is the request parameters for CertificateView
+//
 // Required fields:
 // - Certificate
 type CertificateViewParams struct {
@@ -4744,6 +4752,7 @@ type CertificateViewParams struct {
 }
 
 // DiskListParams is the request parameters for DiskList
+//
 // Required fields:
 type DiskListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -4753,6 +4762,7 @@ type DiskListParams struct {
 }
 
 // DiskCreateParams is the request parameters for DiskCreate
+//
 // Required fields:
 // - Project
 // - Body
@@ -4762,6 +4772,7 @@ type DiskCreateParams struct {
 }
 
 // DiskDeleteParams is the request parameters for DiskDelete
+//
 // Required fields:
 // - Disk
 type DiskDeleteParams struct {
@@ -4770,6 +4781,7 @@ type DiskDeleteParams struct {
 }
 
 // DiskViewParams is the request parameters for DiskView
+//
 // Required fields:
 // - Disk
 type DiskViewParams struct {
@@ -4778,6 +4790,7 @@ type DiskViewParams struct {
 }
 
 // DiskBulkWriteImportParams is the request parameters for DiskBulkWriteImport
+//
 // Required fields:
 // - Disk
 // - Body
@@ -4788,6 +4801,7 @@ type DiskBulkWriteImportParams struct {
 }
 
 // DiskBulkWriteImportStartParams is the request parameters for DiskBulkWriteImportStart
+//
 // Required fields:
 // - Disk
 type DiskBulkWriteImportStartParams struct {
@@ -4796,6 +4810,7 @@ type DiskBulkWriteImportStartParams struct {
 }
 
 // DiskBulkWriteImportStopParams is the request parameters for DiskBulkWriteImportStop
+//
 // Required fields:
 // - Disk
 type DiskBulkWriteImportStopParams struct {
@@ -4804,6 +4819,7 @@ type DiskBulkWriteImportStopParams struct {
 }
 
 // DiskFinalizeImportParams is the request parameters for DiskFinalizeImport
+//
 // Required fields:
 // - Disk
 // - Body
@@ -4814,6 +4830,7 @@ type DiskFinalizeImportParams struct {
 }
 
 // DiskMetricsListParams is the request parameters for DiskMetricsList
+//
 // Required fields:
 // - Disk
 // - Metric
@@ -4829,6 +4846,7 @@ type DiskMetricsListParams struct {
 }
 
 // FloatingIpListParams is the request parameters for FloatingIpList
+//
 // Required fields:
 type FloatingIpListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -4838,6 +4856,7 @@ type FloatingIpListParams struct {
 }
 
 // FloatingIpCreateParams is the request parameters for FloatingIpCreate
+//
 // Required fields:
 // - Project
 // - Body
@@ -4847,6 +4866,7 @@ type FloatingIpCreateParams struct {
 }
 
 // FloatingIpDeleteParams is the request parameters for FloatingIpDelete
+//
 // Required fields:
 // - FloatingIp
 type FloatingIpDeleteParams struct {
@@ -4855,6 +4875,7 @@ type FloatingIpDeleteParams struct {
 }
 
 // FloatingIpViewParams is the request parameters for FloatingIpView
+//
 // Required fields:
 // - FloatingIp
 type FloatingIpViewParams struct {
@@ -4863,6 +4884,7 @@ type FloatingIpViewParams struct {
 }
 
 // FloatingIpUpdateParams is the request parameters for FloatingIpUpdate
+//
 // Required fields:
 // - FloatingIp
 // - Body
@@ -4873,6 +4895,7 @@ type FloatingIpUpdateParams struct {
 }
 
 // FloatingIpAttachParams is the request parameters for FloatingIpAttach
+//
 // Required fields:
 // - FloatingIp
 // - Body
@@ -4883,6 +4906,7 @@ type FloatingIpAttachParams struct {
 }
 
 // FloatingIpDetachParams is the request parameters for FloatingIpDetach
+//
 // Required fields:
 // - FloatingIp
 type FloatingIpDetachParams struct {
@@ -4891,6 +4915,7 @@ type FloatingIpDetachParams struct {
 }
 
 // GroupListParams is the request parameters for GroupList
+//
 // Required fields:
 type GroupListParams struct {
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -4899,6 +4924,7 @@ type GroupListParams struct {
 }
 
 // GroupViewParams is the request parameters for GroupView
+//
 // Required fields:
 // - GroupId
 type GroupViewParams struct {
@@ -4906,6 +4932,7 @@ type GroupViewParams struct {
 }
 
 // ImageListParams is the request parameters for ImageList
+//
 // Required fields:
 type ImageListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -4915,6 +4942,7 @@ type ImageListParams struct {
 }
 
 // ImageCreateParams is the request parameters for ImageCreate
+//
 // Required fields:
 // - Body
 type ImageCreateParams struct {
@@ -4923,6 +4951,7 @@ type ImageCreateParams struct {
 }
 
 // ImageDeleteParams is the request parameters for ImageDelete
+//
 // Required fields:
 // - Image
 type ImageDeleteParams struct {
@@ -4931,6 +4960,7 @@ type ImageDeleteParams struct {
 }
 
 // ImageViewParams is the request parameters for ImageView
+//
 // Required fields:
 // - Image
 type ImageViewParams struct {
@@ -4939,6 +4969,7 @@ type ImageViewParams struct {
 }
 
 // ImageDemoteParams is the request parameters for ImageDemote
+//
 // Required fields:
 // - Image
 // - Project
@@ -4948,6 +4979,7 @@ type ImageDemoteParams struct {
 }
 
 // ImagePromoteParams is the request parameters for ImagePromote
+//
 // Required fields:
 // - Image
 type ImagePromoteParams struct {
@@ -4956,6 +4988,7 @@ type ImagePromoteParams struct {
 }
 
 // InstanceListParams is the request parameters for InstanceList
+//
 // Required fields:
 type InstanceListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -4965,6 +4998,7 @@ type InstanceListParams struct {
 }
 
 // InstanceCreateParams is the request parameters for InstanceCreate
+//
 // Required fields:
 // - Project
 // - Body
@@ -4974,6 +5008,7 @@ type InstanceCreateParams struct {
 }
 
 // InstanceDeleteParams is the request parameters for InstanceDelete
+//
 // Required fields:
 // - Instance
 type InstanceDeleteParams struct {
@@ -4982,6 +5017,7 @@ type InstanceDeleteParams struct {
 }
 
 // InstanceViewParams is the request parameters for InstanceView
+//
 // Required fields:
 // - Instance
 type InstanceViewParams struct {
@@ -4990,6 +5026,7 @@ type InstanceViewParams struct {
 }
 
 // InstanceDiskListParams is the request parameters for InstanceDiskList
+//
 // Required fields:
 // - Instance
 type InstanceDiskListParams struct {
@@ -5001,6 +5038,7 @@ type InstanceDiskListParams struct {
 }
 
 // InstanceDiskAttachParams is the request parameters for InstanceDiskAttach
+//
 // Required fields:
 // - Instance
 // - Body
@@ -5011,6 +5049,7 @@ type InstanceDiskAttachParams struct {
 }
 
 // InstanceDiskDetachParams is the request parameters for InstanceDiskDetach
+//
 // Required fields:
 // - Instance
 // - Body
@@ -5021,6 +5060,7 @@ type InstanceDiskDetachParams struct {
 }
 
 // InstanceExternalIpListParams is the request parameters for InstanceExternalIpList
+//
 // Required fields:
 // - Instance
 type InstanceExternalIpListParams struct {
@@ -5029,6 +5069,7 @@ type InstanceExternalIpListParams struct {
 }
 
 // InstanceEphemeralIpDetachParams is the request parameters for InstanceEphemeralIpDetach
+//
 // Required fields:
 // - Instance
 type InstanceEphemeralIpDetachParams struct {
@@ -5037,6 +5078,7 @@ type InstanceEphemeralIpDetachParams struct {
 }
 
 // InstanceEphemeralIpAttachParams is the request parameters for InstanceEphemeralIpAttach
+//
 // Required fields:
 // - Instance
 // - Body
@@ -5047,6 +5089,7 @@ type InstanceEphemeralIpAttachParams struct {
 }
 
 // InstanceMigrateParams is the request parameters for InstanceMigrate
+//
 // Required fields:
 // - Instance
 // - Body
@@ -5057,6 +5100,7 @@ type InstanceMigrateParams struct {
 }
 
 // InstanceRebootParams is the request parameters for InstanceReboot
+//
 // Required fields:
 // - Instance
 type InstanceRebootParams struct {
@@ -5065,6 +5109,7 @@ type InstanceRebootParams struct {
 }
 
 // InstanceSerialConsoleParams is the request parameters for InstanceSerialConsole
+//
 // Required fields:
 // - Instance
 type InstanceSerialConsoleParams struct {
@@ -5076,6 +5121,7 @@ type InstanceSerialConsoleParams struct {
 }
 
 // InstanceSerialConsoleStreamParams is the request parameters for InstanceSerialConsoleStream
+//
 // Required fields:
 // - Instance
 type InstanceSerialConsoleStreamParams struct {
@@ -5085,6 +5131,7 @@ type InstanceSerialConsoleStreamParams struct {
 }
 
 // InstanceSshPublicKeyListParams is the request parameters for InstanceSshPublicKeyList
+//
 // Required fields:
 // - Instance
 type InstanceSshPublicKeyListParams struct {
@@ -5096,6 +5143,7 @@ type InstanceSshPublicKeyListParams struct {
 }
 
 // InstanceStartParams is the request parameters for InstanceStart
+//
 // Required fields:
 // - Instance
 type InstanceStartParams struct {
@@ -5104,6 +5152,7 @@ type InstanceStartParams struct {
 }
 
 // InstanceStopParams is the request parameters for InstanceStop
+//
 // Required fields:
 // - Instance
 type InstanceStopParams struct {
@@ -5112,6 +5161,7 @@ type InstanceStopParams struct {
 }
 
 // ProjectIpPoolListParams is the request parameters for ProjectIpPoolList
+//
 // Required fields:
 type ProjectIpPoolListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -5120,6 +5170,7 @@ type ProjectIpPoolListParams struct {
 }
 
 // ProjectIpPoolViewParams is the request parameters for ProjectIpPoolView
+//
 // Required fields:
 // - Pool
 type ProjectIpPoolViewParams struct {
@@ -5127,6 +5178,7 @@ type ProjectIpPoolViewParams struct {
 }
 
 // LoginLocalParams is the request parameters for LoginLocal
+//
 // Required fields:
 // - SiloName
 // - Body
@@ -5136,6 +5188,7 @@ type LoginLocalParams struct {
 }
 
 // CurrentUserGroupsParams is the request parameters for CurrentUserGroups
+//
 // Required fields:
 type CurrentUserGroupsParams struct {
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -5144,6 +5197,7 @@ type CurrentUserGroupsParams struct {
 }
 
 // CurrentUserSshKeyListParams is the request parameters for CurrentUserSshKeyList
+//
 // Required fields:
 type CurrentUserSshKeyListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -5152,6 +5206,7 @@ type CurrentUserSshKeyListParams struct {
 }
 
 // CurrentUserSshKeyCreateParams is the request parameters for CurrentUserSshKeyCreate
+//
 // Required fields:
 // - Body
 type CurrentUserSshKeyCreateParams struct {
@@ -5159,6 +5214,7 @@ type CurrentUserSshKeyCreateParams struct {
 }
 
 // CurrentUserSshKeyDeleteParams is the request parameters for CurrentUserSshKeyDelete
+//
 // Required fields:
 // - SshKey
 type CurrentUserSshKeyDeleteParams struct {
@@ -5166,6 +5222,7 @@ type CurrentUserSshKeyDeleteParams struct {
 }
 
 // CurrentUserSshKeyViewParams is the request parameters for CurrentUserSshKeyView
+//
 // Required fields:
 // - SshKey
 type CurrentUserSshKeyViewParams struct {
@@ -5173,6 +5230,7 @@ type CurrentUserSshKeyViewParams struct {
 }
 
 // SiloMetricParams is the request parameters for SiloMetric
+//
 // Required fields:
 // - MetricName
 type SiloMetricParams struct {
@@ -5186,6 +5244,7 @@ type SiloMetricParams struct {
 }
 
 // InstanceNetworkInterfaceListParams is the request parameters for InstanceNetworkInterfaceList
+//
 // Required fields:
 type InstanceNetworkInterfaceListParams struct {
 	Instance  NameOrId         `json:"instance,omitempty" yaml:"instance,omitempty"`
@@ -5196,6 +5255,7 @@ type InstanceNetworkInterfaceListParams struct {
 }
 
 // InstanceNetworkInterfaceCreateParams is the request parameters for InstanceNetworkInterfaceCreate
+//
 // Required fields:
 // - Instance
 // - Body
@@ -5206,6 +5266,7 @@ type InstanceNetworkInterfaceCreateParams struct {
 }
 
 // InstanceNetworkInterfaceDeleteParams is the request parameters for InstanceNetworkInterfaceDelete
+//
 // Required fields:
 // - Interface
 type InstanceNetworkInterfaceDeleteParams struct {
@@ -5215,6 +5276,7 @@ type InstanceNetworkInterfaceDeleteParams struct {
 }
 
 // InstanceNetworkInterfaceViewParams is the request parameters for InstanceNetworkInterfaceView
+//
 // Required fields:
 // - Interface
 type InstanceNetworkInterfaceViewParams struct {
@@ -5224,6 +5286,7 @@ type InstanceNetworkInterfaceViewParams struct {
 }
 
 // InstanceNetworkInterfaceUpdateParams is the request parameters for InstanceNetworkInterfaceUpdate
+//
 // Required fields:
 // - Interface
 // - Body
@@ -5235,6 +5298,7 @@ type InstanceNetworkInterfaceUpdateParams struct {
 }
 
 // PolicyUpdateParams is the request parameters for PolicyUpdate
+//
 // Required fields:
 // - Body
 type PolicyUpdateParams struct {
@@ -5242,6 +5306,7 @@ type PolicyUpdateParams struct {
 }
 
 // ProjectListParams is the request parameters for ProjectList
+//
 // Required fields:
 type ProjectListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -5250,6 +5315,7 @@ type ProjectListParams struct {
 }
 
 // ProjectCreateParams is the request parameters for ProjectCreate
+//
 // Required fields:
 // - Body
 type ProjectCreateParams struct {
@@ -5257,6 +5323,7 @@ type ProjectCreateParams struct {
 }
 
 // ProjectDeleteParams is the request parameters for ProjectDelete
+//
 // Required fields:
 // - Project
 type ProjectDeleteParams struct {
@@ -5264,6 +5331,7 @@ type ProjectDeleteParams struct {
 }
 
 // ProjectViewParams is the request parameters for ProjectView
+//
 // Required fields:
 // - Project
 type ProjectViewParams struct {
@@ -5271,6 +5339,7 @@ type ProjectViewParams struct {
 }
 
 // ProjectUpdateParams is the request parameters for ProjectUpdate
+//
 // Required fields:
 // - Project
 // - Body
@@ -5280,6 +5349,7 @@ type ProjectUpdateParams struct {
 }
 
 // ProjectPolicyViewParams is the request parameters for ProjectPolicyView
+//
 // Required fields:
 // - Project
 type ProjectPolicyViewParams struct {
@@ -5287,6 +5357,7 @@ type ProjectPolicyViewParams struct {
 }
 
 // ProjectPolicyUpdateParams is the request parameters for ProjectPolicyUpdate
+//
 // Required fields:
 // - Project
 // - Body
@@ -5296,6 +5367,7 @@ type ProjectPolicyUpdateParams struct {
 }
 
 // SnapshotListParams is the request parameters for SnapshotList
+//
 // Required fields:
 type SnapshotListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -5305,6 +5377,7 @@ type SnapshotListParams struct {
 }
 
 // SnapshotCreateParams is the request parameters for SnapshotCreate
+//
 // Required fields:
 // - Project
 // - Body
@@ -5314,6 +5387,7 @@ type SnapshotCreateParams struct {
 }
 
 // SnapshotDeleteParams is the request parameters for SnapshotDelete
+//
 // Required fields:
 // - Snapshot
 type SnapshotDeleteParams struct {
@@ -5322,6 +5396,7 @@ type SnapshotDeleteParams struct {
 }
 
 // SnapshotViewParams is the request parameters for SnapshotView
+//
 // Required fields:
 // - Snapshot
 type SnapshotViewParams struct {
@@ -5330,6 +5405,7 @@ type SnapshotViewParams struct {
 }
 
 // PhysicalDiskListParams is the request parameters for PhysicalDiskList
+//
 // Required fields:
 type PhysicalDiskListParams struct {
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -5338,6 +5414,7 @@ type PhysicalDiskListParams struct {
 }
 
 // RackListParams is the request parameters for RackList
+//
 // Required fields:
 type RackListParams struct {
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -5346,6 +5423,7 @@ type RackListParams struct {
 }
 
 // RackViewParams is the request parameters for RackView
+//
 // Required fields:
 // - RackId
 type RackViewParams struct {
@@ -5353,6 +5431,7 @@ type RackViewParams struct {
 }
 
 // SledListParams is the request parameters for SledList
+//
 // Required fields:
 type SledListParams struct {
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -5361,6 +5440,7 @@ type SledListParams struct {
 }
 
 // SledAddParams is the request parameters for SledAdd
+//
 // Required fields:
 // - Body
 type SledAddParams struct {
@@ -5368,6 +5448,7 @@ type SledAddParams struct {
 }
 
 // SledListUninitializedParams is the request parameters for SledListUninitialized
+//
 // Required fields:
 type SledListUninitializedParams struct {
 	Limit     int    `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -5375,6 +5456,7 @@ type SledListUninitializedParams struct {
 }
 
 // SledViewParams is the request parameters for SledView
+//
 // Required fields:
 // - SledId
 type SledViewParams struct {
@@ -5382,6 +5464,7 @@ type SledViewParams struct {
 }
 
 // SledPhysicalDiskListParams is the request parameters for SledPhysicalDiskList
+//
 // Required fields:
 // - SledId
 type SledPhysicalDiskListParams struct {
@@ -5392,6 +5475,7 @@ type SledPhysicalDiskListParams struct {
 }
 
 // SledInstanceListParams is the request parameters for SledInstanceList
+//
 // Required fields:
 // - SledId
 type SledInstanceListParams struct {
@@ -5402,6 +5486,7 @@ type SledInstanceListParams struct {
 }
 
 // SledSetProvisionPolicyParams is the request parameters for SledSetProvisionPolicy
+//
 // Required fields:
 // - SledId
 // - Body
@@ -5411,6 +5496,7 @@ type SledSetProvisionPolicyParams struct {
 }
 
 // NetworkingSwitchPortListParams is the request parameters for NetworkingSwitchPortList
+//
 // Required fields:
 type NetworkingSwitchPortListParams struct {
 	Limit        int        `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -5420,6 +5506,7 @@ type NetworkingSwitchPortListParams struct {
 }
 
 // NetworkingSwitchPortClearSettingsParams is the request parameters for NetworkingSwitchPortClearSettings
+//
 // Required fields:
 // - Port
 // - RackId
@@ -5431,6 +5518,7 @@ type NetworkingSwitchPortClearSettingsParams struct {
 }
 
 // NetworkingSwitchPortApplySettingsParams is the request parameters for NetworkingSwitchPortApplySettings
+//
 // Required fields:
 // - Port
 // - RackId
@@ -5444,6 +5532,7 @@ type NetworkingSwitchPortApplySettingsParams struct {
 }
 
 // SwitchListParams is the request parameters for SwitchList
+//
 // Required fields:
 type SwitchListParams struct {
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -5452,6 +5541,7 @@ type SwitchListParams struct {
 }
 
 // SwitchViewParams is the request parameters for SwitchView
+//
 // Required fields:
 // - SwitchId
 type SwitchViewParams struct {
@@ -5459,6 +5549,7 @@ type SwitchViewParams struct {
 }
 
 // SiloIdentityProviderListParams is the request parameters for SiloIdentityProviderList
+//
 // Required fields:
 type SiloIdentityProviderListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -5468,6 +5559,7 @@ type SiloIdentityProviderListParams struct {
 }
 
 // LocalIdpUserCreateParams is the request parameters for LocalIdpUserCreate
+//
 // Required fields:
 // - Silo
 // - Body
@@ -5477,6 +5569,7 @@ type LocalIdpUserCreateParams struct {
 }
 
 // LocalIdpUserDeleteParams is the request parameters for LocalIdpUserDelete
+//
 // Required fields:
 // - UserId
 // - Silo
@@ -5486,6 +5579,7 @@ type LocalIdpUserDeleteParams struct {
 }
 
 // LocalIdpUserSetPasswordParams is the request parameters for LocalIdpUserSetPassword
+//
 // Required fields:
 // - UserId
 // - Silo
@@ -5497,6 +5591,7 @@ type LocalIdpUserSetPasswordParams struct {
 }
 
 // SamlIdentityProviderCreateParams is the request parameters for SamlIdentityProviderCreate
+//
 // Required fields:
 // - Silo
 // - Body
@@ -5506,6 +5601,7 @@ type SamlIdentityProviderCreateParams struct {
 }
 
 // SamlIdentityProviderViewParams is the request parameters for SamlIdentityProviderView
+//
 // Required fields:
 // - Provider
 // - Silo
@@ -5515,6 +5611,7 @@ type SamlIdentityProviderViewParams struct {
 }
 
 // IpPoolListParams is the request parameters for IpPoolList
+//
 // Required fields:
 type IpPoolListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -5523,6 +5620,7 @@ type IpPoolListParams struct {
 }
 
 // IpPoolCreateParams is the request parameters for IpPoolCreate
+//
 // Required fields:
 // - Body
 type IpPoolCreateParams struct {
@@ -5530,6 +5628,7 @@ type IpPoolCreateParams struct {
 }
 
 // IpPoolServiceRangeListParams is the request parameters for IpPoolServiceRangeList
+//
 // Required fields:
 type IpPoolServiceRangeListParams struct {
 	Limit     int    `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -5537,6 +5636,7 @@ type IpPoolServiceRangeListParams struct {
 }
 
 // IpPoolServiceRangeAddParams is the request parameters for IpPoolServiceRangeAdd
+//
 // Required fields:
 // - Body
 type IpPoolServiceRangeAddParams struct {
@@ -5544,6 +5644,7 @@ type IpPoolServiceRangeAddParams struct {
 }
 
 // IpPoolServiceRangeRemoveParams is the request parameters for IpPoolServiceRangeRemove
+//
 // Required fields:
 // - Body
 type IpPoolServiceRangeRemoveParams struct {
@@ -5551,6 +5652,7 @@ type IpPoolServiceRangeRemoveParams struct {
 }
 
 // IpPoolDeleteParams is the request parameters for IpPoolDelete
+//
 // Required fields:
 // - Pool
 type IpPoolDeleteParams struct {
@@ -5558,6 +5660,7 @@ type IpPoolDeleteParams struct {
 }
 
 // IpPoolViewParams is the request parameters for IpPoolView
+//
 // Required fields:
 // - Pool
 type IpPoolViewParams struct {
@@ -5565,6 +5668,7 @@ type IpPoolViewParams struct {
 }
 
 // IpPoolUpdateParams is the request parameters for IpPoolUpdate
+//
 // Required fields:
 // - Pool
 // - Body
@@ -5574,6 +5678,7 @@ type IpPoolUpdateParams struct {
 }
 
 // IpPoolRangeListParams is the request parameters for IpPoolRangeList
+//
 // Required fields:
 // - Pool
 type IpPoolRangeListParams struct {
@@ -5583,6 +5688,7 @@ type IpPoolRangeListParams struct {
 }
 
 // IpPoolRangeAddParams is the request parameters for IpPoolRangeAdd
+//
 // Required fields:
 // - Pool
 // - Body
@@ -5592,6 +5698,7 @@ type IpPoolRangeAddParams struct {
 }
 
 // IpPoolRangeRemoveParams is the request parameters for IpPoolRangeRemove
+//
 // Required fields:
 // - Pool
 // - Body
@@ -5601,6 +5708,7 @@ type IpPoolRangeRemoveParams struct {
 }
 
 // IpPoolSiloListParams is the request parameters for IpPoolSiloList
+//
 // Required fields:
 // - Pool
 type IpPoolSiloListParams struct {
@@ -5611,6 +5719,7 @@ type IpPoolSiloListParams struct {
 }
 
 // IpPoolSiloLinkParams is the request parameters for IpPoolSiloLink
+//
 // Required fields:
 // - Pool
 // - Body
@@ -5620,6 +5729,7 @@ type IpPoolSiloLinkParams struct {
 }
 
 // IpPoolSiloUnlinkParams is the request parameters for IpPoolSiloUnlink
+//
 // Required fields:
 // - Pool
 // - Silo
@@ -5629,6 +5739,7 @@ type IpPoolSiloUnlinkParams struct {
 }
 
 // IpPoolSiloUpdateParams is the request parameters for IpPoolSiloUpdate
+//
 // Required fields:
 // - Pool
 // - Silo
@@ -5640,6 +5751,7 @@ type IpPoolSiloUpdateParams struct {
 }
 
 // SystemMetricParams is the request parameters for SystemMetric
+//
 // Required fields:
 // - MetricName
 type SystemMetricParams struct {
@@ -5653,6 +5765,7 @@ type SystemMetricParams struct {
 }
 
 // NetworkingAddressLotListParams is the request parameters for NetworkingAddressLotList
+//
 // Required fields:
 type NetworkingAddressLotListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -5661,6 +5774,7 @@ type NetworkingAddressLotListParams struct {
 }
 
 // NetworkingAddressLotCreateParams is the request parameters for NetworkingAddressLotCreate
+//
 // Required fields:
 // - Body
 type NetworkingAddressLotCreateParams struct {
@@ -5668,6 +5782,7 @@ type NetworkingAddressLotCreateParams struct {
 }
 
 // NetworkingAddressLotDeleteParams is the request parameters for NetworkingAddressLotDelete
+//
 // Required fields:
 // - AddressLot
 type NetworkingAddressLotDeleteParams struct {
@@ -5675,6 +5790,7 @@ type NetworkingAddressLotDeleteParams struct {
 }
 
 // NetworkingAddressLotBlockListParams is the request parameters for NetworkingAddressLotBlockList
+//
 // Required fields:
 // - AddressLot
 type NetworkingAddressLotBlockListParams struct {
@@ -5685,6 +5801,7 @@ type NetworkingAddressLotBlockListParams struct {
 }
 
 // NetworkingBfdDisableParams is the request parameters for NetworkingBfdDisable
+//
 // Required fields:
 // - Body
 type NetworkingBfdDisableParams struct {
@@ -5692,6 +5809,7 @@ type NetworkingBfdDisableParams struct {
 }
 
 // NetworkingBfdEnableParams is the request parameters for NetworkingBfdEnable
+//
 // Required fields:
 // - Body
 type NetworkingBfdEnableParams struct {
@@ -5699,6 +5817,7 @@ type NetworkingBfdEnableParams struct {
 }
 
 // NetworkingBgpConfigDeleteParams is the request parameters for NetworkingBgpConfigDelete
+//
 // Required fields:
 // - NameOrId
 type NetworkingBgpConfigDeleteParams struct {
@@ -5706,6 +5825,7 @@ type NetworkingBgpConfigDeleteParams struct {
 }
 
 // NetworkingBgpConfigListParams is the request parameters for NetworkingBgpConfigList
+//
 // Required fields:
 type NetworkingBgpConfigListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -5715,6 +5835,7 @@ type NetworkingBgpConfigListParams struct {
 }
 
 // NetworkingBgpConfigCreateParams is the request parameters for NetworkingBgpConfigCreate
+//
 // Required fields:
 // - Body
 type NetworkingBgpConfigCreateParams struct {
@@ -5722,6 +5843,7 @@ type NetworkingBgpConfigCreateParams struct {
 }
 
 // NetworkingBgpAnnounceSetDeleteParams is the request parameters for NetworkingBgpAnnounceSetDelete
+//
 // Required fields:
 // - NameOrId
 type NetworkingBgpAnnounceSetDeleteParams struct {
@@ -5729,6 +5851,7 @@ type NetworkingBgpAnnounceSetDeleteParams struct {
 }
 
 // NetworkingBgpAnnounceSetListParams is the request parameters for NetworkingBgpAnnounceSetList
+//
 // Required fields:
 // - NameOrId
 type NetworkingBgpAnnounceSetListParams struct {
@@ -5736,6 +5859,7 @@ type NetworkingBgpAnnounceSetListParams struct {
 }
 
 // NetworkingBgpAnnounceSetCreateParams is the request parameters for NetworkingBgpAnnounceSetCreate
+//
 // Required fields:
 // - Body
 type NetworkingBgpAnnounceSetCreateParams struct {
@@ -5743,6 +5867,7 @@ type NetworkingBgpAnnounceSetCreateParams struct {
 }
 
 // NetworkingBgpImportedRoutesIpv4Params is the request parameters for NetworkingBgpImportedRoutesIpv4
+//
 // Required fields:
 // - Asn
 type NetworkingBgpImportedRoutesIpv4Params struct {
@@ -5750,6 +5875,7 @@ type NetworkingBgpImportedRoutesIpv4Params struct {
 }
 
 // NetworkingLoopbackAddressListParams is the request parameters for NetworkingLoopbackAddressList
+//
 // Required fields:
 type NetworkingLoopbackAddressListParams struct {
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -5758,6 +5884,7 @@ type NetworkingLoopbackAddressListParams struct {
 }
 
 // NetworkingLoopbackAddressCreateParams is the request parameters for NetworkingLoopbackAddressCreate
+//
 // Required fields:
 // - Body
 type NetworkingLoopbackAddressCreateParams struct {
@@ -5765,6 +5892,7 @@ type NetworkingLoopbackAddressCreateParams struct {
 }
 
 // NetworkingLoopbackAddressDeleteParams is the request parameters for NetworkingLoopbackAddressDelete
+//
 // Required fields:
 // - Address
 // - RackId
@@ -5778,12 +5906,14 @@ type NetworkingLoopbackAddressDeleteParams struct {
 }
 
 // NetworkingSwitchPortSettingsDeleteParams is the request parameters for NetworkingSwitchPortSettingsDelete
+//
 // Required fields:
 type NetworkingSwitchPortSettingsDeleteParams struct {
 	PortSettings NameOrId `json:"port_settings,omitempty" yaml:"port_settings,omitempty"`
 }
 
 // NetworkingSwitchPortSettingsListParams is the request parameters for NetworkingSwitchPortSettingsList
+//
 // Required fields:
 type NetworkingSwitchPortSettingsListParams struct {
 	Limit        int              `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -5793,6 +5923,7 @@ type NetworkingSwitchPortSettingsListParams struct {
 }
 
 // NetworkingSwitchPortSettingsCreateParams is the request parameters for NetworkingSwitchPortSettingsCreate
+//
 // Required fields:
 // - Body
 type NetworkingSwitchPortSettingsCreateParams struct {
@@ -5800,6 +5931,7 @@ type NetworkingSwitchPortSettingsCreateParams struct {
 }
 
 // NetworkingSwitchPortSettingsViewParams is the request parameters for NetworkingSwitchPortSettingsView
+//
 // Required fields:
 // - Port
 type NetworkingSwitchPortSettingsViewParams struct {
@@ -5807,6 +5939,7 @@ type NetworkingSwitchPortSettingsViewParams struct {
 }
 
 // SystemPolicyUpdateParams is the request parameters for SystemPolicyUpdate
+//
 // Required fields:
 // - Body
 type SystemPolicyUpdateParams struct {
@@ -5814,6 +5947,7 @@ type SystemPolicyUpdateParams struct {
 }
 
 // RoleListParams is the request parameters for RoleList
+//
 // Required fields:
 type RoleListParams struct {
 	Limit     int    `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -5821,6 +5955,7 @@ type RoleListParams struct {
 }
 
 // RoleViewParams is the request parameters for RoleView
+//
 // Required fields:
 // - RoleName
 type RoleViewParams struct {
@@ -5828,6 +5963,7 @@ type RoleViewParams struct {
 }
 
 // SystemQuotasListParams is the request parameters for SystemQuotasList
+//
 // Required fields:
 type SystemQuotasListParams struct {
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -5836,6 +5972,7 @@ type SystemQuotasListParams struct {
 }
 
 // SiloListParams is the request parameters for SiloList
+//
 // Required fields:
 type SiloListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -5844,6 +5981,7 @@ type SiloListParams struct {
 }
 
 // SiloCreateParams is the request parameters for SiloCreate
+//
 // Required fields:
 // - Body
 type SiloCreateParams struct {
@@ -5851,6 +5989,7 @@ type SiloCreateParams struct {
 }
 
 // SiloDeleteParams is the request parameters for SiloDelete
+//
 // Required fields:
 // - Silo
 type SiloDeleteParams struct {
@@ -5858,6 +5997,7 @@ type SiloDeleteParams struct {
 }
 
 // SiloViewParams is the request parameters for SiloView
+//
 // Required fields:
 // - Silo
 type SiloViewParams struct {
@@ -5865,6 +6005,7 @@ type SiloViewParams struct {
 }
 
 // SiloIpPoolListParams is the request parameters for SiloIpPoolList
+//
 // Required fields:
 // - Silo
 type SiloIpPoolListParams struct {
@@ -5875,6 +6016,7 @@ type SiloIpPoolListParams struct {
 }
 
 // SiloPolicyViewParams is the request parameters for SiloPolicyView
+//
 // Required fields:
 // - Silo
 type SiloPolicyViewParams struct {
@@ -5882,6 +6024,7 @@ type SiloPolicyViewParams struct {
 }
 
 // SiloPolicyUpdateParams is the request parameters for SiloPolicyUpdate
+//
 // Required fields:
 // - Silo
 // - Body
@@ -5891,6 +6034,7 @@ type SiloPolicyUpdateParams struct {
 }
 
 // SiloQuotasViewParams is the request parameters for SiloQuotasView
+//
 // Required fields:
 // - Silo
 type SiloQuotasViewParams struct {
@@ -5898,6 +6042,7 @@ type SiloQuotasViewParams struct {
 }
 
 // SiloQuotasUpdateParams is the request parameters for SiloQuotasUpdate
+//
 // Required fields:
 // - Silo
 // - Body
@@ -5907,6 +6052,7 @@ type SiloQuotasUpdateParams struct {
 }
 
 // SiloUserListParams is the request parameters for SiloUserList
+//
 // Required fields:
 type SiloUserListParams struct {
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -5916,6 +6062,7 @@ type SiloUserListParams struct {
 }
 
 // UserBuiltinListParams is the request parameters for UserBuiltinList
+//
 // Required fields:
 type UserBuiltinListParams struct {
 	Limit     int          `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -5924,6 +6071,7 @@ type UserBuiltinListParams struct {
 }
 
 // UserBuiltinViewParams is the request parameters for UserBuiltinView
+//
 // Required fields:
 // - User
 type UserBuiltinViewParams struct {
@@ -5931,6 +6079,7 @@ type UserBuiltinViewParams struct {
 }
 
 // SiloUserViewParams is the request parameters for SiloUserView
+//
 // Required fields:
 // - UserId
 // - Silo
@@ -5940,6 +6089,7 @@ type SiloUserViewParams struct {
 }
 
 // SiloUtilizationListParams is the request parameters for SiloUtilizationList
+//
 // Required fields:
 type SiloUtilizationListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -5948,6 +6098,7 @@ type SiloUtilizationListParams struct {
 }
 
 // SiloUtilizationViewParams is the request parameters for SiloUtilizationView
+//
 // Required fields:
 // - Silo
 type SiloUtilizationViewParams struct {
@@ -5955,6 +6106,7 @@ type SiloUtilizationViewParams struct {
 }
 
 // UserListParams is the request parameters for UserList
+//
 // Required fields:
 type UserListParams struct {
 	Group     string     `json:"group,omitempty" yaml:"group,omitempty"`
@@ -5964,6 +6116,7 @@ type UserListParams struct {
 }
 
 // VpcFirewallRulesViewParams is the request parameters for VpcFirewallRulesView
+//
 // Required fields:
 // - Vpc
 type VpcFirewallRulesViewParams struct {
@@ -5972,6 +6125,7 @@ type VpcFirewallRulesViewParams struct {
 }
 
 // VpcFirewallRulesUpdateParams is the request parameters for VpcFirewallRulesUpdate
+//
 // Required fields:
 // - Vpc
 // - Body
@@ -5982,6 +6136,7 @@ type VpcFirewallRulesUpdateParams struct {
 }
 
 // VpcSubnetListParams is the request parameters for VpcSubnetList
+//
 // Required fields:
 type VpcSubnetListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -5992,6 +6147,7 @@ type VpcSubnetListParams struct {
 }
 
 // VpcSubnetCreateParams is the request parameters for VpcSubnetCreate
+//
 // Required fields:
 // - Vpc
 // - Body
@@ -6002,6 +6158,7 @@ type VpcSubnetCreateParams struct {
 }
 
 // VpcSubnetDeleteParams is the request parameters for VpcSubnetDelete
+//
 // Required fields:
 // - Subnet
 type VpcSubnetDeleteParams struct {
@@ -6011,6 +6168,7 @@ type VpcSubnetDeleteParams struct {
 }
 
 // VpcSubnetViewParams is the request parameters for VpcSubnetView
+//
 // Required fields:
 // - Subnet
 type VpcSubnetViewParams struct {
@@ -6020,6 +6178,7 @@ type VpcSubnetViewParams struct {
 }
 
 // VpcSubnetUpdateParams is the request parameters for VpcSubnetUpdate
+//
 // Required fields:
 // - Subnet
 // - Body
@@ -6031,6 +6190,7 @@ type VpcSubnetUpdateParams struct {
 }
 
 // VpcSubnetListNetworkInterfacesParams is the request parameters for VpcSubnetListNetworkInterfaces
+//
 // Required fields:
 // - Subnet
 type VpcSubnetListNetworkInterfacesParams struct {
@@ -6043,6 +6203,7 @@ type VpcSubnetListNetworkInterfacesParams struct {
 }
 
 // VpcListParams is the request parameters for VpcList
+//
 // Required fields:
 type VpcListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -6052,6 +6213,7 @@ type VpcListParams struct {
 }
 
 // VpcCreateParams is the request parameters for VpcCreate
+//
 // Required fields:
 // - Project
 // - Body
@@ -6061,6 +6223,7 @@ type VpcCreateParams struct {
 }
 
 // VpcDeleteParams is the request parameters for VpcDelete
+//
 // Required fields:
 // - Vpc
 type VpcDeleteParams struct {
@@ -6069,6 +6232,7 @@ type VpcDeleteParams struct {
 }
 
 // VpcViewParams is the request parameters for VpcView
+//
 // Required fields:
 // - Vpc
 type VpcViewParams struct {
@@ -6077,6 +6241,7 @@ type VpcViewParams struct {
 }
 
 // VpcUpdateParams is the request parameters for VpcUpdate
+//
 // Required fields:
 // - Vpc
 // - Body

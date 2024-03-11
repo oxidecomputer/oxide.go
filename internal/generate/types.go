@@ -157,7 +157,7 @@ func constructParamTypes(paths map[string]*openapi3.PathItem) []TypeTemplate {
 				}
 				paramsTpl.Fields = fields
 				paramsTpl.Description = "// " + paramsTypeName + " is the request parameters for " +
-					strcase.ToCamel(o.OperationID) + "\n// Required fields:" + requiredFields
+					strcase.ToCamel(o.OperationID) + "\n//\n// Required fields:" + requiredFields
 				paramTypes = append(paramTypes, paramsTpl)
 			}
 		}
