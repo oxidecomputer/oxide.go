@@ -13,6 +13,10 @@ import (
 )
 
 // Address is an address tied to an address lot.
+//
+// Required fields:
+// - Address
+// - AddressLot
 type Address struct {
 	// Address is the address and prefix length of this address.
 	Address IpNet `json:"address,omitempty" yaml:"address,omitempty"`
@@ -21,12 +25,23 @@ type Address struct {
 }
 
 // AddressConfig is a set of addresses associated with a port configuration.
+//
+// Required fields:
+// - Addresses
 type AddressConfig struct {
 	// Addresses is the set of addresses assigned to the port configuration.
 	Addresses []Address `json:"addresses,omitempty" yaml:"addresses,omitempty"`
 }
 
 // AddressLot is represents an address lot object, containing the id of the lot that can be used in other API calls.
+//
+// Required fields:
+// - Description
+// - Id
+// - Kind
+// - Name
+// - TimeCreated
+// - TimeModified
 type AddressLot struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
@@ -43,6 +58,11 @@ type AddressLot struct {
 }
 
 // AddressLotBlock is an address lot block is a part of an address lot and contains a range of addresses. The range is inclusive.
+//
+// Required fields:
+// - FirstAddress
+// - Id
+// - LastAddress
 type AddressLotBlock struct {
 	// FirstAddress is the first address of the block (inclusive).
 	FirstAddress string `json:"first_address,omitempty" yaml:"first_address,omitempty"`
@@ -53,6 +73,10 @@ type AddressLotBlock struct {
 }
 
 // AddressLotBlockCreate is parameters for creating an address lot block. Fist and last addresses are inclusive.
+//
+// Required fields:
+// - FirstAddress
+// - LastAddress
 type AddressLotBlockCreate struct {
 	// FirstAddress is the first address in the lot (inclusive).
 	FirstAddress string `json:"first_address,omitempty" yaml:"first_address,omitempty"`
@@ -61,6 +85,9 @@ type AddressLotBlockCreate struct {
 }
 
 // AddressLotBlockResultsPage is a single page of results
+//
+// Required fields:
+// - Items
 type AddressLotBlockResultsPage struct {
 	// Items is list of items on this page of results
 	Items []AddressLotBlock `json:"items,omitempty" yaml:"items,omitempty"`
@@ -69,6 +96,12 @@ type AddressLotBlockResultsPage struct {
 }
 
 // AddressLotCreate is parameters for creating an address lot.
+//
+// Required fields:
+// - Blocks
+// - Description
+// - Kind
+// - Name
 type AddressLotCreate struct {
 	// Blocks is the blocks to add along with the new address lot.
 	Blocks      []AddressLotBlockCreate `json:"blocks,omitempty" yaml:"blocks,omitempty"`
@@ -80,6 +113,10 @@ type AddressLotCreate struct {
 }
 
 // AddressLotCreateResponse is an address lot and associated blocks resulting from creating an address lot.
+//
+// Required fields:
+// - Blocks
+// - Lot
 type AddressLotCreateResponse struct {
 	// Blocks is the address lot blocks that were created.
 	Blocks []AddressLotBlock `json:"blocks,omitempty" yaml:"blocks,omitempty"`
@@ -91,6 +128,9 @@ type AddressLotCreateResponse struct {
 type AddressLotKind string
 
 // AddressLotResultsPage is a single page of results
+//
+// Required fields:
+// - Items
 type AddressLotResultsPage struct {
 	// Items is list of items on this page of results
 	Items []AddressLot `json:"items,omitempty" yaml:"items,omitempty"`
@@ -99,6 +139,11 @@ type AddressLotResultsPage struct {
 }
 
 // Baseboard is properties that uniquely identify an Oxide hardware component
+//
+// Required fields:
+// - Part
+// - Revision
+// - Serial
 type Baseboard struct {
 	Part     string `json:"part,omitempty" yaml:"part,omitempty"`
 	Revision int    `json:"revision,omitempty" yaml:"revision,omitempty"`
@@ -109,6 +154,10 @@ type Baseboard struct {
 type BfdMode string
 
 // BfdSessionDisable is information needed to disable a BFD session
+//
+// Required fields:
+// - Remote
+// - Switch
 type BfdSessionDisable struct {
 	// Remote is address of the remote peer to disable a BFD session for.
 	Remote string `json:"remote,omitempty" yaml:"remote,omitempty"`
@@ -117,6 +166,13 @@ type BfdSessionDisable struct {
 }
 
 // BfdSessionEnable is information about a bidirectional forwarding detection (BFD) session.
+//
+// Required fields:
+// - DetectionThreshold
+// - Mode
+// - Remote
+// - RequiredRx
+// - Switch
 type BfdSessionEnable struct {
 	// DetectionThreshold is the negotiated Control packet transmission interval, multiplied by this variable, will be the Detection Time for this session (as seen by the remote system)
 	DetectionThreshold int `json:"detection_threshold,omitempty" yaml:"detection_threshold,omitempty"`
@@ -136,6 +192,14 @@ type BfdSessionEnable struct {
 type BfdState string
 
 // BfdStatus is the type definition for a BfdStatus.
+//
+// Required fields:
+// - DetectionThreshold
+// - Mode
+// - Peer
+// - RequiredRx
+// - State
+// - Switch
 type BfdStatus struct {
 	DetectionThreshold int      `json:"detection_threshold,omitempty" yaml:"detection_threshold,omitempty"`
 	Local              string   `json:"local,omitempty" yaml:"local,omitempty"`
@@ -148,6 +212,13 @@ type BfdStatus struct {
 }
 
 // BgpAnnounceSet is represents a BGP announce set by id. The id can be used with other API calls to view and manage the announce set.
+//
+// Required fields:
+// - Description
+// - Id
+// - Name
+// - TimeCreated
+// - TimeModified
 type BgpAnnounceSet struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
@@ -162,6 +233,11 @@ type BgpAnnounceSet struct {
 }
 
 // BgpAnnounceSetCreate is parameters for creating a named set of BGP announcements.
+//
+// Required fields:
+// - Announcement
+// - Description
+// - Name
 type BgpAnnounceSetCreate struct {
 	// Announcement is the announcements in this set.
 	Announcement []BgpAnnouncementCreate `json:"announcement,omitempty" yaml:"announcement,omitempty"`
@@ -171,6 +247,11 @@ type BgpAnnounceSetCreate struct {
 }
 
 // BgpAnnouncement is a BGP announcement tied to an address lot block.
+//
+// Required fields:
+// - AddressLotBlockId
+// - AnnounceSetId
+// - Network
 type BgpAnnouncement struct {
 	// AddressLotBlockId is the address block the IP network being announced is drawn from.
 	AddressLotBlockId string `json:"address_lot_block_id,omitempty" yaml:"address_lot_block_id,omitempty"`
@@ -181,6 +262,10 @@ type BgpAnnouncement struct {
 }
 
 // BgpAnnouncementCreate is a BGP announcement tied to a particular address lot block.
+//
+// Required fields:
+// - AddressLotBlock
+// - Network
 type BgpAnnouncementCreate struct {
 	// AddressLotBlock is address lot this announcement is drawn from.
 	AddressLotBlock NameOrId `json:"address_lot_block,omitempty" yaml:"address_lot_block,omitempty"`
@@ -189,6 +274,14 @@ type BgpAnnouncementCreate struct {
 }
 
 // BgpConfig is a base BGP configuration.
+//
+// Required fields:
+// - Asn
+// - Description
+// - Id
+// - Name
+// - TimeCreated
+// - TimeModified
 type BgpConfig struct {
 	// Asn is the autonomous system number of this BGP configuration.
 	Asn int `json:"asn,omitempty" yaml:"asn,omitempty"`
@@ -207,6 +300,12 @@ type BgpConfig struct {
 }
 
 // BgpConfigCreate is parameters for creating a BGP configuration. This includes and autonomous system number (ASN) and a virtual routing and forwarding (VRF) identifier.
+//
+// Required fields:
+// - Asn
+// - BgpAnnounceSetId
+// - Description
+// - Name
 type BgpConfigCreate struct {
 	// Asn is the autonomous system number of this BGP configuration.
 	Asn              int      `json:"asn,omitempty" yaml:"asn,omitempty"`
@@ -219,6 +318,9 @@ type BgpConfigCreate struct {
 }
 
 // BgpConfigResultsPage is a single page of results
+//
+// Required fields:
+// - Items
 type BgpConfigResultsPage struct {
 	// Items is list of items on this page of results
 	Items []BgpConfig `json:"items,omitempty" yaml:"items,omitempty"`
@@ -227,6 +329,12 @@ type BgpConfigResultsPage struct {
 }
 
 // BgpImportedRouteIpv4 is a route imported from a BGP peer.
+//
+// Required fields:
+// - Id
+// - Nexthop
+// - Prefix
+// - Switch
 type BgpImportedRouteIpv4 struct {
 	// Id is bGP identifier of the originating router.
 	Id int `json:"id,omitempty" yaml:"id,omitempty"`
@@ -239,6 +347,17 @@ type BgpImportedRouteIpv4 struct {
 }
 
 // BgpPeer is a BGP peer configuration for an interface. Includes the set of announcements that will be advertised to the peer identified by `addr`. The `bgp_config` parameter is a reference to global BGP parameters. The `interface_name` indicates what interface the peer should be contacted on.
+//
+// Required fields:
+// - Addr
+// - BgpAnnounceSet
+// - BgpConfig
+// - ConnectRetry
+// - DelayOpen
+// - HoldTime
+// - IdleHoldTime
+// - InterfaceName
+// - Keepalive
 type BgpPeer struct {
 	// Addr is the address of the host to peer with.
 	Addr string `json:"addr,omitempty" yaml:"addr,omitempty"`
@@ -261,6 +380,9 @@ type BgpPeer struct {
 }
 
 // BgpPeerConfig is the type definition for a BgpPeerConfig.
+//
+// Required fields:
+// - Peers
 type BgpPeerConfig struct {
 	Peers []BgpPeer `json:"peers,omitempty" yaml:"peers,omitempty"`
 }
@@ -269,6 +391,14 @@ type BgpPeerConfig struct {
 type BgpPeerState string
 
 // BgpPeerStatus is the current status of a BGP peer.
+//
+// Required fields:
+// - Addr
+// - LocalAsn
+// - RemoteAsn
+// - State
+// - StateDurationMillis
+// - Switch
 type BgpPeerStatus struct {
 	// Addr is iP address of the peer.
 	Addr string `json:"addr,omitempty" yaml:"addr,omitempty"`
@@ -288,12 +418,21 @@ type BgpPeerStatus struct {
 type BinRangedoubleType string
 
 // BinRangedoubleRangeTo is a range unbounded below and exclusively above, `..end`.
+//
+// Required fields:
+// - End
+// - Type
 type BinRangedoubleRangeTo struct {
 	End  float64            `json:"end,omitempty" yaml:"end,omitempty"`
 	Type BinRangedoubleType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // BinRangedoubleRange is a range bounded inclusively below and exclusively above, `start..end`.
+//
+// Required fields:
+// - End
+// - Start
+// - Type
 type BinRangedoubleRange struct {
 	End   float64            `json:"end,omitempty" yaml:"end,omitempty"`
 	Start float64            `json:"start,omitempty" yaml:"start,omitempty"`
@@ -301,6 +440,10 @@ type BinRangedoubleRange struct {
 }
 
 // BinRangedoubleRangeFrom is a range bounded inclusively below and unbounded above, `start..`.
+//
+// Required fields:
+// - Start
+// - Type
 type BinRangedoubleRangeFrom struct {
 	Start float64            `json:"start,omitempty" yaml:"start,omitempty"`
 	Type  BinRangedoubleType `json:"type,omitempty" yaml:"type,omitempty"`
@@ -322,12 +465,21 @@ type BinRangedouble struct {
 type BinRangefloatType string
 
 // BinRangefloatRangeTo is a range unbounded below and exclusively above, `..end`.
+//
+// Required fields:
+// - End
+// - Type
 type BinRangefloatRangeTo struct {
 	End  float64           `json:"end,omitempty" yaml:"end,omitempty"`
 	Type BinRangefloatType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // BinRangefloatRange is a range bounded inclusively below and exclusively above, `start..end`.
+//
+// Required fields:
+// - End
+// - Start
+// - Type
 type BinRangefloatRange struct {
 	End   float64           `json:"end,omitempty" yaml:"end,omitempty"`
 	Start float64           `json:"start,omitempty" yaml:"start,omitempty"`
@@ -335,6 +487,10 @@ type BinRangefloatRange struct {
 }
 
 // BinRangefloatRangeFrom is a range bounded inclusively below and unbounded above, `start..`.
+//
+// Required fields:
+// - Start
+// - Type
 type BinRangefloatRangeFrom struct {
 	Start float64           `json:"start,omitempty" yaml:"start,omitempty"`
 	Type  BinRangefloatType `json:"type,omitempty" yaml:"type,omitempty"`
@@ -356,12 +512,21 @@ type BinRangefloat struct {
 type BinRangeint16Type string
 
 // BinRangeint16RangeTo is a range unbounded below and exclusively above, `..end`.
+//
+// Required fields:
+// - End
+// - Type
 type BinRangeint16RangeTo struct {
 	End  int               `json:"end,omitempty" yaml:"end,omitempty"`
 	Type BinRangeint16Type `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // BinRangeint16Range is a range bounded inclusively below and exclusively above, `start..end`.
+//
+// Required fields:
+// - End
+// - Start
+// - Type
 type BinRangeint16Range struct {
 	End   int               `json:"end,omitempty" yaml:"end,omitempty"`
 	Start int               `json:"start,omitempty" yaml:"start,omitempty"`
@@ -369,6 +534,10 @@ type BinRangeint16Range struct {
 }
 
 // BinRangeint16RangeFrom is a range bounded inclusively below and unbounded above, `start..`.
+//
+// Required fields:
+// - Start
+// - Type
 type BinRangeint16RangeFrom struct {
 	Start int               `json:"start,omitempty" yaml:"start,omitempty"`
 	Type  BinRangeint16Type `json:"type,omitempty" yaml:"type,omitempty"`
@@ -390,12 +559,21 @@ type BinRangeint16 struct {
 type BinRangeint32Type string
 
 // BinRangeint32RangeTo is a range unbounded below and exclusively above, `..end`.
+//
+// Required fields:
+// - End
+// - Type
 type BinRangeint32RangeTo struct {
 	End  int               `json:"end,omitempty" yaml:"end,omitempty"`
 	Type BinRangeint32Type `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // BinRangeint32Range is a range bounded inclusively below and exclusively above, `start..end`.
+//
+// Required fields:
+// - End
+// - Start
+// - Type
 type BinRangeint32Range struct {
 	End   int               `json:"end,omitempty" yaml:"end,omitempty"`
 	Start int               `json:"start,omitempty" yaml:"start,omitempty"`
@@ -403,6 +581,10 @@ type BinRangeint32Range struct {
 }
 
 // BinRangeint32RangeFrom is a range bounded inclusively below and unbounded above, `start..`.
+//
+// Required fields:
+// - Start
+// - Type
 type BinRangeint32RangeFrom struct {
 	Start int               `json:"start,omitempty" yaml:"start,omitempty"`
 	Type  BinRangeint32Type `json:"type,omitempty" yaml:"type,omitempty"`
@@ -424,12 +606,21 @@ type BinRangeint32 struct {
 type BinRangeint64Type string
 
 // BinRangeint64RangeTo is a range unbounded below and exclusively above, `..end`.
+//
+// Required fields:
+// - End
+// - Type
 type BinRangeint64RangeTo struct {
 	End  int               `json:"end,omitempty" yaml:"end,omitempty"`
 	Type BinRangeint64Type `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // BinRangeint64Range is a range bounded inclusively below and exclusively above, `start..end`.
+//
+// Required fields:
+// - End
+// - Start
+// - Type
 type BinRangeint64Range struct {
 	End   int               `json:"end,omitempty" yaml:"end,omitempty"`
 	Start int               `json:"start,omitempty" yaml:"start,omitempty"`
@@ -437,6 +628,10 @@ type BinRangeint64Range struct {
 }
 
 // BinRangeint64RangeFrom is a range bounded inclusively below and unbounded above, `start..`.
+//
+// Required fields:
+// - Start
+// - Type
 type BinRangeint64RangeFrom struct {
 	Start int               `json:"start,omitempty" yaml:"start,omitempty"`
 	Type  BinRangeint64Type `json:"type,omitempty" yaml:"type,omitempty"`
@@ -458,12 +653,21 @@ type BinRangeint64 struct {
 type BinRangeint8Type string
 
 // BinRangeint8RangeTo is a range unbounded below and exclusively above, `..end`.
+//
+// Required fields:
+// - End
+// - Type
 type BinRangeint8RangeTo struct {
 	End  int              `json:"end,omitempty" yaml:"end,omitempty"`
 	Type BinRangeint8Type `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // BinRangeint8Range is a range bounded inclusively below and exclusively above, `start..end`.
+//
+// Required fields:
+// - End
+// - Start
+// - Type
 type BinRangeint8Range struct {
 	End   int              `json:"end,omitempty" yaml:"end,omitempty"`
 	Start int              `json:"start,omitempty" yaml:"start,omitempty"`
@@ -471,6 +675,10 @@ type BinRangeint8Range struct {
 }
 
 // BinRangeint8RangeFrom is a range bounded inclusively below and unbounded above, `start..`.
+//
+// Required fields:
+// - Start
+// - Type
 type BinRangeint8RangeFrom struct {
 	Start int              `json:"start,omitempty" yaml:"start,omitempty"`
 	Type  BinRangeint8Type `json:"type,omitempty" yaml:"type,omitempty"`
@@ -492,12 +700,21 @@ type BinRangeint8 struct {
 type BinRangeuint16Type string
 
 // BinRangeuint16RangeTo is a range unbounded below and exclusively above, `..end`.
+//
+// Required fields:
+// - End
+// - Type
 type BinRangeuint16RangeTo struct {
 	End  int                `json:"end,omitempty" yaml:"end,omitempty"`
 	Type BinRangeuint16Type `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // BinRangeuint16Range is a range bounded inclusively below and exclusively above, `start..end`.
+//
+// Required fields:
+// - End
+// - Start
+// - Type
 type BinRangeuint16Range struct {
 	End   int                `json:"end,omitempty" yaml:"end,omitempty"`
 	Start int                `json:"start,omitempty" yaml:"start,omitempty"`
@@ -505,6 +722,10 @@ type BinRangeuint16Range struct {
 }
 
 // BinRangeuint16RangeFrom is a range bounded inclusively below and unbounded above, `start..`.
+//
+// Required fields:
+// - Start
+// - Type
 type BinRangeuint16RangeFrom struct {
 	Start int                `json:"start,omitempty" yaml:"start,omitempty"`
 	Type  BinRangeuint16Type `json:"type,omitempty" yaml:"type,omitempty"`
@@ -526,12 +747,21 @@ type BinRangeuint16 struct {
 type BinRangeuint32Type string
 
 // BinRangeuint32RangeTo is a range unbounded below and exclusively above, `..end`.
+//
+// Required fields:
+// - End
+// - Type
 type BinRangeuint32RangeTo struct {
 	End  int                `json:"end,omitempty" yaml:"end,omitempty"`
 	Type BinRangeuint32Type `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // BinRangeuint32Range is a range bounded inclusively below and exclusively above, `start..end`.
+//
+// Required fields:
+// - End
+// - Start
+// - Type
 type BinRangeuint32Range struct {
 	End   int                `json:"end,omitempty" yaml:"end,omitempty"`
 	Start int                `json:"start,omitempty" yaml:"start,omitempty"`
@@ -539,6 +769,10 @@ type BinRangeuint32Range struct {
 }
 
 // BinRangeuint32RangeFrom is a range bounded inclusively below and unbounded above, `start..`.
+//
+// Required fields:
+// - Start
+// - Type
 type BinRangeuint32RangeFrom struct {
 	Start int                `json:"start,omitempty" yaml:"start,omitempty"`
 	Type  BinRangeuint32Type `json:"type,omitempty" yaml:"type,omitempty"`
@@ -560,12 +794,21 @@ type BinRangeuint32 struct {
 type BinRangeuint64Type string
 
 // BinRangeuint64RangeTo is a range unbounded below and exclusively above, `..end`.
+//
+// Required fields:
+// - End
+// - Type
 type BinRangeuint64RangeTo struct {
 	End  int                `json:"end,omitempty" yaml:"end,omitempty"`
 	Type BinRangeuint64Type `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // BinRangeuint64Range is a range bounded inclusively below and exclusively above, `start..end`.
+//
+// Required fields:
+// - End
+// - Start
+// - Type
 type BinRangeuint64Range struct {
 	End   int                `json:"end,omitempty" yaml:"end,omitempty"`
 	Start int                `json:"start,omitempty" yaml:"start,omitempty"`
@@ -573,6 +816,10 @@ type BinRangeuint64Range struct {
 }
 
 // BinRangeuint64RangeFrom is a range bounded inclusively below and unbounded above, `start..`.
+//
+// Required fields:
+// - Start
+// - Type
 type BinRangeuint64RangeFrom struct {
 	Start int                `json:"start,omitempty" yaml:"start,omitempty"`
 	Type  BinRangeuint64Type `json:"type,omitempty" yaml:"type,omitempty"`
@@ -594,12 +841,21 @@ type BinRangeuint64 struct {
 type BinRangeuint8Type string
 
 // BinRangeuint8RangeTo is a range unbounded below and exclusively above, `..end`.
+//
+// Required fields:
+// - End
+// - Type
 type BinRangeuint8RangeTo struct {
 	End  int               `json:"end,omitempty" yaml:"end,omitempty"`
 	Type BinRangeuint8Type `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // BinRangeuint8Range is a range bounded inclusively below and exclusively above, `start..end`.
+//
+// Required fields:
+// - End
+// - Start
+// - Type
 type BinRangeuint8Range struct {
 	End   int               `json:"end,omitempty" yaml:"end,omitempty"`
 	Start int               `json:"start,omitempty" yaml:"start,omitempty"`
@@ -607,6 +863,10 @@ type BinRangeuint8Range struct {
 }
 
 // BinRangeuint8RangeFrom is a range bounded inclusively below and unbounded above, `start..`.
+//
+// Required fields:
+// - Start
+// - Type
 type BinRangeuint8RangeFrom struct {
 	Start int               `json:"start,omitempty" yaml:"start,omitempty"`
 	Type  BinRangeuint8Type `json:"type,omitempty" yaml:"type,omitempty"`
@@ -625,6 +885,10 @@ type BinRangeuint8 struct {
 }
 
 // Bindouble is type storing bin edges and a count of samples within it.
+//
+// Required fields:
+// - Count
+// - Range
 type Bindouble struct {
 	// Count is the total count of samples in this bin.
 	Count int `json:"count,omitempty" yaml:"count,omitempty"`
@@ -633,6 +897,10 @@ type Bindouble struct {
 }
 
 // Binfloat is type storing bin edges and a count of samples within it.
+//
+// Required fields:
+// - Count
+// - Range
 type Binfloat struct {
 	// Count is the total count of samples in this bin.
 	Count int `json:"count,omitempty" yaml:"count,omitempty"`
@@ -641,6 +909,10 @@ type Binfloat struct {
 }
 
 // Binint16 is type storing bin edges and a count of samples within it.
+//
+// Required fields:
+// - Count
+// - Range
 type Binint16 struct {
 	// Count is the total count of samples in this bin.
 	Count int `json:"count,omitempty" yaml:"count,omitempty"`
@@ -649,6 +921,10 @@ type Binint16 struct {
 }
 
 // Binint32 is type storing bin edges and a count of samples within it.
+//
+// Required fields:
+// - Count
+// - Range
 type Binint32 struct {
 	// Count is the total count of samples in this bin.
 	Count int `json:"count,omitempty" yaml:"count,omitempty"`
@@ -657,6 +933,10 @@ type Binint32 struct {
 }
 
 // Binint64 is type storing bin edges and a count of samples within it.
+//
+// Required fields:
+// - Count
+// - Range
 type Binint64 struct {
 	// Count is the total count of samples in this bin.
 	Count int `json:"count,omitempty" yaml:"count,omitempty"`
@@ -665,6 +945,10 @@ type Binint64 struct {
 }
 
 // Binint8 is type storing bin edges and a count of samples within it.
+//
+// Required fields:
+// - Count
+// - Range
 type Binint8 struct {
 	// Count is the total count of samples in this bin.
 	Count int `json:"count,omitempty" yaml:"count,omitempty"`
@@ -673,6 +957,10 @@ type Binint8 struct {
 }
 
 // Binuint16 is type storing bin edges and a count of samples within it.
+//
+// Required fields:
+// - Count
+// - Range
 type Binuint16 struct {
 	// Count is the total count of samples in this bin.
 	Count int `json:"count,omitempty" yaml:"count,omitempty"`
@@ -681,6 +969,10 @@ type Binuint16 struct {
 }
 
 // Binuint32 is type storing bin edges and a count of samples within it.
+//
+// Required fields:
+// - Count
+// - Range
 type Binuint32 struct {
 	// Count is the total count of samples in this bin.
 	Count int `json:"count,omitempty" yaml:"count,omitempty"`
@@ -689,6 +981,10 @@ type Binuint32 struct {
 }
 
 // Binuint64 is type storing bin edges and a count of samples within it.
+//
+// Required fields:
+// - Count
+// - Range
 type Binuint64 struct {
 	// Count is the total count of samples in this bin.
 	Count int `json:"count,omitempty" yaml:"count,omitempty"`
@@ -697,6 +993,10 @@ type Binuint64 struct {
 }
 
 // Binuint8 is type storing bin edges and a count of samples within it.
+//
+// Required fields:
+// - Count
+// - Range
 type Binuint8 struct {
 	// Count is the total count of samples in this bin.
 	Count int `json:"count,omitempty" yaml:"count,omitempty"`
@@ -711,6 +1011,14 @@ type BlockSize int
 type ByteCount uint64
 
 // Certificate is view of a Certificate
+//
+// Required fields:
+// - Description
+// - Id
+// - Name
+// - Service
+// - TimeCreated
+// - TimeModified
 type Certificate struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
@@ -727,6 +1035,13 @@ type Certificate struct {
 }
 
 // CertificateCreate is create-time parameters for a `Certificate`
+//
+// Required fields:
+// - Cert
+// - Description
+// - Key
+// - Name
+// - Service
 type CertificateCreate struct {
 	// Cert is pEM-formatted string containing public certificate chain
 	Cert        string `json:"cert,omitempty" yaml:"cert,omitempty"`
@@ -740,6 +1055,9 @@ type CertificateCreate struct {
 }
 
 // CertificateResultsPage is a single page of results
+//
+// Required fields:
+// - Items
 type CertificateResultsPage struct {
 	// Items is list of items on this page of results
 	Items []Certificate `json:"items,omitempty" yaml:"items,omitempty"`
@@ -748,30 +1066,52 @@ type CertificateResultsPage struct {
 }
 
 // Cumulativedouble is a cumulative or counter data type.
+//
+// Required fields:
+// - StartTime
+// - Value
 type Cumulativedouble struct {
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
 	Value     float64    `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // Cumulativefloat is a cumulative or counter data type.
+//
+// Required fields:
+// - StartTime
+// - Value
 type Cumulativefloat struct {
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
 	Value     float64    `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // Cumulativeint64 is a cumulative or counter data type.
+//
+// Required fields:
+// - StartTime
+// - Value
 type Cumulativeint64 struct {
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
 	Value     int        `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // Cumulativeuint64 is a cumulative or counter data type.
+//
+// Required fields:
+// - StartTime
+// - Value
 type Cumulativeuint64 struct {
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
 	Value     int        `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // CurrentUser is info about the current user
+//
+// Required fields:
+// - DisplayName
+// - Id
+// - SiloId
+// - SiloName
 type CurrentUser struct {
 	// DisplayName is human-readable name that can identify the user
 	DisplayName string `json:"display_name,omitempty" yaml:"display_name,omitempty"`
@@ -786,84 +1126,140 @@ type CurrentUser struct {
 type DatumType string
 
 // DatumBool is the type definition for a DatumBool.
+//
+// Required fields:
+// - Datum
+// - Type
 type DatumBool struct {
 	Datum *bool     `json:"datum,omitempty" yaml:"datum,omitempty"`
 	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // DatumI8 is the type definition for a DatumI8.
+//
+// Required fields:
+// - Datum
+// - Type
 type DatumI8 struct {
 	Datum int       `json:"datum,omitempty" yaml:"datum,omitempty"`
 	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // DatumU8 is the type definition for a DatumU8.
+//
+// Required fields:
+// - Datum
+// - Type
 type DatumU8 struct {
 	Datum int       `json:"datum,omitempty" yaml:"datum,omitempty"`
 	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // DatumI16 is the type definition for a DatumI16.
+//
+// Required fields:
+// - Datum
+// - Type
 type DatumI16 struct {
 	Datum int       `json:"datum,omitempty" yaml:"datum,omitempty"`
 	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // DatumU16 is the type definition for a DatumU16.
+//
+// Required fields:
+// - Datum
+// - Type
 type DatumU16 struct {
 	Datum int       `json:"datum,omitempty" yaml:"datum,omitempty"`
 	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // DatumI32 is the type definition for a DatumI32.
+//
+// Required fields:
+// - Datum
+// - Type
 type DatumI32 struct {
 	Datum int       `json:"datum,omitempty" yaml:"datum,omitempty"`
 	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // DatumU32 is the type definition for a DatumU32.
+//
+// Required fields:
+// - Datum
+// - Type
 type DatumU32 struct {
 	Datum int       `json:"datum,omitempty" yaml:"datum,omitempty"`
 	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // DatumI64 is the type definition for a DatumI64.
+//
+// Required fields:
+// - Datum
+// - Type
 type DatumI64 struct {
 	Datum int       `json:"datum,omitempty" yaml:"datum,omitempty"`
 	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // DatumU64 is the type definition for a DatumU64.
+//
+// Required fields:
+// - Datum
+// - Type
 type DatumU64 struct {
 	Datum int       `json:"datum,omitempty" yaml:"datum,omitempty"`
 	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // DatumF32 is the type definition for a DatumF32.
+//
+// Required fields:
+// - Datum
+// - Type
 type DatumF32 struct {
 	Datum float64   `json:"datum,omitempty" yaml:"datum,omitempty"`
 	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // DatumF64 is the type definition for a DatumF64.
+//
+// Required fields:
+// - Datum
+// - Type
 type DatumF64 struct {
 	Datum float64   `json:"datum,omitempty" yaml:"datum,omitempty"`
 	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // DatumString is the type definition for a DatumString.
+//
+// Required fields:
+// - Datum
+// - Type
 type DatumString struct {
 	Datum string    `json:"datum,omitempty" yaml:"datum,omitempty"`
 	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // DatumBytes is the type definition for a DatumBytes.
+//
+// Required fields:
+// - Datum
+// - Type
 type DatumBytes struct {
 	Datum []string  `json:"datum,omitempty" yaml:"datum,omitempty"`
 	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // DatumCumulativeI64 is the type definition for a DatumCumulativeI64.
+//
+// Required fields:
+// - Datum
+// - Type
 type DatumCumulativeI64 struct {
 	// Datum is a cumulative or counter data type.
 	Datum Cumulativeint64 `json:"datum,omitempty" yaml:"datum,omitempty"`
@@ -871,6 +1267,10 @@ type DatumCumulativeI64 struct {
 }
 
 // DatumCumulativeU64 is the type definition for a DatumCumulativeU64.
+//
+// Required fields:
+// - Datum
+// - Type
 type DatumCumulativeU64 struct {
 	// Datum is a cumulative or counter data type.
 	Datum Cumulativeuint64 `json:"datum,omitempty" yaml:"datum,omitempty"`
@@ -878,6 +1278,10 @@ type DatumCumulativeU64 struct {
 }
 
 // DatumCumulativeF32 is the type definition for a DatumCumulativeF32.
+//
+// Required fields:
+// - Datum
+// - Type
 type DatumCumulativeF32 struct {
 	// Datum is a cumulative or counter data type.
 	Datum Cumulativefloat `json:"datum,omitempty" yaml:"datum,omitempty"`
@@ -885,6 +1289,10 @@ type DatumCumulativeF32 struct {
 }
 
 // DatumCumulativeF64 is the type definition for a DatumCumulativeF64.
+//
+// Required fields:
+// - Datum
+// - Type
 type DatumCumulativeF64 struct {
 	// Datum is a cumulative or counter data type.
 	Datum Cumulativedouble `json:"datum,omitempty" yaml:"datum,omitempty"`
@@ -892,6 +1300,10 @@ type DatumCumulativeF64 struct {
 }
 
 // DatumHistogramI8 is the type definition for a DatumHistogramI8.
+//
+// Required fields:
+// - Datum
+// - Type
 type DatumHistogramI8 struct {
 	// Datum is histogram metric
 	//
@@ -903,6 +1315,10 @@ type DatumHistogramI8 struct {
 }
 
 // DatumHistogramU8 is the type definition for a DatumHistogramU8.
+//
+// Required fields:
+// - Datum
+// - Type
 type DatumHistogramU8 struct {
 	// Datum is histogram metric
 	//
@@ -914,6 +1330,10 @@ type DatumHistogramU8 struct {
 }
 
 // DatumHistogramI16 is the type definition for a DatumHistogramI16.
+//
+// Required fields:
+// - Datum
+// - Type
 type DatumHistogramI16 struct {
 	// Datum is histogram metric
 	//
@@ -925,6 +1345,10 @@ type DatumHistogramI16 struct {
 }
 
 // DatumHistogramU16 is the type definition for a DatumHistogramU16.
+//
+// Required fields:
+// - Datum
+// - Type
 type DatumHistogramU16 struct {
 	// Datum is histogram metric
 	//
@@ -936,6 +1360,10 @@ type DatumHistogramU16 struct {
 }
 
 // DatumHistogramI32 is the type definition for a DatumHistogramI32.
+//
+// Required fields:
+// - Datum
+// - Type
 type DatumHistogramI32 struct {
 	// Datum is histogram metric
 	//
@@ -947,6 +1375,10 @@ type DatumHistogramI32 struct {
 }
 
 // DatumHistogramU32 is the type definition for a DatumHistogramU32.
+//
+// Required fields:
+// - Datum
+// - Type
 type DatumHistogramU32 struct {
 	// Datum is histogram metric
 	//
@@ -958,6 +1390,10 @@ type DatumHistogramU32 struct {
 }
 
 // DatumHistogramI64 is the type definition for a DatumHistogramI64.
+//
+// Required fields:
+// - Datum
+// - Type
 type DatumHistogramI64 struct {
 	// Datum is histogram metric
 	//
@@ -969,6 +1405,10 @@ type DatumHistogramI64 struct {
 }
 
 // DatumHistogramU64 is the type definition for a DatumHistogramU64.
+//
+// Required fields:
+// - Datum
+// - Type
 type DatumHistogramU64 struct {
 	// Datum is histogram metric
 	//
@@ -980,6 +1420,10 @@ type DatumHistogramU64 struct {
 }
 
 // DatumHistogramF32 is the type definition for a DatumHistogramF32.
+//
+// Required fields:
+// - Datum
+// - Type
 type DatumHistogramF32 struct {
 	// Datum is histogram metric
 	//
@@ -991,6 +1435,10 @@ type DatumHistogramF32 struct {
 }
 
 // DatumHistogramF64 is the type definition for a DatumHistogramF64.
+//
+// Required fields:
+// - Datum
+// - Type
 type DatumHistogramF64 struct {
 	// Datum is histogram metric
 	//
@@ -1002,6 +1450,10 @@ type DatumHistogramF64 struct {
 }
 
 // DatumMissing is the type definition for a DatumMissing.
+//
+// Required fields:
+// - Datum
+// - Type
 type DatumMissing struct {
 	Datum MissingDatum `json:"datum,omitempty" yaml:"datum,omitempty"`
 	Type  DatumType    `json:"type,omitempty" yaml:"type,omitempty"`
@@ -1016,6 +1468,10 @@ type Datum struct {
 }
 
 // DerEncodedKeyPair is the type definition for a DerEncodedKeyPair.
+//
+// Required fields:
+// - PrivateKey
+// - PublicCert
 type DerEncodedKeyPair struct {
 	// PrivateKey is request signing private key (base64 encoded der file)
 	PrivateKey string `json:"private_key,omitempty" yaml:"private_key,omitempty"`
@@ -1024,6 +1480,11 @@ type DerEncodedKeyPair struct {
 }
 
 // DeviceAccessTokenRequest is the type definition for a DeviceAccessTokenRequest.
+//
+// Required fields:
+// - ClientId
+// - DeviceCode
+// - GrantType
 type DeviceAccessTokenRequest struct {
 	ClientId   string `json:"client_id,omitempty" yaml:"client_id,omitempty"`
 	DeviceCode string `json:"device_code,omitempty" yaml:"device_code,omitempty"`
@@ -1031,11 +1492,17 @@ type DeviceAccessTokenRequest struct {
 }
 
 // DeviceAuthRequest is the type definition for a DeviceAuthRequest.
+//
+// Required fields:
+// - ClientId
 type DeviceAuthRequest struct {
 	ClientId string `json:"client_id,omitempty" yaml:"client_id,omitempty"`
 }
 
 // DeviceAuthVerify is the type definition for a DeviceAuthVerify.
+//
+// Required fields:
+// - UserCode
 type DeviceAuthVerify struct {
 	UserCode string `json:"user_code,omitempty" yaml:"user_code,omitempty"`
 }
@@ -1044,6 +1511,10 @@ type DeviceAuthVerify struct {
 type DigestType string
 
 // DigestSha256 is the type definition for a DigestSha256.
+//
+// Required fields:
+// - Type
+// - Value
 type DigestSha256 struct {
 	Type  DigestType `json:"type,omitempty" yaml:"type,omitempty"`
 	Value string     `json:"value,omitempty" yaml:"value,omitempty"`
@@ -1058,6 +1529,18 @@ type Digest struct {
 }
 
 // Disk is view of a Disk
+//
+// Required fields:
+// - BlockSize
+// - Description
+// - DevicePath
+// - Id
+// - Name
+// - ProjectId
+// - Size
+// - State
+// - TimeCreated
+// - TimeModified
 type Disk struct {
 	// BlockSize is byte count to express memory or storage capacity.
 	BlockSize ByteCount `json:"block_size,omitempty" yaml:"block_size,omitempty"`
@@ -1084,6 +1567,12 @@ type Disk struct {
 }
 
 // DiskCreate is create-time parameters for a `Disk`
+//
+// Required fields:
+// - Description
+// - DiskSource
+// - Name
+// - Size
 type DiskCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// DiskSource is initial source for this disk
@@ -1098,12 +1587,18 @@ type DiskCreate struct {
 type DiskMetricName string
 
 // DiskPath is the type definition for a DiskPath.
+//
+// Required fields:
+// - Disk
 type DiskPath struct {
 	// Disk is name or ID of the disk
 	Disk NameOrId `json:"disk,omitempty" yaml:"disk,omitempty"`
 }
 
 // DiskResultsPage is a single page of results
+//
+// Required fields:
+// - Items
 type DiskResultsPage struct {
 	// Items is list of items on this page of results
 	Items []Disk `json:"items,omitempty" yaml:"items,omitempty"`
@@ -1115,6 +1610,10 @@ type DiskResultsPage struct {
 type DiskSourceType string
 
 // DiskSourceBlank is create a blank disk
+//
+// Required fields:
+// - BlockSize
+// - Type
 type DiskSourceBlank struct {
 	// BlockSize is size of blocks for this Disk. valid values are: 512, 2048, or 4096
 	BlockSize BlockSize      `json:"block_size,omitempty" yaml:"block_size,omitempty"`
@@ -1122,18 +1621,30 @@ type DiskSourceBlank struct {
 }
 
 // DiskSourceSnapshot is create a disk from a disk snapshot
+//
+// Required fields:
+// - SnapshotId
+// - Type
 type DiskSourceSnapshot struct {
 	SnapshotId string         `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
 	Type       DiskSourceType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // DiskSourceImage is create a disk from an image
+//
+// Required fields:
+// - ImageId
+// - Type
 type DiskSourceImage struct {
 	ImageId string         `json:"image_id,omitempty" yaml:"image_id,omitempty"`
 	Type    DiskSourceType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // DiskSourceImportingBlocks is create a blank disk that will accept bulk writes or pull blocks from an external source.
+//
+// Required fields:
+// - BlockSize
+// - Type
 type DiskSourceImportingBlocks struct {
 	BlockSize BlockSize      `json:"block_size,omitempty" yaml:"block_size,omitempty"`
 	Type      DiskSourceType `json:"type,omitempty" yaml:"type,omitempty"`
@@ -1155,64 +1666,103 @@ type DiskSource struct {
 type DiskStateState string
 
 // DiskStateCreating is disk is being initialized
+//
+// Required fields:
+// - State
 type DiskStateCreating struct {
 	State DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
 }
 
 // DiskStateDetached is disk is ready but detached from any Instance
+//
+// Required fields:
+// - State
 type DiskStateDetached struct {
 	State DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
 }
 
 // DiskStateImportReady is disk is ready to receive blocks from an external source
+//
+// Required fields:
+// - State
 type DiskStateImportReady struct {
 	State DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
 }
 
 // DiskStateImportingFromUrl is disk is importing blocks from a URL
+//
+// Required fields:
+// - State
 type DiskStateImportingFromUrl struct {
 	State DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
 }
 
 // DiskStateImportingFromBulkWrites is disk is importing blocks from bulk writes
+//
+// Required fields:
+// - State
 type DiskStateImportingFromBulkWrites struct {
 	State DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
 }
 
 // DiskStateFinalizing is disk is being finalized to state Detached
+//
+// Required fields:
+// - State
 type DiskStateFinalizing struct {
 	State DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
 }
 
 // DiskStateMaintenance is disk is undergoing maintenance
+//
+// Required fields:
+// - State
 type DiskStateMaintenance struct {
 	State DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
 }
 
 // DiskStateAttaching is disk is being attached to the given Instance
+//
+// Required fields:
+// - Instance
+// - State
 type DiskStateAttaching struct {
 	Instance string         `json:"instance,omitempty" yaml:"instance,omitempty"`
 	State    DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
 }
 
 // DiskStateAttached is disk is attached to the given Instance
+//
+// Required fields:
+// - Instance
+// - State
 type DiskStateAttached struct {
 	Instance string         `json:"instance,omitempty" yaml:"instance,omitempty"`
 	State    DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
 }
 
 // DiskStateDetaching is disk is being detached from the given Instance
+//
+// Required fields:
+// - Instance
+// - State
 type DiskStateDetaching struct {
 	Instance string         `json:"instance,omitempty" yaml:"instance,omitempty"`
 	State    DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
 }
 
 // DiskStateDestroyed is disk has been destroyed
+//
+// Required fields:
+// - State
 type DiskStateDestroyed struct {
 	State DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
 }
 
 // DiskStateFaulted is disk is unavailable
+//
+// Required fields:
+// - State
 type DiskStateFaulted struct {
 	State DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
 }
@@ -1232,6 +1782,10 @@ type EphemeralIpCreate struct {
 }
 
 // Error is error information from a response.
+//
+// Required fields:
+// - Message
+// - RequestId
 type Error struct {
 	ErrorCode string `json:"error_code,omitempty" yaml:"error_code,omitempty"`
 	Message   string `json:"message,omitempty" yaml:"message,omitempty"`
@@ -1242,12 +1796,26 @@ type Error struct {
 type ExternalIpKind string
 
 // ExternalIpEphemeral is the type definition for a ExternalIpEphemeral.
+//
+// Required fields:
+// - Ip
+// - Kind
 type ExternalIpEphemeral struct {
 	Ip   string         `json:"ip,omitempty" yaml:"ip,omitempty"`
 	Kind ExternalIpKind `json:"kind,omitempty" yaml:"kind,omitempty"`
 }
 
 // ExternalIpFloating is a Floating IP is a well-known IP address which can be attached and detached from instances.
+//
+// Required fields:
+// - Description
+// - Id
+// - Ip
+// - Kind
+// - Name
+// - ProjectId
+// - TimeCreated
+// - TimeModified
 type ExternalIpFloating struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
@@ -1294,6 +1862,9 @@ type ExternalIp struct {
 type ExternalIpCreateType string
 
 // ExternalIpCreateEphemeral is an IP address providing both inbound and outbound access. The address is automatically-assigned from the provided IP Pool, or the current silo's default pool if not specified.
+//
+// Required fields:
+// - Type
 type ExternalIpCreateEphemeral struct {
 	Pool NameOrId             `json:"pool,omitempty" yaml:"pool,omitempty"`
 	Type ExternalIpCreateType `json:"type,omitempty" yaml:"type,omitempty"`
@@ -1302,6 +1873,10 @@ type ExternalIpCreateEphemeral struct {
 // ExternalIpCreateFloating is an IP address providing both inbound and outbound access. The address is an existing floating IP object assigned to the current project.
 //
 // The floating IP must not be in use by another instance or service.
+//
+// Required fields:
+// - FloatingIp
+// - Type
 type ExternalIpCreateFloating struct {
 	FloatingIp NameOrId             `json:"floating_ip,omitempty" yaml:"floating_ip,omitempty"`
 	Type       ExternalIpCreateType `json:"type,omitempty" yaml:"type,omitempty"`
@@ -1318,6 +1893,9 @@ type ExternalIpCreate struct {
 }
 
 // ExternalIpResultsPage is a single page of results
+//
+// Required fields:
+// - Items
 type ExternalIpResultsPage struct {
 	// Items is list of items on this page of results
 	Items []ExternalIp `json:"items,omitempty" yaml:"items,omitempty"`
@@ -1337,6 +1915,9 @@ type FleetRole string
 // FleetRolePolicy is policy for a particular resource
 //
 // Note that the Policy only describes access granted explicitly for this resource.  The policies of parent resources can also cause a user to have access to this resource.
+//
+// Required fields:
+// - RoleAssignments
 type FleetRolePolicy struct {
 	// RoleAssignments is roles directly assigned on this resource
 	RoleAssignments []FleetRoleRoleAssignment `json:"role_assignments,omitempty" yaml:"role_assignments,omitempty"`
@@ -1345,6 +1926,11 @@ type FleetRolePolicy struct {
 // FleetRoleRoleAssignment is describes the assignment of a particular role on a particular resource to a particular identity (user, group, etc.)
 //
 // The resource is not part of this structure.  Rather, `RoleAssignment`s are put into a `Policy` and that Policy is applied to a particular resource.
+//
+// Required fields:
+// - IdentityId
+// - IdentityType
+// - RoleName
 type FleetRoleRoleAssignment struct {
 	IdentityId string `json:"identity_id,omitempty" yaml:"identity_id,omitempty"`
 	// IdentityType is describes what kind of identity is described by an id
@@ -1353,6 +1939,15 @@ type FleetRoleRoleAssignment struct {
 }
 
 // FloatingIp is a Floating IP is a well-known IP address which can be attached and detached from instances.
+//
+// Required fields:
+// - Description
+// - Id
+// - Ip
+// - Name
+// - ProjectId
+// - TimeCreated
+// - TimeModified
 type FloatingIp struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
@@ -1373,6 +1968,10 @@ type FloatingIp struct {
 }
 
 // FloatingIpAttach is parameters for attaching a floating IP address to another resource
+//
+// Required fields:
+// - Kind
+// - Parent
 type FloatingIpAttach struct {
 	// Kind is the type of `parent`'s resource
 	Kind FloatingIpParentKind `json:"kind,omitempty" yaml:"kind,omitempty"`
@@ -1381,6 +1980,10 @@ type FloatingIpAttach struct {
 }
 
 // FloatingIpCreate is parameters for creating a new floating IP address for instances.
+//
+// Required fields:
+// - Description
+// - Name
 type FloatingIpCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Ip is an IP address to reserve for use as a floating IP. This field is optional: when not set, an address will be automatically chosen from `pool`. If set, then the IP must be available in the resolved `pool`.
@@ -1395,6 +1998,9 @@ type FloatingIpCreate struct {
 type FloatingIpParentKind string
 
 // FloatingIpResultsPage is a single page of results
+//
+// Required fields:
+// - Items
 type FloatingIpResultsPage struct {
 	// Items is list of items on this page of results
 	Items []FloatingIp `json:"items,omitempty" yaml:"items,omitempty"`
@@ -1409,6 +2015,11 @@ type FloatingIpUpdate struct {
 }
 
 // Group is view of a Group
+//
+// Required fields:
+// - DisplayName
+// - Id
+// - SiloId
 type Group struct {
 	// DisplayName is human-readable name that can identify the group
 	DisplayName string `json:"display_name,omitempty" yaml:"display_name,omitempty"`
@@ -1418,6 +2029,9 @@ type Group struct {
 }
 
 // GroupResultsPage is a single page of results
+//
+// Required fields:
+// - Items
 type GroupResultsPage struct {
 	// Items is list of items on this page of results
 	Items []Group `json:"items,omitempty" yaml:"items,omitempty"`
@@ -1430,6 +2044,11 @@ type GroupResultsPage struct {
 // A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
 //
 // Note that any gaps, unsorted bins, or non-finite values will result in an error.
+//
+// Required fields:
+// - Bins
+// - NSamples
+// - StartTime
 type Histogramdouble struct {
 	Bins      []Bindouble `json:"bins,omitempty" yaml:"bins,omitempty"`
 	NSamples  int         `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
@@ -1441,6 +2060,11 @@ type Histogramdouble struct {
 // A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
 //
 // Note that any gaps, unsorted bins, or non-finite values will result in an error.
+//
+// Required fields:
+// - Bins
+// - NSamples
+// - StartTime
 type Histogramfloat struct {
 	Bins      []Binfloat `json:"bins,omitempty" yaml:"bins,omitempty"`
 	NSamples  int        `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
@@ -1452,6 +2076,11 @@ type Histogramfloat struct {
 // A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
 //
 // Note that any gaps, unsorted bins, or non-finite values will result in an error.
+//
+// Required fields:
+// - Bins
+// - NSamples
+// - StartTime
 type Histogramint16 struct {
 	Bins      []Binint16 `json:"bins,omitempty" yaml:"bins,omitempty"`
 	NSamples  int        `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
@@ -1463,6 +2092,11 @@ type Histogramint16 struct {
 // A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
 //
 // Note that any gaps, unsorted bins, or non-finite values will result in an error.
+//
+// Required fields:
+// - Bins
+// - NSamples
+// - StartTime
 type Histogramint32 struct {
 	Bins      []Binint32 `json:"bins,omitempty" yaml:"bins,omitempty"`
 	NSamples  int        `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
@@ -1474,6 +2108,11 @@ type Histogramint32 struct {
 // A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
 //
 // Note that any gaps, unsorted bins, or non-finite values will result in an error.
+//
+// Required fields:
+// - Bins
+// - NSamples
+// - StartTime
 type Histogramint64 struct {
 	Bins      []Binint64 `json:"bins,omitempty" yaml:"bins,omitempty"`
 	NSamples  int        `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
@@ -1485,6 +2124,11 @@ type Histogramint64 struct {
 // A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
 //
 // Note that any gaps, unsorted bins, or non-finite values will result in an error.
+//
+// Required fields:
+// - Bins
+// - NSamples
+// - StartTime
 type Histogramint8 struct {
 	Bins      []Binint8  `json:"bins,omitempty" yaml:"bins,omitempty"`
 	NSamples  int        `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
@@ -1496,6 +2140,11 @@ type Histogramint8 struct {
 // A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
 //
 // Note that any gaps, unsorted bins, or non-finite values will result in an error.
+//
+// Required fields:
+// - Bins
+// - NSamples
+// - StartTime
 type Histogramuint16 struct {
 	Bins      []Binuint16 `json:"bins,omitempty" yaml:"bins,omitempty"`
 	NSamples  int         `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
@@ -1507,6 +2156,11 @@ type Histogramuint16 struct {
 // A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
 //
 // Note that any gaps, unsorted bins, or non-finite values will result in an error.
+//
+// Required fields:
+// - Bins
+// - NSamples
+// - StartTime
 type Histogramuint32 struct {
 	Bins      []Binuint32 `json:"bins,omitempty" yaml:"bins,omitempty"`
 	NSamples  int         `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
@@ -1518,6 +2172,11 @@ type Histogramuint32 struct {
 // A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
 //
 // Note that any gaps, unsorted bins, or non-finite values will result in an error.
+//
+// Required fields:
+// - Bins
+// - NSamples
+// - StartTime
 type Histogramuint64 struct {
 	Bins      []Binuint64 `json:"bins,omitempty" yaml:"bins,omitempty"`
 	NSamples  int         `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
@@ -1529,6 +2188,11 @@ type Histogramuint64 struct {
 // A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
 //
 // Note that any gaps, unsorted bins, or non-finite values will result in an error.
+//
+// Required fields:
+// - Bins
+// - NSamples
+// - StartTime
 type Histogramuint8 struct {
 	Bins      []Binuint8 `json:"bins,omitempty" yaml:"bins,omitempty"`
 	NSamples  int        `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
@@ -1542,6 +2206,14 @@ type Hostname string
 type IdSortMode string
 
 // IdentityProvider is view of an Identity Provider
+//
+// Required fields:
+// - Description
+// - Id
+// - Name
+// - ProviderType
+// - TimeCreated
+// - TimeModified
 type IdentityProvider struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
@@ -1558,6 +2230,9 @@ type IdentityProvider struct {
 }
 
 // IdentityProviderResultsPage is a single page of results
+//
+// Required fields:
+// - Items
 type IdentityProviderResultsPage struct {
 	// Items is list of items on this page of results
 	Items []IdentityProvider `json:"items,omitempty" yaml:"items,omitempty"`
@@ -1575,12 +2250,20 @@ type IdentityType string
 type IdpMetadataSourceType string
 
 // IdpMetadataSourceUrl is the type definition for a IdpMetadataSourceUrl.
+//
+// Required fields:
+// - Type
+// - Url
 type IdpMetadataSourceUrl struct {
 	Type IdpMetadataSourceType `json:"type,omitempty" yaml:"type,omitempty"`
 	Url  string                `json:"url,omitempty" yaml:"url,omitempty"`
 }
 
 // IdpMetadataSourceBase64EncodedXml is the type definition for a IdpMetadataSourceBase64EncodedXml.
+//
+// Required fields:
+// - Data
+// - Type
 type IdpMetadataSourceBase64EncodedXml struct {
 	Data string                `json:"data,omitempty" yaml:"data,omitempty"`
 	Type IdpMetadataSourceType `json:"type,omitempty" yaml:"type,omitempty"`
@@ -1599,6 +2282,17 @@ type IdpMetadataSource struct {
 // Image is view of an image
 //
 // If `project_id` is present then the image is only visible inside that project. If it's not present then the image is visible to all projects in the silo.
+//
+// Required fields:
+// - BlockSize
+// - Description
+// - Id
+// - Name
+// - Os
+// - Size
+// - TimeCreated
+// - TimeModified
+// - Version
 type Image struct {
 	// BlockSize is size of blocks in bytes
 	BlockSize ByteCount `json:"block_size,omitempty" yaml:"block_size,omitempty"`
@@ -1625,6 +2319,13 @@ type Image struct {
 }
 
 // ImageCreate is create-time parameters for an `Image`
+//
+// Required fields:
+// - Description
+// - Name
+// - Os
+// - Source
+// - Version
 type ImageCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
@@ -1638,6 +2339,9 @@ type ImageCreate struct {
 }
 
 // ImageResultsPage is a single page of results
+//
+// Required fields:
+// - Items
 type ImageResultsPage struct {
 	// Items is list of items on this page of results
 	Items []Image `json:"items,omitempty" yaml:"items,omitempty"`
@@ -1649,12 +2353,19 @@ type ImageResultsPage struct {
 type ImageSourceType string
 
 // ImageSourceSnapshot is the type definition for a ImageSourceSnapshot.
+//
+// Required fields:
+// - Id
+// - Type
 type ImageSourceSnapshot struct {
 	Id   string          `json:"id,omitempty" yaml:"id,omitempty"`
 	Type ImageSourceType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // ImageSourceYouCanBootAnythingAsLongAsItsAlpine is boot the Alpine ISO that ships with the Propolis zone. Intended for development purposes only.
+//
+// Required fields:
+// - Type
 type ImageSourceYouCanBootAnythingAsLongAsItsAlpine struct {
 	Type ImageSourceType `json:"type,omitempty" yaml:"type,omitempty"`
 }
@@ -1668,12 +2379,29 @@ type ImageSource struct {
 }
 
 // ImportBlocksBulkWrite is parameters for importing blocks with a bulk write
+//
+// Required fields:
+// - Base64EncodedData
+// - Offset
 type ImportBlocksBulkWrite struct {
 	Base64EncodedData string `json:"base64_encoded_data,omitempty" yaml:"base64_encoded_data,omitempty"`
 	Offset            int    `json:"offset,omitempty" yaml:"offset,omitempty"`
 }
 
 // Instance is view of an Instance
+//
+// Required fields:
+// - Description
+// - Hostname
+// - Id
+// - Memory
+// - Name
+// - Ncpus
+// - ProjectId
+// - RunState
+// - TimeCreated
+// - TimeModified
+// - TimeRunStateUpdated
 type Instance struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
@@ -1704,6 +2432,13 @@ type Instance struct {
 type InstanceCpuCount uint16
 
 // InstanceCreate is create-time parameters for an `Instance`
+//
+// Required fields:
+// - Description
+// - Hostname
+// - Memory
+// - Name
+// - Ncpus
 type InstanceCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Disks is the disks to be created or attached for this instance.
@@ -1736,6 +2471,13 @@ type InstanceCreate struct {
 type InstanceDiskAttachmentType string
 
 // InstanceDiskAttachmentCreate is during instance creation, create and attach disks
+//
+// Required fields:
+// - Description
+// - DiskSource
+// - Name
+// - Size
+// - Type
 type InstanceDiskAttachmentCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// DiskSource is initial source for this disk
@@ -1748,6 +2490,10 @@ type InstanceDiskAttachmentCreate struct {
 }
 
 // InstanceDiskAttachmentAttach is during instance creation, attach this disk
+//
+// Required fields:
+// - Name
+// - Type
 type InstanceDiskAttachmentAttach struct {
 	// Name is a disk name to attach
 	Name Name                       `json:"name,omitempty" yaml:"name,omitempty"`
@@ -1769,11 +2515,27 @@ type InstanceDiskAttachment struct {
 }
 
 // InstanceMigrate is migration parameters for an `Instance`
+//
+// Required fields:
+// - DstSledId
 type InstanceMigrate struct {
 	DstSledId string `json:"dst_sled_id,omitempty" yaml:"dst_sled_id,omitempty"`
 }
 
 // InstanceNetworkInterface is an `InstanceNetworkInterface` represents a virtual network interface device attached to an instance.
+//
+// Required fields:
+// - Description
+// - Id
+// - InstanceId
+// - Ip
+// - Mac
+// - Name
+// - Primary
+// - SubnetId
+// - TimeCreated
+// - TimeModified
+// - VpcId
 type InstanceNetworkInterface struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
@@ -1805,17 +2567,27 @@ type InstanceNetworkInterfaceAttachmentType string
 // InstanceNetworkInterfaceAttachmentCreate is create one or more `InstanceNetworkInterface`s for the `Instance`.
 //
 // If more than one interface is provided, then the first will be designated the primary interface for the instance.
+//
+// Required fields:
+// - Params
+// - Type
 type InstanceNetworkInterfaceAttachmentCreate struct {
 	Params []InstanceNetworkInterfaceCreate       `json:"params,omitempty" yaml:"params,omitempty"`
 	Type   InstanceNetworkInterfaceAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // InstanceNetworkInterfaceAttachmentDefault is the default networking configuration for an instance is to create a single primary interface with an automatically-assigned IP address. The IP will be pulled from the Project's default VPC / VPC Subnet.
+//
+// Required fields:
+// - Type
 type InstanceNetworkInterfaceAttachmentDefault struct {
 	Type InstanceNetworkInterfaceAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // InstanceNetworkInterfaceAttachmentNone is no network interfaces at all will be created for the instance.
+//
+// Required fields:
+// - Type
 type InstanceNetworkInterfaceAttachmentNone struct {
 	Type InstanceNetworkInterfaceAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
 }
@@ -1829,6 +2601,12 @@ type InstanceNetworkInterfaceAttachment struct {
 }
 
 // InstanceNetworkInterfaceCreate is create-time parameters for an `InstanceNetworkInterface`
+//
+// Required fields:
+// - Description
+// - Name
+// - SubnetName
+// - VpcName
 type InstanceNetworkInterfaceCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Ip is the IP address for the interface. One will be auto-assigned if not provided.
@@ -1842,6 +2620,9 @@ type InstanceNetworkInterfaceCreate struct {
 }
 
 // InstanceNetworkInterfaceResultsPage is a single page of results
+//
+// Required fields:
+// - Items
 type InstanceNetworkInterfaceResultsPage struct {
 	// Items is list of items on this page of results
 	Items []InstanceNetworkInterface `json:"items,omitempty" yaml:"items,omitempty"`
@@ -1864,6 +2645,9 @@ type InstanceNetworkInterfaceUpdate struct {
 }
 
 // InstanceResultsPage is a single page of results
+//
+// Required fields:
+// - Items
 type InstanceResultsPage struct {
 	// Items is list of items on this page of results
 	Items []Instance `json:"items,omitempty" yaml:"items,omitempty"`
@@ -1872,6 +2656,10 @@ type InstanceResultsPage struct {
 }
 
 // InstanceSerialConsoleData is contents of an Instance's serial console buffer.
+//
+// Required fields:
+// - Data
+// - LastByteOffset
 type InstanceSerialConsoleData struct {
 	// Data is the bytes starting from the requested offset up to either the end of the buffer or the request's `max_bytes`. Provided as a u8 array rather than a string, as it may not be UTF-8.
 	Data []string `json:"data,omitempty" yaml:"data,omitempty"`
@@ -1886,6 +2674,13 @@ type InstanceState string
 type IpNet interface{}
 
 // IpPool is a collection of IP ranges. If a pool is linked to a silo, IP addresses from the pool can be allocated within that silo
+//
+// Required fields:
+// - Description
+// - Id
+// - Name
+// - TimeCreated
+// - TimeModified
 type IpPool struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
@@ -1900,6 +2695,10 @@ type IpPool struct {
 }
 
 // IpPoolCreate is create-time parameters for an `IpPool`
+//
+// Required fields:
+// - Description
+// - Name
 type IpPoolCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
@@ -1907,6 +2706,10 @@ type IpPoolCreate struct {
 }
 
 // IpPoolLinkSilo is the type definition for a IpPoolLinkSilo.
+//
+// Required fields:
+// - IsDefault
+// - Silo
 type IpPoolLinkSilo struct {
 	// IsDefault is when a pool is the default for a silo, floating IPs and instance ephemeral IPs will come from that pool when no other pool is specified. There can be at most one default for a given silo.
 	IsDefault *bool    `json:"is_default,omitempty" yaml:"is_default,omitempty"`
@@ -1914,6 +2717,12 @@ type IpPoolLinkSilo struct {
 }
 
 // IpPoolRange is the type definition for a IpPoolRange.
+//
+// Required fields:
+// - Id
+// - IpPoolId
+// - Range
+// - TimeCreated
 type IpPoolRange struct {
 	Id          string     `json:"id,omitempty" yaml:"id,omitempty"`
 	IpPoolId    string     `json:"ip_pool_id,omitempty" yaml:"ip_pool_id,omitempty"`
@@ -1922,6 +2731,9 @@ type IpPoolRange struct {
 }
 
 // IpPoolRangeResultsPage is a single page of results
+//
+// Required fields:
+// - Items
 type IpPoolRangeResultsPage struct {
 	// Items is list of items on this page of results
 	Items []IpPoolRange `json:"items,omitempty" yaml:"items,omitempty"`
@@ -1930,6 +2742,9 @@ type IpPoolRangeResultsPage struct {
 }
 
 // IpPoolResultsPage is a single page of results
+//
+// Required fields:
+// - Items
 type IpPoolResultsPage struct {
 	// Items is list of items on this page of results
 	Items []IpPool `json:"items,omitempty" yaml:"items,omitempty"`
@@ -1938,6 +2753,11 @@ type IpPoolResultsPage struct {
 }
 
 // IpPoolSiloLink is a link between an IP pool and a silo that allows one to allocate IPs from the pool within the silo
+//
+// Required fields:
+// - IpPoolId
+// - IsDefault
+// - SiloId
 type IpPoolSiloLink struct {
 	IpPoolId string `json:"ip_pool_id,omitempty" yaml:"ip_pool_id,omitempty"`
 	// IsDefault is when a pool is the default for a silo, floating IPs and instance ephemeral IPs will come from that pool when no other pool is specified. There can be at most one default for a given silo.
@@ -1946,6 +2766,9 @@ type IpPoolSiloLink struct {
 }
 
 // IpPoolSiloLinkResultsPage is a single page of results
+//
+// Required fields:
+// - Items
 type IpPoolSiloLinkResultsPage struct {
 	// Items is list of items on this page of results
 	Items []IpPoolSiloLink `json:"items,omitempty" yaml:"items,omitempty"`
@@ -1954,6 +2777,9 @@ type IpPoolSiloLinkResultsPage struct {
 }
 
 // IpPoolSiloUpdate is the type definition for a IpPoolSiloUpdate.
+//
+// Required fields:
+// - IsDefault
 type IpPoolSiloUpdate struct {
 	// IsDefault is when a pool is the default for a silo, floating IPs and instance ephemeral IPs will come from that pool when no other pool is specified. There can be at most one default for a given silo, so when a pool is made default, an existing default will remain linked but will no longer be the default.
 	IsDefault *bool `json:"is_default,omitempty" yaml:"is_default,omitempty"`
@@ -1974,6 +2800,10 @@ type Ipv4Net string
 // Ipv4Range is a non-decreasing IPv4 address range, inclusive of both ends.
 //
 // The first address must be less than or equal to the last address.
+//
+// Required fields:
+// - First
+// - Last
 type Ipv4Range struct {
 	First string `json:"first,omitempty" yaml:"first,omitempty"`
 	Last  string `json:"last,omitempty" yaml:"last,omitempty"`
@@ -1985,6 +2815,10 @@ type Ipv6Net string
 // Ipv6Range is a non-decreasing IPv6 address range, inclusive of both ends.
 //
 // The first address must be less than or equal to the last address.
+//
+// Required fields:
+// - First
+// - Last
 type Ipv6Range struct {
 	First string `json:"first,omitempty" yaml:"first,omitempty"`
 	Last  string `json:"last,omitempty" yaml:"last,omitempty"`
@@ -1994,6 +2828,13 @@ type Ipv6Range struct {
 type L4PortRange string
 
 // LinkConfigCreate is switch link configuration.
+//
+// Required fields:
+// - Autoneg
+// - Fec
+// - Lldp
+// - Mtu
+// - Speed
 type LinkConfigCreate struct {
 	// Autoneg is whether or not to set autonegotiation
 	Autoneg *bool `json:"autoneg,omitempty" yaml:"autoneg,omitempty"`
@@ -2014,6 +2855,10 @@ type LinkFec string
 type LinkSpeed string
 
 // LldpServiceConfig is a link layer discovery protocol (LLDP) service configuration.
+//
+// Required fields:
+// - Enabled
+// - Id
 type LldpServiceConfig struct {
 	// Enabled is whether or not the LLDP service is enabled.
 	Enabled *bool `json:"enabled,omitempty" yaml:"enabled,omitempty"`
@@ -2024,6 +2869,9 @@ type LldpServiceConfig struct {
 }
 
 // LldpServiceConfigCreate is the LLDP configuration associated with a port. LLDP may be either enabled or disabled, if enabled, an LLDP configuration must be provided by name or id.
+//
+// Required fields:
+// - Enabled
 type LldpServiceConfigCreate struct {
 	// Enabled is whether or not LLDP is enabled.
 	Enabled *bool `json:"enabled,omitempty" yaml:"enabled,omitempty"`
@@ -2032,6 +2880,13 @@ type LldpServiceConfigCreate struct {
 }
 
 // LoopbackAddress is a loopback address is an address that is assigned to a rack switch but is not associated with any particular port.
+//
+// Required fields:
+// - Address
+// - AddressLotBlockId
+// - Id
+// - RackId
+// - SwitchLocation
 type LoopbackAddress struct {
 	// Address is the loopback IP address and prefix length.
 	Address IpNet `json:"address,omitempty" yaml:"address,omitempty"`
@@ -2046,6 +2901,14 @@ type LoopbackAddress struct {
 }
 
 // LoopbackAddressCreate is parameters for creating a loopback address on a particular rack switch.
+//
+// Required fields:
+// - Address
+// - AddressLot
+// - Anycast
+// - Mask
+// - RackId
+// - SwitchLocation
 type LoopbackAddressCreate struct {
 	// Address is the address to create.
 	Address string `json:"address,omitempty" yaml:"address,omitempty"`
@@ -2062,6 +2925,9 @@ type LoopbackAddressCreate struct {
 }
 
 // LoopbackAddressResultsPage is a single page of results
+//
+// Required fields:
+// - Items
 type LoopbackAddressResultsPage struct {
 	// Items is list of items on this page of results
 	Items []LoopbackAddress `json:"items,omitempty" yaml:"items,omitempty"`
@@ -2073,6 +2939,10 @@ type LoopbackAddressResultsPage struct {
 type MacAddr string
 
 // Measurement is a `Measurement` is a timestamped datum from a single metric
+//
+// Required fields:
+// - Datum
+// - Timestamp
 type Measurement struct {
 	// Datum is a `Datum` is a single sampled data point from a metric.
 	Datum     Datum      `json:"datum,omitempty" yaml:"datum,omitempty"`
@@ -2080,6 +2950,9 @@ type Measurement struct {
 }
 
 // MeasurementResultsPage is a single page of results
+//
+// Required fields:
+// - Items
 type MeasurementResultsPage struct {
 	// Items is list of items on this page of results
 	Items []Measurement `json:"items,omitempty" yaml:"items,omitempty"`
@@ -2088,6 +2961,9 @@ type MeasurementResultsPage struct {
 }
 
 // MissingDatum is the type definition for a MissingDatum.
+//
+// Required fields:
+// - DatumType
 type MissingDatum struct {
 	// DatumType is the type of an individual datum of a metric.
 	DatumType DatumType  `json:"datum_type,omitempty" yaml:"datum_type,omitempty"`
@@ -2115,6 +2991,15 @@ type Password string
 // PhysicalDisk is view of a Physical Disk
 //
 // Physical disks reside in a particular sled and are used to store both Instance Disk data as well as internal metadata.
+//
+// Required fields:
+// - FormFactor
+// - Id
+// - Model
+// - Serial
+// - TimeCreated
+// - TimeModified
+// - Vendor
 type PhysicalDisk struct {
 	// FormFactor is describes the form factor of physical disks.
 	FormFactor PhysicalDiskKind `json:"form_factor,omitempty" yaml:"form_factor,omitempty"`
@@ -2135,6 +3020,9 @@ type PhysicalDisk struct {
 type PhysicalDiskKind string
 
 // PhysicalDiskResultsPage is a single page of results
+//
+// Required fields:
+// - Items
 type PhysicalDiskResultsPage struct {
 	// Items is list of items on this page of results
 	Items []PhysicalDisk `json:"items,omitempty" yaml:"items,omitempty"`
@@ -2143,6 +3031,9 @@ type PhysicalDiskResultsPage struct {
 }
 
 // Ping is the type definition for a Ping.
+//
+// Required fields:
+// - Status
 type Ping struct {
 	// Status is whether the external API is reachable. Will always be Ok if the endpoint returns anything at all.
 	Status PingStatus `json:"status,omitempty" yaml:"status,omitempty"`
@@ -2152,6 +3043,13 @@ type Ping struct {
 type PingStatus string
 
 // Project is view of a Project
+//
+// Required fields:
+// - Description
+// - Id
+// - Name
+// - TimeCreated
+// - TimeModified
 type Project struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
@@ -2166,6 +3064,10 @@ type Project struct {
 }
 
 // ProjectCreate is create-time parameters for a `Project`
+//
+// Required fields:
+// - Description
+// - Name
 type ProjectCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
@@ -2173,6 +3075,9 @@ type ProjectCreate struct {
 }
 
 // ProjectResultsPage is a single page of results
+//
+// Required fields:
+// - Items
 type ProjectResultsPage struct {
 	// Items is list of items on this page of results
 	Items []Project `json:"items,omitempty" yaml:"items,omitempty"`
@@ -2186,6 +3091,9 @@ type ProjectRole string
 // ProjectRolePolicy is policy for a particular resource
 //
 // Note that the Policy only describes access granted explicitly for this resource.  The policies of parent resources can also cause a user to have access to this resource.
+//
+// Required fields:
+// - RoleAssignments
 type ProjectRolePolicy struct {
 	// RoleAssignments is roles directly assigned on this resource
 	RoleAssignments []ProjectRoleRoleAssignment `json:"role_assignments,omitempty" yaml:"role_assignments,omitempty"`
@@ -2194,6 +3102,11 @@ type ProjectRolePolicy struct {
 // ProjectRoleRoleAssignment is describes the assignment of a particular role on a particular resource to a particular identity (user, group, etc.)
 //
 // The resource is not part of this structure.  Rather, `RoleAssignment`s are put into a `Policy` and that Policy is applied to a particular resource.
+//
+// Required fields:
+// - IdentityId
+// - IdentityType
+// - RoleName
 type ProjectRoleRoleAssignment struct {
 	IdentityId string `json:"identity_id,omitempty" yaml:"identity_id,omitempty"`
 	// IdentityType is describes what kind of identity is described by an id
@@ -2208,6 +3121,11 @@ type ProjectUpdate struct {
 }
 
 // Rack is view of an Rack
+//
+// Required fields:
+// - Id
+// - TimeCreated
+// - TimeModified
 type Rack struct {
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
@@ -2218,6 +3136,9 @@ type Rack struct {
 }
 
 // RackResultsPage is a single page of results
+//
+// Required fields:
+// - Items
 type RackResultsPage struct {
 	// Items is list of items on this page of results
 	Items []Rack `json:"items,omitempty" yaml:"items,omitempty"`
@@ -2226,6 +3147,10 @@ type RackResultsPage struct {
 }
 
 // Role is view of a Role
+//
+// Required fields:
+// - Description
+// - Name
 type Role struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Name is role names consist of two string components separated by dot (".").
@@ -2236,6 +3161,9 @@ type Role struct {
 type RoleName string
 
 // RoleResultsPage is a single page of results
+//
+// Required fields:
+// - Items
 type RoleResultsPage struct {
 	// Items is list of items on this page of results
 	Items []Role `json:"items,omitempty" yaml:"items,omitempty"`
@@ -2244,6 +3172,10 @@ type RoleResultsPage struct {
 }
 
 // Route is a route to a destination network through a gateway address.
+//
+// Required fields:
+// - Dst
+// - Gw
 type Route struct {
 	// Dst is the route destination.
 	Dst IpNet `json:"dst,omitempty" yaml:"dst,omitempty"`
@@ -2254,12 +3186,27 @@ type Route struct {
 }
 
 // RouteConfig is route configuration data associated with a switch port configuration.
+//
+// Required fields:
+// - Routes
 type RouteConfig struct {
 	// Routes is the set of routes assigned to a switch port.
 	Routes []Route `json:"routes,omitempty" yaml:"routes,omitempty"`
 }
 
 // SamlIdentityProvider is identity-related metadata that's included in nearly all public API objects
+//
+// Required fields:
+// - AcsUrl
+// - Description
+// - Id
+// - IdpEntityId
+// - Name
+// - SloUrl
+// - SpClientId
+// - TechnicalContactEmail
+// - TimeCreated
+// - TimeModified
 type SamlIdentityProvider struct {
 	// AcsUrl is service provider endpoint where the response will be sent
 	AcsUrl string `json:"acs_url,omitempty" yaml:"acs_url,omitempty"`
@@ -2288,6 +3235,16 @@ type SamlIdentityProvider struct {
 }
 
 // SamlIdentityProviderCreate is create-time identity-related parameters
+//
+// Required fields:
+// - AcsUrl
+// - Description
+// - IdpEntityId
+// - IdpMetadataSource
+// - Name
+// - SloUrl
+// - SpClientId
+// - TechnicalContactEmail
 type SamlIdentityProviderCreate struct {
 	// AcsUrl is service provider endpoint where the response will be sent
 	AcsUrl      string `json:"acs_url,omitempty" yaml:"acs_url,omitempty"`
@@ -2316,6 +3273,16 @@ type ServiceUsingCertificate string
 // Silo is view of a Silo
 //
 // A Silo is the highest level unit of isolation.
+//
+// Required fields:
+// - Description
+// - Discoverable
+// - Id
+// - IdentityMode
+// - MappedFleetRoles
+// - Name
+// - TimeCreated
+// - TimeModified
 type Silo struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
@@ -2338,6 +3305,14 @@ type Silo struct {
 }
 
 // SiloCreate is create-time parameters for a `Silo`
+//
+// Required fields:
+// - Description
+// - Discoverable
+// - IdentityMode
+// - Name
+// - Quotas
+// - TlsCertificates
 type SiloCreate struct {
 	// AdminGroupName is if set, this group will be created during Silo creation and granted the "Silo Admin" role. Identity providers can assert that users belong to this group and those users can log in and further initialize the Silo.
 	//
@@ -2363,6 +3338,14 @@ type SiloCreate struct {
 type SiloIdentityMode string
 
 // SiloIpPool is an IP pool in the context of a silo
+//
+// Required fields:
+// - Description
+// - Id
+// - IsDefault
+// - Name
+// - TimeCreated
+// - TimeModified
 type SiloIpPool struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
@@ -2379,6 +3362,9 @@ type SiloIpPool struct {
 }
 
 // SiloIpPoolResultsPage is a single page of results
+//
+// Required fields:
+// - Items
 type SiloIpPoolResultsPage struct {
 	// Items is list of items on this page of results
 	Items []SiloIpPool `json:"items,omitempty" yaml:"items,omitempty"`
@@ -2387,6 +3373,12 @@ type SiloIpPoolResultsPage struct {
 }
 
 // SiloQuotas is a collection of resource counts used to set the virtual capacity of a silo
+//
+// Required fields:
+// - Cpus
+// - Memory
+// - SiloId
+// - Storage
 type SiloQuotas struct {
 	// Cpus is number of virtual CPUs
 	Cpus int `json:"cpus,omitempty" yaml:"cpus,omitempty"`
@@ -2398,6 +3390,11 @@ type SiloQuotas struct {
 }
 
 // SiloQuotasCreate is the amount of provisionable resources for a Silo
+//
+// Required fields:
+// - Cpus
+// - Memory
+// - Storage
 type SiloQuotasCreate struct {
 	// Cpus is the amount of virtual CPUs available for running instances in the Silo
 	Cpus int `json:"cpus,omitempty" yaml:"cpus,omitempty"`
@@ -2408,6 +3405,9 @@ type SiloQuotasCreate struct {
 }
 
 // SiloQuotasResultsPage is a single page of results
+//
+// Required fields:
+// - Items
 type SiloQuotasResultsPage struct {
 	// Items is list of items on this page of results
 	Items []SiloQuotas `json:"items,omitempty" yaml:"items,omitempty"`
@@ -2426,6 +3426,9 @@ type SiloQuotasUpdate struct {
 }
 
 // SiloResultsPage is a single page of results
+//
+// Required fields:
+// - Items
 type SiloResultsPage struct {
 	// Items is list of items on this page of results
 	Items []Silo `json:"items,omitempty" yaml:"items,omitempty"`
@@ -2439,6 +3442,9 @@ type SiloRole string
 // SiloRolePolicy is policy for a particular resource
 //
 // Note that the Policy only describes access granted explicitly for this resource.  The policies of parent resources can also cause a user to have access to this resource.
+//
+// Required fields:
+// - RoleAssignments
 type SiloRolePolicy struct {
 	// RoleAssignments is roles directly assigned on this resource
 	RoleAssignments []SiloRoleRoleAssignment `json:"role_assignments,omitempty" yaml:"role_assignments,omitempty"`
@@ -2447,6 +3453,11 @@ type SiloRolePolicy struct {
 // SiloRoleRoleAssignment is describes the assignment of a particular role on a particular resource to a particular identity (user, group, etc.)
 //
 // The resource is not part of this structure.  Rather, `RoleAssignment`s are put into a `Policy` and that Policy is applied to a particular resource.
+//
+// Required fields:
+// - IdentityId
+// - IdentityType
+// - RoleName
 type SiloRoleRoleAssignment struct {
 	IdentityId string `json:"identity_id,omitempty" yaml:"identity_id,omitempty"`
 	// IdentityType is describes what kind of identity is described by an id
@@ -2455,6 +3466,12 @@ type SiloRoleRoleAssignment struct {
 }
 
 // SiloUtilization is view of a silo's resource utilization and capacity
+//
+// Required fields:
+// - Allocated
+// - Provisioned
+// - SiloId
+// - SiloName
 type SiloUtilization struct {
 	// Allocated is accounts for the total amount of resources reserved for silos via their quotas
 	Allocated VirtualResourceCounts `json:"allocated,omitempty" yaml:"allocated,omitempty"`
@@ -2466,6 +3483,9 @@ type SiloUtilization struct {
 }
 
 // SiloUtilizationResultsPage is a single page of results
+//
+// Required fields:
+// - Items
 type SiloUtilizationResultsPage struct {
 	// Items is list of items on this page of results
 	Items []SiloUtilization `json:"items,omitempty" yaml:"items,omitempty"`
@@ -2474,6 +3494,17 @@ type SiloUtilizationResultsPage struct {
 }
 
 // Sled is an operator's view of a Sled.
+//
+// Required fields:
+// - Baseboard
+// - Id
+// - Policy
+// - RackId
+// - State
+// - TimeCreated
+// - TimeModified
+// - UsableHardwareThreads
+// - UsablePhysicalRam
 type Sled struct {
 	// Baseboard is properties that uniquely identify an Oxide hardware component
 	Baseboard Baseboard `json:"baseboard,omitempty" yaml:"baseboard,omitempty"`
@@ -2496,6 +3527,18 @@ type Sled struct {
 }
 
 // SledInstance is an operator's view of an instance running on a given sled
+//
+// Required fields:
+// - ActiveSledId
+// - Id
+// - Memory
+// - Name
+// - Ncpus
+// - ProjectName
+// - SiloName
+// - State
+// - TimeCreated
+// - TimeModified
 type SledInstance struct {
 	ActiveSledId string `json:"active_sled_id,omitempty" yaml:"active_sled_id,omitempty"`
 	// Id is unique, immutable, system-controlled identifier for each resource
@@ -2520,6 +3563,9 @@ type SledInstance struct {
 }
 
 // SledInstanceResultsPage is a single page of results
+//
+// Required fields:
+// - Items
 type SledInstanceResultsPage struct {
 	// Items is list of items on this page of results
 	Items []SledInstance `json:"items,omitempty" yaml:"items,omitempty"`
@@ -2531,6 +3577,10 @@ type SledInstanceResultsPage struct {
 type SledPolicyKind string
 
 // SledPolicyInService is the operator has indicated that the sled is in-service.
+//
+// Required fields:
+// - Kind
+// - ProvisionPolicy
 type SledPolicyInService struct {
 	Kind SledPolicyKind `json:"kind,omitempty" yaml:"kind,omitempty"`
 	// ProvisionPolicy is determines whether new resources can be provisioned onto the sled.
@@ -2542,6 +3592,9 @@ type SledPolicyInService struct {
 // This is a terminal state: once a particular sled ID is expunged, it will never return to service. (The actual hardware may be reused, but it will be treated as a brand-new sled.)
 //
 // An expunged sled is always non-provisionable.
+//
+// Required fields:
+// - Kind
 type SledPolicyExpunged struct {
 	Kind SledPolicyKind `json:"kind,omitempty" yaml:"kind,omitempty"`
 }
@@ -2558,12 +3611,19 @@ type SledPolicy struct {
 type SledProvisionPolicy string
 
 // SledProvisionPolicyParams is parameters for `sled_set_provision_policy`.
+//
+// Required fields:
+// - State
 type SledProvisionPolicyParams struct {
 	// State is the provision state.
 	State SledProvisionPolicy `json:"state,omitempty" yaml:"state,omitempty"`
 }
 
 // SledProvisionPolicyResponse is response to `sled_set_provision_policy`.
+//
+// Required fields:
+// - NewState
+// - OldState
 type SledProvisionPolicyResponse struct {
 	// NewState is the new provision state.
 	NewState SledProvisionPolicy `json:"new_state,omitempty" yaml:"new_state,omitempty"`
@@ -2572,6 +3632,9 @@ type SledProvisionPolicyResponse struct {
 }
 
 // SledResultsPage is a single page of results
+//
+// Required fields:
+// - Items
 type SledResultsPage struct {
 	// Items is list of items on this page of results
 	Items []Sled `json:"items,omitempty" yaml:"items,omitempty"`
@@ -2583,6 +3646,17 @@ type SledResultsPage struct {
 type SledState string
 
 // Snapshot is view of a Snapshot
+//
+// Required fields:
+// - Description
+// - DiskId
+// - Id
+// - Name
+// - ProjectId
+// - Size
+// - State
+// - TimeCreated
+// - TimeModified
 type Snapshot struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
@@ -2602,6 +3676,11 @@ type Snapshot struct {
 }
 
 // SnapshotCreate is create-time parameters for a `Snapshot`
+//
+// Required fields:
+// - Description
+// - Disk
+// - Name
 type SnapshotCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Disk is the disk to be snapshotted
@@ -2611,6 +3690,9 @@ type SnapshotCreate struct {
 }
 
 // SnapshotResultsPage is a single page of results
+//
+// Required fields:
+// - Items
 type SnapshotResultsPage struct {
 	// Items is list of items on this page of results
 	Items []Snapshot `json:"items,omitempty" yaml:"items,omitempty"`
@@ -2622,6 +3704,15 @@ type SnapshotResultsPage struct {
 type SnapshotState string
 
 // SshKey is view of an SSH Key
+//
+// Required fields:
+// - Description
+// - Id
+// - Name
+// - PublicKey
+// - SiloUserId
+// - TimeCreated
+// - TimeModified
 type SshKey struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
@@ -2640,6 +3731,11 @@ type SshKey struct {
 }
 
 // SshKeyCreate is create-time parameters for an `SshKey`
+//
+// Required fields:
+// - Description
+// - Name
+// - PublicKey
 type SshKeyCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
@@ -2649,6 +3745,9 @@ type SshKeyCreate struct {
 }
 
 // SshKeyResultsPage is a single page of results
+//
+// Required fields:
+// - Items
 type SshKeyResultsPage struct {
 	// Items is list of items on this page of results
 	Items []SshKey `json:"items,omitempty" yaml:"items,omitempty"`
@@ -2657,6 +3756,13 @@ type SshKeyResultsPage struct {
 }
 
 // Switch is an operator's view of a Switch.
+//
+// Required fields:
+// - Baseboard
+// - Id
+// - RackId
+// - TimeCreated
+// - TimeModified
 type Switch struct {
 	// Baseboard is properties that uniquely identify an Oxide hardware component
 	Baseboard Baseboard `json:"baseboard,omitempty" yaml:"baseboard,omitempty"`
@@ -2671,6 +3777,13 @@ type Switch struct {
 }
 
 // SwitchInterfaceConfig is a switch port interface configuration for a port settings object.
+//
+// Required fields:
+// - Id
+// - InterfaceName
+// - Kind
+// - PortSettingsId
+// - V6Enabled
 type SwitchInterfaceConfig struct {
 	// Id is a unique identifier for this switch interface.
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
@@ -2685,6 +3798,10 @@ type SwitchInterfaceConfig struct {
 }
 
 // SwitchInterfaceConfigCreate is a layer-3 switch interface configuration. When IPv6 is enabled, a link local address will be created for the interface.
+//
+// Required fields:
+// - Kind
+// - V6Enabled
 type SwitchInterfaceConfigCreate struct {
 	// Kind is what kind of switch interface this configuration represents.
 	Kind SwitchInterfaceKind `json:"kind,omitempty" yaml:"kind,omitempty"`
@@ -2696,11 +3813,18 @@ type SwitchInterfaceConfigCreate struct {
 type SwitchInterfaceKindType string
 
 // SwitchInterfaceKindPrimary is primary interfaces are associated with physical links. There is exactly one primary interface per physical link.
+//
+// Required fields:
+// - Type
 type SwitchInterfaceKindPrimary struct {
 	Type SwitchInterfaceKindType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // SwitchInterfaceKindVlan is vLAN interfaces allow physical interfaces to be multiplexed onto multiple logical links, each distinguished by a 12-bit 802.1Q Ethernet tag.
+//
+// Required fields:
+// - Type
+// - Vid
 type SwitchInterfaceKindVlan struct {
 	Type SwitchInterfaceKindType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Vid is the virtual network id (VID) that distinguishes this interface and is used for producing and consuming 802.1Q Ethernet tags. This field has a maximum value of 4095 as 802.1Q tags are twelve bits.
@@ -2708,6 +3832,9 @@ type SwitchInterfaceKindVlan struct {
 }
 
 // SwitchInterfaceKindLoopback is loopback interfaces are anchors for IP addresses that are not specific to any particular port.
+//
+// Required fields:
+// - Type
 type SwitchInterfaceKindLoopback struct {
 	Type SwitchInterfaceKindType `json:"type,omitempty" yaml:"type,omitempty"`
 }
@@ -2727,6 +3854,12 @@ type SwitchInterfaceKind2 string
 type SwitchLocation string
 
 // SwitchPort is a switch port represents a physical external port on a rack switch.
+//
+// Required fields:
+// - Id
+// - PortName
+// - RackId
+// - SwitchLocation
 type SwitchPort struct {
 	// Id is the id of the switch port.
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
@@ -2741,6 +3874,12 @@ type SwitchPort struct {
 }
 
 // SwitchPortAddressConfig is an IP address configuration for a port settings object.
+//
+// Required fields:
+// - Address
+// - AddressLotBlockId
+// - InterfaceName
+// - PortSettingsId
 type SwitchPortAddressConfig struct {
 	// Address is the IP address and prefix.
 	Address IpNet `json:"address,omitempty" yaml:"address,omitempty"`
@@ -2753,12 +3892,21 @@ type SwitchPortAddressConfig struct {
 }
 
 // SwitchPortApplySettings is parameters for applying settings to switch ports.
+//
+// Required fields:
+// - PortSettings
 type SwitchPortApplySettings struct {
 	// PortSettings is a name or id to use when applying switch port settings.
 	PortSettings NameOrId `json:"port_settings,omitempty" yaml:"port_settings,omitempty"`
 }
 
 // SwitchPortBgpPeerConfig is a BGP peer configuration for a port settings object.
+//
+// Required fields:
+// - Addr
+// - BgpConfigId
+// - InterfaceName
+// - PortSettingsId
 type SwitchPortBgpPeerConfig struct {
 	// Addr is the address of the peer.
 	Addr string `json:"addr,omitempty" yaml:"addr,omitempty"`
@@ -2771,6 +3919,10 @@ type SwitchPortBgpPeerConfig struct {
 }
 
 // SwitchPortConfig is a physical port configuration for a port settings object.
+//
+// Required fields:
+// - Geometry
+// - PortSettingsId
 type SwitchPortConfig struct {
 	// Geometry is the physical link geometry of the port.
 	Geometry SwitchPortGeometry2 `json:"geometry,omitempty" yaml:"geometry,omitempty"`
@@ -2779,6 +3931,9 @@ type SwitchPortConfig struct {
 }
 
 // SwitchPortConfigCreate is physical switch port configuration.
+//
+// Required fields:
+// - Geometry
 type SwitchPortConfigCreate struct {
 	// Geometry is link geometry for the switch port.
 	Geometry SwitchPortGeometry `json:"geometry,omitempty" yaml:"geometry,omitempty"`
@@ -2791,6 +3946,12 @@ type SwitchPortGeometry string
 type SwitchPortGeometry2 string
 
 // SwitchPortLinkConfig is a link configuration for a port settings object.
+//
+// Required fields:
+// - LinkName
+// - LldpServiceConfigId
+// - Mtu
+// - PortSettingsId
 type SwitchPortLinkConfig struct {
 	// LinkName is the name of this link.
 	LinkName string `json:"link_name,omitempty" yaml:"link_name,omitempty"`
@@ -2803,6 +3964,9 @@ type SwitchPortLinkConfig struct {
 }
 
 // SwitchPortResultsPage is a single page of results
+//
+// Required fields:
+// - Items
 type SwitchPortResultsPage struct {
 	// Items is list of items on this page of results
 	Items []SwitchPort `json:"items,omitempty" yaml:"items,omitempty"`
@@ -2811,6 +3975,12 @@ type SwitchPortResultsPage struct {
 }
 
 // SwitchPortRouteConfig is a route configuration for a port settings object.
+//
+// Required fields:
+// - Dst
+// - Gw
+// - InterfaceName
+// - PortSettingsId
 type SwitchPortRouteConfig struct {
 	// Dst is the route's destination network.
 	Dst IpNet `json:"dst,omitempty" yaml:"dst,omitempty"`
@@ -2825,6 +3995,13 @@ type SwitchPortRouteConfig struct {
 }
 
 // SwitchPortSettings is a switch port settings identity whose id may be used to view additional details.
+//
+// Required fields:
+// - Description
+// - Id
+// - Name
+// - TimeCreated
+// - TimeModified
 type SwitchPortSettings struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
@@ -2839,6 +4016,17 @@ type SwitchPortSettings struct {
 }
 
 // SwitchPortSettingsCreate is parameters for creating switch port settings. Switch port settings are the central data structure for setting up external networking. Switch port settings include link, interface, route, address and dynamic network protocol configuration.
+//
+// Required fields:
+// - Addresses
+// - BgpPeers
+// - Description
+// - Groups
+// - Interfaces
+// - Links
+// - Name
+// - PortConfig
+// - Routes
 type SwitchPortSettingsCreate struct {
 	// Addresses is addresses indexed by interface name.
 	Addresses AddressConfig `json:"addresses,omitempty" yaml:"addresses,omitempty"`
@@ -2859,6 +4047,10 @@ type SwitchPortSettingsCreate struct {
 }
 
 // SwitchPortSettingsGroups is this structure maps a port settings object to a port settings groups. Port settings objects may inherit settings from groups. This mapping defines the relationship between settings objects and the groups they reference.
+//
+// Required fields:
+// - PortSettingsGroupId
+// - PortSettingsId
 type SwitchPortSettingsGroups struct {
 	// PortSettingsGroupId is the id of a port settings group being referenced by a port settings object.
 	PortSettingsGroupId string `json:"port_settings_group_id,omitempty" yaml:"port_settings_group_id,omitempty"`
@@ -2867,6 +4059,9 @@ type SwitchPortSettingsGroups struct {
 }
 
 // SwitchPortSettingsResultsPage is a single page of results
+//
+// Required fields:
+// - Items
 type SwitchPortSettingsResultsPage struct {
 	// Items is list of items on this page of results
 	Items []SwitchPortSettings `json:"items,omitempty" yaml:"items,omitempty"`
@@ -2875,6 +4070,18 @@ type SwitchPortSettingsResultsPage struct {
 }
 
 // SwitchPortSettingsView is this structure contains all port settings information in one place. It's a convenience data structure for getting a complete view of a particular port's settings.
+//
+// Required fields:
+// - Addresses
+// - BgpPeers
+// - Groups
+// - Interfaces
+// - LinkLldp
+// - Links
+// - Port
+// - Routes
+// - Settings
+// - VlanInterfaces
 type SwitchPortSettingsView struct {
 	// Addresses is layer 3 IP address settings.
 	Addresses []SwitchPortAddressConfig `json:"addresses,omitempty" yaml:"addresses,omitempty"`
@@ -2899,6 +4106,9 @@ type SwitchPortSettingsView struct {
 }
 
 // SwitchResultsPage is a single page of results
+//
+// Required fields:
+// - Items
 type SwitchResultsPage struct {
 	// Items is list of items on this page of results
 	Items []Switch `json:"items,omitempty" yaml:"items,omitempty"`
@@ -2907,6 +4117,10 @@ type SwitchResultsPage struct {
 }
 
 // SwitchVlanInterfaceConfig is a switch port VLAN interface configuration for a port settings object.
+//
+// Required fields:
+// - InterfaceConfigId
+// - VlanId
 type SwitchVlanInterfaceConfig struct {
 	// InterfaceConfigId is the switch interface configuration this VLAN interface configuration belongs to.
 	InterfaceConfigId string `json:"interface_config_id,omitempty" yaml:"interface_config_id,omitempty"`
@@ -2918,6 +4132,11 @@ type SwitchVlanInterfaceConfig struct {
 type SystemMetricName string
 
 // UninitializedSled is a sled that has not been added to an initialized rack yet
+//
+// Required fields:
+// - Baseboard
+// - Cubby
+// - RackId
 type UninitializedSled struct {
 	// Baseboard is properties that uniquely identify an Oxide hardware component
 	Baseboard Baseboard `json:"baseboard,omitempty" yaml:"baseboard,omitempty"`
@@ -2926,12 +4145,19 @@ type UninitializedSled struct {
 }
 
 // UninitializedSledId is the unique hardware ID for a sled
+//
+// Required fields:
+// - Part
+// - Serial
 type UninitializedSledId struct {
 	Part   string `json:"part,omitempty" yaml:"part,omitempty"`
 	Serial string `json:"serial,omitempty" yaml:"serial,omitempty"`
 }
 
 // UninitializedSledResultsPage is a single page of results
+//
+// Required fields:
+// - Items
 type UninitializedSledResultsPage struct {
 	// Items is list of items on this page of results
 	Items []UninitializedSled `json:"items,omitempty" yaml:"items,omitempty"`
@@ -2940,6 +4166,11 @@ type UninitializedSledResultsPage struct {
 }
 
 // User is view of a User
+//
+// Required fields:
+// - DisplayName
+// - Id
+// - SiloId
 type User struct {
 	// DisplayName is human-readable name that can identify the user
 	DisplayName string `json:"display_name,omitempty" yaml:"display_name,omitempty"`
@@ -2951,6 +4182,13 @@ type User struct {
 // UserBuiltin is view of a Built-in User
 //
 // A Built-in User is explicitly created as opposed to being derived from an Identify Provider.
+//
+// Required fields:
+// - Description
+// - Id
+// - Name
+// - TimeCreated
+// - TimeModified
 type UserBuiltin struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
@@ -2965,6 +4203,9 @@ type UserBuiltin struct {
 }
 
 // UserBuiltinResultsPage is a single page of results
+//
+// Required fields:
+// - Items
 type UserBuiltinResultsPage struct {
 	// Items is list of items on this page of results
 	Items []UserBuiltin `json:"items,omitempty" yaml:"items,omitempty"`
@@ -2973,6 +4214,10 @@ type UserBuiltinResultsPage struct {
 }
 
 // UserCreate is create-time parameters for a `User`
+//
+// Required fields:
+// - ExternalId
+// - Password
 type UserCreate struct {
 	// ExternalId is username used to log in
 	ExternalId UserId `json:"external_id,omitempty" yaml:"external_id,omitempty"`
@@ -2987,6 +4232,10 @@ type UserId string
 type UserPasswordMode string
 
 // UserPasswordPassword is sets the user's password to the provided value
+//
+// Required fields:
+// - Mode
+// - Value
 type UserPasswordPassword struct {
 	Mode UserPasswordMode `json:"mode,omitempty" yaml:"mode,omitempty"`
 	// Value is passwords may be subject to additional constraints.
@@ -2994,6 +4243,9 @@ type UserPasswordPassword struct {
 }
 
 // UserPasswordLoginDisallowed is invalidates any current password (disabling password authentication)
+//
+// Required fields:
+// - Mode
 type UserPasswordLoginDisallowed struct {
 	Mode UserPasswordMode `json:"mode,omitempty" yaml:"mode,omitempty"`
 }
@@ -3007,6 +4259,9 @@ type UserPassword struct {
 }
 
 // UserResultsPage is a single page of results
+//
+// Required fields:
+// - Items
 type UserResultsPage struct {
 	// Items is list of items on this page of results
 	Items []User `json:"items,omitempty" yaml:"items,omitempty"`
@@ -3015,6 +4270,10 @@ type UserResultsPage struct {
 }
 
 // UsernamePasswordCredentials is credentials for local user login
+//
+// Required fields:
+// - Password
+// - Username
 type UsernamePasswordCredentials struct {
 	// Password is passwords may be subject to additional constraints.
 	Password Password `json:"password,omitempty" yaml:"password,omitempty"`
@@ -3023,6 +4282,10 @@ type UsernamePasswordCredentials struct {
 }
 
 // Utilization is view of the current silo's resource utilization and capacity
+//
+// Required fields:
+// - Capacity
+// - Provisioned
 type Utilization struct {
 	// Capacity is the total amount of resources that can be provisioned in this silo Actions that would exceed this limit will fail
 	Capacity VirtualResourceCounts `json:"capacity,omitempty" yaml:"capacity,omitempty"`
@@ -3031,6 +4294,11 @@ type Utilization struct {
 }
 
 // VirtualResourceCounts is a collection of resource counts used to describe capacity and utilization
+//
+// Required fields:
+// - Cpus
+// - Memory
+// - Storage
 type VirtualResourceCounts struct {
 	// Cpus is number of virtual CPUs
 	Cpus int `json:"cpus,omitempty" yaml:"cpus,omitempty"`
@@ -3041,6 +4309,17 @@ type VirtualResourceCounts struct {
 }
 
 // Vpc is view of a VPC
+//
+// Required fields:
+// - Description
+// - DnsName
+// - Id
+// - Ipv6Prefix
+// - Name
+// - ProjectId
+// - SystemRouterId
+// - TimeCreated
+// - TimeModified
 type Vpc struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
@@ -3063,6 +4342,11 @@ type Vpc struct {
 }
 
 // VpcCreate is create-time parameters for a `Vpc`
+//
+// Required fields:
+// - Description
+// - DnsName
+// - Name
 type VpcCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// DnsName is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
@@ -3076,6 +4360,20 @@ type VpcCreate struct {
 }
 
 // VpcFirewallRule is a single rule in a VPC firewall
+//
+// Required fields:
+// - Action
+// - Description
+// - Direction
+// - Filters
+// - Id
+// - Name
+// - Priority
+// - Status
+// - Targets
+// - TimeCreated
+// - TimeModified
+// - VpcId
 type VpcFirewallRule struct {
 	// Action is whether traffic matching the rule should be allowed or dropped
 	Action VpcFirewallRuleAction `json:"action,omitempty" yaml:"action,omitempty"`
@@ -3123,6 +4421,10 @@ type VpcFirewallRuleFilter struct {
 type VpcFirewallRuleHostFilterType string
 
 // VpcFirewallRuleHostFilterVpc is the rule applies to traffic from/to all instances in the VPC
+//
+// Required fields:
+// - Type
+// - Value
 type VpcFirewallRuleHostFilterVpc struct {
 	Type VpcFirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
@@ -3130,6 +4432,10 @@ type VpcFirewallRuleHostFilterVpc struct {
 }
 
 // VpcFirewallRuleHostFilterSubnet is the rule applies to traffic from/to all instances in the VPC Subnet
+//
+// Required fields:
+// - Type
+// - Value
 type VpcFirewallRuleHostFilterSubnet struct {
 	Type VpcFirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
@@ -3137,6 +4443,10 @@ type VpcFirewallRuleHostFilterSubnet struct {
 }
 
 // VpcFirewallRuleHostFilterInstance is the rule applies to traffic from/to this specific instance
+//
+// Required fields:
+// - Type
+// - Value
 type VpcFirewallRuleHostFilterInstance struct {
 	Type VpcFirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
@@ -3144,12 +4454,20 @@ type VpcFirewallRuleHostFilterInstance struct {
 }
 
 // VpcFirewallRuleHostFilterIp is the rule applies to traffic from/to a specific IP address
+//
+// Required fields:
+// - Type
+// - Value
 type VpcFirewallRuleHostFilterIp struct {
 	Type  VpcFirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
 	Value string                        `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // VpcFirewallRuleHostFilterIpNet is the rule applies to traffic from/to a specific IP subnet
+//
+// Required fields:
+// - Type
+// - Value
 type VpcFirewallRuleHostFilterIpNet struct {
 	Type  VpcFirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
 	Value IpNet                         `json:"value,omitempty" yaml:"value,omitempty"`
@@ -3173,6 +4491,10 @@ type VpcFirewallRuleStatus string
 type VpcFirewallRuleTargetType string
 
 // VpcFirewallRuleTargetVpc is the rule applies to all instances in the VPC
+//
+// Required fields:
+// - Type
+// - Value
 type VpcFirewallRuleTargetVpc struct {
 	Type VpcFirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
@@ -3180,6 +4502,10 @@ type VpcFirewallRuleTargetVpc struct {
 }
 
 // VpcFirewallRuleTargetSubnet is the rule applies to all instances in the VPC Subnet
+//
+// Required fields:
+// - Type
+// - Value
 type VpcFirewallRuleTargetSubnet struct {
 	Type VpcFirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
@@ -3187,6 +4513,10 @@ type VpcFirewallRuleTargetSubnet struct {
 }
 
 // VpcFirewallRuleTargetInstance is the rule applies to this specific instance
+//
+// Required fields:
+// - Type
+// - Value
 type VpcFirewallRuleTargetInstance struct {
 	Type VpcFirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
@@ -3194,12 +4524,20 @@ type VpcFirewallRuleTargetInstance struct {
 }
 
 // VpcFirewallRuleTargetIp is the rule applies to a specific IP address
+//
+// Required fields:
+// - Type
+// - Value
 type VpcFirewallRuleTargetIp struct {
 	Type  VpcFirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
 	Value string                    `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // VpcFirewallRuleTargetIpNet is the rule applies to a specific IP subnet
+//
+// Required fields:
+// - Type
+// - Value
 type VpcFirewallRuleTargetIpNet struct {
 	Type  VpcFirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
 	Value IpNet                     `json:"value,omitempty" yaml:"value,omitempty"`
@@ -3214,6 +4552,16 @@ type VpcFirewallRuleTarget struct {
 }
 
 // VpcFirewallRuleUpdate is a single rule in a VPC firewall
+//
+// Required fields:
+// - Action
+// - Description
+// - Direction
+// - Filters
+// - Name
+// - Priority
+// - Status
+// - Targets
 type VpcFirewallRuleUpdate struct {
 	// Action is whether traffic matching the rule should be allowed or dropped
 	Action VpcFirewallRuleAction `json:"action,omitempty" yaml:"action,omitempty"`
@@ -3234,16 +4582,25 @@ type VpcFirewallRuleUpdate struct {
 }
 
 // VpcFirewallRuleUpdateParams is updateable properties of a `Vpc`'s firewall Note that VpcFirewallRules are implicitly created along with a Vpc, so there is no explicit creation.
+//
+// Required fields:
+// - Rules
 type VpcFirewallRuleUpdateParams struct {
 	Rules []VpcFirewallRuleUpdate `json:"rules" yaml:"rules"`
 }
 
 // VpcFirewallRules is collection of a Vpc's firewall rules
+//
+// Required fields:
+// - Rules
 type VpcFirewallRules struct {
 	Rules []VpcFirewallRule `json:"rules,omitempty" yaml:"rules,omitempty"`
 }
 
 // VpcResultsPage is a single page of results
+//
+// Required fields:
+// - Items
 type VpcResultsPage struct {
 	// Items is list of items on this page of results
 	Items []Vpc `json:"items,omitempty" yaml:"items,omitempty"`
@@ -3252,6 +4609,16 @@ type VpcResultsPage struct {
 }
 
 // VpcSubnet is a VPC subnet represents a logical grouping for instances that allows network traffic between them, within a IPv4 subnetwork or optionall an IPv6 subnetwork.
+//
+// Required fields:
+// - Description
+// - Id
+// - Ipv4Block
+// - Ipv6Block
+// - Name
+// - TimeCreated
+// - TimeModified
+// - VpcId
 type VpcSubnet struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
@@ -3272,6 +4639,11 @@ type VpcSubnet struct {
 }
 
 // VpcSubnetCreate is create-time parameters for a `VpcSubnet`
+//
+// Required fields:
+// - Description
+// - Ipv4Block
+// - Name
 type VpcSubnetCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Ipv4Block is the IPv4 address range for this subnet.
@@ -3287,6 +4659,9 @@ type VpcSubnetCreate struct {
 }
 
 // VpcSubnetResultsPage is a single page of results
+//
+// Required fields:
+// - Items
 type VpcSubnetResultsPage struct {
 	// Items is list of items on this page of results
 	Items []VpcSubnet `json:"items,omitempty" yaml:"items,omitempty"`
@@ -3308,21 +4683,35 @@ type VpcUpdate struct {
 }
 
 // DeviceAuthRequestParams is the request parameters for DeviceAuthRequest
+//
+// Required fields:
+// - Body
 type DeviceAuthRequestParams struct {
 	Body io.Reader `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // DeviceAuthConfirmParams is the request parameters for DeviceAuthConfirm
+//
+// Required fields:
+// - Body
 type DeviceAuthConfirmParams struct {
 	Body *DeviceAuthVerify `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // DeviceAccessTokenParams is the request parameters for DeviceAccessToken
+//
+// Required fields:
+// - Body
 type DeviceAccessTokenParams struct {
 	Body io.Reader `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // LoginSamlParams is the request parameters for LoginSaml
+//
+// Required fields:
+// - ProviderName
+// - SiloName
+// - Body
 type LoginSamlParams struct {
 	ProviderName Name      `json:"provider_name,omitempty" yaml:"provider_name,omitempty"`
 	SiloName     Name      `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
@@ -3337,21 +4726,33 @@ type CertificateListParams struct {
 }
 
 // CertificateCreateParams is the request parameters for CertificateCreate
+//
+// Required fields:
+// - Body
 type CertificateCreateParams struct {
 	Body *CertificateCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // CertificateDeleteParams is the request parameters for CertificateDelete
+//
+// Required fields:
+// - Certificate
 type CertificateDeleteParams struct {
 	Certificate NameOrId `json:"certificate,omitempty" yaml:"certificate,omitempty"`
 }
 
 // CertificateViewParams is the request parameters for CertificateView
+//
+// Required fields:
+// - Certificate
 type CertificateViewParams struct {
 	Certificate NameOrId `json:"certificate,omitempty" yaml:"certificate,omitempty"`
 }
 
 // DiskListParams is the request parameters for DiskList
+//
+// Required fields:
+// - Project
 type DiskListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -3360,24 +4761,38 @@ type DiskListParams struct {
 }
 
 // DiskCreateParams is the request parameters for DiskCreate
+//
+// Required fields:
+// - Project
+// - Body
 type DiskCreateParams struct {
 	Project NameOrId    `json:"project,omitempty" yaml:"project,omitempty"`
 	Body    *DiskCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // DiskDeleteParams is the request parameters for DiskDelete
+//
+// Required fields:
+// - Disk
 type DiskDeleteParams struct {
 	Disk    NameOrId `json:"disk,omitempty" yaml:"disk,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
 // DiskViewParams is the request parameters for DiskView
+//
+// Required fields:
+// - Disk
 type DiskViewParams struct {
 	Disk    NameOrId `json:"disk,omitempty" yaml:"disk,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
 // DiskBulkWriteImportParams is the request parameters for DiskBulkWriteImport
+//
+// Required fields:
+// - Disk
+// - Body
 type DiskBulkWriteImportParams struct {
 	Disk    NameOrId               `json:"disk,omitempty" yaml:"disk,omitempty"`
 	Project NameOrId               `json:"project,omitempty" yaml:"project,omitempty"`
@@ -3385,18 +4800,28 @@ type DiskBulkWriteImportParams struct {
 }
 
 // DiskBulkWriteImportStartParams is the request parameters for DiskBulkWriteImportStart
+//
+// Required fields:
+// - Disk
 type DiskBulkWriteImportStartParams struct {
 	Disk    NameOrId `json:"disk,omitempty" yaml:"disk,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
 // DiskBulkWriteImportStopParams is the request parameters for DiskBulkWriteImportStop
+//
+// Required fields:
+// - Disk
 type DiskBulkWriteImportStopParams struct {
 	Disk    NameOrId `json:"disk,omitempty" yaml:"disk,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
 // DiskFinalizeImportParams is the request parameters for DiskFinalizeImport
+//
+// Required fields:
+// - Disk
+// - Body
 type DiskFinalizeImportParams struct {
 	Disk    NameOrId      `json:"disk,omitempty" yaml:"disk,omitempty"`
 	Project NameOrId      `json:"project,omitempty" yaml:"project,omitempty"`
@@ -3404,6 +4829,12 @@ type DiskFinalizeImportParams struct {
 }
 
 // DiskMetricsListParams is the request parameters for DiskMetricsList
+//
+// Required fields:
+// - EndTime
+// - StartTime
+// - Disk
+// - Metric
 type DiskMetricsListParams struct {
 	Disk      NameOrId        `json:"disk,omitempty" yaml:"disk,omitempty"`
 	Metric    DiskMetricName  `json:"metric,omitempty" yaml:"metric,omitempty"`
@@ -3416,6 +4847,9 @@ type DiskMetricsListParams struct {
 }
 
 // FloatingIpListParams is the request parameters for FloatingIpList
+//
+// Required fields:
+// - Project
 type FloatingIpListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -3424,24 +4858,38 @@ type FloatingIpListParams struct {
 }
 
 // FloatingIpCreateParams is the request parameters for FloatingIpCreate
+//
+// Required fields:
+// - Project
+// - Body
 type FloatingIpCreateParams struct {
 	Project NameOrId          `json:"project,omitempty" yaml:"project,omitempty"`
 	Body    *FloatingIpCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // FloatingIpDeleteParams is the request parameters for FloatingIpDelete
+//
+// Required fields:
+// - FloatingIp
 type FloatingIpDeleteParams struct {
 	FloatingIp NameOrId `json:"floating_ip,omitempty" yaml:"floating_ip,omitempty"`
 	Project    NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
 // FloatingIpViewParams is the request parameters for FloatingIpView
+//
+// Required fields:
+// - FloatingIp
 type FloatingIpViewParams struct {
 	FloatingIp NameOrId `json:"floating_ip,omitempty" yaml:"floating_ip,omitempty"`
 	Project    NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
 // FloatingIpUpdateParams is the request parameters for FloatingIpUpdate
+//
+// Required fields:
+// - FloatingIp
+// - Body
 type FloatingIpUpdateParams struct {
 	FloatingIp NameOrId          `json:"floating_ip,omitempty" yaml:"floating_ip,omitempty"`
 	Project    NameOrId          `json:"project,omitempty" yaml:"project,omitempty"`
@@ -3449,6 +4897,10 @@ type FloatingIpUpdateParams struct {
 }
 
 // FloatingIpAttachParams is the request parameters for FloatingIpAttach
+//
+// Required fields:
+// - FloatingIp
+// - Body
 type FloatingIpAttachParams struct {
 	FloatingIp NameOrId          `json:"floating_ip,omitempty" yaml:"floating_ip,omitempty"`
 	Project    NameOrId          `json:"project,omitempty" yaml:"project,omitempty"`
@@ -3456,6 +4908,9 @@ type FloatingIpAttachParams struct {
 }
 
 // FloatingIpDetachParams is the request parameters for FloatingIpDetach
+//
+// Required fields:
+// - FloatingIp
 type FloatingIpDetachParams struct {
 	FloatingIp NameOrId `json:"floating_ip,omitempty" yaml:"floating_ip,omitempty"`
 	Project    NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
@@ -3469,6 +4924,9 @@ type GroupListParams struct {
 }
 
 // GroupViewParams is the request parameters for GroupView
+//
+// Required fields:
+// - GroupId
 type GroupViewParams struct {
 	GroupId string `json:"group_id,omitempty" yaml:"group_id,omitempty"`
 }
@@ -3482,36 +4940,55 @@ type ImageListParams struct {
 }
 
 // ImageCreateParams is the request parameters for ImageCreate
+//
+// Required fields:
+// - Body
 type ImageCreateParams struct {
 	Project NameOrId     `json:"project,omitempty" yaml:"project,omitempty"`
 	Body    *ImageCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // ImageDeleteParams is the request parameters for ImageDelete
+//
+// Required fields:
+// - Image
 type ImageDeleteParams struct {
 	Image   NameOrId `json:"image,omitempty" yaml:"image,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
 // ImageViewParams is the request parameters for ImageView
+//
+// Required fields:
+// - Image
 type ImageViewParams struct {
 	Image   NameOrId `json:"image,omitempty" yaml:"image,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
 // ImageDemoteParams is the request parameters for ImageDemote
+//
+// Required fields:
+// - Image
+// - Project
 type ImageDemoteParams struct {
 	Image   NameOrId `json:"image,omitempty" yaml:"image,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
 // ImagePromoteParams is the request parameters for ImagePromote
+//
+// Required fields:
+// - Image
 type ImagePromoteParams struct {
 	Image   NameOrId `json:"image,omitempty" yaml:"image,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
 // InstanceListParams is the request parameters for InstanceList
+//
+// Required fields:
+// - Project
 type InstanceListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -3520,24 +4997,37 @@ type InstanceListParams struct {
 }
 
 // InstanceCreateParams is the request parameters for InstanceCreate
+//
+// Required fields:
+// - Project
+// - Body
 type InstanceCreateParams struct {
 	Project NameOrId        `json:"project,omitempty" yaml:"project,omitempty"`
 	Body    *InstanceCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // InstanceDeleteParams is the request parameters for InstanceDelete
+//
+// Required fields:
+// - Instance
 type InstanceDeleteParams struct {
 	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
 
 // InstanceViewParams is the request parameters for InstanceView
+//
+// Required fields:
+// - Instance
 type InstanceViewParams struct {
 	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
 
 // InstanceDiskListParams is the request parameters for InstanceDiskList
+//
+// Required fields:
+// - Instance
 type InstanceDiskListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -3547,6 +5037,10 @@ type InstanceDiskListParams struct {
 }
 
 // InstanceDiskAttachParams is the request parameters for InstanceDiskAttach
+//
+// Required fields:
+// - Instance
+// - Body
 type InstanceDiskAttachParams struct {
 	Instance NameOrId  `json:"instance,omitempty" yaml:"instance,omitempty"`
 	Project  NameOrId  `json:"project,omitempty" yaml:"project,omitempty"`
@@ -3554,6 +5048,10 @@ type InstanceDiskAttachParams struct {
 }
 
 // InstanceDiskDetachParams is the request parameters for InstanceDiskDetach
+//
+// Required fields:
+// - Instance
+// - Body
 type InstanceDiskDetachParams struct {
 	Instance NameOrId  `json:"instance,omitempty" yaml:"instance,omitempty"`
 	Project  NameOrId  `json:"project,omitempty" yaml:"project,omitempty"`
@@ -3561,18 +5059,28 @@ type InstanceDiskDetachParams struct {
 }
 
 // InstanceExternalIpListParams is the request parameters for InstanceExternalIpList
+//
+// Required fields:
+// - Instance
 type InstanceExternalIpListParams struct {
 	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
 
 // InstanceEphemeralIpDetachParams is the request parameters for InstanceEphemeralIpDetach
+//
+// Required fields:
+// - Instance
 type InstanceEphemeralIpDetachParams struct {
 	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
 	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
 // InstanceEphemeralIpAttachParams is the request parameters for InstanceEphemeralIpAttach
+//
+// Required fields:
+// - Instance
+// - Body
 type InstanceEphemeralIpAttachParams struct {
 	Instance NameOrId           `json:"instance,omitempty" yaml:"instance,omitempty"`
 	Project  NameOrId           `json:"project,omitempty" yaml:"project,omitempty"`
@@ -3580,6 +5088,10 @@ type InstanceEphemeralIpAttachParams struct {
 }
 
 // InstanceMigrateParams is the request parameters for InstanceMigrate
+//
+// Required fields:
+// - Instance
+// - Body
 type InstanceMigrateParams struct {
 	Project  NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
 	Instance NameOrId         `json:"instance,omitempty" yaml:"instance,omitempty"`
@@ -3587,12 +5099,18 @@ type InstanceMigrateParams struct {
 }
 
 // InstanceRebootParams is the request parameters for InstanceReboot
+//
+// Required fields:
+// - Instance
 type InstanceRebootParams struct {
 	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
 
 // InstanceSerialConsoleParams is the request parameters for InstanceSerialConsole
+//
+// Required fields:
+// - Instance
 type InstanceSerialConsoleParams struct {
 	Instance   NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
 	FromStart  int      `json:"from_start,omitempty" yaml:"from_start,omitempty"`
@@ -3602,6 +5120,9 @@ type InstanceSerialConsoleParams struct {
 }
 
 // InstanceSerialConsoleStreamParams is the request parameters for InstanceSerialConsoleStream
+//
+// Required fields:
+// - Instance
 type InstanceSerialConsoleStreamParams struct {
 	Instance   NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
 	MostRecent int      `json:"most_recent,omitempty" yaml:"most_recent,omitempty"`
@@ -3609,6 +5130,9 @@ type InstanceSerialConsoleStreamParams struct {
 }
 
 // InstanceSshPublicKeyListParams is the request parameters for InstanceSshPublicKeyList
+//
+// Required fields:
+// - Instance
 type InstanceSshPublicKeyListParams struct {
 	Instance  NameOrId         `json:"instance,omitempty" yaml:"instance,omitempty"`
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -3618,12 +5142,18 @@ type InstanceSshPublicKeyListParams struct {
 }
 
 // InstanceStartParams is the request parameters for InstanceStart
+//
+// Required fields:
+// - Instance
 type InstanceStartParams struct {
 	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
 
 // InstanceStopParams is the request parameters for InstanceStop
+//
+// Required fields:
+// - Instance
 type InstanceStopParams struct {
 	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
@@ -3637,11 +5167,18 @@ type ProjectIpPoolListParams struct {
 }
 
 // ProjectIpPoolViewParams is the request parameters for ProjectIpPoolView
+//
+// Required fields:
+// - Pool
 type ProjectIpPoolViewParams struct {
 	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 }
 
 // LoginLocalParams is the request parameters for LoginLocal
+//
+// Required fields:
+// - SiloName
+// - Body
 type LoginLocalParams struct {
 	SiloName Name                         `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
 	Body     *UsernamePasswordCredentials `json:"body,omitempty" yaml:"body,omitempty"`
@@ -3662,21 +5199,35 @@ type CurrentUserSshKeyListParams struct {
 }
 
 // CurrentUserSshKeyCreateParams is the request parameters for CurrentUserSshKeyCreate
+//
+// Required fields:
+// - Body
 type CurrentUserSshKeyCreateParams struct {
 	Body *SshKeyCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // CurrentUserSshKeyDeleteParams is the request parameters for CurrentUserSshKeyDelete
+//
+// Required fields:
+// - SshKey
 type CurrentUserSshKeyDeleteParams struct {
 	SshKey NameOrId `json:"ssh_key,omitempty" yaml:"ssh_key,omitempty"`
 }
 
 // CurrentUserSshKeyViewParams is the request parameters for CurrentUserSshKeyView
+//
+// Required fields:
+// - SshKey
 type CurrentUserSshKeyViewParams struct {
 	SshKey NameOrId `json:"ssh_key,omitempty" yaml:"ssh_key,omitempty"`
 }
 
 // SiloMetricParams is the request parameters for SiloMetric
+//
+// Required fields:
+// - EndTime
+// - StartTime
+// - MetricName
 type SiloMetricParams struct {
 	MetricName SystemMetricName `json:"metric_name,omitempty" yaml:"metric_name,omitempty"`
 	EndTime    *time.Time       `json:"end_time,omitempty" yaml:"end_time,omitempty"`
@@ -3688,6 +5239,9 @@ type SiloMetricParams struct {
 }
 
 // InstanceNetworkInterfaceListParams is the request parameters for InstanceNetworkInterfaceList
+//
+// Required fields:
+// - Instance
 type InstanceNetworkInterfaceListParams struct {
 	Instance  NameOrId         `json:"instance,omitempty" yaml:"instance,omitempty"`
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -3697,6 +5251,10 @@ type InstanceNetworkInterfaceListParams struct {
 }
 
 // InstanceNetworkInterfaceCreateParams is the request parameters for InstanceNetworkInterfaceCreate
+//
+// Required fields:
+// - Instance
+// - Body
 type InstanceNetworkInterfaceCreateParams struct {
 	Instance NameOrId                        `json:"instance,omitempty" yaml:"instance,omitempty"`
 	Project  NameOrId                        `json:"project,omitempty" yaml:"project,omitempty"`
@@ -3704,6 +5262,9 @@ type InstanceNetworkInterfaceCreateParams struct {
 }
 
 // InstanceNetworkInterfaceDeleteParams is the request parameters for InstanceNetworkInterfaceDelete
+//
+// Required fields:
+// - Interface
 type InstanceNetworkInterfaceDeleteParams struct {
 	Interface NameOrId `json:"interface,omitempty" yaml:"interface,omitempty"`
 	Instance  NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
@@ -3711,6 +5272,9 @@ type InstanceNetworkInterfaceDeleteParams struct {
 }
 
 // InstanceNetworkInterfaceViewParams is the request parameters for InstanceNetworkInterfaceView
+//
+// Required fields:
+// - Interface
 type InstanceNetworkInterfaceViewParams struct {
 	Interface NameOrId `json:"interface,omitempty" yaml:"interface,omitempty"`
 	Instance  NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
@@ -3718,6 +5282,10 @@ type InstanceNetworkInterfaceViewParams struct {
 }
 
 // InstanceNetworkInterfaceUpdateParams is the request parameters for InstanceNetworkInterfaceUpdate
+//
+// Required fields:
+// - Interface
+// - Body
 type InstanceNetworkInterfaceUpdateParams struct {
 	Interface NameOrId                        `json:"interface,omitempty" yaml:"interface,omitempty"`
 	Instance  NameOrId                        `json:"instance,omitempty" yaml:"instance,omitempty"`
@@ -3726,6 +5294,9 @@ type InstanceNetworkInterfaceUpdateParams struct {
 }
 
 // PolicyUpdateParams is the request parameters for PolicyUpdate
+//
+// Required fields:
+// - Body
 type PolicyUpdateParams struct {
 	Body *SiloRolePolicy `json:"body,omitempty" yaml:"body,omitempty"`
 }
@@ -3738,38 +5309,61 @@ type ProjectListParams struct {
 }
 
 // ProjectCreateParams is the request parameters for ProjectCreate
+//
+// Required fields:
+// - Body
 type ProjectCreateParams struct {
 	Body *ProjectCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // ProjectDeleteParams is the request parameters for ProjectDelete
+//
+// Required fields:
+// - Project
 type ProjectDeleteParams struct {
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
 // ProjectViewParams is the request parameters for ProjectView
+//
+// Required fields:
+// - Project
 type ProjectViewParams struct {
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
 // ProjectUpdateParams is the request parameters for ProjectUpdate
+//
+// Required fields:
+// - Project
+// - Body
 type ProjectUpdateParams struct {
 	Project NameOrId       `json:"project,omitempty" yaml:"project,omitempty"`
 	Body    *ProjectUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // ProjectPolicyViewParams is the request parameters for ProjectPolicyView
+//
+// Required fields:
+// - Project
 type ProjectPolicyViewParams struct {
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
 // ProjectPolicyUpdateParams is the request parameters for ProjectPolicyUpdate
+//
+// Required fields:
+// - Project
+// - Body
 type ProjectPolicyUpdateParams struct {
 	Project NameOrId           `json:"project,omitempty" yaml:"project,omitempty"`
 	Body    *ProjectRolePolicy `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // SnapshotListParams is the request parameters for SnapshotList
+//
+// Required fields:
+// - Project
 type SnapshotListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -3778,18 +5372,28 @@ type SnapshotListParams struct {
 }
 
 // SnapshotCreateParams is the request parameters for SnapshotCreate
+//
+// Required fields:
+// - Project
+// - Body
 type SnapshotCreateParams struct {
 	Project NameOrId        `json:"project,omitempty" yaml:"project,omitempty"`
 	Body    *SnapshotCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // SnapshotDeleteParams is the request parameters for SnapshotDelete
+//
+// Required fields:
+// - Snapshot
 type SnapshotDeleteParams struct {
 	Snapshot NameOrId `json:"snapshot,omitempty" yaml:"snapshot,omitempty"`
 	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
 // SnapshotViewParams is the request parameters for SnapshotView
+//
+// Required fields:
+// - Snapshot
 type SnapshotViewParams struct {
 	Snapshot NameOrId `json:"snapshot,omitempty" yaml:"snapshot,omitempty"`
 	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
@@ -3810,6 +5414,9 @@ type RackListParams struct {
 }
 
 // RackViewParams is the request parameters for RackView
+//
+// Required fields:
+// - RackId
 type RackViewParams struct {
 	RackId string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
 }
@@ -3822,6 +5429,9 @@ type SledListParams struct {
 }
 
 // SledAddParams is the request parameters for SledAdd
+//
+// Required fields:
+// - Body
 type SledAddParams struct {
 	Body *UninitializedSledId `json:"body,omitempty" yaml:"body,omitempty"`
 }
@@ -3833,11 +5443,17 @@ type SledListUninitializedParams struct {
 }
 
 // SledViewParams is the request parameters for SledView
+//
+// Required fields:
+// - SledId
 type SledViewParams struct {
 	SledId string `json:"sled_id,omitempty" yaml:"sled_id,omitempty"`
 }
 
 // SledPhysicalDiskListParams is the request parameters for SledPhysicalDiskList
+//
+// Required fields:
+// - SledId
 type SledPhysicalDiskListParams struct {
 	SledId    string     `json:"sled_id,omitempty" yaml:"sled_id,omitempty"`
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -3846,6 +5462,9 @@ type SledPhysicalDiskListParams struct {
 }
 
 // SledInstanceListParams is the request parameters for SledInstanceList
+//
+// Required fields:
+// - SledId
 type SledInstanceListParams struct {
 	SledId    string     `json:"sled_id,omitempty" yaml:"sled_id,omitempty"`
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -3854,6 +5473,10 @@ type SledInstanceListParams struct {
 }
 
 // SledSetProvisionPolicyParams is the request parameters for SledSetProvisionPolicy
+//
+// Required fields:
+// - SledId
+// - Body
 type SledSetProvisionPolicyParams struct {
 	SledId string                     `json:"sled_id,omitempty" yaml:"sled_id,omitempty"`
 	Body   *SledProvisionPolicyParams `json:"body,omitempty" yaml:"body,omitempty"`
@@ -3868,6 +5491,11 @@ type NetworkingSwitchPortListParams struct {
 }
 
 // NetworkingSwitchPortClearSettingsParams is the request parameters for NetworkingSwitchPortClearSettings
+//
+// Required fields:
+// - Port
+// - RackId
+// - SwitchLocation
 type NetworkingSwitchPortClearSettingsParams struct {
 	Port           Name   `json:"port,omitempty" yaml:"port,omitempty"`
 	RackId         string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
@@ -3875,6 +5503,12 @@ type NetworkingSwitchPortClearSettingsParams struct {
 }
 
 // NetworkingSwitchPortApplySettingsParams is the request parameters for NetworkingSwitchPortApplySettings
+//
+// Required fields:
+// - Port
+// - RackId
+// - SwitchLocation
+// - Body
 type NetworkingSwitchPortApplySettingsParams struct {
 	Port           Name                     `json:"port,omitempty" yaml:"port,omitempty"`
 	RackId         string                   `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
@@ -3890,11 +5524,17 @@ type SwitchListParams struct {
 }
 
 // SwitchViewParams is the request parameters for SwitchView
+//
+// Required fields:
+// - SwitchId
 type SwitchViewParams struct {
 	SwitchId string `json:"switch_id,omitempty" yaml:"switch_id,omitempty"`
 }
 
 // SiloIdentityProviderListParams is the request parameters for SiloIdentityProviderList
+//
+// Required fields:
+// - Silo
 type SiloIdentityProviderListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -3903,18 +5543,31 @@ type SiloIdentityProviderListParams struct {
 }
 
 // LocalIdpUserCreateParams is the request parameters for LocalIdpUserCreate
+//
+// Required fields:
+// - Silo
+// - Body
 type LocalIdpUserCreateParams struct {
 	Silo NameOrId    `json:"silo,omitempty" yaml:"silo,omitempty"`
 	Body *UserCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // LocalIdpUserDeleteParams is the request parameters for LocalIdpUserDelete
+//
+// Required fields:
+// - UserId
+// - Silo
 type LocalIdpUserDeleteParams struct {
 	UserId string   `json:"user_id,omitempty" yaml:"user_id,omitempty"`
 	Silo   NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 }
 
 // LocalIdpUserSetPasswordParams is the request parameters for LocalIdpUserSetPassword
+//
+// Required fields:
+// - UserId
+// - Silo
+// - Body
 type LocalIdpUserSetPasswordParams struct {
 	UserId string        `json:"user_id,omitempty" yaml:"user_id,omitempty"`
 	Silo   NameOrId      `json:"silo,omitempty" yaml:"silo,omitempty"`
@@ -3922,12 +5575,20 @@ type LocalIdpUserSetPasswordParams struct {
 }
 
 // SamlIdentityProviderCreateParams is the request parameters for SamlIdentityProviderCreate
+//
+// Required fields:
+// - Silo
+// - Body
 type SamlIdentityProviderCreateParams struct {
 	Silo NameOrId                    `json:"silo,omitempty" yaml:"silo,omitempty"`
 	Body *SamlIdentityProviderCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // SamlIdentityProviderViewParams is the request parameters for SamlIdentityProviderView
+//
+// Required fields:
+// - Provider
+// - Silo
 type SamlIdentityProviderViewParams struct {
 	Provider NameOrId `json:"provider,omitempty" yaml:"provider,omitempty"`
 	Silo     NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
@@ -3941,6 +5602,9 @@ type IpPoolListParams struct {
 }
 
 // IpPoolCreateParams is the request parameters for IpPoolCreate
+//
+// Required fields:
+// - Body
 type IpPoolCreateParams struct {
 	Body *IpPoolCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
@@ -3952,32 +5616,51 @@ type IpPoolServiceRangeListParams struct {
 }
 
 // IpPoolServiceRangeAddParams is the request parameters for IpPoolServiceRangeAdd
+//
+// Required fields:
+// - Body
 type IpPoolServiceRangeAddParams struct {
 	Body *IpRange `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // IpPoolServiceRangeRemoveParams is the request parameters for IpPoolServiceRangeRemove
+//
+// Required fields:
+// - Body
 type IpPoolServiceRangeRemoveParams struct {
 	Body *IpRange `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // IpPoolDeleteParams is the request parameters for IpPoolDelete
+//
+// Required fields:
+// - Pool
 type IpPoolDeleteParams struct {
 	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 }
 
 // IpPoolViewParams is the request parameters for IpPoolView
+//
+// Required fields:
+// - Pool
 type IpPoolViewParams struct {
 	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 }
 
 // IpPoolUpdateParams is the request parameters for IpPoolUpdate
+//
+// Required fields:
+// - Pool
+// - Body
 type IpPoolUpdateParams struct {
 	Pool NameOrId      `json:"pool,omitempty" yaml:"pool,omitempty"`
 	Body *IpPoolUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // IpPoolRangeListParams is the request parameters for IpPoolRangeList
+//
+// Required fields:
+// - Pool
 type IpPoolRangeListParams struct {
 	Pool      NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 	Limit     int      `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -3985,18 +5668,29 @@ type IpPoolRangeListParams struct {
 }
 
 // IpPoolRangeAddParams is the request parameters for IpPoolRangeAdd
+//
+// Required fields:
+// - Pool
+// - Body
 type IpPoolRangeAddParams struct {
 	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 	Body *IpRange `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // IpPoolRangeRemoveParams is the request parameters for IpPoolRangeRemove
+//
+// Required fields:
+// - Pool
+// - Body
 type IpPoolRangeRemoveParams struct {
 	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 	Body *IpRange `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // IpPoolSiloListParams is the request parameters for IpPoolSiloList
+//
+// Required fields:
+// - Pool
 type IpPoolSiloListParams struct {
 	Pool      NameOrId   `json:"pool,omitempty" yaml:"pool,omitempty"`
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -4005,18 +5699,31 @@ type IpPoolSiloListParams struct {
 }
 
 // IpPoolSiloLinkParams is the request parameters for IpPoolSiloLink
+//
+// Required fields:
+// - Pool
+// - Body
 type IpPoolSiloLinkParams struct {
 	Pool NameOrId        `json:"pool,omitempty" yaml:"pool,omitempty"`
 	Body *IpPoolLinkSilo `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // IpPoolSiloUnlinkParams is the request parameters for IpPoolSiloUnlink
+//
+// Required fields:
+// - Pool
+// - Silo
 type IpPoolSiloUnlinkParams struct {
 	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 }
 
 // IpPoolSiloUpdateParams is the request parameters for IpPoolSiloUpdate
+//
+// Required fields:
+// - Pool
+// - Silo
+// - Body
 type IpPoolSiloUpdateParams struct {
 	Pool NameOrId          `json:"pool,omitempty" yaml:"pool,omitempty"`
 	Silo NameOrId          `json:"silo,omitempty" yaml:"silo,omitempty"`
@@ -4024,6 +5731,11 @@ type IpPoolSiloUpdateParams struct {
 }
 
 // SystemMetricParams is the request parameters for SystemMetric
+//
+// Required fields:
+// - EndTime
+// - StartTime
+// - MetricName
 type SystemMetricParams struct {
 	MetricName SystemMetricName `json:"metric_name,omitempty" yaml:"metric_name,omitempty"`
 	EndTime    *time.Time       `json:"end_time,omitempty" yaml:"end_time,omitempty"`
@@ -4042,16 +5754,25 @@ type NetworkingAddressLotListParams struct {
 }
 
 // NetworkingAddressLotCreateParams is the request parameters for NetworkingAddressLotCreate
+//
+// Required fields:
+// - Body
 type NetworkingAddressLotCreateParams struct {
 	Body *AddressLotCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // NetworkingAddressLotDeleteParams is the request parameters for NetworkingAddressLotDelete
+//
+// Required fields:
+// - AddressLot
 type NetworkingAddressLotDeleteParams struct {
 	AddressLot NameOrId `json:"address_lot,omitempty" yaml:"address_lot,omitempty"`
 }
 
 // NetworkingAddressLotBlockListParams is the request parameters for NetworkingAddressLotBlockList
+//
+// Required fields:
+// - AddressLot
 type NetworkingAddressLotBlockListParams struct {
 	AddressLot NameOrId   `json:"address_lot,omitempty" yaml:"address_lot,omitempty"`
 	Limit      int        `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -4060,16 +5781,25 @@ type NetworkingAddressLotBlockListParams struct {
 }
 
 // NetworkingBfdDisableParams is the request parameters for NetworkingBfdDisable
+//
+// Required fields:
+// - Body
 type NetworkingBfdDisableParams struct {
 	Body *BfdSessionDisable `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // NetworkingBfdEnableParams is the request parameters for NetworkingBfdEnable
+//
+// Required fields:
+// - Body
 type NetworkingBfdEnableParams struct {
 	Body *BfdSessionEnable `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // NetworkingBgpConfigDeleteParams is the request parameters for NetworkingBgpConfigDelete
+//
+// Required fields:
+// - NameOrId
 type NetworkingBgpConfigDeleteParams struct {
 	NameOrId NameOrId `json:"name_or_id,omitempty" yaml:"name_or_id,omitempty"`
 }
@@ -4083,26 +5813,41 @@ type NetworkingBgpConfigListParams struct {
 }
 
 // NetworkingBgpConfigCreateParams is the request parameters for NetworkingBgpConfigCreate
+//
+// Required fields:
+// - Body
 type NetworkingBgpConfigCreateParams struct {
 	Body *BgpConfigCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // NetworkingBgpAnnounceSetDeleteParams is the request parameters for NetworkingBgpAnnounceSetDelete
+//
+// Required fields:
+// - NameOrId
 type NetworkingBgpAnnounceSetDeleteParams struct {
 	NameOrId NameOrId `json:"name_or_id,omitempty" yaml:"name_or_id,omitempty"`
 }
 
 // NetworkingBgpAnnounceSetListParams is the request parameters for NetworkingBgpAnnounceSetList
+//
+// Required fields:
+// - NameOrId
 type NetworkingBgpAnnounceSetListParams struct {
 	NameOrId NameOrId `json:"name_or_id,omitempty" yaml:"name_or_id,omitempty"`
 }
 
 // NetworkingBgpAnnounceSetCreateParams is the request parameters for NetworkingBgpAnnounceSetCreate
+//
+// Required fields:
+// - Body
 type NetworkingBgpAnnounceSetCreateParams struct {
 	Body *BgpAnnounceSetCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // NetworkingBgpImportedRoutesIpv4Params is the request parameters for NetworkingBgpImportedRoutesIpv4
+//
+// Required fields:
+// - Asn
 type NetworkingBgpImportedRoutesIpv4Params struct {
 	Asn int `json:"asn,omitempty" yaml:"asn,omitempty"`
 }
@@ -4115,11 +5860,20 @@ type NetworkingLoopbackAddressListParams struct {
 }
 
 // NetworkingLoopbackAddressCreateParams is the request parameters for NetworkingLoopbackAddressCreate
+//
+// Required fields:
+// - Body
 type NetworkingLoopbackAddressCreateParams struct {
 	Body *LoopbackAddressCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // NetworkingLoopbackAddressDeleteParams is the request parameters for NetworkingLoopbackAddressDelete
+//
+// Required fields:
+// - Address
+// - RackId
+// - SubnetMask
+// - SwitchLocation
 type NetworkingLoopbackAddressDeleteParams struct {
 	Address        string `json:"address,omitempty" yaml:"address,omitempty"`
 	RackId         string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
@@ -4141,16 +5895,25 @@ type NetworkingSwitchPortSettingsListParams struct {
 }
 
 // NetworkingSwitchPortSettingsCreateParams is the request parameters for NetworkingSwitchPortSettingsCreate
+//
+// Required fields:
+// - Body
 type NetworkingSwitchPortSettingsCreateParams struct {
 	Body *SwitchPortSettingsCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // NetworkingSwitchPortSettingsViewParams is the request parameters for NetworkingSwitchPortSettingsView
+//
+// Required fields:
+// - Port
 type NetworkingSwitchPortSettingsViewParams struct {
 	Port NameOrId `json:"port,omitempty" yaml:"port,omitempty"`
 }
 
 // SystemPolicyUpdateParams is the request parameters for SystemPolicyUpdate
+//
+// Required fields:
+// - Body
 type SystemPolicyUpdateParams struct {
 	Body *FleetRolePolicy `json:"body,omitempty" yaml:"body,omitempty"`
 }
@@ -4162,6 +5925,9 @@ type RoleListParams struct {
 }
 
 // RoleViewParams is the request parameters for RoleView
+//
+// Required fields:
+// - RoleName
 type RoleViewParams struct {
 	RoleName string `json:"role_name,omitempty" yaml:"role_name,omitempty"`
 }
@@ -4181,21 +5947,33 @@ type SiloListParams struct {
 }
 
 // SiloCreateParams is the request parameters for SiloCreate
+//
+// Required fields:
+// - Body
 type SiloCreateParams struct {
 	Body *SiloCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // SiloDeleteParams is the request parameters for SiloDelete
+//
+// Required fields:
+// - Silo
 type SiloDeleteParams struct {
 	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 }
 
 // SiloViewParams is the request parameters for SiloView
+//
+// Required fields:
+// - Silo
 type SiloViewParams struct {
 	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 }
 
 // SiloIpPoolListParams is the request parameters for SiloIpPoolList
+//
+// Required fields:
+// - Silo
 type SiloIpPoolListParams struct {
 	Silo      NameOrId         `json:"silo,omitempty" yaml:"silo,omitempty"`
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -4204,28 +5982,45 @@ type SiloIpPoolListParams struct {
 }
 
 // SiloPolicyViewParams is the request parameters for SiloPolicyView
+//
+// Required fields:
+// - Silo
 type SiloPolicyViewParams struct {
 	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 }
 
 // SiloPolicyUpdateParams is the request parameters for SiloPolicyUpdate
+//
+// Required fields:
+// - Silo
+// - Body
 type SiloPolicyUpdateParams struct {
 	Silo NameOrId        `json:"silo,omitempty" yaml:"silo,omitempty"`
 	Body *SiloRolePolicy `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // SiloQuotasViewParams is the request parameters for SiloQuotasView
+//
+// Required fields:
+// - Silo
 type SiloQuotasViewParams struct {
 	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 }
 
 // SiloQuotasUpdateParams is the request parameters for SiloQuotasUpdate
+//
+// Required fields:
+// - Silo
+// - Body
 type SiloQuotasUpdateParams struct {
 	Silo NameOrId          `json:"silo,omitempty" yaml:"silo,omitempty"`
 	Body *SiloQuotasUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // SiloUserListParams is the request parameters for SiloUserList
+//
+// Required fields:
+// - Silo
 type SiloUserListParams struct {
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -4241,11 +6036,18 @@ type UserBuiltinListParams struct {
 }
 
 // UserBuiltinViewParams is the request parameters for UserBuiltinView
+//
+// Required fields:
+// - User
 type UserBuiltinViewParams struct {
 	User NameOrId `json:"user,omitempty" yaml:"user,omitempty"`
 }
 
 // SiloUserViewParams is the request parameters for SiloUserView
+//
+// Required fields:
+// - UserId
+// - Silo
 type SiloUserViewParams struct {
 	UserId string   `json:"user_id,omitempty" yaml:"user_id,omitempty"`
 	Silo   NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
@@ -4259,6 +6061,9 @@ type SiloUtilizationListParams struct {
 }
 
 // SiloUtilizationViewParams is the request parameters for SiloUtilizationView
+//
+// Required fields:
+// - Silo
 type SiloUtilizationViewParams struct {
 	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 }
@@ -4272,12 +6077,19 @@ type UserListParams struct {
 }
 
 // VpcFirewallRulesViewParams is the request parameters for VpcFirewallRulesView
+//
+// Required fields:
+// - Vpc
 type VpcFirewallRulesViewParams struct {
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
 }
 
 // VpcFirewallRulesUpdateParams is the request parameters for VpcFirewallRulesUpdate
+//
+// Required fields:
+// - Vpc
+// - Body
 type VpcFirewallRulesUpdateParams struct {
 	Project NameOrId                     `json:"project,omitempty" yaml:"project,omitempty"`
 	Vpc     NameOrId                     `json:"vpc,omitempty" yaml:"vpc,omitempty"`
@@ -4285,6 +6097,9 @@ type VpcFirewallRulesUpdateParams struct {
 }
 
 // VpcSubnetListParams is the request parameters for VpcSubnetList
+//
+// Required fields:
+// - Vpc
 type VpcSubnetListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -4294,6 +6109,10 @@ type VpcSubnetListParams struct {
 }
 
 // VpcSubnetCreateParams is the request parameters for VpcSubnetCreate
+//
+// Required fields:
+// - Vpc
+// - Body
 type VpcSubnetCreateParams struct {
 	Project NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
 	Vpc     NameOrId         `json:"vpc,omitempty" yaml:"vpc,omitempty"`
@@ -4301,6 +6120,9 @@ type VpcSubnetCreateParams struct {
 }
 
 // VpcSubnetDeleteParams is the request parameters for VpcSubnetDelete
+//
+// Required fields:
+// - Subnet
 type VpcSubnetDeleteParams struct {
 	Subnet  NameOrId `json:"subnet,omitempty" yaml:"subnet,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
@@ -4308,6 +6130,9 @@ type VpcSubnetDeleteParams struct {
 }
 
 // VpcSubnetViewParams is the request parameters for VpcSubnetView
+//
+// Required fields:
+// - Subnet
 type VpcSubnetViewParams struct {
 	Subnet  NameOrId `json:"subnet,omitempty" yaml:"subnet,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
@@ -4315,6 +6140,10 @@ type VpcSubnetViewParams struct {
 }
 
 // VpcSubnetUpdateParams is the request parameters for VpcSubnetUpdate
+//
+// Required fields:
+// - Subnet
+// - Body
 type VpcSubnetUpdateParams struct {
 	Subnet  NameOrId         `json:"subnet,omitempty" yaml:"subnet,omitempty"`
 	Project NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
@@ -4323,6 +6152,9 @@ type VpcSubnetUpdateParams struct {
 }
 
 // VpcSubnetListNetworkInterfacesParams is the request parameters for VpcSubnetListNetworkInterfaces
+//
+// Required fields:
+// - Subnet
 type VpcSubnetListNetworkInterfacesParams struct {
 	Subnet    NameOrId         `json:"subnet,omitempty" yaml:"subnet,omitempty"`
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -4333,6 +6165,9 @@ type VpcSubnetListNetworkInterfacesParams struct {
 }
 
 // VpcListParams is the request parameters for VpcList
+//
+// Required fields:
+// - Project
 type VpcListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
@@ -4341,24 +6176,38 @@ type VpcListParams struct {
 }
 
 // VpcCreateParams is the request parameters for VpcCreate
+//
+// Required fields:
+// - Project
+// - Body
 type VpcCreateParams struct {
 	Project NameOrId   `json:"project,omitempty" yaml:"project,omitempty"`
 	Body    *VpcCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // VpcDeleteParams is the request parameters for VpcDelete
+//
+// Required fields:
+// - Vpc
 type VpcDeleteParams struct {
 	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
 // VpcViewParams is the request parameters for VpcView
+//
+// Required fields:
+// - Vpc
 type VpcViewParams struct {
 	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
 // VpcUpdateParams is the request parameters for VpcUpdate
+//
+// Required fields:
+// - Vpc
+// - Body
 type VpcUpdateParams struct {
 	Vpc     NameOrId   `json:"vpc,omitempty" yaml:"vpc,omitempty"`
 	Project NameOrId   `json:"project,omitempty" yaml:"project,omitempty"`
