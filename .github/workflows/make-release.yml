@@ -37,6 +37,6 @@ jobs:
             echo "##[set-output name=prerelease;]$(echo false)"
           fi
       - name: Create a Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           prerelease: ${{steps.extract_prerelease.outputs.prerelease}}
