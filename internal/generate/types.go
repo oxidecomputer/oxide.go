@@ -417,6 +417,15 @@ func populateTypeTemplates(name string, s *openapi3.Schema, enumFieldName string
 	enumTypes := make([]EnumTemplate, 0)
 	typeTpl := TypeTemplate{}
 
+	// TODO: remove workaround once BgpMessageHistory is no longer empty
+	if name == "BgpMessageHistory" {
+		bgpOT := getObjectType(s)
+		if bgpOT != "" {
+			panic("[ERROR] BgpMessageHistory is no longer an empty type. Remove workaround in " +
+				"internal/types.go `createTypeObject()` and `populateTypeTemplates()`")
+		}
+	}
+
 	switch ot := getObjectType(s); ot {
 	case "string_enum":
 		enums, tt, et := createStringEnum(s, collectEnumStringTypes, name, typeName)
@@ -524,6 +533,12 @@ func createTypeObject(schema *openapi3.Schema, name, typeName, description strin
 			serInfo = fmt.Sprintf("`json:\"%s\" yaml:\"%s\"`", k, k)
 		}
 		field.SerializationInfo = serInfo
+
+		// TODO: Remove workaround once BgpMessageHistory is no longer an empty type
+		if typeName == "BgpMessageHistory" {
+			field.Type = "string"
+		}
+
 		fields = append(fields, field)
 
 	}

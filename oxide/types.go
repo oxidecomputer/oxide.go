@@ -138,6 +138,15 @@ type AddressLotResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+// AggregateBgpMessageHistory is bGP message history for rack switches.
+//
+// Required fields:
+// - SwitchHistories
+type AggregateBgpMessageHistory struct {
+	// SwitchHistories is bGP history organized by switch.
+	SwitchHistories []SwitchBgpHistory `json:"switch_histories,omitempty" yaml:"switch_histories,omitempty"`
+}
+
 // Baseboard is properties that uniquely identify an Oxide hardware component
 //
 // Required fields:
@@ -2670,6 +2679,9 @@ type InstanceSerialConsoleData struct {
 // InstanceState is the instance is being created.
 type InstanceState string
 
+// IpKind is the type definition for a IpKind.
+type IpKind string
+
 // IpNet is the type definition for a IpNet.
 type IpNet interface{}
 
@@ -2791,6 +2803,18 @@ type IpPoolUpdate struct {
 	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
+// IpPoolUtilization is the type definition for a IpPoolUtilization.
+//
+// Required fields:
+// - Ipv4
+// - Ipv6
+type IpPoolUtilization struct {
+	// Ipv4 is number of allocated and total available IPv4 addresses in pool
+	Ipv4 Ipv4Utilization `json:"ipv4,omitempty" yaml:"ipv4,omitempty"`
+	// Ipv6 is number of allocated and total available IPv6 addresses in pool
+	Ipv6 Ipv6Utilization `json:"ipv6,omitempty" yaml:"ipv6,omitempty"`
+}
+
 // IpRange is the type definition for a IpRange.
 type IpRange interface{}
 
@@ -2809,6 +2833,18 @@ type Ipv4Range struct {
 	Last  string `json:"last,omitempty" yaml:"last,omitempty"`
 }
 
+// Ipv4Utilization is the type definition for a Ipv4Utilization.
+//
+// Required fields:
+// - Allocated
+// - Capacity
+type Ipv4Utilization struct {
+	// Allocated is the number of IPv4 addresses allocated from this pool
+	Allocated int `json:"allocated,omitempty" yaml:"allocated,omitempty"`
+	// Capacity is the total number of IPv4 addresses in the pool, i.e., the sum of the lengths of the IPv4 ranges. Unlike IPv6 capacity, can be a 32-bit integer because there are only 2^32 IPv4 addresses.
+	Capacity int `json:"capacity,omitempty" yaml:"capacity,omitempty"`
+}
+
 // Ipv6Net is an IPv6 subnet, including prefix and subnet mask
 type Ipv6Net string
 
@@ -2822,6 +2858,18 @@ type Ipv6Net string
 type Ipv6Range struct {
 	First string `json:"first,omitempty" yaml:"first,omitempty"`
 	Last  string `json:"last,omitempty" yaml:"last,omitempty"`
+}
+
+// Ipv6Utilization is the type definition for a Ipv6Utilization.
+//
+// Required fields:
+// - Allocated
+// - Capacity
+type Ipv6Utilization struct {
+	// Allocated is the number of IPv6 addresses allocated from this pool. A 128-bit integer string to match the capacity field.
+	Allocated string `json:"allocated,omitempty" yaml:"allocated,omitempty"`
+	// Capacity is the total number of IPv6 addresses in the pool, i.e., the sum of the lengths of the IPv6 ranges. An IPv6 range can contain up to 2^128 addresses, so we represent this value in JSON as a numeric string with a custom "uint128" format.
+	Capacity string `json:"capacity,omitempty" yaml:"capacity,omitempty"`
 }
 
 // L4PortRange is an inclusive-inclusive range of IP ports. The second port may be omitted to represent a single port
@@ -2982,6 +3030,75 @@ type NameOrIdSortMode string
 // NameSortMode is sort in increasing order of "name"
 type NameSortMode string
 
+// NetworkInterface is information required to construct a virtual network interface
+//
+// Required fields:
+// - Id
+// - Ip
+// - Kind
+// - Mac
+// - Name
+// - Primary
+// - Slot
+// - Subnet
+// - Vni
+type NetworkInterface struct {
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
+	// Kind is the type of network interface
+	Kind NetworkInterfaceKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+	// Mac is a Media Access Control address, in EUI-48 format
+	Mac MacAddr `json:"mac,omitempty" yaml:"mac,omitempty"`
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	Name    Name  `json:"name,omitempty" yaml:"name,omitempty"`
+	Primary *bool `json:"primary,omitempty" yaml:"primary,omitempty"`
+	Slot    int   `json:"slot,omitempty" yaml:"slot,omitempty"`
+	Subnet  IpNet `json:"subnet,omitempty" yaml:"subnet,omitempty"`
+	// Vni is a Geneve Virtual Network Identifier
+	Vni Vni `json:"vni,omitempty" yaml:"vni,omitempty"`
+}
+
+// NetworkInterfaceKindType is the type definition for a NetworkInterfaceKindType.
+type NetworkInterfaceKindType string
+
+// NetworkInterfaceKindInstance is a vNIC attached to a guest instance
+//
+// Required fields:
+// - Id
+// - Type
+type NetworkInterfaceKindInstance struct {
+	Id   string                   `json:"id,omitempty" yaml:"id,omitempty"`
+	Type NetworkInterfaceKindType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// NetworkInterfaceKindService is a vNIC associated with an internal service
+//
+// Required fields:
+// - Id
+// - Type
+type NetworkInterfaceKindService struct {
+	Id   string                   `json:"id,omitempty" yaml:"id,omitempty"`
+	Type NetworkInterfaceKindType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// NetworkInterfaceKindProbe is a vNIC associated with a probe
+//
+// Required fields:
+// - Id
+// - Type
+type NetworkInterfaceKindProbe struct {
+	Id   string                   `json:"id,omitempty" yaml:"id,omitempty"`
+	Type NetworkInterfaceKindType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// NetworkInterfaceKind is the type of network interface
+type NetworkInterfaceKind struct {
+	// Id is the type definition for a Id.
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Type is the type definition for a Type.
+	Type NetworkInterfaceKindType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
 // PaginationOrder is the order in which the client wants to page through the requested collection
 type PaginationOrder string
 
@@ -3041,6 +3158,86 @@ type Ping struct {
 
 // PingStatus is the type definition for a PingStatus.
 type PingStatus string
+
+// Probe is identity-related metadata that's included in nearly all public API objects
+//
+// Required fields:
+// - Description
+// - Id
+// - Name
+// - Sled
+// - TimeCreated
+// - TimeModified
+type Probe struct {
+	// Description is human-readable free-form text about a resource
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Name is unique, mutable, user-controlled identifier for each resource
+	Name Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	Sled string `json:"sled,omitempty" yaml:"sled,omitempty"`
+	// TimeCreated is timestamp when this resource was created
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	// TimeModified is timestamp when this resource was last modified
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+}
+
+// ProbeCreate is create time parameters for probes.
+//
+// Required fields:
+// - Description
+// - Name
+// - Sled
+type ProbeCreate struct {
+	Description string   `json:"description,omitempty" yaml:"description,omitempty"`
+	IpPool      NameOrId `json:"ip_pool,omitempty" yaml:"ip_pool,omitempty"`
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	Name Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	Sled string `json:"sled,omitempty" yaml:"sled,omitempty"`
+}
+
+// ProbeExternalIp is the type definition for a ProbeExternalIp.
+//
+// Required fields:
+// - FirstPort
+// - Ip
+// - Kind
+// - LastPort
+type ProbeExternalIp struct {
+	FirstPort int    `json:"first_port,omitempty" yaml:"first_port,omitempty"`
+	Ip        string `json:"ip,omitempty" yaml:"ip,omitempty"`
+	Kind      IpKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+	LastPort  int    `json:"last_port,omitempty" yaml:"last_port,omitempty"`
+}
+
+// ProbeInfo is the type definition for a ProbeInfo.
+//
+// Required fields:
+// - ExternalIps
+// - Id
+// - Interface
+// - Name
+// - Sled
+type ProbeInfo struct {
+	ExternalIps []ProbeExternalIp `json:"external_ips,omitempty" yaml:"external_ips,omitempty"`
+	Id          string            `json:"id,omitempty" yaml:"id,omitempty"`
+	// Interface is information required to construct a virtual network interface
+	Interface NetworkInterface `json:"interface,omitempty" yaml:"interface,omitempty"`
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	Name Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	Sled string `json:"sled,omitempty" yaml:"sled,omitempty"`
+}
+
+// ProbeInfoResultsPage is a single page of results
+//
+// Required fields:
+// - Items
+type ProbeInfoResultsPage struct {
+	// Items is list of items on this page of results
+	Items []ProbeInfo `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
 
 // Project is view of a Project
 //
@@ -3776,6 +3973,18 @@ type Switch struct {
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
 }
 
+// SwitchBgpHistory is bGP message history for a particular switch.
+//
+// Required fields:
+// - History
+// - Switch
+type SwitchBgpHistory struct {
+	// History is message history indexed by peer address.
+	History string `json:"history,omitempty" yaml:"history,omitempty"`
+	// Switch is switch this message history is associated with.
+	Switch SwitchLocation `json:"switch,omitempty" yaml:"switch,omitempty"`
+}
+
 // SwitchInterfaceConfig is a switch port interface configuration for a port settings object.
 //
 // Required fields:
@@ -4308,6 +4517,9 @@ type VirtualResourceCounts struct {
 	Storage ByteCount `json:"storage,omitempty" yaml:"storage,omitempty"`
 }
 
+// Vni is a Geneve Virtual Network Identifier
+type Vni uint32
+
 // Vpc is view of a VPC
 //
 // Required fields:
@@ -4704,6 +4916,47 @@ type DeviceAuthConfirmParams struct {
 // - Body
 type DeviceAccessTokenParams struct {
 	Body io.Reader `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// ProbeListParams is the request parameters for ProbeList
+//
+// Required fields:
+// - Project
+type ProbeListParams struct {
+	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// ProbeCreateParams is the request parameters for ProbeCreate
+//
+// Required fields:
+// - Project
+// - Body
+type ProbeCreateParams struct {
+	Project NameOrId     `json:"project,omitempty" yaml:"project,omitempty"`
+	Body    *ProbeCreate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// ProbeDeleteParams is the request parameters for ProbeDelete
+//
+// Required fields:
+// - Project
+// - Probe
+type ProbeDeleteParams struct {
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Probe   NameOrId `json:"probe,omitempty" yaml:"probe,omitempty"`
+}
+
+// ProbeViewParams is the request parameters for ProbeView
+//
+// Required fields:
+// - Probe
+// - Project
+type ProbeViewParams struct {
+	Probe   NameOrId `json:"probe,omitempty" yaml:"probe,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
 // LoginSamlParams is the request parameters for LoginSaml
@@ -5730,6 +5983,14 @@ type IpPoolSiloUpdateParams struct {
 	Body *IpPoolSiloUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+// IpPoolUtilizationViewParams is the request parameters for IpPoolUtilizationView
+//
+// Required fields:
+// - Pool
+type IpPoolUtilizationViewParams struct {
+	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
+}
+
 // SystemMetricParams is the request parameters for SystemMetric
 //
 // Required fields:
@@ -5842,6 +6103,14 @@ type NetworkingBgpAnnounceSetListParams struct {
 // - Body
 type NetworkingBgpAnnounceSetCreateParams struct {
 	Body *BgpAnnounceSetCreate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// NetworkingBgpMessageHistoryParams is the request parameters for NetworkingBgpMessageHistory
+//
+// Required fields:
+// - Asn
+type NetworkingBgpMessageHistoryParams struct {
+	Asn int `json:"asn,omitempty" yaml:"asn,omitempty"`
 }
 
 // NetworkingBgpImportedRoutesIpv4Params is the request parameters for NetworkingBgpImportedRoutesIpv4
@@ -6238,6 +6507,48 @@ func (p *DeviceAuthConfirmParams) Validate() error {
 func (p *DeviceAccessTokenParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredObj(p.Body, "Body")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ProbeListParams are set
+func (p *ProbeListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ProbeCreateParams are set
+func (p *ProbeCreateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Project), "Project")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ProbeDeleteParams are set
+func (p *ProbeDeleteParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Project), "Project")
+	v.HasRequiredStr(string(p.Probe), "Probe")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ProbeViewParams are set
+func (p *ProbeViewParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Probe), "Probe")
+	v.HasRequiredStr(string(p.Project), "Project")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -7343,6 +7654,16 @@ func (p *IpPoolSiloUpdateParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for IpPoolUtilizationViewParams are set
+func (p *IpPoolUtilizationViewParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Pool), "Pool")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for SystemMetricParams are set
 func (p *SystemMetricParams) Validate() error {
 	v := new(Validator)
@@ -7465,6 +7786,16 @@ func (p *NetworkingBgpAnnounceSetListParams) Validate() error {
 func (p *NetworkingBgpAnnounceSetCreateParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredObj(p.Body, "Body")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingBgpMessageHistoryParams are set
+func (p *NetworkingBgpMessageHistoryParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredNum(int(p.Asn), "Asn")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -8261,6 +8592,15 @@ const InstanceStateFailed InstanceState = "failed"
 // InstanceStateDestroyed represents the InstanceState `"destroyed"`.
 const InstanceStateDestroyed InstanceState = "destroyed"
 
+// IpKindSnat represents the IpKind `"snat"`.
+const IpKindSnat IpKind = "snat"
+
+// IpKindFloating represents the IpKind `"floating"`.
+const IpKindFloating IpKind = "floating"
+
+// IpKindEphemeral represents the IpKind `"ephemeral"`.
+const IpKindEphemeral IpKind = "ephemeral"
+
 // LinkFecFirecode represents the LinkFec `"firecode"`.
 const LinkFecFirecode LinkFec = "firecode"
 
@@ -8308,6 +8648,15 @@ const NameOrIdSortModeIdAscending NameOrIdSortMode = "id_ascending"
 
 // NameSortModeNameAscending represents the NameSortMode `"name_ascending"`.
 const NameSortModeNameAscending NameSortMode = "name_ascending"
+
+// NetworkInterfaceKindTypeInstance represents the NetworkInterfaceKindType `"instance"`.
+const NetworkInterfaceKindTypeInstance NetworkInterfaceKindType = "instance"
+
+// NetworkInterfaceKindTypeService represents the NetworkInterfaceKindType `"service"`.
+const NetworkInterfaceKindTypeService NetworkInterfaceKindType = "service"
+
+// NetworkInterfaceKindTypeProbe represents the NetworkInterfaceKindType `"probe"`.
+const NetworkInterfaceKindTypeProbe NetworkInterfaceKindType = "probe"
 
 // PaginationOrderAscending represents the PaginationOrder `"ascending"`.
 const PaginationOrderAscending PaginationOrder = "ascending"
@@ -8746,6 +9095,13 @@ var InstanceStates = []InstanceState{
 	InstanceStateStopping,
 }
 
+// IpKinds is the collection of all IpKind values.
+var IpKinds = []IpKind{
+	IpKindEphemeral,
+	IpKindFloating,
+	IpKindSnat,
+}
+
 // LinkFecs is the collection of all LinkFec values.
 var LinkFecs = []LinkFec{
 	LinkFecFirecode,
@@ -8776,6 +9132,13 @@ var NameOrIdSortModes = []NameOrIdSortMode{
 // NameSortModes is the collection of all NameSortMode values.
 var NameSortModes = []NameSortMode{
 	NameSortModeNameAscending,
+}
+
+// NetworkInterfaceKindTypes is the collection of all NetworkInterfaceKindType values.
+var NetworkInterfaceKindTypes = []NetworkInterfaceKindType{
+	NetworkInterfaceKindTypeInstance,
+	NetworkInterfaceKindTypeProbe,
+	NetworkInterfaceKindTypeService,
 }
 
 // PaginationOrders is the collection of all PaginationOrder values.

@@ -6087,6 +6087,52 @@ func (c *Client) IpPoolSiloUnlink(ctx context.Context, params IpPoolSiloUnlinkPa
 	return nil
 }
 
+// IpPoolUtilizationView: Fetch IP pool utilization
+func (c *Client) IpPoolUtilizationView(ctx context.Context, params IpPoolUtilizationViewParams) (*IpPoolUtilization, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/ip-pools/{{.pool}}/utilization"),
+		map[string]string{
+			"pool": string(params.Pool),
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body IpPoolUtilization
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
 // SystemMetric: Access metrics data
 //
 // To iterate over all pages, use the `SystemMetricAllPages` method, instead.
@@ -6817,6 +6863,52 @@ func (c *Client) NetworkingBgpAnnounceSetDelete(ctx context.Context, params Netw
 	}
 
 	return nil
+}
+
+// NetworkingBgpMessageHistory: Get BGP router message history
+func (c *Client) NetworkingBgpMessageHistory(ctx context.Context, params NetworkingBgpMessageHistoryParams) (*AggregateBgpMessageHistory, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/networking/bgp-message-history"),
+		map[string]string{},
+		map[string]string{
+			"asn": strconv.Itoa(params.Asn),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body AggregateBgpMessageHistory
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
 }
 
 // NetworkingBgpImportedRoutesIpv4: Get imported IPv4 BGP routes
