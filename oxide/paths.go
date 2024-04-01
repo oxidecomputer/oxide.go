@@ -723,7 +723,7 @@ func (c *Client) DiskMetricsListAllPages(ctx context.Context, params DiskMetrics
 	return allPages, nil
 }
 
-// FloatingIpList: List all floating IPs
+// FloatingIpList: List floating IPs
 //
 // To iterate over all pages, use the `FloatingIpListAllPages` method, instead.
 func (c *Client) FloatingIpList(ctx context.Context, params FloatingIpListParams) (*FloatingIpResultsPage, error) {
@@ -774,7 +774,7 @@ func (c *Client) FloatingIpList(ctx context.Context, params FloatingIpListParams
 	return &body, nil
 }
 
-// FloatingIpListAllPages: List all floating IPs
+// FloatingIpListAllPages: List floating IPs
 //
 // This method is a wrapper around the `FloatingIpList` method.
 // This method returns all the pages at once.
@@ -2441,7 +2441,7 @@ func (c *Client) InstanceStop(ctx context.Context, params InstanceStopParams) (*
 	return &body, nil
 }
 
-// ProjectIpPoolList: List all IP pools
+// ProjectIpPoolList: List IP pools
 //
 // To iterate over all pages, use the `ProjectIpPoolListAllPages` method, instead.
 func (c *Client) ProjectIpPoolList(ctx context.Context, params ProjectIpPoolListParams) (*SiloIpPoolResultsPage, error) {
@@ -2491,7 +2491,7 @@ func (c *Client) ProjectIpPoolList(ctx context.Context, params ProjectIpPoolList
 	return &body, nil
 }
 
-// ProjectIpPoolListAllPages: List all IP pools
+// ProjectIpPoolListAllPages: List IP pools
 //
 // This method is a wrapper around the `ProjectIpPoolList` method.
 // This method returns all the pages at once.
@@ -4069,6 +4069,52 @@ func (c *Client) PhysicalDiskListAllPages(ctx context.Context, params PhysicalDi
 	return allPages, nil
 }
 
+// PhysicalDiskView: Get a physical disk
+func (c *Client) PhysicalDiskView(ctx context.Context, params PhysicalDiskViewParams) (*PhysicalDisk, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/hardware/disks/{{.disk_id}}"),
+		map[string]string{
+			"disk_id": params.DiskId,
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body PhysicalDisk
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
 // RackList: List racks
 //
 // To iterate over all pages, use the `RackListAllPages` method, instead.
@@ -5472,6 +5518,7 @@ func (c *Client) IpPoolServiceRangeListAllPages(ctx context.Context, params IpPo
 }
 
 // IpPoolServiceRangeAdd: Add IP range to Oxide service pool
+// IPv6 ranges are not allowed yet.
 func (c *Client) IpPoolServiceRangeAdd(ctx context.Context, params IpPoolServiceRangeAddParams) (*IpPoolRange, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -5773,6 +5820,7 @@ func (c *Client) IpPoolRangeListAllPages(ctx context.Context, params IpPoolRange
 }
 
 // IpPoolRangeAdd: Add range to IP pool
+// IPv6 ranges are not allowed yet.
 func (c *Client) IpPoolRangeAdd(ctx context.Context, params IpPoolRangeAddParams) (*IpPoolRange, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -8513,6 +8561,131 @@ func (c *Client) SiloUtilizationView(ctx context.Context, params SiloUtilization
 
 	// Return the response.
 	return &body, nil
+}
+
+// TimeseriesQuery: Run a timeseries query, written OxQL.
+func (c *Client) TimeseriesQuery(ctx context.Context, params TimeseriesQueryParams) (*[]Table, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"POST",
+		resolveRelative(c.host, "/v1/timeseries/query"),
+		map[string]string{},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body []Table
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// TimeseriesSchemaList: List available timeseries schema.
+//
+// To iterate over all pages, use the `TimeseriesSchemaListAllPages` method, instead.
+func (c *Client) TimeseriesSchemaList(ctx context.Context, params TimeseriesSchemaListParams) (*TimeseriesSchemaResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/timeseries/schema"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body TimeseriesSchemaResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// TimeseriesSchemaListAllPages: List available timeseries schema.
+//
+// This method is a wrapper around the `TimeseriesSchemaList` method.
+// This method returns all the pages at once.
+func (c *Client) TimeseriesSchemaListAllPages(ctx context.Context, params TimeseriesSchemaListParams) ([]TimeseriesSchema, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []TimeseriesSchema
+	params.PageToken = ""
+	params.Limit = 100
+	for {
+		page, err := c.TimeseriesSchemaList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
 }
 
 // UserList: List users

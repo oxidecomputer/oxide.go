@@ -159,7 +159,7 @@ type Baseboard struct {
 	Serial   string `json:"serial,omitempty" yaml:"serial,omitempty"`
 }
 
-// BfdMode is the type definition for a BfdMode.
+// BfdMode is bFD connection mode.
 type BfdMode string
 
 // BfdSessionDisable is information needed to disable a BFD session
@@ -210,12 +210,13 @@ type BfdState string
 // - State
 // - Switch
 type BfdStatus struct {
-	DetectionThreshold int      `json:"detection_threshold,omitempty" yaml:"detection_threshold,omitempty"`
-	Local              string   `json:"local,omitempty" yaml:"local,omitempty"`
-	Mode               BfdMode  `json:"mode,omitempty" yaml:"mode,omitempty"`
-	Peer               string   `json:"peer,omitempty" yaml:"peer,omitempty"`
-	RequiredRx         int      `json:"required_rx,omitempty" yaml:"required_rx,omitempty"`
-	State              BfdState `json:"state,omitempty" yaml:"state,omitempty"`
+	DetectionThreshold int    `json:"detection_threshold,omitempty" yaml:"detection_threshold,omitempty"`
+	Local              string `json:"local,omitempty" yaml:"local,omitempty"`
+	// Mode is bFD connection mode.
+	Mode       BfdMode  `json:"mode,omitempty" yaml:"mode,omitempty"`
+	Peer       string   `json:"peer,omitempty" yaml:"peer,omitempty"`
+	RequiredRx int      `json:"required_rx,omitempty" yaml:"required_rx,omitempty"`
+	State      BfdState `json:"state,omitempty" yaml:"state,omitempty"`
 	// Switch is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
 	Switch Name `json:"switch,omitempty" yaml:"switch,omitempty"`
 }
@@ -1784,6 +1785,26 @@ type DiskState struct {
 	Instance string `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
 
+// Distributiondouble is a distribution is a sequence of bins and counts in those bins.
+//
+// Required fields:
+// - Bins
+// - Counts
+type Distributiondouble struct {
+	Bins   []string `json:"bins,omitempty" yaml:"bins,omitempty"`
+	Counts []string `json:"counts,omitempty" yaml:"counts,omitempty"`
+}
+
+// Distributionint64 is a distribution is a sequence of bins and counts in those bins.
+//
+// Required fields:
+// - Bins
+// - Counts
+type Distributionint64 struct {
+	Bins   []string `json:"bins,omitempty" yaml:"bins,omitempty"`
+	Counts []string `json:"counts,omitempty" yaml:"counts,omitempty"`
+}
+
 // EphemeralIpCreate is parameters for creating an ephemeral IP address for an instance.
 type EphemeralIpCreate struct {
 	// Pool is name or ID of the IP pool used to allocate an address
@@ -1910,6 +1931,157 @@ type ExternalIpResultsPage struct {
 	Items []ExternalIp `json:"items,omitempty" yaml:"items,omitempty"`
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// FieldSchema is the name and type information for a field of a timeseries schema.
+//
+// Required fields:
+// - FieldType
+// - Name
+// - Source
+type FieldSchema struct {
+	// FieldType is the `FieldType` identifies the data type of a target or metric field.
+	FieldType FieldType `json:"field_type,omitempty" yaml:"field_type,omitempty"`
+	Name      string    `json:"name,omitempty" yaml:"name,omitempty"`
+	// Source is the source from which a field is derived, the target or metric.
+	Source FieldSource `json:"source,omitempty" yaml:"source,omitempty"`
+}
+
+// FieldSource is the source from which a field is derived, the target or metric.
+type FieldSource string
+
+// FieldType is the `FieldType` identifies the data type of a target or metric field.
+type FieldType string
+
+// FieldValueType is the type definition for a FieldValueType.
+type FieldValueType string
+
+// FieldValueString is the type definition for a FieldValueString.
+//
+// Required fields:
+// - Type
+// - Value
+type FieldValueString struct {
+	Type  FieldValueType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value string         `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// FieldValueI8 is the type definition for a FieldValueI8.
+//
+// Required fields:
+// - Type
+// - Value
+type FieldValueI8 struct {
+	Type  FieldValueType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value int            `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// FieldValueU8 is the type definition for a FieldValueU8.
+//
+// Required fields:
+// - Type
+// - Value
+type FieldValueU8 struct {
+	Type  FieldValueType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value int            `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// FieldValueI16 is the type definition for a FieldValueI16.
+//
+// Required fields:
+// - Type
+// - Value
+type FieldValueI16 struct {
+	Type  FieldValueType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value int            `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// FieldValueU16 is the type definition for a FieldValueU16.
+//
+// Required fields:
+// - Type
+// - Value
+type FieldValueU16 struct {
+	Type  FieldValueType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value int            `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// FieldValueI32 is the type definition for a FieldValueI32.
+//
+// Required fields:
+// - Type
+// - Value
+type FieldValueI32 struct {
+	Type  FieldValueType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value int            `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// FieldValueU32 is the type definition for a FieldValueU32.
+//
+// Required fields:
+// - Type
+// - Value
+type FieldValueU32 struct {
+	Type  FieldValueType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value int            `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// FieldValueI64 is the type definition for a FieldValueI64.
+//
+// Required fields:
+// - Type
+// - Value
+type FieldValueI64 struct {
+	Type  FieldValueType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value int            `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// FieldValueU64 is the type definition for a FieldValueU64.
+//
+// Required fields:
+// - Type
+// - Value
+type FieldValueU64 struct {
+	Type  FieldValueType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value int            `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// FieldValueIpAddr is the type definition for a FieldValueIpAddr.
+//
+// Required fields:
+// - Type
+// - Value
+type FieldValueIpAddr struct {
+	Type  FieldValueType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value string         `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// FieldValueUuid is the type definition for a FieldValueUuid.
+//
+// Required fields:
+// - Type
+// - Value
+type FieldValueUuid struct {
+	Type  FieldValueType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value string         `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// FieldValueBool is the type definition for a FieldValueBool.
+//
+// Required fields:
+// - Type
+// - Value
+type FieldValueBool struct {
+	Type  FieldValueType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value *bool          `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// FieldValue is the `FieldValue` contains the value of a target or metric field.
+type FieldValue struct {
+	// Type is the type definition for a Type.
+	Type FieldValueType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is the type definition for a Value.
+	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // FinalizeDisk is parameters for finalizing a disk
@@ -3008,6 +3180,9 @@ type MeasurementResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+// MetricType is the value represents an instantaneous measurement in time.
+type MetricType string
+
 // MissingDatum is the type definition for a MissingDatum.
 //
 // Required fields:
@@ -3113,7 +3288,9 @@ type Password string
 // - FormFactor
 // - Id
 // - Model
+// - Policy
 // - Serial
+// - State
 // - TimeCreated
 // - TimeModified
 // - Vendor
@@ -3121,11 +3298,15 @@ type PhysicalDisk struct {
 	// FormFactor is describes the form factor of physical disks.
 	FormFactor PhysicalDiskKind `json:"form_factor,omitempty" yaml:"form_factor,omitempty"`
 	// Id is unique, immutable, system-controlled identifier for each resource
-	Id     string `json:"id,omitempty" yaml:"id,omitempty"`
-	Model  string `json:"model,omitempty" yaml:"model,omitempty"`
-	Serial string `json:"serial,omitempty" yaml:"serial,omitempty"`
+	Id    string `json:"id,omitempty" yaml:"id,omitempty"`
+	Model string `json:"model,omitempty" yaml:"model,omitempty"`
+	// Policy is the operator-defined policy for a physical disk.
+	Policy PhysicalDiskPolicy `json:"policy,omitempty" yaml:"policy,omitempty"`
+	Serial string             `json:"serial,omitempty" yaml:"serial,omitempty"`
 	// SledId is the sled to which this disk is attached, if any.
 	SledId string `json:"sled_id,omitempty" yaml:"sled_id,omitempty"`
+	// State is the current state Nexus believes the disk to be in.
+	State PhysicalDiskState `json:"state,omitempty" yaml:"state,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
@@ -3135,6 +3316,35 @@ type PhysicalDisk struct {
 
 // PhysicalDiskKind is describes the form factor of physical disks.
 type PhysicalDiskKind string
+
+// PhysicalDiskPolicyKind is the type definition for a PhysicalDiskPolicyKind.
+type PhysicalDiskPolicyKind string
+
+// PhysicalDiskPolicyInService is the operator has indicated that the disk is in-service.
+//
+// Required fields:
+// - Kind
+type PhysicalDiskPolicyInService struct {
+	Kind PhysicalDiskPolicyKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+}
+
+// PhysicalDiskPolicyExpunged is the operator has indicated that the disk has been permanently removed from service.
+//
+// This is a terminal state: once a particular disk ID is expunged, it will never return to service. (The actual hardware may be reused, but it will be treated as a brand-new disk.)
+//
+// An expunged disk is always non-provisionable.
+//
+// Required fields:
+// - Kind
+type PhysicalDiskPolicyExpunged struct {
+	Kind PhysicalDiskPolicyKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+}
+
+// PhysicalDiskPolicy is the operator-defined policy of a physical disk.
+type PhysicalDiskPolicy struct {
+	// Kind is the type definition for a Kind.
+	Kind PhysicalDiskPolicyKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+}
 
 // PhysicalDiskResultsPage is a single page of results
 //
@@ -3147,6 +3357,9 @@ type PhysicalDiskResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+// PhysicalDiskState is the disk is currently active, and has resources allocated on it.
+type PhysicalDiskState string
+
 // Ping is the type definition for a Ping.
 //
 // Required fields:
@@ -3158,6 +3371,17 @@ type Ping struct {
 
 // PingStatus is the type definition for a PingStatus.
 type PingStatus string
+
+// Points is timepoints and values for one timeseries.
+//
+// Required fields:
+// - Timestamps
+// - Values
+type Points struct {
+	StartTimes []string `json:"start_times,omitempty" yaml:"start_times,omitempty"`
+	Timestamps []string `json:"timestamps,omitempty" yaml:"timestamps,omitempty"`
+	Values     []Values `json:"values,omitempty" yaml:"values,omitempty"`
+}
 
 // Probe is identity-related metadata that's included in nearly all public API objects
 //
@@ -4340,6 +4564,72 @@ type SwitchVlanInterfaceConfig struct {
 // SystemMetricName is the type definition for a SystemMetricName.
 type SystemMetricName string
 
+// Table is a table represents one or more timeseries with the same schema.
+//
+// A table is the result of an OxQL query. It contains a name, usually the name of the timeseries schema from which the data is derived, and any number of timeseries, which contain the actual data.
+//
+// Required fields:
+// - Name
+// - Timeseries
+type Table struct {
+	Name       string     `json:"name,omitempty" yaml:"name,omitempty"`
+	Timeseries Timeseries `json:"timeseries,omitempty" yaml:"timeseries,omitempty"`
+}
+
+// Timeseries is a timeseries contains a timestamped set of values from one source.
+//
+// This includes the typed key-value pairs that uniquely identify it, and the set of timestamps and data values from it.
+//
+// Required fields:
+// - Fields
+// - Points
+type Timeseries struct {
+	Fields FieldValue `json:"fields,omitempty" yaml:"fields,omitempty"`
+	// Points is timepoints and values for one timeseries.
+	Points Points `json:"points,omitempty" yaml:"points,omitempty"`
+}
+
+// TimeseriesName is names are constructed by concatenating the target and metric names with ':'. Target and metric names must be lowercase alphanumeric characters with '_' separating words.
+type TimeseriesName string
+
+// TimeseriesQuery is a timeseries query string, written in the Oximeter query language.
+//
+// Required fields:
+// - Query
+type TimeseriesQuery struct {
+	// Query is a timeseries query string, written in the Oximeter query language.
+	Query string `json:"query,omitempty" yaml:"query,omitempty"`
+}
+
+// TimeseriesSchema is the schema for a timeseries.
+//
+// This includes the name of the timeseries, as well as the datum type of its metric and the schema for each field.
+//
+// Required fields:
+// - Created
+// - DatumType
+// - FieldSchema
+// - TimeseriesName
+type TimeseriesSchema struct {
+	Created *time.Time `json:"created,omitempty" yaml:"created,omitempty"`
+	// DatumType is the type of an individual datum of a metric.
+	DatumType   DatumType     `json:"datum_type,omitempty" yaml:"datum_type,omitempty"`
+	FieldSchema []FieldSchema `json:"field_schema,omitempty" yaml:"field_schema,omitempty"`
+	// TimeseriesName is names are constructed by concatenating the target and metric names with ':'. Target and metric names must be lowercase alphanumeric characters with '_' separating words.
+	TimeseriesName TimeseriesName `json:"timeseries_name,omitempty" yaml:"timeseries_name,omitempty"`
+}
+
+// TimeseriesSchemaResultsPage is a single page of results
+//
+// Required fields:
+// - Items
+type TimeseriesSchemaResultsPage struct {
+	// Items is list of items on this page of results
+	Items []TimeseriesSchema `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
 // UninitializedSled is a sled that has not been added to an initialized rack yet
 //
 // Required fields:
@@ -4500,6 +4790,93 @@ type Utilization struct {
 	Capacity VirtualResourceCounts `json:"capacity,omitempty" yaml:"capacity,omitempty"`
 	// Provisioned is accounts for resources allocated to running instances or storage allocated via disks or snapshots Note that CPU and memory resources associated with a stopped instances are not counted here whereas associated disks will still be counted
 	Provisioned VirtualResourceCounts `json:"provisioned,omitempty" yaml:"provisioned,omitempty"`
+}
+
+// ValueArrayType is the type definition for a ValueArrayType.
+type ValueArrayType string
+
+// ValueArrayInteger is the type definition for a ValueArrayInteger.
+//
+// Required fields:
+// - Type
+// - Values
+type ValueArrayInteger struct {
+	Type   ValueArrayType `json:"type,omitempty" yaml:"type,omitempty"`
+	Values []string       `json:"values,omitempty" yaml:"values,omitempty"`
+}
+
+// ValueArrayDouble is the type definition for a ValueArrayDouble.
+//
+// Required fields:
+// - Type
+// - Values
+type ValueArrayDouble struct {
+	Type   ValueArrayType `json:"type,omitempty" yaml:"type,omitempty"`
+	Values []string       `json:"values,omitempty" yaml:"values,omitempty"`
+}
+
+// ValueArrayBoolean is the type definition for a ValueArrayBoolean.
+//
+// Required fields:
+// - Type
+// - Values
+type ValueArrayBoolean struct {
+	Type   ValueArrayType `json:"type,omitempty" yaml:"type,omitempty"`
+	Values []string       `json:"values,omitempty" yaml:"values,omitempty"`
+}
+
+// ValueArrayString is the type definition for a ValueArrayString.
+//
+// Required fields:
+// - Type
+// - Values
+type ValueArrayString struct {
+	Type   ValueArrayType `json:"type,omitempty" yaml:"type,omitempty"`
+	Values []string       `json:"values,omitempty" yaml:"values,omitempty"`
+}
+
+// ValueArrayIntegerDistribution is the type definition for a ValueArrayIntegerDistribution.
+//
+// Required fields:
+// - Type
+// - Values
+type ValueArrayIntegerDistribution struct {
+	Type   ValueArrayType `json:"type,omitempty" yaml:"type,omitempty"`
+	Values []string       `json:"values,omitempty" yaml:"values,omitempty"`
+}
+
+// ValueArrayDoubleDistribution is the type definition for a ValueArrayDoubleDistribution.
+//
+// Required fields:
+// - Type
+// - Values
+type ValueArrayDoubleDistribution struct {
+	Type   ValueArrayType `json:"type,omitempty" yaml:"type,omitempty"`
+	Values []string       `json:"values,omitempty" yaml:"values,omitempty"`
+}
+
+// ValueArray is list of data values for one timeseries.
+//
+// Each element is an option, where `None` represents a missing sample.
+type ValueArray struct {
+	// Type is the type definition for a Type.
+	Type ValueArrayType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Values is the type definition for a Values.
+	Values []string `json:"values,omitempty" yaml:"values,omitempty"`
+}
+
+// Values is a single list of values, for one dimension of a timeseries.
+//
+// Required fields:
+// - MetricType
+// - Values
+type Values struct {
+	// MetricType is the type of the metric itself, indicating what its values represent.
+	MetricType MetricType `json:"metric_type,omitempty" yaml:"metric_type,omitempty"`
+	// Values is list of data values for one timeseries.
+	//
+	// Each element is an option, where `None` represents a missing sample.
+	Values ValueArray `json:"values,omitempty" yaml:"values,omitempty"`
 }
 
 // VirtualResourceCounts is a collection of resource counts used to describe capacity and utilization
@@ -5659,6 +6036,14 @@ type PhysicalDiskListParams struct {
 	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
 
+// PhysicalDiskViewParams is the request parameters for PhysicalDiskView
+//
+// Required fields:
+// - DiskId
+type PhysicalDiskViewParams struct {
+	DiskId string `json:"disk_id,omitempty" yaml:"disk_id,omitempty"`
+}
+
 // RackListParams is the request parameters for RackList
 type RackListParams struct {
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -6335,6 +6720,20 @@ type SiloUtilizationListParams struct {
 // - Silo
 type SiloUtilizationViewParams struct {
 	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
+}
+
+// TimeseriesQueryParams is the request parameters for TimeseriesQuery
+//
+// Required fields:
+// - Body
+type TimeseriesQueryParams struct {
+	Body *TimeseriesQuery `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// TimeseriesSchemaListParams is the request parameters for TimeseriesSchemaList
+type TimeseriesSchemaListParams struct {
+	Limit     int    `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 }
 
 // UserListParams is the request parameters for UserList
@@ -7293,6 +7692,16 @@ func (p *PhysicalDiskListParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for PhysicalDiskViewParams are set
+func (p *PhysicalDiskViewParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.DiskId), "DiskId")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for RackListParams are set
 func (p *RackListParams) Validate() error {
 	v := new(Validator)
@@ -8069,6 +8478,25 @@ func (p *SiloUtilizationViewParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for TimeseriesQueryParams are set
+func (p *TimeseriesQueryParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for TimeseriesSchemaListParams are set
+func (p *TimeseriesSchemaListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for UserListParams are set
 func (p *UserListParams) Validate() error {
 	v := new(Validator)
@@ -8511,6 +8939,84 @@ const ExternalIpCreateTypeEphemeral ExternalIpCreateType = "ephemeral"
 // ExternalIpCreateTypeFloating represents the ExternalIpCreateType `"floating"`.
 const ExternalIpCreateTypeFloating ExternalIpCreateType = "floating"
 
+// FieldSourceTarget represents the FieldSource `"target"`.
+const FieldSourceTarget FieldSource = "target"
+
+// FieldSourceMetric represents the FieldSource `"metric"`.
+const FieldSourceMetric FieldSource = "metric"
+
+// FieldTypeString represents the FieldType `"string"`.
+const FieldTypeString FieldType = "string"
+
+// FieldTypeI8 represents the FieldType `"i8"`.
+const FieldTypeI8 FieldType = "i8"
+
+// FieldTypeU8 represents the FieldType `"u8"`.
+const FieldTypeU8 FieldType = "u8"
+
+// FieldTypeI16 represents the FieldType `"i16"`.
+const FieldTypeI16 FieldType = "i16"
+
+// FieldTypeU16 represents the FieldType `"u16"`.
+const FieldTypeU16 FieldType = "u16"
+
+// FieldTypeI32 represents the FieldType `"i32"`.
+const FieldTypeI32 FieldType = "i32"
+
+// FieldTypeU32 represents the FieldType `"u32"`.
+const FieldTypeU32 FieldType = "u32"
+
+// FieldTypeI64 represents the FieldType `"i64"`.
+const FieldTypeI64 FieldType = "i64"
+
+// FieldTypeU64 represents the FieldType `"u64"`.
+const FieldTypeU64 FieldType = "u64"
+
+// FieldTypeIpAddr represents the FieldType `"ip_addr"`.
+const FieldTypeIpAddr FieldType = "ip_addr"
+
+// FieldTypeUuid represents the FieldType `"uuid"`.
+const FieldTypeUuid FieldType = "uuid"
+
+// FieldTypeBool represents the FieldType `"bool"`.
+const FieldTypeBool FieldType = "bool"
+
+// FieldValueTypeString represents the FieldValueType `"string"`.
+const FieldValueTypeString FieldValueType = "string"
+
+// FieldValueTypeI8 represents the FieldValueType `"i8"`.
+const FieldValueTypeI8 FieldValueType = "i8"
+
+// FieldValueTypeU8 represents the FieldValueType `"u8"`.
+const FieldValueTypeU8 FieldValueType = "u8"
+
+// FieldValueTypeI16 represents the FieldValueType `"i16"`.
+const FieldValueTypeI16 FieldValueType = "i16"
+
+// FieldValueTypeU16 represents the FieldValueType `"u16"`.
+const FieldValueTypeU16 FieldValueType = "u16"
+
+// FieldValueTypeI32 represents the FieldValueType `"i32"`.
+const FieldValueTypeI32 FieldValueType = "i32"
+
+// FieldValueTypeU32 represents the FieldValueType `"u32"`.
+const FieldValueTypeU32 FieldValueType = "u32"
+
+// FieldValueTypeI64 represents the FieldValueType `"i64"`.
+const FieldValueTypeI64 FieldValueType = "i64"
+
+// FieldValueTypeU64 represents the FieldValueType `"u64"`.
+const FieldValueTypeU64 FieldValueType = "u64"
+
+// FieldValueTypeIpAddr represents the FieldValueType `"ip_addr"`.
+const FieldValueTypeIpAddr FieldValueType = "ip_addr"
+
+// FieldValueTypeUuid represents the FieldValueType `"uuid"`.
+const FieldValueTypeUuid FieldValueType = "uuid"
+
+// FieldValueTypeBool represents the FieldValueType `"bool"`.
+const FieldValueTypeBool FieldValueType = "bool"
+
 // FleetRoleAdmin represents the FleetRole `"admin"`.
 const FleetRoleAdmin FleetRole = "admin"
 
@@ -8637,6 +9143,15 @@ const LinkSpeedSpeed200G LinkSpeed = "speed200_g"
 // LinkSpeedSpeed400G represents the LinkSpeed `"speed400_g"`.
 const LinkSpeedSpeed400G LinkSpeed = "speed400_g"
 
+// MetricTypeGauge represents the MetricType `"gauge"`.
+const MetricTypeGauge MetricType = "gauge"
+
+// MetricTypeDelta represents the MetricType `"delta"`.
+const MetricTypeDelta MetricType = "delta"
+
+// MetricTypeCumulative represents the MetricType `"cumulative"`.
+const MetricTypeCumulative MetricType = "cumulative"
+
 // NameOrIdSortModeNameAscending represents the NameOrIdSortMode `"name_ascending"`.
 const NameOrIdSortModeNameAscending NameOrIdSortMode = "name_ascending"
 
@@ -8669,6 +9184,18 @@ const PhysicalDiskKindM2 PhysicalDiskKind = "m2"
 
 // PhysicalDiskKindU2 represents the PhysicalDiskKind `"u2"`.
 const PhysicalDiskKindU2 PhysicalDiskKind = "u2"
+
+// PhysicalDiskPolicyKindInService represents the PhysicalDiskPolicyKind `"in_service"`.
+const PhysicalDiskPolicyKindInService PhysicalDiskPolicyKind = "in_service"
+
+// PhysicalDiskPolicyKindExpunged represents the PhysicalDiskPolicyKind `"expunged"`.
+const PhysicalDiskPolicyKindExpunged PhysicalDiskPolicyKind = "expunged"
+
+// PhysicalDiskStateActive represents the PhysicalDiskState `"active"`.
+const PhysicalDiskStateActive PhysicalDiskState = "active"
+
+// PhysicalDiskStateDecommissioned represents the PhysicalDiskState `"decommissioned"`.
+const PhysicalDiskStateDecommissioned PhysicalDiskState = "decommissioned"
 
 // PingStatusOk represents the PingStatus `"ok"`.
 const PingStatusOk PingStatus = "ok"
@@ -8786,6 +9313,24 @@ const UserPasswordModePassword UserPasswordMode = "password"
 
 // UserPasswordModeLoginDisallowed represents the UserPasswordMode `"login_disallowed"`.
 const UserPasswordModeLoginDisallowed UserPasswordMode = "login_disallowed"
+
+// ValueArrayTypeInteger represents the ValueArrayType `"integer"`.
+const ValueArrayTypeInteger ValueArrayType = "integer"
+
+// ValueArrayTypeDouble represents the ValueArrayType `"double"`.
+const ValueArrayTypeDouble ValueArrayType = "double"
+
+// ValueArrayTypeBoolean represents the ValueArrayType `"boolean"`.
+const ValueArrayTypeBoolean ValueArrayType = "boolean"
+
+// ValueArrayTypeString represents the ValueArrayType `"string"`.
+const ValueArrayTypeString ValueArrayType = "string"
+
+// ValueArrayTypeIntegerDistribution represents the ValueArrayType `"integer_distribution"`.
+const ValueArrayTypeIntegerDistribution ValueArrayType = "integer_distribution"
+
+// ValueArrayTypeDoubleDistribution represents the ValueArrayType `"double_distribution"`.
+const ValueArrayTypeDoubleDistribution ValueArrayType = "double_distribution"
 
 // VpcFirewallRuleActionAllow represents the VpcFirewallRuleAction `"allow"`.
 const VpcFirewallRuleActionAllow VpcFirewallRuleAction = "allow"
@@ -9028,6 +9573,44 @@ var ExternalIpKinds = []ExternalIpKind{
 	ExternalIpKindFloating,
 }
 
+// FieldSources is the collection of all FieldSource values.
+var FieldSources = []FieldSource{
+	FieldSourceMetric,
+	FieldSourceTarget,
+}
+
+// FieldTypes is the collection of all FieldType values.
+var FieldTypes = []FieldType{
+	FieldTypeBool,
+	FieldTypeI16,
+	FieldTypeI32,
+	FieldTypeI64,
+	FieldTypeI8,
+	FieldTypeIpAddr,
+	FieldTypeString,
+	FieldTypeU16,
+	FieldTypeU32,
+	FieldTypeU64,
+	FieldTypeU8,
+	FieldTypeUuid,
+}
+
+// FieldValueTypes is the collection of all FieldValueType values.
+var FieldValueTypes = []FieldValueType{
+	FieldValueTypeBool,
+	FieldValueTypeI16,
+	FieldValueTypeI32,
+	FieldValueTypeI64,
+	FieldValueTypeI8,
+	FieldValueTypeIpAddr,
+	FieldValueTypeString,
+	FieldValueTypeU16,
+	FieldValueTypeU32,
+	FieldValueTypeU64,
+	FieldValueTypeU8,
+	FieldValueTypeUuid,
+}
+
 // FleetRoles is the collection of all FleetRole values.
 var FleetRoles = []FleetRole{
 	FleetRoleAdmin,
@@ -9122,6 +9705,13 @@ var LinkSpeeds = []LinkSpeed{
 	LinkSpeedSpeed50G,
 }
 
+// MetricTypes is the collection of all MetricType values.
+var MetricTypes = []MetricType{
+	MetricTypeCumulative,
+	MetricTypeDelta,
+	MetricTypeGauge,
+}
+
 // NameOrIdSortModes is the collection of all NameOrIdSortMode values.
 var NameOrIdSortModes = []NameOrIdSortMode{
 	NameOrIdSortModeIdAscending,
@@ -9151,6 +9741,18 @@ var PaginationOrders = []PaginationOrder{
 var PhysicalDiskKinds = []PhysicalDiskKind{
 	PhysicalDiskKindM2,
 	PhysicalDiskKindU2,
+}
+
+// PhysicalDiskPolicyKinds is the collection of all PhysicalDiskPolicyKind values.
+var PhysicalDiskPolicyKinds = []PhysicalDiskPolicyKind{
+	PhysicalDiskPolicyKindExpunged,
+	PhysicalDiskPolicyKindInService,
+}
+
+// PhysicalDiskStates is the collection of all PhysicalDiskState values.
+var PhysicalDiskStates = []PhysicalDiskState{
+	PhysicalDiskStateActive,
+	PhysicalDiskStateDecommissioned,
 }
 
 // PingStatuses is the collection of all PingStatus values.
@@ -9254,6 +9856,16 @@ var SystemMetricNames = []SystemMetricName{
 var UserPasswordModes = []UserPasswordMode{
 	UserPasswordModeLoginDisallowed,
 	UserPasswordModePassword,
+}
+
+// ValueArrayTypes is the collection of all ValueArrayType values.
+var ValueArrayTypes = []ValueArrayType{
+	ValueArrayTypeBoolean,
+	ValueArrayTypeDouble,
+	ValueArrayTypeDoubleDistribution,
+	ValueArrayTypeInteger,
+	ValueArrayTypeIntegerDistribution,
+	ValueArrayTypeString,
 }
 
 // VpcFirewallRuleActions is the collection of all VpcFirewallRuleAction values.
