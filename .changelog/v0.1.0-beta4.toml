@@ -1,15 +1,7 @@
-[[bugs]]
-title = ""
-description = ""
-
-[[breaking]]
-title = ""
-description = ""
-
 [[features]]
-title = ""
-description = ""
+title = "New API endpoints"
+description = "Floating IP update, IP pool utilization view, physical disk view, timeseries query, timeseries schema list, and BGP message history. [#198](https://github.com/oxidecomputer/oxide.go/pull/198), [#201](https://github.com/oxidecomputer/oxide.go/pull/201), [#202](https://github.com/oxidecomputer/oxide.go/pull/202)"
 
 [[enhancements]]
-title = ""
-description = ""
+title = "Documentation"
+description = "Go doc comments now include which fields are required for each type. [#198](https://github.com/oxidecomputer/oxide.go/pull/198)"
