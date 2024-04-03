@@ -2,7 +2,7 @@
 
 ### New features
 
-- **New API endpoints:** Floating IP update, IP pool utilization view, physical disk view, timeseries query, timeseries schema list, and BGP message history. [#198](https://github.com/oxidecomputer/oxide.go/pull/198), [#201](https://github.com/oxidecomputer/oxide.go/pull/201), [#202](https://github.com/oxidecomputer/oxide.go/pull/202)
+- **New API endpoints:** Floating IP update, IP pool utilization view, physical disk view, timeseries query, timeseries schema list, and BGP message history. [#195](https://github.com/oxidecomputer/oxide.go/pull/195), [#201](https://github.com/oxidecomputer/oxide.go/pull/201), [#202](https://github.com/oxidecomputer/oxide.go/pull/202)
 
 ### Enhancements
 
