@@ -1,3 +1,25 @@
+# v0.1.0-beta4 (2024/Apr/3)
+
+### New features
+
+- **New API endpoints:** Floating IP update, IP pool utilization view, physical disk view, timeseries query, timeseries schema list, and BGP message history. [#198](https://github.com/oxidecomputer/oxide.go/pull/198), [#201](https://github.com/oxidecomputer/oxide.go/pull/201), [#202](https://github.com/oxidecomputer/oxide.go/pull/202)
+
+### Enhancements
+
+- **Documentation:** Go doc comments now include which fields are required for each type. [#198](https://github.com/oxidecomputer/oxide.go/pull/198)
+
+### List of commits
+
+- [f488d8e](https://github.com/oxidecomputer/oxide.go/commit/f488d8e) Update to omicron afb2e9a (#202)
+- [f7d1056](https://github.com/oxidecomputer/oxide.go/commit/f7d1056) Update to omicron a3fa540 (#201)
+- [35ead62](https://github.com/oxidecomputer/oxide.go/commit/35ead62) Bump softprops/action-gh-release from 1 to 2 (#199)
+- [8359042](https://github.com/oxidecomputer/oxide.go/commit/8359042) Document required fields (#198)
+- [2d221d4](https://github.com/oxidecomputer/oxide.go/commit/2d221d4) Remove unecessary env var from GH action (#197)
+- [9b0cf8d](https://github.com/oxidecomputer/oxide.go/commit/9b0cf8d) Bump github.com/stretchr/testify from 1.8.4 to 1.9.0 (#196)
+- [043c873](https://github.com/oxidecomputer/oxide.go/commit/043c873) Update SDK to Omicron dcd3d9e (#195)
+- [20c490d](https://github.com/oxidecomputer/oxide.go/commit/20c490d) Write correct date on changelog (#193)
+- [38e6c01](https://github.com/oxidecomputer/oxide.go/commit/38e6c01) Bump version for next release (#192)
+
 # v0.1.0-beta3 (2024/Feb/13)
 
 ### Breaking changes
