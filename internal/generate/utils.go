@@ -44,11 +44,11 @@ func openGeneratedFile(filename string) (*os.File, error) {
 }
 
 func isLocalEnum(v *openapi3.SchemaRef) bool {
-	return v.Ref == "" && v.Value.Type == "string" && len(v.Value.Enum) > 0
+	return v.Ref == "" && v.Value.Type.Is("string") && len(v.Value.Enum) > 0
 }
 
 func isLocalObject(v *openapi3.SchemaRef) bool {
-	return v.Ref == "" && v.Value.Type == "object" && len(v.Value.Properties) > 0
+	return v.Ref == "" && v.Value.Type.Is("object") && len(v.Value.Properties) > 0
 }
 
 // formatStringType converts a string schema to a valid Go type.
@@ -127,7 +127,7 @@ func convertToValidGoType(property string, r *openapi3.SchemaRef) string {
 			return getReferenceSchema(r.Value.AdditionalProperties.Schema)
 		} else if r.Value.AdditionalProperties.Schema.Value.Items.Ref != "" {
 			ref := getReferenceSchema(r.Value.AdditionalProperties.Schema.Value.Items)
-			if r.Value.AdditionalProperties.Schema.Value.Items.Value.Type == "array" {
+			if r.Value.AdditionalProperties.Schema.Value.Items.Value.Type.Is("array") {
 				return "[]" + ref
 			}
 			return ref
@@ -145,27 +145,27 @@ func convertToValidGoType(property string, r *openapi3.SchemaRef) string {
 	}
 
 	var schemaType string
-	switch r.Value.Type {
-	case "string":
+
+	if r.Value.Type.Is("string") {
 		schemaType = formatStringType(r.Value)
-	case "integer":
+	} else if r.Value.Type.Is("integer") {
 		schemaType = "int"
-	case "number":
+	} else if r.Value.Type.Is("number") {
 		schemaType = "float64"
-	case "boolean":
+	} else if r.Value.Type.Is("boolean") {
 		// Using a pointer here as the json encoder takes false as null
 		schemaType = "*bool"
-	case "array":
+	} else if r.Value.Type.Is("array") {
 		reference := getReferenceSchema(r.Value.Items)
 		if reference != "" {
 			return fmt.Sprintf("[]%s", reference)
 		}
 		// TODO: handle if it is not a reference.
 		schemaType = "[]string"
-	case "object":
+	} else if r.Value.Type.Is("object") {
 		// Most likely this is a local object, we will handle it.
 		schemaType = strcase.ToCamel(property)
-	default:
+	} else {
 		fmt.Printf("[WARN] TODO: handle type %q for %q, marking as interface{} for now\n", r.Value.Type, property)
 		schemaType = "interface{}"
 	}

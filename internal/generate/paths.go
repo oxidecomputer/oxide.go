@@ -253,7 +253,7 @@ func getSuccessResponseType(o *openapi3.Operation, isGetAllPages bool) (string, 
 				return getReferenceSchema(content.Schema), getAllPagesType, nil
 			}
 
-			if content.Schema.Value.Type == "array" {
+			if content.Schema.Value.Type.Is("array") {
 				return fmt.Sprintf("[]%s", getReferenceSchema(content.Schema.Value.Items)), getAllPagesType, nil
 			}
 
