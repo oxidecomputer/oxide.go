@@ -228,7 +228,7 @@ func constructParamValidation(paths map[string]*openapi3.PathItem) []ValidationT
 
 					paramName := strcase.ToCamel(p.Value.Name)
 
-					if p.Value.Schema.Value.Type == "integer" {
+					if p.Value.Schema.Value.Type.Is("integer") {
 						validationTpl.RequiredNums = append(validationTpl.RequiredNums, paramName)
 						continue
 					}
@@ -724,31 +724,32 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 
 func getObjectType(s *openapi3.Schema) string {
 	// TODO: Support enums of other types
-	if s.Type == "string" && len(s.Enum) > 0 {
+	if s.Type.Is("string") && len(s.Enum) > 0 {
 		return "string_enum"
 	}
 
-	if s.Type == "integer" {
+	if s.Type.Is("integer") {
 		if isNumericType(s.Format) {
 			return s.Format
 		}
 		return "int"
 	}
 
-	if s.Type == "number" {
+	if s.Type.Is("number") {
 		if isNumericType(s.Format) {
 			return s.Format
 		}
 		return "float64"
 	}
 
-	if s.Type == "boolean" {
-		// Using a pointer here as the json encoder takes false as null
+	if s.Type.Is("boolean") {
 		return "*bool"
 	}
 
-	if s.Type != "" {
-		return s.Type
+	if s.Type != nil {
+		t := s.Type.Slice()
+		// Our API only supports a single type per object
+		return string(t[0])
 	}
 
 	if s.OneOf != nil {

@@ -17,13 +17,13 @@ func Test_generateTypes(t *testing.T) {
 			Schemas: openapi3.Schemas{
 				"DiskIdentifier": &openapi3.SchemaRef{Value: &openapi3.Schema{
 					Description: "Parameters for the [`Disk`](omicron_common::api::external::Disk) to be attached or detached to an instance",
-					Type:        "object",
+					Type:        &openapi3.Types{"object"},
 					Properties: openapi3.Schemas{"name": &openapi3.SchemaRef{
 						Value: &openapi3.Schema{},
 						Ref:   "#/components/schemas/Name"}},
 				}},
 				"DiskCreate": &openapi3.SchemaRef{Value: &openapi3.Schema{
-					Type: "object",
+					Type: &openapi3.Types{"object"},
 					Properties: openapi3.Schemas{"disk_source": &openapi3.SchemaRef{
 						Value: &openapi3.Schema{AllOf: openapi3.SchemaRefs{
 							&openapi3.SchemaRef{
@@ -38,13 +38,13 @@ func Test_generateTypes(t *testing.T) {
 						&openapi3.SchemaRef{
 							Value: &openapi3.Schema{
 								Description: "Create a disk from a disk snapshot",
-								Type:        "object",
+								Type:        &openapi3.Types{"object"},
 								Properties: openapi3.Schemas{
 									"snapshot_id": &openapi3.SchemaRef{
-										Value: &openapi3.Schema{Type: "string", Format: "uuid"},
+										Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Format: "uuid"},
 									},
 									"type": &openapi3.SchemaRef{
-										Value: &openapi3.Schema{Type: "string", Enum: []interface{}{"snapshot"}},
+										Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []interface{}{"snapshot"}},
 									},
 								},
 							},
@@ -52,13 +52,13 @@ func Test_generateTypes(t *testing.T) {
 						&openapi3.SchemaRef{
 							Value: &openapi3.Schema{
 								Description: "Create a disk from a project image",
-								Type:        "object",
+								Type:        &openapi3.Types{"object"},
 								Properties: openapi3.Schemas{
 									"image_id": &openapi3.SchemaRef{
-										Value: &openapi3.Schema{Type: "string", Format: "uuid"},
+										Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Format: "uuid"},
 									},
 									"type": &openapi3.SchemaRef{
-										Value: &openapi3.Schema{Type: "string", Enum: []interface{}{"image"}},
+										Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []interface{}{"image"}},
 									},
 								},
 							},
@@ -107,10 +107,10 @@ func Test_createTypeObject(t *testing.T) {
 		Required: []string{"type"},
 		Properties: map[string]*openapi3.SchemaRef{
 			"snapshot_id": {
-				Value: &openapi3.Schema{Type: "string", Format: "uuid"},
+				Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Format: "uuid"},
 			},
 			"type": {
-				Value: &openapi3.Schema{Type: "string", Enum: []interface{}{"snapshot"}},
+				Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []interface{}{"snapshot"}},
 			},
 		}}
 
@@ -199,13 +199,13 @@ func Test_createOneOf(t *testing.T) {
 		OneOf: openapi3.SchemaRefs{
 			&openapi3.SchemaRef{
 				Value: &openapi3.Schema{
-					Type: "object",
+					Type: &openapi3.Types{"object"},
 					Properties: map[string]*openapi3.SchemaRef{
 						"type": {
-							Value: &openapi3.Schema{Type: "string", Enum: []interface{}{"url"}},
+							Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []interface{}{"url"}},
 						},
 						"url": {
-							Value: &openapi3.Schema{Type: "string"},
+							Value: &openapi3.Schema{Type: &openapi3.Types{"string"}},
 						},
 					},
 					Required: []string{"type", "url"},
@@ -213,13 +213,13 @@ func Test_createOneOf(t *testing.T) {
 			},
 			&openapi3.SchemaRef{
 				Value: &openapi3.Schema{
-					Type: "object",
+					Type: &openapi3.Types{"object"},
 					Properties: map[string]*openapi3.SchemaRef{
 						"id": {
-							Value: &openapi3.Schema{Type: "string", Format: "uuid"},
+							Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Format: "uuid"},
 						},
 						"type": {
-							Value: &openapi3.Schema{Type: "string", Enum: []interface{}{"snapshot"}},
+							Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []interface{}{"snapshot"}},
 						},
 					},
 					Required: []string{"id", "type"},
