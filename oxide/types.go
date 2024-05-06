@@ -147,6 +147,61 @@ type AggregateBgpMessageHistory struct {
 	SwitchHistories []SwitchBgpHistory `json:"switch_histories,omitempty" yaml:"switch_histories,omitempty"`
 }
 
+// AllowList is allowlist of IPs or subnets that can make requests to user-facing services.
+//
+// Required fields:
+// - AllowedIps
+// - TimeCreated
+// - TimeModified
+type AllowList struct {
+	// AllowedIps is the allowlist of IPs or subnets.
+	AllowedIps AllowedSourceIps `json:"allowed_ips,omitempty" yaml:"allowed_ips,omitempty"`
+	// TimeCreated is time the list was created.
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	// TimeModified is time the list was last modified.
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+}
+
+// AllowListUpdate is parameters for updating allowed source IPs
+//
+// Required fields:
+// - AllowedIps
+type AllowListUpdate struct {
+	// AllowedIps is the new list of allowed source IPs.
+	AllowedIps AllowedSourceIps `json:"allowed_ips,omitempty" yaml:"allowed_ips,omitempty"`
+}
+
+// AllowedSourceIpsAllow is the type definition for a AllowedSourceIpsAllow.
+type AllowedSourceIpsAllow string
+
+// AllowedSourceIpsAny is allow traffic from any external IP address.
+//
+// Required fields:
+// - Allow
+type AllowedSourceIpsAny struct {
+	Allow AllowedSourceIpsAllow `json:"allow,omitempty" yaml:"allow,omitempty"`
+}
+
+// AllowedSourceIpsList is restrict access to a specific set of source IP addresses or subnets.
+//
+// All others are prevented from reaching rack services.
+//
+// Required fields:
+// - Allow
+// - Ips
+type AllowedSourceIpsList struct {
+	Allow AllowedSourceIpsAllow `json:"allow,omitempty" yaml:"allow,omitempty"`
+	Ips   []IpNet               `json:"ips,omitempty" yaml:"ips,omitempty"`
+}
+
+// AllowedSourceIps is description of source IPs allowed to reach rack services.
+type AllowedSourceIps struct {
+	// Allow is the type definition for a Allow.
+	Allow AllowedSourceIpsAllow `json:"allow,omitempty" yaml:"allow,omitempty"`
+	// Ips is the type definition for a Ips.
+	Ips []IpNet `json:"ips,omitempty" yaml:"ips,omitempty"`
+}
+
 // Baseboard is properties that uniquely identify an Oxide hardware component
 //
 // Required fields:
@@ -356,14 +411,21 @@ type BgpImportedRouteIpv4 struct {
 	Switch SwitchLocation `json:"switch,omitempty" yaml:"switch,omitempty"`
 }
 
+// BgpMessageHistory is the type definition for a BgpMessageHistory.
+type BgpMessageHistory string
+
 // BgpPeer is a BGP peer configuration for an interface. Includes the set of announcements that will be advertised to the peer identified by `addr`. The `bgp_config` parameter is a reference to global BGP parameters. The `interface_name` indicates what interface the peer should be contacted on.
 //
 // Required fields:
 // - Addr
+// - AllowedExport
+// - AllowedImport
 // - BgpAnnounceSet
 // - BgpConfig
+// - Communities
 // - ConnectRetry
 // - DelayOpen
+// - EnforceFirstAs
 // - HoldTime
 // - IdleHoldTime
 // - InterfaceName
@@ -371,14 +433,22 @@ type BgpImportedRouteIpv4 struct {
 type BgpPeer struct {
 	// Addr is the address of the host to peer with.
 	Addr string `json:"addr,omitempty" yaml:"addr,omitempty"`
+	// AllowedExport is define export policy for a peer.
+	AllowedExport ImportExportPolicy `json:"allowed_export,omitempty" yaml:"allowed_export,omitempty"`
+	// AllowedImport is define import policy for a peer.
+	AllowedImport ImportExportPolicy `json:"allowed_import,omitempty" yaml:"allowed_import,omitempty"`
 	// BgpAnnounceSet is the set of announcements advertised by the peer.
 	BgpAnnounceSet NameOrId `json:"bgp_announce_set,omitempty" yaml:"bgp_announce_set,omitempty"`
 	// BgpConfig is the global BGP configuration used for establishing a session with this peer.
 	BgpConfig NameOrId `json:"bgp_config,omitempty" yaml:"bgp_config,omitempty"`
+	// Communities is include the provided communities in updates sent to the peer.
+	Communities []string `json:"communities,omitempty" yaml:"communities,omitempty"`
 	// ConnectRetry is how long to to wait between TCP connection retries (seconds).
 	ConnectRetry int `json:"connect_retry,omitempty" yaml:"connect_retry,omitempty"`
 	// DelayOpen is how long to delay sending an open request after establishing a TCP session (seconds).
 	DelayOpen int `json:"delay_open,omitempty" yaml:"delay_open,omitempty"`
+	// EnforceFirstAs is enforce that the first AS in paths received from this peer is the peer's AS.
+	EnforceFirstAs *bool `json:"enforce_first_as,omitempty" yaml:"enforce_first_as,omitempty"`
 	// HoldTime is how long to hold peer connections between keppalives (seconds).
 	HoldTime int `json:"hold_time,omitempty" yaml:"hold_time,omitempty"`
 	// IdleHoldTime is how long to hold a peer in idle before attempting a new session (seconds).
@@ -387,6 +457,18 @@ type BgpPeer struct {
 	InterfaceName string `json:"interface_name,omitempty" yaml:"interface_name,omitempty"`
 	// Keepalive is how often to send keepalive requests (seconds).
 	Keepalive int `json:"keepalive,omitempty" yaml:"keepalive,omitempty"`
+	// LocalPref is apply a local preference to routes received from this peer.
+	LocalPref int `json:"local_pref,omitempty" yaml:"local_pref,omitempty"`
+	// Md5AuthKey is use the given key for TCP-MD5 authentication with the peer.
+	Md5AuthKey string `json:"md5_auth_key,omitempty" yaml:"md5_auth_key,omitempty"`
+	// MinTtl is require messages from a peer have a minimum IP time to live field.
+	MinTtl int `json:"min_ttl,omitempty" yaml:"min_ttl,omitempty"`
+	// MultiExitDiscriminator is apply the provided multi-exit discriminator (MED) updates sent to the peer.
+	MultiExitDiscriminator int `json:"multi_exit_discriminator,omitempty" yaml:"multi_exit_discriminator,omitempty"`
+	// RemoteAsn is require that a peer has a specified ASN.
+	RemoteAsn int `json:"remote_asn,omitempty" yaml:"remote_asn,omitempty"`
+	// VlanId is associate a VLAN ID with a peer.
+	VlanId int `json:"vlan_id,omitempty" yaml:"vlan_id,omitempty"`
 }
 
 // BgpPeerConfig is the type definition for a BgpPeerConfig.
@@ -2569,6 +2651,35 @@ type ImportBlocksBulkWrite struct {
 	Offset            int    `json:"offset,omitempty" yaml:"offset,omitempty"`
 }
 
+// ImportExportPolicyType is the type definition for a ImportExportPolicyType.
+type ImportExportPolicyType string
+
+// ImportExportPolicyNoFiltering is do not perform any filtering.
+//
+// Required fields:
+// - Type
+type ImportExportPolicyNoFiltering struct {
+	Type ImportExportPolicyType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// ImportExportPolicyAllow is the type definition for a ImportExportPolicyAllow.
+//
+// Required fields:
+// - Type
+// - Value
+type ImportExportPolicyAllow struct {
+	Type  ImportExportPolicyType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value []IpNet                `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// ImportExportPolicy is define policy relating to the import and export of prefixes from a BGP peer.
+type ImportExportPolicy struct {
+	// Type is the type definition for a Type.
+	Type ImportExportPolicyType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is the type definition for a Value.
+	Value []IpNet `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
 // Instance is view of an Instance
 //
 // Required fields:
@@ -3947,6 +4058,14 @@ type Sled struct {
 	UsablePhysicalRam ByteCount `json:"usable_physical_ram,omitempty" yaml:"usable_physical_ram,omitempty"`
 }
 
+// SledId is the unique ID of a sled.
+//
+// Required fields:
+// - Id
+type SledId struct {
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+}
+
 // SledInstance is an operator's view of an instance running on a given sled
 //
 // Required fields:
@@ -4204,7 +4323,7 @@ type Switch struct {
 // - Switch
 type SwitchBgpHistory struct {
 	// History is message history indexed by peer address.
-	History string `json:"history,omitempty" yaml:"history,omitempty"`
+	History BgpMessageHistory `json:"history,omitempty" yaml:"history,omitempty"`
 	// Switch is switch this message history is associated with.
 	Switch SwitchLocation `json:"switch,omitempty" yaml:"switch,omitempty"`
 }
@@ -4282,6 +4401,9 @@ type SwitchInterfaceKind struct {
 
 // SwitchInterfaceKind2 is primary interfaces are associated with physical links. There is exactly one primary interface per physical link.
 type SwitchInterfaceKind2 string
+
+// SwitchLinkState is the type definition for a SwitchLinkState.
+type SwitchLinkState string
 
 // SwitchLocation is switch in upper slot
 type SwitchLocation string
@@ -6154,6 +6276,18 @@ type NetworkingSwitchPortApplySettingsParams struct {
 	Body           *SwitchPortApplySettings `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+// NetworkingSwitchPortStatusParams is the request parameters for NetworkingSwitchPortStatus
+//
+// Required fields:
+// - Port
+// - RackId
+// - SwitchLocation
+type NetworkingSwitchPortStatusParams struct {
+	Port           Name   `json:"port,omitempty" yaml:"port,omitempty"`
+	RackId         string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
+	SwitchLocation Name   `json:"switch_location,omitempty" yaml:"switch_location,omitempty"`
+}
+
 // SwitchListParams is the request parameters for SwitchList
 type SwitchListParams struct {
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -6424,6 +6558,14 @@ type NetworkingAddressLotBlockListParams struct {
 	Limit      int        `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken  string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy     IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// NetworkingAllowListUpdateParams is the request parameters for NetworkingAllowListUpdate
+//
+// Required fields:
+// - Body
+type NetworkingAllowListUpdateParams struct {
+	Body *AllowListUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // NetworkingBfdDisableParams is the request parameters for NetworkingBfdDisable
@@ -7824,6 +7966,18 @@ func (p *NetworkingSwitchPortApplySettingsParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for NetworkingSwitchPortStatusParams are set
+func (p *NetworkingSwitchPortStatusParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Port), "Port")
+	v.HasRequiredStr(string(p.RackId), "RackId")
+	v.HasRequiredStr(string(p.SwitchLocation), "SwitchLocation")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for SwitchListParams are set
 func (p *SwitchListParams) Validate() error {
 	v := new(Validator)
@@ -8116,6 +8270,16 @@ func (p *NetworkingAddressLotDeleteParams) Validate() error {
 func (p *NetworkingAddressLotBlockListParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.AddressLot), "AddressLot")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingAllowListUpdateParams are set
+func (p *NetworkingAllowListUpdateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -8645,6 +8809,12 @@ const AddressLotKindInfra AddressLotKind = "infra"
 // AddressLotKindPool represents the AddressLotKind `"pool"`.
 const AddressLotKindPool AddressLotKind = "pool"
 
+// AllowedSourceIpsAllowAny represents the AllowedSourceIpsAllow `"any"`.
+const AllowedSourceIpsAllowAny AllowedSourceIpsAllow = "any"
+
+// AllowedSourceIpsAllowList represents the AllowedSourceIpsAllow `"list"`.
+const AllowedSourceIpsAllowList AllowedSourceIpsAllow = "list"
+
 // BfdModeSingleHop represents the BfdMode `"single_hop"`.
 const BfdModeSingleHop BfdMode = "single_hop"
 
@@ -9053,6 +9223,12 @@ const ImageSourceTypeSnapshot ImageSourceType = "snapshot"
 // ImageSourceTypeYouCanBootAnythingAsLongAsItsAlpine represents the ImageSourceType `"you_can_boot_anything_as_long_as_its_alpine"`.
 const ImageSourceTypeYouCanBootAnythingAsLongAsItsAlpine ImageSourceType = "you_can_boot_anything_as_long_as_its_alpine"
 
+// ImportExportPolicyTypeNoFiltering represents the ImportExportPolicyType `"no_filtering"`.
+const ImportExportPolicyTypeNoFiltering ImportExportPolicyType = "no_filtering"
+
+// ImportExportPolicyTypeAllow represents the ImportExportPolicyType `"allow"`.
+const ImportExportPolicyTypeAllow ImportExportPolicyType = "allow"
+
 // InstanceDiskAttachmentTypeCreate represents the InstanceDiskAttachmentType `"create"`.
 const InstanceDiskAttachmentTypeCreate InstanceDiskAttachmentType = "create"
 
@@ -9395,6 +9571,12 @@ var AddressLotKinds = []AddressLotKind{
 	AddressLotKindPool,
 }
 
+// AllowedSourceIpsAllows is the collection of all AllowedSourceIpsAllow values.
+var AllowedSourceIpsAllows = []AllowedSourceIpsAllow{
+	AllowedSourceIpsAllowAny,
+	AllowedSourceIpsAllowList,
+}
+
 // BfdModes is the collection of all BfdMode values.
 var BfdModes = []BfdMode{
 	BfdModeMultiHop,
@@ -9649,6 +9831,12 @@ var IdpMetadataSourceTypes = []IdpMetadataSourceType{
 var ImageSourceTypes = []ImageSourceType{
 	ImageSourceTypeSnapshot,
 	ImageSourceTypeYouCanBootAnythingAsLongAsItsAlpine,
+}
+
+// ImportExportPolicyTypes is the collection of all ImportExportPolicyType values.
+var ImportExportPolicyTypes = []ImportExportPolicyType{
+	ImportExportPolicyTypeAllow,
+	ImportExportPolicyTypeNoFiltering,
 }
 
 // InstanceDiskAttachmentTypes is the collection of all InstanceDiskAttachmentType values.
