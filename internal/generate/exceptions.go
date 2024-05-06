@@ -12,3 +12,10 @@ func omitemptyExceptions() []string {
 		"[]NameOrId",
 	}
 }
+
+func emptyTypes() []string {
+	return []string{
+		"BgpMessageHistory",
+		"SwitchLinkState",
+	}
+}

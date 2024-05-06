@@ -2933,7 +2933,8 @@ func (c *Client) CurrentUserSshKeyDelete(ctx context.Context, params CurrentUser
 	return nil
 }
 
-// SiloMetric: Access metrics data
+// SiloMetric: View metrics
+// View CPU, memory, or storage utilization metrics at the silo or project level.
 //
 // To iterate over all pages, use the `SiloMetricAllPages` method, instead.
 func (c *Client) SiloMetric(ctx context.Context, params SiloMetricParams) (*MeasurementResultsPage, error) {
@@ -2988,7 +2989,8 @@ func (c *Client) SiloMetric(ctx context.Context, params SiloMetricParams) (*Meas
 	return &body, nil
 }
 
-// SiloMetricAllPages: Access metrics data
+// SiloMetricAllPages: View metrics
+// View CPU, memory, or storage utilization metrics at the silo or project level.
 //
 // This method is a wrapper around the `SiloMetric` method.
 // This method returns all the pages at once.
@@ -4314,14 +4316,14 @@ func (c *Client) SledListAllPages(ctx context.Context, params SledListParams) ([
 }
 
 // SledAdd: Add sled to initialized rack
-func (c *Client) SledAdd(ctx context.Context, params SledAddParams) error {
+func (c *Client) SledAdd(ctx context.Context, params SledAddParams) (*SledId, error) {
 	if err := params.Validate(); err != nil {
-		return err
+		return nil, err
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return fmt.Errorf("encoding json body request failed: %v", err)
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
 	// Create the request
@@ -4334,22 +4336,33 @@ func (c *Client) SledAdd(ctx context.Context, params SledAddParams) error {
 		map[string]string{},
 	)
 	if err != nil {
-		return fmt.Errorf("error building request: %v", err)
+		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
 	resp, err := c.client.Do(req)
 	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
+		return nil, fmt.Errorf("error sending request: %v", err)
 	}
 	defer resp.Body.Close()
 
 	// Create and return an HTTPError when an error response code is received.
 	if err := NewHTTPError(resp); err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SledId
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
 }
 
 // SledListUninitialized: List uninitialized sleds
@@ -4838,6 +4851,55 @@ func (c *Client) NetworkingSwitchPortClearSettings(ctx context.Context, params N
 	}
 
 	return nil
+}
+
+// NetworkingSwitchPortStatus: Get switch port status
+func (c *Client) NetworkingSwitchPortStatus(ctx context.Context, params NetworkingSwitchPortStatusParams) (*SwitchLinkState, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/hardware/switch-port/{{.port}}/status"),
+		map[string]string{
+			"port": string(params.Port),
+		},
+		map[string]string{
+			"rack_id":         params.RackId,
+			"switch_location": string(params.SwitchLocation),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SwitchLinkState
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
 }
 
 // SwitchList: List switches
@@ -6181,7 +6243,8 @@ func (c *Client) IpPoolUtilizationView(ctx context.Context, params IpPoolUtiliza
 	return &body, nil
 }
 
-// SystemMetric: Access metrics data
+// SystemMetric: View metrics
+// View CPU, memory, or storage utilization metrics at the fleet or silo level.
 //
 // To iterate over all pages, use the `SystemMetricAllPages` method, instead.
 func (c *Client) SystemMetric(ctx context.Context, params SystemMetricParams) (*MeasurementResultsPage, error) {
@@ -6236,7 +6299,8 @@ func (c *Client) SystemMetric(ctx context.Context, params SystemMetricParams) (*
 	return &body, nil
 }
 
-// SystemMetricAllPages: Access metrics data
+// SystemMetricAllPages: View metrics
+// View CPU, memory, or storage utilization metrics at the fleet or silo level.
 //
 // This method is a wrapper around the `SystemMetric` method.
 // This method returns all the pages at once.
@@ -6499,6 +6563,97 @@ func (c *Client) NetworkingAddressLotBlockListAllPages(ctx context.Context, para
 	}
 
 	return allPages, nil
+}
+
+// NetworkingAllowListView: Get user-facing services IP allowlist
+func (c *Client) NetworkingAllowListView(ctx context.Context) (*AllowList, error) {
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/networking/allow-list"),
+		map[string]string{},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body AllowList
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// NetworkingAllowListUpdate: Update user-facing services IP allowlist
+func (c *Client) NetworkingAllowListUpdate(ctx context.Context, params NetworkingAllowListUpdateParams) (*AllowList, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"PUT",
+		resolveRelative(c.host, "/v1/system/networking/allow-list"),
+		map[string]string{},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body AllowList
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
 }
 
 // NetworkingBfdDisable: Disable a BFD session
@@ -8563,7 +8718,8 @@ func (c *Client) SiloUtilizationView(ctx context.Context, params SiloUtilization
 	return &body, nil
 }
 
-// TimeseriesQuery: Run a timeseries query, written OxQL.
+// TimeseriesQuery: Run timeseries query
+// Queries are written in OxQL.
 func (c *Client) TimeseriesQuery(ctx context.Context, params TimeseriesQueryParams) (*[]Table, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -8613,7 +8769,7 @@ func (c *Client) TimeseriesQuery(ctx context.Context, params TimeseriesQueryPara
 	return &body, nil
 }
 
-// TimeseriesSchemaList: List available timeseries schema.
+// TimeseriesSchemaList: List timeseries schemas
 //
 // To iterate over all pages, use the `TimeseriesSchemaListAllPages` method, instead.
 func (c *Client) TimeseriesSchemaList(ctx context.Context, params TimeseriesSchemaListParams) (*TimeseriesSchemaResultsPage, error) {
@@ -8662,7 +8818,7 @@ func (c *Client) TimeseriesSchemaList(ctx context.Context, params TimeseriesSche
 	return &body, nil
 }
 
-// TimeseriesSchemaListAllPages: List available timeseries schema.
+// TimeseriesSchemaListAllPages: List timeseries schemas
 //
 // This method is a wrapper around the `TimeseriesSchemaList` method.
 // This method returns all the pages at once.

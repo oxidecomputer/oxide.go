@@ -7,8 +7,8 @@ title = ""
 description = ""
 
 [[features]]
-title = ""
-description = ""
+title = "New APIs"
+description = "Several new endpoints in [#XXX](https://github.com/oxidecomputer/oxide.go/pull/XXX)\n  - NetworkingAllowListView: Get user-facing services IP allowlist \n  - NetworkingAllowListUpdate: Update user-facing services IP allowlist \n  - NetworkingSwitchPortStatus: Get switch port status"
 
 [[enhancements]]
 title = ""
