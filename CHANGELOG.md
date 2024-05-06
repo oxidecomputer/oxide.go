@@ -1,3 +1,18 @@
+# v0.1.0-beta5 (2024/May/6)
+
+### New features
+
+- **New APIs:** Several new endpoints in [#208](https://github.com/oxidecomputer/oxide.go/pull/208)
+  - NetworkingAllowListView: Get user-facing services IP allowlist 
+  - NetworkingAllowListUpdate: Update user-facing services IP allowlist 
+  - NetworkingSwitchPortStatus: Get switch port status
+
+### List of commits
+
+- [75ad608](https://github.com/oxidecomputer/oxide.go/commit/75ad608) Update to omicron f2602b5 (#208)
+- [44a6751](https://github.com/oxidecomputer/oxide.go/commit/44a6751) Update kin-openapi to 0.124.0 (#206)
+- [b4e284c](https://github.com/oxidecomputer/oxide.go/commit/b4e284c) Version bump (#204)
+
 # v0.1.0-beta4 (2024/Apr/3)
 
 ### New features
