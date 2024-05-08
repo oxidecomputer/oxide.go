@@ -93,7 +93,7 @@
 
 ### Bug fixes
 
-- **Fix delete VPC firewall rules:** By removing `omitempty` when parsing the rules, we are able to pass an empty array to delete all firewall rules. [#158](https://github.com/oxidecomputer/terraform-provider-oxide/pull/158)
+- **Fix delete VPC firewall rules:** By removing `omitempty` when parsing the rules, we are able to pass an empty array to delete all firewall rules. [#158](https://github.com/oxidecomputer/oxide.go/pull/158)
 
 ### List of commits
 

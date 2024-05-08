@@ -1,6 +1,6 @@
 [[bugs]]
 title = "Fix delete VPC firewall rules"
-description = "By removing `omitempty` when parsing the rules, we are able to pass an empty array to delete all firewall rules. [#158](https://github.com/oxidecomputer/terraform-provider-oxide/pull/158)"
+description = "By removing `omitempty` when parsing the rules, we are able to pass an empty array to delete all firewall rules. [#158](https://github.com/oxidecomputer/oxide.go/pull/158)"
 
 [[breaking]]
 title = "ListAll methods"
