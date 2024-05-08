@@ -420,7 +420,6 @@ type BgpMessageHistory string
 // - Addr
 // - AllowedExport
 // - AllowedImport
-// - BgpAnnounceSet
 // - BgpConfig
 // - Communities
 // - ConnectRetry
@@ -437,8 +436,6 @@ type BgpPeer struct {
 	AllowedExport ImportExportPolicy `json:"allowed_export,omitempty" yaml:"allowed_export,omitempty"`
 	// AllowedImport is define import policy for a peer.
 	AllowedImport ImportExportPolicy `json:"allowed_import,omitempty" yaml:"allowed_import,omitempty"`
-	// BgpAnnounceSet is the set of announcements advertised by the peer.
-	BgpAnnounceSet NameOrId `json:"bgp_announce_set,omitempty" yaml:"bgp_announce_set,omitempty"`
 	// BgpConfig is the global BGP configuration used for establishing a session with this peer.
 	BgpConfig NameOrId `json:"bgp_config,omitempty" yaml:"bgp_config,omitempty"`
 	// Communities is include the provided communities in updates sent to the peer.
@@ -449,7 +446,7 @@ type BgpPeer struct {
 	DelayOpen int `json:"delay_open,omitempty" yaml:"delay_open,omitempty"`
 	// EnforceFirstAs is enforce that the first AS in paths received from this peer is the peer's AS.
 	EnforceFirstAs *bool `json:"enforce_first_as,omitempty" yaml:"enforce_first_as,omitempty"`
-	// HoldTime is how long to hold peer connections between keppalives (seconds).
+	// HoldTime is how long to hold peer connections between keepalives (seconds).
 	HoldTime int `json:"hold_time,omitempty" yaml:"hold_time,omitempty"`
 	// IdleHoldTime is how long to hold a peer in idle before attempting a new session (seconds).
 	IdleHoldTime int `json:"idle_hold_time,omitempty" yaml:"idle_hold_time,omitempty"`
@@ -479,7 +476,7 @@ type BgpPeerConfig struct {
 	Peers []BgpPeer `json:"peers,omitempty" yaml:"peers,omitempty"`
 }
 
-// BgpPeerState is initial state. Refuse all incomming BGP connections. No resources allocated to peer.
+// BgpPeerState is initial state. Refuse all incoming BGP connections. No resources allocated to peer.
 type BgpPeerState string
 
 // BgpPeerStatus is the current status of a BGP peer.
@@ -3179,7 +3176,7 @@ type LinkConfigCreate struct {
 	Speed LinkSpeed `json:"speed,omitempty" yaml:"speed,omitempty"`
 }
 
-// LinkFec is firecode foward error correction.
+// LinkFec is firecode forward error correction.
 type LinkFec string
 
 // LinkSpeed is zero gigabits per second.
@@ -4455,24 +4452,6 @@ type SwitchPortApplySettings struct {
 	PortSettings NameOrId `json:"port_settings,omitempty" yaml:"port_settings,omitempty"`
 }
 
-// SwitchPortBgpPeerConfig is a BGP peer configuration for a port settings object.
-//
-// Required fields:
-// - Addr
-// - BgpConfigId
-// - InterfaceName
-// - PortSettingsId
-type SwitchPortBgpPeerConfig struct {
-	// Addr is the address of the peer.
-	Addr string `json:"addr,omitempty" yaml:"addr,omitempty"`
-	// BgpConfigId is the id of the global BGP configuration referenced by this peer configuration.
-	BgpConfigId string `json:"bgp_config_id,omitempty" yaml:"bgp_config_id,omitempty"`
-	// InterfaceName is the interface name used to establish a peer session.
-	InterfaceName string `json:"interface_name,omitempty" yaml:"interface_name,omitempty"`
-	// PortSettingsId is the port settings object this BGP configuration belongs to.
-	PortSettingsId string `json:"port_settings_id,omitempty" yaml:"port_settings_id,omitempty"`
-}
-
 // SwitchPortConfig is a physical port configuration for a port settings object.
 //
 // Required fields:
@@ -4503,11 +4482,18 @@ type SwitchPortGeometry2 string
 // SwitchPortLinkConfig is a link configuration for a port settings object.
 //
 // Required fields:
+// - Autoneg
+// - Fec
 // - LinkName
 // - LldpServiceConfigId
 // - Mtu
 // - PortSettingsId
+// - Speed
 type SwitchPortLinkConfig struct {
+	// Autoneg is whether or not the link has autonegotiation enabled.
+	Autoneg *bool `json:"autoneg,omitempty" yaml:"autoneg,omitempty"`
+	// Fec is the forward error correction mode of the link.
+	Fec LinkFec `json:"fec,omitempty" yaml:"fec,omitempty"`
 	// LinkName is the name of this link.
 	LinkName string `json:"link_name,omitempty" yaml:"link_name,omitempty"`
 	// LldpServiceConfigId is the link-layer discovery protocol service configuration id for this link.
@@ -4516,6 +4502,8 @@ type SwitchPortLinkConfig struct {
 	Mtu int `json:"mtu,omitempty" yaml:"mtu,omitempty"`
 	// PortSettingsId is the port settings this link configuration belongs to.
 	PortSettingsId string `json:"port_settings_id,omitempty" yaml:"port_settings_id,omitempty"`
+	// Speed is the configured speed of the link.
+	Speed LinkSpeed `json:"speed,omitempty" yaml:"speed,omitempty"`
 }
 
 // SwitchPortResultsPage is a single page of results
@@ -4641,7 +4629,7 @@ type SwitchPortSettingsView struct {
 	// Addresses is layer 3 IP address settings.
 	Addresses []SwitchPortAddressConfig `json:"addresses,omitempty" yaml:"addresses,omitempty"`
 	// BgpPeers is bGP peer settings.
-	BgpPeers []SwitchPortBgpPeerConfig `json:"bgp_peers,omitempty" yaml:"bgp_peers,omitempty"`
+	BgpPeers []BgpPeer `json:"bgp_peers,omitempty" yaml:"bgp_peers,omitempty"`
 	// Groups is switch port settings included from other switch port settings groups.
 	Groups []SwitchPortSettingsGroups `json:"groups,omitempty" yaml:"groups,omitempty"`
 	// Interfaces is layer 3 interface settings.
