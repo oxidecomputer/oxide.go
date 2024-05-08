@@ -1,3 +1,14 @@
+# v0.1.0-beta6 (2024/May/9)
+
+### Breaking changes
+
+- **Types:** Changes to BGP related types. [#212](https://github.com/oxidecomputer/oxide.go/pull/212)
+
+### List of commits
+
+- [a4018ce](https://github.com/oxidecomputer/oxide.go/commit/a4018ce) Update to omicron c1f9e8f (#212)
+- [bb16ad2](https://github.com/oxidecomputer/oxide.go/commit/bb16ad2) Version bump (#210)
+
 # v0.1.0-beta5 (2024/May/6)
 
 ### New features
