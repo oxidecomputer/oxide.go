@@ -1,15 +1,3 @@
-[[bugs]]
-title = ""
-description = ""
-
 [[breaking]]
-title = ""
-description = ""
-
-[[features]]
-title = ""
-description = ""
-
-[[enhancements]]
-title = ""
-description = ""
+title = "Types"
+description = "Changes to BGP related types. [#XXX](https://github.com/oxidecomputer/oxide.go/pull/XXX)"
