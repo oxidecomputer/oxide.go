@@ -1,8 +1,8 @@
-[[breaking]]
-title = ""
-description = ""
-
 [[features]]
+title = "New APIs"
+description = "Several new endpoints in [#216](https://github.com/oxidecomputer/oxide.go/pull/216)\n  - VpcRouterRouteList: List routes \n  - VpcRouterRouteListAllPages: List routes \n  - VpcRouterRouteCreate: Create route \n - VpcRouterRouteView: Fetch route \n - VpcRouterRouteUpdate: Update route \n - VpcRouterRouteDelete: Delete route \n - VpcRouterList: List routers \n - VpcRouterListAllPages: List routers \n - VpcRouterCreate: Create VPC router \n - VpcRouterView: Fetch router \n - VpcRouterUpdate: Update router \n - VpcRouterDelete: Delete router"
+
+[[breaking]]
 title = ""
 description = ""
 

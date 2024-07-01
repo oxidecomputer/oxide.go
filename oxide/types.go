@@ -22,6 +22,8 @@ type Address struct {
 	Address IpNet `json:"address,omitempty" yaml:"address,omitempty"`
 	// AddressLot is the address lot this address is drawn from.
 	AddressLot NameOrId `json:"address_lot,omitempty" yaml:"address_lot,omitempty"`
+	// VlanId is optional VLAN ID for this address
+	VlanId int `json:"vlan_id,omitempty" yaml:"vlan_id,omitempty"`
 }
 
 // AddressConfig is a set of addresses associated with a port configuration.
@@ -108,7 +110,7 @@ type AddressLotCreate struct {
 	Description string                  `json:"description,omitempty" yaml:"description,omitempty"`
 	// Kind is the kind of address lot to create.
 	Kind AddressLotKind `json:"kind,omitempty" yaml:"kind,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
@@ -202,6 +204,9 @@ type AllowedSourceIps struct {
 	Ips []IpNet `json:"ips,omitempty" yaml:"ips,omitempty"`
 }
 
+// AuthzScope is timeseries data is limited to fleet readers.
+type AuthzScope string
+
 // Baseboard is properties that uniquely identify an Oxide hardware component
 //
 // Required fields:
@@ -272,7 +277,7 @@ type BfdStatus struct {
 	Peer       string   `json:"peer,omitempty" yaml:"peer,omitempty"`
 	RequiredRx int      `json:"required_rx,omitempty" yaml:"required_rx,omitempty"`
 	State      BfdState `json:"state,omitempty" yaml:"state,omitempty"`
-	// Switch is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	// Switch is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Switch Name `json:"switch,omitempty" yaml:"switch,omitempty"`
 }
 
@@ -307,7 +312,7 @@ type BgpAnnounceSetCreate struct {
 	// Announcement is the announcements in this set.
 	Announcement []BgpAnnouncementCreate `json:"announcement,omitempty" yaml:"announcement,omitempty"`
 	Description  string                  `json:"description,omitempty" yaml:"description,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
@@ -376,7 +381,7 @@ type BgpConfigCreate struct {
 	Asn              int      `json:"asn,omitempty" yaml:"asn,omitempty"`
 	BgpAnnounceSetId NameOrId `json:"bgp_announce_set_id,omitempty" yaml:"bgp_announce_set_id,omitempty"`
 	Description      string   `json:"description,omitempty" yaml:"description,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// Vrf is optional virtual routing and forwarding identifier for this BGP configuration.
 	Vrf Name `json:"vrf,omitempty" yaml:"vrf,omitempty"`
@@ -1102,6 +1107,7 @@ type ByteCount uint64
 // Certificate is view of a Certificate
 //
 // Required fields:
+// - Cert
 // - Description
 // - Id
 // - Name
@@ -1109,13 +1115,15 @@ type ByteCount uint64
 // - TimeCreated
 // - TimeModified
 type Certificate struct {
+	// Cert is pEM-formatted string containing public certificate chain
+	Cert string `json:"cert,omitempty" yaml:"cert,omitempty"`
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
-	// Service is the service intended to use this certificate.
+	// Service is the service using this certificate
 	Service ServiceUsingCertificate `json:"service,omitempty" yaml:"service,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
@@ -1137,7 +1145,7 @@ type CertificateCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Key is pEM-formatted string containing private key
 	Key string `json:"key,omitempty" yaml:"key,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// Service is the service using this certificate
 	Service ServiceUsingCertificate `json:"service,omitempty" yaml:"service,omitempty"`
@@ -1666,7 +1674,7 @@ type DiskCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// DiskSource is initial source for this disk
 	DiskSource DiskSource `json:"disk_source,omitempty" yaml:"disk_source,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// Size is total size of the Disk in bytes
 	Size ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
@@ -1864,24 +1872,46 @@ type DiskState struct {
 	Instance string `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
 
-// Distributiondouble is a distribution is a sequence of bins and counts in those bins.
+// Distributiondouble is a distribution is a sequence of bins and counts in those bins, and some statistical information tracked to compute the mean, standard deviation, and quantile estimates.
+//
+// Min, max, and the p-* quantiles are treated as optional due to the possibility of distribution operations, like subtraction.
 //
 // Required fields:
 // - Bins
 // - Counts
+// - SquaredMean
+// - SumOfSamples
 type Distributiondouble struct {
-	Bins   []string `json:"bins,omitempty" yaml:"bins,omitempty"`
-	Counts []string `json:"counts,omitempty" yaml:"counts,omitempty"`
+	Bins         []string `json:"bins,omitempty" yaml:"bins,omitempty"`
+	Counts       []string `json:"counts,omitempty" yaml:"counts,omitempty"`
+	Max          float64  `json:"max,omitempty" yaml:"max,omitempty"`
+	Min          float64  `json:"min,omitempty" yaml:"min,omitempty"`
+	P50          Quantile `json:"p50,omitempty" yaml:"p50,omitempty"`
+	P90          Quantile `json:"p90,omitempty" yaml:"p90,omitempty"`
+	P99          Quantile `json:"p99,omitempty" yaml:"p99,omitempty"`
+	SquaredMean  float64  `json:"squared_mean,omitempty" yaml:"squared_mean,omitempty"`
+	SumOfSamples float64  `json:"sum_of_samples,omitempty" yaml:"sum_of_samples,omitempty"`
 }
 
-// Distributionint64 is a distribution is a sequence of bins and counts in those bins.
+// Distributionint64 is a distribution is a sequence of bins and counts in those bins, and some statistical information tracked to compute the mean, standard deviation, and quantile estimates.
+//
+// Min, max, and the p-* quantiles are treated as optional due to the possibility of distribution operations, like subtraction.
 //
 // Required fields:
 // - Bins
 // - Counts
+// - SquaredMean
+// - SumOfSamples
 type Distributionint64 struct {
-	Bins   []string `json:"bins,omitempty" yaml:"bins,omitempty"`
-	Counts []string `json:"counts,omitempty" yaml:"counts,omitempty"`
+	Bins         []string `json:"bins,omitempty" yaml:"bins,omitempty"`
+	Counts       []string `json:"counts,omitempty" yaml:"counts,omitempty"`
+	Max          int      `json:"max,omitempty" yaml:"max,omitempty"`
+	Min          int      `json:"min,omitempty" yaml:"min,omitempty"`
+	P50          Quantile `json:"p50,omitempty" yaml:"p50,omitempty"`
+	P90          Quantile `json:"p90,omitempty" yaml:"p90,omitempty"`
+	P99          Quantile `json:"p99,omitempty" yaml:"p99,omitempty"`
+	SquaredMean  float64  `json:"squared_mean,omitempty" yaml:"squared_mean,omitempty"`
+	SumOfSamples int      `json:"sum_of_samples,omitempty" yaml:"sum_of_samples,omitempty"`
 }
 
 // EphemeralIpCreate is parameters for creating an ephemeral IP address for an instance.
@@ -1920,6 +1950,7 @@ type ExternalIpEphemeral struct {
 // - Description
 // - Id
 // - Ip
+// - IpPoolId
 // - Kind
 // - Name
 // - ProjectId
@@ -1933,8 +1964,10 @@ type ExternalIpFloating struct {
 	// InstanceId is the ID of the instance that this Floating IP is attached to, if it is presently in use.
 	InstanceId string `json:"instance_id,omitempty" yaml:"instance_id,omitempty"`
 	// Ip is the IP address held by this resource.
-	Ip   string         `json:"ip,omitempty" yaml:"ip,omitempty"`
-	Kind ExternalIpKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
+	// IpPoolId is the ID of the IP pool this resource belongs to.
+	IpPoolId string         `json:"ip_pool_id,omitempty" yaml:"ip_pool_id,omitempty"`
+	Kind     ExternalIpKind `json:"kind,omitempty" yaml:"kind,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// ProjectId is the project this resource exists within.
@@ -1957,6 +1990,8 @@ type ExternalIp struct {
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 	// InstanceId is the ID of the instance that this Floating IP is attached to, if it is presently in use.
 	InstanceId string `json:"instance_id,omitempty" yaml:"instance_id,omitempty"`
+	// IpPoolId is the ID of the IP pool this resource belongs to.
+	IpPoolId string `json:"ip_pool_id,omitempty" yaml:"ip_pool_id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// ProjectId is the project this resource exists within.
@@ -2015,10 +2050,12 @@ type ExternalIpResultsPage struct {
 // FieldSchema is the name and type information for a field of a timeseries schema.
 //
 // Required fields:
+// - Description
 // - FieldType
 // - Name
 // - Source
 type FieldSchema struct {
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// FieldType is the `FieldType` identifies the data type of a target or metric field.
 	FieldType FieldType `json:"field_type,omitempty" yaml:"field_type,omitempty"`
 	Name      string    `json:"name,omitempty" yaml:"name,omitempty"`
@@ -2204,6 +2241,7 @@ type FleetRoleRoleAssignment struct {
 // - Description
 // - Id
 // - Ip
+// - IpPoolId
 // - Name
 // - ProjectId
 // - TimeCreated
@@ -2217,6 +2255,8 @@ type FloatingIp struct {
 	InstanceId string `json:"instance_id,omitempty" yaml:"instance_id,omitempty"`
 	// Ip is the IP address held by this resource.
 	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
+	// IpPoolId is the ID of the IP pool this resource belongs to.
+	IpPoolId string `json:"ip_pool_id,omitempty" yaml:"ip_pool_id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// ProjectId is the project this resource exists within.
@@ -2248,7 +2288,7 @@ type FloatingIpCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Ip is an IP address to reserve for use as a floating IP. This field is optional: when not set, an address will be automatically chosen from `pool`. If set, then the IP must be available in the resolved `pool`.
 	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// Pool is the parent IP pool that a floating IP is pulled from. If unset, the default pool is selected.
 	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
@@ -2307,12 +2347,38 @@ type GroupResultsPage struct {
 //
 // Required fields:
 // - Bins
+// - Max
+// - Min
 // - NSamples
+// - P50
+// - P90
+// - P99
+// - SquaredMean
 // - StartTime
+// - SumOfSamples
 type Histogramdouble struct {
-	Bins      []Bindouble `json:"bins,omitempty" yaml:"bins,omitempty"`
-	NSamples  int         `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
-	StartTime *time.Time  `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+	// Bins is the bins of the histogram.
+	Bins []Bindouble `json:"bins,omitempty" yaml:"bins,omitempty"`
+	// Max is the maximum value of all samples in the histogram.
+	Max float64 `json:"max,omitempty" yaml:"max,omitempty"`
+	// Min is the minimum value of all samples in the histogram.
+	Min float64 `json:"min,omitempty" yaml:"min,omitempty"`
+	// NSamples is the total number of samples in the histogram.
+	NSamples int `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
+	// P50 is p50 Quantile
+	P50 Quantile `json:"p50,omitempty" yaml:"p50,omitempty"`
+	// P90 is p95 Quantile
+	P90 Quantile `json:"p90,omitempty" yaml:"p90,omitempty"`
+	// P99 is p99 Quantile
+	P99 Quantile `json:"p99,omitempty" yaml:"p99,omitempty"`
+	// SquaredMean is m2 for Welford's algorithm for variance calculation.
+	//
+	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for more information on the algorithm.
+	SquaredMean float64 `json:"squared_mean,omitempty" yaml:"squared_mean,omitempty"`
+	// StartTime is the start time of the histogram.
+	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+	// SumOfSamples is the sum of all samples in the histogram.
+	SumOfSamples float64 `json:"sum_of_samples,omitempty" yaml:"sum_of_samples,omitempty"`
 }
 
 // Histogramfloat is histogram metric
@@ -2323,12 +2389,38 @@ type Histogramdouble struct {
 //
 // Required fields:
 // - Bins
+// - Max
+// - Min
 // - NSamples
+// - P50
+// - P90
+// - P99
+// - SquaredMean
 // - StartTime
+// - SumOfSamples
 type Histogramfloat struct {
-	Bins      []Binfloat `json:"bins,omitempty" yaml:"bins,omitempty"`
-	NSamples  int        `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
+	// Bins is the bins of the histogram.
+	Bins []Binfloat `json:"bins,omitempty" yaml:"bins,omitempty"`
+	// Max is the maximum value of all samples in the histogram.
+	Max float64 `json:"max,omitempty" yaml:"max,omitempty"`
+	// Min is the minimum value of all samples in the histogram.
+	Min float64 `json:"min,omitempty" yaml:"min,omitempty"`
+	// NSamples is the total number of samples in the histogram.
+	NSamples int `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
+	// P50 is p50 Quantile
+	P50 Quantile `json:"p50,omitempty" yaml:"p50,omitempty"`
+	// P90 is p95 Quantile
+	P90 Quantile `json:"p90,omitempty" yaml:"p90,omitempty"`
+	// P99 is p99 Quantile
+	P99 Quantile `json:"p99,omitempty" yaml:"p99,omitempty"`
+	// SquaredMean is m2 for Welford's algorithm for variance calculation.
+	//
+	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for more information on the algorithm.
+	SquaredMean float64 `json:"squared_mean,omitempty" yaml:"squared_mean,omitempty"`
+	// StartTime is the start time of the histogram.
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+	// SumOfSamples is the sum of all samples in the histogram.
+	SumOfSamples float64 `json:"sum_of_samples,omitempty" yaml:"sum_of_samples,omitempty"`
 }
 
 // Histogramint16 is histogram metric
@@ -2339,12 +2431,38 @@ type Histogramfloat struct {
 //
 // Required fields:
 // - Bins
+// - Max
+// - Min
 // - NSamples
+// - P50
+// - P90
+// - P99
+// - SquaredMean
 // - StartTime
+// - SumOfSamples
 type Histogramint16 struct {
-	Bins      []Binint16 `json:"bins,omitempty" yaml:"bins,omitempty"`
-	NSamples  int        `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
+	// Bins is the bins of the histogram.
+	Bins []Binint16 `json:"bins,omitempty" yaml:"bins,omitempty"`
+	// Max is the maximum value of all samples in the histogram.
+	Max int `json:"max,omitempty" yaml:"max,omitempty"`
+	// Min is the minimum value of all samples in the histogram.
+	Min int `json:"min,omitempty" yaml:"min,omitempty"`
+	// NSamples is the total number of samples in the histogram.
+	NSamples int `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
+	// P50 is p50 Quantile
+	P50 Quantile `json:"p50,omitempty" yaml:"p50,omitempty"`
+	// P90 is p95 Quantile
+	P90 Quantile `json:"p90,omitempty" yaml:"p90,omitempty"`
+	// P99 is p99 Quantile
+	P99 Quantile `json:"p99,omitempty" yaml:"p99,omitempty"`
+	// SquaredMean is m2 for Welford's algorithm for variance calculation.
+	//
+	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for more information on the algorithm.
+	SquaredMean float64 `json:"squared_mean,omitempty" yaml:"squared_mean,omitempty"`
+	// StartTime is the start time of the histogram.
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+	// SumOfSamples is the sum of all samples in the histogram.
+	SumOfSamples int `json:"sum_of_samples,omitempty" yaml:"sum_of_samples,omitempty"`
 }
 
 // Histogramint32 is histogram metric
@@ -2355,12 +2473,38 @@ type Histogramint16 struct {
 //
 // Required fields:
 // - Bins
+// - Max
+// - Min
 // - NSamples
+// - P50
+// - P90
+// - P99
+// - SquaredMean
 // - StartTime
+// - SumOfSamples
 type Histogramint32 struct {
-	Bins      []Binint32 `json:"bins,omitempty" yaml:"bins,omitempty"`
-	NSamples  int        `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
+	// Bins is the bins of the histogram.
+	Bins []Binint32 `json:"bins,omitempty" yaml:"bins,omitempty"`
+	// Max is the maximum value of all samples in the histogram.
+	Max int `json:"max,omitempty" yaml:"max,omitempty"`
+	// Min is the minimum value of all samples in the histogram.
+	Min int `json:"min,omitempty" yaml:"min,omitempty"`
+	// NSamples is the total number of samples in the histogram.
+	NSamples int `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
+	// P50 is p50 Quantile
+	P50 Quantile `json:"p50,omitempty" yaml:"p50,omitempty"`
+	// P90 is p95 Quantile
+	P90 Quantile `json:"p90,omitempty" yaml:"p90,omitempty"`
+	// P99 is p99 Quantile
+	P99 Quantile `json:"p99,omitempty" yaml:"p99,omitempty"`
+	// SquaredMean is m2 for Welford's algorithm for variance calculation.
+	//
+	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for more information on the algorithm.
+	SquaredMean float64 `json:"squared_mean,omitempty" yaml:"squared_mean,omitempty"`
+	// StartTime is the start time of the histogram.
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+	// SumOfSamples is the sum of all samples in the histogram.
+	SumOfSamples int `json:"sum_of_samples,omitempty" yaml:"sum_of_samples,omitempty"`
 }
 
 // Histogramint64 is histogram metric
@@ -2371,12 +2515,38 @@ type Histogramint32 struct {
 //
 // Required fields:
 // - Bins
+// - Max
+// - Min
 // - NSamples
+// - P50
+// - P90
+// - P99
+// - SquaredMean
 // - StartTime
+// - SumOfSamples
 type Histogramint64 struct {
-	Bins      []Binint64 `json:"bins,omitempty" yaml:"bins,omitempty"`
-	NSamples  int        `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
+	// Bins is the bins of the histogram.
+	Bins []Binint64 `json:"bins,omitempty" yaml:"bins,omitempty"`
+	// Max is the maximum value of all samples in the histogram.
+	Max int `json:"max,omitempty" yaml:"max,omitempty"`
+	// Min is the minimum value of all samples in the histogram.
+	Min int `json:"min,omitempty" yaml:"min,omitempty"`
+	// NSamples is the total number of samples in the histogram.
+	NSamples int `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
+	// P50 is p50 Quantile
+	P50 Quantile `json:"p50,omitempty" yaml:"p50,omitempty"`
+	// P90 is p95 Quantile
+	P90 Quantile `json:"p90,omitempty" yaml:"p90,omitempty"`
+	// P99 is p99 Quantile
+	P99 Quantile `json:"p99,omitempty" yaml:"p99,omitempty"`
+	// SquaredMean is m2 for Welford's algorithm for variance calculation.
+	//
+	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for more information on the algorithm.
+	SquaredMean float64 `json:"squared_mean,omitempty" yaml:"squared_mean,omitempty"`
+	// StartTime is the start time of the histogram.
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+	// SumOfSamples is the sum of all samples in the histogram.
+	SumOfSamples int `json:"sum_of_samples,omitempty" yaml:"sum_of_samples,omitempty"`
 }
 
 // Histogramint8 is histogram metric
@@ -2387,12 +2557,38 @@ type Histogramint64 struct {
 //
 // Required fields:
 // - Bins
+// - Max
+// - Min
 // - NSamples
+// - P50
+// - P90
+// - P99
+// - SquaredMean
 // - StartTime
+// - SumOfSamples
 type Histogramint8 struct {
-	Bins      []Binint8  `json:"bins,omitempty" yaml:"bins,omitempty"`
-	NSamples  int        `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
+	// Bins is the bins of the histogram.
+	Bins []Binint8 `json:"bins,omitempty" yaml:"bins,omitempty"`
+	// Max is the maximum value of all samples in the histogram.
+	Max int `json:"max,omitempty" yaml:"max,omitempty"`
+	// Min is the minimum value of all samples in the histogram.
+	Min int `json:"min,omitempty" yaml:"min,omitempty"`
+	// NSamples is the total number of samples in the histogram.
+	NSamples int `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
+	// P50 is p50 Quantile
+	P50 Quantile `json:"p50,omitempty" yaml:"p50,omitempty"`
+	// P90 is p95 Quantile
+	P90 Quantile `json:"p90,omitempty" yaml:"p90,omitempty"`
+	// P99 is p99 Quantile
+	P99 Quantile `json:"p99,omitempty" yaml:"p99,omitempty"`
+	// SquaredMean is m2 for Welford's algorithm for variance calculation.
+	//
+	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for more information on the algorithm.
+	SquaredMean float64 `json:"squared_mean,omitempty" yaml:"squared_mean,omitempty"`
+	// StartTime is the start time of the histogram.
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+	// SumOfSamples is the sum of all samples in the histogram.
+	SumOfSamples int `json:"sum_of_samples,omitempty" yaml:"sum_of_samples,omitempty"`
 }
 
 // Histogramuint16 is histogram metric
@@ -2403,12 +2599,38 @@ type Histogramint8 struct {
 //
 // Required fields:
 // - Bins
+// - Max
+// - Min
 // - NSamples
+// - P50
+// - P90
+// - P99
+// - SquaredMean
 // - StartTime
+// - SumOfSamples
 type Histogramuint16 struct {
-	Bins      []Binuint16 `json:"bins,omitempty" yaml:"bins,omitempty"`
-	NSamples  int         `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
-	StartTime *time.Time  `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+	// Bins is the bins of the histogram.
+	Bins []Binuint16 `json:"bins,omitempty" yaml:"bins,omitempty"`
+	// Max is the maximum value of all samples in the histogram.
+	Max int `json:"max,omitempty" yaml:"max,omitempty"`
+	// Min is the minimum value of all samples in the histogram.
+	Min int `json:"min,omitempty" yaml:"min,omitempty"`
+	// NSamples is the total number of samples in the histogram.
+	NSamples int `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
+	// P50 is p50 Quantile
+	P50 Quantile `json:"p50,omitempty" yaml:"p50,omitempty"`
+	// P90 is p95 Quantile
+	P90 Quantile `json:"p90,omitempty" yaml:"p90,omitempty"`
+	// P99 is p99 Quantile
+	P99 Quantile `json:"p99,omitempty" yaml:"p99,omitempty"`
+	// SquaredMean is m2 for Welford's algorithm for variance calculation.
+	//
+	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for more information on the algorithm.
+	SquaredMean float64 `json:"squared_mean,omitempty" yaml:"squared_mean,omitempty"`
+	// StartTime is the start time of the histogram.
+	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+	// SumOfSamples is the sum of all samples in the histogram.
+	SumOfSamples int `json:"sum_of_samples,omitempty" yaml:"sum_of_samples,omitempty"`
 }
 
 // Histogramuint32 is histogram metric
@@ -2419,12 +2641,38 @@ type Histogramuint16 struct {
 //
 // Required fields:
 // - Bins
+// - Max
+// - Min
 // - NSamples
+// - P50
+// - P90
+// - P99
+// - SquaredMean
 // - StartTime
+// - SumOfSamples
 type Histogramuint32 struct {
-	Bins      []Binuint32 `json:"bins,omitempty" yaml:"bins,omitempty"`
-	NSamples  int         `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
-	StartTime *time.Time  `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+	// Bins is the bins of the histogram.
+	Bins []Binuint32 `json:"bins,omitempty" yaml:"bins,omitempty"`
+	// Max is the maximum value of all samples in the histogram.
+	Max int `json:"max,omitempty" yaml:"max,omitempty"`
+	// Min is the minimum value of all samples in the histogram.
+	Min int `json:"min,omitempty" yaml:"min,omitempty"`
+	// NSamples is the total number of samples in the histogram.
+	NSamples int `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
+	// P50 is p50 Quantile
+	P50 Quantile `json:"p50,omitempty" yaml:"p50,omitempty"`
+	// P90 is p95 Quantile
+	P90 Quantile `json:"p90,omitempty" yaml:"p90,omitempty"`
+	// P99 is p99 Quantile
+	P99 Quantile `json:"p99,omitempty" yaml:"p99,omitempty"`
+	// SquaredMean is m2 for Welford's algorithm for variance calculation.
+	//
+	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for more information on the algorithm.
+	SquaredMean float64 `json:"squared_mean,omitempty" yaml:"squared_mean,omitempty"`
+	// StartTime is the start time of the histogram.
+	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+	// SumOfSamples is the sum of all samples in the histogram.
+	SumOfSamples int `json:"sum_of_samples,omitempty" yaml:"sum_of_samples,omitempty"`
 }
 
 // Histogramuint64 is histogram metric
@@ -2435,12 +2683,38 @@ type Histogramuint32 struct {
 //
 // Required fields:
 // - Bins
+// - Max
+// - Min
 // - NSamples
+// - P50
+// - P90
+// - P99
+// - SquaredMean
 // - StartTime
+// - SumOfSamples
 type Histogramuint64 struct {
-	Bins      []Binuint64 `json:"bins,omitempty" yaml:"bins,omitempty"`
-	NSamples  int         `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
-	StartTime *time.Time  `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+	// Bins is the bins of the histogram.
+	Bins []Binuint64 `json:"bins,omitempty" yaml:"bins,omitempty"`
+	// Max is the maximum value of all samples in the histogram.
+	Max int `json:"max,omitempty" yaml:"max,omitempty"`
+	// Min is the minimum value of all samples in the histogram.
+	Min int `json:"min,omitempty" yaml:"min,omitempty"`
+	// NSamples is the total number of samples in the histogram.
+	NSamples int `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
+	// P50 is p50 Quantile
+	P50 Quantile `json:"p50,omitempty" yaml:"p50,omitempty"`
+	// P90 is p95 Quantile
+	P90 Quantile `json:"p90,omitempty" yaml:"p90,omitempty"`
+	// P99 is p99 Quantile
+	P99 Quantile `json:"p99,omitempty" yaml:"p99,omitempty"`
+	// SquaredMean is m2 for Welford's algorithm for variance calculation.
+	//
+	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for more information on the algorithm.
+	SquaredMean float64 `json:"squared_mean,omitempty" yaml:"squared_mean,omitempty"`
+	// StartTime is the start time of the histogram.
+	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+	// SumOfSamples is the sum of all samples in the histogram.
+	SumOfSamples int `json:"sum_of_samples,omitempty" yaml:"sum_of_samples,omitempty"`
 }
 
 // Histogramuint8 is histogram metric
@@ -2451,12 +2725,38 @@ type Histogramuint64 struct {
 //
 // Required fields:
 // - Bins
+// - Max
+// - Min
 // - NSamples
+// - P50
+// - P90
+// - P99
+// - SquaredMean
 // - StartTime
+// - SumOfSamples
 type Histogramuint8 struct {
-	Bins      []Binuint8 `json:"bins,omitempty" yaml:"bins,omitempty"`
-	NSamples  int        `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
+	// Bins is the bins of the histogram.
+	Bins []Binuint8 `json:"bins,omitempty" yaml:"bins,omitempty"`
+	// Max is the maximum value of all samples in the histogram.
+	Max int `json:"max,omitempty" yaml:"max,omitempty"`
+	// Min is the minimum value of all samples in the histogram.
+	Min int `json:"min,omitempty" yaml:"min,omitempty"`
+	// NSamples is the total number of samples in the histogram.
+	NSamples int `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
+	// P50 is p50 Quantile
+	P50 Quantile `json:"p50,omitempty" yaml:"p50,omitempty"`
+	// P90 is p95 Quantile
+	P90 Quantile `json:"p90,omitempty" yaml:"p90,omitempty"`
+	// P99 is p99 Quantile
+	P99 Quantile `json:"p99,omitempty" yaml:"p99,omitempty"`
+	// SquaredMean is m2 for Welford's algorithm for variance calculation.
+	//
+	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for more information on the algorithm.
+	SquaredMean float64 `json:"squared_mean,omitempty" yaml:"squared_mean,omitempty"`
+	// StartTime is the start time of the histogram.
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+	// SumOfSamples is the sum of all samples in the histogram.
+	SumOfSamples int `json:"sum_of_samples,omitempty" yaml:"sum_of_samples,omitempty"`
 }
 
 // Hostname is a hostname identifies a host on a network, and is usually a dot-delimited sequence of labels, where each label contains only letters, digits, or the hyphen. See RFCs 1035 and 952 for more details.
@@ -2588,7 +2888,7 @@ type Image struct {
 // - Version
 type ImageCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// Os is the family of the operating system (e.g. Debian, Ubuntu, etc.)
 	Os string `json:"os,omitempty" yaml:"os,omitempty"`
@@ -2740,7 +3040,7 @@ type InstanceCreate struct {
 	Hostname Hostname `json:"hostname,omitempty" yaml:"hostname,omitempty"`
 	// Memory is byte count to express memory or storage capacity.
 	Memory ByteCount `json:"memory,omitempty" yaml:"memory,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// Ncpus is the number of CPUs in an Instance
 	Ncpus InstanceCpuCount `json:"ncpus,omitempty" yaml:"ncpus,omitempty"`
@@ -2771,7 +3071,7 @@ type InstanceDiskAttachmentCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// DiskSource is initial source for this disk
 	DiskSource DiskSource `json:"disk_source,omitempty" yaml:"disk_source,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// Size is total size of the Disk in bytes
 	Size ByteCount                  `json:"size,omitempty" yaml:"size,omitempty"`
@@ -2795,7 +3095,7 @@ type InstanceDiskAttachment struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// DiskSource is initial source for this disk
 	DiskSource DiskSource `json:"disk_source,omitempty" yaml:"disk_source,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// Size is total size of the Disk in bytes
 	Size ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
@@ -2846,6 +3146,8 @@ type InstanceNetworkInterface struct {
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+	// TransitIps is a set of additional networks that this interface may send and receive traffic on.
+	TransitIps []IpNet `json:"transit_ips,omitempty" yaml:"transit_ips,omitempty"`
 	// VpcId is the VPC to which the interface belongs.
 	VpcId string `json:"vpc_id,omitempty" yaml:"vpc_id,omitempty"`
 }
@@ -2900,7 +3202,7 @@ type InstanceNetworkInterfaceCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Ip is the IP address for the interface. One will be auto-assigned if not provided.
 	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// SubnetName is the VPC Subnet in which to create the interface.
 	SubnetName Name `json:"subnet_name,omitempty" yaml:"subnet_name,omitempty"`
@@ -2931,6 +3233,8 @@ type InstanceNetworkInterfaceUpdate struct {
 	//
 	// Note that this can only be used to select a new primary interface for an instance. Requests to change the primary interface into a secondary will return an error.
 	Primary *bool `json:"primary,omitempty" yaml:"primary,omitempty"`
+	// TransitIps is a set of additional networks that this interface may send and receive traffic on.
+	TransitIps []IpNet `json:"transit_ips,omitempty" yaml:"transit_ips,omitempty"`
 }
 
 // InstanceResultsPage is a single page of results
@@ -2993,7 +3297,7 @@ type IpPool struct {
 // - Name
 type IpPoolCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
@@ -3098,7 +3402,7 @@ type IpPoolUtilization struct {
 // IpRange is the type definition for a IpRange.
 type IpRange interface{}
 
-// Ipv4Net is an IPv4 subnet, including prefix and subnet mask
+// Ipv4Net is an IPv4 subnet, including prefix and prefix length
 type Ipv4Net string
 
 // Ipv4Range is a non-decreasing IPv4 address range, inclusive of both ends.
@@ -3301,7 +3605,7 @@ type MissingDatum struct {
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
 }
 
-// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 type Name string
 
 // NameOrId is the type definition for a NameOrId.
@@ -3332,11 +3636,12 @@ type NetworkInterface struct {
 	Kind NetworkInterfaceKind `json:"kind,omitempty" yaml:"kind,omitempty"`
 	// Mac is a Media Access Control address, in EUI-48 format
 	Mac MacAddr `json:"mac,omitempty" yaml:"mac,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
-	Name    Name  `json:"name,omitempty" yaml:"name,omitempty"`
-	Primary *bool `json:"primary,omitempty" yaml:"primary,omitempty"`
-	Slot    int   `json:"slot,omitempty" yaml:"slot,omitempty"`
-	Subnet  IpNet `json:"subnet,omitempty" yaml:"subnet,omitempty"`
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	Name       Name    `json:"name,omitempty" yaml:"name,omitempty"`
+	Primary    *bool   `json:"primary,omitempty" yaml:"primary,omitempty"`
+	Slot       int     `json:"slot,omitempty" yaml:"slot,omitempty"`
+	Subnet     IpNet   `json:"subnet,omitempty" yaml:"subnet,omitempty"`
+	TransitIps []IpNet `json:"transit_ips,omitempty" yaml:"transit_ips,omitempty"`
 	// Vni is a Geneve Virtual Network Identifier
 	Vni Vni `json:"vni,omitempty" yaml:"vni,omitempty"`
 }
@@ -3523,7 +3828,7 @@ type Probe struct {
 type ProbeCreate struct {
 	Description string   `json:"description,omitempty" yaml:"description,omitempty"`
 	IpPool      NameOrId `json:"ip_pool,omitempty" yaml:"ip_pool,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Name Name   `json:"name,omitempty" yaml:"name,omitempty"`
 	Sled string `json:"sled,omitempty" yaml:"sled,omitempty"`
 }
@@ -3555,7 +3860,7 @@ type ProbeInfo struct {
 	Id          string            `json:"id,omitempty" yaml:"id,omitempty"`
 	// Interface is information required to construct a virtual network interface
 	Interface NetworkInterface `json:"interface,omitempty" yaml:"interface,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Name Name   `json:"name,omitempty" yaml:"name,omitempty"`
 	Sled string `json:"sled,omitempty" yaml:"sled,omitempty"`
 }
@@ -3599,7 +3904,7 @@ type Project struct {
 // - Name
 type ProjectCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
@@ -3647,6 +3952,30 @@ type ProjectRoleRoleAssignment struct {
 type ProjectUpdate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
+}
+
+// Quantile is structure for estimating the p-quantile of a population.
+//
+// This is based on the P² algorithm for estimating quantiles using constant space.
+//
+// The algorithm consists of maintaining five markers: the minimum, the p/2-, p-, and (1 + p)/2 quantiles, and the maximum.
+//
+// Required fields:
+// - DesiredMarkerPositions
+// - MarkerHeights
+// - MarkerPositions
+// - P
+type Quantile struct {
+	// DesiredMarkerPositions is the desired marker positions.
+	DesiredMarkerPositions []string `json:"desired_marker_positions,omitempty" yaml:"desired_marker_positions,omitempty"`
+	// MarkerHeights is the heights of the markers.
+	MarkerHeights []string `json:"marker_heights,omitempty" yaml:"marker_heights,omitempty"`
+	// MarkerPositions is the positions of the markers.
+	//
+	// We track sample size in the 5th position, as useful observations won't start until we've filled the heights at the 6th sample anyway This does deviate from the paper, but it's a more useful representation that works according to the paper's algorithm.
+	MarkerPositions []string `json:"marker_positions,omitempty" yaml:"marker_positions,omitempty"`
+	// P is the p value for the quantile.
+	P float64 `json:"p,omitempty" yaml:"p,omitempty"`
 }
 
 // Rack is view of an Rack
@@ -3723,6 +4052,214 @@ type RouteConfig struct {
 	Routes []Route `json:"routes,omitempty" yaml:"routes,omitempty"`
 }
 
+// RouteDestinationType is the type definition for a RouteDestinationType.
+type RouteDestinationType string
+
+// RouteDestinationIp is route applies to traffic destined for a specific IP address
+//
+// Required fields:
+// - Type
+// - Value
+type RouteDestinationIp struct {
+	Type  RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value string               `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// RouteDestinationIpNet is route applies to traffic destined for a specific IP subnet
+//
+// Required fields:
+// - Type
+// - Value
+type RouteDestinationIpNet struct {
+	Type  RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value IpNet                `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// RouteDestinationVpc is route applies to traffic destined for the given VPC.
+//
+// Required fields:
+// - Type
+// - Value
+type RouteDestinationVpc struct {
+	Type RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// RouteDestinationSubnet is route applies to traffic
+//
+// Required fields:
+// - Type
+// - Value
+type RouteDestinationSubnet struct {
+	Type RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// RouteDestination is a `RouteDestination` is used to match traffic with a routing rule, on the destination of that traffic.
+//
+// When traffic is to be sent to a destination that is within a given `RouteDestination`, the corresponding `RouterRoute` applies, and traffic will be forward to the `RouteTarget` for that rule.
+type RouteDestination struct {
+	// Type is the type definition for a Type.
+	Type RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is the type definition for a Value.
+	Value string `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// RouteTargetType is the type definition for a RouteTargetType.
+type RouteTargetType string
+
+// RouteTargetIp is forward traffic to a particular IP address.
+//
+// Required fields:
+// - Type
+// - Value
+type RouteTargetIp struct {
+	Type  RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value string          `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// RouteTargetVpc is forward traffic to a VPC
+//
+// Required fields:
+// - Type
+// - Value
+type RouteTargetVpc struct {
+	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// RouteTargetSubnet is forward traffic to a VPC Subnet
+//
+// Required fields:
+// - Type
+// - Value
+type RouteTargetSubnet struct {
+	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// RouteTargetInstance is forward traffic to a specific instance
+//
+// Required fields:
+// - Type
+// - Value
+type RouteTargetInstance struct {
+	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// RouteTargetInternetGateway is forward traffic to an internet gateway
+//
+// Required fields:
+// - Type
+// - Value
+type RouteTargetInternetGateway struct {
+	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// RouteTargetDrop is drop matching traffic
+//
+// Required fields:
+// - Type
+type RouteTargetDrop struct {
+	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// RouteTarget is a `RouteTarget` describes the possible locations that traffic matching a route destination can be sent.
+type RouteTarget struct {
+	// Type is the type definition for a Type.
+	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is the type definition for a Value.
+	Value string `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// RouterRoute is a route defines a rule that governs where traffic should be sent based on its destination.
+//
+// Required fields:
+// - Description
+// - Destination
+// - Id
+// - Kind
+// - Name
+// - Target
+// - TimeCreated
+// - TimeModified
+// - VpcRouterId
+type RouterRoute struct {
+	// Description is human-readable free-form text about a resource
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Destination is selects which traffic this routing rule will apply to.
+	Destination RouteDestination `json:"destination,omitempty" yaml:"destination,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Kind is describes the kind of router. Set at creation. `read-only`
+	Kind RouterRouteKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+	// Name is unique, mutable, user-controlled identifier for each resource
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	// Target is the location that matched packets should be forwarded to.
+	Target RouteTarget `json:"target,omitempty" yaml:"target,omitempty"`
+	// TimeCreated is timestamp when this resource was created
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	// TimeModified is timestamp when this resource was last modified
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+	// VpcRouterId is the ID of the VPC Router to which the route belongs
+	VpcRouterId string `json:"vpc_router_id,omitempty" yaml:"vpc_router_id,omitempty"`
+}
+
+// RouterRouteCreate is create-time parameters for a `RouterRoute`
+//
+// Required fields:
+// - Description
+// - Destination
+// - Name
+// - Target
+type RouterRouteCreate struct {
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Destination is selects which traffic this routing rule will apply to.
+	Destination RouteDestination `json:"destination,omitempty" yaml:"destination,omitempty"`
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	// Target is the location that matched packets should be forwarded to.
+	Target RouteTarget `json:"target,omitempty" yaml:"target,omitempty"`
+}
+
+// RouterRouteKind is determines the default destination of traffic, such as whether it goes to the internet or not.
+//
+// `Destination: An Internet Gateway` `Modifiable: true`
+type RouterRouteKind string
+
+// RouterRouteResultsPage is a single page of results
+//
+// Required fields:
+// - Items
+type RouterRouteResultsPage struct {
+	// Items is list of items on this page of results
+	Items []RouterRoute `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// RouterRouteUpdate is updateable properties of a `RouterRoute`
+//
+// Required fields:
+// - Destination
+// - Target
+type RouterRouteUpdate struct {
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Destination is selects which traffic this routing rule will apply to.
+	Destination RouteDestination `json:"destination,omitempty" yaml:"destination,omitempty"`
+	Name        Name             `json:"name,omitempty" yaml:"name,omitempty"`
+	// Target is the location that matched packets should be forwarded to.
+	Target RouteTarget `json:"target,omitempty" yaml:"target,omitempty"`
+}
+
 // SamlIdentityProvider is identity-related metadata that's included in nearly all public API objects
 //
 // Required fields:
@@ -3784,7 +4321,7 @@ type SamlIdentityProviderCreate struct {
 	IdpEntityId string `json:"idp_entity_id,omitempty" yaml:"idp_entity_id,omitempty"`
 	// IdpMetadataSource is the source of an identity provider metadata descriptor
 	IdpMetadataSource IdpMetadataSource `json:"idp_metadata_source,omitempty" yaml:"idp_metadata_source,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// SigningKeypair is request signing key pair
 	SigningKeypair DerEncodedKeyPair `json:"signing_keypair,omitempty" yaml:"signing_keypair,omitempty"`
@@ -3855,7 +4392,7 @@ type SiloCreate struct {
 	//
 	// The default is that no Fleet roles are conferred by any Silo roles unless there's a corresponding entry in this map.
 	MappedFleetRoles FleetRole `json:"mapped_fleet_roles,omitempty" yaml:"mapped_fleet_roles,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// Quotas is limits the amount of provisionable CPU, memory, and storage in the Silo. CPU and memory are only consumed by running instances, while storage is consumed by any disk or snapshot. A value of 0 means that resource is *not* provisionable.
 	Quotas SiloQuotasCreate `json:"quotas,omitempty" yaml:"quotas,omitempty"`
@@ -4007,7 +4544,7 @@ type SiloUtilization struct {
 	// Provisioned is accounts for resources allocated by in silos like CPU or memory for running instances and storage for disks and snapshots Note that CPU and memory resources associated with a stopped instances are not counted here
 	Provisioned VirtualResourceCounts `json:"provisioned,omitempty" yaml:"provisioned,omitempty"`
 	SiloId      string                `json:"silo_id,omitempty" yaml:"silo_id,omitempty"`
-	// SiloName is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	// SiloName is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	SiloName Name `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
 }
 
@@ -4082,12 +4619,12 @@ type SledInstance struct {
 	Id          string `json:"id,omitempty" yaml:"id,omitempty"`
 	Memory      int    `json:"memory,omitempty" yaml:"memory,omitempty"`
 	MigrationId string `json:"migration_id,omitempty" yaml:"migration_id,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Name  Name `json:"name,omitempty" yaml:"name,omitempty"`
 	Ncpus int  `json:"ncpus,omitempty" yaml:"ncpus,omitempty"`
-	// ProjectName is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	// ProjectName is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	ProjectName Name `json:"project_name,omitempty" yaml:"project_name,omitempty"`
-	// SiloName is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	// SiloName is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	SiloName Name `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
 	// State is running state of an Instance (primarily: booted or stopped)
 	//
@@ -4222,7 +4759,7 @@ type SnapshotCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Disk is the disk to be snapshotted
 	Disk NameOrId `json:"disk,omitempty" yaml:"disk,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
@@ -4275,7 +4812,7 @@ type SshKey struct {
 // - PublicKey
 type SshKeyCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// PublicKey is sSH public key, e.g., `"ssh-ed25519 AAAAC3NzaC..."`
 	PublicKey string `json:"public_key,omitempty" yaml:"public_key,omitempty"`
@@ -4441,6 +4978,8 @@ type SwitchPortAddressConfig struct {
 	InterfaceName string `json:"interface_name,omitempty" yaml:"interface_name,omitempty"`
 	// PortSettingsId is the port settings object this address configuration belongs to.
 	PortSettingsId string `json:"port_settings_id,omitempty" yaml:"port_settings_id,omitempty"`
+	// VlanId is an optional VLAN ID
+	VlanId int `json:"vlan_id,omitempty" yaml:"vlan_id,omitempty"`
 }
 
 // SwitchPortApplySettings is parameters for applying settings to switch ports.
@@ -4581,7 +5120,7 @@ type SwitchPortSettingsCreate struct {
 	Interfaces SwitchInterfaceConfigCreate `json:"interfaces,omitempty" yaml:"interfaces,omitempty"`
 	// Links is links indexed by phy name. On ports that are not broken out, this is always phy0. On a 2x breakout the options are phy0 and phy1, on 4x phy0-phy3, etc.
 	Links LinkConfigCreate `json:"links,omitempty" yaml:"links,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// PortConfig is physical switch port configuration.
 	PortConfig SwitchPortConfigCreate `json:"port_config,omitempty" yaml:"port_config,omitempty"`
@@ -4699,6 +5238,16 @@ type Timeseries struct {
 	Points Points `json:"points,omitempty" yaml:"points,omitempty"`
 }
 
+// TimeseriesDescription is text descriptions for the target and metric of a timeseries.
+//
+// Required fields:
+// - Metric
+// - Target
+type TimeseriesDescription struct {
+	Metric string `json:"metric,omitempty" yaml:"metric,omitempty"`
+	Target string `json:"target,omitempty" yaml:"target,omitempty"`
+}
+
 // TimeseriesName is names are constructed by concatenating the target and metric names with ':'. Target and metric names must be lowercase alphanumeric characters with '_' separating words.
 type TimeseriesName string
 
@@ -4716,17 +5265,30 @@ type TimeseriesQuery struct {
 // This includes the name of the timeseries, as well as the datum type of its metric and the schema for each field.
 //
 // Required fields:
+// - AuthzScope
 // - Created
 // - DatumType
+// - Description
 // - FieldSchema
 // - TimeseriesName
+// - Units
+// - Version
 type TimeseriesSchema struct {
-	Created *time.Time `json:"created,omitempty" yaml:"created,omitempty"`
+	// AuthzScope is authorization scope for a timeseries.
+	//
+	// This describes the level at which a user must be authorized to read data from a timeseries. For example, fleet-scoping means the data is only visible to an operator or fleet reader. Project-scoped, on the other hand, indicates that a user will see data limited to the projects on which they have read permissions.
+	AuthzScope AuthzScope `json:"authz_scope,omitempty" yaml:"authz_scope,omitempty"`
+	Created    *time.Time `json:"created,omitempty" yaml:"created,omitempty"`
 	// DatumType is the type of an individual datum of a metric.
-	DatumType   DatumType     `json:"datum_type,omitempty" yaml:"datum_type,omitempty"`
-	FieldSchema []FieldSchema `json:"field_schema,omitempty" yaml:"field_schema,omitempty"`
+	DatumType DatumType `json:"datum_type,omitempty" yaml:"datum_type,omitempty"`
+	// Description is text descriptions for the target and metric of a timeseries.
+	Description TimeseriesDescription `json:"description,omitempty" yaml:"description,omitempty"`
+	FieldSchema []FieldSchema         `json:"field_schema,omitempty" yaml:"field_schema,omitempty"`
 	// TimeseriesName is names are constructed by concatenating the target and metric names with ':'. Target and metric names must be lowercase alphanumeric characters with '_' separating words.
 	TimeseriesName TimeseriesName `json:"timeseries_name,omitempty" yaml:"timeseries_name,omitempty"`
+	// Units is measurement units for timeseries samples.
+	Units   Unit `json:"units,omitempty" yaml:"units,omitempty"`
+	Version int  `json:"version,omitempty" yaml:"version,omitempty"`
 }
 
 // TimeseriesSchemaResultsPage is a single page of results
@@ -4773,6 +5335,9 @@ type UninitializedSledResultsPage struct {
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
+
+// Unit is measurement units for timeseries samples.
+type Unit string
 
 // User is view of a User
 //
@@ -4834,7 +5399,7 @@ type UserCreate struct {
 	Password UserPassword `json:"password,omitempty" yaml:"password,omitempty"`
 }
 
-// UserId is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+// UserId is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 type UserId string
 
 // UserPasswordMode is the type definition for a UserPasswordMode.
@@ -4886,7 +5451,7 @@ type UserResultsPage struct {
 type UsernamePasswordCredentials struct {
 	// Password is passwords may be subject to additional constraints.
 	Password Password `json:"password,omitempty" yaml:"password,omitempty"`
-	// Username is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	// Username is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Username UserId `json:"username,omitempty" yaml:"username,omitempty"`
 }
 
@@ -5048,13 +5613,13 @@ type Vpc struct {
 // - Name
 type VpcCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// DnsName is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	// DnsName is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	DnsName Name `json:"dns_name,omitempty" yaml:"dns_name,omitempty"`
 	// Ipv6Prefix is the IPv6 prefix for this VPC
 	//
 	// All IPv6 subnets created from this VPC must be taken from this range, which should be a Unique Local Address in the range `fd00::/48`. The default VPC Subnet will have the first `/64` range from this prefix.
 	Ipv6Prefix Ipv6Net `json:"ipv6_prefix,omitempty" yaml:"ipv6_prefix,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
@@ -5126,7 +5691,7 @@ type VpcFirewallRuleHostFilterType string
 // - Value
 type VpcFirewallRuleHostFilterVpc struct {
 	Type VpcFirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
@@ -5137,7 +5702,7 @@ type VpcFirewallRuleHostFilterVpc struct {
 // - Value
 type VpcFirewallRuleHostFilterSubnet struct {
 	Type VpcFirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
@@ -5148,7 +5713,7 @@ type VpcFirewallRuleHostFilterSubnet struct {
 // - Value
 type VpcFirewallRuleHostFilterInstance struct {
 	Type VpcFirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
@@ -5176,7 +5741,7 @@ type VpcFirewallRuleHostFilterIpNet struct {
 type VpcFirewallRuleHostFilter struct {
 	// Type is the type definition for a Type.
 	Type VpcFirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
@@ -5196,7 +5761,7 @@ type VpcFirewallRuleTargetType string
 // - Value
 type VpcFirewallRuleTargetVpc struct {
 	Type VpcFirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
@@ -5207,7 +5772,7 @@ type VpcFirewallRuleTargetVpc struct {
 // - Value
 type VpcFirewallRuleTargetSubnet struct {
 	Type VpcFirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
@@ -5218,7 +5783,7 @@ type VpcFirewallRuleTargetSubnet struct {
 // - Value
 type VpcFirewallRuleTargetInstance struct {
 	Type VpcFirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
@@ -5246,7 +5811,7 @@ type VpcFirewallRuleTargetIpNet struct {
 type VpcFirewallRuleTarget struct {
 	// Type is the type definition for a Type.
 	Type VpcFirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
@@ -5307,7 +5872,64 @@ type VpcResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// VpcSubnet is a VPC subnet represents a logical grouping for instances that allows network traffic between them, within a IPv4 subnetwork or optionall an IPv6 subnetwork.
+// VpcRouter is a VPC router defines a series of rules that indicate where traffic should be sent depending on its destination.
+//
+// Required fields:
+// - Description
+// - Id
+// - Kind
+// - Name
+// - TimeCreated
+// - TimeModified
+// - VpcId
+type VpcRouter struct {
+	// Description is human-readable free-form text about a resource
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id   string        `json:"id,omitempty" yaml:"id,omitempty"`
+	Kind VpcRouterKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+	// Name is unique, mutable, user-controlled identifier for each resource
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	// TimeCreated is timestamp when this resource was created
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	// TimeModified is timestamp when this resource was last modified
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+	// VpcId is the VPC to which the router belongs.
+	VpcId string `json:"vpc_id,omitempty" yaml:"vpc_id,omitempty"`
+}
+
+// VpcRouterCreate is create-time parameters for a `VpcRouter`
+//
+// Required fields:
+// - Description
+// - Name
+type VpcRouterCreate struct {
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+}
+
+// VpcRouterKind is the type definition for a VpcRouterKind.
+type VpcRouterKind string
+
+// VpcRouterResultsPage is a single page of results
+//
+// Required fields:
+// - Items
+type VpcRouterResultsPage struct {
+	// Items is list of items on this page of results
+	Items []VpcRouter `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// VpcRouterUpdate is updateable properties of a `VpcRouter`
+type VpcRouterUpdate struct {
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
+}
+
+// VpcSubnet is a VPC subnet represents a logical grouping for instances that allows network traffic between them, within a IPv4 subnetwork or optionally an IPv6 subnetwork.
 //
 // Required fields:
 // - Description
@@ -5319,6 +5941,8 @@ type VpcResultsPage struct {
 // - TimeModified
 // - VpcId
 type VpcSubnet struct {
+	// CustomRouterId is iD for an attached custom router.
+	CustomRouterId string `json:"custom_router_id,omitempty" yaml:"custom_router_id,omitempty"`
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Id is unique, immutable, system-controlled identifier for each resource
@@ -5344,7 +5968,11 @@ type VpcSubnet struct {
 // - Ipv4Block
 // - Name
 type VpcSubnetCreate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// CustomRouter is an optional router, used to direct packets sent from hosts in this subnet to any destination address.
+	//
+	// Custom routers apply in addition to the VPC-wide *system* router, and have higher priority than the system router for an otherwise equal-prefix-length match.
+	CustomRouter NameOrId `json:"custom_router,omitempty" yaml:"custom_router,omitempty"`
+	Description  string   `json:"description,omitempty" yaml:"description,omitempty"`
 	// Ipv4Block is the IPv4 address range for this subnet.
 	//
 	// It must be allocated from an RFC 1918 private address range, and must not overlap with any other existing subnet in the VPC.
@@ -5353,7 +5981,7 @@ type VpcSubnetCreate struct {
 	//
 	// It must be allocated from the RFC 4193 Unique Local Address range, with the prefix equal to the parent VPC's prefix. A random `/64` block will be assigned if one is not provided. It must not overlap with any existing subnet in the VPC.
 	Ipv6Block Ipv6Net `json:"ipv6_block,omitempty" yaml:"ipv6_block,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID though they may contain a UUID.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
@@ -5370,8 +5998,10 @@ type VpcSubnetResultsPage struct {
 
 // VpcSubnetUpdate is updateable properties of a `VpcSubnet`
 type VpcSubnetUpdate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	// CustomRouter is an optional router, used to direct packets sent from hosts in this subnet to any destination address.
+	CustomRouter NameOrId `json:"custom_router,omitempty" yaml:"custom_router,omitempty"`
+	Description  string   `json:"description,omitempty" yaml:"description,omitempty"`
+	Name         Name     `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
 // VpcUpdate is updateable properties of a `Vpc`
@@ -6892,6 +7522,122 @@ type VpcFirewallRulesUpdateParams struct {
 	Project NameOrId                     `json:"project,omitempty" yaml:"project,omitempty"`
 	Vpc     NameOrId                     `json:"vpc,omitempty" yaml:"vpc,omitempty"`
 	Body    *VpcFirewallRuleUpdateParams `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// VpcRouterRouteListParams is the request parameters for VpcRouterRouteList
+//
+// Required fields:
+// - Router
+type VpcRouterRouteListParams struct {
+	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	Router    NameOrId         `json:"router,omitempty" yaml:"router,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Vpc       NameOrId         `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+}
+
+// VpcRouterRouteCreateParams is the request parameters for VpcRouterRouteCreate
+//
+// Required fields:
+// - Router
+// - Body
+type VpcRouterRouteCreateParams struct {
+	Project NameOrId           `json:"project,omitempty" yaml:"project,omitempty"`
+	Router  NameOrId           `json:"router,omitempty" yaml:"router,omitempty"`
+	Vpc     NameOrId           `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Body    *RouterRouteCreate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// VpcRouterRouteDeleteParams is the request parameters for VpcRouterRouteDelete
+//
+// Required fields:
+// - Route
+type VpcRouterRouteDeleteParams struct {
+	Route   NameOrId `json:"route,omitempty" yaml:"route,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Router  NameOrId `json:"router,omitempty" yaml:"router,omitempty"`
+	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+}
+
+// VpcRouterRouteViewParams is the request parameters for VpcRouterRouteView
+//
+// Required fields:
+// - Route
+// - Router
+type VpcRouterRouteViewParams struct {
+	Route   NameOrId `json:"route,omitempty" yaml:"route,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Router  NameOrId `json:"router,omitempty" yaml:"router,omitempty"`
+	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+}
+
+// VpcRouterRouteUpdateParams is the request parameters for VpcRouterRouteUpdate
+//
+// Required fields:
+// - Route
+// - Body
+type VpcRouterRouteUpdateParams struct {
+	Route   NameOrId           `json:"route,omitempty" yaml:"route,omitempty"`
+	Project NameOrId           `json:"project,omitempty" yaml:"project,omitempty"`
+	Router  NameOrId           `json:"router,omitempty" yaml:"router,omitempty"`
+	Vpc     NameOrId           `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Body    *RouterRouteUpdate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// VpcRouterListParams is the request parameters for VpcRouterList
+//
+// Required fields:
+// - Vpc
+type VpcRouterListParams struct {
+	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Vpc       NameOrId         `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+}
+
+// VpcRouterCreateParams is the request parameters for VpcRouterCreate
+//
+// Required fields:
+// - Vpc
+// - Body
+type VpcRouterCreateParams struct {
+	Project NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	Vpc     NameOrId         `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Body    *VpcRouterCreate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// VpcRouterDeleteParams is the request parameters for VpcRouterDelete
+//
+// Required fields:
+// - Router
+type VpcRouterDeleteParams struct {
+	Router  NameOrId `json:"router,omitempty" yaml:"router,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+}
+
+// VpcRouterViewParams is the request parameters for VpcRouterView
+//
+// Required fields:
+// - Router
+type VpcRouterViewParams struct {
+	Router  NameOrId `json:"router,omitempty" yaml:"router,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+}
+
+// VpcRouterUpdateParams is the request parameters for VpcRouterUpdate
+//
+// Required fields:
+// - Router
+// - Body
+type VpcRouterUpdateParams struct {
+	Router  NameOrId         `json:"router,omitempty" yaml:"router,omitempty"`
+	Project NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	Vpc     NameOrId         `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Body    *VpcRouterUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // VpcSubnetListParams is the request parameters for VpcSubnetList
@@ -8679,6 +9425,109 @@ func (p *VpcFirewallRulesUpdateParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for VpcRouterRouteListParams are set
+func (p *VpcRouterRouteListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcRouterRouteCreateParams are set
+func (p *VpcRouterRouteCreateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Router), "Router")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcRouterRouteDeleteParams are set
+func (p *VpcRouterRouteDeleteParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Route), "Route")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcRouterRouteViewParams are set
+func (p *VpcRouterRouteViewParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Route), "Route")
+	v.HasRequiredStr(string(p.Router), "Router")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcRouterRouteUpdateParams are set
+func (p *VpcRouterRouteUpdateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Route), "Route")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcRouterListParams are set
+func (p *VpcRouterListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcRouterCreateParams are set
+func (p *VpcRouterCreateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Vpc), "Vpc")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcRouterDeleteParams are set
+func (p *VpcRouterDeleteParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Router), "Router")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcRouterViewParams are set
+func (p *VpcRouterViewParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Router), "Router")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcRouterUpdateParams are set
+func (p *VpcRouterUpdateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Router), "Router")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for VpcSubnetListParams are set
 func (p *VpcSubnetListParams) Validate() error {
 	v := new(Validator)
@@ -8802,6 +9651,18 @@ const AllowedSourceIpsAllowAny AllowedSourceIpsAllow = "any"
 
 // AllowedSourceIpsAllowList represents the AllowedSourceIpsAllow `"list"`.
 const AllowedSourceIpsAllowList AllowedSourceIpsAllow = "list"
+
+// AuthzScopeFleet represents the AuthzScope `"fleet"`.
+const AuthzScopeFleet AuthzScope = "fleet"
+
+// AuthzScopeSilo represents the AuthzScope `"silo"`.
+const AuthzScopeSilo AuthzScope = "silo"
+
+// AuthzScopeProject represents the AuthzScope `"project"`.
+const AuthzScopeProject AuthzScope = "project"
+
+// AuthzScopeViewableToAll represents the AuthzScope `"viewable_to_all"`.
+const AuthzScopeViewableToAll AuthzScope = "viewable_to_all"
 
 // BfdModeSingleHop represents the BfdMode `"single_hop"`.
 const BfdModeSingleHop BfdMode = "single_hop"
@@ -9373,6 +10234,48 @@ const ProjectRoleCollaborator ProjectRole = "collaborator"
 // ProjectRoleViewer represents the ProjectRole `"viewer"`.
 const ProjectRoleViewer ProjectRole = "viewer"
 
+// RouteDestinationTypeIp represents the RouteDestinationType `"ip"`.
+const RouteDestinationTypeIp RouteDestinationType = "ip"
+
+// RouteDestinationTypeIpNet represents the RouteDestinationType `"ip_net"`.
+const RouteDestinationTypeIpNet RouteDestinationType = "ip_net"
+
+// RouteDestinationTypeVpc represents the RouteDestinationType `"vpc"`.
+const RouteDestinationTypeVpc RouteDestinationType = "vpc"
+
+// RouteDestinationTypeSubnet represents the RouteDestinationType `"subnet"`.
+const RouteDestinationTypeSubnet RouteDestinationType = "subnet"
+
+// RouteTargetTypeIp represents the RouteTargetType `"ip"`.
+const RouteTargetTypeIp RouteTargetType = "ip"
+
+// RouteTargetTypeVpc represents the RouteTargetType `"vpc"`.
+const RouteTargetTypeVpc RouteTargetType = "vpc"
+
+// RouteTargetTypeSubnet represents the RouteTargetType `"subnet"`.
+const RouteTargetTypeSubnet RouteTargetType = "subnet"
+
+// RouteTargetTypeInstance represents the RouteTargetType `"instance"`.
+const RouteTargetTypeInstance RouteTargetType = "instance"
+
+// RouteTargetTypeInternetGateway represents the RouteTargetType `"internet_gateway"`.
+const RouteTargetTypeInternetGateway RouteTargetType = "internet_gateway"
+
+// RouteTargetTypeDrop represents the RouteTargetType `"drop"`.
+const RouteTargetTypeDrop RouteTargetType = "drop"
+
+// RouterRouteKindDefault represents the RouterRouteKind `"default"`.
+const RouterRouteKindDefault RouterRouteKind = "default"
+
+// RouterRouteKindVpcSubnet represents the RouterRouteKind `"vpc_subnet"`.
+const RouterRouteKindVpcSubnet RouterRouteKind = "vpc_subnet"
+
+// RouterRouteKindVpcPeering represents the RouterRouteKind `"vpc_peering"`.
+const RouterRouteKindVpcPeering RouterRouteKind = "vpc_peering"
+
+// RouterRouteKindCustom represents the RouterRouteKind `"custom"`.
+const RouterRouteKindCustom RouterRouteKind = "custom"
+
 // ServiceUsingCertificateExternalApi represents the ServiceUsingCertificate `"external_api"`.
 const ServiceUsingCertificateExternalApi ServiceUsingCertificate = "external_api"
 
@@ -9472,6 +10375,12 @@ const SystemMetricNameCpusProvisioned SystemMetricName = "cpus_provisioned"
 // SystemMetricNameRamProvisioned represents the SystemMetricName `"ram_provisioned"`.
 const SystemMetricNameRamProvisioned SystemMetricName = "ram_provisioned"
 
+// UnitCount represents the Unit `"count"`.
+const UnitCount Unit = "count"
+
+// UnitBytes represents the Unit `"bytes"`.
+const UnitBytes Unit = "bytes"
+
 // UserPasswordModePassword represents the UserPasswordMode `"password"`.
 const UserPasswordModePassword UserPasswordMode = "password"
 
@@ -9553,6 +10462,12 @@ const VpcFirewallRuleTargetTypeIp VpcFirewallRuleTargetType = "ip"
 // VpcFirewallRuleTargetTypeIpNet represents the VpcFirewallRuleTargetType `"ip_net"`.
 const VpcFirewallRuleTargetTypeIpNet VpcFirewallRuleTargetType = "ip_net"
 
+// VpcRouterKindSystem represents the VpcRouterKind `"system"`.
+const VpcRouterKindSystem VpcRouterKind = "system"
+
+// VpcRouterKindCustom represents the VpcRouterKind `"custom"`.
+const VpcRouterKindCustom VpcRouterKind = "custom"
+
 // AddressLotKinds is the collection of all AddressLotKind values.
 var AddressLotKinds = []AddressLotKind{
 	AddressLotKindInfra,
@@ -9563,6 +10478,14 @@ var AddressLotKinds = []AddressLotKind{
 var AllowedSourceIpsAllows = []AllowedSourceIpsAllow{
 	AllowedSourceIpsAllowAny,
 	AllowedSourceIpsAllowList,
+}
+
+// AuthzScopes is the collection of all AuthzScope values.
+var AuthzScopes = []AuthzScope{
+	AuthzScopeFleet,
+	AuthzScopeProject,
+	AuthzScopeSilo,
+	AuthzScopeViewableToAll,
 }
 
 // BfdModes is the collection of all BfdMode values.
@@ -9943,6 +10866,32 @@ var ProjectRoles = []ProjectRole{
 	ProjectRoleViewer,
 }
 
+// RouteDestinationTypes is the collection of all RouteDestinationType values.
+var RouteDestinationTypes = []RouteDestinationType{
+	RouteDestinationTypeIp,
+	RouteDestinationTypeIpNet,
+	RouteDestinationTypeSubnet,
+	RouteDestinationTypeVpc,
+}
+
+// RouteTargetTypes is the collection of all RouteTargetType values.
+var RouteTargetTypes = []RouteTargetType{
+	RouteTargetTypeDrop,
+	RouteTargetTypeInstance,
+	RouteTargetTypeInternetGateway,
+	RouteTargetTypeIp,
+	RouteTargetTypeSubnet,
+	RouteTargetTypeVpc,
+}
+
+// RouterRouteKinds is the collection of all RouterRouteKind values.
+var RouterRouteKinds = []RouterRouteKind{
+	RouterRouteKindCustom,
+	RouterRouteKindDefault,
+	RouterRouteKindVpcPeering,
+	RouterRouteKindVpcSubnet,
+}
+
 // ServiceUsingCertificates is the collection of all ServiceUsingCertificate values.
 var ServiceUsingCertificates = []ServiceUsingCertificate{
 	ServiceUsingCertificateExternalApi,
@@ -10028,6 +10977,12 @@ var SystemMetricNames = []SystemMetricName{
 	SystemMetricNameVirtualDiskSpaceProvisioned,
 }
 
+// Units is the collection of all Unit values.
+var Units = []Unit{
+	UnitBytes,
+	UnitCount,
+}
+
 // UserPasswordModes is the collection of all UserPasswordMode values.
 var UserPasswordModes = []UserPasswordMode{
 	UserPasswordModeLoginDisallowed,
@@ -10085,4 +11040,10 @@ var VpcFirewallRuleTargetTypes = []VpcFirewallRuleTargetType{
 	VpcFirewallRuleTargetTypeIpNet,
 	VpcFirewallRuleTargetTypeSubnet,
 	VpcFirewallRuleTargetTypeVpc,
+}
+
+// VpcRouterKinds is the collection of all VpcRouterKind values.
+var VpcRouterKinds = []VpcRouterKind{
+	VpcRouterKindCustom,
+	VpcRouterKindSystem,
 }
