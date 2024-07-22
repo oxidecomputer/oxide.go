@@ -1,15 +1,7 @@
 [[features]]
 title = "New APIs"
-description = "Several new endpoints in [#216](https://github.com/oxidecomputer/oxide.go/pull/216)\n  - VpcRouterRouteList: List routes \n  - VpcRouterRouteListAllPages: List routes \n  - VpcRouterRouteCreate: Create route \n - VpcRouterRouteView: Fetch route \n - VpcRouterRouteUpdate: Update route \n - VpcRouterRouteDelete: Delete route \n - VpcRouterList: List routers \n - VpcRouterListAllPages: List routers \n - VpcRouterCreate: Create VPC router \n - VpcRouterView: Fetch router \n - VpcRouterUpdate: Update router \n - VpcRouterDelete: Delete router"
+description = "Several new endpoints in [#216](https://github.com/oxidecomputer/oxide.go/pull/216)\n  - VpcRouterRouteList: List routes \n  - VpcRouterRouteListAllPages: List routes \n  - VpcRouterRouteCreate: Create route \n  - VpcRouterRouteView: Fetch route \n  - VpcRouterRouteUpdate: Update route \n  - VpcRouterRouteDelete: Delete route \n  - VpcRouterList: List routers \n  - VpcRouterListAllPages: List routers \n  - VpcRouterCreate: Create VPC router \n  - VpcRouterView: Fetch router \n  - VpcRouterUpdate: Update router \n  - VpcRouterDelete: Delete router"
 
 [[breaking]]
 title = "Networking"
 description = "The `NetworkingBgpAnnounceSetCreate` method has been replaced by `NetworkingBgpAnnounceSetUpdate` [#218](https://github.com/oxidecomputer/oxide.go/pull/218)."
-
-[[enhancements]]
-title = ""
-description = ""
-
-[[bugs]]
-title = ""
-description = ""
