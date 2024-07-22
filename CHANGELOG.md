@@ -1,3 +1,33 @@
+# v0.1.0-beta7 (2024/Jul/23)
+
+### Breaking changes
+
+- **Networking:** The `NetworkingBgpAnnounceSetCreate` method has been replaced by `NetworkingBgpAnnounceSetUpdate` [#218](https://github.com/oxidecomputer/oxide.go/pull/218).
+
+### New features
+
+- **New APIs:** Several new endpoints in [#216](https://github.com/oxidecomputer/oxide.go/pull/216)
+  - VpcRouterRouteList: List routes 
+  - VpcRouterRouteListAllPages: List routes 
+  - VpcRouterRouteCreate: Create route 
+  - VpcRouterRouteView: Fetch route 
+  - VpcRouterRouteUpdate: Update route 
+  - VpcRouterRouteDelete: Delete route 
+  - VpcRouterList: List routers 
+  - VpcRouterListAllPages: List routers 
+  - VpcRouterCreate: Create VPC router 
+  - VpcRouterView: Fetch router 
+  - VpcRouterUpdate: Update router 
+  - VpcRouterDelete: Delete router
+
+### List of commits
+
+- [3682a00](https://github.com/oxidecomputer/oxide.go/commit/3682a00) Update to omicron bedb238 (#218)
+- [c52f6e0](https://github.com/oxidecomputer/oxide.go/commit/c52f6e0) Bump github.com/getkin/kin-openapi from 0.125.0 to 0.126.0 (#217)
+- [06dd780](https://github.com/oxidecomputer/oxide.go/commit/06dd780) Update to Omicron 97fe552 (#216)
+- [e44fdd5](https://github.com/oxidecomputer/oxide.go/commit/e44fdd5) Bump github.com/getkin/kin-openapi from 0.124.0 to 0.125.0 (#215)
+- [4151b01](https://github.com/oxidecomputer/oxide.go/commit/4151b01) Version bump (#214)
+
 # v0.1.0-beta6 (2024/May/9)
 
 ### Breaking changes
