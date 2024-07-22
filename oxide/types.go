@@ -3263,9 +3263,6 @@ type InstanceSerialConsoleData struct {
 // InstanceState is the instance is being created.
 type InstanceState string
 
-// IpKind is the type definition for a IpKind.
-type IpKind string
-
 // IpNet is the type definition for a IpNet.
 type IpNet interface{}
 
@@ -3841,11 +3838,14 @@ type ProbeCreate struct {
 // - Kind
 // - LastPort
 type ProbeExternalIp struct {
-	FirstPort int    `json:"first_port,omitempty" yaml:"first_port,omitempty"`
-	Ip        string `json:"ip,omitempty" yaml:"ip,omitempty"`
-	Kind      IpKind `json:"kind,omitempty" yaml:"kind,omitempty"`
-	LastPort  int    `json:"last_port,omitempty" yaml:"last_port,omitempty"`
+	FirstPort int                 `json:"first_port,omitempty" yaml:"first_port,omitempty"`
+	Ip        string              `json:"ip,omitempty" yaml:"ip,omitempty"`
+	Kind      ProbeExternalIpKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+	LastPort  int                 `json:"last_port,omitempty" yaml:"last_port,omitempty"`
 }
+
+// ProbeExternalIpKind is the type definition for a ProbeExternalIpKind.
+type ProbeExternalIpKind string
 
 // ProbeInfo is the type definition for a ProbeInfo.
 //
@@ -5355,7 +5355,7 @@ type User struct {
 
 // UserBuiltin is view of a Built-in User
 //
-// A Built-in User is explicitly created as opposed to being derived from an Identify Provider.
+// # Built-in users are identities internal to the system, used when the control plane performs actions autonomously
 //
 // Required fields:
 // - Description
@@ -7242,11 +7242,11 @@ type NetworkingBgpAnnounceSetListParams struct {
 	NameOrId NameOrId `json:"name_or_id,omitempty" yaml:"name_or_id,omitempty"`
 }
 
-// NetworkingBgpAnnounceSetCreateParams is the request parameters for NetworkingBgpAnnounceSetCreate
+// NetworkingBgpAnnounceSetUpdateParams is the request parameters for NetworkingBgpAnnounceSetUpdate
 //
 // Required fields:
 // - Body
-type NetworkingBgpAnnounceSetCreateParams struct {
+type NetworkingBgpAnnounceSetUpdateParams struct {
 	Body *BgpAnnounceSetCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
@@ -9089,8 +9089,8 @@ func (p *NetworkingBgpAnnounceSetListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for NetworkingBgpAnnounceSetCreateParams are set
-func (p *NetworkingBgpAnnounceSetCreateParams) Validate() error {
+// Validate verifies all required fields for NetworkingBgpAnnounceSetUpdateParams are set
+func (p *NetworkingBgpAnnounceSetUpdateParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredObj(p.Body, "Body")
 	if !v.IsValid() {
@@ -10123,15 +10123,6 @@ const InstanceStateFailed InstanceState = "failed"
 // InstanceStateDestroyed represents the InstanceState `"destroyed"`.
 const InstanceStateDestroyed InstanceState = "destroyed"
 
-// IpKindSnat represents the IpKind `"snat"`.
-const IpKindSnat IpKind = "snat"
-
-// IpKindFloating represents the IpKind `"floating"`.
-const IpKindFloating IpKind = "floating"
-
-// IpKindEphemeral represents the IpKind `"ephemeral"`.
-const IpKindEphemeral IpKind = "ephemeral"
-
 // LinkFecFirecode represents the LinkFec `"firecode"`.
 const LinkFecFirecode LinkFec = "firecode"
 
@@ -10224,6 +10215,15 @@ const PhysicalDiskStateDecommissioned PhysicalDiskState = "decommissioned"
 
 // PingStatusOk represents the PingStatus `"ok"`.
 const PingStatusOk PingStatus = "ok"
+
+// ProbeExternalIpKindSnat represents the ProbeExternalIpKind `"snat"`.
+const ProbeExternalIpKindSnat ProbeExternalIpKind = "snat"
+
+// ProbeExternalIpKindFloating represents the ProbeExternalIpKind `"floating"`.
+const ProbeExternalIpKindFloating ProbeExternalIpKind = "floating"
+
+// ProbeExternalIpKindEphemeral represents the ProbeExternalIpKind `"ephemeral"`.
+const ProbeExternalIpKindEphemeral ProbeExternalIpKind = "ephemeral"
 
 // ProjectRoleAdmin represents the ProjectRole `"admin"`.
 const ProjectRoleAdmin ProjectRole = "admin"
@@ -10380,6 +10380,12 @@ const UnitCount Unit = "count"
 
 // UnitBytes represents the Unit `"bytes"`.
 const UnitBytes Unit = "bytes"
+
+// UnitSeconds represents the Unit `"seconds"`.
+const UnitSeconds Unit = "seconds"
+
+// UnitNanoseconds represents the Unit `"nanoseconds"`.
+const UnitNanoseconds Unit = "nanoseconds"
 
 // UserPasswordModePassword represents the UserPasswordMode `"password"`.
 const UserPasswordModePassword UserPasswordMode = "password"
@@ -10777,13 +10783,6 @@ var InstanceStates = []InstanceState{
 	InstanceStateStopping,
 }
 
-// IpKinds is the collection of all IpKind values.
-var IpKinds = []IpKind{
-	IpKindEphemeral,
-	IpKindFloating,
-	IpKindSnat,
-}
-
 // LinkFecs is the collection of all LinkFec values.
 var LinkFecs = []LinkFec{
 	LinkFecFirecode,
@@ -10857,6 +10856,13 @@ var PhysicalDiskStates = []PhysicalDiskState{
 // PingStatuses is the collection of all PingStatus values.
 var PingStatuses = []PingStatus{
 	PingStatusOk,
+}
+
+// ProbeExternalIpKinds is the collection of all ProbeExternalIpKind values.
+var ProbeExternalIpKinds = []ProbeExternalIpKind{
+	ProbeExternalIpKindEphemeral,
+	ProbeExternalIpKindFloating,
+	ProbeExternalIpKindSnat,
 }
 
 // ProjectRoles is the collection of all ProjectRole values.
@@ -10981,6 +10987,8 @@ var SystemMetricNames = []SystemMetricName{
 var Units = []Unit{
 	UnitBytes,
 	UnitCount,
+	UnitNanoseconds,
+	UnitSeconds,
 }
 
 // UserPasswordModes is the collection of all UserPasswordMode values.

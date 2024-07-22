@@ -6983,8 +6983,9 @@ func (c *Client) NetworkingBgpAnnounceSetList(ctx context.Context, params Networ
 	return &body, nil
 }
 
-// NetworkingBgpAnnounceSetCreate: Create new BGP announce set
-func (c *Client) NetworkingBgpAnnounceSetCreate(ctx context.Context, params NetworkingBgpAnnounceSetCreateParams) (*BgpAnnounceSet, error) {
+// NetworkingBgpAnnounceSetUpdate: Update BGP announce set
+// If the announce set exists, this endpoint replaces the existing announce set with the one specified.
+func (c *Client) NetworkingBgpAnnounceSetUpdate(ctx context.Context, params NetworkingBgpAnnounceSetUpdateParams) (*BgpAnnounceSet, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6998,7 +6999,7 @@ func (c *Client) NetworkingBgpAnnounceSetCreate(ctx context.Context, params Netw
 	req, err := c.buildRequest(
 		ctx,
 		b,
-		"POST",
+		"PUT",
 		resolveRelative(c.host, "/v1/system/networking/bgp-announce"),
 		map[string]string{},
 		map[string]string{},
