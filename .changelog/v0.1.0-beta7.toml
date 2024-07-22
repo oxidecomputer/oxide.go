@@ -4,7 +4,7 @@ description = "Several new endpoints in [#216](https://github.com/oxidecomputer/
 
 [[breaking]]
 title = "Networking"
-description = "The `NetworkingBgpAnnounceSetCreate` method has been replaced by `NetworkingBgpAnnounceSetUpdate` [#XXX](https://github.com/oxidecomputer/oxide.go/pull/XXX)."
+description = "The `NetworkingBgpAnnounceSetCreate` method has been replaced by `NetworkingBgpAnnounceSetUpdate` [#218](https://github.com/oxidecomputer/oxide.go/pull/218)."
 
 [[enhancements]]
 title = ""
