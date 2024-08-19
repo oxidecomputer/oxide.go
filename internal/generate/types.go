@@ -314,18 +314,19 @@ func constructEnums(enumStrCollection map[string][]string) []EnumTemplate {
 		sort.Strings(enums)
 		for _, enum := range enums {
 			// Most likely, the enum values are strings.
-			enumItems = enumItems + fmt.Sprintf("\t%s,\n", strcase.ToCamel(fmt.Sprintf("%s_%s", makeSingular(name), enum)))
+			enumItems = enumItems + fmt.Sprintf("\t%s,\n", strcase.ToCamel(fmt.Sprintf("%s_%s", name, enum)))
 		}
 
 		if enumItems == "" {
 			continue
 		}
 
-		enumVar := fmt.Sprintf("= []%s{\n", makeSingular(name)) + enumItems + "}"
+		enumVar := fmt.Sprintf("= []%s{\n", name) + enumItems + "}"
 
+		varName := name + "Collection"
 		enumTpl := EnumTemplate{
-			Description: fmt.Sprintf("// %s is the collection of all %s values.", makePlural(name), makeSingular(name)),
-			Name:        makePlural(name),
+			Description: fmt.Sprintf("// %s is the collection of all %s values.", varName, name),
+			Name:        varName,
 			ValueType:   "var",
 			Value:       enumVar,
 		}
@@ -551,8 +552,8 @@ func createTypeObject(schema *openapi3.Schema, name, typeName, description strin
 }
 
 func createStringEnum(s *openapi3.Schema, stringEnums map[string][]string, name, typeName string) (map[string][]string, []TypeTemplate, []EnumTemplate) {
-	singularTypename := makeSingular(typeName)
-	singularName := makeSingular(name)
+	singularTypename := typeName
+	singularName := name
 	typeTpls := make([]TypeTemplate, 0)
 
 	// Make sure we don't redeclare the enum type.

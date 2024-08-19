@@ -46,8 +46,8 @@ const DiskSourceTypeSnapshot DiskSourceType = "snapshot"
 // DiskSourceTypeImage represents the DiskSourceType `"image"`.
 const DiskSourceTypeImage DiskSourceType = "image"
 
-// DiskSourceTypes is the collection of all DiskSourceType values.
-var DiskSourceTypes = []DiskSourceType{
+// DiskSourceTypeCollection is the collection of all DiskSourceType values.
+var DiskSourceTypeCollection = []DiskSourceType{
 	DiskSourceTypeImage,
 	DiskSourceTypeSnapshot,
 }

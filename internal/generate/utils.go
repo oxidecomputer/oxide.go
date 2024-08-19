@@ -84,16 +84,6 @@ func makeSingular(s string) string {
 	return strings.TrimSuffix(s, "s")
 }
 
-// makePlural returns the given string but plural.
-func makePlural(s string) string {
-	singular := makeSingular(s)
-	if strings.HasSuffix(singular, "s") {
-		return singular + "es"
-	}
-
-	return singular + "s"
-}
-
 func trimStringFromSpace(s string) string {
 	if idx := strings.Index(s, " "); idx != -1 {
 		return s[:idx]

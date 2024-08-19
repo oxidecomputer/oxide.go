@@ -3103,14 +3103,6 @@ type InstanceDiskAttachment struct {
 	Type InstanceDiskAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
-// InstanceMigrate is migration parameters for an `Instance`
-//
-// Required fields:
-// - DstSledId
-type InstanceMigrate struct {
-	DstSledId string `json:"dst_sled_id,omitempty" yaml:"dst_sled_id,omitempty"`
-}
-
 // InstanceNetworkInterface is an `InstanceNetworkInterface` represents a virtual network interface device attached to an instance.
 //
 // Required fields:
@@ -3453,7 +3445,7 @@ type Ipv6Utilization struct {
 	Capacity string `json:"capacity,omitempty" yaml:"capacity,omitempty"`
 }
 
-// L4PortRange is an inclusive-inclusive range of IP ports. The second port may be omitted to represent a single port
+// L4PortRange is an inclusive-inclusive range of IP ports. The second port may be omitted to represent a single port.
 type L4PortRange string
 
 // LinkConfigCreate is switch link configuration.
@@ -3682,6 +3674,15 @@ type NetworkInterfaceKind struct {
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 	// Type is the type definition for a Type.
 	Type NetworkInterfaceKindType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// OxqlQueryResult is the result of a successful OxQL query.
+//
+// Required fields:
+// - Tables
+type OxqlQueryResult struct {
+	// Tables is tables resulting from the query, each containing timeseries.
+	Tables []Table `json:"tables,omitempty" yaml:"tables,omitempty"`
 }
 
 // PaginationOrder is the order in which the client wants to page through the requested collection
@@ -5287,8 +5288,8 @@ type TimeseriesSchema struct {
 	// TimeseriesName is names are constructed by concatenating the target and metric names with ':'. Target and metric names must be lowercase alphanumeric characters with '_' separating words.
 	TimeseriesName TimeseriesName `json:"timeseries_name,omitempty" yaml:"timeseries_name,omitempty"`
 	// Units is measurement units for timeseries samples.
-	Units   Unit `json:"units,omitempty" yaml:"units,omitempty"`
-	Version int  `json:"version,omitempty" yaml:"version,omitempty"`
+	Units   Units `json:"units,omitempty" yaml:"units,omitempty"`
+	Version int   `json:"version,omitempty" yaml:"version,omitempty"`
 }
 
 // TimeseriesSchemaResultsPage is a single page of results
@@ -5336,8 +5337,8 @@ type UninitializedSledResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// Unit is measurement units for timeseries samples.
-type Unit string
+// Units is the type definition for a Units.
+type Units string
 
 // User is view of a User
 //
@@ -5399,7 +5400,7 @@ type UserCreate struct {
 	Password UserPassword `json:"password,omitempty" yaml:"password,omitempty"`
 }
 
-// UserId is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+// UserId is usernames must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Usernames cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 type UserId string
 
 // UserPasswordMode is the type definition for a UserPasswordMode.
@@ -5451,7 +5452,7 @@ type UserResultsPage struct {
 type UsernamePasswordCredentials struct {
 	// Password is passwords may be subject to additional constraints.
 	Password Password `json:"password,omitempty" yaml:"password,omitempty"`
-	// Username is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Username is usernames must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Usernames cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Username UserId `json:"username,omitempty" yaml:"username,omitempty"`
 }
 
@@ -5546,11 +5547,9 @@ type ValueArray struct {
 // - MetricType
 // - Values
 type Values struct {
-	// MetricType is the type of the metric itself, indicating what its values represent.
+	// MetricType is the type of this metric.
 	MetricType MetricType `json:"metric_type,omitempty" yaml:"metric_type,omitempty"`
-	// Values is list of data values for one timeseries.
-	//
-	// Each element is an option, where `None` represents a missing sample.
+	// Values is the data values.
 	Values ValueArray `json:"values,omitempty" yaml:"values,omitempty"`
 }
 
@@ -5655,7 +5654,7 @@ type VpcFirewallRule struct {
 	Priority int `json:"priority,omitempty" yaml:"priority,omitempty"`
 	// Status is whether this rule is in effect
 	Status VpcFirewallRuleStatus `json:"status,omitempty" yaml:"status,omitempty"`
-	// Targets is list of sets of instances that the rule applies to
+	// Targets is determine the set of instances that the rule applies to
 	Targets []VpcFirewallRuleTarget `json:"targets,omitempty" yaml:"targets,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
@@ -5671,11 +5670,11 @@ type VpcFirewallRuleAction string
 // VpcFirewallRuleDirection is the type definition for a VpcFirewallRuleDirection.
 type VpcFirewallRuleDirection string
 
-// VpcFirewallRuleFilter is filter for a firewall rule. A given packet must match every field that is present for the rule to apply to it. A packet matches a field if any entry in that field matches the packet.
+// VpcFirewallRuleFilter is filters reduce the scope of a firewall rule. Without filters, the rule applies to all packets to the targets (or from the targets, if it's an outbound rule). With multiple filters, the rule applies only to packets matching ALL filters. The maximum number of each type of filter is 256.
 type VpcFirewallRuleFilter struct {
-	// Hosts is if present, the sources (if incoming) or destinations (if outgoing) this rule applies to.
+	// Hosts is if present, host filters match the "other end" of traffic from the target’s perspective: for an inbound rule, they match the source of traffic. For an outbound rule, they match the destination.
 	Hosts []VpcFirewallRuleHostFilter `json:"hosts,omitempty" yaml:"hosts,omitempty"`
-	// Ports is if present, the destination ports this rule applies to.
+	// Ports is if present, the destination ports or port ranges this rule applies to.
 	Ports []L4PortRange `json:"ports,omitempty" yaml:"ports,omitempty"`
 	// Protocols is if present, the networking protocols this rule applies to.
 	Protocols []VpcFirewallRuleProtocol `json:"protocols,omitempty" yaml:"protocols,omitempty"`
@@ -5807,7 +5806,7 @@ type VpcFirewallRuleTargetIpNet struct {
 	Value IpNet                     `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-// VpcFirewallRuleTarget is a `VpcFirewallRuleTarget` is used to specify the set of `Instance`s to which a firewall rule applies.
+// VpcFirewallRuleTarget is a `VpcFirewallRuleTarget` is used to specify the set of instances to which a firewall rule applies. You can target instances directly by name, or specify a VPC, VPC subnet, IP, or IP subnet, which will apply the rule to traffic going to all matching instances. Targets are additive: the rule applies to instances matching ANY target.
 type VpcFirewallRuleTarget struct {
 	// Type is the type definition for a Type.
 	Type VpcFirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
@@ -5841,11 +5840,11 @@ type VpcFirewallRuleUpdate struct {
 	Priority int `json:"priority,omitempty" yaml:"priority,omitempty"`
 	// Status is whether this rule is in effect
 	Status VpcFirewallRuleStatus `json:"status,omitempty" yaml:"status,omitempty"`
-	// Targets is list of sets of instances that the rule applies to
+	// Targets is determine the set of instances that the rule applies to
 	Targets []VpcFirewallRuleTarget `json:"targets,omitempty" yaml:"targets,omitempty"`
 }
 
-// VpcFirewallRuleUpdateParams is updateable properties of a `Vpc`'s firewall Note that VpcFirewallRules are implicitly created along with a Vpc, so there is no explicit creation.
+// VpcFirewallRuleUpdateParams is updated list of firewall rules. Will replace all existing rules.
 //
 // Required fields:
 // - Rules
@@ -6455,17 +6454,6 @@ type InstanceEphemeralIpAttachParams struct {
 	Instance NameOrId           `json:"instance,omitempty" yaml:"instance,omitempty"`
 	Project  NameOrId           `json:"project,omitempty" yaml:"project,omitempty"`
 	Body     *EphemeralIpCreate `json:"body,omitempty" yaml:"body,omitempty"`
-}
-
-// InstanceMigrateParams is the request parameters for InstanceMigrate
-//
-// Required fields:
-// - Instance
-// - Body
-type InstanceMigrateParams struct {
-	Project  NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
-	Instance NameOrId         `json:"instance,omitempty" yaml:"instance,omitempty"`
-	Body     *InstanceMigrate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // InstanceRebootParams is the request parameters for InstanceReboot
@@ -8219,17 +8207,6 @@ func (p *InstanceEphemeralIpDetachParams) Validate() error {
 
 // Validate verifies all required fields for InstanceEphemeralIpAttachParams are set
 func (p *InstanceEphemeralIpAttachParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Instance), "Instance")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for InstanceMigrateParams are set
-func (p *InstanceMigrateParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredObj(p.Body, "Body")
 	v.HasRequiredStr(string(p.Instance), "Instance")
@@ -10375,17 +10352,32 @@ const SystemMetricNameCpusProvisioned SystemMetricName = "cpus_provisioned"
 // SystemMetricNameRamProvisioned represents the SystemMetricName `"ram_provisioned"`.
 const SystemMetricNameRamProvisioned SystemMetricName = "ram_provisioned"
 
-// UnitCount represents the Unit `"count"`.
-const UnitCount Unit = "count"
+// UnitsCount represents the Units `"count"`.
+const UnitsCount Units = "count"
 
-// UnitBytes represents the Unit `"bytes"`.
-const UnitBytes Unit = "bytes"
+// UnitsBytes represents the Units `"bytes"`.
+const UnitsBytes Units = "bytes"
 
-// UnitSeconds represents the Unit `"seconds"`.
-const UnitSeconds Unit = "seconds"
+// UnitsSeconds represents the Units `"seconds"`.
+const UnitsSeconds Units = "seconds"
 
-// UnitNanoseconds represents the Unit `"nanoseconds"`.
-const UnitNanoseconds Unit = "nanoseconds"
+// UnitsNanoseconds represents the Units `"nanoseconds"`.
+const UnitsNanoseconds Units = "nanoseconds"
+
+// UnitsVolts represents the Units `"volts"`.
+const UnitsVolts Units = "volts"
+
+// UnitsAmps represents the Units `"amps"`.
+const UnitsAmps Units = "amps"
+
+// UnitsDegreesCelcius represents the Units `"degrees_celcius"`.
+const UnitsDegreesCelcius Units = "degrees_celcius"
+
+// UnitsNone represents the Units `"none"`.
+const UnitsNone Units = "none"
+
+// UnitsRpm represents the Units `"rpm"`.
+const UnitsRpm Units = "rpm"
 
 // UserPasswordModePassword represents the UserPasswordMode `"password"`.
 const UserPasswordModePassword UserPasswordMode = "password"
@@ -10474,42 +10466,42 @@ const VpcRouterKindSystem VpcRouterKind = "system"
 // VpcRouterKindCustom represents the VpcRouterKind `"custom"`.
 const VpcRouterKindCustom VpcRouterKind = "custom"
 
-// AddressLotKinds is the collection of all AddressLotKind values.
-var AddressLotKinds = []AddressLotKind{
+// AddressLotKindCollection is the collection of all AddressLotKind values.
+var AddressLotKindCollection = []AddressLotKind{
 	AddressLotKindInfra,
 	AddressLotKindPool,
 }
 
-// AllowedSourceIpsAllows is the collection of all AllowedSourceIpsAllow values.
-var AllowedSourceIpsAllows = []AllowedSourceIpsAllow{
+// AllowedSourceIpsAllowCollection is the collection of all AllowedSourceIpsAllow values.
+var AllowedSourceIpsAllowCollection = []AllowedSourceIpsAllow{
 	AllowedSourceIpsAllowAny,
 	AllowedSourceIpsAllowList,
 }
 
-// AuthzScopes is the collection of all AuthzScope values.
-var AuthzScopes = []AuthzScope{
+// AuthzScopeCollection is the collection of all AuthzScope values.
+var AuthzScopeCollection = []AuthzScope{
 	AuthzScopeFleet,
 	AuthzScopeProject,
 	AuthzScopeSilo,
 	AuthzScopeViewableToAll,
 }
 
-// BfdModes is the collection of all BfdMode values.
-var BfdModes = []BfdMode{
+// BfdModeCollection is the collection of all BfdMode values.
+var BfdModeCollection = []BfdMode{
 	BfdModeMultiHop,
 	BfdModeSingleHop,
 }
 
-// BfdStates is the collection of all BfdState values.
-var BfdStates = []BfdState{
+// BfdStateCollection is the collection of all BfdState values.
+var BfdStateCollection = []BfdState{
 	BfdStateAdminDown,
 	BfdStateDown,
 	BfdStateInit,
 	BfdStateUp,
 }
 
-// BgpPeerStates is the collection of all BgpPeerState values.
-var BgpPeerStates = []BgpPeerState{
+// BgpPeerStateCollection is the collection of all BgpPeerState values.
+var BgpPeerStateCollection = []BgpPeerState{
 	BgpPeerStateActive,
 	BgpPeerStateConnect,
 	BgpPeerStateEstablished,
@@ -10519,78 +10511,78 @@ var BgpPeerStates = []BgpPeerState{
 	BgpPeerStateSessionSetup,
 }
 
-// BinRangedoubleTypes is the collection of all BinRangedoubleType values.
-var BinRangedoubleTypes = []BinRangedoubleType{
+// BinRangedoubleTypeCollection is the collection of all BinRangedoubleType values.
+var BinRangedoubleTypeCollection = []BinRangedoubleType{
 	BinRangedoubleTypeRange,
 	BinRangedoubleTypeRangeFrom,
 	BinRangedoubleTypeRangeTo,
 }
 
-// BinRangefloatTypes is the collection of all BinRangefloatType values.
-var BinRangefloatTypes = []BinRangefloatType{
+// BinRangefloatTypeCollection is the collection of all BinRangefloatType values.
+var BinRangefloatTypeCollection = []BinRangefloatType{
 	BinRangefloatTypeRange,
 	BinRangefloatTypeRangeFrom,
 	BinRangefloatTypeRangeTo,
 }
 
-// BinRangeint16Types is the collection of all BinRangeint16Type values.
-var BinRangeint16Types = []BinRangeint16Type{
+// BinRangeint16TypeCollection is the collection of all BinRangeint16Type values.
+var BinRangeint16TypeCollection = []BinRangeint16Type{
 	BinRangeint16TypeRange,
 	BinRangeint16TypeRangeFrom,
 	BinRangeint16TypeRangeTo,
 }
 
-// BinRangeint32Types is the collection of all BinRangeint32Type values.
-var BinRangeint32Types = []BinRangeint32Type{
+// BinRangeint32TypeCollection is the collection of all BinRangeint32Type values.
+var BinRangeint32TypeCollection = []BinRangeint32Type{
 	BinRangeint32TypeRange,
 	BinRangeint32TypeRangeFrom,
 	BinRangeint32TypeRangeTo,
 }
 
-// BinRangeint64Types is the collection of all BinRangeint64Type values.
-var BinRangeint64Types = []BinRangeint64Type{
+// BinRangeint64TypeCollection is the collection of all BinRangeint64Type values.
+var BinRangeint64TypeCollection = []BinRangeint64Type{
 	BinRangeint64TypeRange,
 	BinRangeint64TypeRangeFrom,
 	BinRangeint64TypeRangeTo,
 }
 
-// BinRangeint8Types is the collection of all BinRangeint8Type values.
-var BinRangeint8Types = []BinRangeint8Type{
+// BinRangeint8TypeCollection is the collection of all BinRangeint8Type values.
+var BinRangeint8TypeCollection = []BinRangeint8Type{
 	BinRangeint8TypeRange,
 	BinRangeint8TypeRangeFrom,
 	BinRangeint8TypeRangeTo,
 }
 
-// BinRangeuint16Types is the collection of all BinRangeuint16Type values.
-var BinRangeuint16Types = []BinRangeuint16Type{
+// BinRangeuint16TypeCollection is the collection of all BinRangeuint16Type values.
+var BinRangeuint16TypeCollection = []BinRangeuint16Type{
 	BinRangeuint16TypeRange,
 	BinRangeuint16TypeRangeFrom,
 	BinRangeuint16TypeRangeTo,
 }
 
-// BinRangeuint32Types is the collection of all BinRangeuint32Type values.
-var BinRangeuint32Types = []BinRangeuint32Type{
+// BinRangeuint32TypeCollection is the collection of all BinRangeuint32Type values.
+var BinRangeuint32TypeCollection = []BinRangeuint32Type{
 	BinRangeuint32TypeRange,
 	BinRangeuint32TypeRangeFrom,
 	BinRangeuint32TypeRangeTo,
 }
 
-// BinRangeuint64Types is the collection of all BinRangeuint64Type values.
-var BinRangeuint64Types = []BinRangeuint64Type{
+// BinRangeuint64TypeCollection is the collection of all BinRangeuint64Type values.
+var BinRangeuint64TypeCollection = []BinRangeuint64Type{
 	BinRangeuint64TypeRange,
 	BinRangeuint64TypeRangeFrom,
 	BinRangeuint64TypeRangeTo,
 }
 
-// BinRangeuint8Types is the collection of all BinRangeuint8Type values.
-var BinRangeuint8Types = []BinRangeuint8Type{
+// BinRangeuint8TypeCollection is the collection of all BinRangeuint8Type values.
+var BinRangeuint8TypeCollection = []BinRangeuint8Type{
 	BinRangeuint8TypeRange,
 	BinRangeuint8TypeRangeFrom,
 	BinRangeuint8TypeRangeTo,
 }
 
-// DatumTypes is the collection of all DatumType values.
-var DatumTypes = []DatumType{
+// DatumTypeCollection is the collection of all DatumType values.
+var DatumTypeCollection = []DatumType{
 	DatumTypeBool,
 	DatumTypeBytes,
 	DatumTypeCumulativeF32,
@@ -10621,13 +10613,13 @@ var DatumTypes = []DatumType{
 	DatumTypeU8,
 }
 
-// DigestTypes is the collection of all DigestType values.
-var DigestTypes = []DigestType{
+// DigestTypeCollection is the collection of all DigestType values.
+var DigestTypeCollection = []DigestType{
 	DigestTypeSha256,
 }
 
-// DiskMetricNames is the collection of all DiskMetricName values.
-var DiskMetricNames = []DiskMetricName{
+// DiskMetricNameCollection is the collection of all DiskMetricName values.
+var DiskMetricNameCollection = []DiskMetricName{
 	DiskMetricNameActivated,
 	DiskMetricNameFlush,
 	DiskMetricNameRead,
@@ -10636,16 +10628,16 @@ var DiskMetricNames = []DiskMetricName{
 	DiskMetricNameWriteBytes,
 }
 
-// DiskSourceTypes is the collection of all DiskSourceType values.
-var DiskSourceTypes = []DiskSourceType{
+// DiskSourceTypeCollection is the collection of all DiskSourceType values.
+var DiskSourceTypeCollection = []DiskSourceType{
 	DiskSourceTypeBlank,
 	DiskSourceTypeImage,
 	DiskSourceTypeImportingBlocks,
 	DiskSourceTypeSnapshot,
 }
 
-// DiskStateStates is the collection of all DiskStateState values.
-var DiskStateStates = []DiskStateState{
+// DiskStateStateCollection is the collection of all DiskStateState values.
+var DiskStateStateCollection = []DiskStateState{
 	DiskStateStateAttached,
 	DiskStateStateAttaching,
 	DiskStateStateCreating,
@@ -10660,26 +10652,26 @@ var DiskStateStates = []DiskStateState{
 	DiskStateStateMaintenance,
 }
 
-// ExternalIpCreateTypes is the collection of all ExternalIpCreateType values.
-var ExternalIpCreateTypes = []ExternalIpCreateType{
+// ExternalIpCreateTypeCollection is the collection of all ExternalIpCreateType values.
+var ExternalIpCreateTypeCollection = []ExternalIpCreateType{
 	ExternalIpCreateTypeEphemeral,
 	ExternalIpCreateTypeFloating,
 }
 
-// ExternalIpKinds is the collection of all ExternalIpKind values.
-var ExternalIpKinds = []ExternalIpKind{
+// ExternalIpKindCollection is the collection of all ExternalIpKind values.
+var ExternalIpKindCollection = []ExternalIpKind{
 	ExternalIpKindEphemeral,
 	ExternalIpKindFloating,
 }
 
-// FieldSources is the collection of all FieldSource values.
-var FieldSources = []FieldSource{
+// FieldSourceCollection is the collection of all FieldSource values.
+var FieldSourceCollection = []FieldSource{
 	FieldSourceMetric,
 	FieldSourceTarget,
 }
 
-// FieldTypes is the collection of all FieldType values.
-var FieldTypes = []FieldType{
+// FieldTypeCollection is the collection of all FieldType values.
+var FieldTypeCollection = []FieldType{
 	FieldTypeBool,
 	FieldTypeI16,
 	FieldTypeI32,
@@ -10694,8 +10686,8 @@ var FieldTypes = []FieldType{
 	FieldTypeUuid,
 }
 
-// FieldValueTypes is the collection of all FieldValueType values.
-var FieldValueTypes = []FieldValueType{
+// FieldValueTypeCollection is the collection of all FieldValueType values.
+var FieldValueTypeCollection = []FieldValueType{
 	FieldValueTypeBool,
 	FieldValueTypeI16,
 	FieldValueTypeI32,
@@ -10710,67 +10702,67 @@ var FieldValueTypes = []FieldValueType{
 	FieldValueTypeUuid,
 }
 
-// FleetRoles is the collection of all FleetRole values.
-var FleetRoles = []FleetRole{
+// FleetRoleCollection is the collection of all FleetRole values.
+var FleetRoleCollection = []FleetRole{
 	FleetRoleAdmin,
 	FleetRoleCollaborator,
 	FleetRoleViewer,
 }
 
-// FloatingIpParentKinds is the collection of all FloatingIpParentKind values.
-var FloatingIpParentKinds = []FloatingIpParentKind{
+// FloatingIpParentKindCollection is the collection of all FloatingIpParentKind values.
+var FloatingIpParentKindCollection = []FloatingIpParentKind{
 	FloatingIpParentKindInstance,
 }
 
-// IdSortModes is the collection of all IdSortMode values.
-var IdSortModes = []IdSortMode{
+// IdSortModeCollection is the collection of all IdSortMode values.
+var IdSortModeCollection = []IdSortMode{
 	IdSortModeIdAscending,
 }
 
-// IdentityProviderTypes is the collection of all IdentityProviderType values.
-var IdentityProviderTypes = []IdentityProviderType{
+// IdentityProviderTypeCollection is the collection of all IdentityProviderType values.
+var IdentityProviderTypeCollection = []IdentityProviderType{
 	IdentityProviderTypeSaml,
 }
 
-// IdentityTypes is the collection of all IdentityType values.
-var IdentityTypes = []IdentityType{
+// IdentityTypeCollection is the collection of all IdentityType values.
+var IdentityTypeCollection = []IdentityType{
 	IdentityTypeSiloGroup,
 	IdentityTypeSiloUser,
 }
 
-// IdpMetadataSourceTypes is the collection of all IdpMetadataSourceType values.
-var IdpMetadataSourceTypes = []IdpMetadataSourceType{
+// IdpMetadataSourceTypeCollection is the collection of all IdpMetadataSourceType values.
+var IdpMetadataSourceTypeCollection = []IdpMetadataSourceType{
 	IdpMetadataSourceTypeBase64EncodedXml,
 	IdpMetadataSourceTypeUrl,
 }
 
-// ImageSourceTypes is the collection of all ImageSourceType values.
-var ImageSourceTypes = []ImageSourceType{
+// ImageSourceTypeCollection is the collection of all ImageSourceType values.
+var ImageSourceTypeCollection = []ImageSourceType{
 	ImageSourceTypeSnapshot,
 	ImageSourceTypeYouCanBootAnythingAsLongAsItsAlpine,
 }
 
-// ImportExportPolicyTypes is the collection of all ImportExportPolicyType values.
-var ImportExportPolicyTypes = []ImportExportPolicyType{
+// ImportExportPolicyTypeCollection is the collection of all ImportExportPolicyType values.
+var ImportExportPolicyTypeCollection = []ImportExportPolicyType{
 	ImportExportPolicyTypeAllow,
 	ImportExportPolicyTypeNoFiltering,
 }
 
-// InstanceDiskAttachmentTypes is the collection of all InstanceDiskAttachmentType values.
-var InstanceDiskAttachmentTypes = []InstanceDiskAttachmentType{
+// InstanceDiskAttachmentTypeCollection is the collection of all InstanceDiskAttachmentType values.
+var InstanceDiskAttachmentTypeCollection = []InstanceDiskAttachmentType{
 	InstanceDiskAttachmentTypeAttach,
 	InstanceDiskAttachmentTypeCreate,
 }
 
-// InstanceNetworkInterfaceAttachmentTypes is the collection of all InstanceNetworkInterfaceAttachmentType values.
-var InstanceNetworkInterfaceAttachmentTypes = []InstanceNetworkInterfaceAttachmentType{
+// InstanceNetworkInterfaceAttachmentTypeCollection is the collection of all InstanceNetworkInterfaceAttachmentType values.
+var InstanceNetworkInterfaceAttachmentTypeCollection = []InstanceNetworkInterfaceAttachmentType{
 	InstanceNetworkInterfaceAttachmentTypeCreate,
 	InstanceNetworkInterfaceAttachmentTypeDefault,
 	InstanceNetworkInterfaceAttachmentTypeNone,
 }
 
-// InstanceStates is the collection of all InstanceState values.
-var InstanceStates = []InstanceState{
+// InstanceStateCollection is the collection of all InstanceState values.
+var InstanceStateCollection = []InstanceState{
 	InstanceStateCreating,
 	InstanceStateDestroyed,
 	InstanceStateFailed,
@@ -10783,15 +10775,15 @@ var InstanceStates = []InstanceState{
 	InstanceStateStopping,
 }
 
-// LinkFecs is the collection of all LinkFec values.
-var LinkFecs = []LinkFec{
+// LinkFecCollection is the collection of all LinkFec values.
+var LinkFecCollection = []LinkFec{
 	LinkFecFirecode,
 	LinkFecNone,
 	LinkFecRs,
 }
 
-// LinkSpeeds is the collection of all LinkSpeed values.
-var LinkSpeeds = []LinkSpeed{
+// LinkSpeedCollection is the collection of all LinkSpeed values.
+var LinkSpeedCollection = []LinkSpeed{
 	LinkSpeedSpeed0G,
 	LinkSpeedSpeed100G,
 	LinkSpeedSpeed10G,
@@ -10803,85 +10795,85 @@ var LinkSpeeds = []LinkSpeed{
 	LinkSpeedSpeed50G,
 }
 
-// MetricTypes is the collection of all MetricType values.
-var MetricTypes = []MetricType{
+// MetricTypeCollection is the collection of all MetricType values.
+var MetricTypeCollection = []MetricType{
 	MetricTypeCumulative,
 	MetricTypeDelta,
 	MetricTypeGauge,
 }
 
-// NameOrIdSortModes is the collection of all NameOrIdSortMode values.
-var NameOrIdSortModes = []NameOrIdSortMode{
+// NameOrIdSortModeCollection is the collection of all NameOrIdSortMode values.
+var NameOrIdSortModeCollection = []NameOrIdSortMode{
 	NameOrIdSortModeIdAscending,
 	NameOrIdSortModeNameAscending,
 	NameOrIdSortModeNameDescending,
 }
 
-// NameSortModes is the collection of all NameSortMode values.
-var NameSortModes = []NameSortMode{
+// NameSortModeCollection is the collection of all NameSortMode values.
+var NameSortModeCollection = []NameSortMode{
 	NameSortModeNameAscending,
 }
 
-// NetworkInterfaceKindTypes is the collection of all NetworkInterfaceKindType values.
-var NetworkInterfaceKindTypes = []NetworkInterfaceKindType{
+// NetworkInterfaceKindTypeCollection is the collection of all NetworkInterfaceKindType values.
+var NetworkInterfaceKindTypeCollection = []NetworkInterfaceKindType{
 	NetworkInterfaceKindTypeInstance,
 	NetworkInterfaceKindTypeProbe,
 	NetworkInterfaceKindTypeService,
 }
 
-// PaginationOrders is the collection of all PaginationOrder values.
-var PaginationOrders = []PaginationOrder{
+// PaginationOrderCollection is the collection of all PaginationOrder values.
+var PaginationOrderCollection = []PaginationOrder{
 	PaginationOrderAscending,
 	PaginationOrderDescending,
 }
 
-// PhysicalDiskKinds is the collection of all PhysicalDiskKind values.
-var PhysicalDiskKinds = []PhysicalDiskKind{
+// PhysicalDiskKindCollection is the collection of all PhysicalDiskKind values.
+var PhysicalDiskKindCollection = []PhysicalDiskKind{
 	PhysicalDiskKindM2,
 	PhysicalDiskKindU2,
 }
 
-// PhysicalDiskPolicyKinds is the collection of all PhysicalDiskPolicyKind values.
-var PhysicalDiskPolicyKinds = []PhysicalDiskPolicyKind{
+// PhysicalDiskPolicyKindCollection is the collection of all PhysicalDiskPolicyKind values.
+var PhysicalDiskPolicyKindCollection = []PhysicalDiskPolicyKind{
 	PhysicalDiskPolicyKindExpunged,
 	PhysicalDiskPolicyKindInService,
 }
 
-// PhysicalDiskStates is the collection of all PhysicalDiskState values.
-var PhysicalDiskStates = []PhysicalDiskState{
+// PhysicalDiskStateCollection is the collection of all PhysicalDiskState values.
+var PhysicalDiskStateCollection = []PhysicalDiskState{
 	PhysicalDiskStateActive,
 	PhysicalDiskStateDecommissioned,
 }
 
-// PingStatuses is the collection of all PingStatus values.
-var PingStatuses = []PingStatus{
+// PingStatusCollection is the collection of all PingStatus values.
+var PingStatusCollection = []PingStatus{
 	PingStatusOk,
 }
 
-// ProbeExternalIpKinds is the collection of all ProbeExternalIpKind values.
-var ProbeExternalIpKinds = []ProbeExternalIpKind{
+// ProbeExternalIpKindCollection is the collection of all ProbeExternalIpKind values.
+var ProbeExternalIpKindCollection = []ProbeExternalIpKind{
 	ProbeExternalIpKindEphemeral,
 	ProbeExternalIpKindFloating,
 	ProbeExternalIpKindSnat,
 }
 
-// ProjectRoles is the collection of all ProjectRole values.
-var ProjectRoles = []ProjectRole{
+// ProjectRoleCollection is the collection of all ProjectRole values.
+var ProjectRoleCollection = []ProjectRole{
 	ProjectRoleAdmin,
 	ProjectRoleCollaborator,
 	ProjectRoleViewer,
 }
 
-// RouteDestinationTypes is the collection of all RouteDestinationType values.
-var RouteDestinationTypes = []RouteDestinationType{
+// RouteDestinationTypeCollection is the collection of all RouteDestinationType values.
+var RouteDestinationTypeCollection = []RouteDestinationType{
 	RouteDestinationTypeIp,
 	RouteDestinationTypeIpNet,
 	RouteDestinationTypeSubnet,
 	RouteDestinationTypeVpc,
 }
 
-// RouteTargetTypes is the collection of all RouteTargetType values.
-var RouteTargetTypes = []RouteTargetType{
+// RouteTargetTypeCollection is the collection of all RouteTargetType values.
+var RouteTargetTypeCollection = []RouteTargetType{
 	RouteTargetTypeDrop,
 	RouteTargetTypeInstance,
 	RouteTargetTypeInternetGateway,
@@ -10890,115 +10882,120 @@ var RouteTargetTypes = []RouteTargetType{
 	RouteTargetTypeVpc,
 }
 
-// RouterRouteKinds is the collection of all RouterRouteKind values.
-var RouterRouteKinds = []RouterRouteKind{
+// RouterRouteKindCollection is the collection of all RouterRouteKind values.
+var RouterRouteKindCollection = []RouterRouteKind{
 	RouterRouteKindCustom,
 	RouterRouteKindDefault,
 	RouterRouteKindVpcPeering,
 	RouterRouteKindVpcSubnet,
 }
 
-// ServiceUsingCertificates is the collection of all ServiceUsingCertificate values.
-var ServiceUsingCertificates = []ServiceUsingCertificate{
+// ServiceUsingCertificateCollection is the collection of all ServiceUsingCertificate values.
+var ServiceUsingCertificateCollection = []ServiceUsingCertificate{
 	ServiceUsingCertificateExternalApi,
 }
 
-// SiloIdentityModes is the collection of all SiloIdentityMode values.
-var SiloIdentityModes = []SiloIdentityMode{
+// SiloIdentityModeCollection is the collection of all SiloIdentityMode values.
+var SiloIdentityModeCollection = []SiloIdentityMode{
 	SiloIdentityModeLocalOnly,
 	SiloIdentityModeSamlJit,
 }
 
-// SiloRoles is the collection of all SiloRole values.
-var SiloRoles = []SiloRole{
+// SiloRoleCollection is the collection of all SiloRole values.
+var SiloRoleCollection = []SiloRole{
 	SiloRoleAdmin,
 	SiloRoleCollaborator,
 	SiloRoleViewer,
 }
 
-// SledPolicyKinds is the collection of all SledPolicyKind values.
-var SledPolicyKinds = []SledPolicyKind{
+// SledPolicyKindCollection is the collection of all SledPolicyKind values.
+var SledPolicyKindCollection = []SledPolicyKind{
 	SledPolicyKindExpunged,
 	SledPolicyKindInService,
 }
 
-// SledProvisionPolicys is the collection of all SledProvisionPolicy values.
-var SledProvisionPolicys = []SledProvisionPolicy{
+// SledProvisionPolicyCollection is the collection of all SledProvisionPolicy values.
+var SledProvisionPolicyCollection = []SledProvisionPolicy{
 	SledProvisionPolicyNonProvisionable,
 	SledProvisionPolicyProvisionable,
 }
 
-// SledStates is the collection of all SledState values.
-var SledStates = []SledState{
+// SledStateCollection is the collection of all SledState values.
+var SledStateCollection = []SledState{
 	SledStateActive,
 	SledStateDecommissioned,
 }
 
-// SnapshotStates is the collection of all SnapshotState values.
-var SnapshotStates = []SnapshotState{
+// SnapshotStateCollection is the collection of all SnapshotState values.
+var SnapshotStateCollection = []SnapshotState{
 	SnapshotStateCreating,
 	SnapshotStateDestroyed,
 	SnapshotStateFaulted,
 	SnapshotStateReady,
 }
 
-// SwitchInterfaceKind2s is the collection of all SwitchInterfaceKind2 values.
-var SwitchInterfaceKind2s = []SwitchInterfaceKind2{
+// SwitchInterfaceKind2Collection is the collection of all SwitchInterfaceKind2 values.
+var SwitchInterfaceKind2Collection = []SwitchInterfaceKind2{
 	SwitchInterfaceKind2Loopback,
 	SwitchInterfaceKind2Primary,
 	SwitchInterfaceKind2Vlan,
 }
 
-// SwitchInterfaceKindTypes is the collection of all SwitchInterfaceKindType values.
-var SwitchInterfaceKindTypes = []SwitchInterfaceKindType{
+// SwitchInterfaceKindTypeCollection is the collection of all SwitchInterfaceKindType values.
+var SwitchInterfaceKindTypeCollection = []SwitchInterfaceKindType{
 	SwitchInterfaceKindTypeLoopback,
 	SwitchInterfaceKindTypePrimary,
 	SwitchInterfaceKindTypeVlan,
 }
 
-// SwitchLocations is the collection of all SwitchLocation values.
-var SwitchLocations = []SwitchLocation{
+// SwitchLocationCollection is the collection of all SwitchLocation values.
+var SwitchLocationCollection = []SwitchLocation{
 	SwitchLocationSwitch0,
 	SwitchLocationSwitch1,
 }
 
-// SwitchPortGeometrys is the collection of all SwitchPortGeometry values.
-var SwitchPortGeometrys = []SwitchPortGeometry{
+// SwitchPortGeometryCollection is the collection of all SwitchPortGeometry values.
+var SwitchPortGeometryCollection = []SwitchPortGeometry{
 	SwitchPortGeometryQsfp28X1,
 	SwitchPortGeometryQsfp28X2,
 	SwitchPortGeometrySfp28X4,
 }
 
-// SwitchPortGeometry2s is the collection of all SwitchPortGeometry2 values.
-var SwitchPortGeometry2s = []SwitchPortGeometry2{
+// SwitchPortGeometry2Collection is the collection of all SwitchPortGeometry2 values.
+var SwitchPortGeometry2Collection = []SwitchPortGeometry2{
 	SwitchPortGeometry2Qsfp28X1,
 	SwitchPortGeometry2Qsfp28X2,
 	SwitchPortGeometry2Sfp28X4,
 }
 
-// SystemMetricNames is the collection of all SystemMetricName values.
-var SystemMetricNames = []SystemMetricName{
+// SystemMetricNameCollection is the collection of all SystemMetricName values.
+var SystemMetricNameCollection = []SystemMetricName{
 	SystemMetricNameCpusProvisioned,
 	SystemMetricNameRamProvisioned,
 	SystemMetricNameVirtualDiskSpaceProvisioned,
 }
 
-// Units is the collection of all Unit values.
-var Units = []Unit{
-	UnitBytes,
-	UnitCount,
-	UnitNanoseconds,
-	UnitSeconds,
+// UnitsCollection is the collection of all Units values.
+var UnitsCollection = []Units{
+	UnitsAmps,
+	UnitsBytes,
+	UnitsCount,
+	UnitsDegreesCelcius,
+	UnitsNanoseconds,
+	UnitsNone,
+	UnitsRpm,
+	UnitsSeconds,
+	UnitsVolts,
 }
 
-// UserPasswordModes is the collection of all UserPasswordMode values.
-var UserPasswordModes = []UserPasswordMode{
+// UserPasswordModeCollection is the collection of all UserPasswordMode values.
+var UserPasswordModeCollection = []UserPasswordMode{
 	UserPasswordModeLoginDisallowed,
 	UserPasswordModePassword,
 }
 
-// ValueArrayTypes is the collection of all ValueArrayType values.
-var ValueArrayTypes = []ValueArrayType{
+// ValueArrayTypeCollection is the collection of all ValueArrayType values.
+var ValueArrayTypeCollection = []ValueArrayType{
 	ValueArrayTypeBoolean,
 	ValueArrayTypeDouble,
 	ValueArrayTypeDoubleDistribution,
@@ -11007,20 +11004,20 @@ var ValueArrayTypes = []ValueArrayType{
 	ValueArrayTypeString,
 }
 
-// VpcFirewallRuleActions is the collection of all VpcFirewallRuleAction values.
-var VpcFirewallRuleActions = []VpcFirewallRuleAction{
+// VpcFirewallRuleActionCollection is the collection of all VpcFirewallRuleAction values.
+var VpcFirewallRuleActionCollection = []VpcFirewallRuleAction{
 	VpcFirewallRuleActionAllow,
 	VpcFirewallRuleActionDeny,
 }
 
-// VpcFirewallRuleDirections is the collection of all VpcFirewallRuleDirection values.
-var VpcFirewallRuleDirections = []VpcFirewallRuleDirection{
+// VpcFirewallRuleDirectionCollection is the collection of all VpcFirewallRuleDirection values.
+var VpcFirewallRuleDirectionCollection = []VpcFirewallRuleDirection{
 	VpcFirewallRuleDirectionInbound,
 	VpcFirewallRuleDirectionOutbound,
 }
 
-// VpcFirewallRuleHostFilterTypes is the collection of all VpcFirewallRuleHostFilterType values.
-var VpcFirewallRuleHostFilterTypes = []VpcFirewallRuleHostFilterType{
+// VpcFirewallRuleHostFilterTypeCollection is the collection of all VpcFirewallRuleHostFilterType values.
+var VpcFirewallRuleHostFilterTypeCollection = []VpcFirewallRuleHostFilterType{
 	VpcFirewallRuleHostFilterTypeInstance,
 	VpcFirewallRuleHostFilterTypeIp,
 	VpcFirewallRuleHostFilterTypeIpNet,
@@ -11028,21 +11025,21 @@ var VpcFirewallRuleHostFilterTypes = []VpcFirewallRuleHostFilterType{
 	VpcFirewallRuleHostFilterTypeVpc,
 }
 
-// VpcFirewallRuleProtocols is the collection of all VpcFirewallRuleProtocol values.
-var VpcFirewallRuleProtocols = []VpcFirewallRuleProtocol{
+// VpcFirewallRuleProtocolCollection is the collection of all VpcFirewallRuleProtocol values.
+var VpcFirewallRuleProtocolCollection = []VpcFirewallRuleProtocol{
 	VpcFirewallRuleProtocolIcmp,
 	VpcFirewallRuleProtocolTcp,
 	VpcFirewallRuleProtocolUdp,
 }
 
-// VpcFirewallRuleStatuses is the collection of all VpcFirewallRuleStatus values.
-var VpcFirewallRuleStatuses = []VpcFirewallRuleStatus{
+// VpcFirewallRuleStatusCollection is the collection of all VpcFirewallRuleStatus values.
+var VpcFirewallRuleStatusCollection = []VpcFirewallRuleStatus{
 	VpcFirewallRuleStatusDisabled,
 	VpcFirewallRuleStatusEnabled,
 }
 
-// VpcFirewallRuleTargetTypes is the collection of all VpcFirewallRuleTargetType values.
-var VpcFirewallRuleTargetTypes = []VpcFirewallRuleTargetType{
+// VpcFirewallRuleTargetTypeCollection is the collection of all VpcFirewallRuleTargetType values.
+var VpcFirewallRuleTargetTypeCollection = []VpcFirewallRuleTargetType{
 	VpcFirewallRuleTargetTypeInstance,
 	VpcFirewallRuleTargetTypeIp,
 	VpcFirewallRuleTargetTypeIpNet,
@@ -11050,8 +11047,8 @@ var VpcFirewallRuleTargetTypes = []VpcFirewallRuleTargetType{
 	VpcFirewallRuleTargetTypeVpc,
 }
 
-// VpcRouterKinds is the collection of all VpcRouterKind values.
-var VpcRouterKinds = []VpcRouterKind{
+// VpcRouterKindCollection is the collection of all VpcRouterKind values.
+var VpcRouterKindCollection = []VpcRouterKind{
 	VpcRouterKindCustom,
 	VpcRouterKindSystem,
 }
