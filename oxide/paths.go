@@ -2073,60 +2073,6 @@ func (c *Client) InstanceEphemeralIpDetach(ctx context.Context, params InstanceE
 	return nil
 }
 
-// InstanceMigrate: Migrate an instance
-func (c *Client) InstanceMigrate(ctx context.Context, params InstanceMigrateParams) (*Instance, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
-
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/instances/{{.instance}}/migrate"),
-		map[string]string{
-			"instance": string(params.Instance),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body Instance
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
 // InstanceReboot: Reboot an instance
 func (c *Client) InstanceReboot(ctx context.Context, params InstanceRebootParams) (*Instance, error) {
 	if err := params.Validate(); err != nil {
@@ -8721,7 +8667,7 @@ func (c *Client) SiloUtilizationView(ctx context.Context, params SiloUtilization
 
 // TimeseriesQuery: Run timeseries query
 // Queries are written in OxQL.
-func (c *Client) TimeseriesQuery(ctx context.Context, params TimeseriesQueryParams) (*[]Table, error) {
+func (c *Client) TimeseriesQuery(ctx context.Context, params TimeseriesQueryParams) (*OxqlQueryResult, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8761,7 +8707,7 @@ func (c *Client) TimeseriesQuery(ctx context.Context, params TimeseriesQueryPara
 		return nil, errors.New("request returned an empty body in the response")
 	}
 
-	var body []Table
+	var body OxqlQueryResult
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -9011,6 +8957,11 @@ func (c *Client) VpcFirewallRulesView(ctx context.Context, params VpcFirewallRul
 }
 
 // VpcFirewallRulesUpdate: Replace firewall rules
+// The maximum number of rules per VPC is 1024.
+//
+// Targets are used to specify the set of instances to which a firewall rule applies. You can target instances directly by name, or specify a VPC, VPC subnet, IP, or IP subnet, which will apply the rule to traffic going to all matching instances. Targets are additive: the rule applies to instances matching ANY target. The maximum number of targets is 256.
+//
+// Filters reduce the scope of a firewall rule. Without filters, the rule applies to all packets to the targets (or from the targets, if it's an outbound rule). With multiple filters, the rule applies only to packets matching ALL filters. The maximum number of each type of filter is 256.
 func (c *Client) VpcFirewallRulesUpdate(ctx context.Context, params VpcFirewallRulesUpdateParams) (*VpcFirewallRules, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err

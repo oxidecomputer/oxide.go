@@ -3,12 +3,16 @@ title = ""
 description = ""
 
 [[breaking]]
-title = ""
-description = ""
+title = "Enums"
+description = "All 'enum' collection variables have been changed. The word 'Collection' has been appended to all variable names. [#223](https://github.com/oxidecomputer/oxide.go/pull/223)"
+
+[[breaking]]
+title = "Instances"
+description = "The migration endpoint has been removed. [#223](https://github.com/oxidecomputer/oxide.go/pull/223)"
 
 [[enhancements]]
-title = ""
-description = ""
+title = "Metrics"
+description = "The 'TimeseriesSchema' type now has additional fields. [#223](https://github.com/oxidecomputer/oxide.go/pull/223)"
 
 [[bugs]]
 title = ""

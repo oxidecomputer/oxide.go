@@ -76,24 +76,6 @@ func toLowerFirstLetter(str string) string {
 	return ""
 }
 
-// makeSingular returns the given string but singular.
-func makeSingular(s string) string {
-	if strings.HasSuffix(s, "Status") {
-		return s
-	}
-	return strings.TrimSuffix(s, "s")
-}
-
-// makePlural returns the given string but plural.
-func makePlural(s string) string {
-	singular := makeSingular(s)
-	if strings.HasSuffix(singular, "s") {
-		return singular + "es"
-	}
-
-	return singular + "s"
-}
-
 func trimStringFromSpace(s string) string {
 	if idx := strings.Index(s, " "); idx != -1 {
 		return s[:idx]
@@ -177,7 +159,7 @@ func getReferenceSchema(v *openapi3.SchemaRef) string {
 	if v.Ref != "" {
 		ref := strings.TrimPrefix(v.Ref, "#/components/schemas/")
 		if len(v.Value.Enum) > 0 {
-			return strcase.ToCamel(makeSingular(ref))
+			return strcase.ToCamel(ref)
 		}
 
 		return strcase.ToCamel(ref)
