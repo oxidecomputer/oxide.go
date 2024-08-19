@@ -552,20 +552,18 @@ func createTypeObject(schema *openapi3.Schema, name, typeName, description strin
 }
 
 func createStringEnum(s *openapi3.Schema, stringEnums map[string][]string, name, typeName string) (map[string][]string, []TypeTemplate, []EnumTemplate) {
-	singularTypename := typeName
-	singularName := name
 	typeTpls := make([]TypeTemplate, 0)
 
 	// Make sure we don't redeclare the enum type.
-	if _, ok := stringEnums[singularTypename]; !ok {
+	if _, ok := stringEnums[typeName]; !ok {
 		typeTpl := TypeTemplate{
-			Description: formatTypeDescription(singularName, s),
-			Name:        singularTypename,
+			Description: formatTypeDescription(name, s),
+			Name:        typeName,
 			Type:        "string",
 		}
 
 		typeTpls = append(typeTpls, typeTpl)
-		stringEnums[singularTypename] = []string{}
+		stringEnums[typeName] = []string{}
 	}
 
 	enumTpls := make([]EnumTemplate, 0)
@@ -577,19 +575,19 @@ func createStringEnum(s *openapi3.Schema, stringEnums map[string][]string, name,
 			fmt.Printf("[WARN] TODO: enum value is not a string for %q -> %#v\n", name, v)
 			continue
 		}
-		snakeCaseTypeName := fmt.Sprintf("%s_%s", singularName, enum)
+		snakeCaseTypeName := fmt.Sprintf("%s_%s", name, enum)
 
 		enumTpl := EnumTemplate{
-			Description: fmt.Sprintf("// %s represents the %s `%q`.", strcase.ToCamel(snakeCaseTypeName), singularName, enum),
+			Description: fmt.Sprintf("// %s represents the %s `%q`.", strcase.ToCamel(snakeCaseTypeName), name, enum),
 			Name:        strcase.ToCamel(snakeCaseTypeName),
 			ValueType:   "const",
-			Value:       fmt.Sprintf("%s = %q", singularName, enum),
+			Value:       fmt.Sprintf("%s = %q", name, enum),
 		}
 
 		enumTpls = append(enumTpls, enumTpl)
 
 		// Add the enum type to the list of enum types.
-		stringEnums[singularTypename] = append(stringEnums[singularTypename], enum)
+		stringEnums[typeName] = append(stringEnums[typeName], enum)
 	}
 
 	return stringEnums, typeTpls, enumTpls
@@ -609,27 +607,25 @@ func createStringEnum(s *openapi3.Schema, stringEnums map[string][]string, name,
 // Probably not the best approach, but will leave them this way until I come up with
 // a more idiomatic solution. Keep an eye out on this one to refine.
 func createAllOf(s *openapi3.Schema, stringEnums map[string][]string, name, typeName string) []TypeTemplate {
-	singularTypename := makeSingular(typeName)
-	singularName := makeSingular(name)
 	typeTpls := make([]TypeTemplate, 0)
 
 	// Make sure we don't redeclare the enum type.
-	if _, ok := stringEnums[singularTypename]; !ok {
+	if _, ok := stringEnums[typeName]; !ok {
 		typeTpl := TypeTemplate{
-			Description: formatTypeDescription(singularName, s),
-			Name:        singularTypename,
+			Description: formatTypeDescription(name, s),
+			Name:        typeName,
 			Type:        "interface{}",
 		}
 
 		// TODO: See above about making a more idiomatic approach, this is a small workaround
 		// until https://github.com/oxidecomputer/oxide.go/issues/67 is done
-		if singularTypename == "NameOrId" {
+		if typeName == "NameOrId" {
 			typeTpl.Type = "string"
 		}
 
 		typeTpls = append(typeTpls, typeTpl)
 
-		stringEnums[singularTypename] = []string{}
+		stringEnums[typeName] = []string{}
 	}
 
 	return typeTpls
