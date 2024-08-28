@@ -144,6 +144,13 @@ func buildMethod(f *os.File, spec *openapi3.T, method string, path string, o *op
 	pInfo := buildParams(o, methodName)
 
 	// Adapt for ListAll methods
+
+	if isGetAllPages {
+		if respType == "" && pagedRespType == "" {
+			return nil
+		}
+	}
+
 	if isGetAllPages && len(pagedRespType) > 0 {
 		respType = pagedRespType
 	}
@@ -247,6 +254,7 @@ func getSuccessResponseType(o *openapi3.Operation, isGetAllPages bool) (string, 
 					getAllPagesType = convertToValidGoType("", items)
 				} else {
 					fmt.Printf("[WARN] TODO: skipping response for %q, since it is a get all pages response and has no `items` property:\n%#v\n", o.OperationID, content.Schema.Value.Properties)
+					return "", "", nil
 				}
 			}
 			if content.Schema.Ref != "" {
