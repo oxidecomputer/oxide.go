@@ -239,7 +239,25 @@
                 "type": "string"
             },
             "IpPoolResultsPage": {
-                "type": "string"
+              "description": "A single page of results",
+              "type": "object",
+              "properties": {
+                "items": {
+                  "description": "list of items on this page of results",
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IpPool"
+                  }
+                },
+                "next_page": {
+                  "nullable": true,
+                  "description": "token used to fetch the next page of results (if any)",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "items"
+              ]
             },
             "Error": {
                 "type": "string"

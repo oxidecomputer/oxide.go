@@ -6883,8 +6883,10 @@ func (c *Client) NetworkingBgpConfigDelete(ctx context.Context, params Networkin
 	return nil
 }
 
-// NetworkingBgpAnnounceSetList: Get originated routes for a BGP configuration
-func (c *Client) NetworkingBgpAnnounceSetList(ctx context.Context, params NetworkingBgpAnnounceSetListParams) (*[]BgpAnnouncement, error) {
+// NetworkingBgpAnnounceSetList: List BGP announce sets
+//
+// To iterate over all pages, use the `NetworkingBgpAnnounceSetListAllPages` method, instead.
+func (c *Client) NetworkingBgpAnnounceSetList(ctx context.Context, params NetworkingBgpAnnounceSetListParams) (*[]BgpAnnounceSet, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6893,10 +6895,13 @@ func (c *Client) NetworkingBgpAnnounceSetList(ctx context.Context, params Networ
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.host, "/v1/system/networking/bgp-announce"),
+		resolveRelative(c.host, "/v1/system/networking/bgp-announce-set"),
 		map[string]string{},
 		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
 			"name_or_id": string(params.NameOrId),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
 		},
 	)
 	if err != nil {
@@ -6920,7 +6925,7 @@ func (c *Client) NetworkingBgpAnnounceSetList(ctx context.Context, params Networ
 		return nil, errors.New("request returned an empty body in the response")
 	}
 
-	var body []BgpAnnouncement
+	var body []BgpAnnounceSet
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -6946,7 +6951,7 @@ func (c *Client) NetworkingBgpAnnounceSetUpdate(ctx context.Context, params Netw
 		ctx,
 		b,
 		"PUT",
-		resolveRelative(c.host, "/v1/system/networking/bgp-announce"),
+		resolveRelative(c.host, "/v1/system/networking/bgp-announce-set"),
 		map[string]string{},
 		map[string]string{},
 	)
@@ -6990,11 +6995,11 @@ func (c *Client) NetworkingBgpAnnounceSetDelete(ctx context.Context, params Netw
 		ctx,
 		nil,
 		"DELETE",
-		resolveRelative(c.host, "/v1/system/networking/bgp-announce"),
-		map[string]string{},
+		resolveRelative(c.host, "/v1/system/networking/bgp-announce-set/{{.name_or_id}}"),
 		map[string]string{
 			"name_or_id": string(params.NameOrId),
 		},
+		map[string]string{},
 	)
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
@@ -7013,6 +7018,93 @@ func (c *Client) NetworkingBgpAnnounceSetDelete(ctx context.Context, params Netw
 	}
 
 	return nil
+}
+
+// NetworkingBgpAnnouncementList: Get originated routes for a specified BGP announce set
+func (c *Client) NetworkingBgpAnnouncementList(ctx context.Context, params NetworkingBgpAnnouncementListParams) (*[]BgpAnnouncement, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/networking/bgp-announce-set/{{.name_or_id}}/announcement"),
+		map[string]string{
+			"name_or_id": string(params.NameOrId),
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body []BgpAnnouncement
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// NetworkingBgpExported: Get BGP exported routes
+func (c *Client) NetworkingBgpExported(ctx context.Context) (*BgpExported, error) {
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/networking/bgp-exported"),
+		map[string]string{},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body BgpExported
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
 }
 
 // NetworkingBgpMessageHistory: Get BGP router message history

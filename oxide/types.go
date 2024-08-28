@@ -398,6 +398,15 @@ type BgpConfigResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+// BgpExported is the current status of a BGP peer.
+//
+// Required fields:
+// - Exports
+type BgpExported struct {
+	// Exports is exported routes indexed by peer address.
+	Exports Ipv4Net `json:"exports,omitempty" yaml:"exports,omitempty"`
+}
+
 // BgpImportedRouteIpv4 is a route imported from a BGP peer.
 //
 // Required fields:
@@ -3462,7 +3471,7 @@ type LinkConfigCreate struct {
 	// Fec is the forward error correction mode of the link.
 	Fec LinkFec `json:"fec,omitempty" yaml:"fec,omitempty"`
 	// Lldp is the link-layer discovery protocol (LLDP) configuration for the link.
-	Lldp LldpServiceConfigCreate `json:"lldp,omitempty" yaml:"lldp,omitempty"`
+	Lldp LldpLinkConfigCreate `json:"lldp,omitempty" yaml:"lldp,omitempty"`
 	// Mtu is maximum transmission unit for the link.
 	Mtu int `json:"mtu,omitempty" yaml:"mtu,omitempty"`
 	// Speed is the speed of the link.
@@ -3475,29 +3484,49 @@ type LinkFec string
 // LinkSpeed is zero gigabits per second.
 type LinkSpeed string
 
-// LldpServiceConfig is a link layer discovery protocol (LLDP) service configuration.
+// LldpLinkConfig is a link layer discovery protocol (LLDP) service configuration.
 //
 // Required fields:
 // - Enabled
 // - Id
-type LldpServiceConfig struct {
+type LldpLinkConfig struct {
+	// ChassisId is the LLDP chassis identifier TLV.
+	ChassisId string `json:"chassis_id,omitempty" yaml:"chassis_id,omitempty"`
 	// Enabled is whether or not the LLDP service is enabled.
 	Enabled *bool `json:"enabled,omitempty" yaml:"enabled,omitempty"`
 	// Id is the id of this LLDP service instance.
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
-	// LldpConfigId is the link-layer discovery protocol configuration for this service.
-	LldpConfigId string `json:"lldp_config_id,omitempty" yaml:"lldp_config_id,omitempty"`
+	// LinkDescription is the LLDP link description TLV.
+	LinkDescription string `json:"link_description,omitempty" yaml:"link_description,omitempty"`
+	// LinkName is the LLDP link name TLV.
+	LinkName string `json:"link_name,omitempty" yaml:"link_name,omitempty"`
+	// ManagementIp is the LLDP management IP TLV.
+	ManagementIp IpNet `json:"management_ip,omitempty" yaml:"management_ip,omitempty"`
+	// SystemDescription is the LLDP system description TLV.
+	SystemDescription string `json:"system_description,omitempty" yaml:"system_description,omitempty"`
+	// SystemName is the LLDP system name TLV.
+	SystemName string `json:"system_name,omitempty" yaml:"system_name,omitempty"`
 }
 
-// LldpServiceConfigCreate is the LLDP configuration associated with a port. LLDP may be either enabled or disabled, if enabled, an LLDP configuration must be provided by name or id.
+// LldpLinkConfigCreate is the LLDP configuration associated with a port.
 //
 // Required fields:
 // - Enabled
-type LldpServiceConfigCreate struct {
+type LldpLinkConfigCreate struct {
+	// ChassisId is the LLDP chassis identifier TLV.
+	ChassisId string `json:"chassis_id,omitempty" yaml:"chassis_id,omitempty"`
 	// Enabled is whether or not LLDP is enabled.
 	Enabled *bool `json:"enabled,omitempty" yaml:"enabled,omitempty"`
-	// LldpConfig is a reference to the LLDP configuration used. Must not be `None` when `enabled` is `true`.
-	LldpConfig NameOrId `json:"lldp_config,omitempty" yaml:"lldp_config,omitempty"`
+	// LinkDescription is the LLDP link description TLV.
+	LinkDescription string `json:"link_description,omitempty" yaml:"link_description,omitempty"`
+	// LinkName is the LLDP link name TLV.
+	LinkName string `json:"link_name,omitempty" yaml:"link_name,omitempty"`
+	// ManagementIp is the LLDP management IP TLV.
+	ManagementIp string `json:"management_ip,omitempty" yaml:"management_ip,omitempty"`
+	// SystemDescription is the LLDP system description TLV.
+	SystemDescription string `json:"system_description,omitempty" yaml:"system_description,omitempty"`
+	// SystemName is the LLDP system name TLV.
+	SystemName string `json:"system_name,omitempty" yaml:"system_name,omitempty"`
 }
 
 // LoopbackAddress is a loopback address is an address that is assigned to a rack switch but is not associated with any particular port.
@@ -4040,6 +4069,8 @@ type Route struct {
 	Dst IpNet `json:"dst,omitempty" yaml:"dst,omitempty"`
 	// Gw is the route gateway.
 	Gw string `json:"gw,omitempty" yaml:"gw,omitempty"`
+	// LocalPref is local preference for route. Higher preference indictes precedence within and across protocols.
+	LocalPref int `json:"local_pref,omitempty" yaml:"local_pref,omitempty"`
 	// Vid is vLAN id the gateway is reachable over.
 	Vid int `json:"vid,omitempty" yaml:"vid,omitempty"`
 }
@@ -5025,7 +5056,6 @@ type SwitchPortGeometry2 string
 // - Autoneg
 // - Fec
 // - LinkName
-// - LldpServiceConfigId
 // - Mtu
 // - PortSettingsId
 // - Speed
@@ -5036,8 +5066,8 @@ type SwitchPortLinkConfig struct {
 	Fec LinkFec `json:"fec,omitempty" yaml:"fec,omitempty"`
 	// LinkName is the name of this link.
 	LinkName string `json:"link_name,omitempty" yaml:"link_name,omitempty"`
-	// LldpServiceConfigId is the link-layer discovery protocol service configuration id for this link.
-	LldpServiceConfigId string `json:"lldp_service_config_id,omitempty" yaml:"lldp_service_config_id,omitempty"`
+	// LldpLinkConfigId is the link-layer discovery protocol service configuration id for this link.
+	LldpLinkConfigId string `json:"lldp_link_config_id,omitempty" yaml:"lldp_link_config_id,omitempty"`
 	// Mtu is the maximum transmission unit for this link.
 	Mtu int `json:"mtu,omitempty" yaml:"mtu,omitempty"`
 	// PortSettingsId is the port settings this link configuration belongs to.
@@ -5071,6 +5101,8 @@ type SwitchPortRouteConfig struct {
 	Gw IpNet `json:"gw,omitempty" yaml:"gw,omitempty"`
 	// InterfaceName is the interface name this route configuration is assigned to.
 	InterfaceName string `json:"interface_name,omitempty" yaml:"interface_name,omitempty"`
+	// LocalPref is local preference indicating priority within and across protocols.
+	LocalPref int `json:"local_pref,omitempty" yaml:"local_pref,omitempty"`
 	// PortSettingsId is the port settings object this route configuration belongs to.
 	PortSettingsId string `json:"port_settings_id,omitempty" yaml:"port_settings_id,omitempty"`
 	// VlanId is the VLAN identifier for the route. Use this if the gateway is reachable over an 802.1Q tagged L2 segment.
@@ -5175,7 +5207,7 @@ type SwitchPortSettingsView struct {
 	// Interfaces is layer 3 interface settings.
 	Interfaces []SwitchInterfaceConfig `json:"interfaces,omitempty" yaml:"interfaces,omitempty"`
 	// LinkLldp is link-layer discovery protocol (LLDP) settings.
-	LinkLldp []LldpServiceConfig `json:"link_lldp,omitempty" yaml:"link_lldp,omitempty"`
+	LinkLldp []LldpLinkConfig `json:"link_lldp,omitempty" yaml:"link_lldp,omitempty"`
 	// Links is layer 2 link settings.
 	Links []SwitchPortLinkConfig `json:"links,omitempty" yaml:"links,omitempty"`
 	// Port is layer 1 physical port settings.
@@ -7214,20 +7246,12 @@ type NetworkingBgpConfigCreateParams struct {
 	Body *BgpConfigCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
-// NetworkingBgpAnnounceSetDeleteParams is the request parameters for NetworkingBgpAnnounceSetDelete
-//
-// Required fields:
-// - NameOrId
-type NetworkingBgpAnnounceSetDeleteParams struct {
-	NameOrId NameOrId `json:"name_or_id,omitempty" yaml:"name_or_id,omitempty"`
-}
-
 // NetworkingBgpAnnounceSetListParams is the request parameters for NetworkingBgpAnnounceSetList
-//
-// Required fields:
-// - NameOrId
 type NetworkingBgpAnnounceSetListParams struct {
-	NameOrId NameOrId `json:"name_or_id,omitempty" yaml:"name_or_id,omitempty"`
+	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	NameOrId  NameOrId         `json:"name_or_id,omitempty" yaml:"name_or_id,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
 
 // NetworkingBgpAnnounceSetUpdateParams is the request parameters for NetworkingBgpAnnounceSetUpdate
@@ -7236,6 +7260,22 @@ type NetworkingBgpAnnounceSetListParams struct {
 // - Body
 type NetworkingBgpAnnounceSetUpdateParams struct {
 	Body *BgpAnnounceSetCreate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// NetworkingBgpAnnounceSetDeleteParams is the request parameters for NetworkingBgpAnnounceSetDelete
+//
+// Required fields:
+// - NameOrId
+type NetworkingBgpAnnounceSetDeleteParams struct {
+	NameOrId NameOrId `json:"name_or_id,omitempty" yaml:"name_or_id,omitempty"`
+}
+
+// NetworkingBgpAnnouncementListParams is the request parameters for NetworkingBgpAnnouncementList
+//
+// Required fields:
+// - NameOrId
+type NetworkingBgpAnnouncementListParams struct {
+	NameOrId NameOrId `json:"name_or_id,omitempty" yaml:"name_or_id,omitempty"`
 }
 
 // NetworkingBgpMessageHistoryParams is the request parameters for NetworkingBgpMessageHistory
@@ -9046,20 +9086,9 @@ func (p *NetworkingBgpConfigCreateParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for NetworkingBgpAnnounceSetDeleteParams are set
-func (p *NetworkingBgpAnnounceSetDeleteParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredStr(string(p.NameOrId), "NameOrId")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
 // Validate verifies all required fields for NetworkingBgpAnnounceSetListParams are set
 func (p *NetworkingBgpAnnounceSetListParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.NameOrId), "NameOrId")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -9070,6 +9099,26 @@ func (p *NetworkingBgpAnnounceSetListParams) Validate() error {
 func (p *NetworkingBgpAnnounceSetUpdateParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredObj(p.Body, "Body")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingBgpAnnounceSetDeleteParams are set
+func (p *NetworkingBgpAnnounceSetDeleteParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.NameOrId), "NameOrId")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingBgpAnnouncementListParams are set
+func (p *NetworkingBgpAnnouncementListParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.NameOrId), "NameOrId")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -10370,8 +10419,11 @@ const UnitsVolts Units = "volts"
 // UnitsAmps represents the Units `"amps"`.
 const UnitsAmps Units = "amps"
 
-// UnitsDegreesCelcius represents the Units `"degrees_celcius"`.
-const UnitsDegreesCelcius Units = "degrees_celcius"
+// UnitsWatts represents the Units `"watts"`.
+const UnitsWatts Units = "watts"
+
+// UnitsDegreesCelsius represents the Units `"degrees_celsius"`.
+const UnitsDegreesCelsius Units = "degrees_celsius"
 
 // UnitsNone represents the Units `"none"`.
 const UnitsNone Units = "none"
@@ -10980,12 +11032,13 @@ var UnitsCollection = []Units{
 	UnitsAmps,
 	UnitsBytes,
 	UnitsCount,
-	UnitsDegreesCelcius,
+	UnitsDegreesCelsius,
 	UnitsNanoseconds,
 	UnitsNone,
 	UnitsRpm,
 	UnitsSeconds,
 	UnitsVolts,
+	UnitsWatts,
 }
 
 // UserPasswordModeCollection is the collection of all UserPasswordMode values.
