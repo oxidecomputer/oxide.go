@@ -1,3 +1,25 @@
+# v0.1.0-beta8 (2024/Sep/3)
+
+### Breaking changes
+
+- **Enums:** All 'enum' collection variables have been changed. The word 'Collection' has been appended to all variable names. [#223](https://github.com/oxidecomputer/oxide.go/pull/223)
+- **Instances:** The migration endpoint has been removed. [#223](https://github.com/oxidecomputer/oxide.go/pull/223)
+
+### New features
+
+- **Networking:** New BGP related methods. [#225](https://github.com/oxidecomputer/oxide.go/pull/225)
+
+### Enhancements
+
+- **Metrics:** The 'TimeseriesSchema' type now has additional fields. [#223](https://github.com/oxidecomputer/oxide.go/pull/223)
+
+### List of commits
+
+- [b4aa1b2](https://github.com/oxidecomputer/oxide.go/commit/b4aa1b2) Update to omircon rel/v10/rc001 (#225)
+- [3ece271](https://github.com/oxidecomputer/oxide.go/commit/3ece271) Update to Omicron ede17c7 and refactor enum collections (#223)
+- [942bccc](https://github.com/oxidecomputer/oxide.go/commit/942bccc) Bump github.com/getkin/kin-openapi from 0.126.0 to 0.127.0 (#222)
+- [9c89a17](https://github.com/oxidecomputer/oxide.go/commit/9c89a17) Version bump (#221)
+
 # v0.1.0-beta7 (2024/Jul/23)
 
 ### Breaking changes
