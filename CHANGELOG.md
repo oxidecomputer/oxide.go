@@ -13,7 +13,6 @@
 
 - **Metrics:** The 'TimeseriesSchema' type now has additional fields. [#223](https://github.com/oxidecomputer/oxide.go/pull/223)
 
-
 ### List of commits
 
 - [b4aa1b2](https://github.com/oxidecomputer/oxide.go/commit/b4aa1b2) Update to omircon rel/v10/rc001 (#225)
