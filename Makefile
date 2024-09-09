@@ -37,7 +37,7 @@ all: generate test fmt lint staticcheck vet ## Runs a fmt, lint, test, staticche
 .PHONY: fmt
 fmt: ## Verifies all files have been `gofmt`ed.
 	@ echo "+ Verifying all files have been gofmt-ed..."
-	@if [[ ! -z "$(shell gofmt -s -d . | grep -v '.pb.go:' | grep -v '.twirp.go:' | grep -v vendor | grep -v internal/generate/test_generated | grep -v internal/generate/test_utils | tee /dev/stderr)" ]]; then \
+	@if [[ ! -z "$(shell gofmt -s -d . | grep -v -e internal/generate/test_generated -e internal/generate/test_utils | tee /dev/stderr)" ]]; then \
 		exit 1; \
 	fi
 
@@ -49,19 +49,19 @@ lint: tools ## Verifies `golangci-lint` passes.
 .PHONY: test
 test: ## Runs the go tests.
 	@ echo "+ Running Go tests..."
-	@ $(GO) test -v -tags "$(BUILDTAGS) cgo" $(shell $(GO) list ./... | grep -v vendor)
+	@ $(GO) test -v -tags "$(BUILDTAGS) cgo" ./...
 
 .PHONY: vet
 vet: ## Verifies `go vet` passes.
 	@ echo "+ Verifying go vet passes..."
-	@if [[ ! -z "$(shell $(GO) vet $(shell $(GO) list ./... | grep -v vendor) | tee /dev/stderr)" ]]; then \
+	@if [[ ! -z "$(shell $(GO) vet ./... | tee /dev/stderr)" ]]; then \
 		exit 1; \
 	fi
 
 .PHONY: staticcheck
 staticcheck: tools ## Verifies `staticcheck` passes.
 	@ echo "+ Verifying staticcheck passes..."
-	@if [[ ! -z "$(shell $(GOBIN)/staticcheck $(shell $(GO) list ./... | grep -v vendor) | tee /dev/stderr)" ]]; then \
+	@if [[ ! -z "$(shell $(GOBIN)/staticcheck ./... | tee /dev/stderr)" ]]; then \
 		exit 1; \
 	fi
 
@@ -89,10 +89,10 @@ help:
 # This way linting tools don't need to be downloaded/installed every time you
 # want to run the linters or generate the SDK.
 VERSION_DIR:=$(GOBIN)/versions
-VERSION_GOIMPORTS:=v0.15.0
-VERSION_GOLANGCILINT:=v1.55.2
-VERSION_STATICCHECK:=2023.1.6
-VERSION_WHATSIT:=7fd2b385f
+VERSION_GOIMPORTS:=v0.24.0
+VERSION_GOLANGCILINT:=v1.60.3
+VERSION_STATICCHECK:=2024.1.1
+VERSION_WHATSIT:=1f5eb3ea
 
 tools: $(GOBIN)/golangci-lint $(GOBIN)/goimports $(GOBIN)/staticcheck
 
