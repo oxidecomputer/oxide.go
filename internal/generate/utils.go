@@ -27,7 +27,7 @@ func openGeneratedFile(filename string) (*os.File, error) {
 
 	// Create the generated files.
 	// Open the file for writing.
-	f, err := os.OpenFile(p, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
+	f, err := os.OpenFile(p, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
 		return nil, fmt.Errorf("error creating %q: %v", p, err)
 	}

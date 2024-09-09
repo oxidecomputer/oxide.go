@@ -1,4 +1,4 @@
-SHELL := /bin/bash
+SHELL = /usr/bin/env bash -eo pipefail
 NAME := oxide
 
 # If this session isn't interactive, then we don't want to allocate a
