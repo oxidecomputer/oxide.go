@@ -13,6 +13,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"time"
 )
 
 // LoginSaml: Authenticate a user via SAML
@@ -659,12 +660,12 @@ func (c *Client) DiskMetricsList(ctx context.Context, params DiskMetricsListPara
 			"metric": string(params.Metric),
 		},
 		map[string]string{
-			"end_time":   params.EndTime.String(),
+			"end_time":   params.EndTime.Format(time.RFC3339),
 			"limit":      strconv.Itoa(params.Limit),
 			"order":      string(params.Order),
 			"page_token": params.PageToken,
 			"project":    string(params.Project),
-			"start_time": params.StartTime.String(),
+			"start_time": params.StartTime.Format(time.RFC3339),
 		},
 	)
 	if err != nil {
@@ -2897,12 +2898,12 @@ func (c *Client) SiloMetric(ctx context.Context, params SiloMetricParams) (*Meas
 			"metric_name": string(params.MetricName),
 		},
 		map[string]string{
-			"end_time":   params.EndTime.String(),
+			"end_time":   params.EndTime.Format(time.RFC3339),
 			"limit":      strconv.Itoa(params.Limit),
 			"order":      string(params.Order),
 			"page_token": params.PageToken,
 			"project":    string(params.Project),
-			"start_time": params.StartTime.String(),
+			"start_time": params.StartTime.Format(time.RFC3339),
 		},
 	)
 	if err != nil {
@@ -6207,12 +6208,12 @@ func (c *Client) SystemMetric(ctx context.Context, params SystemMetricParams) (*
 			"metric_name": string(params.MetricName),
 		},
 		map[string]string{
-			"end_time":   params.EndTime.String(),
+			"end_time":   params.EndTime.Format(time.RFC3339),
 			"limit":      strconv.Itoa(params.Limit),
 			"order":      string(params.Order),
 			"page_token": params.PageToken,
 			"silo":       string(params.Silo),
-			"start_time": params.StartTime.String(),
+			"start_time": params.StartTime.Format(time.RFC3339),
 		},
 	)
 	if err != nil {
