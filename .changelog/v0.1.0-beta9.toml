@@ -1,6 +1,6 @@
 [[breaking]]
-title = ""
-description = ""
+title = "OneOf generic types"
+description = "All struct field types that have different property types in the OpenAPI spec have now been set to `any`. [#234](https://github.com/oxidecomputer/oxide.go/pull/234)"
 
 [[features]]
 title = ""
@@ -11,5 +11,5 @@ title = ""
 description = ""
 
 [[bugs]]
-title = ""
-description = ""
+title = "Fix for fields of type `time.Time`"
+description = "Change encoding of time parameters to RFC3339. [232](https://github.com/oxidecomputer/oxide.go/pull/232)"

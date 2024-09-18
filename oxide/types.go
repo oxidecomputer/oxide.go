@@ -1568,7 +1568,7 @@ type DatumMissing struct {
 // Datum is a `Datum` is a single sampled data point from a metric.
 type Datum struct {
 	// Datum is the type definition for a Datum.
-	Datum *bool `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Datum any `json:"datum,omitempty" yaml:"datum,omitempty"`
 	// Type is the type definition for a Type.
 	Type DatumType `json:"type,omitempty" yaml:"type,omitempty"`
 }
@@ -2206,7 +2206,7 @@ type FieldValue struct {
 	// Type is the type definition for a Type.
 	Type FieldValueType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is the type definition for a Value.
-	Value string `json:"value,omitempty" yaml:"value,omitempty"`
+	Value any `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // FinalizeDisk is parameters for finalizing a disk
@@ -4136,7 +4136,7 @@ type RouteDestination struct {
 	// Type is the type definition for a Type.
 	Type RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is the type definition for a Value.
-	Value string `json:"value,omitempty" yaml:"value,omitempty"`
+	Value any `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // RouteTargetType is the type definition for a RouteTargetType.
@@ -4209,7 +4209,7 @@ type RouteTarget struct {
 	// Type is the type definition for a Type.
 	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is the type definition for a Value.
-	Value string `json:"value,omitempty" yaml:"value,omitempty"`
+	Value any `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // RouterRoute is a route defines a rule that governs where traffic should be sent based on its destination.
@@ -5773,7 +5773,7 @@ type VpcFirewallRuleHostFilter struct {
 	// Type is the type definition for a Type.
 	Type VpcFirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+	Value any `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // VpcFirewallRuleProtocol is the protocols that may be specified in a firewall rule's filter
@@ -5843,7 +5843,7 @@ type VpcFirewallRuleTarget struct {
 	// Type is the type definition for a Type.
 	Type VpcFirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+	Value any `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // VpcFirewallRuleUpdate is a single rule in a VPC firewall
