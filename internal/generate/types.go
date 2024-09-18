@@ -657,34 +657,32 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 
 	// When dealing with oneOf sometimes property types will not be the same, we want to
 	// catch these to set them as "any" when we generate the type.
-	if typeName == "Datum" {
-		typeKeys := []string{}
-		// First we gather all unique properties
+	typeKeys := []string{}
+	// First we gather all unique properties
+	for _, v := range properties {
+		parts := strings.Split(v, "=")
+		key := parts[0]
+		if !sliceContains(typeKeys, key) {
+			typeKeys = append(typeKeys, key)
+		}
+	}
+
+	// For each of the properties above we gather all possible types
+	// and gather all of those that are not. We will be setting those
+	// as a generic type
+	for _, k := range typeKeys {
+		values := []string{}
 		for _, v := range properties {
 			parts := strings.Split(v, "=")
 			key := parts[0]
-			if !sliceContains(typeKeys, key) {
-				typeKeys = append(typeKeys, key)
+			value := parts[1]
+			if key == k {
+				values = append(values, value)
 			}
 		}
 
-		// For each of the properties above we gather all possible types
-		// and gather all of those that are not. We will be setting those
-		// as a generic type
-		for _, k := range typeKeys {
-			values := []string{}
-			for _, v := range properties {
-				parts := strings.Split(v, "=")
-				key := parts[0]
-				value := parts[1]
-				if key == k {
-					values = append(values, value)
-				}
-			}
-
-			if !allItemsAreSame(values) {
-				genericTypes = append(genericTypes, k)
-			}
+		if !allItemsAreSame(values) {
+			genericTypes = append(genericTypes, k)
 		}
 	}
 
