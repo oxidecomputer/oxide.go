@@ -1568,7 +1568,7 @@ type DatumMissing struct {
 // Datum is a `Datum` is a single sampled data point from a metric.
 type Datum struct {
 	// Datum is the type definition for a Datum.
-	Datum *bool `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Datum any `json:"datum,omitempty" yaml:"datum,omitempty"`
 	// Type is the type definition for a Type.
 	Type DatumType `json:"type,omitempty" yaml:"type,omitempty"`
 }

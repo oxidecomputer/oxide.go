@@ -214,3 +214,12 @@ func sliceContains[T comparable](s []T, str T) bool {
 	}
 	return false
 }
+
+func allItemsAreSame[T comparable](a []T) bool {
+	for _, v := range a {
+		if v != a[0] {
+			return false
+		}
+	}
+	return true
+}

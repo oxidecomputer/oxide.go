@@ -632,10 +632,62 @@ func createAllOf(s *openapi3.Schema, stringEnums map[string][]string, name, type
 }
 
 func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []EnumTemplate) {
+	var parsedProperties []string
 	var properties []string
+	var genericTypes []string
 	enumTpls := make([]EnumTemplate, 0)
 	typeTpls := make([]TypeTemplate, 0)
 	fields := make([]TypeFields, 0)
+	for _, v := range s.OneOf {
+		// Iterate over all the schema components in the spec and write the types.
+		// We want to ensure we keep the order.
+		keys := make([]string, 0)
+		for k := range v.Value.Properties {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+
+		for _, prop := range keys {
+			p := v.Value.Properties[prop]
+			// We want to collect all the unique properties to create our global oneOf type.
+			propertyType := convertToValidGoType(prop, p)
+			properties = append(properties, prop+"="+propertyType)
+		}
+	}
+
+	// When dealing with oneOf sometimes property types will not be the same, we want to
+	// catch these to set them as "any" when we generate the type.
+	if typeName == "Datum" {
+		typeKeys := []string{}
+		// First we gather all unique properties
+		for _, v := range properties {
+			parts := strings.Split(v, "=")
+			key := parts[0]
+			if !sliceContains(typeKeys, key) {
+				typeKeys = append(typeKeys, key)
+			}
+		}
+
+		// For each of the properties above we gather all possible types
+		// and gather all of those that are not. We will be setting those
+		// as a generic type
+		for _, k := range typeKeys {
+			values := []string{}
+			for _, v := range properties {
+				parts := strings.Split(v, "=")
+				key := parts[0]
+				value := parts[1]
+				if key == k {
+					values = append(values, value)
+				}
+			}
+
+			if !allItemsAreSame(values) {
+				genericTypes = append(genericTypes, k)
+			}
+		}
+	}
+
 	for _, v := range s.OneOf {
 		// We want to iterate over the properties of the embedded object
 		// and find the type that is a string.
@@ -661,16 +713,22 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 
 			propertyName := strcase.ToCamel(prop)
 			// Avoids duplication for every enum
-			if !containsMatchFirstWord(properties, propertyName) {
+			if !containsMatchFirstWord(parsedProperties, propertyName) {
 				field := TypeFields{
 					Description:       formatTypeDescription(propertyName, p.Value),
 					Name:              propertyName,
 					Type:              propertyType,
 					SerializationInfo: fmt.Sprintf("`json:\"%s,omitempty\" yaml:\"%s,omitempty\"`", prop, prop),
 				}
+
+				// We set the type of a field as "any" if every element of the oneOf property isn't the same
+				if sliceContains(genericTypes, prop) {
+					field.Type = "any"
+				}
+
 				fields = append(fields, field)
 
-				properties = append(properties, propertyName)
+				parsedProperties = append(parsedProperties, propertyName)
 			}
 
 			if p.Value.Enum != nil {
