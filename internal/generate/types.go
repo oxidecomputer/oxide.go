@@ -519,6 +519,16 @@ func createTypeObject(schema *openapi3.Schema, name, typeName, description strin
 			typeName = fmt.Sprintf("%s%s", name, strcase.ToCamel(k))
 		}
 
+		// When additional properties is set and is type array, it means
+		// the type will be a map.
+		// TODO correctness: Currently our API spec does not specify what
+		// type the key will be, so we set it to string to avoid errors.
+		// If the type of the key is defined in our spec in the future,
+		// this should be changed to reflect that type.
+		if isObjectArray(v) {
+			typeName = fmt.Sprintf("map[string][]%s", typeName)
+		}
+
 		field := TypeFields{}
 		if v.Value.Description != "" {
 			desc := fmt.Sprintf("// %s is %s", strcase.ToCamel(k), toLowerFirstLetter(strings.ReplaceAll(v.Value.Description, "\n", "\n// ")))
