@@ -3,8 +3,8 @@ title = "OneOf generic types"
 description = "All struct field types that have different property types in the OpenAPI spec have now been set to `any`. [#234](https://github.com/oxidecomputer/oxide.go/pull/234)"
 
 [[features]]
-title = ""
-description = ""
+title = "Helper function"
+description = "New `NewPointer` function that returns a pointer to a given value. [235](https://github.com/oxidecomputer/oxide.go/pull/235)"
 
 [[enhancements]]
 title = ""
@@ -13,3 +13,7 @@ description = ""
 [[bugs]]
 title = "Fix for fields of type `time.Time`"
 description = "Change encoding of time parameters to RFC3339. [232](https://github.com/oxidecomputer/oxide.go/pull/232)"
+
+[[bugs]]
+title = "Fix for types"
+description = "Account for additional fields 'array' types that don't specify map keys. [235](https://github.com/oxidecomputer/oxide.go/pull/235)"
