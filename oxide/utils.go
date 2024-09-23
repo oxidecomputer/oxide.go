@@ -8,6 +8,11 @@ import (
 	"text/template"
 )
 
+// NewPointer returns a pointer to a given value.
+func NewPointer[T any](v T) *T {
+	return &v
+}
+
 // resolveRelative combines a url base with a relative path.
 func resolveRelative(basestr, relstr string) string {
 	u, _ := url.Parse(basestr)

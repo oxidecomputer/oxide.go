@@ -404,7 +404,7 @@ type BgpConfigResultsPage struct {
 // - Exports
 type BgpExported struct {
 	// Exports is exported routes indexed by peer address.
-	Exports Ipv4Net `json:"exports,omitempty" yaml:"exports,omitempty"`
+	Exports map[string][]Ipv4Net `json:"exports,omitempty" yaml:"exports,omitempty"`
 }
 
 // BgpImportedRouteIpv4 is a route imported from a BGP peer.
@@ -4393,7 +4393,7 @@ type Silo struct {
 	// MappedFleetRoles is mapping of which Fleet roles are conferred by each Silo role
 	//
 	// The default is that no Fleet roles are conferred by any Silo roles unless there's a corresponding entry in this map.
-	MappedFleetRoles FleetRole `json:"mapped_fleet_roles,omitempty" yaml:"mapped_fleet_roles,omitempty"`
+	MappedFleetRoles map[string][]FleetRole `json:"mapped_fleet_roles,omitempty" yaml:"mapped_fleet_roles,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// TimeCreated is timestamp when this resource was created
@@ -4423,7 +4423,7 @@ type SiloCreate struct {
 	// MappedFleetRoles is mapping of which Fleet roles are conferred by each Silo role
 	//
 	// The default is that no Fleet roles are conferred by any Silo roles unless there's a corresponding entry in this map.
-	MappedFleetRoles FleetRole `json:"mapped_fleet_roles,omitempty" yaml:"mapped_fleet_roles,omitempty"`
+	MappedFleetRoles map[string][]FleetRole `json:"mapped_fleet_roles,omitempty" yaml:"mapped_fleet_roles,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// Quotas is limits the amount of provisionable CPU, memory, and storage in the Silo. CPU and memory are only consumed by running instances, while storage is consumed by any disk or snapshot. A value of 0 means that resource is *not* provisionable.
