@@ -1711,6 +1711,60 @@ func (c *Client) InstanceView(ctx context.Context, params InstanceViewParams) (*
 	return &body, nil
 }
 
+// InstanceUpdate: Update instance
+func (c *Client) InstanceUpdate(ctx context.Context, params InstanceUpdateParams) (*Instance, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"PUT",
+		resolveRelative(c.host, "/v1/instances/{{.instance}}"),
+		map[string]string{
+			"instance": string(params.Instance),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body Instance
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
 // InstanceDelete: Delete instance
 func (c *Client) InstanceDelete(ctx context.Context, params InstanceDeleteParams) error {
 	if err := params.Validate(); err != nil {
@@ -6738,7 +6792,6 @@ func (c *Client) NetworkingBgpConfigList(ctx context.Context, params NetworkingB
 		map[string]string{},
 		map[string]string{
 			"limit":      strconv.Itoa(params.Limit),
-			"name_or_id": string(params.NameOrId),
 			"page_token": params.PageToken,
 			"sort_by":    string(params.SortBy),
 		},
@@ -6900,7 +6953,6 @@ func (c *Client) NetworkingBgpAnnounceSetList(ctx context.Context, params Networ
 		map[string]string{},
 		map[string]string{
 			"limit":      strconv.Itoa(params.Limit),
-			"name_or_id": string(params.NameOrId),
 			"page_token": params.PageToken,
 			"sort_by":    string(params.SortBy),
 		},
@@ -6996,9 +7048,9 @@ func (c *Client) NetworkingBgpAnnounceSetDelete(ctx context.Context, params Netw
 		ctx,
 		nil,
 		"DELETE",
-		resolveRelative(c.host, "/v1/system/networking/bgp-announce-set/{{.name_or_id}}"),
+		resolveRelative(c.host, "/v1/system/networking/bgp-announce-set/{{.announce_set}}"),
 		map[string]string{
-			"name_or_id": string(params.NameOrId),
+			"announce_set": string(params.AnnounceSet),
 		},
 		map[string]string{},
 	)
@@ -7031,9 +7083,9 @@ func (c *Client) NetworkingBgpAnnouncementList(ctx context.Context, params Netwo
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.host, "/v1/system/networking/bgp-announce-set/{{.name_or_id}}/announcement"),
+		resolveRelative(c.host, "/v1/system/networking/bgp-announce-set/{{.announce_set}}/announcement"),
 		map[string]string{
-			"name_or_id": string(params.NameOrId),
+			"announce_set": string(params.AnnounceSet),
 		},
 		map[string]string{},
 	)
