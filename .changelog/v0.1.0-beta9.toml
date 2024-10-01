@@ -17,3 +17,11 @@ description = "Change encoding of time parameters to RFC3339. [232](https://gith
 [[bugs]]
 title = "Fix for types"
 description = "Account for additional fields 'array' types that don't specify map keys. [235](https://github.com/oxidecomputer/oxide.go/pull/235)"
+
+[[features]]
+title = "New fields for Instance"
+description = "It is now possible to specify a boot disk and update it. Additionally, instances now have 'autorestart' functionality, where if set the control plane to automatically restart it if it enters the `Failed` state. [236](https://github.com/oxidecomputer/oxide.go/pull/236)"
+
+[[breaking]]
+title = "NetworkingBgpAnnounceSet type"
+description = "Small change in fields. [236](https://github.com/oxidecomputer/oxide.go/pull/236)"

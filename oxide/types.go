@@ -2989,6 +2989,7 @@ type ImportExportPolicy struct {
 // Instance is view of an Instance
 //
 // Required fields:
+// - AutoRestartEnabled
 // - Description
 // - Hostname
 // - Id
@@ -3001,6 +3002,14 @@ type ImportExportPolicy struct {
 // - TimeModified
 // - TimeRunStateUpdated
 type Instance struct {
+	// AutoRestartCooldownExpiration is the time at which the auto-restart cooldown period for this instance completes, permitting it to be automatically restarted again. If the instance enters the `Failed` state, it will not be restarted until after this time.
+	//
+	// If this is not present, then either the instance has never been automatically restarted, or the cooldown period has already expired, allowing the instance to be restarted immediately if it fails.
+	AutoRestartCooldownExpiration *time.Time `json:"auto_restart_cooldown_expiration,omitempty" yaml:"auto_restart_cooldown_expiration,omitempty"`
+	// AutoRestartEnabled is `true` if this instance's auto-restart policy will permit the control plane to automatically restart it if it enters the `Failed` state.
+	AutoRestartEnabled *bool `json:"auto_restart_enabled,omitempty" yaml:"auto_restart_enabled,omitempty"`
+	// BootDiskId is the ID of the disk used to boot this Instance, if a specific one is assigned.
+	BootDiskId string `json:"boot_disk_id,omitempty" yaml:"boot_disk_id,omitempty"`
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Hostname is rFC1035-compliant hostname for the Instance.
@@ -3021,10 +3030,17 @@ type Instance struct {
 	RunState InstanceState `json:"run_state,omitempty" yaml:"run_state,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	// TimeLastAutoRestarted is the timestamp of the most recent time this instance was automatically restarted by the control plane.
+	//
+	// If this is not present, then this instance has not been automatically restarted.
+	TimeLastAutoRestarted *time.Time `json:"time_last_auto_restarted,omitempty" yaml:"time_last_auto_restarted,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified        *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
 	TimeRunStateUpdated *time.Time `json:"time_run_state_updated,omitempty" yaml:"time_run_state_updated,omitempty"`
 }
+
+// InstanceAutoRestartPolicy is the instance should not be automatically restarted by the control plane if it fails.
+type InstanceAutoRestartPolicy string
 
 // InstanceCpuCount is the number of CPUs in an Instance
 type InstanceCpuCount uint16
@@ -3038,7 +3054,17 @@ type InstanceCpuCount uint16
 // - Name
 // - Ncpus
 type InstanceCreate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// AutoRestartPolicy is the auto-restart policy for this instance.
+	//
+	// This indicates whether the instance should be automatically restarted by the control plane on failure. If this is `null`, no auto-restart policy has been configured for this instance by the user.
+	AutoRestartPolicy InstanceAutoRestartPolicy `json:"auto_restart_policy,omitempty" yaml:"auto_restart_policy,omitempty"`
+	// BootDisk is the disk this instance should boot into. This disk can either be attached if it already exists, or created, if it should be a new disk.
+	//
+	// It is strongly recommended to either provide a boot disk at instance creation, or update the instance after creation to set a boot disk.
+	//
+	// An instance without an explicit boot disk can be booted: the options are as managed by UEFI, and as controlled by the guest OS, but with some risk.  If this instance later has a disk attached or detached, it is possible that boot options can end up reordered, with the intended boot disk moved after the EFI shell in boot priority. This may result in an instance that only boots to the EFI shell until the desired disk is set as an explicit boot disk and the instance rebooted.
+	BootDisk    InstanceDiskAttachment `json:"boot_disk,omitempty" yaml:"boot_disk,omitempty"`
+	Description string                 `json:"description,omitempty" yaml:"description,omitempty"`
 	// Disks is the disks to be created or attached for this instance.
 	Disks []InstanceDiskAttachment `json:"disks,omitempty" yaml:"disks,omitempty"`
 	// ExternalIps is the external IP addresses provided to this instance.
@@ -3263,6 +3289,14 @@ type InstanceSerialConsoleData struct {
 
 // InstanceState is the instance is being created.
 type InstanceState string
+
+// InstanceUpdate is parameters of an `Instance` that can be reconfigured after creation.
+type InstanceUpdate struct {
+	// BootDisk is name or ID of the disk the instance should be instructed to boot from.
+	//
+	// If not provided, unset the instance's boot disk.
+	BootDisk NameOrId `json:"boot_disk,omitempty" yaml:"boot_disk,omitempty"`
+}
 
 // IpNet is the type definition for a IpNet.
 type IpNet interface{}
@@ -4087,7 +4121,7 @@ type RouteConfig struct {
 // RouteDestinationType is the type definition for a RouteDestinationType.
 type RouteDestinationType string
 
-// RouteDestinationIp is route applies to traffic destined for a specific IP address
+// RouteDestinationIp is route applies to traffic destined for the specified IP address
 //
 // Required fields:
 // - Type
@@ -4097,7 +4131,7 @@ type RouteDestinationIp struct {
 	Value string               `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-// RouteDestinationIpNet is route applies to traffic destined for a specific IP subnet
+// RouteDestinationIpNet is route applies to traffic destined for the specified IP subnet
 //
 // Required fields:
 // - Type
@@ -4107,7 +4141,7 @@ type RouteDestinationIpNet struct {
 	Value IpNet                `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-// RouteDestinationVpc is route applies to traffic destined for the given VPC.
+// RouteDestinationVpc is route applies to traffic destined for the specified VPC
 //
 // Required fields:
 // - Type
@@ -4118,7 +4152,7 @@ type RouteDestinationVpc struct {
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-// RouteDestinationSubnet is route applies to traffic
+// RouteDestinationSubnet is route applies to traffic destined for the specified VPC subnet
 //
 // Required fields:
 // - Type
@@ -4129,7 +4163,7 @@ type RouteDestinationSubnet struct {
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-// RouteDestination is a `RouteDestination` is used to match traffic with a routing rule, on the destination of that traffic.
+// RouteDestination is a `RouteDestination` is used to match traffic with a routing rule based on the destination of that traffic.
 //
 // When traffic is to be sent to a destination that is within a given `RouteDestination`, the corresponding `RouterRoute` applies, and traffic will be forward to the `RouteTarget` for that rule.
 type RouteDestination struct {
@@ -6425,6 +6459,17 @@ type InstanceViewParams struct {
 	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
 
+// InstanceUpdateParams is the request parameters for InstanceUpdate
+//
+// Required fields:
+// - Instance
+// - Body
+type InstanceUpdateParams struct {
+	Project  NameOrId        `json:"project,omitempty" yaml:"project,omitempty"`
+	Instance NameOrId        `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Body     *InstanceUpdate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
 // InstanceDiskListParams is the request parameters for InstanceDiskList
 //
 // Required fields:
@@ -7233,7 +7278,6 @@ type NetworkingBgpConfigDeleteParams struct {
 // NetworkingBgpConfigListParams is the request parameters for NetworkingBgpConfigList
 type NetworkingBgpConfigListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
-	NameOrId  NameOrId         `json:"name_or_id,omitempty" yaml:"name_or_id,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
@@ -7249,7 +7293,6 @@ type NetworkingBgpConfigCreateParams struct {
 // NetworkingBgpAnnounceSetListParams is the request parameters for NetworkingBgpAnnounceSetList
 type NetworkingBgpAnnounceSetListParams struct {
 	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
-	NameOrId  NameOrId         `json:"name_or_id,omitempty" yaml:"name_or_id,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
@@ -7265,17 +7308,17 @@ type NetworkingBgpAnnounceSetUpdateParams struct {
 // NetworkingBgpAnnounceSetDeleteParams is the request parameters for NetworkingBgpAnnounceSetDelete
 //
 // Required fields:
-// - NameOrId
+// - AnnounceSet
 type NetworkingBgpAnnounceSetDeleteParams struct {
-	NameOrId NameOrId `json:"name_or_id,omitempty" yaml:"name_or_id,omitempty"`
+	AnnounceSet NameOrId `json:"announce_set,omitempty" yaml:"announce_set,omitempty"`
 }
 
 // NetworkingBgpAnnouncementListParams is the request parameters for NetworkingBgpAnnouncementList
 //
 // Required fields:
-// - NameOrId
+// - AnnounceSet
 type NetworkingBgpAnnouncementListParams struct {
-	NameOrId NameOrId `json:"name_or_id,omitempty" yaml:"name_or_id,omitempty"`
+	AnnounceSet NameOrId `json:"announce_set,omitempty" yaml:"announce_set,omitempty"`
 }
 
 // NetworkingBgpMessageHistoryParams is the request parameters for NetworkingBgpMessageHistory
@@ -8186,6 +8229,17 @@ func (p *InstanceDeleteParams) Validate() error {
 // Validate verifies all required fields for InstanceViewParams are set
 func (p *InstanceViewParams) Validate() error {
 	v := new(Validator)
+	v.HasRequiredStr(string(p.Instance), "Instance")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceUpdateParams are set
+func (p *InstanceUpdateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
 	v.HasRequiredStr(string(p.Instance), "Instance")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
@@ -9108,7 +9162,7 @@ func (p *NetworkingBgpAnnounceSetUpdateParams) Validate() error {
 // Validate verifies all required fields for NetworkingBgpAnnounceSetDeleteParams are set
 func (p *NetworkingBgpAnnounceSetDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.NameOrId), "NameOrId")
+	v.HasRequiredStr(string(p.AnnounceSet), "AnnounceSet")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -9118,7 +9172,7 @@ func (p *NetworkingBgpAnnounceSetDeleteParams) Validate() error {
 // Validate verifies all required fields for NetworkingBgpAnnouncementListParams are set
 func (p *NetworkingBgpAnnouncementListParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.NameOrId), "NameOrId")
+	v.HasRequiredStr(string(p.AnnounceSet), "AnnounceSet")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -10104,6 +10158,12 @@ const ImportExportPolicyTypeNoFiltering ImportExportPolicyType = "no_filtering"
 // ImportExportPolicyTypeAllow represents the ImportExportPolicyType `"allow"`.
 const ImportExportPolicyTypeAllow ImportExportPolicyType = "allow"
 
+// InstanceAutoRestartPolicyNever represents the InstanceAutoRestartPolicy `"never"`.
+const InstanceAutoRestartPolicyNever InstanceAutoRestartPolicy = "never"
+
+// InstanceAutoRestartPolicyBestEffort represents the InstanceAutoRestartPolicy `"best_effort"`.
+const InstanceAutoRestartPolicyBestEffort InstanceAutoRestartPolicy = "best_effort"
+
 // InstanceDiskAttachmentTypeCreate represents the InstanceDiskAttachmentType `"create"`.
 const InstanceDiskAttachmentTypeCreate InstanceDiskAttachmentType = "create"
 
@@ -10798,6 +10858,12 @@ var ImageSourceTypeCollection = []ImageSourceType{
 var ImportExportPolicyTypeCollection = []ImportExportPolicyType{
 	ImportExportPolicyTypeAllow,
 	ImportExportPolicyTypeNoFiltering,
+}
+
+// InstanceAutoRestartPolicyCollection is the collection of all InstanceAutoRestartPolicy values.
+var InstanceAutoRestartPolicyCollection = []InstanceAutoRestartPolicy{
+	InstanceAutoRestartPolicyBestEffort,
+	InstanceAutoRestartPolicyNever,
 }
 
 // InstanceDiskAttachmentTypeCollection is the collection of all InstanceDiskAttachmentType values.
