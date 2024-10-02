@@ -3063,8 +3063,8 @@ type InstanceCreate struct {
 	// It is strongly recommended to either provide a boot disk at instance creation, or update the instance after creation to set a boot disk.
 	//
 	// An instance without an explicit boot disk can be booted: the options are as managed by UEFI, and as controlled by the guest OS, but with some risk.  If this instance later has a disk attached or detached, it is possible that boot options can end up reordered, with the intended boot disk moved after the EFI shell in boot priority. This may result in an instance that only boots to the EFI shell until the desired disk is set as an explicit boot disk and the instance rebooted.
-	BootDisk    InstanceDiskAttachment `json:"boot_disk,omitempty" yaml:"boot_disk,omitempty"`
-	Description string                 `json:"description,omitempty" yaml:"description,omitempty"`
+	BootDisk    *InstanceDiskAttachment `json:"boot_disk,omitempty" yaml:"boot_disk,omitempty"`
+	Description string                  `json:"description,omitempty" yaml:"description,omitempty"`
 	// Disks is the disks to be created or attached for this instance.
 	Disks []InstanceDiskAttachment `json:"disks,omitempty" yaml:"disks,omitempty"`
 	// ExternalIps is the external IP addresses provided to this instance.

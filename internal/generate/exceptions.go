@@ -19,3 +19,10 @@ func emptyTypes() []string {
 		"SwitchLinkState",
 	}
 }
+
+// TODO: Actually handle nullable fields properly
+func nullable() []string {
+	return []string{
+		"InstanceDiskAttachment",
+	}
+}

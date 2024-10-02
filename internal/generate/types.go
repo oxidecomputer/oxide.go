@@ -529,6 +529,11 @@ func createTypeObject(schema *openapi3.Schema, name, typeName, description strin
 			typeName = fmt.Sprintf("map[string][]%s", typeName)
 		}
 
+		// If a type is nullable we'll want a pointer
+		if sliceContains(nullable(), typeName) {
+			typeName = fmt.Sprintf("*%s", typeName)
+		}
+
 		field := TypeFields{}
 		if v.Value.Description != "" {
 			desc := fmt.Sprintf("// %s is %s", strcase.ToCamel(k), toLowerFirstLetter(strings.ReplaceAll(v.Value.Description, "\n", "\n// ")))
