@@ -3,7 +3,7 @@ module github.com/oxidecomputer/oxide.go
 go 1.21
 
 require (
-	github.com/getkin/kin-openapi v0.127.0
+	github.com/getkin/kin-openapi v0.128.0
 	github.com/iancoleman/strcase v0.3.0
 	github.com/stretchr/testify v1.9.0
 )
