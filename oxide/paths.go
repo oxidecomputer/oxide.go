@@ -2442,6 +2442,571 @@ func (c *Client) InstanceStop(ctx context.Context, params InstanceStopParams) (*
 	return &body, nil
 }
 
+// InternetGatewayIpAddressList: List IP addresses attached to internet gateway
+//
+// To iterate over all pages, use the `InternetGatewayIpAddressListAllPages` method, instead.
+func (c *Client) InternetGatewayIpAddressList(ctx context.Context, params InternetGatewayIpAddressListParams) (*InternetGatewayIpAddressResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/internet-gateway-ip-addresses"),
+		map[string]string{},
+		map[string]string{
+			"gateway":    string(params.Gateway),
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"project":    string(params.Project),
+			"sort_by":    string(params.SortBy),
+			"vpc":        string(params.Vpc),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body InternetGatewayIpAddressResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// InternetGatewayIpAddressListAllPages: List IP addresses attached to internet gateway
+//
+// This method is a wrapper around the `InternetGatewayIpAddressList` method.
+// This method returns all the pages at once.
+func (c *Client) InternetGatewayIpAddressListAllPages(ctx context.Context, params InternetGatewayIpAddressListParams) ([]InternetGatewayIpAddress, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []InternetGatewayIpAddress
+	params.PageToken = ""
+	params.Limit = 100
+	for {
+		page, err := c.InternetGatewayIpAddressList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
+}
+
+// InternetGatewayIpAddressCreate: Attach IP address to internet gateway
+func (c *Client) InternetGatewayIpAddressCreate(ctx context.Context, params InternetGatewayIpAddressCreateParams) (*InternetGatewayIpAddress, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"POST",
+		resolveRelative(c.host, "/v1/internet-gateway-ip-addresses"),
+		map[string]string{},
+		map[string]string{
+			"gateway": string(params.Gateway),
+			"project": string(params.Project),
+			"vpc":     string(params.Vpc),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body InternetGatewayIpAddress
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// InternetGatewayIpAddressDelete: Detach IP address from internet gateway
+func (c *Client) InternetGatewayIpAddressDelete(ctx context.Context, params InternetGatewayIpAddressDeleteParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"DELETE",
+		resolveRelative(c.host, "/v1/internet-gateway-ip-addresses/{{.address}}"),
+		map[string]string{
+			"address": string(params.Address),
+		},
+		map[string]string{
+			"cascade": strconv.FormatBool(*params.Cascade),
+			"gateway": string(params.Gateway),
+			"project": string(params.Project),
+			"vpc":     string(params.Vpc),
+		},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// InternetGatewayIpPoolList: List IP pools attached to internet gateway
+//
+// To iterate over all pages, use the `InternetGatewayIpPoolListAllPages` method, instead.
+func (c *Client) InternetGatewayIpPoolList(ctx context.Context, params InternetGatewayIpPoolListParams) (*InternetGatewayIpPoolResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/internet-gateway-ip-pools"),
+		map[string]string{},
+		map[string]string{
+			"gateway":    string(params.Gateway),
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"project":    string(params.Project),
+			"sort_by":    string(params.SortBy),
+			"vpc":        string(params.Vpc),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body InternetGatewayIpPoolResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// InternetGatewayIpPoolListAllPages: List IP pools attached to internet gateway
+//
+// This method is a wrapper around the `InternetGatewayIpPoolList` method.
+// This method returns all the pages at once.
+func (c *Client) InternetGatewayIpPoolListAllPages(ctx context.Context, params InternetGatewayIpPoolListParams) ([]InternetGatewayIpPool, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []InternetGatewayIpPool
+	params.PageToken = ""
+	params.Limit = 100
+	for {
+		page, err := c.InternetGatewayIpPoolList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
+}
+
+// InternetGatewayIpPoolCreate: Attach IP pool to internet gateway
+func (c *Client) InternetGatewayIpPoolCreate(ctx context.Context, params InternetGatewayIpPoolCreateParams) (*InternetGatewayIpPool, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"POST",
+		resolveRelative(c.host, "/v1/internet-gateway-ip-pools"),
+		map[string]string{},
+		map[string]string{
+			"gateway": string(params.Gateway),
+			"project": string(params.Project),
+			"vpc":     string(params.Vpc),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body InternetGatewayIpPool
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// InternetGatewayIpPoolDelete: Detach IP pool from internet gateway
+func (c *Client) InternetGatewayIpPoolDelete(ctx context.Context, params InternetGatewayIpPoolDeleteParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"DELETE",
+		resolveRelative(c.host, "/v1/internet-gateway-ip-pools/{{.pool}}"),
+		map[string]string{
+			"pool": string(params.Pool),
+		},
+		map[string]string{
+			"cascade": strconv.FormatBool(*params.Cascade),
+			"gateway": string(params.Gateway),
+			"project": string(params.Project),
+			"vpc":     string(params.Vpc),
+		},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// InternetGatewayList: List internet gateways
+//
+// To iterate over all pages, use the `InternetGatewayListAllPages` method, instead.
+func (c *Client) InternetGatewayList(ctx context.Context, params InternetGatewayListParams) (*InternetGatewayResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/internet-gateways"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"project":    string(params.Project),
+			"sort_by":    string(params.SortBy),
+			"vpc":        string(params.Vpc),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body InternetGatewayResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// InternetGatewayListAllPages: List internet gateways
+//
+// This method is a wrapper around the `InternetGatewayList` method.
+// This method returns all the pages at once.
+func (c *Client) InternetGatewayListAllPages(ctx context.Context, params InternetGatewayListParams) ([]InternetGateway, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []InternetGateway
+	params.PageToken = ""
+	params.Limit = 100
+	for {
+		page, err := c.InternetGatewayList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
+}
+
+// InternetGatewayCreate: Create VPC internet gateway
+func (c *Client) InternetGatewayCreate(ctx context.Context, params InternetGatewayCreateParams) (*InternetGateway, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"POST",
+		resolveRelative(c.host, "/v1/internet-gateways"),
+		map[string]string{},
+		map[string]string{
+			"project": string(params.Project),
+			"vpc":     string(params.Vpc),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body InternetGateway
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// InternetGatewayView: Fetch internet gateway
+func (c *Client) InternetGatewayView(ctx context.Context, params InternetGatewayViewParams) (*InternetGateway, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/internet-gateways/{{.gateway}}"),
+		map[string]string{
+			"gateway": string(params.Gateway),
+		},
+		map[string]string{
+			"project": string(params.Project),
+			"vpc":     string(params.Vpc),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body InternetGateway
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// InternetGatewayDelete: Delete internet gateway
+func (c *Client) InternetGatewayDelete(ctx context.Context, params InternetGatewayDeleteParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"DELETE",
+		resolveRelative(c.host, "/v1/internet-gateways/{{.gateway}}"),
+		map[string]string{
+			"gateway": string(params.Gateway),
+		},
+		map[string]string{
+			"cascade": strconv.FormatBool(*params.Cascade),
+			"project": string(params.Project),
+			"vpc":     string(params.Vpc),
+		},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // ProjectIpPoolList: List IP pools
 //
 // To iterate over all pages, use the `ProjectIpPoolListAllPages` method, instead.
