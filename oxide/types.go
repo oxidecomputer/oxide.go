@@ -1681,11 +1681,11 @@ type Disk struct {
 // - Size
 type DiskCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// DiskSource is initial source for this disk
+	// DiskSource is the initial source for this disk
 	DiskSource DiskSource `json:"disk_source,omitempty" yaml:"disk_source,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
-	// Size is total size of the Disk in bytes
+	// Size is the total size of the Disk (in bytes)
 	Size ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
 }
 
@@ -3008,6 +3008,10 @@ type Instance struct {
 	AutoRestartCooldownExpiration *time.Time `json:"auto_restart_cooldown_expiration,omitempty" yaml:"auto_restart_cooldown_expiration,omitempty"`
 	// AutoRestartEnabled is `true` if this instance's auto-restart policy will permit the control plane to automatically restart it if it enters the `Failed` state.
 	AutoRestartEnabled *bool `json:"auto_restart_enabled,omitempty" yaml:"auto_restart_enabled,omitempty"`
+	// AutoRestartPolicy is the auto-restart policy configured for this instance, or `None` if no explicit policy is configured.
+	//
+	// If this is not present, then this instance uses the default auto-restart policy, which may or may not allow it to be restarted. The `auto_restart_enabled` field indicates whether the instance will be automatically restarted.
+	AutoRestartPolicy InstanceAutoRestartPolicy `json:"auto_restart_policy,omitempty" yaml:"auto_restart_policy,omitempty"`
 	// BootDiskId is the ID of the disk used to boot this Instance, if a specific one is assigned.
 	BootDiskId string `json:"boot_disk_id,omitempty" yaml:"boot_disk_id,omitempty"`
 	// Description is human-readable free-form text about a resource
@@ -3071,13 +3075,13 @@ type InstanceCreate struct {
 	//
 	// By default, all instances have outbound connectivity, but no inbound connectivity. These external addresses can be used to provide a fixed, known IP address for making inbound connections to the instance.
 	ExternalIps []ExternalIpCreate `json:"external_ips,omitempty" yaml:"external_ips,omitempty"`
-	// Hostname is a hostname identifies a host on a network, and is usually a dot-delimited sequence of labels, where each label contains only letters, digits, or the hyphen. See RFCs 1035 and 952 for more details.
+	// Hostname is the hostname to be assigned to the instance
 	Hostname Hostname `json:"hostname,omitempty" yaml:"hostname,omitempty"`
-	// Memory is byte count to express memory or storage capacity.
+	// Memory is the amount of RAM (in bytes) to be allocated to the instance
 	Memory ByteCount `json:"memory,omitempty" yaml:"memory,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
-	// Ncpus is the number of CPUs in an Instance
+	// Ncpus is the number of vCPUs to be allocated to the instance
 	Ncpus InstanceCpuCount `json:"ncpus,omitempty" yaml:"ncpus,omitempty"`
 	// NetworkInterfaces is the network interfaces to be created for this instance.
 	NetworkInterfaces InstanceNetworkInterfaceAttachment `json:"network_interfaces,omitempty" yaml:"network_interfaces,omitempty"`
@@ -3104,11 +3108,11 @@ type InstanceDiskAttachmentType string
 // - Type
 type InstanceDiskAttachmentCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// DiskSource is initial source for this disk
+	// DiskSource is the initial source for this disk
 	DiskSource DiskSource `json:"disk_source,omitempty" yaml:"disk_source,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
-	// Size is total size of the Disk in bytes
+	// Size is the total size of the Disk (in bytes)
 	Size ByteCount                  `json:"size,omitempty" yaml:"size,omitempty"`
 	Type InstanceDiskAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
 }
@@ -3128,11 +3132,11 @@ type InstanceDiskAttachmentAttach struct {
 type InstanceDiskAttachment struct {
 	// Description is the type definition for a Description.
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// DiskSource is initial source for this disk
+	// DiskSource is the initial source for this disk
 	DiskSource DiskSource `json:"disk_source,omitempty" yaml:"disk_source,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
-	// Size is total size of the Disk in bytes
+	// Size is the total size of the Disk (in bytes)
 	Size ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
 	// Type is the type definition for a Type.
 	Type InstanceDiskAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
@@ -3292,10 +3296,162 @@ type InstanceState string
 
 // InstanceUpdate is parameters of an `Instance` that can be reconfigured after creation.
 type InstanceUpdate struct {
+	// AutoRestartPolicy is the auto-restart policy for this instance.
+	//
+	// If not provided, unset the instance's auto-restart policy.
+	AutoRestartPolicy InstanceAutoRestartPolicy `json:"auto_restart_policy,omitempty" yaml:"auto_restart_policy,omitempty"`
 	// BootDisk is name or ID of the disk the instance should be instructed to boot from.
 	//
 	// If not provided, unset the instance's boot disk.
 	BootDisk NameOrId `json:"boot_disk,omitempty" yaml:"boot_disk,omitempty"`
+}
+
+// InternetGateway is an internet gateway provides a path between VPC networks and external networks.
+//
+// Required fields:
+// - Description
+// - Id
+// - Name
+// - TimeCreated
+// - TimeModified
+// - VpcId
+type InternetGateway struct {
+	// Description is human-readable free-form text about a resource
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Name is unique, mutable, user-controlled identifier for each resource
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	// TimeCreated is timestamp when this resource was created
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	// TimeModified is timestamp when this resource was last modified
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+	// VpcId is the VPC to which the gateway belongs.
+	VpcId string `json:"vpc_id,omitempty" yaml:"vpc_id,omitempty"`
+}
+
+// InternetGatewayCreate is create-time parameters for an `InternetGateway`
+//
+// Required fields:
+// - Description
+// - Name
+type InternetGatewayCreate struct {
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+}
+
+// InternetGatewayIpAddress is an IP address that is attached to an internet gateway
+//
+// Required fields:
+// - Address
+// - Description
+// - Id
+// - InternetGatewayId
+// - Name
+// - TimeCreated
+// - TimeModified
+type InternetGatewayIpAddress struct {
+	// Address is the associated IP address,
+	Address string `json:"address,omitempty" yaml:"address,omitempty"`
+	// Description is human-readable free-form text about a resource
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// InternetGatewayId is the associated internet gateway.
+	InternetGatewayId string `json:"internet_gateway_id,omitempty" yaml:"internet_gateway_id,omitempty"`
+	// Name is unique, mutable, user-controlled identifier for each resource
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	// TimeCreated is timestamp when this resource was created
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	// TimeModified is timestamp when this resource was last modified
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+}
+
+// InternetGatewayIpAddressCreate is create-time identity-related parameters
+//
+// Required fields:
+// - Address
+// - Description
+// - Name
+type InternetGatewayIpAddressCreate struct {
+	Address     string `json:"address,omitempty" yaml:"address,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+}
+
+// InternetGatewayIpAddressResultsPage is a single page of results
+//
+// Required fields:
+// - Items
+type InternetGatewayIpAddressResultsPage struct {
+	// Items is list of items on this page of results
+	Items []InternetGatewayIpAddress `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// InternetGatewayIpPool is an IP pool that is attached to an internet gateway
+//
+// Required fields:
+// - Description
+// - Id
+// - InternetGatewayId
+// - IpPoolId
+// - Name
+// - TimeCreated
+// - TimeModified
+type InternetGatewayIpPool struct {
+	// Description is human-readable free-form text about a resource
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// InternetGatewayId is the associated internet gateway.
+	InternetGatewayId string `json:"internet_gateway_id,omitempty" yaml:"internet_gateway_id,omitempty"`
+	// IpPoolId is the associated IP pool.
+	IpPoolId string `json:"ip_pool_id,omitempty" yaml:"ip_pool_id,omitempty"`
+	// Name is unique, mutable, user-controlled identifier for each resource
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	// TimeCreated is timestamp when this resource was created
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	// TimeModified is timestamp when this resource was last modified
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+}
+
+// InternetGatewayIpPoolCreate is create-time identity-related parameters
+//
+// Required fields:
+// - Description
+// - IpPool
+// - Name
+type InternetGatewayIpPoolCreate struct {
+	Description string   `json:"description,omitempty" yaml:"description,omitempty"`
+	IpPool      NameOrId `json:"ip_pool,omitempty" yaml:"ip_pool,omitempty"`
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+}
+
+// InternetGatewayIpPoolResultsPage is a single page of results
+//
+// Required fields:
+// - Items
+type InternetGatewayIpPoolResultsPage struct {
+	// Items is list of items on this page of results
+	Items []InternetGatewayIpPool `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// InternetGatewayResultsPage is a single page of results
+//
+// Required fields:
+// - Items
+type InternetGatewayResultsPage struct {
+	// Items is list of items on this page of results
+	Items []InternetGateway `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
 // IpNet is the type definition for a IpNet.
@@ -4103,8 +4259,8 @@ type Route struct {
 	Dst IpNet `json:"dst,omitempty" yaml:"dst,omitempty"`
 	// Gw is the route gateway.
 	Gw string `json:"gw,omitempty" yaml:"gw,omitempty"`
-	// LocalPref is local preference for route. Higher preference indictes precedence within and across protocols.
-	LocalPref int `json:"local_pref,omitempty" yaml:"local_pref,omitempty"`
+	// RibPriority is local preference for route. Higher preference indictes precedence within and across protocols.
+	RibPriority int `json:"rib_priority,omitempty" yaml:"rib_priority,omitempty"`
 	// Vid is vLAN id the gateway is reachable over.
 	Vid int `json:"vid,omitempty" yaml:"vid,omitempty"`
 }
@@ -4261,7 +4417,7 @@ type RouteTarget struct {
 type RouterRoute struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// Destination is selects which traffic this routing rule will apply to.
+	// Destination is selects which traffic this routing rule will apply to
 	Destination RouteDestination `json:"destination,omitempty" yaml:"destination,omitempty"`
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
@@ -4269,7 +4425,7 @@ type RouterRoute struct {
 	Kind RouterRouteKind `json:"kind,omitempty" yaml:"kind,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
-	// Target is the location that matched packets should be forwarded to.
+	// Target is the location that matched packets should be forwarded to
 	Target RouteTarget `json:"target,omitempty" yaml:"target,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
@@ -5135,10 +5291,10 @@ type SwitchPortRouteConfig struct {
 	Gw IpNet `json:"gw,omitempty" yaml:"gw,omitempty"`
 	// InterfaceName is the interface name this route configuration is assigned to.
 	InterfaceName string `json:"interface_name,omitempty" yaml:"interface_name,omitempty"`
-	// LocalPref is local preference indicating priority within and across protocols.
-	LocalPref int `json:"local_pref,omitempty" yaml:"local_pref,omitempty"`
 	// PortSettingsId is the port settings object this route configuration belongs to.
 	PortSettingsId string `json:"port_settings_id,omitempty" yaml:"port_settings_id,omitempty"`
+	// RibPriority is rIB Priority indicating priority within and across protocols.
+	RibPriority int `json:"rib_priority,omitempty" yaml:"rib_priority,omitempty"`
 	// VlanId is the VLAN identifier for the route. Use this if the gateway is reachable over an 802.1Q tagged L2 segment.
 	VlanId int `json:"vlan_id,omitempty" yaml:"vlan_id,omitempty"`
 }
@@ -6592,6 +6748,124 @@ type InstanceStartParams struct {
 type InstanceStopParams struct {
 	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+}
+
+// InternetGatewayIpAddressListParams is the request parameters for InternetGatewayIpAddressList
+//
+// Required fields:
+// - Gateway
+type InternetGatewayIpAddressListParams struct {
+	Gateway   NameOrId         `json:"gateway,omitempty" yaml:"gateway,omitempty"`
+	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Vpc       NameOrId         `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+}
+
+// InternetGatewayIpAddressCreateParams is the request parameters for InternetGatewayIpAddressCreate
+//
+// Required fields:
+// - Gateway
+// - Body
+type InternetGatewayIpAddressCreateParams struct {
+	Gateway NameOrId                        `json:"gateway,omitempty" yaml:"gateway,omitempty"`
+	Project NameOrId                        `json:"project,omitempty" yaml:"project,omitempty"`
+	Vpc     NameOrId                        `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Body    *InternetGatewayIpAddressCreate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// InternetGatewayIpAddressDeleteParams is the request parameters for InternetGatewayIpAddressDelete
+//
+// Required fields:
+// - Address
+type InternetGatewayIpAddressDeleteParams struct {
+	Address NameOrId `json:"address,omitempty" yaml:"address,omitempty"`
+	Cascade *bool    `json:"cascade,omitempty" yaml:"cascade,omitempty"`
+	Gateway NameOrId `json:"gateway,omitempty" yaml:"gateway,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+}
+
+// InternetGatewayIpPoolListParams is the request parameters for InternetGatewayIpPoolList
+//
+// Required fields:
+// - Gateway
+type InternetGatewayIpPoolListParams struct {
+	Gateway   NameOrId         `json:"gateway,omitempty" yaml:"gateway,omitempty"`
+	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Vpc       NameOrId         `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+}
+
+// InternetGatewayIpPoolCreateParams is the request parameters for InternetGatewayIpPoolCreate
+//
+// Required fields:
+// - Gateway
+// - Body
+type InternetGatewayIpPoolCreateParams struct {
+	Gateway NameOrId                     `json:"gateway,omitempty" yaml:"gateway,omitempty"`
+	Project NameOrId                     `json:"project,omitempty" yaml:"project,omitempty"`
+	Vpc     NameOrId                     `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Body    *InternetGatewayIpPoolCreate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// InternetGatewayIpPoolDeleteParams is the request parameters for InternetGatewayIpPoolDelete
+//
+// Required fields:
+// - Pool
+type InternetGatewayIpPoolDeleteParams struct {
+	Pool    NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Cascade *bool    `json:"cascade,omitempty" yaml:"cascade,omitempty"`
+	Gateway NameOrId `json:"gateway,omitempty" yaml:"gateway,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+}
+
+// InternetGatewayListParams is the request parameters for InternetGatewayList
+//
+// Required fields:
+// - Vpc
+type InternetGatewayListParams struct {
+	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Vpc       NameOrId         `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+}
+
+// InternetGatewayCreateParams is the request parameters for InternetGatewayCreate
+//
+// Required fields:
+// - Vpc
+// - Body
+type InternetGatewayCreateParams struct {
+	Project NameOrId               `json:"project,omitempty" yaml:"project,omitempty"`
+	Vpc     NameOrId               `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Body    *InternetGatewayCreate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// InternetGatewayDeleteParams is the request parameters for InternetGatewayDelete
+//
+// Required fields:
+// - Gateway
+type InternetGatewayDeleteParams struct {
+	Gateway NameOrId `json:"gateway,omitempty" yaml:"gateway,omitempty"`
+	Cascade *bool    `json:"cascade,omitempty" yaml:"cascade,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+}
+
+// InternetGatewayViewParams is the request parameters for InternetGatewayView
+//
+// Required fields:
+// - Gateway
+type InternetGatewayViewParams struct {
+	Gateway NameOrId `json:"gateway,omitempty" yaml:"gateway,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
 }
 
 // ProjectIpPoolListParams is the request parameters for ProjectIpPoolList
@@ -8364,6 +8638,106 @@ func (p *InstanceStartParams) Validate() error {
 func (p *InstanceStopParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.Instance), "Instance")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InternetGatewayIpAddressListParams are set
+func (p *InternetGatewayIpAddressListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InternetGatewayIpAddressCreateParams are set
+func (p *InternetGatewayIpAddressCreateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Gateway), "Gateway")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InternetGatewayIpAddressDeleteParams are set
+func (p *InternetGatewayIpAddressDeleteParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Address), "Address")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InternetGatewayIpPoolListParams are set
+func (p *InternetGatewayIpPoolListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InternetGatewayIpPoolCreateParams are set
+func (p *InternetGatewayIpPoolCreateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Gateway), "Gateway")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InternetGatewayIpPoolDeleteParams are set
+func (p *InternetGatewayIpPoolDeleteParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Pool), "Pool")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InternetGatewayListParams are set
+func (p *InternetGatewayListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InternetGatewayCreateParams are set
+func (p *InternetGatewayCreateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Vpc), "Vpc")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InternetGatewayDeleteParams are set
+func (p *InternetGatewayDeleteParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Gateway), "Gateway")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InternetGatewayViewParams are set
+func (p *InternetGatewayViewParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Gateway), "Gateway")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
