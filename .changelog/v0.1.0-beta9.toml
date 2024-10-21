@@ -28,4 +28,4 @@ description = "Small change in fields. [236](https://github.com/oxidecomputer/ox
 
 [[features]]
 title = "New types and methods"
-description = "Create, list, view and delete methods for InternetGatewayIpAddress and InternetGatewayIpPool. [XXX](https://github.com/oxidecomputer/oxide.go/pull/XXX)"
+description = "Create, list, view and delete methods for InternetGatewayIpAddress and InternetGatewayIpPool. [240](https://github.com/oxidecomputer/oxide.go/pull/240)"
