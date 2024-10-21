@@ -6,10 +6,6 @@ description = "All struct field types that have different property types in the 
 title = "Helper function"
 description = "New `NewPointer` function that returns a pointer to a given value. [235](https://github.com/oxidecomputer/oxide.go/pull/235)"
 
-[[enhancements]]
-title = ""
-description = ""
-
 [[bugs]]
 title = "Fix for fields of type `time.Time`"
 description = "Change encoding of time parameters to RFC3339. [232](https://github.com/oxidecomputer/oxide.go/pull/232)"

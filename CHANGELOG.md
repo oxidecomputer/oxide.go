@@ -1,3 +1,35 @@
+# v0.1.0-beta9 (2024/Oct/21)
+
+### Breaking changes
+
+- **OneOf generic types:** All struct field types that have different property types in the OpenAPI spec have now been set to `any`. [#234](https://github.com/oxidecomputer/oxide.go/pull/234)
+- **NetworkingBgpAnnounceSet type:** Small change in fields. [236](https://github.com/oxidecomputer/oxide.go/pull/236)
+
+### New features
+
+- **Helper function:** New `NewPointer` function that returns a pointer to a given value. [235](https://github.com/oxidecomputer/oxide.go/pull/235)
+- **New fields for Instance:** It is now possible to specify a boot disk and update it. Additionally, instances now have 'autorestart' functionality, where if set the control plane to automatically restart it if it enters the `Failed` state. [236](https://github.com/oxidecomputer/oxide.go/pull/236)
+- **New types and methods:** Create, list, view and delete methods for InternetGatewayIpAddress and InternetGatewayIpPool. [240](https://github.com/oxidecomputer/oxide.go/pull/240)
+
+
+### Bug fixes
+
+- **Fix for fields of type `time.Time`:** Change encoding of time parameters to RFC3339. [232](https://github.com/oxidecomputer/oxide.go/pull/232)
+- **Fix for types:** Account for additional fields 'array' types that don't specify map keys. [235](https://github.com/oxidecomputer/oxide.go/pull/235)
+
+### List of commits
+
+- [7c3ac3b](https://github.com/oxidecomputer/oxide.go/commit/7c3ac3b) Update to omicron rel/v11/rc1 (#240)
+- [92053e1](https://github.com/oxidecomputer/oxide.go/commit/92053e1) Fix nullable BootDisk field (#237)
+- [cadd7b6](https://github.com/oxidecomputer/oxide.go/commit/cadd7b6) Update to omicron f14b561 (#236)
+- [5f5c339](https://github.com/oxidecomputer/oxide.go/commit/5f5c339) Account for additional fields "array" types that don't specify map keys (#235)
+- [7b8deef](https://github.com/oxidecomputer/oxide.go/commit/7b8deef) Fix OneOf type templates when property types differ (#234)
+- [2633306](https://github.com/oxidecomputer/oxide.go/commit/2633306) Change encoding of time parameters to RFC3339 (#232)
+- [645ab82](https://github.com/oxidecomputer/oxide.go/commit/645ab82) Remove outdated checks in Makefile and bump tools (#230)
+- [db1cf82](https://github.com/oxidecomputer/oxide.go/commit/db1cf82) Remove executable bit from generated source files (#229)
+- [2d91c54](https://github.com/oxidecomputer/oxide.go/commit/2d91c54) Don't hardcode Bash path in Makefile (#228)
+- [ab549ae](https://github.com/oxidecomputer/oxide.go/commit/ab549ae) Bump version to v0.1.0-beta9 (#227)
+
 # v0.1.0-beta8 (2024/Sep/3)
 
 ### Breaking changes
