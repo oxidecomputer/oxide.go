@@ -11,5 +11,5 @@ title = ""
 description = ""
 
 [[enhancements]]
-title = ""
-description = ""
+title = "Update Go version"
+description = "The SDK's version has been updated to 1.22"
