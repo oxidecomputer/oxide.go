@@ -12,4 +12,4 @@ description = ""
 
 [[enhancements]]
 title = "Update Go version"
-description = "The SDK's version has been updated to 1.22"
+description = "The SDK's version has been updated to 1.22. [243](https://github.com/oxidecomputer/oxide.go/pull/243)"
