@@ -12,10 +12,12 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func Test_buildRequest(t *testing.T) {
@@ -165,15 +167,17 @@ func Test_buildRequest(t *testing.T) {
 
 func Test_NewClient(t *testing.T) {
 	tt := map[string]struct {
-		config         *Config
+		config         func(string) *Config
 		env            map[string]string
 		expectedClient *Client
 		expectedError  string
 	}{
 		"succeeds with valid client from config": {
-			config: &Config{
-				Host:  "http://localhost",
-				Token: "foo",
+			config: func(string) *Config {
+				return &Config{
+					Host:  "http://localhost",
+					Token: "foo",
+				}
 			},
 			expectedClient: &Client{
 				host:  "http://localhost/",
@@ -203,11 +207,13 @@ func Test_NewClient(t *testing.T) {
 				"OXIDE_HOST":  "http://localhost",
 				"OXIDE_TOKEN": "foo",
 			},
-			config: &Config{
-				UserAgent: "bob",
-				HTTPClient: &http.Client{
-					Timeout: 500 * time.Second,
-				},
+			config: func(string) *Config {
+				return &Config{
+					UserAgent: "bob",
+					HTTPClient: &http.Client{
+						Timeout: 500 * time.Second,
+					},
+				}
 			},
 			expectedClient: &Client{
 				host:  "http://localhost/",
@@ -218,13 +224,128 @@ func Test_NewClient(t *testing.T) {
 				userAgent: "bob",
 			},
 		},
+		"succeeds with profile": {
+			config: func(string) *Config {
+				return &Config{
+					Profile: "file",
+				}
+			},
+			expectedClient: &Client{
+				host:  "http://file-host/",
+				token: "file-token",
+				client: &http.Client{
+					Timeout: 600 * time.Second,
+				},
+				userAgent: defaultUserAgent(),
+			},
+		},
+		"succeeds with default profile": {
+			config: func(string) *Config {
+				return &Config{
+					UseDefaultProfile: true,
+				}
+			},
+			expectedClient: &Client{
+				host:  "http://file-host/",
+				token: "file-token",
+				client: &http.Client{
+					Timeout: 600 * time.Second,
+				},
+				userAgent: defaultUserAgent(),
+			},
+		},
+		"succeeds with config dir and default profile": {
+			config: func(oxideDir string) *Config {
+				return &Config{
+					UseDefaultProfile: true,
+					ConfigDir:         oxideDir,
+				}
+			},
+			expectedClient: &Client{
+				host:  "http://file-host/",
+				token: "file-token",
+				client: &http.Client{
+					Timeout: 600 * time.Second,
+				},
+				userAgent: defaultUserAgent(),
+			},
+		},
+		"succeeds with config dir and profile": {
+			config: func(oxideDir string) *Config {
+				return &Config{
+					Profile:   "other",
+					ConfigDir: oxideDir,
+				}
+			},
+			expectedClient: &Client{
+				host:  "http://other-host/",
+				token: "other-token",
+				client: &http.Client{
+					Timeout: 600 * time.Second,
+				},
+				userAgent: defaultUserAgent(),
+			},
+		},
+		"succeeds with profile, overrides env": {
+			env: map[string]string{
+				"OXIDE_HOST":  "http://localhost",
+				"OXIDE_TOKEN": "foo",
+			},
+			config: func(string) *Config {
+				return &Config{
+					Profile: "other",
+				}
+			},
+			expectedClient: &Client{
+				host:  "http://other-host/",
+				token: "other-token",
+				client: &http.Client{
+					Timeout: 600 * time.Second,
+				},
+				userAgent: defaultUserAgent(),
+			},
+		},
+		"succeeds with profile, host overridden": {
+			config: func(oxideDir string) *Config {
+				return &Config{
+					Host:    "http://localhost",
+					Profile: "file",
+				}
+			},
+			expectedClient: &Client{
+				host:  "http://localhost/",
+				token: "file-token",
+				client: &http.Client{
+					Timeout: 600 * time.Second,
+				},
+				userAgent: defaultUserAgent(),
+			},
+		},
+		"succeeds with profile, token overridden": {
+			config: func(oxideDir string) *Config {
+				return &Config{
+					Token:   "foo",
+					Profile: "file",
+				}
+			},
+			expectedClient: &Client{
+				host:  "http://file-host/",
+				token: "foo",
+				client: &http.Client{
+					Timeout: 600 * time.Second,
+				},
+				userAgent: defaultUserAgent(),
+			},
+		},
 		"fails with missing address using config": {
 			env: map[string]string{
 				"OXIDE_HOST":  "",
 				"OXIDE_TOKEN": "",
 			},
-			config: &Config{
-				Token: "foo",
+			config: func(string) *Config {
+				return &Config{
+					Token: "foo",
+				}
 			},
 			expectedError: "invalid client configuration:\nfailed parsing host address: host address is empty",
 		},
@@ -233,8 +354,10 @@ func Test_NewClient(t *testing.T) {
 				"OXIDE_HOST":  "",
 				"OXIDE_TOKEN": "",
 			},
-			config: &Config{
-				Host: "http://localhost",
+			config: func(string) *Config {
+				return &Config{
+					Host: "http://localhost",
+				}
 			},
 			expectedError: "invalid client configuration:\ntoken is required",
 		},
@@ -261,6 +384,33 @@ func Test_NewClient(t *testing.T) {
 			},
 			expectedError: "invalid client configuration:\nfailed parsing host address: host address is empty\ntoken is required",
 		},
+		"fails with invalid config dir": {
+			config: func(string) *Config {
+				return &Config{
+					ConfigDir:         "/not/a/valid/directory",
+					UseDefaultProfile: true,
+				}
+			},
+			expectedError: "invalid client configuration:\nfailed to read config: failed to get default profile: failed to open config: open /not/a/valid/directory/config.toml: no such file or directory\nfailed parsing host address: host address is empty\ntoken is required",
+		},
+		"fails with invalid profile": {
+			config: func(string) *Config {
+				return &Config{
+					Profile: "not-a-profile",
+				}
+			},
+			expectedError: "invalid client configuration:\nfailed to read config: failed to get credentials for profile \"not-a-profile\": profile not found\nfailed parsing host address: host address is empty\ntoken is required",
+		},
+		"fails with invalid profile and default profile": {
+			config: func(oxideDir string) *Config {
+				return &Config{
+					ConfigDir:         oxideDir,
+					Profile:           "not-a-profile",
+					UseDefaultProfile: true,
+				}
+			},
+			expectedError: "invalid client configuration:\nfailed to read config: failed to get credentials for profile \"not-a-profile\": profile not found\nfailed parsing host address: host address is empty\ntoken is required",
+		},
 	}
 
 	for testName, testCase := range tt {
@@ -269,13 +419,23 @@ func Test_NewClient(t *testing.T) {
 				os.Setenv(key, val)
 			}
 
+			tmpDir := setupConfig(t)
+			originalHome := os.Getenv("HOME")
+			os.Setenv("HOME", tmpDir)
+
 			t.Cleanup(func() {
 				for key := range testCase.env {
 					os.Unsetenv(key)
 				}
+				os.Setenv("HOME", originalHome)
+				require.NoError(t, os.RemoveAll(tmpDir))
 			})
 
-			c, err := NewClient(testCase.config)
+			var config *Config
+			if testCase.config != nil {
+				config = testCase.config(filepath.Join(tmpDir, ".config", "oxide"))
+			}
+			c, err := NewClient(config)
 
 			if testCase.expectedError != "" {
 				assert.EqualError(t, err, testCase.expectedError)
@@ -284,4 +444,28 @@ func Test_NewClient(t *testing.T) {
 			assert.Equal(t, testCase.expectedClient, c)
 		})
 	}
+}
+
+func setupConfig(t *testing.T) string {
+	tmpDir, err := os.MkdirTemp("", "")
+	require.NoError(t, err)
+
+	oxideDir := filepath.Join(tmpDir, ".config", "oxide")
+	require.NoError(t, os.MkdirAll(oxideDir, 0o755))
+
+	credentials := []byte(`
+[profile.file]
+host = "http://file-host"
+token = "file-token"
+user = "file-user"
+
+[profile.other]
+host = "http://other-host"
+token = "other-token"
+user = "other-user"
+`)
+	require.NoError(t, os.WriteFile(filepath.Join(oxideDir, "credentials.toml"), credentials, 0o600))
+	require.NoError(t, os.WriteFile(filepath.Join(oxideDir, "config.toml"), []byte(`default-profile = "file"`), 0o644))
+
+	return tmpDir
 }

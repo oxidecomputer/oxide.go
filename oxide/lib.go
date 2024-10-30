@@ -12,8 +12,11 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/pelletier/go-toml"
 )
 
 // TokenEnvVar is the environment variable that contains the token.
@@ -37,6 +40,20 @@ type Config struct {
 	// A custom user agent string to add to every request instead of the
 	// default.
 	UserAgent string
+
+	// The directory to look for Oxide CLI configuration files. Defaults
+	// to $HOME/.config/oxide if unset.
+	ConfigDir string
+
+	// The name of the Oxide CLI profile to use for authentication.
+	// The Host and Token fields will override their respective values
+	// provided by the profile.
+	Profile string
+
+	// Whether to use the default profile listed in the Oxide CLI
+	// config.toml file for authentication. Will be overridden by
+	// the Profile field.
+	UseDefaultProfile bool
 }
 
 // Client which conforms to the OpenAPI3 specification for this service.
@@ -55,6 +72,11 @@ type Client struct {
 	userAgent string
 }
 
+type hostCreds struct {
+	host  string
+	token string
+}
+
 // NewClient creates a new client for the Oxide API. To authenticate with
 // environment variables, set OXIDE_HOST and OXIDE_TOKEN accordingly. Pass in a
 // non-nil *Config to set the various configuration options on a Client. When
@@ -68,14 +90,31 @@ func NewClient(cfg *Config) (*Client, error) {
 		Timeout: 600 * time.Second,
 	}
 
+	errs := make([]error, 0)
+
 	// Layer in the user-provided configuration if provided.
 	if cfg != nil {
-		if cfg.Host != "" {
-			host = cfg.Host
+		var fileCreds *hostCreds
+		if cfg.Profile != "" || cfg.UseDefaultProfile {
+			var err error
+			fileCreds, err = profileCredentials(*cfg)
+			if err != nil {
+				errs = append(errs, fmt.Errorf("failed to read config: %w", err))
+			}
 		}
 
+		// Use explicit host over profile.
+		if cfg.Host != "" {
+			host = cfg.Host
+		} else if fileCreds != nil {
+			host = fileCreds.host
+		}
+
+		// Use explicit token over profile.
 		if cfg.Token != "" {
 			token = cfg.Token
+		} else if fileCreds != nil {
+			token = fileCreds.token
 		}
 
 		if cfg.UserAgent != "" {
@@ -87,19 +126,17 @@ func NewClient(cfg *Config) (*Client, error) {
 		}
 	}
 
-	var errHost error
 	host, err := parseBaseURL(host)
 	if err != nil {
-		errHost = fmt.Errorf("failed parsing host address: %w", err)
+		errs = append(errs, fmt.Errorf("failed parsing host address: %w", err))
 	}
 
-	var errToken error
 	if token == "" {
-		errToken = errors.New("token is required")
+		errs = append(errs, errors.New("token is required"))
 	}
 
 	// To aggregate the validation errors above.
-	if err := errors.Join(errHost, errToken); err != nil {
+	if err := errors.Join(errs...); err != nil {
 		return nil, fmt.Errorf("invalid client configuration:\n%w", err)
 	}
 
@@ -116,6 +153,78 @@ func NewClient(cfg *Config) (*Client, error) {
 // defaultUserAgent builds and returns the default user agent string.
 func defaultUserAgent() string {
 	return fmt.Sprintf("oxide.go/%s", version)
+}
+
+func profileCredentials(cfg Config) (*hostCreds, error) {
+	configDir := cfg.ConfigDir
+	if configDir == "" {
+		homeDir, err := os.UserHomeDir()
+		if err != nil {
+			return nil, fmt.Errorf("unable to find user's home directory: %w", err)
+		}
+		configDir = filepath.Join(homeDir, ".config", "oxide")
+	}
+
+	profile := cfg.Profile
+
+	// Use explicitly configured profile over default when both are set.
+	if cfg.UseDefaultProfile && profile == "" {
+		var err error
+		profile, err = defaultProfile(filepath.Join(configDir, "config.toml"))
+		if err != nil {
+			return nil, fmt.Errorf("failed to get default profile: %w", err)
+		}
+	}
+
+	fileCreds, err := readCredentials(filepath.Join(configDir, "credentials.toml"), profile)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get credentials for profile %q: %w", profile, err)
+	}
+
+	return fileCreds, nil
+}
+
+// defaultProfile returns the default profile from config.toml, if present.
+func defaultProfile(configPath string) (string, error) {
+	configFile, err := toml.LoadFile(configPath)
+	if err != nil {
+		return "", fmt.Errorf("failed to open config: %w", err)
+	}
+
+	if profileName := configFile.Get("default-profile"); profileName != nil {
+		return profileName.(string), nil
+	}
+
+	return "", errors.New("no default profile set")
+}
+
+// readCredentials returns the token and host associated with a profile.
+func readCredentials(credentialsPath, profileName string) (*hostCreds, error) {
+	if profileName == "" {
+		return nil, errors.New("no profile name provided")
+	}
+
+	credentialsFile, err := toml.LoadFile(credentialsPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open %q: %v", credentialsPath, err)
+	}
+
+	profile, ok := credentialsFile.Get("profile." + profileName).(*toml.Tree)
+	if !ok {
+		return nil, errors.New("profile not found")
+	}
+
+	token, ok := profile.Get("token").(string)
+	if !ok {
+		return nil, errors.New("token not found")
+	}
+
+	host, ok := profile.Get("host").(string)
+	if !ok {
+		return nil, errors.New("host not found")
+	}
+
+	return &hostCreds{host: host, token: token}, nil
 }
 
 // parseBaseURL parses the base URL from the host URL.
