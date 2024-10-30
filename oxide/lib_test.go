@@ -278,12 +278,10 @@ func Test_NewClient(t *testing.T) {
 			c, err := NewClient(testCase.config)
 
 			if testCase.expectedError != "" {
-				assert.Error(t, err)
-				assert.Equal(t, testCase.expectedError, err.Error())
+				assert.EqualError(t, err, testCase.expectedError)
 			}
 
 			assert.Equal(t, testCase.expectedClient, c)
 		})
-
 	}
 }
