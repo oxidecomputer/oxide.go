@@ -19,6 +19,8 @@ import (
 )
 
 func Test_buildRequest(t *testing.T) {
+	t.Parallel()
+
 	type dummyCreate struct {
 		Name string `json:"name,omitempty"`
 		Size int    `json:"size,omitempty"`
@@ -57,7 +59,8 @@ func Test_buildRequest(t *testing.T) {
 				params: map[string]string{},
 				queries: map[string]string{
 					"project": "prod",
-				}},
+				},
+			},
 			want: &http.Request{
 				Method: "POST",
 				URL: &url.URL{
@@ -140,7 +143,10 @@ func Test_buildRequest(t *testing.T) {
 	}
 
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			got, err := c.buildRequest(context.TODO(), tt.args.body, tt.args.method, tt.args.uri, tt.args.params, tt.args.queries)
 			if err != nil {
 				assert.ErrorContains(t, err, tt.wantErr)
