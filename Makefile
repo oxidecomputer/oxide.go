@@ -49,7 +49,7 @@ lint: tools ## Verifies `golangci-lint` passes.
 .PHONY: test
 test: ## Runs the go tests.
 	@ echo "+ Running Go tests..."
-	@ $(GO) test -v -tags "$(BUILDTAGS) cgo" ./...
+	@ $(GO) test -v -tags "$(BUILDTAGS)" ./...
 
 .PHONY: vet
 vet: ## Verifies `go vet` passes.
