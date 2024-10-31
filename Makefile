@@ -84,7 +84,7 @@ help:
 # This way linting tools don't need to be downloaded/installed every time you
 # want to run the linters or generate the SDK.
 VERSION_DIR:=$(GOBIN)/versions
-VERSION_GOIMPORTS:=v0.24.0
+VERSION_GOIMPORTS:=v0.26.0
 VERSION_GOLANGCILINT:=v1.61.0
 VERSION_STATICCHECK:=2024.1.1
 VERSION_WHATSIT:=1f5eb3ea
