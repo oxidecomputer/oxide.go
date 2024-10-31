@@ -65,11 +65,6 @@ staticcheck: tools ## Verifies `staticcheck` passes.
 		exit 1; \
 	fi
 
-.PHONY: install
-install: ## Installs the executable or package.
-	@echo "+ $@"
-	$(GO) install -a -tags "$(BUILDTAGS)" ${GO_LDFLAGS} .
-
 .PHONY: tag
 tag: ## Create a new git tag to prepare to build a release.
 	git tag -sa $(VERSION) -m "$(VERSION)"
