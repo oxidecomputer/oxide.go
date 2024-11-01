@@ -19,17 +19,22 @@ import (
 	"github.com/pelletier/go-toml"
 )
 
-// TokenEnvVar is the environment variable that contains the token.
-const TokenEnvVar = "OXIDE_TOKEN"
+const (
+	// TokenEnvVar is the environment variable that contains the token.
+	TokenEnvVar = "OXIDE_TOKEN"
 
-// HostEnvVar is the environment variable that contains the host.
-const HostEnvVar = "OXIDE_HOST"
+	// HostEnvVar is the environment variable that contains the host.
+	HostEnvVar = "OXIDE_HOST"
 
-var (
-	credentialsFile  = "credentials.toml"
-	configFile       = "config.toml"
-	defaultConfigDir = filepath.Join(".config/oxide")
+	// credentialsFile is the name of the file the Oxide CLI stores credentials in.
+	credentialsFile = "credentials.toml"
+
+	// configFile is the name of the file the Oxide CLI stores its config in.
+	configFile = "config.toml"
 )
+
+// defaultConfigDir is the default path used by the Oxide CLI for configuration files.
+var defaultConfigDir = filepath.Join(".config/oxide")
 
 // Config is the configuration that can be set on a Client.
 type Config struct {
