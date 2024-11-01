@@ -49,7 +49,7 @@ lint: tools ## Verifies `golangci-lint` passes.
 .PHONY: test
 test: ## Runs the go tests.
 	@ echo "+ Running Go tests..."
-	@ $(GO) test -v -tags "$(BUILDTAGS) cgo" ./...
+	@ $(GO) test -v -tags "$(BUILDTAGS)" ./...
 
 .PHONY: vet
 vet: ## Verifies `go vet` passes.
@@ -64,11 +64,6 @@ staticcheck: tools ## Verifies `staticcheck` passes.
 	@if [[ ! -z "$(shell $(GOBIN)/staticcheck ./... | tee /dev/stderr)" ]]; then \
 		exit 1; \
 	fi
-
-.PHONY: install
-install: ## Installs the executable or package.
-	@echo "+ $@"
-	$(GO) install -a -tags "$(BUILDTAGS)" ${GO_LDFLAGS} .
 
 .PHONY: tag
 tag: ## Create a new git tag to prepare to build a release.
@@ -89,7 +84,7 @@ help:
 # This way linting tools don't need to be downloaded/installed every time you
 # want to run the linters or generate the SDK.
 VERSION_DIR:=$(GOBIN)/versions
-VERSION_GOIMPORTS:=v0.24.0
+VERSION_GOIMPORTS:=v0.26.0
 VERSION_GOLANGCILINT:=v1.61.0
 VERSION_STATICCHECK:=2024.1.1
 VERSION_WHATSIT:=1f5eb3ea
