@@ -13,6 +13,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -168,6 +169,7 @@ func Test_buildRequest(t *testing.T) {
 func Test_NewClient(t *testing.T) {
 	tt := map[string]struct {
 		config         func(string) *Config
+		setHome        bool
 		env            map[string]string
 		expectedClient *Client
 		expectedError  string
@@ -230,6 +232,7 @@ func Test_NewClient(t *testing.T) {
 					Profile: "file",
 				}
 			},
+			setHome: true,
 			expectedClient: &Client{
 				host:  "http://file-host/",
 				token: "file-token",
@@ -245,6 +248,7 @@ func Test_NewClient(t *testing.T) {
 					UseDefaultProfile: true,
 				}
 			},
+			setHome: true,
 			expectedClient: &Client{
 				host:  "http://file-host/",
 				token: "file-token",
@@ -296,41 +300,10 @@ func Test_NewClient(t *testing.T) {
 					Profile: "other",
 				}
 			},
+			setHome: true,
 			expectedClient: &Client{
 				host:  "http://other-host/",
 				token: "other-token",
-				client: &http.Client{
-					Timeout: 600 * time.Second,
-				},
-				userAgent: defaultUserAgent(),
-			},
-		},
-		"succeeds with profile, host overridden": {
-			config: func(oxideDir string) *Config {
-				return &Config{
-					Host:    "http://localhost",
-					Profile: "file",
-				}
-			},
-			expectedClient: &Client{
-				host:  "http://localhost/",
-				token: "file-token",
-				client: &http.Client{
-					Timeout: 600 * time.Second,
-				},
-				userAgent: defaultUserAgent(),
-			},
-		},
-		"succeeds with profile, token overridden": {
-			config: func(oxideDir string) *Config {
-				return &Config{
-					Token:   "foo",
-					Profile: "file",
-				}
-			},
-			expectedClient: &Client{
-				host:  "http://file-host/",
-				token: "foo",
 				client: &http.Client{
 					Timeout: 600 * time.Second,
 				},
@@ -391,7 +364,7 @@ func Test_NewClient(t *testing.T) {
 					UseDefaultProfile: true,
 				}
 			},
-			expectedError: "invalid client configuration:\nfailed to read config: failed to get default profile: failed to open config: open /not/a/valid/directory/config.toml: no such file or directory\nfailed parsing host address: host address is empty\ntoken is required",
+			expectedError: "invalid client configuration:\nunable to retrieve profile: failed to get default profile from \"/not/a/valid/directory/config.toml\": failed to open config: open /not/a/valid/directory/config.toml: no such file or directory\nfailed parsing host address: host address is empty\ntoken is required",
 		},
 		"fails with invalid profile": {
 			config: func(string) *Config {
@@ -399,7 +372,8 @@ func Test_NewClient(t *testing.T) {
 					Profile: "not-a-profile",
 				}
 			},
-			expectedError: "invalid client configuration:\nfailed to read config: failed to get credentials for profile \"not-a-profile\": profile not found\nfailed parsing host address: host address is empty\ntoken is required",
+			setHome:       true,
+			expectedError: "invalid client configuration:\nunable to retrieve profile: failed to get credentials for profile \"not-a-profile\" from \"<OXIDE_DIR>/credentials.toml\": profile not found\nfailed parsing host address: host address is empty\ntoken is required",
 		},
 		"fails with invalid profile and default profile": {
 			config: func(oxideDir string) *Config {
@@ -409,7 +383,28 @@ func Test_NewClient(t *testing.T) {
 					UseDefaultProfile: true,
 				}
 			},
-			expectedError: "invalid client configuration:\nfailed to read config: failed to get credentials for profile \"not-a-profile\": profile not found\nfailed parsing host address: host address is empty\ntoken is required",
+			setHome:       true,
+			expectedError: "invalid client configuration:\nunable to retrieve profile: failed to get credentials for profile \"not-a-profile\" from \"<OXIDE_DIR>/credentials.toml\": profile not found\nfailed parsing host address: host address is empty\ntoken is required",
+		},
+		"fails with profile and host": {
+			config: func(oxideDir string) *Config {
+				return &Config{
+					Host:    "http://localhost",
+					Profile: "file",
+				}
+			},
+			setHome:       true,
+			expectedError: "invalid client configuration:\nunable to retrieve profile: cannot authenticate with both a profile and host/token\ntoken is required",
+		},
+		"fails with profile and token": {
+			config: func(oxideDir string) *Config {
+				return &Config{
+					Token:   "foo",
+					Profile: "file",
+				}
+			},
+			setHome:       true,
+			expectedError: "invalid client configuration:\nunable to retrieve profile: cannot authenticate with both a profile and host/token\nfailed parsing host address: host address is empty",
 		},
 	}
 
@@ -420,8 +415,15 @@ func Test_NewClient(t *testing.T) {
 			}
 
 			tmpDir := setupConfig(t)
+			oxideDir := filepath.Join(tmpDir, ".config", "oxide")
+
 			originalHome := os.Getenv("HOME")
-			os.Setenv("HOME", tmpDir)
+			if testCase.setHome {
+				os.Setenv("HOME", tmpDir)
+			} else {
+				// Ensure we don't read from your actual credentials.toml.
+				os.Unsetenv("HOME")
+			}
 
 			t.Cleanup(func() {
 				for key := range testCase.env {
@@ -433,12 +435,12 @@ func Test_NewClient(t *testing.T) {
 
 			var config *Config
 			if testCase.config != nil {
-				config = testCase.config(filepath.Join(tmpDir, ".config", "oxide"))
+				config = testCase.config(oxideDir)
 			}
 			c, err := NewClient(config)
 
 			if testCase.expectedError != "" {
-				assert.EqualError(t, err, testCase.expectedError)
+				assert.EqualError(t, err, strings.ReplaceAll(testCase.expectedError, "<OXIDE_DIR>", oxideDir))
 			}
 
 			assert.Equal(t, testCase.expectedClient, c)
