@@ -364,7 +364,7 @@ func Test_NewClient(t *testing.T) {
 					UseDefaultProfile: true,
 				}
 			},
-			expectedError: "invalid client configuration:\nunable to retrieve profile: failed to get default profile from \"/not/a/valid/directory/config.toml\": failed to open config: open /not/a/valid/directory/config.toml: no such file or directory\nfailed parsing host address: host address is empty\ntoken is required",
+			expectedError: "unable to retrieve profile: failed to get default profile from \"/not/a/valid/directory/config.toml\": failed to open config: open /not/a/valid/directory/config.toml: no such file or directory",
 		},
 		"fails with invalid profile": {
 			config: func(string) *Config {
@@ -373,7 +373,7 @@ func Test_NewClient(t *testing.T) {
 				}
 			},
 			setHome:       true,
-			expectedError: "invalid client configuration:\nunable to retrieve profile: failed to get credentials for profile \"not-a-profile\" from \"<OXIDE_DIR>/credentials.toml\": profile not found\nfailed parsing host address: host address is empty\ntoken is required",
+			expectedError: "unable to retrieve profile: failed to get credentials for profile \"not-a-profile\" from \"<OXIDE_DIR>/credentials.toml\": profile not found",
 		},
 		"fails with invalid profile and default profile": {
 			config: func(oxideDir string) *Config {
@@ -384,7 +384,7 @@ func Test_NewClient(t *testing.T) {
 				}
 			},
 			setHome:       true,
-			expectedError: "invalid client configuration:\nunable to retrieve profile: failed to get credentials for profile \"not-a-profile\" from \"<OXIDE_DIR>/credentials.toml\": profile not found\nfailed parsing host address: host address is empty\ntoken is required",
+			expectedError: "unable to retrieve profile: failed to get credentials for profile \"not-a-profile\" from \"<OXIDE_DIR>/credentials.toml\": profile not found",
 		},
 		"fails with profile and host": {
 			config: func(oxideDir string) *Config {
@@ -394,7 +394,7 @@ func Test_NewClient(t *testing.T) {
 				}
 			},
 			setHome:       true,
-			expectedError: "invalid client configuration:\nunable to retrieve profile: cannot authenticate with both a profile and host/token\ntoken is required",
+			expectedError: "cannot authenticate with both a profile and host/token",
 		},
 		"fails with profile and token": {
 			config: func(oxideDir string) *Config {
@@ -404,7 +404,7 @@ func Test_NewClient(t *testing.T) {
 				}
 			},
 			setHome:       true,
-			expectedError: "invalid client configuration:\nunable to retrieve profile: cannot authenticate with both a profile and host/token\nfailed parsing host address: host address is empty",
+			expectedError: "cannot authenticate with both a profile and host/token",
 		},
 	}
 

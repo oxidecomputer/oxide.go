@@ -98,18 +98,20 @@ func NewClient(cfg *Config) (*Client, error) {
 		Timeout: 600 * time.Second,
 	}
 
-	errs := make([]error, 0)
-
 	// Layer in the user-provided configuration if provided.
 	if cfg != nil {
 		if cfg.Profile != "" || cfg.UseDefaultProfile {
+			if cfg.Host != "" || cfg.Token != "" {
+				return nil, errors.New("cannot authenticate with both a profile and host/token")
+			}
+
 			fileCreds, err := getProfile(*cfg)
 			if err != nil {
-				errs = append(errs, fmt.Errorf("unable to retrieve profile: %w", err))
-			} else {
-				token = fileCreds.token
-				host = fileCreds.host
+				return nil, fmt.Errorf("unable to retrieve profile: %w", err)
 			}
+
+			token = fileCreds.token
+			host = fileCreds.host
 		}
 
 		if cfg.Host != "" {
@@ -129,6 +131,7 @@ func NewClient(cfg *Config) (*Client, error) {
 		}
 	}
 
+	errs := make([]error, 0)
 	host, err := parseBaseURL(host)
 	if err != nil {
 		errs = append(errs, fmt.Errorf("failed parsing host address: %w", err))
@@ -161,10 +164,6 @@ func defaultUserAgent() string {
 // getProfile determines the path of the user's credentials file
 // and returns the host and token for the requested profile.
 func getProfile(cfg Config) (*authCredentials, error) {
-	if cfg.Host != "" || cfg.Token != "" {
-		return nil, errors.New("cannot authenticate with both a profile and host/token")
-	}
-
 	configDir := cfg.ConfigDir
 	if configDir == "" {
 		homeDir, err := os.UserHomeDir()
