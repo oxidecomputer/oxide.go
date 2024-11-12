@@ -375,17 +375,6 @@ func Test_NewClient(t *testing.T) {
 			setHome:       true,
 			expectedError: "unable to retrieve profile: failed to get credentials for profile \"not-a-profile\" from \"<OXIDE_DIR>/credentials.toml\": profile not found",
 		},
-		"fails with invalid profile and default profile": {
-			config: func(oxideDir string) *Config {
-				return &Config{
-					ConfigDir:         oxideDir,
-					Profile:           "not-a-profile",
-					UseDefaultProfile: true,
-				}
-			},
-			setHome:       true,
-			expectedError: "unable to retrieve profile: failed to get credentials for profile \"not-a-profile\" from \"<OXIDE_DIR>/credentials.toml\": profile not found",
-		},
 		"fails with profile and host": {
 			config: func(oxideDir string) *Config {
 				return &Config{
@@ -405,6 +394,16 @@ func Test_NewClient(t *testing.T) {
 			},
 			setHome:       true,
 			expectedError: "cannot authenticate with both a profile and host/token",
+		},
+		"fails with profile and default profile": {
+			config: func(oxideDir string) *Config {
+				return &Config{
+					Profile:           "file",
+					UseDefaultProfile: true,
+				}
+			},
+			setHome:       true,
+			expectedError: "cannot authenticate with both default profile and a defined profile",
 		},
 	}
 
