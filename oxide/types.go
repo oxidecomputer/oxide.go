@@ -35,7 +35,8 @@ type AddressConfig struct {
 	Addresses []Address `json:"addresses,omitempty" yaml:"addresses,omitempty"`
 }
 
-// AddressLot is represents an address lot object, containing the id of the lot that can be used in other API calls.
+// AddressLot is represents an address lot object, containing the id of the lot that can be used in other API
+// calls.
 //
 // Required fields:
 // - Description
@@ -59,7 +60,8 @@ type AddressLot struct {
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
 }
 
-// AddressLotBlock is an address lot block is a part of an address lot and contains a range of addresses. The range is inclusive.
+// AddressLotBlock is an address lot block is a part of an address lot and contains a range of addresses. The
+// range is inclusive.
 //
 // Required fields:
 // - FirstAddress
@@ -110,7 +112,9 @@ type AddressLotCreate struct {
 	Description string                  `json:"description,omitempty" yaml:"description,omitempty"`
 	// Kind is the kind of address lot to create.
 	Kind AddressLotKind `json:"kind,omitempty" yaml:"kind,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
@@ -126,7 +130,8 @@ type AddressLotCreateResponse struct {
 	Lot AddressLot `json:"lot,omitempty" yaml:"lot,omitempty"`
 }
 
-// AddressLotKind is infrastructure address lots are used for network infrastructure like addresses assigned to rack switches.
+// AddressLotKind is infrastructure address lots are used for network infrastructure like addresses assigned to
+// rack switches.
 type AddressLotKind string
 
 // AddressLotResultsPage is a single page of results
@@ -243,15 +248,18 @@ type BfdSessionDisable struct {
 // - RequiredRx
 // - Switch
 type BfdSessionEnable struct {
-	// DetectionThreshold is the negotiated Control packet transmission interval, multiplied by this variable, will be the Detection Time for this session (as seen by the remote system)
+	// DetectionThreshold is the negotiated Control packet transmission interval, multiplied by this variable, will
+	// be the Detection Time for this session (as seen by the remote system)
 	DetectionThreshold int `json:"detection_threshold,omitempty" yaml:"detection_threshold,omitempty"`
-	// Local is address the Oxide switch will listen on for BFD traffic. If `None` then the unspecified address (0.0.0.0 or ::) is used.
+	// Local is address the Oxide switch will listen on for BFD traffic. If `None` then the unspecified address (0.0.0.0
+	// or ::) is used.
 	Local string `json:"local,omitempty" yaml:"local,omitempty"`
 	// Mode is select either single-hop (RFC 5881) or multi-hop (RFC 5883)
 	Mode BfdMode `json:"mode,omitempty" yaml:"mode,omitempty"`
 	// Remote is address of the remote peer to establish a BFD session with.
 	Remote string `json:"remote,omitempty" yaml:"remote,omitempty"`
-	// RequiredRx is the minimum interval, in microseconds, between received BFD Control packets that this system requires
+	// RequiredRx is the minimum interval, in microseconds, between received BFD Control packets that this system
+	// requires
 	RequiredRx int `json:"required_rx,omitempty" yaml:"required_rx,omitempty"`
 	// Switch is the switch to enable this session on. Must be `switch0` or `switch1`.
 	Switch Name `json:"switch,omitempty" yaml:"switch,omitempty"`
@@ -277,11 +285,14 @@ type BfdStatus struct {
 	Peer       string   `json:"peer,omitempty" yaml:"peer,omitempty"`
 	RequiredRx int      `json:"required_rx,omitempty" yaml:"required_rx,omitempty"`
 	State      BfdState `json:"state,omitempty" yaml:"state,omitempty"`
-	// Switch is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Switch is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Switch Name `json:"switch,omitempty" yaml:"switch,omitempty"`
 }
 
-// BgpAnnounceSet is represents a BGP announce set by id. The id can be used with other API calls to view and manage the announce set.
+// BgpAnnounceSet is represents a BGP announce set by id. The id can be used with other API calls to view
+// and manage the announce set.
 //
 // Required fields:
 // - Description
@@ -312,7 +323,9 @@ type BgpAnnounceSetCreate struct {
 	// Announcement is the announcements in this set.
 	Announcement []BgpAnnouncementCreate `json:"announcement,omitempty" yaml:"announcement,omitempty"`
 	Description  string                  `json:"description,omitempty" yaml:"description,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
@@ -369,7 +382,8 @@ type BgpConfig struct {
 	Vrf string `json:"vrf,omitempty" yaml:"vrf,omitempty"`
 }
 
-// BgpConfigCreate is parameters for creating a BGP configuration. This includes and autonomous system number (ASN) and a virtual routing and forwarding (VRF) identifier.
+// BgpConfigCreate is parameters for creating a BGP configuration. This includes and autonomous system number
+// (ASN) and a virtual routing and forwarding (VRF) identifier.
 //
 // Required fields:
 // - Asn
@@ -381,7 +395,9 @@ type BgpConfigCreate struct {
 	Asn              int      `json:"asn,omitempty" yaml:"asn,omitempty"`
 	BgpAnnounceSetId NameOrId `json:"bgp_announce_set_id,omitempty" yaml:"bgp_announce_set_id,omitempty"`
 	Description      string   `json:"description,omitempty" yaml:"description,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// Vrf is optional virtual routing and forwarding identifier for this BGP configuration.
 	Vrf Name `json:"vrf,omitempty" yaml:"vrf,omitempty"`
@@ -428,7 +444,9 @@ type BgpImportedRouteIpv4 struct {
 // BgpMessageHistory is the type definition for a BgpMessageHistory.
 type BgpMessageHistory string
 
-// BgpPeer is a BGP peer configuration for an interface. Includes the set of announcements that will be advertised to the peer identified by `addr`. The `bgp_config` parameter is a reference to global BGP parameters. The `interface_name` indicates what interface the peer should be contacted on.
+// BgpPeer is a BGP peer configuration for an interface. Includes the set of announcements that will be
+// advertised to the peer identified by `addr`. The `bgp_config` parameter is a reference to global BGP parameters.
+// The `interface_name` indicates what interface the peer should be contacted on.
 //
 // Required fields:
 // - Addr
@@ -464,7 +482,9 @@ type BgpPeer struct {
 	HoldTime int `json:"hold_time,omitempty" yaml:"hold_time,omitempty"`
 	// IdleHoldTime is how long to hold a peer in idle before attempting a new session (seconds).
 	IdleHoldTime int `json:"idle_hold_time,omitempty" yaml:"idle_hold_time,omitempty"`
-	// InterfaceName is the name of interface to peer on. This is relative to the port configuration this BGP peer configuration is a part of. For example this value could be phy0 to refer to a primary physical interface. Or it could be vlan47 to refer to a VLAN interface.
+	// InterfaceName is the name of interface to peer on. This is relative to the port configuration this BGP
+	// peer configuration is a part of. For example this value could be phy0 to refer to a primary physical interface.
+	// Or it could be vlan47 to refer to a VLAN interface.
 	InterfaceName string `json:"interface_name,omitempty" yaml:"interface_name,omitempty"`
 	// Keepalive is how often to send keepalive requests (seconds).
 	Keepalive int `json:"keepalive,omitempty" yaml:"keepalive,omitempty"`
@@ -554,7 +574,8 @@ type BinRangedoubleRangeFrom struct {
 
 // BinRangedouble is a type storing a range over `T`.
 //
-// This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those cover `(..end)`, `(start..end)`, and `(start..)` respectively.
+// This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
+// cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangedouble struct {
 	// End is the type definition for a End.
 	End float64 `json:"end,omitempty" yaml:"end,omitempty"`
@@ -601,7 +622,8 @@ type BinRangefloatRangeFrom struct {
 
 // BinRangefloat is a type storing a range over `T`.
 //
-// This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those cover `(..end)`, `(start..end)`, and `(start..)` respectively.
+// This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
+// cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangefloat struct {
 	// End is the type definition for a End.
 	End float64 `json:"end,omitempty" yaml:"end,omitempty"`
@@ -648,7 +670,8 @@ type BinRangeint16RangeFrom struct {
 
 // BinRangeint16 is a type storing a range over `T`.
 //
-// This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those cover `(..end)`, `(start..end)`, and `(start..)` respectively.
+// This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
+// cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeint16 struct {
 	// End is the type definition for a End.
 	End int `json:"end,omitempty" yaml:"end,omitempty"`
@@ -695,7 +718,8 @@ type BinRangeint32RangeFrom struct {
 
 // BinRangeint32 is a type storing a range over `T`.
 //
-// This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those cover `(..end)`, `(start..end)`, and `(start..)` respectively.
+// This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
+// cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeint32 struct {
 	// End is the type definition for a End.
 	End int `json:"end,omitempty" yaml:"end,omitempty"`
@@ -742,7 +766,8 @@ type BinRangeint64RangeFrom struct {
 
 // BinRangeint64 is a type storing a range over `T`.
 //
-// This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those cover `(..end)`, `(start..end)`, and `(start..)` respectively.
+// This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
+// cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeint64 struct {
 	// End is the type definition for a End.
 	End int `json:"end,omitempty" yaml:"end,omitempty"`
@@ -789,7 +814,8 @@ type BinRangeint8RangeFrom struct {
 
 // BinRangeint8 is a type storing a range over `T`.
 //
-// This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those cover `(..end)`, `(start..end)`, and `(start..)` respectively.
+// This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
+// cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeint8 struct {
 	// End is the type definition for a End.
 	End int `json:"end,omitempty" yaml:"end,omitempty"`
@@ -836,7 +862,8 @@ type BinRangeuint16RangeFrom struct {
 
 // BinRangeuint16 is a type storing a range over `T`.
 //
-// This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those cover `(..end)`, `(start..end)`, and `(start..)` respectively.
+// This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
+// cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeuint16 struct {
 	// End is the type definition for a End.
 	End int `json:"end,omitempty" yaml:"end,omitempty"`
@@ -883,7 +910,8 @@ type BinRangeuint32RangeFrom struct {
 
 // BinRangeuint32 is a type storing a range over `T`.
 //
-// This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those cover `(..end)`, `(start..end)`, and `(start..)` respectively.
+// This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
+// cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeuint32 struct {
 	// End is the type definition for a End.
 	End int `json:"end,omitempty" yaml:"end,omitempty"`
@@ -930,7 +958,8 @@ type BinRangeuint64RangeFrom struct {
 
 // BinRangeuint64 is a type storing a range over `T`.
 //
-// This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those cover `(..end)`, `(start..end)`, and `(start..)` respectively.
+// This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
+// cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeuint64 struct {
 	// End is the type definition for a End.
 	End int `json:"end,omitempty" yaml:"end,omitempty"`
@@ -977,7 +1006,8 @@ type BinRangeuint8RangeFrom struct {
 
 // BinRangeuint8 is a type storing a range over `T`.
 //
-// This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those cover `(..end)`, `(start..end)`, and `(start..)` respectively.
+// This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
+// cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeuint8 struct {
 	// End is the type definition for a End.
 	End int `json:"end,omitempty" yaml:"end,omitempty"`
@@ -1154,7 +1184,9 @@ type CertificateCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Key is pEM-formatted string containing private key
 	Key string `json:"key,omitempty" yaml:"key,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// Service is the service using this certificate
 	Service ServiceUsingCertificate `json:"service,omitempty" yaml:"service,omitempty"`
@@ -1413,7 +1445,9 @@ type DatumCumulativeF64 struct {
 type DatumHistogramI8 struct {
 	// Datum is histogram metric
 	//
-	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+	// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+	// the left, right, or both so that the bins extend to the entire range of the support.
 	//
 	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
 	Datum Histogramint8 `json:"datum,omitempty" yaml:"datum,omitempty"`
@@ -1428,7 +1462,9 @@ type DatumHistogramI8 struct {
 type DatumHistogramU8 struct {
 	// Datum is histogram metric
 	//
-	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+	// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+	// the left, right, or both so that the bins extend to the entire range of the support.
 	//
 	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
 	Datum Histogramuint8 `json:"datum,omitempty" yaml:"datum,omitempty"`
@@ -1443,7 +1479,9 @@ type DatumHistogramU8 struct {
 type DatumHistogramI16 struct {
 	// Datum is histogram metric
 	//
-	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+	// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+	// the left, right, or both so that the bins extend to the entire range of the support.
 	//
 	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
 	Datum Histogramint16 `json:"datum,omitempty" yaml:"datum,omitempty"`
@@ -1458,7 +1496,9 @@ type DatumHistogramI16 struct {
 type DatumHistogramU16 struct {
 	// Datum is histogram metric
 	//
-	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+	// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+	// the left, right, or both so that the bins extend to the entire range of the support.
 	//
 	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
 	Datum Histogramuint16 `json:"datum,omitempty" yaml:"datum,omitempty"`
@@ -1473,7 +1513,9 @@ type DatumHistogramU16 struct {
 type DatumHistogramI32 struct {
 	// Datum is histogram metric
 	//
-	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+	// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+	// the left, right, or both so that the bins extend to the entire range of the support.
 	//
 	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
 	Datum Histogramint32 `json:"datum,omitempty" yaml:"datum,omitempty"`
@@ -1488,7 +1530,9 @@ type DatumHistogramI32 struct {
 type DatumHistogramU32 struct {
 	// Datum is histogram metric
 	//
-	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+	// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+	// the left, right, or both so that the bins extend to the entire range of the support.
 	//
 	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
 	Datum Histogramuint32 `json:"datum,omitempty" yaml:"datum,omitempty"`
@@ -1503,7 +1547,9 @@ type DatumHistogramU32 struct {
 type DatumHistogramI64 struct {
 	// Datum is histogram metric
 	//
-	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+	// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+	// the left, right, or both so that the bins extend to the entire range of the support.
 	//
 	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
 	Datum Histogramint64 `json:"datum,omitempty" yaml:"datum,omitempty"`
@@ -1518,7 +1564,9 @@ type DatumHistogramI64 struct {
 type DatumHistogramU64 struct {
 	// Datum is histogram metric
 	//
-	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+	// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+	// the left, right, or both so that the bins extend to the entire range of the support.
 	//
 	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
 	Datum Histogramuint64 `json:"datum,omitempty" yaml:"datum,omitempty"`
@@ -1533,7 +1581,9 @@ type DatumHistogramU64 struct {
 type DatumHistogramF32 struct {
 	// Datum is histogram metric
 	//
-	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+	// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+	// the left, right, or both so that the bins extend to the entire range of the support.
 	//
 	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
 	Datum Histogramfloat `json:"datum,omitempty" yaml:"datum,omitempty"`
@@ -1548,7 +1598,9 @@ type DatumHistogramF32 struct {
 type DatumHistogramF64 struct {
 	// Datum is histogram metric
 	//
-	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+	// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+	// the left, right, or both so that the bins extend to the entire range of the support.
 	//
 	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
 	Datum Histogramdouble `json:"datum,omitempty" yaml:"datum,omitempty"`
@@ -1683,7 +1735,9 @@ type DiskCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// DiskSource is the initial source for this disk
 	DiskSource DiskSource `json:"disk_source,omitempty" yaml:"disk_source,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// Size is the total size of the Disk (in bytes)
 	Size ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
@@ -1746,7 +1800,8 @@ type DiskSourceImage struct {
 	Type    DiskSourceType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
-// DiskSourceImportingBlocks is create a blank disk that will accept bulk writes or pull blocks from an external source.
+// DiskSourceImportingBlocks is create a blank disk that will accept bulk writes or pull blocks from an
+// external source.
 //
 // Required fields:
 // - BlockSize
@@ -1881,9 +1936,11 @@ type DiskState struct {
 	Instance string `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
 
-// Distributiondouble is a distribution is a sequence of bins and counts in those bins, and some statistical information tracked to compute the mean, standard deviation, and quantile estimates.
+// Distributiondouble is a distribution is a sequence of bins and counts in those bins, and some statistical information
+// tracked to compute the mean, standard deviation, and quantile estimates.
 //
-// Min, max, and the p-* quantiles are treated as optional due to the possibility of distribution operations, like subtraction.
+// Min, max, and the p-* quantiles are treated as optional due to the possibility of distribution operations, like
+// subtraction.
 //
 // Required fields:
 // - Bins
@@ -1902,9 +1959,11 @@ type Distributiondouble struct {
 	SumOfSamples float64  `json:"sum_of_samples,omitempty" yaml:"sum_of_samples,omitempty"`
 }
 
-// Distributionint64 is a distribution is a sequence of bins and counts in those bins, and some statistical information tracked to compute the mean, standard deviation, and quantile estimates.
+// Distributionint64 is a distribution is a sequence of bins and counts in those bins, and some statistical information
+// tracked to compute the mean, standard deviation, and quantile estimates.
 //
-// Min, max, and the p-* quantiles are treated as optional due to the possibility of distribution operations, like subtraction.
+// Min, max, and the p-* quantiles are treated as optional due to the possibility of distribution operations, like
+// subtraction.
 //
 // Required fields:
 // - Bins
@@ -1953,7 +2012,8 @@ type ExternalIpEphemeral struct {
 	Kind ExternalIpKind `json:"kind,omitempty" yaml:"kind,omitempty"`
 }
 
-// ExternalIpFloating is a Floating IP is a well-known IP address which can be attached and detached from instances.
+// ExternalIpFloating is a Floating IP is a well-known IP address which can be attached and detached from
+// instances.
 //
 // Required fields:
 // - Description
@@ -2014,7 +2074,8 @@ type ExternalIp struct {
 // ExternalIpCreateType is the type definition for a ExternalIpCreateType.
 type ExternalIpCreateType string
 
-// ExternalIpCreateEphemeral is an IP address providing both inbound and outbound access. The address is automatically-assigned from the provided IP Pool, or the current silo's default pool if not specified.
+// ExternalIpCreateEphemeral is an IP address providing both inbound and outbound access. The address is
+// automatically-assigned from the provided IP Pool, or the current silo's default pool if not specified.
 //
 // Required fields:
 // - Type
@@ -2023,7 +2084,8 @@ type ExternalIpCreateEphemeral struct {
 	Type ExternalIpCreateType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
-// ExternalIpCreateFloating is an IP address providing both inbound and outbound access. The address is an existing floating IP object assigned to the current project.
+// ExternalIpCreateFloating is an IP address providing both inbound and outbound access. The address is
+// an existing floating IP object assigned to the current project.
 //
 // The floating IP must not be in use by another instance or service.
 //
@@ -2211,7 +2273,9 @@ type FieldValue struct {
 
 // FinalizeDisk is parameters for finalizing a disk
 type FinalizeDisk struct {
-	// SnapshotName is if specified a snapshot of the disk will be created with the given name during finalization. If not specified, a snapshot for the disk will _not_ be created. A snapshot can be manually created once the disk transitions into the `Detached` state.
+	// SnapshotName is if specified a snapshot of the disk will be created with the given name during finalization. If
+	// not specified, a snapshot for the disk will _not_ be created. A snapshot can be manually created once the
+	// disk transitions into the `Detached` state.
 	SnapshotName Name `json:"snapshot_name,omitempty" yaml:"snapshot_name,omitempty"`
 }
 
@@ -2220,7 +2284,8 @@ type FleetRole string
 
 // FleetRolePolicy is policy for a particular resource
 //
-// Note that the Policy only describes access granted explicitly for this resource.  The policies of parent resources can also cause a user to have access to this resource.
+// Note that the Policy only describes access granted explicitly for this resource.  The policies of parent resources
+// can also cause a user to have access to this resource.
 //
 // Required fields:
 // - RoleAssignments
@@ -2229,9 +2294,11 @@ type FleetRolePolicy struct {
 	RoleAssignments []FleetRoleRoleAssignment `json:"role_assignments,omitempty" yaml:"role_assignments,omitempty"`
 }
 
-// FleetRoleRoleAssignment is describes the assignment of a particular role on a particular resource to a particular identity (user, group, etc.)
+// FleetRoleRoleAssignment is describes the assignment of a particular role on a particular resource to
+// a particular identity (user, group, etc.)
 //
-// The resource is not part of this structure.  Rather, `RoleAssignment`s are put into a `Policy` and that Policy is applied to a particular resource.
+// The resource is not part of this structure.  Rather, `RoleAssignment`s are put into a `Policy` and that Policy
+// is applied to a particular resource.
 //
 // Required fields:
 // - IdentityId
@@ -2295,9 +2362,12 @@ type FloatingIpAttach struct {
 // - Name
 type FloatingIpCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// Ip is an IP address to reserve for use as a floating IP. This field is optional: when not set, an address will be automatically chosen from `pool`. If set, then the IP must be available in the resolved `pool`.
+	// Ip is an IP address to reserve for use as a floating IP. This field is optional: when not set, an address
+	// will be automatically chosen from `pool`. If set, then the IP must be available in the resolved `pool`.
 	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// Pool is the parent IP pool that a floating IP is pulled from. If unset, the default pool is selected.
 	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
@@ -2350,7 +2420,9 @@ type GroupResultsPage struct {
 
 // Histogramdouble is histogram metric
 //
-// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+// the left, right, or both so that the bins extend to the entire range of the support.
 //
 // Note that any gaps, unsorted bins, or non-finite values will result in an error.
 //
@@ -2382,7 +2454,8 @@ type Histogramdouble struct {
 	P99 Quantile `json:"p99,omitempty" yaml:"p99,omitempty"`
 	// SquaredMean is m2 for Welford's algorithm for variance calculation.
 	//
-	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for more information on the algorithm.
+	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for
+	// more information on the algorithm.
 	SquaredMean float64 `json:"squared_mean,omitempty" yaml:"squared_mean,omitempty"`
 	// StartTime is the start time of the histogram.
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
@@ -2392,7 +2465,9 @@ type Histogramdouble struct {
 
 // Histogramfloat is histogram metric
 //
-// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+// the left, right, or both so that the bins extend to the entire range of the support.
 //
 // Note that any gaps, unsorted bins, or non-finite values will result in an error.
 //
@@ -2424,7 +2499,8 @@ type Histogramfloat struct {
 	P99 Quantile `json:"p99,omitempty" yaml:"p99,omitempty"`
 	// SquaredMean is m2 for Welford's algorithm for variance calculation.
 	//
-	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for more information on the algorithm.
+	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for
+	// more information on the algorithm.
 	SquaredMean float64 `json:"squared_mean,omitempty" yaml:"squared_mean,omitempty"`
 	// StartTime is the start time of the histogram.
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
@@ -2434,7 +2510,9 @@ type Histogramfloat struct {
 
 // Histogramint16 is histogram metric
 //
-// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+// the left, right, or both so that the bins extend to the entire range of the support.
 //
 // Note that any gaps, unsorted bins, or non-finite values will result in an error.
 //
@@ -2466,7 +2544,8 @@ type Histogramint16 struct {
 	P99 Quantile `json:"p99,omitempty" yaml:"p99,omitempty"`
 	// SquaredMean is m2 for Welford's algorithm for variance calculation.
 	//
-	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for more information on the algorithm.
+	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for
+	// more information on the algorithm.
 	SquaredMean float64 `json:"squared_mean,omitempty" yaml:"squared_mean,omitempty"`
 	// StartTime is the start time of the histogram.
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
@@ -2476,7 +2555,9 @@ type Histogramint16 struct {
 
 // Histogramint32 is histogram metric
 //
-// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+// the left, right, or both so that the bins extend to the entire range of the support.
 //
 // Note that any gaps, unsorted bins, or non-finite values will result in an error.
 //
@@ -2508,7 +2589,8 @@ type Histogramint32 struct {
 	P99 Quantile `json:"p99,omitempty" yaml:"p99,omitempty"`
 	// SquaredMean is m2 for Welford's algorithm for variance calculation.
 	//
-	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for more information on the algorithm.
+	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for
+	// more information on the algorithm.
 	SquaredMean float64 `json:"squared_mean,omitempty" yaml:"squared_mean,omitempty"`
 	// StartTime is the start time of the histogram.
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
@@ -2518,7 +2600,9 @@ type Histogramint32 struct {
 
 // Histogramint64 is histogram metric
 //
-// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+// the left, right, or both so that the bins extend to the entire range of the support.
 //
 // Note that any gaps, unsorted bins, or non-finite values will result in an error.
 //
@@ -2550,7 +2634,8 @@ type Histogramint64 struct {
 	P99 Quantile `json:"p99,omitempty" yaml:"p99,omitempty"`
 	// SquaredMean is m2 for Welford's algorithm for variance calculation.
 	//
-	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for more information on the algorithm.
+	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for
+	// more information on the algorithm.
 	SquaredMean float64 `json:"squared_mean,omitempty" yaml:"squared_mean,omitempty"`
 	// StartTime is the start time of the histogram.
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
@@ -2560,7 +2645,9 @@ type Histogramint64 struct {
 
 // Histogramint8 is histogram metric
 //
-// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+// the left, right, or both so that the bins extend to the entire range of the support.
 //
 // Note that any gaps, unsorted bins, or non-finite values will result in an error.
 //
@@ -2592,7 +2679,8 @@ type Histogramint8 struct {
 	P99 Quantile `json:"p99,omitempty" yaml:"p99,omitempty"`
 	// SquaredMean is m2 for Welford's algorithm for variance calculation.
 	//
-	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for more information on the algorithm.
+	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for
+	// more information on the algorithm.
 	SquaredMean float64 `json:"squared_mean,omitempty" yaml:"squared_mean,omitempty"`
 	// StartTime is the start time of the histogram.
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
@@ -2602,7 +2690,9 @@ type Histogramint8 struct {
 
 // Histogramuint16 is histogram metric
 //
-// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+// the left, right, or both so that the bins extend to the entire range of the support.
 //
 // Note that any gaps, unsorted bins, or non-finite values will result in an error.
 //
@@ -2634,7 +2724,8 @@ type Histogramuint16 struct {
 	P99 Quantile `json:"p99,omitempty" yaml:"p99,omitempty"`
 	// SquaredMean is m2 for Welford's algorithm for variance calculation.
 	//
-	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for more information on the algorithm.
+	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for
+	// more information on the algorithm.
 	SquaredMean float64 `json:"squared_mean,omitempty" yaml:"squared_mean,omitempty"`
 	// StartTime is the start time of the histogram.
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
@@ -2644,7 +2735,9 @@ type Histogramuint16 struct {
 
 // Histogramuint32 is histogram metric
 //
-// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+// the left, right, or both so that the bins extend to the entire range of the support.
 //
 // Note that any gaps, unsorted bins, or non-finite values will result in an error.
 //
@@ -2676,7 +2769,8 @@ type Histogramuint32 struct {
 	P99 Quantile `json:"p99,omitempty" yaml:"p99,omitempty"`
 	// SquaredMean is m2 for Welford's algorithm for variance calculation.
 	//
-	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for more information on the algorithm.
+	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for
+	// more information on the algorithm.
 	SquaredMean float64 `json:"squared_mean,omitempty" yaml:"squared_mean,omitempty"`
 	// StartTime is the start time of the histogram.
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
@@ -2686,7 +2780,9 @@ type Histogramuint32 struct {
 
 // Histogramuint64 is histogram metric
 //
-// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+// the left, right, or both so that the bins extend to the entire range of the support.
 //
 // Note that any gaps, unsorted bins, or non-finite values will result in an error.
 //
@@ -2718,7 +2814,8 @@ type Histogramuint64 struct {
 	P99 Quantile `json:"p99,omitempty" yaml:"p99,omitempty"`
 	// SquaredMean is m2 for Welford's algorithm for variance calculation.
 	//
-	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for more information on the algorithm.
+	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for
+	// more information on the algorithm.
 	SquaredMean float64 `json:"squared_mean,omitempty" yaml:"squared_mean,omitempty"`
 	// StartTime is the start time of the histogram.
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
@@ -2728,7 +2825,9 @@ type Histogramuint64 struct {
 
 // Histogramuint8 is histogram metric
 //
-// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to the left, right, or both so that the bins extend to the entire range of the support.
+// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+// the left, right, or both so that the bins extend to the entire range of the support.
 //
 // Note that any gaps, unsorted bins, or non-finite values will result in an error.
 //
@@ -2760,7 +2859,8 @@ type Histogramuint8 struct {
 	P99 Quantile `json:"p99,omitempty" yaml:"p99,omitempty"`
 	// SquaredMean is m2 for Welford's algorithm for variance calculation.
 	//
-	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for more information on the algorithm.
+	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for
+	// more information on the algorithm.
 	SquaredMean float64 `json:"squared_mean,omitempty" yaml:"squared_mean,omitempty"`
 	// StartTime is the start time of the histogram.
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
@@ -2768,7 +2868,8 @@ type Histogramuint8 struct {
 	SumOfSamples int `json:"sum_of_samples,omitempty" yaml:"sum_of_samples,omitempty"`
 }
 
-// Hostname is a hostname identifies a host on a network, and is usually a dot-delimited sequence of labels, where each label contains only letters, digits, or the hyphen. See RFCs 1035 and 952 for more details.
+// Hostname is a hostname identifies a host on a network, and is usually a dot-delimited sequence of labels,
+// where each label contains only letters, digits, or the hyphen. See RFCs 1035 and 952 for more details.
 type Hostname string
 
 // IdSortMode is sort in increasing order of "id"
@@ -2850,7 +2951,8 @@ type IdpMetadataSource struct {
 
 // Image is view of an image
 //
-// If `project_id` is present then the image is only visible inside that project. If it's not present then the image is visible to all projects in the silo.
+// If `project_id` is present then the image is only visible inside that project. If it's not present then the
+// image is visible to all projects in the silo.
 //
 // Required fields:
 // - BlockSize
@@ -2897,7 +2999,9 @@ type Image struct {
 // - Version
 type ImageCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// Os is the family of the operating system (e.g. Debian, Ubuntu, etc.)
 	Os string `json:"os,omitempty" yaml:"os,omitempty"`
@@ -2931,7 +3035,8 @@ type ImageSourceSnapshot struct {
 	Type ImageSourceType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
-// ImageSourceYouCanBootAnythingAsLongAsItsAlpine is boot the Alpine ISO that ships with the Propolis zone. Intended for development purposes only.
+// ImageSourceYouCanBootAnythingAsLongAsItsAlpine is boot the Alpine ISO that ships with the Propolis zone.
+// Intended for development purposes only.
 //
 // Required fields:
 // - Type
@@ -3002,15 +3107,24 @@ type ImportExportPolicy struct {
 // - TimeModified
 // - TimeRunStateUpdated
 type Instance struct {
-	// AutoRestartCooldownExpiration is the time at which the auto-restart cooldown period for this instance completes, permitting it to be automatically restarted again. If the instance enters the `Failed` state, it will not be restarted until after this time.
+	// AutoRestartCooldownExpiration is the time at which the auto-restart cooldown period for this instance completes,
+	// permitting it to be automatically restarted again. If the instance enters the `Failed` state, it will not
+	// be restarted until after this time.
 	//
-	// If this is not present, then either the instance has never been automatically restarted, or the cooldown period has already expired, allowing the instance to be restarted immediately if it fails.
+	// If this is not present, then either the instance has never been automatically restarted, or the cooldown period
+	// has already expired, allowing the instance to be restarted immediately if it fails.
 	AutoRestartCooldownExpiration *time.Time `json:"auto_restart_cooldown_expiration,omitempty" yaml:"auto_restart_cooldown_expiration,omitempty"`
-	// AutoRestartEnabled is `true` if this instance's auto-restart policy will permit the control plane to automatically restart it if it enters the `Failed` state.
+	// AutoRestartEnabled is `true` if this instance's auto-restart policy will permit the control plane to
+	// automatically restart it if it enters the `Failed` state.
 	AutoRestartEnabled *bool `json:"auto_restart_enabled,omitempty" yaml:"auto_restart_enabled,omitempty"`
-	// AutoRestartPolicy is the auto-restart policy configured for this instance, or `null` if no explicit policy has been configured.
+	// AutoRestartPolicy is the auto-restart policy configured for this instance, or `null` if no explicit policy
+	// has been configured.
 	//
-	// This policy determines whether the instance should be automatically restarted by the control plane on failure. If this is `null`, the control plane will use the default policy when determining whether or not to automatically restart this instance, which may or may not allow it to be restarted. The value of the `auto_restart_enabled` field indicates whether the instance will be auto-restarted, based on its current policy or the default if it has no configured policy.
+	// This policy determines whether the instance should be automatically restarted by the control plane on failure.
+	// If this is `null`, the control plane will use the default policy when determining whether or not to automatically restart
+	// this instance, which may or may not allow it to be restarted. The value of the `auto_restart_enabled` field
+	// indicates whether the instance will be auto-restarted, based on its current policy or the default if it
+	// has no configured policy.
 	AutoRestartPolicy InstanceAutoRestartPolicy `json:"auto_restart_policy,omitempty" yaml:"auto_restart_policy,omitempty"`
 	// BootDiskId is the ID of the disk used to boot this Instance, if a specific one is assigned.
 	BootDiskId string `json:"boot_disk_id,omitempty" yaml:"boot_disk_id,omitempty"`
@@ -3030,11 +3144,13 @@ type Instance struct {
 	ProjectId string `json:"project_id,omitempty" yaml:"project_id,omitempty"`
 	// RunState is running state of an Instance (primarily: booted or stopped)
 	//
-	// This typically reflects whether it's starting, running, stopping, or stopped, but also includes states related to the Instance's lifecycle
+	// This typically reflects whether it's starting, running, stopping, or stopped, but also includes states related
+	// to the Instance's lifecycle
 	RunState InstanceState `json:"run_state,omitempty" yaml:"run_state,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
-	// TimeLastAutoRestarted is the timestamp of the most recent time this instance was automatically restarted by the control plane.
+	// TimeLastAutoRestarted is the timestamp of the most recent time this instance was automatically restarted by
+	// the control plane.
 	//
 	// If this is not present, then this instance has not been automatically restarted.
 	TimeLastAutoRestarted *time.Time `json:"time_last_auto_restarted,omitempty" yaml:"time_last_auto_restarted,omitempty"`
@@ -3043,7 +3159,8 @@ type Instance struct {
 	TimeRunStateUpdated *time.Time `json:"time_run_state_updated,omitempty" yaml:"time_run_state_updated,omitempty"`
 }
 
-// InstanceAutoRestartPolicy is the instance should not be automatically restarted by the control plane if it fails.
+// InstanceAutoRestartPolicy is the instance should not be automatically restarted by the control plane if
+// it fails.
 type InstanceAutoRestartPolicy string
 
 // InstanceCpuCount is the number of CPUs in an Instance
@@ -3060,40 +3177,57 @@ type InstanceCpuCount uint16
 type InstanceCreate struct {
 	// AutoRestartPolicy is the auto-restart policy for this instance.
 	//
-	// This policy determines whether the instance should be automatically restarted by the control plane on failure. If this is `null`, no auto-restart policy will be explicitly configured for this instance, and the control plane will select the default policy when determining whether the instance can be automatically restarted.
+	// This policy determines whether the instance should be automatically restarted by the control plane on failure.
+	// If this is `null`, no auto-restart policy will be explicitly configured for this instance, and the control plane
+	// will select the default policy when determining whether the instance can be automatically restarted.
 	//
-	// Currently, the global default auto-restart policy is "best-effort", so instances with `null` auto-restart policies will be automatically restarted. However, in the future, the default policy may be configurable through other mechanisms, such as on a per-project basis. In that case, any configured default policy will be used if this is `null`.
+	// Currently, the global default auto-restart policy is "best-effort", so instances with `null` auto-restart policies
+	// will be automatically restarted. However, in the future, the default policy may be configurable through other
+	// mechanisms, such as on a per-project basis. In that case, any configured default policy will be used if
+	// this is `null`.
 	AutoRestartPolicy InstanceAutoRestartPolicy `json:"auto_restart_policy,omitempty" yaml:"auto_restart_policy,omitempty"`
-	// BootDisk is the disk this instance should boot into. This disk can either be attached if it already exists, or created, if it should be a new disk.
+	// BootDisk is the disk this instance should boot into. This disk can either be attached if it already exists,
+	// or created, if it should be a new disk.
 	//
-	// It is strongly recommended to either provide a boot disk at instance creation, or update the instance after creation to set a boot disk.
+	// It is strongly recommended to either provide a boot disk at instance creation, or update the instance after
+	// creation to set a boot disk.
 	//
-	// An instance without an explicit boot disk can be booted: the options are as managed by UEFI, and as controlled by the guest OS, but with some risk.  If this instance later has a disk attached or detached, it is possible that boot options can end up reordered, with the intended boot disk moved after the EFI shell in boot priority. This may result in an instance that only boots to the EFI shell until the desired disk is set as an explicit boot disk and the instance rebooted.
+	// An instance without an explicit boot disk can be booted: the options are as managed by UEFI, and as controlled by
+	// the guest OS, but with some risk.  If this instance later has a disk attached or detached, it is possible that
+	// boot options can end up reordered, with the intended boot disk moved after the EFI shell in boot priority. This
+	// may result in an instance that only boots to the EFI shell until the desired disk is set as an explicit boot
+	// disk and the instance rebooted.
 	BootDisk    *InstanceDiskAttachment `json:"boot_disk,omitempty" yaml:"boot_disk,omitempty"`
 	Description string                  `json:"description,omitempty" yaml:"description,omitempty"`
 	// Disks is the disks to be created or attached for this instance.
 	Disks []InstanceDiskAttachment `json:"disks,omitempty" yaml:"disks,omitempty"`
 	// ExternalIps is the external IP addresses provided to this instance.
 	//
-	// By default, all instances have outbound connectivity, but no inbound connectivity. These external addresses can be used to provide a fixed, known IP address for making inbound connections to the instance.
+	// By default, all instances have outbound connectivity, but no inbound connectivity. These external addresses can
+	// be used to provide a fixed, known IP address for making inbound connections to the instance.
 	ExternalIps []ExternalIpCreate `json:"external_ips,omitempty" yaml:"external_ips,omitempty"`
 	// Hostname is the hostname to be assigned to the instance
 	Hostname Hostname `json:"hostname,omitempty" yaml:"hostname,omitempty"`
 	// Memory is the amount of RAM (in bytes) to be allocated to the instance
 	Memory ByteCount `json:"memory,omitempty" yaml:"memory,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// Ncpus is the number of vCPUs to be allocated to the instance
 	Ncpus InstanceCpuCount `json:"ncpus,omitempty" yaml:"ncpus,omitempty"`
 	// NetworkInterfaces is the network interfaces to be created for this instance.
 	NetworkInterfaces InstanceNetworkInterfaceAttachment `json:"network_interfaces,omitempty" yaml:"network_interfaces,omitempty"`
-	// SshPublicKeys is an allowlist of SSH public keys to be transferred to the instance via cloud-init during instance creation.
+	// SshPublicKeys is an allowlist of SSH public keys to be transferred to the instance via cloud-init during
+	// instance creation.
 	//
-	// If not provided, all SSH public keys from the user's profile will be sent. If an empty list is provided, no public keys will be transmitted to the instance.
+	// If not provided, all SSH public keys from the user's profile will be sent. If an empty list is provided, no
+	// public keys will be transmitted to the instance.
 	SshPublicKeys []NameOrId `json:"ssh_public_keys" yaml:"ssh_public_keys"`
 	// Start is should this instance be started upon creation; true by default.
 	Start *bool `json:"start,omitempty" yaml:"start,omitempty"`
-	// UserData is user data for instance initialization systems (such as cloud-init). Must be a Base64-encoded string, as specified in RFC 4648 § 4 (+ and / characters with padding). Maximum 32 KiB unencoded data.
+	// UserData is user data for instance initialization systems (such as cloud-init). Must be a Base64-encoded string,
+	// as specified in RFC 4648 § 4 (+ and / characters with padding). Maximum 32 KiB unencoded data.
 	UserData string `json:"user_data,omitempty" yaml:"user_data,omitempty"`
 }
 
@@ -3112,7 +3246,9 @@ type InstanceDiskAttachmentCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// DiskSource is the initial source for this disk
 	DiskSource DiskSource `json:"disk_source,omitempty" yaml:"disk_source,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// Size is the total size of the Disk (in bytes)
 	Size ByteCount                  `json:"size,omitempty" yaml:"size,omitempty"`
@@ -3136,7 +3272,9 @@ type InstanceDiskAttachment struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// DiskSource is the initial source for this disk
 	DiskSource DiskSource `json:"disk_source,omitempty" yaml:"disk_source,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// Size is the total size of the Disk (in bytes)
 	Size ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
@@ -3144,7 +3282,8 @@ type InstanceDiskAttachment struct {
 	Type InstanceDiskAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
-// InstanceNetworkInterface is an `InstanceNetworkInterface` represents a virtual network interface device attached to an instance.
+// InstanceNetworkInterface is an `InstanceNetworkInterface` represents a virtual network interface device attached
+// to an instance.
 //
 // Required fields:
 // - Description
@@ -3200,7 +3339,9 @@ type InstanceNetworkInterfaceAttachmentCreate struct {
 	Type   InstanceNetworkInterfaceAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
-// InstanceNetworkInterfaceAttachmentDefault is the default networking configuration for an instance is to create a single primary interface with an automatically-assigned IP address. The IP will be pulled from the Project's default VPC / VPC Subnet.
+// InstanceNetworkInterfaceAttachmentDefault is the default networking configuration for an instance is
+// to create a single primary interface with an automatically-assigned IP address. The IP will be pulled from
+// the Project's default VPC / VPC Subnet.
 //
 // Required fields:
 // - Type
@@ -3216,7 +3357,8 @@ type InstanceNetworkInterfaceAttachmentNone struct {
 	Type InstanceNetworkInterfaceAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
-// InstanceNetworkInterfaceAttachment is describes an attachment of an `InstanceNetworkInterface` to an `Instance`, at the time the instance is created.
+// InstanceNetworkInterfaceAttachment is describes an attachment of an `InstanceNetworkInterface` to an
+// `Instance`, at the time the instance is created.
 type InstanceNetworkInterfaceAttachment struct {
 	// Params is the type definition for a Params.
 	Params []InstanceNetworkInterfaceCreate `json:"params,omitempty" yaml:"params,omitempty"`
@@ -3235,7 +3377,9 @@ type InstanceNetworkInterfaceCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Ip is the IP address for the interface. One will be auto-assigned if not provided.
 	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// SubnetName is the VPC Subnet in which to create the interface.
 	SubnetName Name `json:"subnet_name,omitempty" yaml:"subnet_name,omitempty"`
@@ -3262,9 +3406,12 @@ type InstanceNetworkInterfaceUpdate struct {
 	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
 	// Primary is make a secondary interface the instance's primary interface.
 	//
-	// If applied to a secondary interface, that interface will become the primary on the next reboot of the instance. Note that this may have implications for routing between instances, as the new primary interface will be on a distinct subnet from the previous primary interface.
+	// If applied to a secondary interface, that interface will become the primary on the next reboot of the instance.
+	// Note that this may have implications for routing between instances, as the new primary interface will be
+	// on a distinct subnet from the previous primary interface.
 	//
-	// Note that this can only be used to select a new primary interface for an instance. Requests to change the primary interface into a secondary will return an error.
+	// Note that this can only be used to select a new primary interface for an instance. Requests to change the
+	// primary interface into a secondary will return an error.
 	Primary *bool `json:"primary,omitempty" yaml:"primary,omitempty"`
 	// TransitIps is a set of additional networks that this interface may send and receive traffic on.
 	TransitIps []IpNet `json:"transit_ips,omitempty" yaml:"transit_ips,omitempty"`
@@ -3287,9 +3434,11 @@ type InstanceResultsPage struct {
 // - Data
 // - LastByteOffset
 type InstanceSerialConsoleData struct {
-	// Data is the bytes starting from the requested offset up to either the end of the buffer or the request's `max_bytes`. Provided as a u8 array rather than a string, as it may not be UTF-8.
+	// Data is the bytes starting from the requested offset up to either the end of the buffer or the request's `max_bytes`.
+	// Provided as a u8 array rather than a string, as it may not be UTF-8.
 	Data []string `json:"data,omitempty" yaml:"data,omitempty"`
-	// LastByteOffset is the absolute offset since boot (suitable for use as `byte_offset` in a subsequent request) of the last byte returned in `data`.
+	// LastByteOffset is the absolute offset since boot (suitable for use as `byte_offset` in a subsequent request)
+	// of the last byte returned in `data`.
 	LastByteOffset int `json:"last_byte_offset,omitempty" yaml:"last_byte_offset,omitempty"`
 }
 
@@ -3304,9 +3453,14 @@ type InstanceState string
 type InstanceUpdate struct {
 	// AutoRestartPolicy is sets the auto-restart policy for this instance.
 	//
-	// This policy determines whether the instance should be automatically restarted by the control plane on failure. If this is `null`, any explicitly configured auto-restart policy will be unset, and the control plane will select the default policy when determining whether the instance can be automatically restarted.
+	// This policy determines whether the instance should be automatically restarted by the control plane on failure.
+	// If this is `null`, any explicitly configured auto-restart policy will be unset, and the control plane will
+	// select the default policy when determining whether the instance can be automatically restarted.
 	//
-	// Currently, the global default auto-restart policy is "best-effort", so instances with `null` auto-restart policies will be automatically restarted. However, in the future, the default policy may be configurable through other mechanisms, such as on a per-project basis. In that case, any configured default policy will be used if this is `null`.
+	// Currently, the global default auto-restart policy is "best-effort", so instances with `null` auto-restart policies
+	// will be automatically restarted. However, in the future, the default policy may be configurable through other
+	// mechanisms, such as on a per-project basis. In that case, any configured default policy will be used if
+	// this is `null`.
 	AutoRestartPolicy InstanceAutoRestartPolicy `json:"auto_restart_policy,omitempty" yaml:"auto_restart_policy,omitempty"`
 	// BootDisk is name or ID of the disk the instance should be instructed to boot from.
 	//
@@ -3349,7 +3503,9 @@ type InternetGateway struct {
 // - Name
 type InternetGatewayCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
@@ -3389,7 +3545,9 @@ type InternetGatewayIpAddress struct {
 type InternetGatewayIpAddressCreate struct {
 	Address     string `json:"address,omitempty" yaml:"address,omitempty"`
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
@@ -3440,7 +3598,9 @@ type InternetGatewayIpPool struct {
 type InternetGatewayIpPoolCreate struct {
 	Description string   `json:"description,omitempty" yaml:"description,omitempty"`
 	IpPool      NameOrId `json:"ip_pool,omitempty" yaml:"ip_pool,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
@@ -3469,7 +3629,8 @@ type InternetGatewayResultsPage struct {
 // IpNet is the type definition for a IpNet.
 type IpNet interface{}
 
-// IpPool is a collection of IP ranges. If a pool is linked to a silo, IP addresses from the pool can be allocated within that silo
+// IpPool is a collection of IP ranges. If a pool is linked to a silo, IP addresses from the pool can be
+// allocated within that silo
 //
 // Required fields:
 // - Description
@@ -3497,7 +3658,9 @@ type IpPool struct {
 // - Name
 type IpPoolCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
@@ -3507,7 +3670,8 @@ type IpPoolCreate struct {
 // - IsDefault
 // - Silo
 type IpPoolLinkSilo struct {
-	// IsDefault is when a pool is the default for a silo, floating IPs and instance ephemeral IPs will come from that pool when no other pool is specified. There can be at most one default for a given silo.
+	// IsDefault is when a pool is the default for a silo, floating IPs and instance ephemeral IPs will come from
+	// that pool when no other pool is specified. There can be at most one default for a given silo.
 	IsDefault *bool    `json:"is_default,omitempty" yaml:"is_default,omitempty"`
 	Silo      NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 }
@@ -3548,7 +3712,8 @@ type IpPoolResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// IpPoolSiloLink is a link between an IP pool and a silo that allows one to allocate IPs from the pool within the silo
+// IpPoolSiloLink is a link between an IP pool and a silo that allows one to allocate IPs from the pool within
+// the silo
 //
 // Required fields:
 // - IpPoolId
@@ -3556,7 +3721,8 @@ type IpPoolResultsPage struct {
 // - SiloId
 type IpPoolSiloLink struct {
 	IpPoolId string `json:"ip_pool_id,omitempty" yaml:"ip_pool_id,omitempty"`
-	// IsDefault is when a pool is the default for a silo, floating IPs and instance ephemeral IPs will come from that pool when no other pool is specified. There can be at most one default for a given silo.
+	// IsDefault is when a pool is the default for a silo, floating IPs and instance ephemeral IPs will come from
+	// that pool when no other pool is specified. There can be at most one default for a given silo.
 	IsDefault *bool  `json:"is_default,omitempty" yaml:"is_default,omitempty"`
 	SiloId    string `json:"silo_id,omitempty" yaml:"silo_id,omitempty"`
 }
@@ -3577,7 +3743,9 @@ type IpPoolSiloLinkResultsPage struct {
 // Required fields:
 // - IsDefault
 type IpPoolSiloUpdate struct {
-	// IsDefault is when a pool is the default for a silo, floating IPs and instance ephemeral IPs will come from that pool when no other pool is specified. There can be at most one default for a given silo, so when a pool is made default, an existing default will remain linked but will no longer be the default.
+	// IsDefault is when a pool is the default for a silo, floating IPs and instance ephemeral IPs will come from
+	// that pool when no other pool is specified. There can be at most one default for a given silo, so when a
+	// pool is made default, an existing default will remain linked but will no longer be the default.
 	IsDefault *bool `json:"is_default,omitempty" yaml:"is_default,omitempty"`
 }
 
@@ -3625,7 +3793,8 @@ type Ipv4Range struct {
 type Ipv4Utilization struct {
 	// Allocated is the number of IPv4 addresses allocated from this pool
 	Allocated int `json:"allocated,omitempty" yaml:"allocated,omitempty"`
-	// Capacity is the total number of IPv4 addresses in the pool, i.e., the sum of the lengths of the IPv4 ranges. Unlike IPv6 capacity, can be a 32-bit integer because there are only 2^32 IPv4 addresses.
+	// Capacity is the total number of IPv4 addresses in the pool, i.e., the sum of the lengths of the IPv4 ranges.
+	// Unlike IPv6 capacity, can be a 32-bit integer because there are only 2^32 IPv4 addresses.
 	Capacity int `json:"capacity,omitempty" yaml:"capacity,omitempty"`
 }
 
@@ -3650,13 +3819,17 @@ type Ipv6Range struct {
 // - Allocated
 // - Capacity
 type Ipv6Utilization struct {
-	// Allocated is the number of IPv6 addresses allocated from this pool. A 128-bit integer string to match the capacity field.
+	// Allocated is the number of IPv6 addresses allocated from this pool. A 128-bit integer string to match the
+	// capacity field.
 	Allocated string `json:"allocated,omitempty" yaml:"allocated,omitempty"`
-	// Capacity is the total number of IPv6 addresses in the pool, i.e., the sum of the lengths of the IPv6 ranges. An IPv6 range can contain up to 2^128 addresses, so we represent this value in JSON as a numeric string with a custom "uint128" format.
+	// Capacity is the total number of IPv6 addresses in the pool, i.e., the sum of the lengths of the IPv6 ranges.
+	// An IPv6 range can contain up to 2^128 addresses, so we represent this value in JSON as a numeric string with
+	// a custom "uint128" format.
 	Capacity string `json:"capacity,omitempty" yaml:"capacity,omitempty"`
 }
 
-// L4PortRange is an inclusive-inclusive range of IP ports. The second port may be omitted to represent a single port.
+// L4PortRange is an inclusive-inclusive range of IP ports. The second port may be omitted to represent a
+// single port.
 type L4PortRange string
 
 // LinkConfigCreate is switch link configuration.
@@ -3669,7 +3842,8 @@ type L4PortRange string
 type LinkConfigCreate struct {
 	// Autoneg is whether or not to set autonegotiation
 	Autoneg *bool `json:"autoneg,omitempty" yaml:"autoneg,omitempty"`
-	// Fec is the requested forward-error correction method.  If this is not specified, the standard FEC for the underlying media will be applied if it can be determined.
+	// Fec is the requested forward-error correction method.  If this is not specified, the standard FEC for
+	// the underlying media will be applied if it can be determined.
 	Fec LinkFec `json:"fec,omitempty" yaml:"fec,omitempty"`
 	// Lldp is the link-layer discovery protocol (LLDP) configuration for the link.
 	Lldp LldpLinkConfigCreate `json:"lldp,omitempty" yaml:"lldp,omitempty"`
@@ -3732,7 +3906,8 @@ type LldpLinkConfigCreate struct {
 	SystemName string `json:"system_name,omitempty" yaml:"system_name,omitempty"`
 }
 
-// LoopbackAddress is a loopback address is an address that is assigned to a rack switch but is not associated with any particular port.
+// LoopbackAddress is a loopback address is an address that is assigned to a rack switch but is not associated with
+// any particular port.
 //
 // Required fields:
 // - Address
@@ -3768,12 +3943,14 @@ type LoopbackAddressCreate struct {
 	// AddressLot is the name or id of the address lot this loopback address will pull an address from.
 	AddressLot NameOrId `json:"address_lot,omitempty" yaml:"address_lot,omitempty"`
 	// Anycast is address is an anycast address. This allows the address to be assigned to multiple locations simultaneously.
+	//
 	Anycast *bool `json:"anycast,omitempty" yaml:"anycast,omitempty"`
 	// Mask is the subnet mask to use for the address.
 	Mask int `json:"mask,omitempty" yaml:"mask,omitempty"`
 	// RackId is the containing the switch this loopback address will be configured on.
 	RackId string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
 	// SwitchLocation is the location of the switch within the rack this loopback address will be configured on.
+	//
 	SwitchLocation Name `json:"switch_location,omitempty" yaml:"switch_location,omitempty"`
 }
 
@@ -3826,7 +4003,9 @@ type MissingDatum struct {
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
 }
 
-// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 type Name string
 
 // NameOrId is the type definition for a NameOrId.
@@ -3857,7 +4036,9 @@ type NetworkInterface struct {
 	Kind NetworkInterfaceKind `json:"kind,omitempty" yaml:"kind,omitempty"`
 	// Mac is a Media Access Control address, in EUI-48 format
 	Mac MacAddr `json:"mac,omitempty" yaml:"mac,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Name       Name    `json:"name,omitempty" yaml:"name,omitempty"`
 	Primary    *bool   `json:"primary,omitempty" yaml:"primary,omitempty"`
 	Slot       int     `json:"slot,omitempty" yaml:"slot,omitempty"`
@@ -3971,9 +4152,11 @@ type PhysicalDiskPolicyInService struct {
 	Kind PhysicalDiskPolicyKind `json:"kind,omitempty" yaml:"kind,omitempty"`
 }
 
-// PhysicalDiskPolicyExpunged is the operator has indicated that the disk has been permanently removed from service.
+// PhysicalDiskPolicyExpunged is the operator has indicated that the disk has been permanently removed from
+// service.
 //
-// This is a terminal state: once a particular disk ID is expunged, it will never return to service. (The actual hardware may be reused, but it will be treated as a brand-new disk.)
+// This is a terminal state: once a particular disk ID is expunged, it will never return to service. (The actual
+// hardware may be reused, but it will be treated as a brand-new disk.)
 //
 // An expunged disk is always non-provisionable.
 //
@@ -4008,7 +4191,8 @@ type PhysicalDiskState string
 // Required fields:
 // - Status
 type Ping struct {
-	// Status is whether the external API is reachable. Will always be Ok if the endpoint returns anything at all.
+	// Status is whether the external API is reachable. Will always be Ok if the endpoint returns anything at
+	// all.
 	Status PingStatus `json:"status,omitempty" yaml:"status,omitempty"`
 }
 
@@ -4058,7 +4242,9 @@ type Probe struct {
 type ProbeCreate struct {
 	Description string   `json:"description,omitempty" yaml:"description,omitempty"`
 	IpPool      NameOrId `json:"ip_pool,omitempty" yaml:"ip_pool,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Name Name   `json:"name,omitempty" yaml:"name,omitempty"`
 	Sled string `json:"sled,omitempty" yaml:"sled,omitempty"`
 }
@@ -4093,7 +4279,9 @@ type ProbeInfo struct {
 	Id          string            `json:"id,omitempty" yaml:"id,omitempty"`
 	// Interface is information required to construct a virtual network interface
 	Interface NetworkInterface `json:"interface,omitempty" yaml:"interface,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Name Name   `json:"name,omitempty" yaml:"name,omitempty"`
 	Sled string `json:"sled,omitempty" yaml:"sled,omitempty"`
 }
@@ -4137,7 +4325,9 @@ type Project struct {
 // - Name
 type ProjectCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
@@ -4157,7 +4347,8 @@ type ProjectRole string
 
 // ProjectRolePolicy is policy for a particular resource
 //
-// Note that the Policy only describes access granted explicitly for this resource.  The policies of parent resources can also cause a user to have access to this resource.
+// Note that the Policy only describes access granted explicitly for this resource.  The policies of parent resources
+// can also cause a user to have access to this resource.
 //
 // Required fields:
 // - RoleAssignments
@@ -4166,9 +4357,11 @@ type ProjectRolePolicy struct {
 	RoleAssignments []ProjectRoleRoleAssignment `json:"role_assignments,omitempty" yaml:"role_assignments,omitempty"`
 }
 
-// ProjectRoleRoleAssignment is describes the assignment of a particular role on a particular resource to a particular identity (user, group, etc.)
+// ProjectRoleRoleAssignment is describes the assignment of a particular role on a particular resource to
+// a particular identity (user, group, etc.)
 //
-// The resource is not part of this structure.  Rather, `RoleAssignment`s are put into a `Policy` and that Policy is applied to a particular resource.
+// The resource is not part of this structure.  Rather, `RoleAssignment`s are put into a `Policy` and that Policy
+// is applied to a particular resource.
 //
 // Required fields:
 // - IdentityId
@@ -4191,7 +4384,8 @@ type ProjectUpdate struct {
 //
 // This is based on the P² algorithm for estimating quantiles using constant space.
 //
-// The algorithm consists of maintaining five markers: the minimum, the p/2-, p-, and (1 + p)/2 quantiles, and the maximum.
+// The algorithm consists of maintaining five markers: the minimum, the p/2-, p-, and (1 + p)/2 quantiles, and
+// the maximum.
 //
 // Required fields:
 // - DesiredMarkerPositions
@@ -4205,7 +4399,9 @@ type Quantile struct {
 	MarkerHeights []string `json:"marker_heights,omitempty" yaml:"marker_heights,omitempty"`
 	// MarkerPositions is the positions of the markers.
 	//
-	// We track sample size in the 5th position, as useful observations won't start until we've filled the heights at the 6th sample anyway This does deviate from the paper, but it's a more useful representation that works according to the paper's algorithm.
+	// We track sample size in the 5th position, as useful observations won't start until we've filled the heights at
+	// the 6th sample anyway This does deviate from the paper, but it's a more useful representation that works according
+	// to the paper's algorithm.
 	MarkerPositions []string `json:"marker_positions,omitempty" yaml:"marker_positions,omitempty"`
 	// P is the p value for the quantile.
 	P float64 `json:"p,omitempty" yaml:"p,omitempty"`
@@ -4273,6 +4469,7 @@ type Route struct {
 	// Gw is the route gateway.
 	Gw string `json:"gw,omitempty" yaml:"gw,omitempty"`
 	// RibPriority is local preference for route. Higher preference indictes precedence within and across protocols.
+	//
 	RibPriority int `json:"rib_priority,omitempty" yaml:"rib_priority,omitempty"`
 	// Vid is vLAN id the gateway is reachable over.
 	Vid int `json:"vid,omitempty" yaml:"vid,omitempty"`
@@ -4317,7 +4514,9 @@ type RouteDestinationIpNet struct {
 // - Value
 type RouteDestinationVpc struct {
 	Type RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
@@ -4328,13 +4527,17 @@ type RouteDestinationVpc struct {
 // - Value
 type RouteDestinationSubnet struct {
 	Type RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-// RouteDestination is a `RouteDestination` is used to match traffic with a routing rule based on the destination of that traffic.
+// RouteDestination is a `RouteDestination` is used to match traffic with a routing rule based on the destination
+// of that traffic.
 //
-// When traffic is to be sent to a destination that is within a given `RouteDestination`, the corresponding `RouterRoute` applies, and traffic will be forward to the `RouteTarget` for that rule.
+// When traffic is to be sent to a destination that is within a given `RouteDestination`, the corresponding `RouterRoute`
+// applies, and traffic will be forward to the `RouteTarget` for that rule.
 type RouteDestination struct {
 	// Type is the type definition for a Type.
 	Type RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
@@ -4362,7 +4565,9 @@ type RouteTargetIp struct {
 // - Value
 type RouteTargetVpc struct {
 	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
@@ -4373,7 +4578,9 @@ type RouteTargetVpc struct {
 // - Value
 type RouteTargetSubnet struct {
 	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
@@ -4384,7 +4591,9 @@ type RouteTargetSubnet struct {
 // - Value
 type RouteTargetInstance struct {
 	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
@@ -4395,7 +4604,9 @@ type RouteTargetInstance struct {
 // - Value
 type RouteTargetInternetGateway struct {
 	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
@@ -4407,7 +4618,8 @@ type RouteTargetDrop struct {
 	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
-// RouteTarget is a `RouteTarget` describes the possible locations that traffic matching a route destination can be sent.
+// RouteTarget is a `RouteTarget` describes the possible locations that traffic matching a route destination can
+// be sent.
 type RouteTarget struct {
 	// Type is the type definition for a Type.
 	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
@@ -4459,13 +4671,16 @@ type RouterRouteCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Destination is selects which traffic this routing rule will apply to.
 	Destination RouteDestination `json:"destination,omitempty" yaml:"destination,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// Target is the location that matched packets should be forwarded to.
 	Target RouteTarget `json:"target,omitempty" yaml:"target,omitempty"`
 }
 
-// RouterRouteKind is determines the default destination of traffic, such as whether it goes to the internet or not.
+// RouterRouteKind is determines the default destination of traffic, such as whether it goes to the internet or
+// not.
 //
 // `Destination: An Internet Gateway` `Modifiable: true`
 type RouterRouteKind string
@@ -4513,7 +4728,8 @@ type SamlIdentityProvider struct {
 	AcsUrl string `json:"acs_url,omitempty" yaml:"acs_url,omitempty"`
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// GroupAttributeName is if set, attributes with this name will be considered to denote a user's group membership, where the values will be the group names.
+	// GroupAttributeName is if set, attributes with this name will be considered to denote a user's group membership,
+	// where the values will be the group names.
 	GroupAttributeName string `json:"group_attribute_name,omitempty" yaml:"group_attribute_name,omitempty"`
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
@@ -4550,13 +4766,16 @@ type SamlIdentityProviderCreate struct {
 	// AcsUrl is service provider endpoint where the response will be sent
 	AcsUrl      string `json:"acs_url,omitempty" yaml:"acs_url,omitempty"`
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// GroupAttributeName is if set, SAML attributes with this name will be considered to denote a user's group membership, where the attribute value(s) should be a comma-separated list of group names.
+	// GroupAttributeName is if set, SAML attributes with this name will be considered to denote a user's group
+	// membership, where the attribute value(s) should be a comma-separated list of group names.
 	GroupAttributeName string `json:"group_attribute_name,omitempty" yaml:"group_attribute_name,omitempty"`
 	// IdpEntityId is idp's entity id
 	IdpEntityId string `json:"idp_entity_id,omitempty" yaml:"idp_entity_id,omitempty"`
 	// IdpMetadataSource is the source of an identity provider metadata descriptor
 	IdpMetadataSource IdpMetadataSource `json:"idp_metadata_source,omitempty" yaml:"idp_metadata_source,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// SigningKeypair is request signing key pair
 	SigningKeypair DerEncodedKeyPair `json:"signing_keypair,omitempty" yaml:"signing_keypair,omitempty"`
@@ -4587,7 +4806,8 @@ type ServiceUsingCertificate string
 type Silo struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// Discoverable is a silo where discoverable is false can be retrieved only by its id - it will not be part of the "list all silos" output.
+	// Discoverable is a silo where discoverable is false can be retrieved only by its id - it will not be part
+	// of the "list all silos" output.
 	Discoverable *bool `json:"discoverable,omitempty" yaml:"discoverable,omitempty"`
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
@@ -4595,7 +4815,8 @@ type Silo struct {
 	IdentityMode SiloIdentityMode `json:"identity_mode,omitempty" yaml:"identity_mode,omitempty"`
 	// MappedFleetRoles is mapping of which Fleet roles are conferred by each Silo role
 	//
-	// The default is that no Fleet roles are conferred by any Silo roles unless there's a corresponding entry in this map.
+	// The default is that no Fleet roles are conferred by any Silo roles unless there's a corresponding entry in
+	// this map.
 	MappedFleetRoles map[string][]FleetRole `json:"mapped_fleet_roles,omitempty" yaml:"mapped_fleet_roles,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
@@ -4615,9 +4836,12 @@ type Silo struct {
 // - Quotas
 // - TlsCertificates
 type SiloCreate struct {
-	// AdminGroupName is if set, this group will be created during Silo creation and granted the "Silo Admin" role. Identity providers can assert that users belong to this group and those users can log in and further initialize the Silo.
+	// AdminGroupName is if set, this group will be created during Silo creation and granted the "Silo Admin" role.
+	// Identity providers can assert that users belong to this group and those users can log in and further initialize
+	// the Silo.
 	//
-	// Note that if configuring a SAML based identity provider, group_attribute_name must be set for users to be considered part of a group. See `SamlIdentityProviderCreate` for more information.
+	// Note that if configuring a SAML based identity provider, group_attribute_name must be set for users to be
+	// considered part of a group. See `SamlIdentityProviderCreate` for more information.
 	AdminGroupName string `json:"admin_group_name,omitempty" yaml:"admin_group_name,omitempty"`
 	Description    string `json:"description,omitempty" yaml:"description,omitempty"`
 	Discoverable   *bool  `json:"discoverable,omitempty" yaml:"discoverable,omitempty"`
@@ -4625,17 +4849,25 @@ type SiloCreate struct {
 	IdentityMode SiloIdentityMode `json:"identity_mode,omitempty" yaml:"identity_mode,omitempty"`
 	// MappedFleetRoles is mapping of which Fleet roles are conferred by each Silo role
 	//
-	// The default is that no Fleet roles are conferred by any Silo roles unless there's a corresponding entry in this map.
+	// The default is that no Fleet roles are conferred by any Silo roles unless there's a corresponding entry in
+	// this map.
 	MappedFleetRoles map[string][]FleetRole `json:"mapped_fleet_roles,omitempty" yaml:"mapped_fleet_roles,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
-	// Quotas is limits the amount of provisionable CPU, memory, and storage in the Silo. CPU and memory are only consumed by running instances, while storage is consumed by any disk or snapshot. A value of 0 means that resource is *not* provisionable.
+	// Quotas is limits the amount of provisionable CPU, memory, and storage in the Silo. CPU and memory are
+	// only consumed by running instances, while storage is consumed by any disk or snapshot. A value of 0 means that
+	// resource is *not* provisionable.
 	Quotas SiloQuotasCreate `json:"quotas,omitempty" yaml:"quotas,omitempty"`
-	// TlsCertificates is initial TLS certificates to be used for the new Silo's console and API endpoints.  These should be valid for the Silo's DNS name(s).
+	// TlsCertificates is initial TLS certificates to be used for the new Silo's console and API endpoints.
+	// These should be valid for the Silo's DNS name(s).
 	TlsCertificates []CertificateCreate `json:"tls_certificates,omitempty" yaml:"tls_certificates,omitempty"`
 }
 
-// SiloIdentityMode is users are authenticated with SAML using an external authentication provider.  The system updates information about users and groups only during successful authentication (i.e,. "JIT provisioning" of users and groups).
+// SiloIdentityMode is users are authenticated with SAML using an external authentication provider.  The
+// system updates information about users and groups only during successful authentication (i.e,. "JIT provisioning" of
+// users and groups).
 type SiloIdentityMode string
 
 // SiloIpPool is an IP pool in the context of a silo
@@ -4652,7 +4884,8 @@ type SiloIpPool struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
-	// IsDefault is when a pool is the default for a silo, floating IPs and instance ephemeral IPs will come from that pool when no other pool is specified. There can be at most one default for a given silo.
+	// IsDefault is when a pool is the default for a silo, floating IPs and instance ephemeral IPs will come from
+	// that pool when no other pool is specified. There can be at most one default for a given silo.
 	IsDefault *bool `json:"is_default,omitempty" yaml:"is_default,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
@@ -4716,7 +4949,8 @@ type SiloQuotasResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// SiloQuotasUpdate is updateable properties of a Silo's resource limits. If a value is omitted it will not be updated.
+// SiloQuotasUpdate is updateable properties of a Silo's resource limits. If a value is omitted it will not
+// be updated.
 type SiloQuotasUpdate struct {
 	// Cpus is the amount of virtual CPUs available for running instances in the Silo
 	Cpus int `json:"cpus,omitempty" yaml:"cpus,omitempty"`
@@ -4742,7 +4976,8 @@ type SiloRole string
 
 // SiloRolePolicy is policy for a particular resource
 //
-// Note that the Policy only describes access granted explicitly for this resource.  The policies of parent resources can also cause a user to have access to this resource.
+// Note that the Policy only describes access granted explicitly for this resource.  The policies of parent resources
+// can also cause a user to have access to this resource.
 //
 // Required fields:
 // - RoleAssignments
@@ -4751,9 +4986,11 @@ type SiloRolePolicy struct {
 	RoleAssignments []SiloRoleRoleAssignment `json:"role_assignments,omitempty" yaml:"role_assignments,omitempty"`
 }
 
-// SiloRoleRoleAssignment is describes the assignment of a particular role on a particular resource to a particular identity (user, group, etc.)
+// SiloRoleRoleAssignment is describes the assignment of a particular role on a particular resource to a
+// particular identity (user, group, etc.)
 //
-// The resource is not part of this structure.  Rather, `RoleAssignment`s are put into a `Policy` and that Policy is applied to a particular resource.
+// The resource is not part of this structure.  Rather, `RoleAssignment`s are put into a `Policy` and that Policy
+// is applied to a particular resource.
 //
 // Required fields:
 // - IdentityId
@@ -4776,10 +5013,14 @@ type SiloRoleRoleAssignment struct {
 type SiloUtilization struct {
 	// Allocated is accounts for the total amount of resources reserved for silos via their quotas
 	Allocated VirtualResourceCounts `json:"allocated,omitempty" yaml:"allocated,omitempty"`
-	// Provisioned is accounts for resources allocated by in silos like CPU or memory for running instances and storage for disks and snapshots Note that CPU and memory resources associated with a stopped instances are not counted here
+	// Provisioned is accounts for resources allocated by in silos like CPU or memory for running instances and
+	// storage for disks and snapshots Note that CPU and memory resources associated with a stopped instances are
+	// not counted here
 	Provisioned VirtualResourceCounts `json:"provisioned,omitempty" yaml:"provisioned,omitempty"`
 	SiloId      string                `json:"silo_id,omitempty" yaml:"silo_id,omitempty"`
-	// SiloName is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// SiloName is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII,
+	// uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a
+	// UUID. They can be at most 63 characters long.
 	SiloName Name `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
 }
 
@@ -4854,16 +5095,23 @@ type SledInstance struct {
 	Id          string `json:"id,omitempty" yaml:"id,omitempty"`
 	Memory      int    `json:"memory,omitempty" yaml:"memory,omitempty"`
 	MigrationId string `json:"migration_id,omitempty" yaml:"migration_id,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Name  Name `json:"name,omitempty" yaml:"name,omitempty"`
 	Ncpus int  `json:"ncpus,omitempty" yaml:"ncpus,omitempty"`
-	// ProjectName is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// ProjectName is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII,
+	// uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a
+	// UUID. They can be at most 63 characters long.
 	ProjectName Name `json:"project_name,omitempty" yaml:"project_name,omitempty"`
-	// SiloName is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// SiloName is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII,
+	// uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a
+	// UUID. They can be at most 63 characters long.
 	SiloName Name `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
 	// State is running state of an Instance (primarily: booted or stopped)
 	//
-	// This typically reflects whether it's starting, running, stopping, or stopped, but also includes states related to the Instance's lifecycle
+	// This typically reflects whether it's starting, running, stopping, or stopped, but also includes states related
+	// to the Instance's lifecycle
 	State InstanceState `json:"state,omitempty" yaml:"state,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
@@ -4898,7 +5146,8 @@ type SledPolicyInService struct {
 
 // SledPolicyExpunged is the operator has indicated that the sled has been permanently removed from service.
 //
-// This is a terminal state: once a particular sled ID is expunged, it will never return to service. (The actual hardware may be reused, but it will be treated as a brand-new sled.)
+// This is a terminal state: once a particular sled ID is expunged, it will never return to service. (The actual
+// hardware may be reused, but it will be treated as a brand-new sled.)
 //
 // An expunged sled is always non-provisionable.
 //
@@ -4994,7 +5243,9 @@ type SnapshotCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Disk is the disk to be snapshotted
 	Disk NameOrId `json:"disk,omitempty" yaml:"disk,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
@@ -5047,7 +5298,9 @@ type SshKey struct {
 // - PublicKey
 type SshKeyCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// PublicKey is sSH public key, e.g., `"ssh-ed25519 AAAAC3NzaC..."`
 	PublicKey string `json:"public_key,omitempty" yaml:"public_key,omitempty"`
@@ -5118,7 +5371,8 @@ type SwitchInterfaceConfig struct {
 	V6Enabled *bool `json:"v6_enabled,omitempty" yaml:"v6_enabled,omitempty"`
 }
 
-// SwitchInterfaceConfigCreate is a layer-3 switch interface configuration. When IPv6 is enabled, a link local address will be created for the interface.
+// SwitchInterfaceConfigCreate is a layer-3 switch interface configuration. When IPv6 is enabled, a link local
+// address will be created for the interface.
 //
 // Required fields:
 // - Kind
@@ -5133,7 +5387,8 @@ type SwitchInterfaceConfigCreate struct {
 // SwitchInterfaceKindType is the type definition for a SwitchInterfaceKindType.
 type SwitchInterfaceKindType string
 
-// SwitchInterfaceKindPrimary is primary interfaces are associated with physical links. There is exactly one primary interface per physical link.
+// SwitchInterfaceKindPrimary is primary interfaces are associated with physical links. There is exactly one
+// primary interface per physical link.
 //
 // Required fields:
 // - Type
@@ -5141,18 +5396,21 @@ type SwitchInterfaceKindPrimary struct {
 	Type SwitchInterfaceKindType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
-// SwitchInterfaceKindVlan is vLAN interfaces allow physical interfaces to be multiplexed onto multiple logical links, each distinguished by a 12-bit 802.1Q Ethernet tag.
+// SwitchInterfaceKindVlan is vLAN interfaces allow physical interfaces to be multiplexed onto multiple logical
+// links, each distinguished by a 12-bit 802.1Q Ethernet tag.
 //
 // Required fields:
 // - Type
 // - Vid
 type SwitchInterfaceKindVlan struct {
 	Type SwitchInterfaceKindType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Vid is the virtual network id (VID) that distinguishes this interface and is used for producing and consuming 802.1Q Ethernet tags. This field has a maximum value of 4095 as 802.1Q tags are twelve bits.
+	// Vid is the virtual network id (VID) that distinguishes this interface and is used for producing and consuming
+	// 802.1Q Ethernet tags. This field has a maximum value of 4095 as 802.1Q tags are twelve bits.
 	Vid int `json:"vid,omitempty" yaml:"vid,omitempty"`
 }
 
-// SwitchInterfaceKindLoopback is loopback interfaces are anchors for IP addresses that are not specific to any particular port.
+// SwitchInterfaceKindLoopback is loopback interfaces are anchors for IP addresses that are not specific to
+// any particular port.
 //
 // Required fields:
 // - Type
@@ -5164,11 +5422,13 @@ type SwitchInterfaceKindLoopback struct {
 type SwitchInterfaceKind struct {
 	// Type is the type definition for a Type.
 	Type SwitchInterfaceKindType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Vid is the virtual network id (VID) that distinguishes this interface and is used for producing and consuming 802.1Q Ethernet tags. This field has a maximum value of 4095 as 802.1Q tags are twelve bits.
+	// Vid is the virtual network id (VID) that distinguishes this interface and is used for producing and consuming
+	// 802.1Q Ethernet tags. This field has a maximum value of 4095 as 802.1Q tags are twelve bits.
 	Vid int `json:"vid,omitempty" yaml:"vid,omitempty"`
 }
 
-// SwitchInterfaceKind2 is primary interfaces are associated with physical links. There is exactly one primary interface per physical link.
+// SwitchInterfaceKind2 is primary interfaces are associated with physical links. There is exactly one primary
+// interface per physical link.
 type SwitchInterfaceKind2 string
 
 // SwitchLinkState is the type definition for a SwitchLinkState.
@@ -5189,7 +5449,8 @@ type SwitchPort struct {
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 	// PortName is the name of this switch port.
 	PortName string `json:"port_name,omitempty" yaml:"port_name,omitempty"`
-	// PortSettingsId is the primary settings group of this switch port. Will be `None` until this switch port is configured.
+	// PortSettingsId is the primary settings group of this switch port. Will be `None` until this switch port
+	// is configured.
 	PortSettingsId string `json:"port_settings_id,omitempty" yaml:"port_settings_id,omitempty"`
 	// RackId is the rack this switch port belongs to.
 	RackId string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
@@ -5264,7 +5525,8 @@ type SwitchPortGeometry2 string
 type SwitchPortLinkConfig struct {
 	// Autoneg is whether or not the link has autonegotiation enabled.
 	Autoneg *bool `json:"autoneg,omitempty" yaml:"autoneg,omitempty"`
-	// Fec is the requested forward-error correction method.  If this is not specified, the standard FEC for the underlying media will be applied if it can be determined.
+	// Fec is the requested forward-error correction method.  If this is not specified, the standard FEC for
+	// the underlying media will be applied if it can be determined.
 	Fec LinkFec `json:"fec,omitempty" yaml:"fec,omitempty"`
 	// LinkName is the name of this link.
 	LinkName string `json:"link_name,omitempty" yaml:"link_name,omitempty"`
@@ -5309,7 +5571,8 @@ type SwitchPortRouteConfig struct {
 	PortSettingsId string `json:"port_settings_id,omitempty" yaml:"port_settings_id,omitempty"`
 	// RibPriority is rIB Priority indicating priority within and across protocols.
 	RibPriority int `json:"rib_priority,omitempty" yaml:"rib_priority,omitempty"`
-	// VlanId is the VLAN identifier for the route. Use this if the gateway is reachable over an 802.1Q tagged L2 segment.
+	// VlanId is the VLAN identifier for the route. Use this if the gateway is reachable over an 802.1Q tagged L2
+	// segment.
 	VlanId int `json:"vlan_id,omitempty" yaml:"vlan_id,omitempty"`
 }
 
@@ -5334,7 +5597,9 @@ type SwitchPortSettings struct {
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
 }
 
-// SwitchPortSettingsCreate is parameters for creating switch port settings. Switch port settings are the central data structure for setting up external networking. Switch port settings include link, interface, route, address and dynamic network protocol configuration.
+// SwitchPortSettingsCreate is parameters for creating switch port settings. Switch port settings are the
+// central data structure for setting up external networking. Switch port settings include link, interface, route,
+// address and dynamic network protocol configuration.
 //
 // Required fields:
 // - Addresses
@@ -5355,9 +5620,12 @@ type SwitchPortSettingsCreate struct {
 	Groups      []NameOrId    `json:"groups" yaml:"groups"`
 	// Interfaces is interfaces indexed by link name.
 	Interfaces SwitchInterfaceConfigCreate `json:"interfaces,omitempty" yaml:"interfaces,omitempty"`
-	// Links is links indexed by phy name. On ports that are not broken out, this is always phy0. On a 2x breakout the options are phy0 and phy1, on 4x phy0-phy3, etc.
+	// Links is links indexed by phy name. On ports that are not broken out, this is always phy0. On a 2x breakout
+	// the options are phy0 and phy1, on 4x phy0-phy3, etc.
 	Links LinkConfigCreate `json:"links,omitempty" yaml:"links,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// PortConfig is physical switch port configuration.
 	PortConfig SwitchPortConfigCreate `json:"port_config,omitempty" yaml:"port_config,omitempty"`
@@ -5365,7 +5633,9 @@ type SwitchPortSettingsCreate struct {
 	Routes RouteConfig `json:"routes,omitempty" yaml:"routes,omitempty"`
 }
 
-// SwitchPortSettingsGroups is this structure maps a port settings object to a port settings groups. Port settings objects may inherit settings from groups. This mapping defines the relationship between settings objects and the groups they reference.
+// SwitchPortSettingsGroups is this structure maps a port settings object to a port settings groups. Port
+// settings objects may inherit settings from groups. This mapping defines the relationship between settings objects
+// and the groups they reference.
 //
 // Required fields:
 // - PortSettingsGroupId
@@ -5388,7 +5658,8 @@ type SwitchPortSettingsResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// SwitchPortSettingsView is this structure contains all port settings information in one place. It's a convenience data structure for getting a complete view of a particular port's settings.
+// SwitchPortSettingsView is this structure contains all port settings information in one place. It's a
+// convenience data structure for getting a complete view of a particular port's settings.
 //
 // Required fields:
 // - Addresses
@@ -5445,8 +5716,10 @@ type SwitchResultsPage struct {
 // - VlanId
 type SwitchVlanInterfaceConfig struct {
 	// InterfaceConfigId is the switch interface configuration this VLAN interface configuration belongs to.
+	//
 	InterfaceConfigId string `json:"interface_config_id,omitempty" yaml:"interface_config_id,omitempty"`
-	// VlanId is the virtual network id for this interface that is used for producing and consuming 802.1Q Ethernet tags. This field has a maximum value of 4095 as 802.1Q tags are twelve bits.
+	// VlanId is the virtual network id for this interface that is used for producing and consuming 802.1Q Ethernet
+	// tags. This field has a maximum value of 4095 as 802.1Q tags are twelve bits.
 	VlanId int `json:"vlan_id,omitempty" yaml:"vlan_id,omitempty"`
 }
 
@@ -5455,7 +5728,8 @@ type SystemMetricName string
 
 // Table is a table represents one or more timeseries with the same schema.
 //
-// A table is the result of an OxQL query. It contains a name, usually the name of the timeseries schema from which the data is derived, and any number of timeseries, which contain the actual data.
+// A table is the result of an OxQL query. It contains a name, usually the name of the timeseries schema from
+// which the data is derived, and any number of timeseries, which contain the actual data.
 //
 // Required fields:
 // - Name
@@ -5467,7 +5741,8 @@ type Table struct {
 
 // Timeseries is a timeseries contains a timestamped set of values from one source.
 //
-// This includes the typed key-value pairs that uniquely identify it, and the set of timestamps and data values from it.
+// This includes the typed key-value pairs that uniquely identify it, and the set of timestamps and data values
+// from it.
 //
 // Required fields:
 // - Fields
@@ -5488,7 +5763,8 @@ type TimeseriesDescription struct {
 	Target string `json:"target,omitempty" yaml:"target,omitempty"`
 }
 
-// TimeseriesName is names are constructed by concatenating the target and metric names with ':'. Target and metric names must be lowercase alphanumeric characters with '_' separating words.
+// TimeseriesName is names are constructed by concatenating the target and metric names with ':'. Target and
+// metric names must be lowercase alphanumeric characters with '_' separating words.
 type TimeseriesName string
 
 // TimeseriesQuery is a timeseries query string, written in the Oximeter query language.
@@ -5502,7 +5778,8 @@ type TimeseriesQuery struct {
 
 // TimeseriesSchema is the schema for a timeseries.
 //
-// This includes the name of the timeseries, as well as the datum type of its metric and the schema for each field.
+// This includes the name of the timeseries, as well as the datum type of its metric and the schema for each
+// field.
 //
 // Required fields:
 // - AuthzScope
@@ -5516,7 +5793,9 @@ type TimeseriesQuery struct {
 type TimeseriesSchema struct {
 	// AuthzScope is authorization scope for a timeseries.
 	//
-	// This describes the level at which a user must be authorized to read data from a timeseries. For example, fleet-scoping means the data is only visible to an operator or fleet reader. Project-scoped, on the other hand, indicates that a user will see data limited to the projects on which they have read permissions.
+	// This describes the level at which a user must be authorized to read data from a timeseries. For example, fleet-scoping
+	// means the data is only visible to an operator or fleet reader. Project-scoped, on the other hand, indicates that
+	// a user will see data limited to the projects on which they have read permissions.
 	AuthzScope AuthzScope `json:"authz_scope,omitempty" yaml:"authz_scope,omitempty"`
 	Created    *time.Time `json:"created,omitempty" yaml:"created,omitempty"`
 	// DatumType is the type of an individual datum of a metric.
@@ -5524,7 +5803,8 @@ type TimeseriesSchema struct {
 	// Description is text descriptions for the target and metric of a timeseries.
 	Description TimeseriesDescription `json:"description,omitempty" yaml:"description,omitempty"`
 	FieldSchema []FieldSchema         `json:"field_schema,omitempty" yaml:"field_schema,omitempty"`
-	// TimeseriesName is names are constructed by concatenating the target and metric names with ':'. Target and metric names must be lowercase alphanumeric characters with '_' separating words.
+	// TimeseriesName is names are constructed by concatenating the target and metric names with ':'. Target and
+	// metric names must be lowercase alphanumeric characters with '_' separating words.
 	TimeseriesName TimeseriesName `json:"timeseries_name,omitempty" yaml:"timeseries_name,omitempty"`
 	// Units is measurement units for timeseries samples.
 	Units   Units `json:"units,omitempty" yaml:"units,omitempty"`
@@ -5542,7 +5822,8 @@ type TimeseriesSchemaResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// TxEqConfig is per-port tx-eq overrides.  This can be used to fine-tune the transceiver equalization settings to improve signal integrity.
+// TxEqConfig is per-port tx-eq overrides.  This can be used to fine-tune the transceiver equalization settings
+// to improve signal integrity.
 type TxEqConfig struct {
 	// Main is main tap
 	Main int `json:"main,omitempty" yaml:"main,omitempty"`
@@ -5653,7 +5934,9 @@ type UserCreate struct {
 	Password UserPassword `json:"password,omitempty" yaml:"password,omitempty"`
 }
 
-// UserId is usernames must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Usernames cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+// UserId is usernames must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII,
+// uppercase ASCII, numbers, and '-', and may not end with a '-'. Usernames cannot be a UUID, but they may contain
+// a UUID. They can be at most 63 characters long.
 type UserId string
 
 // UserPasswordMode is the type definition for a UserPasswordMode.
@@ -5705,7 +5988,9 @@ type UserResultsPage struct {
 type UsernamePasswordCredentials struct {
 	// Password is passwords may be subject to additional constraints.
 	Password Password `json:"password,omitempty" yaml:"password,omitempty"`
-	// Username is usernames must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Usernames cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Username is usernames must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII,
+	// uppercase ASCII, numbers, and '-', and may not end with a '-'. Usernames cannot be a UUID, but they may contain
+	// a UUID. They can be at most 63 characters long.
 	Username UserId `json:"username,omitempty" yaml:"username,omitempty"`
 }
 
@@ -5715,9 +6000,12 @@ type UsernamePasswordCredentials struct {
 // - Capacity
 // - Provisioned
 type Utilization struct {
-	// Capacity is the total amount of resources that can be provisioned in this silo Actions that would exceed this limit will fail
+	// Capacity is the total amount of resources that can be provisioned in this silo Actions that would exceed
+	// this limit will fail
 	Capacity VirtualResourceCounts `json:"capacity,omitempty" yaml:"capacity,omitempty"`
-	// Provisioned is accounts for resources allocated to running instances or storage allocated via disks or snapshots Note that CPU and memory resources associated with a stopped instances are not counted here whereas associated disks will still be counted
+	// Provisioned is accounts for resources allocated to running instances or storage allocated via disks or
+	// snapshots Note that CPU and memory resources associated with a stopped instances are not counted here whereas
+	// associated disks will still be counted
 	Provisioned VirtualResourceCounts `json:"provisioned,omitempty" yaml:"provisioned,omitempty"`
 }
 
@@ -5865,13 +6153,18 @@ type Vpc struct {
 // - Name
 type VpcCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// DnsName is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// DnsName is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	DnsName Name `json:"dns_name,omitempty" yaml:"dns_name,omitempty"`
 	// Ipv6Prefix is the IPv6 prefix for this VPC
 	//
-	// All IPv6 subnets created from this VPC must be taken from this range, which should be a Unique Local Address in the range `fd00::/48`. The default VPC Subnet will have the first `/64` range from this prefix.
+	// All IPv6 subnets created from this VPC must be taken from this range, which should be a Unique Local Address
+	// in the range `fd00::/48`. The default VPC Subnet will have the first `/64` range from this prefix.
 	Ipv6Prefix Ipv6Net `json:"ipv6_prefix,omitempty" yaml:"ipv6_prefix,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
@@ -5923,9 +6216,12 @@ type VpcFirewallRuleAction string
 // VpcFirewallRuleDirection is the type definition for a VpcFirewallRuleDirection.
 type VpcFirewallRuleDirection string
 
-// VpcFirewallRuleFilter is filters reduce the scope of a firewall rule. Without filters, the rule applies to all packets to the targets (or from the targets, if it's an outbound rule). With multiple filters, the rule applies only to packets matching ALL filters. The maximum number of each type of filter is 256.
+// VpcFirewallRuleFilter is filters reduce the scope of a firewall rule. Without filters, the rule applies to
+// all packets to the targets (or from the targets, if it's an outbound rule). With multiple filters, the rule
+// applies only to packets matching ALL filters. The maximum number of each type of filter is 256.
 type VpcFirewallRuleFilter struct {
-	// Hosts is if present, host filters match the "other end" of traffic from the target’s perspective: for an inbound rule, they match the source of traffic. For an outbound rule, they match the destination.
+	// Hosts is if present, host filters match the "other end" of traffic from the target’s perspective: for
+	// an inbound rule, they match the source of traffic. For an outbound rule, they match the destination.
 	Hosts []VpcFirewallRuleHostFilter `json:"hosts,omitempty" yaml:"hosts,omitempty"`
 	// Ports is if present, the destination ports or port ranges this rule applies to.
 	Ports []L4PortRange `json:"ports,omitempty" yaml:"ports,omitempty"`
@@ -5943,7 +6239,9 @@ type VpcFirewallRuleHostFilterType string
 // - Value
 type VpcFirewallRuleHostFilterVpc struct {
 	Type VpcFirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
@@ -5954,7 +6252,9 @@ type VpcFirewallRuleHostFilterVpc struct {
 // - Value
 type VpcFirewallRuleHostFilterSubnet struct {
 	Type VpcFirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
@@ -5965,7 +6265,9 @@ type VpcFirewallRuleHostFilterSubnet struct {
 // - Value
 type VpcFirewallRuleHostFilterInstance struct {
 	Type VpcFirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
@@ -5989,11 +6291,14 @@ type VpcFirewallRuleHostFilterIpNet struct {
 	Value IpNet                         `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-// VpcFirewallRuleHostFilter is the `VpcFirewallRuleHostFilter` is used to filter traffic on the basis of its source or destination host.
+// VpcFirewallRuleHostFilter is the `VpcFirewallRuleHostFilter` is used to filter traffic on the basis of
+// its source or destination host.
 type VpcFirewallRuleHostFilter struct {
 	// Type is the type definition for a Type.
 	Type VpcFirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Value any `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
@@ -6013,7 +6318,9 @@ type VpcFirewallRuleTargetType string
 // - Value
 type VpcFirewallRuleTargetVpc struct {
 	Type VpcFirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
@@ -6024,7 +6331,9 @@ type VpcFirewallRuleTargetVpc struct {
 // - Value
 type VpcFirewallRuleTargetSubnet struct {
 	Type VpcFirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
@@ -6035,7 +6344,9 @@ type VpcFirewallRuleTargetSubnet struct {
 // - Value
 type VpcFirewallRuleTargetInstance struct {
 	Type VpcFirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
@@ -6059,11 +6370,16 @@ type VpcFirewallRuleTargetIpNet struct {
 	Value IpNet                     `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-// VpcFirewallRuleTarget is a `VpcFirewallRuleTarget` is used to specify the set of instances to which a firewall rule applies. You can target instances directly by name, or specify a VPC, VPC subnet, IP, or IP subnet, which will apply the rule to traffic going to all matching instances. Targets are additive: the rule applies to instances matching ANY target.
+// VpcFirewallRuleTarget is a `VpcFirewallRuleTarget` is used to specify the set of instances to which a
+// firewall rule applies. You can target instances directly by name, or specify a VPC, VPC subnet, IP, or IP
+// subnet, which will apply the rule to traffic going to all matching instances. Targets are additive: the rule
+// applies to instances matching ANY target.
 type VpcFirewallRuleTarget struct {
 	// Type is the type definition for a Type.
 	Type VpcFirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Value any `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
@@ -6124,7 +6440,8 @@ type VpcResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// VpcRouter is a VPC router defines a series of rules that indicate where traffic should be sent depending on its destination.
+// VpcRouter is a VPC router defines a series of rules that indicate where traffic should be sent depending on
+// its destination.
 //
 // Required fields:
 // - Description
@@ -6157,7 +6474,9 @@ type VpcRouter struct {
 // - Name
 type VpcRouterCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
@@ -6181,7 +6500,8 @@ type VpcRouterUpdate struct {
 	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
-// VpcSubnet is a VPC subnet represents a logical grouping for instances that allows network traffic between them, within a IPv4 subnetwork or optionally an IPv6 subnetwork.
+// VpcSubnet is a VPC subnet represents a logical grouping for instances that allows network traffic between
+// them, within a IPv4 subnetwork or optionally an IPv6 subnetwork.
 //
 // Required fields:
 // - Description
@@ -6222,18 +6542,25 @@ type VpcSubnet struct {
 type VpcSubnetCreate struct {
 	// CustomRouter is an optional router, used to direct packets sent from hosts in this subnet to any destination address.
 	//
-	// Custom routers apply in addition to the VPC-wide *system* router, and have higher priority than the system router for an otherwise equal-prefix-length match.
+	//
+	// Custom routers apply in addition to the VPC-wide *system* router, and have higher priority than the system router
+	// for an otherwise equal-prefix-length match.
 	CustomRouter NameOrId `json:"custom_router,omitempty" yaml:"custom_router,omitempty"`
 	Description  string   `json:"description,omitempty" yaml:"description,omitempty"`
 	// Ipv4Block is the IPv4 address range for this subnet.
 	//
-	// It must be allocated from an RFC 1918 private address range, and must not overlap with any other existing subnet in the VPC.
+	// It must be allocated from an RFC 1918 private address range, and must not overlap with any other existing subnet
+	// in the VPC.
 	Ipv4Block Ipv4Net `json:"ipv4_block,omitempty" yaml:"ipv4_block,omitempty"`
 	// Ipv6Block is the IPv6 address range for this subnet.
 	//
-	// It must be allocated from the RFC 4193 Unique Local Address range, with the prefix equal to the parent VPC's prefix. A random `/64` block will be assigned if one is not provided. It must not overlap with any existing subnet in the VPC.
+	// It must be allocated from the RFC 4193 Unique Local Address range, with the prefix equal to the parent VPC's
+	// prefix. A random `/64` block will be assigned if one is not provided. It must not overlap with any existing subnet
+	// in the VPC.
 	Ipv6Block Ipv6Net `json:"ipv6_block,omitempty" yaml:"ipv6_block,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They can be at most 63 characters long.
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
@@ -6251,6 +6578,7 @@ type VpcSubnetResultsPage struct {
 // VpcSubnetUpdate is updateable properties of a `VpcSubnet`
 type VpcSubnetUpdate struct {
 	// CustomRouter is an optional router, used to direct packets sent from hosts in this subnet to any destination address.
+	//
 	CustomRouter NameOrId `json:"custom_router,omitempty" yaml:"custom_router,omitempty"`
 	Description  string   `json:"description,omitempty" yaml:"description,omitempty"`
 	Name         Name     `json:"name,omitempty" yaml:"name,omitempty"`

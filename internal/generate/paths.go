@@ -175,7 +175,7 @@ func buildMethod(f *os.File, spec *openapi3.T, method string, path string, o *op
 	sanitisedDescription := strings.ReplaceAll(o.Description, "\n", "\n// ")
 
 	config := methodTemplate{
-		Description:     sanitisedDescription,
+		Description:     splitDocString(sanitisedDescription),
 		HTTPMethod:      method,
 		FunctionName:    methodName,
 		WrappedFunction: ogmethodName,
@@ -276,6 +276,33 @@ func getSuccessResponseType(o *openapi3.Operation, isGetAllPages bool) (string, 
 func cleanPath(path string) string {
 	path = strings.Replace(path, "{", "{{.", -1)
 	return strings.Replace(path, "}", "}}", -1)
+}
+
+// splitDocString inserts newlines into doc comments at approximately 100 character intervals.
+func splitDocString(s string) string {
+	var (
+		out     strings.Builder
+		written int
+	)
+
+	for _, subStr := range strings.SplitAfter(s, " ") {
+		if written > 100 {
+			// Remove trailing space if inserting a newline.
+			out.WriteString(strings.TrimSuffix(subStr, " "))
+			out.WriteString("\n// ")
+			written = 0
+
+			continue
+		}
+
+		ct, _ := out.WriteString(subStr)
+		written += ct
+
+		if strings.Contains(subStr, "\n") {
+			written = 0
+		}
+	}
+	return out.String()
 }
 
 func writeTpl(f *os.File, config methodTemplate) error {

@@ -11,7 +11,8 @@ type DiskCreate struct {
 	DiskSource DiskSource `json:"disk_source,omitempty" yaml:"disk_source,omitempty"`
 }
 
-// DiskIdentifier is parameters for the [`Disk`](omicron_common::api::external::Disk) to be attached or detached to an instance
+// DiskIdentifier is parameters for the [`Disk`](omicron_common::api::external::Disk) to be attached or
+// detached to an instance
 type DiskIdentifier struct {
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 }
