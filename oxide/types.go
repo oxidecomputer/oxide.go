@@ -3008,9 +3008,9 @@ type Instance struct {
 	AutoRestartCooldownExpiration *time.Time `json:"auto_restart_cooldown_expiration,omitempty" yaml:"auto_restart_cooldown_expiration,omitempty"`
 	// AutoRestartEnabled is `true` if this instance's auto-restart policy will permit the control plane to automatically restart it if it enters the `Failed` state.
 	AutoRestartEnabled *bool `json:"auto_restart_enabled,omitempty" yaml:"auto_restart_enabled,omitempty"`
-	// AutoRestartPolicy is the auto-restart policy configured for this instance, or `None` if no explicit policy is configured.
+	// AutoRestartPolicy is the auto-restart policy configured for this instance, or `null` if no explicit policy has been configured.
 	//
-	// If this is not present, then this instance uses the default auto-restart policy, which may or may not allow it to be restarted. The `auto_restart_enabled` field indicates whether the instance will be automatically restarted.
+	// This policy determines whether the instance should be automatically restarted by the control plane on failure. If this is `null`, the control plane will use the default policy when determining whether or not to automatically restart this instance, which may or may not allow it to be restarted. The value of the `auto_restart_enabled` field indicates whether the instance will be auto-restarted, based on its current policy or the default if it has no configured policy.
 	AutoRestartPolicy InstanceAutoRestartPolicy `json:"auto_restart_policy,omitempty" yaml:"auto_restart_policy,omitempty"`
 	// BootDiskId is the ID of the disk used to boot this Instance, if a specific one is assigned.
 	BootDiskId string `json:"boot_disk_id,omitempty" yaml:"boot_disk_id,omitempty"`
@@ -3060,7 +3060,9 @@ type InstanceCpuCount uint16
 type InstanceCreate struct {
 	// AutoRestartPolicy is the auto-restart policy for this instance.
 	//
-	// This indicates whether the instance should be automatically restarted by the control plane on failure. If this is `null`, no auto-restart policy has been configured for this instance by the user.
+	// This policy determines whether the instance should be automatically restarted by the control plane on failure. If this is `null`, no auto-restart policy will be explicitly configured for this instance, and the control plane will select the default policy when determining whether the instance can be automatically restarted.
+	//
+	// Currently, the global default auto-restart policy is "best-effort", so instances with `null` auto-restart policies will be automatically restarted. However, in the future, the default policy may be configurable through other mechanisms, such as on a per-project basis. In that case, any configured default policy will be used if this is `null`.
 	AutoRestartPolicy InstanceAutoRestartPolicy `json:"auto_restart_policy,omitempty" yaml:"auto_restart_policy,omitempty"`
 	// BootDisk is the disk this instance should boot into. This disk can either be attached if it already exists, or created, if it should be a new disk.
 	//
@@ -3295,15 +3297,25 @@ type InstanceSerialConsoleData struct {
 type InstanceState string
 
 // InstanceUpdate is parameters of an `Instance` that can be reconfigured after creation.
+//
+// Required fields:
+// - Memory
+// - Ncpus
 type InstanceUpdate struct {
-	// AutoRestartPolicy is the auto-restart policy for this instance.
+	// AutoRestartPolicy is sets the auto-restart policy for this instance.
 	//
-	// If not provided, unset the instance's auto-restart policy.
+	// This policy determines whether the instance should be automatically restarted by the control plane on failure. If this is `null`, any explicitly configured auto-restart policy will be unset, and the control plane will select the default policy when determining whether the instance can be automatically restarted.
+	//
+	// Currently, the global default auto-restart policy is "best-effort", so instances with `null` auto-restart policies will be automatically restarted. However, in the future, the default policy may be configurable through other mechanisms, such as on a per-project basis. In that case, any configured default policy will be used if this is `null`.
 	AutoRestartPolicy InstanceAutoRestartPolicy `json:"auto_restart_policy,omitempty" yaml:"auto_restart_policy,omitempty"`
 	// BootDisk is name or ID of the disk the instance should be instructed to boot from.
 	//
 	// If not provided, unset the instance's boot disk.
 	BootDisk NameOrId `json:"boot_disk,omitempty" yaml:"boot_disk,omitempty"`
+	// Memory is the amount of memory to assign to this instance.
+	Memory ByteCount `json:"memory,omitempty" yaml:"memory,omitempty"`
+	// Ncpus is the number of CPUs to assign to this instance.
+	Ncpus InstanceCpuCount `json:"ncpus,omitempty" yaml:"ncpus,omitempty"`
 }
 
 // InternetGateway is an internet gateway provides a path between VPC networks and external networks.
@@ -3651,14 +3663,13 @@ type L4PortRange string
 //
 // Required fields:
 // - Autoneg
-// - Fec
 // - Lldp
 // - Mtu
 // - Speed
 type LinkConfigCreate struct {
 	// Autoneg is whether or not to set autonegotiation
 	Autoneg *bool `json:"autoneg,omitempty" yaml:"autoneg,omitempty"`
-	// Fec is the forward error correction mode of the link.
+	// Fec is the requested forward-error correction method.  If this is not specified, the standard FEC for the underlying media will be applied if it can be determined.
 	Fec LinkFec `json:"fec,omitempty" yaml:"fec,omitempty"`
 	// Lldp is the link-layer discovery protocol (LLDP) configuration for the link.
 	Lldp LldpLinkConfigCreate `json:"lldp,omitempty" yaml:"lldp,omitempty"`
@@ -3666,6 +3677,8 @@ type LinkConfigCreate struct {
 	Mtu int `json:"mtu,omitempty" yaml:"mtu,omitempty"`
 	// Speed is the speed of the link.
 	Speed LinkSpeed `json:"speed,omitempty" yaml:"speed,omitempty"`
+	// TxEq is optional tx_eq settings
+	TxEq TxEqConfig `json:"tx_eq,omitempty" yaml:"tx_eq,omitempty"`
 }
 
 // LinkFec is firecode forward error correction.
@@ -5244,7 +5257,6 @@ type SwitchPortGeometry2 string
 //
 // Required fields:
 // - Autoneg
-// - Fec
 // - LinkName
 // - Mtu
 // - PortSettingsId
@@ -5252,7 +5264,7 @@ type SwitchPortGeometry2 string
 type SwitchPortLinkConfig struct {
 	// Autoneg is whether or not the link has autonegotiation enabled.
 	Autoneg *bool `json:"autoneg,omitempty" yaml:"autoneg,omitempty"`
-	// Fec is the forward error correction mode of the link.
+	// Fec is the requested forward-error correction method.  If this is not specified, the standard FEC for the underlying media will be applied if it can be determined.
 	Fec LinkFec `json:"fec,omitempty" yaml:"fec,omitempty"`
 	// LinkName is the name of this link.
 	LinkName string `json:"link_name,omitempty" yaml:"link_name,omitempty"`
@@ -5264,6 +5276,8 @@ type SwitchPortLinkConfig struct {
 	PortSettingsId string `json:"port_settings_id,omitempty" yaml:"port_settings_id,omitempty"`
 	// Speed is the configured speed of the link.
 	Speed LinkSpeed `json:"speed,omitempty" yaml:"speed,omitempty"`
+	// TxEqConfigId is the tx_eq configuration id for this link.
+	TxEqConfigId string `json:"tx_eq_config_id,omitempty" yaml:"tx_eq_config_id,omitempty"`
 }
 
 // SwitchPortResultsPage is a single page of results
@@ -5386,6 +5400,7 @@ type SwitchPortSettingsResultsPage struct {
 // - Port
 // - Routes
 // - Settings
+// - TxEq
 // - VlanInterfaces
 type SwitchPortSettingsView struct {
 	// Addresses is layer 3 IP address settings.
@@ -5406,6 +5421,8 @@ type SwitchPortSettingsView struct {
 	Routes []SwitchPortRouteConfig `json:"routes,omitempty" yaml:"routes,omitempty"`
 	// Settings is the primary switch port settings handle.
 	Settings SwitchPortSettings `json:"settings,omitempty" yaml:"settings,omitempty"`
+	// TxEq is tX equalization settings.  These are optional, and most links will not need them.
+	TxEq []string `json:"tx_eq,omitempty" yaml:"tx_eq,omitempty"`
 	// VlanInterfaces is vlan interface settings.
 	VlanInterfaces []SwitchVlanInterfaceConfig `json:"vlan_interfaces,omitempty" yaml:"vlan_interfaces,omitempty"`
 }
@@ -5523,6 +5540,20 @@ type TimeseriesSchemaResultsPage struct {
 	Items []TimeseriesSchema `json:"items,omitempty" yaml:"items,omitempty"`
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// TxEqConfig is per-port tx-eq overrides.  This can be used to fine-tune the transceiver equalization settings to improve signal integrity.
+type TxEqConfig struct {
+	// Main is main tap
+	Main int `json:"main,omitempty" yaml:"main,omitempty"`
+	// Post1 is post-cursor tap1
+	Post1 int `json:"post1,omitempty" yaml:"post1,omitempty"`
+	// Post2 is post-cursor tap2
+	Post2 int `json:"post2,omitempty" yaml:"post2,omitempty"`
+	// Pre1 is pre-cursor tap1
+	Pre1 int `json:"pre1,omitempty" yaml:"pre1,omitempty"`
+	// Pre2 is pre-cursor tap2
+	Pre2 int `json:"pre2,omitempty" yaml:"pre2,omitempty"`
 }
 
 // UninitializedSled is a sled that has not been added to an initialized rack yet
@@ -7776,6 +7807,20 @@ type SiloQuotasUpdateParams struct {
 	Body *SiloQuotasUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+// SystemTimeseriesQueryParams is the request parameters for SystemTimeseriesQuery
+//
+// Required fields:
+// - Body
+type SystemTimeseriesQueryParams struct {
+	Body *TimeseriesQuery `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// SystemTimeseriesSchemaListParams is the request parameters for SystemTimeseriesSchemaList
+type SystemTimeseriesSchemaListParams struct {
+	Limit     int    `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+}
+
 // SiloUserListParams is the request parameters for SiloUserList
 //
 // Required fields:
@@ -7825,20 +7870,6 @@ type SiloUtilizationListParams struct {
 // - Silo
 type SiloUtilizationViewParams struct {
 	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
-}
-
-// TimeseriesQueryParams is the request parameters for TimeseriesQuery
-//
-// Required fields:
-// - Body
-type TimeseriesQueryParams struct {
-	Body *TimeseriesQuery `json:"body,omitempty" yaml:"body,omitempty"`
-}
-
-// TimeseriesSchemaListParams is the request parameters for TimeseriesSchemaList
-type TimeseriesSchemaListParams struct {
-	Limit     int    `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 }
 
 // UserListParams is the request parameters for UserList
@@ -9772,6 +9803,25 @@ func (p *SiloQuotasUpdateParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for SystemTimeseriesQueryParams are set
+func (p *SystemTimeseriesQueryParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SystemTimeseriesSchemaListParams are set
+func (p *SystemTimeseriesSchemaListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for SiloUserListParams are set
 func (p *SiloUserListParams) Validate() error {
 	v := new(Validator)
@@ -9824,25 +9874,6 @@ func (p *SiloUtilizationListParams) Validate() error {
 func (p *SiloUtilizationViewParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.Silo), "Silo")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for TimeseriesQueryParams are set
-func (p *TimeseriesQueryParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for TimeseriesSchemaListParams are set
-func (p *TimeseriesSchemaListParams) Validate() error {
-	v := new(Validator)
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
