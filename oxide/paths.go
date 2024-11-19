@@ -9006,6 +9006,132 @@ func (c *Client) SiloQuotasUpdate(ctx context.Context, params SiloQuotasUpdatePa
 	return &body, nil
 }
 
+// SystemTimeseriesQuery: Run timeseries query
+// Queries are written in OxQL.
+func (c *Client) SystemTimeseriesQuery(ctx context.Context, params SystemTimeseriesQueryParams) (*OxqlQueryResult, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"POST",
+		resolveRelative(c.host, "/v1/system/timeseries/query"),
+		map[string]string{},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body OxqlQueryResult
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SystemTimeseriesSchemaList: List timeseries schemas
+//
+// To iterate over all pages, use the `SystemTimeseriesSchemaListAllPages` method, instead.
+func (c *Client) SystemTimeseriesSchemaList(ctx context.Context, params SystemTimeseriesSchemaListParams) (*TimeseriesSchemaResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/timeseries/schemas"),
+		map[string]string{},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body TimeseriesSchemaResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SystemTimeseriesSchemaListAllPages: List timeseries schemas
+//
+// This method is a wrapper around the `SystemTimeseriesSchemaList` method.
+// This method returns all the pages at once.
+func (c *Client) SystemTimeseriesSchemaListAllPages(ctx context.Context, params SystemTimeseriesSchemaListParams) ([]TimeseriesSchema, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []TimeseriesSchema
+	params.PageToken = ""
+	params.Limit = 100
+	for {
+		page, err := c.SystemTimeseriesSchemaList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
+}
+
 // SiloUserList: List built-in (system) users in silo
 //
 // To iterate over all pages, use the `SiloUserListAllPages` method, instead.
@@ -9373,132 +9499,6 @@ func (c *Client) SiloUtilizationView(ctx context.Context, params SiloUtilization
 
 	// Return the response.
 	return &body, nil
-}
-
-// TimeseriesQuery: Run timeseries query
-// Queries are written in OxQL.
-func (c *Client) TimeseriesQuery(ctx context.Context, params TimeseriesQueryParams) (*OxqlQueryResult, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
-
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/timeseries/query"),
-		map[string]string{},
-		map[string]string{},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body OxqlQueryResult
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// TimeseriesSchemaList: List timeseries schemas
-//
-// To iterate over all pages, use the `TimeseriesSchemaListAllPages` method, instead.
-func (c *Client) TimeseriesSchemaList(ctx context.Context, params TimeseriesSchemaListParams) (*TimeseriesSchemaResultsPage, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/timeseries/schema"),
-		map[string]string{},
-		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
-			"page_token": params.PageToken,
-		},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body TimeseriesSchemaResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// TimeseriesSchemaListAllPages: List timeseries schemas
-//
-// This method is a wrapper around the `TimeseriesSchemaList` method.
-// This method returns all the pages at once.
-func (c *Client) TimeseriesSchemaListAllPages(ctx context.Context, params TimeseriesSchemaListParams) ([]TimeseriesSchema, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	var allPages []TimeseriesSchema
-	params.PageToken = ""
-	params.Limit = 100
-	for {
-		page, err := c.TimeseriesSchemaList(ctx, params)
-		if err != nil {
-			return nil, err
-		}
-		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == params.PageToken {
-			break
-		}
-		params.PageToken = page.NextPage
-	}
-
-	return allPages, nil
 }
 
 // UserList: List users
