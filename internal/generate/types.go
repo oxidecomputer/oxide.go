@@ -348,14 +348,14 @@ func writeTypes(f *os.File, typeCollection []TypeTemplate, typeValidationCollect
 			continue
 		}
 
-		fmt.Fprintf(f, "%s\n", tt.Description)
+		fmt.Fprintf(f, "%s\n", splitDocString(tt.Description))
 		fmt.Fprintf(f, "type %s %s", tt.Name, tt.Type)
 		if tt.Fields != nil {
 			fmt.Fprint(f, " {\n")
 			for _, ft := range tt.Fields {
 				if ft.Description != "" {
 					// TODO: Double check about the "//"
-					fmt.Fprintf(f, "\t%s\n", ft.Description)
+					fmt.Fprintf(f, "\t%s\n", splitDocString(ft.Description))
 				}
 				fmt.Fprintf(f, "\t%s %s %s\n", ft.Name, ft.Type, ft.SerializationInfo)
 			}
@@ -398,7 +398,7 @@ func writeTypes(f *os.File, typeCollection []TypeTemplate, typeValidationCollect
 			continue
 		}
 
-		fmt.Fprintf(f, "%s\n", et.Description)
+		fmt.Fprintf(f, "%s\n", splitDocString(et.Description))
 		fmt.Fprintf(f, "%s %s %s\n\n", et.ValueType, et.Name, et.Value)
 	}
 }

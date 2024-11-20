@@ -55,7 +55,8 @@ func (c *Client) LoginSaml(ctx context.Context, params LoginSamlParams) error {
 }
 
 // CertificateList: List certificates for external endpoints
-// Returns a list of TLS certificates used for the external API (for the current Silo).  These are sorted by creation date, with the most recent certificates appearing first.
+// Returns a list of TLS certificates used for the external API (for the current Silo).  These are sorted by
+// creation date, with the most recent certificates appearing first.
 //
 // To iterate over all pages, use the `CertificateListAllPages` method, instead.
 func (c *Client) CertificateList(ctx context.Context, params CertificateListParams) (*CertificateResultsPage, error) {
@@ -106,7 +107,8 @@ func (c *Client) CertificateList(ctx context.Context, params CertificateListPara
 }
 
 // CertificateListAllPages: List certificates for external endpoints
-// Returns a list of TLS certificates used for the external API (for the current Silo).  These are sorted by creation date, with the most recent certificates appearing first.
+// Returns a list of TLS certificates used for the external API (for the current Silo).  These are sorted by
+// creation date, with the most recent certificates appearing first.
 //
 // This method is a wrapper around the `CertificateList` method.
 // This method returns all the pages at once.
@@ -1218,7 +1220,8 @@ func (c *Client) GroupView(ctx context.Context, params GroupViewParams) (*Group,
 }
 
 // ImageList: List images
-// List images which are global or scoped to the specified project. The images are returned sorted by creation date, with the most recent images appearing first.
+// List images which are global or scoped to the specified project. The images are returned sorted by creation date,
+// with the most recent images appearing first.
 //
 // To iterate over all pages, use the `ImageListAllPages` method, instead.
 func (c *Client) ImageList(ctx context.Context, params ImageListParams) (*ImageResultsPage, error) {
@@ -1270,7 +1273,8 @@ func (c *Client) ImageList(ctx context.Context, params ImageListParams) (*ImageR
 }
 
 // ImageListAllPages: List images
-// List images which are global or scoped to the specified project. The images are returned sorted by creation date, with the most recent images appearing first.
+// List images which are global or scoped to the specified project. The images are returned sorted by creation date,
+// with the most recent images appearing first.
 //
 // This method is a wrapper around the `ImageList` method.
 // This method returns all the pages at once.
@@ -1399,7 +1403,8 @@ func (c *Client) ImageView(ctx context.Context, params ImageViewParams) (*Image,
 }
 
 // ImageDelete: Delete image
-// Permanently delete an image from a project. This operation cannot be undone. Any instances in the project using the image will continue to run, however new instances can not be created with this image.
+// Permanently delete an image from a project. This operation cannot be undone. Any instances in the project using
+// the image will continue to run, however new instances can not be created with this image.
 func (c *Client) ImageDelete(ctx context.Context, params ImageDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
@@ -2266,7 +2271,8 @@ func (c *Client) InstanceSerialConsoleStream(ctx context.Context, params Instanc
 }
 
 // InstanceSshPublicKeyList: List SSH public keys for instance
-// List SSH public keys injected via cloud-init during instance creation. Note that this list is a snapshot in time and will not reflect updates made after the instance is created.
+// List SSH public keys injected via cloud-init during instance creation. Note that this list is a snapshot in
+// time and will not reflect updates made after the instance is created.
 //
 // To iterate over all pages, use the `InstanceSshPublicKeyListAllPages` method, instead.
 func (c *Client) InstanceSshPublicKeyList(ctx context.Context, params InstanceSshPublicKeyListParams) (*SshKeyResultsPage, error) {
@@ -2320,7 +2326,8 @@ func (c *Client) InstanceSshPublicKeyList(ctx context.Context, params InstanceSs
 }
 
 // InstanceSshPublicKeyListAllPages: List SSH public keys for instance
-// List SSH public keys injected via cloud-init during instance creation. Note that this list is a snapshot in time and will not reflect updates made after the instance is created.
+// List SSH public keys injected via cloud-init during instance creation. Note that this list is a snapshot in
+// time and will not reflect updates made after the instance is created.
 //
 // This method is a wrapper around the `InstanceSshPublicKeyList` method.
 // This method returns all the pages at once.
@@ -3818,7 +3825,9 @@ func (c *Client) InstanceNetworkInterfaceUpdate(ctx context.Context, params Inst
 }
 
 // InstanceNetworkInterfaceDelete: Delete network interface
-// Note that the primary interface for an instance cannot be deleted if there are any secondary interfaces. A new primary interface must be designated first. The primary interface can be deleted if there are no secondary interfaces.
+// Note that the primary interface for an instance cannot be deleted if there are any secondary interfaces. A
+// new primary interface must be designated first. The primary interface can be deleted if there are no secondary
+// interfaces.
 func (c *Client) InstanceNetworkInterfaceDelete(ctx context.Context, params InstanceNetworkInterfaceDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
@@ -5668,7 +5677,8 @@ func (c *Client) SiloIdentityProviderListAllPages(ctx context.Context, params Si
 }
 
 // LocalIdpUserCreate: Create user
-// Users can only be created in Silos with `provision_type` == `Fixed`. Otherwise, Silo users are just-in-time (JIT) provisioned when a user first logs in using an external Identity Provider.
+// Users can only be created in Silos with `provision_type` == `Fixed`. Otherwise, Silo users are just-in-time (JIT)
+// provisioned when a user first logs in using an external Identity Provider.
 func (c *Client) LocalIdpUserCreate(ctx context.Context, params LocalIdpUserCreateParams) (*User, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -6620,7 +6630,8 @@ func (c *Client) IpPoolSiloListAllPages(ctx context.Context, params IpPoolSiloLi
 }
 
 // IpPoolSiloLink: Link IP pool to silo
-// Users in linked silos can allocate external IPs from this pool for their instances. A silo can have at most one default pool. IPs are allocated from the default pool when users ask for one without specifying a pool.
+// Users in linked silos can allocate external IPs from this pool for their instances. A silo can have at most
+// one default pool. IPs are allocated from the default pool when users ask for one without specifying a pool.
 func (c *Client) IpPoolSiloLink(ctx context.Context, params IpPoolSiloLinkParams) (*IpPoolSiloLink, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -6673,7 +6684,9 @@ func (c *Client) IpPoolSiloLink(ctx context.Context, params IpPoolSiloLinkParams
 }
 
 // IpPoolSiloUpdate: Make IP pool default for silo
-// When a user asks for an IP (e.g., at instance create time) without specifying a pool, the IP comes from the default pool if a default is configured. When a pool is made the default for a silo, any existing default will remain linked to the silo, but will no longer be the default.
+// When a user asks for an IP (e.g., at instance create time) without specifying a pool, the IP comes from the
+// default pool if a default is configured. When a pool is made the default for a silo, any existing default will
+// remain linked to the silo, but will no longer be the default.
 func (c *Client) IpPoolSiloUpdate(ctx context.Context, params IpPoolSiloUpdateParams) (*IpPoolSiloLink, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -8730,7 +8743,8 @@ func (c *Client) SiloDelete(ctx context.Context, params SiloDeleteParams) error 
 }
 
 // SiloIpPoolList: List IP pools linked to silo
-// Linked IP pools are available to users in the specified silo. A silo can have at most one default pool. IPs are allocated from the default pool when users ask for one without specifying a pool.
+// Linked IP pools are available to users in the specified silo. A silo can have at most one default pool. IPs
+// are allocated from the default pool when users ask for one without specifying a pool.
 //
 // To iterate over all pages, use the `SiloIpPoolListAllPages` method, instead.
 func (c *Client) SiloIpPoolList(ctx context.Context, params SiloIpPoolListParams) (*SiloIpPoolResultsPage, error) {
@@ -8783,7 +8797,8 @@ func (c *Client) SiloIpPoolList(ctx context.Context, params SiloIpPoolListParams
 }
 
 // SiloIpPoolListAllPages: List IP pools linked to silo
-// Linked IP pools are available to users in the specified silo. A silo can have at most one default pool. IPs are allocated from the default pool when users ask for one without specifying a pool.
+// Linked IP pools are available to users in the specified silo. A silo can have at most one default pool. IPs
+// are allocated from the default pool when users ask for one without specifying a pool.
 //
 // This method is a wrapper around the `SiloIpPoolList` method.
 // This method returns all the pages at once.
@@ -9669,9 +9684,14 @@ func (c *Client) VpcFirewallRulesView(ctx context.Context, params VpcFirewallRul
 // VpcFirewallRulesUpdate: Replace firewall rules
 // The maximum number of rules per VPC is 1024.
 //
-// Targets are used to specify the set of instances to which a firewall rule applies. You can target instances directly by name, or specify a VPC, VPC subnet, IP, or IP subnet, which will apply the rule to traffic going to all matching instances. Targets are additive: the rule applies to instances matching ANY target. The maximum number of targets is 256.
+// Targets are used to specify the set of instances to which a firewall rule applies. You can target instances directly
+// by name, or specify a VPC, VPC subnet, IP, or IP subnet, which will apply the rule to traffic going to all
+// matching instances. Targets are additive: the rule applies to instances matching ANY target. The maximum number
+// of targets is 256.
 //
-// Filters reduce the scope of a firewall rule. Without filters, the rule applies to all packets to the targets (or from the targets, if it's an outbound rule). With multiple filters, the rule applies only to packets matching ALL filters. The maximum number of each type of filter is 256.
+// Filters reduce the scope of a firewall rule. Without filters, the rule applies to all packets to the targets
+// (or from the targets, if it's an outbound rule). With multiple filters, the rule applies only to packets matching
+// ALL filters. The maximum number of each type of filter is 256.
 func (c *Client) VpcFirewallRulesUpdate(ctx context.Context, params VpcFirewallRulesUpdateParams) (*VpcFirewallRules, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
