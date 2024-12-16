@@ -1631,7 +1631,7 @@ type Datum struct {
 // - PrivateKey
 // - PublicCert
 type DerEncodedKeyPair struct {
-	// PrivateKey is request signing private key (base64 encoded der file)
+	// PrivateKey is request signing RSA private key in PKCS#1 format (base64 encoded der file)
 	PrivateKey string `json:"private_key,omitempty" yaml:"private_key,omitempty"`
 	// PublicCert is request signing public certificate (base64 encoded der file)
 	PublicCert string `json:"public_cert,omitempty" yaml:"public_cert,omitempty"`
@@ -8200,6 +8200,16 @@ type SiloUtilizationViewParams struct {
 	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 }
 
+// TimeseriesQueryParams is the request parameters for TimeseriesQuery
+//
+// Required fields:
+// - Project
+// - Body
+type TimeseriesQueryParams struct {
+	Project NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	Body    *TimeseriesQuery `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
 // UserListParams is the request parameters for UserList
 type UserListParams struct {
 	Group     string     `json:"group,omitempty" yaml:"group,omitempty"`
@@ -10202,6 +10212,17 @@ func (p *SiloUtilizationListParams) Validate() error {
 func (p *SiloUtilizationViewParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.Silo), "Silo")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for TimeseriesQueryParams are set
+func (p *TimeseriesQueryParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Project), "Project")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
