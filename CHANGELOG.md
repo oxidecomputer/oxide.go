@@ -1,3 +1,18 @@
+# v0.2.0 (2025/Jan/07)
+
+Generated from Oxide API version [20241204.0.0](https://github.com/oxidecomputer/omicron/blob/rel/v12/rc1/openapi/nexus.json)
+
+### Notes
+
+This release is solely a version bump. Since pkg.go.dev does not recognise git tags with metadata suffixes,
+we are not able to set build metadata like the previous version. See associated [commit](https://go-review.googlesource.com/c/pkgsite/+/343631).
+
+### List of commits
+
+- [8357536](https://github.com/oxidecomputer/oxide.go/commit/8357536) Bump version for release v0.2.0 (#257)
+- [f314faf](https://github.com/oxidecomputer/oxide.go/commit/f314faf) release: bump to next version (#255)
+- [230e0cc](https://github.com/oxidecomputer/oxide.go/commit/230e0cc) release: v0.1.0+20241204.0.0 (#254)
+
 # v0.1.0+20241204.0.0 (2025/Jan/06)
 
 ### Breaking changes
