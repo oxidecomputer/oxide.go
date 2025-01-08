@@ -14,7 +14,7 @@ labels: release
 - [ ] Make sure the [VERSION](https://github.com/oxidecomputer/oxide.go/blob/main/VERSION) and [oxide/version.go](https://github.com/oxidecomputer/oxide.go/blob/main/oxide/version.go) files have the new version you want to release.
 - [ ] Make sure the changelog file in the `.changelog/` directory is set to the new version you want to release.
 - [ ] Make sure all examples and docs reference the new version.
-- [ ] Generate changelog by running `make changelog` and add date of the release to the title.
+- [ ] Make sure you've pulled the latest tag on main, and generate changelog by running `make changelog`. Add the date of the release to the title, and update associated Oxide API version.
 - [ ] Release the new version by running `make tag`.
 - [ ] Update GitHub release description with release notes generated from `make changelog`.
 - [ ] Create a release branch from the commit of the release tag.
