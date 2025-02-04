@@ -2,8 +2,6 @@ module github.com/oxidecomputer/oxide.go
 
 go 1.22.5
 
-toolchain go1.23.1
-
 require (
 	github.com/getkin/kin-openapi v0.129.0
 	github.com/iancoleman/strcase v0.3.0
