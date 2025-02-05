@@ -3,8 +3,8 @@ title = ""
 description = ""
 
 [[features]]
-title = ""
-description = ""
+title = "Switch Port LLDP Neighbors"
+description = "CRUD functionality for LLDP neighbors seen on a switch port. [#XXX](https://github.com/oxidecomputer/oxide.go/pull/XXX)"
 
 [[bugs]]
 title = ""

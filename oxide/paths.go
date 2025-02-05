@@ -4692,6 +4692,86 @@ func (c *Client) PhysicalDiskView(ctx context.Context, params PhysicalDiskViewPa
 	return &body, nil
 }
 
+// NetworkingSwitchPortLldpNeighbors: Fetch the LLDP neighbors seen on a switch port
+//
+// To iterate over all pages, use the `NetworkingSwitchPortLldpNeighborsAllPages` method, instead.
+func (c *Client) NetworkingSwitchPortLldpNeighbors(ctx context.Context, params NetworkingSwitchPortLldpNeighborsParams) (*LldpNeighborResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/hardware/rack-switch-port/{{.rack_id}}/{{.switch_location}}/{{.port}}/lldp/neighbors"),
+		map[string]string{
+			"port":            string(params.Port),
+			"rack_id":         params.RackId,
+			"switch_location": string(params.SwitchLocation),
+		},
+		map[string]string{
+			"limit":      strconv.Itoa(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body LldpNeighborResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// NetworkingSwitchPortLldpNeighborsAllPages: Fetch the LLDP neighbors seen on a switch port
+//
+// This method is a wrapper around the `NetworkingSwitchPortLldpNeighbors` method.
+// This method returns all the pages at once.
+func (c *Client) NetworkingSwitchPortLldpNeighborsAllPages(ctx context.Context, params NetworkingSwitchPortLldpNeighborsParams) ([]LldpNeighbor, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []LldpNeighbor
+	params.PageToken = ""
+	params.Limit = 100
+	for {
+		page, err := c.NetworkingSwitchPortLldpNeighbors(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
+}
+
 // RackList: List racks
 //
 // To iterate over all pages, use the `RackListAllPages` method, instead.
@@ -5344,6 +5424,99 @@ func (c *Client) NetworkingSwitchPortListAllPages(ctx context.Context, params Ne
 	}
 
 	return allPages, nil
+}
+
+// NetworkingSwitchPortLldpConfigView: Fetch the LLDP configuration for a switch port
+func (c *Client) NetworkingSwitchPortLldpConfigView(ctx context.Context, params NetworkingSwitchPortLldpConfigViewParams) (*LldpLinkConfig, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/hardware/switch-port/{{.port}}/lldp/config"),
+		map[string]string{
+			"port": string(params.Port),
+		},
+		map[string]string{
+			"rack_id":         params.RackId,
+			"switch_location": string(params.SwitchLocation),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body LldpLinkConfig
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// NetworkingSwitchPortLldpConfigUpdate: Update the LLDP configuration for a switch port
+func (c *Client) NetworkingSwitchPortLldpConfigUpdate(ctx context.Context, params NetworkingSwitchPortLldpConfigUpdateParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"POST",
+		resolveRelative(c.host, "/v1/system/hardware/switch-port/{{.port}}/lldp/config"),
+		map[string]string{
+			"port": string(params.Port),
+		},
+		map[string]string{
+			"rack_id":         params.RackId,
+			"switch_location": string(params.SwitchLocation),
+		},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // NetworkingSwitchPortApplySettings: Apply switch port settings
