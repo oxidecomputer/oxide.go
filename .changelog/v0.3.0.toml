@@ -4,7 +4,7 @@ description = ""
 
 [[features]]
 title = "Switch Port LLDP Neighbors"
-description = "CRUD functionality for LLDP neighbors seen on a switch port. [#XXX](https://github.com/oxidecomputer/oxide.go/pull/XXX)"
+description = "CRUD functionality for LLDP neighbors seen on a switch port. [#263](https://github.com/oxidecomputer/oxide.go/pull/263)"
 
 [[bugs]]
 title = ""
