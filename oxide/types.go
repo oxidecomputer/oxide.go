@@ -3906,6 +3906,49 @@ type LldpLinkConfigCreate struct {
 	SystemName string `json:"system_name,omitempty" yaml:"system_name,omitempty"`
 }
 
+// LldpNeighbor is information about LLDP advertisements from other network entities directly connected to
+// a switch port.  This structure contains both metadata about when and where the neighbor was seen, as well
+// as the specific information the neighbor was advertising.
+//
+// Required fields:
+// - ChassisId
+// - FirstSeen
+// - LastSeen
+// - LinkName
+// - LocalPort
+// - ManagementIp
+type LldpNeighbor struct {
+	// ChassisId is the LLDP chassis identifier advertised by the neighbor
+	ChassisId string `json:"chassis_id,omitempty" yaml:"chassis_id,omitempty"`
+	// FirstSeen is initial sighting of this LldpNeighbor
+	FirstSeen *time.Time `json:"first_seen,omitempty" yaml:"first_seen,omitempty"`
+	// LastSeen is most recent sighting of this LldpNeighbor
+	LastSeen *time.Time `json:"last_seen,omitempty" yaml:"last_seen,omitempty"`
+	// LinkDescription is the LLDP link description advertised by the neighbor
+	LinkDescription string `json:"link_description,omitempty" yaml:"link_description,omitempty"`
+	// LinkName is the LLDP link name advertised by the neighbor
+	LinkName string `json:"link_name,omitempty" yaml:"link_name,omitempty"`
+	// LocalPort is the port on which the neighbor was seen
+	LocalPort string `json:"local_port,omitempty" yaml:"local_port,omitempty"`
+	// ManagementIp is the LLDP management IP(s) advertised by the neighbor
+	ManagementIp []IpNet `json:"management_ip,omitempty" yaml:"management_ip,omitempty"`
+	// SystemDescription is the LLDP system description advertised by the neighbor
+	SystemDescription string `json:"system_description,omitempty" yaml:"system_description,omitempty"`
+	// SystemName is the LLDP system name advertised by the neighbor
+	SystemName string `json:"system_name,omitempty" yaml:"system_name,omitempty"`
+}
+
+// LldpNeighborResultsPage is a single page of results
+//
+// Required fields:
+// - Items
+type LldpNeighborResultsPage struct {
+	// Items is list of items on this page of results
+	Items []LldpNeighbor `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
 // LoopbackAddress is a loopback address is an address that is assigned to a rack switch but is not associated with
 // any particular port.
 //
@@ -5317,6 +5360,41 @@ type SshKeyResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+// SupportBundleInfo is the type definition for a SupportBundleInfo.
+//
+// Required fields:
+// - Id
+// - ReasonForCreation
+// - State
+// - TimeCreated
+type SupportBundleInfo struct {
+	Id                TypedUuidForSupportBundleKind `json:"id,omitempty" yaml:"id,omitempty"`
+	ReasonForCreation string                        `json:"reason_for_creation,omitempty" yaml:"reason_for_creation,omitempty"`
+	ReasonForFailure  string                        `json:"reason_for_failure,omitempty" yaml:"reason_for_failure,omitempty"`
+	State             SupportBundleState            `json:"state,omitempty" yaml:"state,omitempty"`
+	TimeCreated       *time.Time                    `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+}
+
+// SupportBundleInfoResultsPage is a single page of results
+//
+// Required fields:
+// - Items
+type SupportBundleInfoResultsPage struct {
+	// Items is list of items on this page of results
+	Items []SupportBundleInfo `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// SupportBundleState is support Bundle still actively being collected.
+//
+// This is the initial state for a Support Bundle, and it will automatically transition to either "Failing" or
+// "Active".
+//
+// If a user no longer wants to access a Support Bundle, they can request cancellation, which will transition to
+// the "Destroying" state.
+type SupportBundleState string
+
 // Switch is an operator's view of a Switch.
 //
 // Required fields:
@@ -5836,6 +5914,9 @@ type TxEqConfig struct {
 	// Pre2 is pre-cursor tap2
 	Pre2 int `json:"pre2,omitempty" yaml:"pre2,omitempty"`
 }
+
+// TypedUuidForSupportBundleKind is the type definition for a TypedUuidForSupportBundleKind.
+type TypedUuidForSupportBundleKind string
 
 // UninitializedSled is a sled that has not been added to an initialized rack yet
 //
@@ -6654,6 +6735,73 @@ type ProbeDeleteParams struct {
 type ProbeViewParams struct {
 	Probe   NameOrId `json:"probe,omitempty" yaml:"probe,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// SupportBundleListParams is the request parameters for SupportBundleList
+type SupportBundleListParams struct {
+	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// SupportBundleDeleteParams is the request parameters for SupportBundleDelete
+//
+// Required fields:
+// - SupportBundle
+type SupportBundleDeleteParams struct {
+	SupportBundle string `json:"support_bundle,omitempty" yaml:"support_bundle,omitempty"`
+}
+
+// SupportBundleViewParams is the request parameters for SupportBundleView
+//
+// Required fields:
+// - SupportBundle
+type SupportBundleViewParams struct {
+	SupportBundle string `json:"support_bundle,omitempty" yaml:"support_bundle,omitempty"`
+}
+
+// SupportBundleDownloadParams is the request parameters for SupportBundleDownload
+//
+// Required fields:
+// - SupportBundle
+type SupportBundleDownloadParams struct {
+	SupportBundle string `json:"support_bundle,omitempty" yaml:"support_bundle,omitempty"`
+}
+
+// SupportBundleHeadParams is the request parameters for SupportBundleHead
+//
+// Required fields:
+// - SupportBundle
+type SupportBundleHeadParams struct {
+	SupportBundle string `json:"support_bundle,omitempty" yaml:"support_bundle,omitempty"`
+}
+
+// SupportBundleDownloadFileParams is the request parameters for SupportBundleDownloadFile
+//
+// Required fields:
+// - File
+// - SupportBundle
+type SupportBundleDownloadFileParams struct {
+	File          string `json:"file,omitempty" yaml:"file,omitempty"`
+	SupportBundle string `json:"support_bundle,omitempty" yaml:"support_bundle,omitempty"`
+}
+
+// SupportBundleHeadFileParams is the request parameters for SupportBundleHeadFile
+//
+// Required fields:
+// - File
+// - SupportBundle
+type SupportBundleHeadFileParams struct {
+	File          string `json:"file,omitempty" yaml:"file,omitempty"`
+	SupportBundle string `json:"support_bundle,omitempty" yaml:"support_bundle,omitempty"`
+}
+
+// SupportBundleIndexParams is the request parameters for SupportBundleIndex
+//
+// Required fields:
+// - SupportBundle
+type SupportBundleIndexParams struct {
+	SupportBundle string `json:"support_bundle,omitempty" yaml:"support_bundle,omitempty"`
 }
 
 // LoginSamlParams is the request parameters for LoginSaml
@@ -7482,6 +7630,21 @@ type PhysicalDiskViewParams struct {
 	DiskId string `json:"disk_id,omitempty" yaml:"disk_id,omitempty"`
 }
 
+// NetworkingSwitchPortLldpNeighborsParams is the request parameters for NetworkingSwitchPortLldpNeighbors
+//
+// Required fields:
+// - Port
+// - RackId
+// - SwitchLocation
+type NetworkingSwitchPortLldpNeighborsParams struct {
+	Port           Name       `json:"port,omitempty" yaml:"port,omitempty"`
+	RackId         string     `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
+	SwitchLocation Name       `json:"switch_location,omitempty" yaml:"switch_location,omitempty"`
+	Limit          int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken      string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy         IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
 // RackListParams is the request parameters for RackList
 type RackListParams struct {
 	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -7564,6 +7727,32 @@ type NetworkingSwitchPortListParams struct {
 	PageToken    string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy       IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 	SwitchPortId string     `json:"switch_port_id,omitempty" yaml:"switch_port_id,omitempty"`
+}
+
+// NetworkingSwitchPortLldpConfigViewParams is the request parameters for NetworkingSwitchPortLldpConfigView
+//
+// Required fields:
+// - Port
+// - RackId
+// - SwitchLocation
+type NetworkingSwitchPortLldpConfigViewParams struct {
+	Port           Name   `json:"port,omitempty" yaml:"port,omitempty"`
+	RackId         string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
+	SwitchLocation Name   `json:"switch_location,omitempty" yaml:"switch_location,omitempty"`
+}
+
+// NetworkingSwitchPortLldpConfigUpdateParams is the request parameters for NetworkingSwitchPortLldpConfigUpdate
+//
+// Required fields:
+// - Port
+// - RackId
+// - SwitchLocation
+// - Body
+type NetworkingSwitchPortLldpConfigUpdateParams struct {
+	Port           Name            `json:"port,omitempty" yaml:"port,omitempty"`
+	RackId         string          `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
+	SwitchLocation Name            `json:"switch_location,omitempty" yaml:"switch_location,omitempty"`
+	Body           *LldpLinkConfig `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // NetworkingSwitchPortClearSettingsParams is the request parameters for NetworkingSwitchPortClearSettings
@@ -8544,6 +8733,87 @@ func (p *ProbeViewParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for SupportBundleListParams are set
+func (p *SupportBundleListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SupportBundleDeleteParams are set
+func (p *SupportBundleDeleteParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.SupportBundle), "SupportBundle")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SupportBundleViewParams are set
+func (p *SupportBundleViewParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.SupportBundle), "SupportBundle")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SupportBundleDownloadParams are set
+func (p *SupportBundleDownloadParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.SupportBundle), "SupportBundle")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SupportBundleHeadParams are set
+func (p *SupportBundleHeadParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.SupportBundle), "SupportBundle")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SupportBundleDownloadFileParams are set
+func (p *SupportBundleDownloadFileParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.File), "File")
+	v.HasRequiredStr(string(p.SupportBundle), "SupportBundle")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SupportBundleHeadFileParams are set
+func (p *SupportBundleHeadFileParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.File), "File")
+	v.HasRequiredStr(string(p.SupportBundle), "SupportBundle")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SupportBundleIndexParams are set
+func (p *SupportBundleIndexParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.SupportBundle), "SupportBundle")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for LoginSamlParams are set
 func (p *LoginSamlParams) Validate() error {
 	v := new(Validator)
@@ -9392,6 +9662,18 @@ func (p *PhysicalDiskViewParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for NetworkingSwitchPortLldpNeighborsParams are set
+func (p *NetworkingSwitchPortLldpNeighborsParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Port), "Port")
+	v.HasRequiredStr(string(p.RackId), "RackId")
+	v.HasRequiredStr(string(p.SwitchLocation), "SwitchLocation")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for RackListParams are set
 func (p *RackListParams) Validate() error {
 	v := new(Validator)
@@ -9483,6 +9765,31 @@ func (p *SledSetProvisionPolicyParams) Validate() error {
 // Validate verifies all required fields for NetworkingSwitchPortListParams are set
 func (p *NetworkingSwitchPortListParams) Validate() error {
 	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingSwitchPortLldpConfigViewParams are set
+func (p *NetworkingSwitchPortLldpConfigViewParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Port), "Port")
+	v.HasRequiredStr(string(p.RackId), "RackId")
+	v.HasRequiredStr(string(p.SwitchLocation), "SwitchLocation")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingSwitchPortLldpConfigUpdateParams are set
+func (p *NetworkingSwitchPortLldpConfigUpdateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Port), "Port")
+	v.HasRequiredStr(string(p.RackId), "RackId")
+	v.HasRequiredStr(string(p.SwitchLocation), "SwitchLocation")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -11164,6 +11471,18 @@ const SnapshotStateFaulted SnapshotState = "faulted"
 // SnapshotStateDestroyed represents the SnapshotState `"destroyed"`.
 const SnapshotStateDestroyed SnapshotState = "destroyed"
 
+// SupportBundleStateCollecting represents the SupportBundleState `"collecting"`.
+const SupportBundleStateCollecting SupportBundleState = "collecting"
+
+// SupportBundleStateDestroying represents the SupportBundleState `"destroying"`.
+const SupportBundleStateDestroying SupportBundleState = "destroying"
+
+// SupportBundleStateFailed represents the SupportBundleState `"failed"`.
+const SupportBundleStateFailed SupportBundleState = "failed"
+
+// SupportBundleStateActive represents the SupportBundleState `"active"`.
+const SupportBundleStateActive SupportBundleState = "active"
+
 // SwitchInterfaceKindTypePrimary represents the SwitchInterfaceKindType `"primary"`.
 const SwitchInterfaceKindTypePrimary SwitchInterfaceKindType = "primary"
 
@@ -11804,6 +12123,14 @@ var SnapshotStateCollection = []SnapshotState{
 	SnapshotStateDestroyed,
 	SnapshotStateFaulted,
 	SnapshotStateReady,
+}
+
+// SupportBundleStateCollection is the collection of all SupportBundleState values.
+var SupportBundleStateCollection = []SupportBundleState{
+	SupportBundleStateActive,
+	SupportBundleStateCollecting,
+	SupportBundleStateDestroying,
+	SupportBundleStateFailed,
 }
 
 // SwitchInterfaceKind2Collection is the collection of all SwitchInterfaceKind2 values.
