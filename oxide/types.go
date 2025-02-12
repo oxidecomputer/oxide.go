@@ -5561,8 +5561,23 @@ type SwitchPortAddressConfig struct {
 // Required fields:
 // - PortSettings
 type SwitchPortApplySettings struct {
-	// PortSettings is a name or id to use when applying switch port settings.
-	PortSettings NameOrId `json:"port_settings,omitempty" yaml:"port_settings,omitempty"`
+	// PortSettings is name or ID of the desired configuration
+	PortSettings NameOrId                         `json:"port_settings,omitempty" yaml:"port_settings,omitempty"`
+	Precondition SwitchPortApplySettingsChecksums `json:"precondition,omitempty" yaml:"precondition,omitempty"`
+}
+
+// SwitchPortApplySettingsChecksums is parameters for applying a precondition to SwitchPortApplySettings
+//
+// Required fields:
+// - NewSettingsChecksum
+type SwitchPortApplySettingsChecksums struct {
+	// CurrentSettingsChecksum is md5 checksum of current SwitchPortApplySettings body This field protects against
+	// concurrent modification of `SwitchPortApplySettings` Set to `None` if you expect there to not be any settings
+	// currently applied.
+	CurrentSettingsChecksum string `json:"current_settings_checksum,omitempty" yaml:"current_settings_checksum,omitempty"`
+	// NewSettingsChecksum is md5 checksum of the desired configuration body This field ensures that the port
+	// settings you are applying have not been modified since you last viewed them
+	NewSettingsChecksum string `json:"new_settings_checksum,omitempty" yaml:"new_settings_checksum,omitempty"`
 }
 
 // SwitchPortConfig is a physical port configuration for a port settings object.
@@ -5707,6 +5722,8 @@ type SwitchPortSettingsCreate struct {
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// PortConfig is physical switch port configuration.
 	PortConfig SwitchPortConfigCreate `json:"port_config,omitempty" yaml:"port_config,omitempty"`
+	// Precondition is optional checksum to provide for detecting conflicting concurrent updates
+	Precondition string `json:"precondition,omitempty" yaml:"precondition,omitempty"`
 	// Routes is routes indexed by interface name.
 	Routes RouteConfig `json:"routes,omitempty" yaml:"routes,omitempty"`
 }
@@ -5774,6 +5791,18 @@ type SwitchPortSettingsView struct {
 	TxEq []string `json:"tx_eq,omitempty" yaml:"tx_eq,omitempty"`
 	// VlanInterfaces is vlan interface settings.
 	VlanInterfaces []SwitchVlanInterfaceConfig `json:"vlan_interfaces,omitempty" yaml:"vlan_interfaces,omitempty"`
+}
+
+// SwitchPortSettingsWithChecksum is the type definition for a SwitchPortSettingsWithChecksum.
+//
+// Required fields:
+// - Checksum
+// - Value
+type SwitchPortSettingsWithChecksum struct {
+	// Checksum is checksum of value to use for concurrency control
+	Checksum string `json:"checksum,omitempty" yaml:"checksum,omitempty"`
+	// Value is value of response
+	Value SwitchPortSettingsView `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // SwitchResultsPage is a single page of results

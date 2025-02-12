@@ -8286,7 +8286,7 @@ func (c *Client) NetworkingSwitchPortSettingsListAllPages(ctx context.Context, p
 }
 
 // NetworkingSwitchPortSettingsCreate: Create switch port settings
-func (c *Client) NetworkingSwitchPortSettingsCreate(ctx context.Context, params NetworkingSwitchPortSettingsCreateParams) (*SwitchPortSettingsView, error) {
+func (c *Client) NetworkingSwitchPortSettingsCreate(ctx context.Context, params NetworkingSwitchPortSettingsCreateParams) (*SwitchPortSettingsWithChecksum, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8326,7 +8326,7 @@ func (c *Client) NetworkingSwitchPortSettingsCreate(ctx context.Context, params 
 		return nil, errors.New("request returned an empty body in the response")
 	}
 
-	var body SwitchPortSettingsView
+	var body SwitchPortSettingsWithChecksum
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -8371,7 +8371,7 @@ func (c *Client) NetworkingSwitchPortSettingsDelete(ctx context.Context, params 
 }
 
 // NetworkingSwitchPortSettingsView: Get information about switch port
-func (c *Client) NetworkingSwitchPortSettingsView(ctx context.Context, params NetworkingSwitchPortSettingsViewParams) (*SwitchPortSettingsView, error) {
+func (c *Client) NetworkingSwitchPortSettingsView(ctx context.Context, params NetworkingSwitchPortSettingsViewParams) (*SwitchPortSettingsWithChecksum, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8407,7 +8407,7 @@ func (c *Client) NetworkingSwitchPortSettingsView(ctx context.Context, params Ne
 		return nil, errors.New("request returned an empty body in the response")
 	}
 
-	var body SwitchPortSettingsView
+	var body SwitchPortSettingsWithChecksum
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
