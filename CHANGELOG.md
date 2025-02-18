@@ -1,3 +1,19 @@
+# v0.3.0 (2025/Feb/18)
+
+Generated from Oxide API version [20250212.0.0](https://github.com/oxidecomputer/omicron/blob/rel/v13/rc0/openapi/nexus.json)
+
+### New features
+
+- **Switch Port LLDP Neighbors:** CRUD functionality for LLDP neighbors seen on a switch port. [#263](https://github.com/oxidecomputer/oxide.go/pull/263)
+
+### List of commits
+
+- [96d5f51](https://github.com/oxidecomputer/oxide.go/commit/96d5f51) Update to omicron rel/v13/rc0 (#266)
+- [6d04e20](https://github.com/oxidecomputer/oxide.go/commit/6d04e20) Update SDK to omicron e036c80 (#263)
+- [0a7b464](https://github.com/oxidecomputer/oxide.go/commit/0a7b464) Bump kin-openapi to 0.129.0 (#262)
+- [05e4807](https://github.com/oxidecomputer/oxide.go/commit/05e4807) Improve contributing docs (#261)
+- [ea1d4d0](https://github.com/oxidecomputer/oxide.go/commit/ea1d4d0) Bump to version v0.3.0 (#259)
+
 # v0.2.0 (2025/Jan/07)
 
 Generated from Oxide API version [20241204.0.0](https://github.com/oxidecomputer/omicron/blob/rel/v12/rc1/openapi/nexus.json)
