@@ -3,8 +3,8 @@ title = ""
 description = ""
 
 [[features]]
-title = ""
-description = ""
+title = "Affinity and anti-affinity groups"
+description = "CRUD methods. [#269](https://github.com/oxidecomputer/oxide.go/pull/269)"
 
 [[bugs]]
 title = ""
