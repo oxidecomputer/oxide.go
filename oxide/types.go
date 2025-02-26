@@ -145,6 +145,112 @@ type AddressLotResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+// AffinityGroup is identity-related metadata that's included in nearly all public API objects
+//
+// Required fields:
+// - Description
+// - FailureDomain
+// - Id
+// - Name
+// - Policy
+// - TimeCreated
+// - TimeModified
+type AffinityGroup struct {
+	// Description is human-readable free-form text about a resource
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// FailureDomain is describes the scope of affinity for the purposes of co-location.
+	FailureDomain FailureDomain `json:"failure_domain,omitempty" yaml:"failure_domain,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Name is unique, mutable, user-controlled identifier for each resource
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	// Policy is affinity policy used to describe "what to do when a request cannot be satisfied"
+	//
+	// Used for both Affinity and Anti-Affinity Groups
+	Policy AffinityPolicy `json:"policy,omitempty" yaml:"policy,omitempty"`
+	// TimeCreated is timestamp when this resource was created
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	// TimeModified is timestamp when this resource was last modified
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+}
+
+// AffinityGroupCreate is create-time parameters for an `AffinityGroup`
+//
+// Required fields:
+// - Description
+// - FailureDomain
+// - Name
+// - Policy
+type AffinityGroupCreate struct {
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// FailureDomain is describes the scope of affinity for the purposes of co-location.
+	FailureDomain FailureDomain `json:"failure_domain,omitempty" yaml:"failure_domain,omitempty"`
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	// Policy is affinity policy used to describe "what to do when a request cannot be satisfied"
+	//
+	// Used for both Affinity and Anti-Affinity Groups
+	Policy AffinityPolicy `json:"policy,omitempty" yaml:"policy,omitempty"`
+}
+
+// AffinityGroupMemberType is the type definition for a AffinityGroupMemberType.
+type AffinityGroupMemberType string
+
+// AffinityGroupMemberInstance is an instance belonging to this group, identified by UUID.
+//
+// Required fields:
+// - Type
+// - Value
+type AffinityGroupMemberInstance struct {
+	Type  AffinityGroupMemberType  `json:"type,omitempty" yaml:"type,omitempty"`
+	Value TypedUuidForInstanceKind `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// AffinityGroupMember is a member of an Affinity Group
+//
+// Membership in a group is not exclusive - members may belong to multiple affinity / anti-affinity groups.
+type AffinityGroupMember struct {
+	// Type is the type definition for a Type.
+	Type AffinityGroupMemberType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is the type definition for a Value.
+	Value TypedUuidForInstanceKind `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// AffinityGroupMemberResultsPage is a single page of results
+//
+// Required fields:
+// - Items
+type AffinityGroupMemberResultsPage struct {
+	// Items is list of items on this page of results
+	Items []AffinityGroupMember `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// AffinityGroupResultsPage is a single page of results
+//
+// Required fields:
+// - Items
+type AffinityGroupResultsPage struct {
+	// Items is list of items on this page of results
+	Items []AffinityGroup `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// AffinityGroupUpdate is updateable properties of an `AffinityGroup`
+type AffinityGroupUpdate struct {
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
+}
+
+// AffinityPolicy is if the affinity request cannot be satisfied, allow it anyway.
+//
+// This enables a "best-effort" attempt to satisfy the affinity policy.
+type AffinityPolicy string
+
 // AggregateBgpMessageHistory is bGP message history for rack switches.
 //
 // Required fields:
@@ -207,6 +313,107 @@ type AllowedSourceIps struct {
 	Allow AllowedSourceIpsAllow `json:"allow,omitempty" yaml:"allow,omitempty"`
 	// Ips is the type definition for a Ips.
 	Ips []IpNet `json:"ips,omitempty" yaml:"ips,omitempty"`
+}
+
+// AntiAffinityGroup is identity-related metadata that's included in nearly all public API objects
+//
+// Required fields:
+// - Description
+// - FailureDomain
+// - Id
+// - Name
+// - Policy
+// - TimeCreated
+// - TimeModified
+type AntiAffinityGroup struct {
+	// Description is human-readable free-form text about a resource
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// FailureDomain is describes the scope of affinity for the purposes of co-location.
+	FailureDomain FailureDomain `json:"failure_domain,omitempty" yaml:"failure_domain,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Name is unique, mutable, user-controlled identifier for each resource
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	// Policy is affinity policy used to describe "what to do when a request cannot be satisfied"
+	//
+	// Used for both Affinity and Anti-Affinity Groups
+	Policy AffinityPolicy `json:"policy,omitempty" yaml:"policy,omitempty"`
+	// TimeCreated is timestamp when this resource was created
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	// TimeModified is timestamp when this resource was last modified
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+}
+
+// AntiAffinityGroupCreate is create-time parameters for an `AntiAffinityGroup`
+//
+// Required fields:
+// - Description
+// - FailureDomain
+// - Name
+// - Policy
+type AntiAffinityGroupCreate struct {
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// FailureDomain is describes the scope of affinity for the purposes of co-location.
+	FailureDomain FailureDomain `json:"failure_domain,omitempty" yaml:"failure_domain,omitempty"`
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	// Policy is affinity policy used to describe "what to do when a request cannot be satisfied"
+	//
+	// Used for both Affinity and Anti-Affinity Groups
+	Policy AffinityPolicy `json:"policy,omitempty" yaml:"policy,omitempty"`
+}
+
+// AntiAffinityGroupMemberType is the type definition for a AntiAffinityGroupMemberType.
+type AntiAffinityGroupMemberType string
+
+// AntiAffinityGroupMemberInstance is an instance belonging to this group, identified by UUID.
+//
+// Required fields:
+// - Type
+// - Value
+type AntiAffinityGroupMemberInstance struct {
+	Type  AntiAffinityGroupMemberType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value TypedUuidForInstanceKind    `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// AntiAffinityGroupMember is a member of an Anti-Affinity Group
+//
+// Membership in a group is not exclusive - members may belong to multiple affinity / anti-affinity groups.
+type AntiAffinityGroupMember struct {
+	// Type is the type definition for a Type.
+	Type AntiAffinityGroupMemberType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is the type definition for a Value.
+	Value TypedUuidForInstanceKind `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// AntiAffinityGroupMemberResultsPage is a single page of results
+//
+// Required fields:
+// - Items
+type AntiAffinityGroupMemberResultsPage struct {
+	// Items is list of items on this page of results
+	Items []AntiAffinityGroupMember `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// AntiAffinityGroupResultsPage is a single page of results
+//
+// Required fields:
+// - Items
+type AntiAffinityGroupResultsPage struct {
+	// Items is list of items on this page of results
+	Items []AntiAffinityGroup `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// AntiAffinityGroupUpdate is updateable properties of an `AntiAffinityGroup`
+type AntiAffinityGroupUpdate struct {
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
 // AuthzScope is timeseries data is limited to fleet readers.
@@ -2117,6 +2324,9 @@ type ExternalIpResultsPage struct {
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
+
+// FailureDomain is instances are considered co-located if they are on the same sled
+type FailureDomain string
 
 // FieldSchema is the name and type information for a field of a timeseries schema.
 //
@@ -5915,6 +6125,9 @@ type TxEqConfig struct {
 	Pre2 int `json:"pre2,omitempty" yaml:"pre2,omitempty"`
 }
 
+// TypedUuidForInstanceKind is the type definition for a TypedUuidForInstanceKind.
+type TypedUuidForInstanceKind string
+
 // TypedUuidForSupportBundleKind is the type definition for a TypedUuidForSupportBundleKind.
 type TypedUuidForSupportBundleKind string
 
@@ -6814,6 +7027,196 @@ type LoginSamlParams struct {
 	ProviderName Name      `json:"provider_name,omitempty" yaml:"provider_name,omitempty"`
 	SiloName     Name      `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
 	Body         io.Reader `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// AffinityGroupListParams is the request parameters for AffinityGroupList
+//
+// Required fields:
+// - Project
+type AffinityGroupListParams struct {
+	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// AffinityGroupCreateParams is the request parameters for AffinityGroupCreate
+//
+// Required fields:
+// - Project
+// - Body
+type AffinityGroupCreateParams struct {
+	Project NameOrId             `json:"project,omitempty" yaml:"project,omitempty"`
+	Body    *AffinityGroupCreate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// AffinityGroupDeleteParams is the request parameters for AffinityGroupDelete
+//
+// Required fields:
+// - AffinityGroup
+type AffinityGroupDeleteParams struct {
+	Project       NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	AffinityGroup NameOrId `json:"affinity_group,omitempty" yaml:"affinity_group,omitempty"`
+}
+
+// AffinityGroupViewParams is the request parameters for AffinityGroupView
+//
+// Required fields:
+// - AffinityGroup
+type AffinityGroupViewParams struct {
+	Project       NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	AffinityGroup NameOrId `json:"affinity_group,omitempty" yaml:"affinity_group,omitempty"`
+}
+
+// AffinityGroupUpdateParams is the request parameters for AffinityGroupUpdate
+//
+// Required fields:
+// - AffinityGroup
+// - Body
+type AffinityGroupUpdateParams struct {
+	Project       NameOrId             `json:"project,omitempty" yaml:"project,omitempty"`
+	AffinityGroup NameOrId             `json:"affinity_group,omitempty" yaml:"affinity_group,omitempty"`
+	Body          *AffinityGroupUpdate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// AffinityGroupMemberListParams is the request parameters for AffinityGroupMemberList
+//
+// Required fields:
+// - AffinityGroup
+type AffinityGroupMemberListParams struct {
+	Limit         int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken     string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project       NameOrId   `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy        IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	AffinityGroup NameOrId   `json:"affinity_group,omitempty" yaml:"affinity_group,omitempty"`
+}
+
+// AffinityGroupMemberInstanceDeleteParams is the request parameters for AffinityGroupMemberInstanceDelete
+//
+// Required fields:
+// - AffinityGroup
+// - Instance
+type AffinityGroupMemberInstanceDeleteParams struct {
+	Project       NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	AffinityGroup NameOrId `json:"affinity_group,omitempty" yaml:"affinity_group,omitempty"`
+	Instance      NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+}
+
+// AffinityGroupMemberInstanceViewParams is the request parameters for AffinityGroupMemberInstanceView
+//
+// Required fields:
+// - AffinityGroup
+// - Instance
+type AffinityGroupMemberInstanceViewParams struct {
+	Project       NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	AffinityGroup NameOrId `json:"affinity_group,omitempty" yaml:"affinity_group,omitempty"`
+	Instance      NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+}
+
+// AffinityGroupMemberInstanceAddParams is the request parameters for AffinityGroupMemberInstanceAdd
+//
+// Required fields:
+// - AffinityGroup
+// - Instance
+type AffinityGroupMemberInstanceAddParams struct {
+	Project       NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	AffinityGroup NameOrId `json:"affinity_group,omitempty" yaml:"affinity_group,omitempty"`
+	Instance      NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+}
+
+// AntiAffinityGroupListParams is the request parameters for AntiAffinityGroupList
+//
+// Required fields:
+// - Project
+type AntiAffinityGroupListParams struct {
+	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// AntiAffinityGroupCreateParams is the request parameters for AntiAffinityGroupCreate
+//
+// Required fields:
+// - Project
+// - Body
+type AntiAffinityGroupCreateParams struct {
+	Project NameOrId                 `json:"project,omitempty" yaml:"project,omitempty"`
+	Body    *AntiAffinityGroupCreate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// AntiAffinityGroupDeleteParams is the request parameters for AntiAffinityGroupDelete
+//
+// Required fields:
+// - AntiAffinityGroup
+type AntiAffinityGroupDeleteParams struct {
+	Project           NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	AntiAffinityGroup NameOrId `json:"anti_affinity_group,omitempty" yaml:"anti_affinity_group,omitempty"`
+}
+
+// AntiAffinityGroupViewParams is the request parameters for AntiAffinityGroupView
+//
+// Required fields:
+// - AntiAffinityGroup
+type AntiAffinityGroupViewParams struct {
+	Project           NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	AntiAffinityGroup NameOrId `json:"anti_affinity_group,omitempty" yaml:"anti_affinity_group,omitempty"`
+}
+
+// AntiAffinityGroupUpdateParams is the request parameters for AntiAffinityGroupUpdate
+//
+// Required fields:
+// - AntiAffinityGroup
+// - Body
+type AntiAffinityGroupUpdateParams struct {
+	Project           NameOrId                 `json:"project,omitempty" yaml:"project,omitempty"`
+	AntiAffinityGroup NameOrId                 `json:"anti_affinity_group,omitempty" yaml:"anti_affinity_group,omitempty"`
+	Body              *AntiAffinityGroupUpdate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// AntiAffinityGroupMemberListParams is the request parameters for AntiAffinityGroupMemberList
+//
+// Required fields:
+// - AntiAffinityGroup
+type AntiAffinityGroupMemberListParams struct {
+	Limit             int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken         string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project           NameOrId   `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy            IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	AntiAffinityGroup NameOrId   `json:"anti_affinity_group,omitempty" yaml:"anti_affinity_group,omitempty"`
+}
+
+// AntiAffinityGroupMemberInstanceDeleteParams is the request parameters for AntiAffinityGroupMemberInstanceDelete
+//
+// Required fields:
+// - AntiAffinityGroup
+// - Instance
+type AntiAffinityGroupMemberInstanceDeleteParams struct {
+	Project           NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	AntiAffinityGroup NameOrId `json:"anti_affinity_group,omitempty" yaml:"anti_affinity_group,omitempty"`
+	Instance          NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+}
+
+// AntiAffinityGroupMemberInstanceViewParams is the request parameters for AntiAffinityGroupMemberInstanceView
+//
+// Required fields:
+// - AntiAffinityGroup
+// - Instance
+type AntiAffinityGroupMemberInstanceViewParams struct {
+	Project           NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	AntiAffinityGroup NameOrId `json:"anti_affinity_group,omitempty" yaml:"anti_affinity_group,omitempty"`
+	Instance          NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+}
+
+// AntiAffinityGroupMemberInstanceAddParams is the request parameters for AntiAffinityGroupMemberInstanceAdd
+//
+// Required fields:
+// - AntiAffinityGroup
+// - Instance
+type AntiAffinityGroupMemberInstanceAddParams struct {
+	Project           NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	AntiAffinityGroup NameOrId `json:"anti_affinity_group,omitempty" yaml:"anti_affinity_group,omitempty"`
+	Instance          NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
 
 // CertificateListParams is the request parameters for CertificateList
@@ -8826,6 +9229,194 @@ func (p *LoginSamlParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for AffinityGroupListParams are set
+func (p *AffinityGroupListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AffinityGroupCreateParams are set
+func (p *AffinityGroupCreateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Project), "Project")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AffinityGroupDeleteParams are set
+func (p *AffinityGroupDeleteParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.AffinityGroup), "AffinityGroup")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AffinityGroupViewParams are set
+func (p *AffinityGroupViewParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.AffinityGroup), "AffinityGroup")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AffinityGroupUpdateParams are set
+func (p *AffinityGroupUpdateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.AffinityGroup), "AffinityGroup")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AffinityGroupMemberListParams are set
+func (p *AffinityGroupMemberListParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.AffinityGroup), "AffinityGroup")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AffinityGroupMemberInstanceDeleteParams are set
+func (p *AffinityGroupMemberInstanceDeleteParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.AffinityGroup), "AffinityGroup")
+	v.HasRequiredStr(string(p.Instance), "Instance")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AffinityGroupMemberInstanceViewParams are set
+func (p *AffinityGroupMemberInstanceViewParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.AffinityGroup), "AffinityGroup")
+	v.HasRequiredStr(string(p.Instance), "Instance")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AffinityGroupMemberInstanceAddParams are set
+func (p *AffinityGroupMemberInstanceAddParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.AffinityGroup), "AffinityGroup")
+	v.HasRequiredStr(string(p.Instance), "Instance")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AntiAffinityGroupListParams are set
+func (p *AntiAffinityGroupListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AntiAffinityGroupCreateParams are set
+func (p *AntiAffinityGroupCreateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Project), "Project")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AntiAffinityGroupDeleteParams are set
+func (p *AntiAffinityGroupDeleteParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.AntiAffinityGroup), "AntiAffinityGroup")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AntiAffinityGroupViewParams are set
+func (p *AntiAffinityGroupViewParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.AntiAffinityGroup), "AntiAffinityGroup")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AntiAffinityGroupUpdateParams are set
+func (p *AntiAffinityGroupUpdateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.AntiAffinityGroup), "AntiAffinityGroup")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AntiAffinityGroupMemberListParams are set
+func (p *AntiAffinityGroupMemberListParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.AntiAffinityGroup), "AntiAffinityGroup")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AntiAffinityGroupMemberInstanceDeleteParams are set
+func (p *AntiAffinityGroupMemberInstanceDeleteParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.AntiAffinityGroup), "AntiAffinityGroup")
+	v.HasRequiredStr(string(p.Instance), "Instance")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AntiAffinityGroupMemberInstanceViewParams are set
+func (p *AntiAffinityGroupMemberInstanceViewParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.AntiAffinityGroup), "AntiAffinityGroup")
+	v.HasRequiredStr(string(p.Instance), "Instance")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AntiAffinityGroupMemberInstanceAddParams are set
+func (p *AntiAffinityGroupMemberInstanceAddParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.AntiAffinityGroup), "AntiAffinityGroup")
+	v.HasRequiredStr(string(p.Instance), "Instance")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for CertificateListParams are set
 func (p *CertificateListParams) Validate() error {
 	v := new(Validator)
@@ -10787,11 +11378,23 @@ const AddressLotKindInfra AddressLotKind = "infra"
 // AddressLotKindPool represents the AddressLotKind `"pool"`.
 const AddressLotKindPool AddressLotKind = "pool"
 
+// AffinityGroupMemberTypeInstance represents the AffinityGroupMemberType `"instance"`.
+const AffinityGroupMemberTypeInstance AffinityGroupMemberType = "instance"
+
+// AffinityPolicyAllow represents the AffinityPolicy `"allow"`.
+const AffinityPolicyAllow AffinityPolicy = "allow"
+
+// AffinityPolicyFail represents the AffinityPolicy `"fail"`.
+const AffinityPolicyFail AffinityPolicy = "fail"
+
 // AllowedSourceIpsAllowAny represents the AllowedSourceIpsAllow `"any"`.
 const AllowedSourceIpsAllowAny AllowedSourceIpsAllow = "any"
 
 // AllowedSourceIpsAllowList represents the AllowedSourceIpsAllow `"list"`.
 const AllowedSourceIpsAllowList AllowedSourceIpsAllow = "list"
+
+// AntiAffinityGroupMemberTypeInstance represents the AntiAffinityGroupMemberType `"instance"`.
+const AntiAffinityGroupMemberTypeInstance AntiAffinityGroupMemberType = "instance"
 
 // AuthzScopeFleet represents the AuthzScope `"fleet"`.
 const AuthzScopeFleet AuthzScope = "fleet"
@@ -11098,6 +11701,9 @@ const ExternalIpCreateTypeEphemeral ExternalIpCreateType = "ephemeral"
 
 // ExternalIpCreateTypeFloating represents the ExternalIpCreateType `"floating"`.
 const ExternalIpCreateTypeFloating ExternalIpCreateType = "floating"
+
+// FailureDomainSled represents the FailureDomain `"sled"`.
+const FailureDomainSled FailureDomain = "sled"
 
 // FieldSourceTarget represents the FieldSource `"target"`.
 const FieldSourceTarget FieldSource = "target"
@@ -11657,10 +12263,26 @@ var AddressLotKindCollection = []AddressLotKind{
 	AddressLotKindPool,
 }
 
+// AffinityGroupMemberTypeCollection is the collection of all AffinityGroupMemberType values.
+var AffinityGroupMemberTypeCollection = []AffinityGroupMemberType{
+	AffinityGroupMemberTypeInstance,
+}
+
+// AffinityPolicyCollection is the collection of all AffinityPolicy values.
+var AffinityPolicyCollection = []AffinityPolicy{
+	AffinityPolicyAllow,
+	AffinityPolicyFail,
+}
+
 // AllowedSourceIpsAllowCollection is the collection of all AllowedSourceIpsAllow values.
 var AllowedSourceIpsAllowCollection = []AllowedSourceIpsAllow{
 	AllowedSourceIpsAllowAny,
 	AllowedSourceIpsAllowList,
+}
+
+// AntiAffinityGroupMemberTypeCollection is the collection of all AntiAffinityGroupMemberType values.
+var AntiAffinityGroupMemberTypeCollection = []AntiAffinityGroupMemberType{
+	AntiAffinityGroupMemberTypeInstance,
 }
 
 // AuthzScopeCollection is the collection of all AuthzScope values.
@@ -11847,6 +12469,11 @@ var ExternalIpCreateTypeCollection = []ExternalIpCreateType{
 var ExternalIpKindCollection = []ExternalIpKind{
 	ExternalIpKindEphemeral,
 	ExternalIpKindFloating,
+}
+
+// FailureDomainCollection is the collection of all FailureDomain values.
+var FailureDomainCollection = []FailureDomain{
+	FailureDomainSled,
 }
 
 // FieldSourceCollection is the collection of all FieldSource values.
