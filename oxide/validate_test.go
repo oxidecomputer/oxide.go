@@ -133,6 +133,15 @@ func TestValidator_HasRequiredNum(t *testing.T) {
 			want: true,
 		},
 		{
+			name:   "int is present when 0",
+			fields: fields{},
+			args: args{
+				value: NewPointer(0),
+				name:  "name",
+			},
+			want: true,
+		},
+		{
 			name:   "int is not present",
 			fields: fields{},
 			args: args{
