@@ -14,7 +14,7 @@ func NewPointer[T any](v T) *T {
 	return &v
 }
 
-// PointerIntToStr converts a *int into a string.
+// PointerIntToStr converts an *int into a string.
 // If nil, an empty string is returned.
 func PointerIntToStr(i *int) string {
 	if i == nil {
