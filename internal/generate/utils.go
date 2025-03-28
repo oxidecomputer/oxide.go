@@ -139,7 +139,9 @@ func convertToValidGoType(property string, r *openapi3.SchemaRef) string {
 	if r.Value.Type.Is("string") {
 		schemaType = formatStringType(r.Value)
 	} else if r.Value.Type.Is("integer") {
-		schemaType = "int"
+		// It is necessary to use pointers for integer types as we need
+		// to differentiate between an empty value and a 0.
+		schemaType = "*int"
 	} else if r.Value.Type.Is("number") {
 		schemaType = "float64"
 	} else if r.Value.Type.Is("boolean") {

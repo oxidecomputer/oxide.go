@@ -22,7 +22,7 @@ func (c *Client) IpPoolList(ctx context.Context, params IpPoolListParams, ) (*Ip
         map[string]string{ 
         }, 
         map[string]string{ 
-            "limit": strconv.Itoa(params.Limit),
+            "limit": PointerIntToStr(params.Limit),
             "page_token": params.PageToken,
             "sort_by": string(params.SortBy),
         },
@@ -67,7 +67,7 @@ func (c *Client) IpPoolListAllPages(ctx context.Context, params IpPoolListParams
 	}
 	var allPages []IpPool
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.IpPoolList(ctx, params)
 		if err != nil {

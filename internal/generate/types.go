@@ -354,7 +354,6 @@ func writeTypes(f *os.File, typeCollection []TypeTemplate, typeValidationCollect
 			fmt.Fprint(f, " {\n")
 			for _, ft := range tt.Fields {
 				if ft.Description != "" {
-					// TODO: Double check about the "//"
 					fmt.Fprintf(f, "\t%s\n", splitDocString(ft.Description))
 				}
 				fmt.Fprintf(f, "\t%s %s %s\n", ft.Name, ft.Type, ft.SerializationInfo)
@@ -380,7 +379,7 @@ func writeTypes(f *os.File, typeCollection []TypeTemplate, typeValidationCollect
 			fmt.Fprintf(f, "v.HasRequiredStr(string(p.%s), \"%s\")\n", s, s)
 		}
 		for _, i := range vm.RequiredNums {
-			fmt.Fprintf(f, "v.HasRequiredNum(int(p.%s), \"%s\")\n", i, i)
+			fmt.Fprintf(f, "v.HasRequiredNum(p.%s, \"%s\")\n", i, i)
 		}
 		fmt.Fprintln(f, "if !v.IsValid() {")
 		// Unfortunately I have to craft the following line this way as I get
