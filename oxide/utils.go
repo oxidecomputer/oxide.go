@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"net/url"
+	"strconv"
 	"strings"
 	"text/template"
 )
@@ -11,6 +12,14 @@ import (
 // NewPointer returns a pointer to a given value.
 func NewPointer[T any](v T) *T {
 	return &v
+}
+
+func PointerIntToStr(i *int) string {
+	if i == nil {
+		return ""
+	}
+
+	return strconv.Itoa(*i)
 }
 
 // resolveRelative combines a url base with a relative path.

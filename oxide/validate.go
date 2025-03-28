@@ -24,10 +24,10 @@ func (v *Validator) HasRequiredStr(value, name string) bool {
 	return true
 }
 
-// HasRequiredNum checks that a value is not 0
-func (v *Validator) HasRequiredNum(value int, name string) bool {
-	if value == 0 {
-		v.err = errors.Join(v.err, fmt.Errorf("required value for %s is zero", name))
+// HasRequiredNum checks that a value is not nil
+func (v *Validator) HasRequiredNum(value *int, name string) bool {
+	if value == nil {
+		v.err = errors.Join(v.err, fmt.Errorf("required value for %s is nil", name))
 		return false
 	}
 	return true

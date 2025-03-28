@@ -113,7 +113,7 @@ func TestValidator_HasRequiredNum(t *testing.T) {
 		err error
 	}
 	type args struct {
-		value int
+		value *int
 		name  string
 	}
 	tests := []struct {
@@ -127,7 +127,7 @@ func TestValidator_HasRequiredNum(t *testing.T) {
 			name:   "int is present",
 			fields: fields{},
 			args: args{
-				value: 1,
+				value: NewPointer(1),
 				name:  "name",
 			},
 			want: true,
@@ -139,7 +139,7 @@ func TestValidator_HasRequiredNum(t *testing.T) {
 				name: "name",
 			},
 			want:    false,
-			wantErr: errors.Join(errors.New("required value for name is zero")),
+			wantErr: errors.Join(errors.New("required value for name is nil")),
 		},
 	}
 	for _, tt := range tests {

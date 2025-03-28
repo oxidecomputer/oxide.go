@@ -23,7 +23,7 @@ type Address struct {
 	// AddressLot is the address lot this address is drawn from.
 	AddressLot NameOrId `json:"address_lot,omitempty" yaml:"address_lot,omitempty"`
 	// VlanId is optional VLAN ID for this address
-	VlanId int `json:"vlan_id,omitempty" yaml:"vlan_id,omitempty"`
+	VlanId *int `json:"vlan_id,omitempty" yaml:"vlan_id,omitempty"`
 }
 
 // AddressConfig is a set of addresses associated with a port configuration.
@@ -427,7 +427,7 @@ type AuthzScope string
 // - Serial
 type Baseboard struct {
 	Part     string `json:"part,omitempty" yaml:"part,omitempty"`
-	Revision int    `json:"revision,omitempty" yaml:"revision,omitempty"`
+	Revision *int   `json:"revision,omitempty" yaml:"revision,omitempty"`
 	Serial   string `json:"serial,omitempty" yaml:"serial,omitempty"`
 }
 
@@ -457,7 +457,7 @@ type BfdSessionDisable struct {
 type BfdSessionEnable struct {
 	// DetectionThreshold is the negotiated Control packet transmission interval, multiplied by this variable, will
 	// be the Detection Time for this session (as seen by the remote system)
-	DetectionThreshold int `json:"detection_threshold,omitempty" yaml:"detection_threshold,omitempty"`
+	DetectionThreshold *int `json:"detection_threshold,omitempty" yaml:"detection_threshold,omitempty"`
 	// Local is address the Oxide switch will listen on for BFD traffic. If `None` then the unspecified address (0.0.0.0
 	// or ::) is used.
 	Local string `json:"local,omitempty" yaml:"local,omitempty"`
@@ -467,7 +467,7 @@ type BfdSessionEnable struct {
 	Remote string `json:"remote,omitempty" yaml:"remote,omitempty"`
 	// RequiredRx is the minimum interval, in microseconds, between received BFD Control packets that this system
 	// requires
-	RequiredRx int `json:"required_rx,omitempty" yaml:"required_rx,omitempty"`
+	RequiredRx *int `json:"required_rx,omitempty" yaml:"required_rx,omitempty"`
 	// Switch is the switch to enable this session on. Must be `switch0` or `switch1`.
 	Switch Name `json:"switch,omitempty" yaml:"switch,omitempty"`
 }
@@ -485,12 +485,12 @@ type BfdState string
 // - State
 // - Switch
 type BfdStatus struct {
-	DetectionThreshold int    `json:"detection_threshold,omitempty" yaml:"detection_threshold,omitempty"`
+	DetectionThreshold *int   `json:"detection_threshold,omitempty" yaml:"detection_threshold,omitempty"`
 	Local              string `json:"local,omitempty" yaml:"local,omitempty"`
 	// Mode is bFD connection mode.
 	Mode       BfdMode  `json:"mode,omitempty" yaml:"mode,omitempty"`
 	Peer       string   `json:"peer,omitempty" yaml:"peer,omitempty"`
-	RequiredRx int      `json:"required_rx,omitempty" yaml:"required_rx,omitempty"`
+	RequiredRx *int     `json:"required_rx,omitempty" yaml:"required_rx,omitempty"`
 	State      BfdState `json:"state,omitempty" yaml:"state,omitempty"`
 	// Switch is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
@@ -574,7 +574,7 @@ type BgpAnnouncementCreate struct {
 // - TimeModified
 type BgpConfig struct {
 	// Asn is the autonomous system number of this BGP configuration.
-	Asn int `json:"asn,omitempty" yaml:"asn,omitempty"`
+	Asn *int `json:"asn,omitempty" yaml:"asn,omitempty"`
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Id is unique, immutable, system-controlled identifier for each resource
@@ -599,7 +599,7 @@ type BgpConfig struct {
 // - Name
 type BgpConfigCreate struct {
 	// Asn is the autonomous system number of this BGP configuration.
-	Asn              int      `json:"asn,omitempty" yaml:"asn,omitempty"`
+	Asn              *int     `json:"asn,omitempty" yaml:"asn,omitempty"`
 	BgpAnnounceSetId NameOrId `json:"bgp_announce_set_id,omitempty" yaml:"bgp_announce_set_id,omitempty"`
 	Description      string   `json:"description,omitempty" yaml:"description,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
@@ -639,7 +639,7 @@ type BgpExported struct {
 // - Switch
 type BgpImportedRouteIpv4 struct {
 	// Id is bGP identifier of the originating router.
-	Id int `json:"id,omitempty" yaml:"id,omitempty"`
+	Id *int `json:"id,omitempty" yaml:"id,omitempty"`
 	// Nexthop is the nexthop the prefix is reachable through.
 	Nexthop string `json:"nexthop,omitempty" yaml:"nexthop,omitempty"`
 	// Prefix is the destination network prefix.
@@ -680,33 +680,33 @@ type BgpPeer struct {
 	// Communities is include the provided communities in updates sent to the peer.
 	Communities []string `json:"communities,omitempty" yaml:"communities,omitempty"`
 	// ConnectRetry is how long to to wait between TCP connection retries (seconds).
-	ConnectRetry int `json:"connect_retry,omitempty" yaml:"connect_retry,omitempty"`
+	ConnectRetry *int `json:"connect_retry,omitempty" yaml:"connect_retry,omitempty"`
 	// DelayOpen is how long to delay sending an open request after establishing a TCP session (seconds).
-	DelayOpen int `json:"delay_open,omitempty" yaml:"delay_open,omitempty"`
+	DelayOpen *int `json:"delay_open,omitempty" yaml:"delay_open,omitempty"`
 	// EnforceFirstAs is enforce that the first AS in paths received from this peer is the peer's AS.
 	EnforceFirstAs *bool `json:"enforce_first_as,omitempty" yaml:"enforce_first_as,omitempty"`
 	// HoldTime is how long to hold peer connections between keepalives (seconds).
-	HoldTime int `json:"hold_time,omitempty" yaml:"hold_time,omitempty"`
+	HoldTime *int `json:"hold_time,omitempty" yaml:"hold_time,omitempty"`
 	// IdleHoldTime is how long to hold a peer in idle before attempting a new session (seconds).
-	IdleHoldTime int `json:"idle_hold_time,omitempty" yaml:"idle_hold_time,omitempty"`
+	IdleHoldTime *int `json:"idle_hold_time,omitempty" yaml:"idle_hold_time,omitempty"`
 	// InterfaceName is the name of interface to peer on. This is relative to the port configuration this BGP
 	// peer configuration is a part of. For example this value could be phy0 to refer to a primary physical interface.
 	// Or it could be vlan47 to refer to a VLAN interface.
 	InterfaceName string `json:"interface_name,omitempty" yaml:"interface_name,omitempty"`
 	// Keepalive is how often to send keepalive requests (seconds).
-	Keepalive int `json:"keepalive,omitempty" yaml:"keepalive,omitempty"`
+	Keepalive *int `json:"keepalive,omitempty" yaml:"keepalive,omitempty"`
 	// LocalPref is apply a local preference to routes received from this peer.
-	LocalPref int `json:"local_pref,omitempty" yaml:"local_pref,omitempty"`
+	LocalPref *int `json:"local_pref,omitempty" yaml:"local_pref,omitempty"`
 	// Md5AuthKey is use the given key for TCP-MD5 authentication with the peer.
 	Md5AuthKey string `json:"md5_auth_key,omitempty" yaml:"md5_auth_key,omitempty"`
 	// MinTtl is require messages from a peer have a minimum IP time to live field.
-	MinTtl int `json:"min_ttl,omitempty" yaml:"min_ttl,omitempty"`
+	MinTtl *int `json:"min_ttl,omitempty" yaml:"min_ttl,omitempty"`
 	// MultiExitDiscriminator is apply the provided multi-exit discriminator (MED) updates sent to the peer.
-	MultiExitDiscriminator int `json:"multi_exit_discriminator,omitempty" yaml:"multi_exit_discriminator,omitempty"`
+	MultiExitDiscriminator *int `json:"multi_exit_discriminator,omitempty" yaml:"multi_exit_discriminator,omitempty"`
 	// RemoteAsn is require that a peer has a specified ASN.
-	RemoteAsn int `json:"remote_asn,omitempty" yaml:"remote_asn,omitempty"`
+	RemoteAsn *int `json:"remote_asn,omitempty" yaml:"remote_asn,omitempty"`
 	// VlanId is associate a VLAN ID with a peer.
-	VlanId int `json:"vlan_id,omitempty" yaml:"vlan_id,omitempty"`
+	VlanId *int `json:"vlan_id,omitempty" yaml:"vlan_id,omitempty"`
 }
 
 // BgpPeerConfig is the type definition for a BgpPeerConfig.
@@ -733,13 +733,13 @@ type BgpPeerStatus struct {
 	// Addr is iP address of the peer.
 	Addr string `json:"addr,omitempty" yaml:"addr,omitempty"`
 	// LocalAsn is local autonomous system number.
-	LocalAsn int `json:"local_asn,omitempty" yaml:"local_asn,omitempty"`
+	LocalAsn *int `json:"local_asn,omitempty" yaml:"local_asn,omitempty"`
 	// RemoteAsn is remote autonomous system number.
-	RemoteAsn int `json:"remote_asn,omitempty" yaml:"remote_asn,omitempty"`
+	RemoteAsn *int `json:"remote_asn,omitempty" yaml:"remote_asn,omitempty"`
 	// State is state of the peer.
 	State BgpPeerState `json:"state,omitempty" yaml:"state,omitempty"`
 	// StateDurationMillis is time of last state change.
-	StateDurationMillis int `json:"state_duration_millis,omitempty" yaml:"state_duration_millis,omitempty"`
+	StateDurationMillis *int `json:"state_duration_millis,omitempty" yaml:"state_duration_millis,omitempty"`
 	// Switch is switch with the peer session.
 	Switch SwitchLocation `json:"switch,omitempty" yaml:"switch,omitempty"`
 }
@@ -849,7 +849,7 @@ type BinRangeint16Type string
 // - End
 // - Type
 type BinRangeint16RangeTo struct {
-	End  int               `json:"end,omitempty" yaml:"end,omitempty"`
+	End  *int              `json:"end,omitempty" yaml:"end,omitempty"`
 	Type BinRangeint16Type `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -860,8 +860,8 @@ type BinRangeint16RangeTo struct {
 // - Start
 // - Type
 type BinRangeint16Range struct {
-	End   int               `json:"end,omitempty" yaml:"end,omitempty"`
-	Start int               `json:"start,omitempty" yaml:"start,omitempty"`
+	End   *int              `json:"end,omitempty" yaml:"end,omitempty"`
+	Start *int              `json:"start,omitempty" yaml:"start,omitempty"`
 	Type  BinRangeint16Type `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -871,7 +871,7 @@ type BinRangeint16Range struct {
 // - Start
 // - Type
 type BinRangeint16RangeFrom struct {
-	Start int               `json:"start,omitempty" yaml:"start,omitempty"`
+	Start *int              `json:"start,omitempty" yaml:"start,omitempty"`
 	Type  BinRangeint16Type `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -881,11 +881,11 @@ type BinRangeint16RangeFrom struct {
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeint16 struct {
 	// End is the type definition for a End.
-	End int `json:"end,omitempty" yaml:"end,omitempty"`
+	End *int `json:"end,omitempty" yaml:"end,omitempty"`
 	// Type is the type definition for a Type.
 	Type BinRangeint16Type `json:"type,omitempty" yaml:"type,omitempty"`
 	// Start is the type definition for a Start.
-	Start int `json:"start,omitempty" yaml:"start,omitempty"`
+	Start *int `json:"start,omitempty" yaml:"start,omitempty"`
 }
 
 // BinRangeint32Type is the type definition for a BinRangeint32Type.
@@ -897,7 +897,7 @@ type BinRangeint32Type string
 // - End
 // - Type
 type BinRangeint32RangeTo struct {
-	End  int               `json:"end,omitempty" yaml:"end,omitempty"`
+	End  *int              `json:"end,omitempty" yaml:"end,omitempty"`
 	Type BinRangeint32Type `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -908,8 +908,8 @@ type BinRangeint32RangeTo struct {
 // - Start
 // - Type
 type BinRangeint32Range struct {
-	End   int               `json:"end,omitempty" yaml:"end,omitempty"`
-	Start int               `json:"start,omitempty" yaml:"start,omitempty"`
+	End   *int              `json:"end,omitempty" yaml:"end,omitempty"`
+	Start *int              `json:"start,omitempty" yaml:"start,omitempty"`
 	Type  BinRangeint32Type `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -919,7 +919,7 @@ type BinRangeint32Range struct {
 // - Start
 // - Type
 type BinRangeint32RangeFrom struct {
-	Start int               `json:"start,omitempty" yaml:"start,omitempty"`
+	Start *int              `json:"start,omitempty" yaml:"start,omitempty"`
 	Type  BinRangeint32Type `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -929,11 +929,11 @@ type BinRangeint32RangeFrom struct {
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeint32 struct {
 	// End is the type definition for a End.
-	End int `json:"end,omitempty" yaml:"end,omitempty"`
+	End *int `json:"end,omitempty" yaml:"end,omitempty"`
 	// Type is the type definition for a Type.
 	Type BinRangeint32Type `json:"type,omitempty" yaml:"type,omitempty"`
 	// Start is the type definition for a Start.
-	Start int `json:"start,omitempty" yaml:"start,omitempty"`
+	Start *int `json:"start,omitempty" yaml:"start,omitempty"`
 }
 
 // BinRangeint64Type is the type definition for a BinRangeint64Type.
@@ -945,7 +945,7 @@ type BinRangeint64Type string
 // - End
 // - Type
 type BinRangeint64RangeTo struct {
-	End  int               `json:"end,omitempty" yaml:"end,omitempty"`
+	End  *int              `json:"end,omitempty" yaml:"end,omitempty"`
 	Type BinRangeint64Type `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -956,8 +956,8 @@ type BinRangeint64RangeTo struct {
 // - Start
 // - Type
 type BinRangeint64Range struct {
-	End   int               `json:"end,omitempty" yaml:"end,omitempty"`
-	Start int               `json:"start,omitempty" yaml:"start,omitempty"`
+	End   *int              `json:"end,omitempty" yaml:"end,omitempty"`
+	Start *int              `json:"start,omitempty" yaml:"start,omitempty"`
 	Type  BinRangeint64Type `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -967,7 +967,7 @@ type BinRangeint64Range struct {
 // - Start
 // - Type
 type BinRangeint64RangeFrom struct {
-	Start int               `json:"start,omitempty" yaml:"start,omitempty"`
+	Start *int              `json:"start,omitempty" yaml:"start,omitempty"`
 	Type  BinRangeint64Type `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -977,11 +977,11 @@ type BinRangeint64RangeFrom struct {
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeint64 struct {
 	// End is the type definition for a End.
-	End int `json:"end,omitempty" yaml:"end,omitempty"`
+	End *int `json:"end,omitempty" yaml:"end,omitempty"`
 	// Type is the type definition for a Type.
 	Type BinRangeint64Type `json:"type,omitempty" yaml:"type,omitempty"`
 	// Start is the type definition for a Start.
-	Start int `json:"start,omitempty" yaml:"start,omitempty"`
+	Start *int `json:"start,omitempty" yaml:"start,omitempty"`
 }
 
 // BinRangeint8Type is the type definition for a BinRangeint8Type.
@@ -993,7 +993,7 @@ type BinRangeint8Type string
 // - End
 // - Type
 type BinRangeint8RangeTo struct {
-	End  int              `json:"end,omitempty" yaml:"end,omitempty"`
+	End  *int             `json:"end,omitempty" yaml:"end,omitempty"`
 	Type BinRangeint8Type `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -1004,8 +1004,8 @@ type BinRangeint8RangeTo struct {
 // - Start
 // - Type
 type BinRangeint8Range struct {
-	End   int              `json:"end,omitempty" yaml:"end,omitempty"`
-	Start int              `json:"start,omitempty" yaml:"start,omitempty"`
+	End   *int             `json:"end,omitempty" yaml:"end,omitempty"`
+	Start *int             `json:"start,omitempty" yaml:"start,omitempty"`
 	Type  BinRangeint8Type `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -1015,7 +1015,7 @@ type BinRangeint8Range struct {
 // - Start
 // - Type
 type BinRangeint8RangeFrom struct {
-	Start int              `json:"start,omitempty" yaml:"start,omitempty"`
+	Start *int             `json:"start,omitempty" yaml:"start,omitempty"`
 	Type  BinRangeint8Type `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -1025,11 +1025,11 @@ type BinRangeint8RangeFrom struct {
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeint8 struct {
 	// End is the type definition for a End.
-	End int `json:"end,omitempty" yaml:"end,omitempty"`
+	End *int `json:"end,omitempty" yaml:"end,omitempty"`
 	// Type is the type definition for a Type.
 	Type BinRangeint8Type `json:"type,omitempty" yaml:"type,omitempty"`
 	// Start is the type definition for a Start.
-	Start int `json:"start,omitempty" yaml:"start,omitempty"`
+	Start *int `json:"start,omitempty" yaml:"start,omitempty"`
 }
 
 // BinRangeuint16Type is the type definition for a BinRangeuint16Type.
@@ -1041,7 +1041,7 @@ type BinRangeuint16Type string
 // - End
 // - Type
 type BinRangeuint16RangeTo struct {
-	End  int                `json:"end,omitempty" yaml:"end,omitempty"`
+	End  *int               `json:"end,omitempty" yaml:"end,omitempty"`
 	Type BinRangeuint16Type `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -1052,8 +1052,8 @@ type BinRangeuint16RangeTo struct {
 // - Start
 // - Type
 type BinRangeuint16Range struct {
-	End   int                `json:"end,omitempty" yaml:"end,omitempty"`
-	Start int                `json:"start,omitempty" yaml:"start,omitempty"`
+	End   *int               `json:"end,omitempty" yaml:"end,omitempty"`
+	Start *int               `json:"start,omitempty" yaml:"start,omitempty"`
 	Type  BinRangeuint16Type `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -1063,7 +1063,7 @@ type BinRangeuint16Range struct {
 // - Start
 // - Type
 type BinRangeuint16RangeFrom struct {
-	Start int                `json:"start,omitempty" yaml:"start,omitempty"`
+	Start *int               `json:"start,omitempty" yaml:"start,omitempty"`
 	Type  BinRangeuint16Type `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -1073,11 +1073,11 @@ type BinRangeuint16RangeFrom struct {
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeuint16 struct {
 	// End is the type definition for a End.
-	End int `json:"end,omitempty" yaml:"end,omitempty"`
+	End *int `json:"end,omitempty" yaml:"end,omitempty"`
 	// Type is the type definition for a Type.
 	Type BinRangeuint16Type `json:"type,omitempty" yaml:"type,omitempty"`
 	// Start is the type definition for a Start.
-	Start int `json:"start,omitempty" yaml:"start,omitempty"`
+	Start *int `json:"start,omitempty" yaml:"start,omitempty"`
 }
 
 // BinRangeuint32Type is the type definition for a BinRangeuint32Type.
@@ -1089,7 +1089,7 @@ type BinRangeuint32Type string
 // - End
 // - Type
 type BinRangeuint32RangeTo struct {
-	End  int                `json:"end,omitempty" yaml:"end,omitempty"`
+	End  *int               `json:"end,omitempty" yaml:"end,omitempty"`
 	Type BinRangeuint32Type `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -1100,8 +1100,8 @@ type BinRangeuint32RangeTo struct {
 // - Start
 // - Type
 type BinRangeuint32Range struct {
-	End   int                `json:"end,omitempty" yaml:"end,omitempty"`
-	Start int                `json:"start,omitempty" yaml:"start,omitempty"`
+	End   *int               `json:"end,omitempty" yaml:"end,omitempty"`
+	Start *int               `json:"start,omitempty" yaml:"start,omitempty"`
 	Type  BinRangeuint32Type `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -1111,7 +1111,7 @@ type BinRangeuint32Range struct {
 // - Start
 // - Type
 type BinRangeuint32RangeFrom struct {
-	Start int                `json:"start,omitempty" yaml:"start,omitempty"`
+	Start *int               `json:"start,omitempty" yaml:"start,omitempty"`
 	Type  BinRangeuint32Type `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -1121,11 +1121,11 @@ type BinRangeuint32RangeFrom struct {
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeuint32 struct {
 	// End is the type definition for a End.
-	End int `json:"end,omitempty" yaml:"end,omitempty"`
+	End *int `json:"end,omitempty" yaml:"end,omitempty"`
 	// Type is the type definition for a Type.
 	Type BinRangeuint32Type `json:"type,omitempty" yaml:"type,omitempty"`
 	// Start is the type definition for a Start.
-	Start int `json:"start,omitempty" yaml:"start,omitempty"`
+	Start *int `json:"start,omitempty" yaml:"start,omitempty"`
 }
 
 // BinRangeuint64Type is the type definition for a BinRangeuint64Type.
@@ -1137,7 +1137,7 @@ type BinRangeuint64Type string
 // - End
 // - Type
 type BinRangeuint64RangeTo struct {
-	End  int                `json:"end,omitempty" yaml:"end,omitempty"`
+	End  *int               `json:"end,omitempty" yaml:"end,omitempty"`
 	Type BinRangeuint64Type `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -1148,8 +1148,8 @@ type BinRangeuint64RangeTo struct {
 // - Start
 // - Type
 type BinRangeuint64Range struct {
-	End   int                `json:"end,omitempty" yaml:"end,omitempty"`
-	Start int                `json:"start,omitempty" yaml:"start,omitempty"`
+	End   *int               `json:"end,omitempty" yaml:"end,omitempty"`
+	Start *int               `json:"start,omitempty" yaml:"start,omitempty"`
 	Type  BinRangeuint64Type `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -1159,7 +1159,7 @@ type BinRangeuint64Range struct {
 // - Start
 // - Type
 type BinRangeuint64RangeFrom struct {
-	Start int                `json:"start,omitempty" yaml:"start,omitempty"`
+	Start *int               `json:"start,omitempty" yaml:"start,omitempty"`
 	Type  BinRangeuint64Type `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -1169,11 +1169,11 @@ type BinRangeuint64RangeFrom struct {
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeuint64 struct {
 	// End is the type definition for a End.
-	End int `json:"end,omitempty" yaml:"end,omitempty"`
+	End *int `json:"end,omitempty" yaml:"end,omitempty"`
 	// Type is the type definition for a Type.
 	Type BinRangeuint64Type `json:"type,omitempty" yaml:"type,omitempty"`
 	// Start is the type definition for a Start.
-	Start int `json:"start,omitempty" yaml:"start,omitempty"`
+	Start *int `json:"start,omitempty" yaml:"start,omitempty"`
 }
 
 // BinRangeuint8Type is the type definition for a BinRangeuint8Type.
@@ -1185,7 +1185,7 @@ type BinRangeuint8Type string
 // - End
 // - Type
 type BinRangeuint8RangeTo struct {
-	End  int               `json:"end,omitempty" yaml:"end,omitempty"`
+	End  *int              `json:"end,omitempty" yaml:"end,omitempty"`
 	Type BinRangeuint8Type `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -1196,8 +1196,8 @@ type BinRangeuint8RangeTo struct {
 // - Start
 // - Type
 type BinRangeuint8Range struct {
-	End   int               `json:"end,omitempty" yaml:"end,omitempty"`
-	Start int               `json:"start,omitempty" yaml:"start,omitempty"`
+	End   *int              `json:"end,omitempty" yaml:"end,omitempty"`
+	Start *int              `json:"start,omitempty" yaml:"start,omitempty"`
 	Type  BinRangeuint8Type `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -1207,7 +1207,7 @@ type BinRangeuint8Range struct {
 // - Start
 // - Type
 type BinRangeuint8RangeFrom struct {
-	Start int               `json:"start,omitempty" yaml:"start,omitempty"`
+	Start *int              `json:"start,omitempty" yaml:"start,omitempty"`
 	Type  BinRangeuint8Type `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -1217,11 +1217,11 @@ type BinRangeuint8RangeFrom struct {
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeuint8 struct {
 	// End is the type definition for a End.
-	End int `json:"end,omitempty" yaml:"end,omitempty"`
+	End *int `json:"end,omitempty" yaml:"end,omitempty"`
 	// Type is the type definition for a Type.
 	Type BinRangeuint8Type `json:"type,omitempty" yaml:"type,omitempty"`
 	// Start is the type definition for a Start.
-	Start int `json:"start,omitempty" yaml:"start,omitempty"`
+	Start *int `json:"start,omitempty" yaml:"start,omitempty"`
 }
 
 // Bindouble is type storing bin edges and a count of samples within it.
@@ -1231,7 +1231,7 @@ type BinRangeuint8 struct {
 // - Range
 type Bindouble struct {
 	// Count is the total count of samples in this bin.
-	Count int `json:"count,omitempty" yaml:"count,omitempty"`
+	Count *int `json:"count,omitempty" yaml:"count,omitempty"`
 	// Range is the range of the support covered by this bin.
 	Range BinRangedouble `json:"range,omitempty" yaml:"range,omitempty"`
 }
@@ -1243,7 +1243,7 @@ type Bindouble struct {
 // - Range
 type Binfloat struct {
 	// Count is the total count of samples in this bin.
-	Count int `json:"count,omitempty" yaml:"count,omitempty"`
+	Count *int `json:"count,omitempty" yaml:"count,omitempty"`
 	// Range is the range of the support covered by this bin.
 	Range BinRangefloat `json:"range,omitempty" yaml:"range,omitempty"`
 }
@@ -1255,7 +1255,7 @@ type Binfloat struct {
 // - Range
 type Binint16 struct {
 	// Count is the total count of samples in this bin.
-	Count int `json:"count,omitempty" yaml:"count,omitempty"`
+	Count *int `json:"count,omitempty" yaml:"count,omitempty"`
 	// Range is the range of the support covered by this bin.
 	Range BinRangeint16 `json:"range,omitempty" yaml:"range,omitempty"`
 }
@@ -1267,7 +1267,7 @@ type Binint16 struct {
 // - Range
 type Binint32 struct {
 	// Count is the total count of samples in this bin.
-	Count int `json:"count,omitempty" yaml:"count,omitempty"`
+	Count *int `json:"count,omitempty" yaml:"count,omitempty"`
 	// Range is the range of the support covered by this bin.
 	Range BinRangeint32 `json:"range,omitempty" yaml:"range,omitempty"`
 }
@@ -1279,7 +1279,7 @@ type Binint32 struct {
 // - Range
 type Binint64 struct {
 	// Count is the total count of samples in this bin.
-	Count int `json:"count,omitempty" yaml:"count,omitempty"`
+	Count *int `json:"count,omitempty" yaml:"count,omitempty"`
 	// Range is the range of the support covered by this bin.
 	Range BinRangeint64 `json:"range,omitempty" yaml:"range,omitempty"`
 }
@@ -1291,7 +1291,7 @@ type Binint64 struct {
 // - Range
 type Binint8 struct {
 	// Count is the total count of samples in this bin.
-	Count int `json:"count,omitempty" yaml:"count,omitempty"`
+	Count *int `json:"count,omitempty" yaml:"count,omitempty"`
 	// Range is the range of the support covered by this bin.
 	Range BinRangeint8 `json:"range,omitempty" yaml:"range,omitempty"`
 }
@@ -1303,7 +1303,7 @@ type Binint8 struct {
 // - Range
 type Binuint16 struct {
 	// Count is the total count of samples in this bin.
-	Count int `json:"count,omitempty" yaml:"count,omitempty"`
+	Count *int `json:"count,omitempty" yaml:"count,omitempty"`
 	// Range is the range of the support covered by this bin.
 	Range BinRangeuint16 `json:"range,omitempty" yaml:"range,omitempty"`
 }
@@ -1315,7 +1315,7 @@ type Binuint16 struct {
 // - Range
 type Binuint32 struct {
 	// Count is the total count of samples in this bin.
-	Count int `json:"count,omitempty" yaml:"count,omitempty"`
+	Count *int `json:"count,omitempty" yaml:"count,omitempty"`
 	// Range is the range of the support covered by this bin.
 	Range BinRangeuint32 `json:"range,omitempty" yaml:"range,omitempty"`
 }
@@ -1327,7 +1327,7 @@ type Binuint32 struct {
 // - Range
 type Binuint64 struct {
 	// Count is the total count of samples in this bin.
-	Count int `json:"count,omitempty" yaml:"count,omitempty"`
+	Count *int `json:"count,omitempty" yaml:"count,omitempty"`
 	// Range is the range of the support covered by this bin.
 	Range BinRangeuint64 `json:"range,omitempty" yaml:"range,omitempty"`
 }
@@ -1339,7 +1339,7 @@ type Binuint64 struct {
 // - Range
 type Binuint8 struct {
 	// Count is the total count of samples in this bin.
-	Count int `json:"count,omitempty" yaml:"count,omitempty"`
+	Count *int `json:"count,omitempty" yaml:"count,omitempty"`
 	// Range is the range of the support covered by this bin.
 	Range BinRangeuint8 `json:"range,omitempty" yaml:"range,omitempty"`
 }
@@ -1437,7 +1437,7 @@ type Cumulativefloat struct {
 // - Value
 type Cumulativeint64 struct {
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
-	Value     int        `json:"value,omitempty" yaml:"value,omitempty"`
+	Value     *int       `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // Cumulativeuint64 is a cumulative or counter data type.
@@ -1447,7 +1447,7 @@ type Cumulativeint64 struct {
 // - Value
 type Cumulativeuint64 struct {
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
-	Value     int        `json:"value,omitempty" yaml:"value,omitempty"`
+	Value     *int       `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // CurrentUser is info about the current user
@@ -1486,7 +1486,7 @@ type DatumBool struct {
 // - Datum
 // - Type
 type DatumI8 struct {
-	Datum int       `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Datum *int      `json:"datum,omitempty" yaml:"datum,omitempty"`
 	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -1496,7 +1496,7 @@ type DatumI8 struct {
 // - Datum
 // - Type
 type DatumU8 struct {
-	Datum int       `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Datum *int      `json:"datum,omitempty" yaml:"datum,omitempty"`
 	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -1506,7 +1506,7 @@ type DatumU8 struct {
 // - Datum
 // - Type
 type DatumI16 struct {
-	Datum int       `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Datum *int      `json:"datum,omitempty" yaml:"datum,omitempty"`
 	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -1516,7 +1516,7 @@ type DatumI16 struct {
 // - Datum
 // - Type
 type DatumU16 struct {
-	Datum int       `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Datum *int      `json:"datum,omitempty" yaml:"datum,omitempty"`
 	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -1526,7 +1526,7 @@ type DatumU16 struct {
 // - Datum
 // - Type
 type DatumI32 struct {
-	Datum int       `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Datum *int      `json:"datum,omitempty" yaml:"datum,omitempty"`
 	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -1536,7 +1536,7 @@ type DatumI32 struct {
 // - Datum
 // - Type
 type DatumU32 struct {
-	Datum int       `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Datum *int      `json:"datum,omitempty" yaml:"datum,omitempty"`
 	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -1546,7 +1546,7 @@ type DatumU32 struct {
 // - Datum
 // - Type
 type DatumI64 struct {
-	Datum int       `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Datum *int      `json:"datum,omitempty" yaml:"datum,omitempty"`
 	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -1556,7 +1556,7 @@ type DatumI64 struct {
 // - Datum
 // - Type
 type DatumU64 struct {
-	Datum int       `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Datum *int      `json:"datum,omitempty" yaml:"datum,omitempty"`
 	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -2180,13 +2180,13 @@ type Distributiondouble struct {
 type Distributionint64 struct {
 	Bins         []string `json:"bins,omitempty" yaml:"bins,omitempty"`
 	Counts       []string `json:"counts,omitempty" yaml:"counts,omitempty"`
-	Max          int      `json:"max,omitempty" yaml:"max,omitempty"`
-	Min          int      `json:"min,omitempty" yaml:"min,omitempty"`
+	Max          *int     `json:"max,omitempty" yaml:"max,omitempty"`
+	Min          *int     `json:"min,omitempty" yaml:"min,omitempty"`
 	P50          Quantile `json:"p50,omitempty" yaml:"p50,omitempty"`
 	P90          Quantile `json:"p90,omitempty" yaml:"p90,omitempty"`
 	P99          Quantile `json:"p99,omitempty" yaml:"p99,omitempty"`
 	SquaredMean  float64  `json:"squared_mean,omitempty" yaml:"squared_mean,omitempty"`
-	SumOfSamples int      `json:"sum_of_samples,omitempty" yaml:"sum_of_samples,omitempty"`
+	SumOfSamples *int     `json:"sum_of_samples,omitempty" yaml:"sum_of_samples,omitempty"`
 }
 
 // EphemeralIpCreate is parameters for creating an ephemeral IP address for an instance.
@@ -2370,7 +2370,7 @@ type FieldValueString struct {
 // - Value
 type FieldValueI8 struct {
 	Type  FieldValueType `json:"type,omitempty" yaml:"type,omitempty"`
-	Value int            `json:"value,omitempty" yaml:"value,omitempty"`
+	Value *int           `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // FieldValueU8 is the type definition for a FieldValueU8.
@@ -2380,7 +2380,7 @@ type FieldValueI8 struct {
 // - Value
 type FieldValueU8 struct {
 	Type  FieldValueType `json:"type,omitempty" yaml:"type,omitempty"`
-	Value int            `json:"value,omitempty" yaml:"value,omitempty"`
+	Value *int           `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // FieldValueI16 is the type definition for a FieldValueI16.
@@ -2390,7 +2390,7 @@ type FieldValueU8 struct {
 // - Value
 type FieldValueI16 struct {
 	Type  FieldValueType `json:"type,omitempty" yaml:"type,omitempty"`
-	Value int            `json:"value,omitempty" yaml:"value,omitempty"`
+	Value *int           `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // FieldValueU16 is the type definition for a FieldValueU16.
@@ -2400,7 +2400,7 @@ type FieldValueI16 struct {
 // - Value
 type FieldValueU16 struct {
 	Type  FieldValueType `json:"type,omitempty" yaml:"type,omitempty"`
-	Value int            `json:"value,omitempty" yaml:"value,omitempty"`
+	Value *int           `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // FieldValueI32 is the type definition for a FieldValueI32.
@@ -2410,7 +2410,7 @@ type FieldValueU16 struct {
 // - Value
 type FieldValueI32 struct {
 	Type  FieldValueType `json:"type,omitempty" yaml:"type,omitempty"`
-	Value int            `json:"value,omitempty" yaml:"value,omitempty"`
+	Value *int           `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // FieldValueU32 is the type definition for a FieldValueU32.
@@ -2420,7 +2420,7 @@ type FieldValueI32 struct {
 // - Value
 type FieldValueU32 struct {
 	Type  FieldValueType `json:"type,omitempty" yaml:"type,omitempty"`
-	Value int            `json:"value,omitempty" yaml:"value,omitempty"`
+	Value *int           `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // FieldValueI64 is the type definition for a FieldValueI64.
@@ -2430,7 +2430,7 @@ type FieldValueU32 struct {
 // - Value
 type FieldValueI64 struct {
 	Type  FieldValueType `json:"type,omitempty" yaml:"type,omitempty"`
-	Value int            `json:"value,omitempty" yaml:"value,omitempty"`
+	Value *int           `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // FieldValueU64 is the type definition for a FieldValueU64.
@@ -2440,7 +2440,7 @@ type FieldValueI64 struct {
 // - Value
 type FieldValueU64 struct {
 	Type  FieldValueType `json:"type,omitempty" yaml:"type,omitempty"`
-	Value int            `json:"value,omitempty" yaml:"value,omitempty"`
+	Value *int           `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // FieldValueIpAddr is the type definition for a FieldValueIpAddr.
@@ -2655,7 +2655,7 @@ type Histogramdouble struct {
 	// Min is the minimum value of all samples in the histogram.
 	Min float64 `json:"min,omitempty" yaml:"min,omitempty"`
 	// NSamples is the total number of samples in the histogram.
-	NSamples int `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
+	NSamples *int `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
 	// P50 is p50 Quantile
 	P50 Quantile `json:"p50,omitempty" yaml:"p50,omitempty"`
 	// P90 is p95 Quantile
@@ -2700,7 +2700,7 @@ type Histogramfloat struct {
 	// Min is the minimum value of all samples in the histogram.
 	Min float64 `json:"min,omitempty" yaml:"min,omitempty"`
 	// NSamples is the total number of samples in the histogram.
-	NSamples int `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
+	NSamples *int `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
 	// P50 is p50 Quantile
 	P50 Quantile `json:"p50,omitempty" yaml:"p50,omitempty"`
 	// P90 is p95 Quantile
@@ -2741,11 +2741,11 @@ type Histogramint16 struct {
 	// Bins is the bins of the histogram.
 	Bins []Binint16 `json:"bins,omitempty" yaml:"bins,omitempty"`
 	// Max is the maximum value of all samples in the histogram.
-	Max int `json:"max,omitempty" yaml:"max,omitempty"`
+	Max *int `json:"max,omitempty" yaml:"max,omitempty"`
 	// Min is the minimum value of all samples in the histogram.
-	Min int `json:"min,omitempty" yaml:"min,omitempty"`
+	Min *int `json:"min,omitempty" yaml:"min,omitempty"`
 	// NSamples is the total number of samples in the histogram.
-	NSamples int `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
+	NSamples *int `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
 	// P50 is p50 Quantile
 	P50 Quantile `json:"p50,omitempty" yaml:"p50,omitempty"`
 	// P90 is p95 Quantile
@@ -2760,7 +2760,7 @@ type Histogramint16 struct {
 	// StartTime is the start time of the histogram.
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
 	// SumOfSamples is the sum of all samples in the histogram.
-	SumOfSamples int `json:"sum_of_samples,omitempty" yaml:"sum_of_samples,omitempty"`
+	SumOfSamples *int `json:"sum_of_samples,omitempty" yaml:"sum_of_samples,omitempty"`
 }
 
 // Histogramint32 is histogram metric
@@ -2786,11 +2786,11 @@ type Histogramint32 struct {
 	// Bins is the bins of the histogram.
 	Bins []Binint32 `json:"bins,omitempty" yaml:"bins,omitempty"`
 	// Max is the maximum value of all samples in the histogram.
-	Max int `json:"max,omitempty" yaml:"max,omitempty"`
+	Max *int `json:"max,omitempty" yaml:"max,omitempty"`
 	// Min is the minimum value of all samples in the histogram.
-	Min int `json:"min,omitempty" yaml:"min,omitempty"`
+	Min *int `json:"min,omitempty" yaml:"min,omitempty"`
 	// NSamples is the total number of samples in the histogram.
-	NSamples int `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
+	NSamples *int `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
 	// P50 is p50 Quantile
 	P50 Quantile `json:"p50,omitempty" yaml:"p50,omitempty"`
 	// P90 is p95 Quantile
@@ -2805,7 +2805,7 @@ type Histogramint32 struct {
 	// StartTime is the start time of the histogram.
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
 	// SumOfSamples is the sum of all samples in the histogram.
-	SumOfSamples int `json:"sum_of_samples,omitempty" yaml:"sum_of_samples,omitempty"`
+	SumOfSamples *int `json:"sum_of_samples,omitempty" yaml:"sum_of_samples,omitempty"`
 }
 
 // Histogramint64 is histogram metric
@@ -2831,11 +2831,11 @@ type Histogramint64 struct {
 	// Bins is the bins of the histogram.
 	Bins []Binint64 `json:"bins,omitempty" yaml:"bins,omitempty"`
 	// Max is the maximum value of all samples in the histogram.
-	Max int `json:"max,omitempty" yaml:"max,omitempty"`
+	Max *int `json:"max,omitempty" yaml:"max,omitempty"`
 	// Min is the minimum value of all samples in the histogram.
-	Min int `json:"min,omitempty" yaml:"min,omitempty"`
+	Min *int `json:"min,omitempty" yaml:"min,omitempty"`
 	// NSamples is the total number of samples in the histogram.
-	NSamples int `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
+	NSamples *int `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
 	// P50 is p50 Quantile
 	P50 Quantile `json:"p50,omitempty" yaml:"p50,omitempty"`
 	// P90 is p95 Quantile
@@ -2850,7 +2850,7 @@ type Histogramint64 struct {
 	// StartTime is the start time of the histogram.
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
 	// SumOfSamples is the sum of all samples in the histogram.
-	SumOfSamples int `json:"sum_of_samples,omitempty" yaml:"sum_of_samples,omitempty"`
+	SumOfSamples *int `json:"sum_of_samples,omitempty" yaml:"sum_of_samples,omitempty"`
 }
 
 // Histogramint8 is histogram metric
@@ -2876,11 +2876,11 @@ type Histogramint8 struct {
 	// Bins is the bins of the histogram.
 	Bins []Binint8 `json:"bins,omitempty" yaml:"bins,omitempty"`
 	// Max is the maximum value of all samples in the histogram.
-	Max int `json:"max,omitempty" yaml:"max,omitempty"`
+	Max *int `json:"max,omitempty" yaml:"max,omitempty"`
 	// Min is the minimum value of all samples in the histogram.
-	Min int `json:"min,omitempty" yaml:"min,omitempty"`
+	Min *int `json:"min,omitempty" yaml:"min,omitempty"`
 	// NSamples is the total number of samples in the histogram.
-	NSamples int `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
+	NSamples *int `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
 	// P50 is p50 Quantile
 	P50 Quantile `json:"p50,omitempty" yaml:"p50,omitempty"`
 	// P90 is p95 Quantile
@@ -2895,7 +2895,7 @@ type Histogramint8 struct {
 	// StartTime is the start time of the histogram.
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
 	// SumOfSamples is the sum of all samples in the histogram.
-	SumOfSamples int `json:"sum_of_samples,omitempty" yaml:"sum_of_samples,omitempty"`
+	SumOfSamples *int `json:"sum_of_samples,omitempty" yaml:"sum_of_samples,omitempty"`
 }
 
 // Histogramuint16 is histogram metric
@@ -2921,11 +2921,11 @@ type Histogramuint16 struct {
 	// Bins is the bins of the histogram.
 	Bins []Binuint16 `json:"bins,omitempty" yaml:"bins,omitempty"`
 	// Max is the maximum value of all samples in the histogram.
-	Max int `json:"max,omitempty" yaml:"max,omitempty"`
+	Max *int `json:"max,omitempty" yaml:"max,omitempty"`
 	// Min is the minimum value of all samples in the histogram.
-	Min int `json:"min,omitempty" yaml:"min,omitempty"`
+	Min *int `json:"min,omitempty" yaml:"min,omitempty"`
 	// NSamples is the total number of samples in the histogram.
-	NSamples int `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
+	NSamples *int `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
 	// P50 is p50 Quantile
 	P50 Quantile `json:"p50,omitempty" yaml:"p50,omitempty"`
 	// P90 is p95 Quantile
@@ -2940,7 +2940,7 @@ type Histogramuint16 struct {
 	// StartTime is the start time of the histogram.
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
 	// SumOfSamples is the sum of all samples in the histogram.
-	SumOfSamples int `json:"sum_of_samples,omitempty" yaml:"sum_of_samples,omitempty"`
+	SumOfSamples *int `json:"sum_of_samples,omitempty" yaml:"sum_of_samples,omitempty"`
 }
 
 // Histogramuint32 is histogram metric
@@ -2966,11 +2966,11 @@ type Histogramuint32 struct {
 	// Bins is the bins of the histogram.
 	Bins []Binuint32 `json:"bins,omitempty" yaml:"bins,omitempty"`
 	// Max is the maximum value of all samples in the histogram.
-	Max int `json:"max,omitempty" yaml:"max,omitempty"`
+	Max *int `json:"max,omitempty" yaml:"max,omitempty"`
 	// Min is the minimum value of all samples in the histogram.
-	Min int `json:"min,omitempty" yaml:"min,omitempty"`
+	Min *int `json:"min,omitempty" yaml:"min,omitempty"`
 	// NSamples is the total number of samples in the histogram.
-	NSamples int `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
+	NSamples *int `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
 	// P50 is p50 Quantile
 	P50 Quantile `json:"p50,omitempty" yaml:"p50,omitempty"`
 	// P90 is p95 Quantile
@@ -2985,7 +2985,7 @@ type Histogramuint32 struct {
 	// StartTime is the start time of the histogram.
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
 	// SumOfSamples is the sum of all samples in the histogram.
-	SumOfSamples int `json:"sum_of_samples,omitempty" yaml:"sum_of_samples,omitempty"`
+	SumOfSamples *int `json:"sum_of_samples,omitempty" yaml:"sum_of_samples,omitempty"`
 }
 
 // Histogramuint64 is histogram metric
@@ -3011,11 +3011,11 @@ type Histogramuint64 struct {
 	// Bins is the bins of the histogram.
 	Bins []Binuint64 `json:"bins,omitempty" yaml:"bins,omitempty"`
 	// Max is the maximum value of all samples in the histogram.
-	Max int `json:"max,omitempty" yaml:"max,omitempty"`
+	Max *int `json:"max,omitempty" yaml:"max,omitempty"`
 	// Min is the minimum value of all samples in the histogram.
-	Min int `json:"min,omitempty" yaml:"min,omitempty"`
+	Min *int `json:"min,omitempty" yaml:"min,omitempty"`
 	// NSamples is the total number of samples in the histogram.
-	NSamples int `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
+	NSamples *int `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
 	// P50 is p50 Quantile
 	P50 Quantile `json:"p50,omitempty" yaml:"p50,omitempty"`
 	// P90 is p95 Quantile
@@ -3030,7 +3030,7 @@ type Histogramuint64 struct {
 	// StartTime is the start time of the histogram.
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
 	// SumOfSamples is the sum of all samples in the histogram.
-	SumOfSamples int `json:"sum_of_samples,omitempty" yaml:"sum_of_samples,omitempty"`
+	SumOfSamples *int `json:"sum_of_samples,omitempty" yaml:"sum_of_samples,omitempty"`
 }
 
 // Histogramuint8 is histogram metric
@@ -3056,11 +3056,11 @@ type Histogramuint8 struct {
 	// Bins is the bins of the histogram.
 	Bins []Binuint8 `json:"bins,omitempty" yaml:"bins,omitempty"`
 	// Max is the maximum value of all samples in the histogram.
-	Max int `json:"max,omitempty" yaml:"max,omitempty"`
+	Max *int `json:"max,omitempty" yaml:"max,omitempty"`
 	// Min is the minimum value of all samples in the histogram.
-	Min int `json:"min,omitempty" yaml:"min,omitempty"`
+	Min *int `json:"min,omitempty" yaml:"min,omitempty"`
 	// NSamples is the total number of samples in the histogram.
-	NSamples int `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
+	NSamples *int `json:"n_samples,omitempty" yaml:"n_samples,omitempty"`
 	// P50 is p50 Quantile
 	P50 Quantile `json:"p50,omitempty" yaml:"p50,omitempty"`
 	// P90 is p95 Quantile
@@ -3075,7 +3075,7 @@ type Histogramuint8 struct {
 	// StartTime is the start time of the histogram.
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
 	// SumOfSamples is the sum of all samples in the histogram.
-	SumOfSamples int `json:"sum_of_samples,omitempty" yaml:"sum_of_samples,omitempty"`
+	SumOfSamples *int `json:"sum_of_samples,omitempty" yaml:"sum_of_samples,omitempty"`
 }
 
 // Hostname is a hostname identifies a host on a network, and is usually a dot-delimited sequence of labels,
@@ -3269,7 +3269,7 @@ type ImageSource struct {
 // - Offset
 type ImportBlocksBulkWrite struct {
 	Base64EncodedData string `json:"base64_encoded_data,omitempty" yaml:"base64_encoded_data,omitempty"`
-	Offset            int    `json:"offset,omitempty" yaml:"offset,omitempty"`
+	Offset            *int   `json:"offset,omitempty" yaml:"offset,omitempty"`
 }
 
 // ImportExportPolicyType is the type definition for a ImportExportPolicyType.
@@ -3649,7 +3649,7 @@ type InstanceSerialConsoleData struct {
 	Data []string `json:"data,omitempty" yaml:"data,omitempty"`
 	// LastByteOffset is the absolute offset since boot (suitable for use as `byte_offset` in a subsequent request)
 	// of the last byte returned in `data`.
-	LastByteOffset int `json:"last_byte_offset,omitempty" yaml:"last_byte_offset,omitempty"`
+	LastByteOffset *int `json:"last_byte_offset,omitempty" yaml:"last_byte_offset,omitempty"`
 }
 
 // InstanceState is the instance is being created.
@@ -4002,10 +4002,10 @@ type Ipv4Range struct {
 // - Capacity
 type Ipv4Utilization struct {
 	// Allocated is the number of IPv4 addresses allocated from this pool
-	Allocated int `json:"allocated,omitempty" yaml:"allocated,omitempty"`
+	Allocated *int `json:"allocated,omitempty" yaml:"allocated,omitempty"`
 	// Capacity is the total number of IPv4 addresses in the pool, i.e., the sum of the lengths of the IPv4 ranges.
 	// Unlike IPv6 capacity, can be a 32-bit integer because there are only 2^32 IPv4 addresses.
-	Capacity int `json:"capacity,omitempty" yaml:"capacity,omitempty"`
+	Capacity *int `json:"capacity,omitempty" yaml:"capacity,omitempty"`
 }
 
 // Ipv6Net is an IPv6 subnet, including prefix and subnet mask
@@ -4058,7 +4058,7 @@ type LinkConfigCreate struct {
 	// Lldp is the link-layer discovery protocol (LLDP) configuration for the link.
 	Lldp LldpLinkConfigCreate `json:"lldp,omitempty" yaml:"lldp,omitempty"`
 	// Mtu is maximum transmission unit for the link.
-	Mtu int `json:"mtu,omitempty" yaml:"mtu,omitempty"`
+	Mtu *int `json:"mtu,omitempty" yaml:"mtu,omitempty"`
 	// Speed is the speed of the link.
 	Speed LinkSpeed `json:"speed,omitempty" yaml:"speed,omitempty"`
 	// TxEq is optional tx_eq settings
@@ -4199,7 +4199,7 @@ type LoopbackAddressCreate struct {
 	//
 	Anycast *bool `json:"anycast,omitempty" yaml:"anycast,omitempty"`
 	// Mask is the subnet mask to use for the address.
-	Mask int `json:"mask,omitempty" yaml:"mask,omitempty"`
+	Mask *int `json:"mask,omitempty" yaml:"mask,omitempty"`
 	// RackId is the containing the switch this loopback address will be configured on.
 	RackId string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
 	// SwitchLocation is the location of the switch within the rack this loopback address will be configured on.
@@ -4294,7 +4294,7 @@ type NetworkInterface struct {
 	// can be at most 63 characters long.
 	Name       Name    `json:"name,omitempty" yaml:"name,omitempty"`
 	Primary    *bool   `json:"primary,omitempty" yaml:"primary,omitempty"`
-	Slot       int     `json:"slot,omitempty" yaml:"slot,omitempty"`
+	Slot       *int    `json:"slot,omitempty" yaml:"slot,omitempty"`
 	Subnet     IpNet   `json:"subnet,omitempty" yaml:"subnet,omitempty"`
 	TransitIps []IpNet `json:"transit_ips,omitempty" yaml:"transit_ips,omitempty"`
 	// Vni is a Geneve Virtual Network Identifier
@@ -4510,10 +4510,10 @@ type ProbeCreate struct {
 // - Kind
 // - LastPort
 type ProbeExternalIp struct {
-	FirstPort int                 `json:"first_port,omitempty" yaml:"first_port,omitempty"`
+	FirstPort *int                `json:"first_port,omitempty" yaml:"first_port,omitempty"`
 	Ip        string              `json:"ip,omitempty" yaml:"ip,omitempty"`
 	Kind      ProbeExternalIpKind `json:"kind,omitempty" yaml:"kind,omitempty"`
-	LastPort  int                 `json:"last_port,omitempty" yaml:"last_port,omitempty"`
+	LastPort  *int                `json:"last_port,omitempty" yaml:"last_port,omitempty"`
 }
 
 // ProbeExternalIpKind is the type definition for a ProbeExternalIpKind.
@@ -4723,9 +4723,9 @@ type Route struct {
 	Gw string `json:"gw,omitempty" yaml:"gw,omitempty"`
 	// RibPriority is local preference for route. Higher preference indictes precedence within and across protocols.
 	//
-	RibPriority int `json:"rib_priority,omitempty" yaml:"rib_priority,omitempty"`
+	RibPriority *int `json:"rib_priority,omitempty" yaml:"rib_priority,omitempty"`
 	// Vid is vLAN id the gateway is reachable over.
-	Vid int `json:"vid,omitempty" yaml:"vid,omitempty"`
+	Vid *int `json:"vid,omitempty" yaml:"vid,omitempty"`
 }
 
 // RouteConfig is route configuration data associated with a switch port configuration.
@@ -5168,7 +5168,7 @@ type SiloIpPoolResultsPage struct {
 // - Storage
 type SiloQuotas struct {
 	// Cpus is number of virtual CPUs
-	Cpus int `json:"cpus,omitempty" yaml:"cpus,omitempty"`
+	Cpus *int `json:"cpus,omitempty" yaml:"cpus,omitempty"`
 	// Memory is amount of memory in bytes
 	Memory ByteCount `json:"memory,omitempty" yaml:"memory,omitempty"`
 	SiloId string    `json:"silo_id,omitempty" yaml:"silo_id,omitempty"`
@@ -5184,7 +5184,7 @@ type SiloQuotas struct {
 // - Storage
 type SiloQuotasCreate struct {
 	// Cpus is the amount of virtual CPUs available for running instances in the Silo
-	Cpus int `json:"cpus,omitempty" yaml:"cpus,omitempty"`
+	Cpus *int `json:"cpus,omitempty" yaml:"cpus,omitempty"`
 	// Memory is the amount of RAM (in bytes) available for running instances in the Silo
 	Memory ByteCount `json:"memory,omitempty" yaml:"memory,omitempty"`
 	// Storage is the amount of storage (in bytes) available for disks or snapshots
@@ -5206,7 +5206,7 @@ type SiloQuotasResultsPage struct {
 // be updated.
 type SiloQuotasUpdate struct {
 	// Cpus is the amount of virtual CPUs available for running instances in the Silo
-	Cpus int `json:"cpus,omitempty" yaml:"cpus,omitempty"`
+	Cpus *int `json:"cpus,omitempty" yaml:"cpus,omitempty"`
 	// Memory is the amount of RAM (in bytes) available for running instances in the Silo
 	Memory ByteCount `json:"memory,omitempty" yaml:"memory,omitempty"`
 	// Storage is the amount of storage (in bytes) available for disks or snapshots
@@ -5316,7 +5316,7 @@ type Sled struct {
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
 	// UsableHardwareThreads is the number of hardware threads which can execute on this sled
-	UsableHardwareThreads int `json:"usable_hardware_threads,omitempty" yaml:"usable_hardware_threads,omitempty"`
+	UsableHardwareThreads *int `json:"usable_hardware_threads,omitempty" yaml:"usable_hardware_threads,omitempty"`
 	// UsablePhysicalRam is amount of RAM which may be used by the Sled's OS
 	UsablePhysicalRam ByteCount `json:"usable_physical_ram,omitempty" yaml:"usable_physical_ram,omitempty"`
 }
@@ -5346,13 +5346,13 @@ type SledInstance struct {
 	ActiveSledId string `json:"active_sled_id,omitempty" yaml:"active_sled_id,omitempty"`
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id          string `json:"id,omitempty" yaml:"id,omitempty"`
-	Memory      int    `json:"memory,omitempty" yaml:"memory,omitempty"`
+	Memory      *int   `json:"memory,omitempty" yaml:"memory,omitempty"`
 	MigrationId string `json:"migration_id,omitempty" yaml:"migration_id,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
 	// can be at most 63 characters long.
 	Name  Name `json:"name,omitempty" yaml:"name,omitempty"`
-	Ncpus int  `json:"ncpus,omitempty" yaml:"ncpus,omitempty"`
+	Ncpus *int `json:"ncpus,omitempty" yaml:"ncpus,omitempty"`
 	// ProjectName is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII,
 	// uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a
 	// UUID. They can be at most 63 characters long.
@@ -5694,7 +5694,7 @@ type SwitchInterfaceKindVlan struct {
 	Type SwitchInterfaceKindType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Vid is the virtual network id (VID) that distinguishes this interface and is used for producing and consuming
 	// 802.1Q Ethernet tags. This field has a maximum value of 4095 as 802.1Q tags are twelve bits.
-	Vid int `json:"vid,omitempty" yaml:"vid,omitempty"`
+	Vid *int `json:"vid,omitempty" yaml:"vid,omitempty"`
 }
 
 // SwitchInterfaceKindLoopback is loopback interfaces are anchors for IP addresses that are not specific to
@@ -5712,7 +5712,7 @@ type SwitchInterfaceKind struct {
 	Type SwitchInterfaceKindType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Vid is the virtual network id (VID) that distinguishes this interface and is used for producing and consuming
 	// 802.1Q Ethernet tags. This field has a maximum value of 4095 as 802.1Q tags are twelve bits.
-	Vid int `json:"vid,omitempty" yaml:"vid,omitempty"`
+	Vid *int `json:"vid,omitempty" yaml:"vid,omitempty"`
 }
 
 // SwitchInterfaceKind2 is primary interfaces are associated with physical links. There is exactly one primary
@@ -5763,7 +5763,7 @@ type SwitchPortAddressConfig struct {
 	// PortSettingsId is the port settings object this address configuration belongs to.
 	PortSettingsId string `json:"port_settings_id,omitempty" yaml:"port_settings_id,omitempty"`
 	// VlanId is an optional VLAN ID
-	VlanId int `json:"vlan_id,omitempty" yaml:"vlan_id,omitempty"`
+	VlanId *int `json:"vlan_id,omitempty" yaml:"vlan_id,omitempty"`
 }
 
 // SwitchPortApplySettings is parameters for applying settings to switch ports.
@@ -5821,7 +5821,7 @@ type SwitchPortLinkConfig struct {
 	// LldpLinkConfigId is the link-layer discovery protocol service configuration id for this link.
 	LldpLinkConfigId string `json:"lldp_link_config_id,omitempty" yaml:"lldp_link_config_id,omitempty"`
 	// Mtu is the maximum transmission unit for this link.
-	Mtu int `json:"mtu,omitempty" yaml:"mtu,omitempty"`
+	Mtu *int `json:"mtu,omitempty" yaml:"mtu,omitempty"`
 	// PortSettingsId is the port settings this link configuration belongs to.
 	PortSettingsId string `json:"port_settings_id,omitempty" yaml:"port_settings_id,omitempty"`
 	// Speed is the configured speed of the link.
@@ -5858,10 +5858,10 @@ type SwitchPortRouteConfig struct {
 	// PortSettingsId is the port settings object this route configuration belongs to.
 	PortSettingsId string `json:"port_settings_id,omitempty" yaml:"port_settings_id,omitempty"`
 	// RibPriority is rIB Priority indicating priority within and across protocols.
-	RibPriority int `json:"rib_priority,omitempty" yaml:"rib_priority,omitempty"`
+	RibPriority *int `json:"rib_priority,omitempty" yaml:"rib_priority,omitempty"`
 	// VlanId is the VLAN identifier for the route. Use this if the gateway is reachable over an 802.1Q tagged L2
 	// segment.
-	VlanId int `json:"vlan_id,omitempty" yaml:"vlan_id,omitempty"`
+	VlanId *int `json:"vlan_id,omitempty" yaml:"vlan_id,omitempty"`
 }
 
 // SwitchPortSettings is a switch port settings identity whose id may be used to view additional details.
@@ -6008,7 +6008,7 @@ type SwitchVlanInterfaceConfig struct {
 	InterfaceConfigId string `json:"interface_config_id,omitempty" yaml:"interface_config_id,omitempty"`
 	// VlanId is the virtual network id for this interface that is used for producing and consuming 802.1Q Ethernet
 	// tags. This field has a maximum value of 4095 as 802.1Q tags are twelve bits.
-	VlanId int `json:"vlan_id,omitempty" yaml:"vlan_id,omitempty"`
+	VlanId *int `json:"vlan_id,omitempty" yaml:"vlan_id,omitempty"`
 }
 
 // SystemMetricName is the type definition for a SystemMetricName.
@@ -6096,7 +6096,7 @@ type TimeseriesSchema struct {
 	TimeseriesName TimeseriesName `json:"timeseries_name,omitempty" yaml:"timeseries_name,omitempty"`
 	// Units is measurement units for timeseries samples.
 	Units   Units `json:"units,omitempty" yaml:"units,omitempty"`
-	Version int   `json:"version,omitempty" yaml:"version,omitempty"`
+	Version *int  `json:"version,omitempty" yaml:"version,omitempty"`
 }
 
 // TimeseriesSchemaResultsPage is a single page of results
@@ -6114,15 +6114,15 @@ type TimeseriesSchemaResultsPage struct {
 // to improve signal integrity.
 type TxEqConfig struct {
 	// Main is main tap
-	Main int `json:"main,omitempty" yaml:"main,omitempty"`
+	Main *int `json:"main,omitempty" yaml:"main,omitempty"`
 	// Post1 is post-cursor tap1
-	Post1 int `json:"post1,omitempty" yaml:"post1,omitempty"`
+	Post1 *int `json:"post1,omitempty" yaml:"post1,omitempty"`
 	// Post2 is post-cursor tap2
-	Post2 int `json:"post2,omitempty" yaml:"post2,omitempty"`
+	Post2 *int `json:"post2,omitempty" yaml:"post2,omitempty"`
 	// Pre1 is pre-cursor tap1
-	Pre1 int `json:"pre1,omitempty" yaml:"pre1,omitempty"`
+	Pre1 *int `json:"pre1,omitempty" yaml:"pre1,omitempty"`
 	// Pre2 is pre-cursor tap2
-	Pre2 int `json:"pre2,omitempty" yaml:"pre2,omitempty"`
+	Pre2 *int `json:"pre2,omitempty" yaml:"pre2,omitempty"`
 }
 
 // TypedUuidForInstanceKind is the type definition for a TypedUuidForInstanceKind.
@@ -6140,7 +6140,7 @@ type TypedUuidForSupportBundleKind string
 type UninitializedSled struct {
 	// Baseboard is properties that uniquely identify an Oxide hardware component
 	Baseboard Baseboard `json:"baseboard,omitempty" yaml:"baseboard,omitempty"`
-	Cubby     int       `json:"cubby,omitempty" yaml:"cubby,omitempty"`
+	Cubby     *int      `json:"cubby,omitempty" yaml:"cubby,omitempty"`
 	RackId    string    `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
 }
 
@@ -6396,7 +6396,7 @@ type Values struct {
 // - Storage
 type VirtualResourceCounts struct {
 	// Cpus is number of virtual CPUs
-	Cpus int `json:"cpus,omitempty" yaml:"cpus,omitempty"`
+	Cpus *int `json:"cpus,omitempty" yaml:"cpus,omitempty"`
 	// Memory is amount of memory in bytes
 	Memory ByteCount `json:"memory,omitempty" yaml:"memory,omitempty"`
 	// Storage is amount of disk storage in bytes
@@ -6491,7 +6491,7 @@ type VpcFirewallRule struct {
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// Priority is the relative priority of this rule
-	Priority int `json:"priority,omitempty" yaml:"priority,omitempty"`
+	Priority *int `json:"priority,omitempty" yaml:"priority,omitempty"`
 	// Status is whether this rule is in effect
 	Status VpcFirewallRuleStatus `json:"status,omitempty" yaml:"status,omitempty"`
 	// Targets is determine the set of instances that the rule applies to
@@ -6700,7 +6700,7 @@ type VpcFirewallRuleUpdate struct {
 	// Name is name of the rule, unique to this VPC
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// Priority is the relative priority of this rule
-	Priority int `json:"priority,omitempty" yaml:"priority,omitempty"`
+	Priority *int `json:"priority,omitempty" yaml:"priority,omitempty"`
 	// Status is whether this rule is in effect
 	Status VpcFirewallRuleStatus `json:"status,omitempty" yaml:"status,omitempty"`
 	// Targets is determine the set of instances that the rule applies to
@@ -6914,7 +6914,7 @@ type DeviceAccessTokenParams struct {
 // Required fields:
 // - Project
 type ProbeListParams struct {
-	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
@@ -6952,7 +6952,7 @@ type ProbeViewParams struct {
 
 // SupportBundleListParams is the request parameters for SupportBundleList
 type SupportBundleListParams struct {
-	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
@@ -7034,7 +7034,7 @@ type LoginSamlParams struct {
 // Required fields:
 // - Project
 type AffinityGroupListParams struct {
-	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
@@ -7084,7 +7084,7 @@ type AffinityGroupUpdateParams struct {
 // Required fields:
 // - AffinityGroup
 type AffinityGroupMemberListParams struct {
-	Limit         int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit         *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken     string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	Project       NameOrId   `json:"project,omitempty" yaml:"project,omitempty"`
 	SortBy        IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
@@ -7129,7 +7129,7 @@ type AffinityGroupMemberInstanceAddParams struct {
 // Required fields:
 // - Project
 type AntiAffinityGroupListParams struct {
-	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
@@ -7179,7 +7179,7 @@ type AntiAffinityGroupUpdateParams struct {
 // Required fields:
 // - AntiAffinityGroup
 type AntiAffinityGroupMemberListParams struct {
-	Limit             int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit             *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken         string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	Project           NameOrId   `json:"project,omitempty" yaml:"project,omitempty"`
 	SortBy            IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
@@ -7221,7 +7221,7 @@ type AntiAffinityGroupMemberInstanceAddParams struct {
 
 // CertificateListParams is the request parameters for CertificateList
 type CertificateListParams struct {
-	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
@@ -7255,7 +7255,7 @@ type CertificateViewParams struct {
 // Required fields:
 // - Project
 type DiskListParams struct {
-	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
@@ -7340,7 +7340,7 @@ type DiskMetricsListParams struct {
 	Disk      NameOrId        `json:"disk,omitempty" yaml:"disk,omitempty"`
 	Metric    DiskMetricName  `json:"metric,omitempty" yaml:"metric,omitempty"`
 	EndTime   *time.Time      `json:"end_time,omitempty" yaml:"end_time,omitempty"`
-	Limit     int             `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int            `json:"limit,omitempty" yaml:"limit,omitempty"`
 	Order     PaginationOrder `json:"order,omitempty" yaml:"order,omitempty"`
 	PageToken string          `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	StartTime *time.Time      `json:"start_time,omitempty" yaml:"start_time,omitempty"`
@@ -7352,7 +7352,7 @@ type DiskMetricsListParams struct {
 // Required fields:
 // - Project
 type FloatingIpListParams struct {
-	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
@@ -7419,7 +7419,7 @@ type FloatingIpDetachParams struct {
 
 // GroupListParams is the request parameters for GroupList
 type GroupListParams struct {
-	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
@@ -7434,7 +7434,7 @@ type GroupViewParams struct {
 
 // ImageListParams is the request parameters for ImageList
 type ImageListParams struct {
-	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
@@ -7491,7 +7491,7 @@ type ImagePromoteParams struct {
 // Required fields:
 // - Project
 type InstanceListParams struct {
-	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
@@ -7541,7 +7541,7 @@ type InstanceUpdateParams struct {
 // Required fields:
 // - Instance
 type InstanceDiskListParams struct {
-	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
@@ -7614,9 +7614,9 @@ type InstanceRebootParams struct {
 // - Instance
 type InstanceSerialConsoleParams struct {
 	Instance   NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
-	FromStart  int      `json:"from_start,omitempty" yaml:"from_start,omitempty"`
-	MaxBytes   int      `json:"max_bytes,omitempty" yaml:"max_bytes,omitempty"`
-	MostRecent int      `json:"most_recent,omitempty" yaml:"most_recent,omitempty"`
+	FromStart  *int     `json:"from_start,omitempty" yaml:"from_start,omitempty"`
+	MaxBytes   *int     `json:"max_bytes,omitempty" yaml:"max_bytes,omitempty"`
+	MostRecent *int     `json:"most_recent,omitempty" yaml:"most_recent,omitempty"`
 	Project    NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
@@ -7626,7 +7626,7 @@ type InstanceSerialConsoleParams struct {
 // - Instance
 type InstanceSerialConsoleStreamParams struct {
 	Instance   NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
-	MostRecent int      `json:"most_recent,omitempty" yaml:"most_recent,omitempty"`
+	MostRecent *int     `json:"most_recent,omitempty" yaml:"most_recent,omitempty"`
 	Project    NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
@@ -7636,7 +7636,7 @@ type InstanceSerialConsoleStreamParams struct {
 // - Instance
 type InstanceSshPublicKeyListParams struct {
 	Instance  NameOrId         `json:"instance,omitempty" yaml:"instance,omitempty"`
-	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
@@ -7666,7 +7666,7 @@ type InstanceStopParams struct {
 // - Gateway
 type InternetGatewayIpAddressListParams struct {
 	Gateway   NameOrId         `json:"gateway,omitempty" yaml:"gateway,omitempty"`
-	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
@@ -7703,7 +7703,7 @@ type InternetGatewayIpAddressDeleteParams struct {
 // - Gateway
 type InternetGatewayIpPoolListParams struct {
 	Gateway   NameOrId         `json:"gateway,omitempty" yaml:"gateway,omitempty"`
-	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
@@ -7739,7 +7739,7 @@ type InternetGatewayIpPoolDeleteParams struct {
 // Required fields:
 // - Vpc
 type InternetGatewayListParams struct {
-	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
@@ -7780,7 +7780,7 @@ type InternetGatewayViewParams struct {
 
 // ProjectIpPoolListParams is the request parameters for ProjectIpPoolList
 type ProjectIpPoolListParams struct {
-	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
@@ -7805,14 +7805,14 @@ type LoginLocalParams struct {
 
 // CurrentUserGroupsParams is the request parameters for CurrentUserGroups
 type CurrentUserGroupsParams struct {
-	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
 
 // CurrentUserSshKeyListParams is the request parameters for CurrentUserSshKeyList
 type CurrentUserSshKeyListParams struct {
-	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
@@ -7850,7 +7850,7 @@ type CurrentUserSshKeyViewParams struct {
 type SiloMetricParams struct {
 	MetricName SystemMetricName `json:"metric_name,omitempty" yaml:"metric_name,omitempty"`
 	EndTime    *time.Time       `json:"end_time,omitempty" yaml:"end_time,omitempty"`
-	Limit      int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit      *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	Order      PaginationOrder  `json:"order,omitempty" yaml:"order,omitempty"`
 	PageToken  string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	StartTime  *time.Time       `json:"start_time,omitempty" yaml:"start_time,omitempty"`
@@ -7863,7 +7863,7 @@ type SiloMetricParams struct {
 // - Instance
 type InstanceNetworkInterfaceListParams struct {
 	Instance  NameOrId         `json:"instance,omitempty" yaml:"instance,omitempty"`
-	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
@@ -7922,7 +7922,7 @@ type PolicyUpdateParams struct {
 
 // ProjectListParams is the request parameters for ProjectList
 type ProjectListParams struct {
-	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
@@ -7984,7 +7984,7 @@ type ProjectPolicyUpdateParams struct {
 // Required fields:
 // - Project
 type SnapshotListParams struct {
-	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
@@ -8020,7 +8020,7 @@ type SnapshotViewParams struct {
 
 // PhysicalDiskListParams is the request parameters for PhysicalDiskList
 type PhysicalDiskListParams struct {
-	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
@@ -8043,14 +8043,14 @@ type NetworkingSwitchPortLldpNeighborsParams struct {
 	Port           Name       `json:"port,omitempty" yaml:"port,omitempty"`
 	RackId         string     `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
 	SwitchLocation Name       `json:"switch_location,omitempty" yaml:"switch_location,omitempty"`
-	Limit          int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit          *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken      string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy         IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
 
 // RackListParams is the request parameters for RackList
 type RackListParams struct {
-	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
@@ -8065,7 +8065,7 @@ type RackViewParams struct {
 
 // SledListParams is the request parameters for SledList
 type SledListParams struct {
-	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
@@ -8080,7 +8080,7 @@ type SledAddParams struct {
 
 // SledListUninitializedParams is the request parameters for SledListUninitialized
 type SledListUninitializedParams struct {
-	Limit     int    `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int   `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 }
 
@@ -8098,7 +8098,7 @@ type SledViewParams struct {
 // - SledId
 type SledPhysicalDiskListParams struct {
 	SledId    string     `json:"sled_id,omitempty" yaml:"sled_id,omitempty"`
-	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
@@ -8109,7 +8109,7 @@ type SledPhysicalDiskListParams struct {
 // - SledId
 type SledInstanceListParams struct {
 	SledId    string     `json:"sled_id,omitempty" yaml:"sled_id,omitempty"`
-	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
@@ -8126,7 +8126,7 @@ type SledSetProvisionPolicyParams struct {
 
 // NetworkingSwitchPortListParams is the request parameters for NetworkingSwitchPortList
 type NetworkingSwitchPortListParams struct {
-	Limit        int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit        *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken    string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy       IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 	SwitchPortId string     `json:"switch_port_id,omitempty" yaml:"switch_port_id,omitempty"`
@@ -8198,7 +8198,7 @@ type NetworkingSwitchPortStatusParams struct {
 
 // SwitchListParams is the request parameters for SwitchList
 type SwitchListParams struct {
-	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
@@ -8216,7 +8216,7 @@ type SwitchViewParams struct {
 // Required fields:
 // - Silo
 type SiloIdentityProviderListParams struct {
-	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	Silo      NameOrId         `json:"silo,omitempty" yaml:"silo,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
@@ -8276,7 +8276,7 @@ type SamlIdentityProviderViewParams struct {
 
 // IpPoolListParams is the request parameters for IpPoolList
 type IpPoolListParams struct {
-	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
@@ -8291,7 +8291,7 @@ type IpPoolCreateParams struct {
 
 // IpPoolServiceRangeListParams is the request parameters for IpPoolServiceRangeList
 type IpPoolServiceRangeListParams struct {
-	Limit     int    `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int   `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 }
 
@@ -8343,7 +8343,7 @@ type IpPoolUpdateParams struct {
 // - Pool
 type IpPoolRangeListParams struct {
 	Pool      NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
-	Limit     int      `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int     `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string   `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 }
 
@@ -8373,7 +8373,7 @@ type IpPoolRangeRemoveParams struct {
 // - Pool
 type IpPoolSiloListParams struct {
 	Pool      NameOrId   `json:"pool,omitempty" yaml:"pool,omitempty"`
-	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
@@ -8427,7 +8427,7 @@ type IpPoolUtilizationViewParams struct {
 type SystemMetricParams struct {
 	MetricName SystemMetricName `json:"metric_name,omitempty" yaml:"metric_name,omitempty"`
 	EndTime    *time.Time       `json:"end_time,omitempty" yaml:"end_time,omitempty"`
-	Limit      int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit      *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	Order      PaginationOrder  `json:"order,omitempty" yaml:"order,omitempty"`
 	PageToken  string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	StartTime  *time.Time       `json:"start_time,omitempty" yaml:"start_time,omitempty"`
@@ -8436,7 +8436,7 @@ type SystemMetricParams struct {
 
 // NetworkingAddressLotListParams is the request parameters for NetworkingAddressLotList
 type NetworkingAddressLotListParams struct {
-	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
@@ -8463,7 +8463,7 @@ type NetworkingAddressLotDeleteParams struct {
 // - AddressLot
 type NetworkingAddressLotBlockListParams struct {
 	AddressLot NameOrId   `json:"address_lot,omitempty" yaml:"address_lot,omitempty"`
-	Limit      int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit      *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken  string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy     IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
@@ -8502,7 +8502,7 @@ type NetworkingBgpConfigDeleteParams struct {
 
 // NetworkingBgpConfigListParams is the request parameters for NetworkingBgpConfigList
 type NetworkingBgpConfigListParams struct {
-	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
@@ -8517,7 +8517,7 @@ type NetworkingBgpConfigCreateParams struct {
 
 // NetworkingBgpAnnounceSetListParams is the request parameters for NetworkingBgpAnnounceSetList
 type NetworkingBgpAnnounceSetListParams struct {
-	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
@@ -8551,7 +8551,7 @@ type NetworkingBgpAnnouncementListParams struct {
 // Required fields:
 // - Asn
 type NetworkingBgpMessageHistoryParams struct {
-	Asn int `json:"asn,omitempty" yaml:"asn,omitempty"`
+	Asn *int `json:"asn,omitempty" yaml:"asn,omitempty"`
 }
 
 // NetworkingBgpImportedRoutesIpv4Params is the request parameters for NetworkingBgpImportedRoutesIpv4
@@ -8559,12 +8559,12 @@ type NetworkingBgpMessageHistoryParams struct {
 // Required fields:
 // - Asn
 type NetworkingBgpImportedRoutesIpv4Params struct {
-	Asn int `json:"asn,omitempty" yaml:"asn,omitempty"`
+	Asn *int `json:"asn,omitempty" yaml:"asn,omitempty"`
 }
 
 // NetworkingLoopbackAddressListParams is the request parameters for NetworkingLoopbackAddressList
 type NetworkingLoopbackAddressListParams struct {
-	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
@@ -8587,7 +8587,7 @@ type NetworkingLoopbackAddressCreateParams struct {
 type NetworkingLoopbackAddressDeleteParams struct {
 	Address        string `json:"address,omitempty" yaml:"address,omitempty"`
 	RackId         string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
-	SubnetMask     int    `json:"subnet_mask,omitempty" yaml:"subnet_mask,omitempty"`
+	SubnetMask     *int   `json:"subnet_mask,omitempty" yaml:"subnet_mask,omitempty"`
 	SwitchLocation Name   `json:"switch_location,omitempty" yaml:"switch_location,omitempty"`
 }
 
@@ -8598,7 +8598,7 @@ type NetworkingSwitchPortSettingsDeleteParams struct {
 
 // NetworkingSwitchPortSettingsListParams is the request parameters for NetworkingSwitchPortSettingsList
 type NetworkingSwitchPortSettingsListParams struct {
-	Limit        int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit        *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken    string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	PortSettings NameOrId         `json:"port_settings,omitempty" yaml:"port_settings,omitempty"`
 	SortBy       NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
@@ -8630,7 +8630,7 @@ type SystemPolicyUpdateParams struct {
 
 // RoleListParams is the request parameters for RoleList
 type RoleListParams struct {
-	Limit     int    `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int   `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 }
 
@@ -8644,14 +8644,14 @@ type RoleViewParams struct {
 
 // SystemQuotasListParams is the request parameters for SystemQuotasList
 type SystemQuotasListParams struct {
-	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
 
 // SiloListParams is the request parameters for SiloList
 type SiloListParams struct {
-	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
@@ -8686,7 +8686,7 @@ type SiloViewParams struct {
 // - Silo
 type SiloIpPoolListParams struct {
 	Silo      NameOrId         `json:"silo,omitempty" yaml:"silo,omitempty"`
-	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
@@ -8737,7 +8737,7 @@ type SystemTimeseriesQueryParams struct {
 
 // SystemTimeseriesSchemaListParams is the request parameters for SystemTimeseriesSchemaList
 type SystemTimeseriesSchemaListParams struct {
-	Limit     int    `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int   `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 }
 
@@ -8746,7 +8746,7 @@ type SystemTimeseriesSchemaListParams struct {
 // Required fields:
 // - Silo
 type SiloUserListParams struct {
-	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	Silo      NameOrId   `json:"silo,omitempty" yaml:"silo,omitempty"`
 	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
@@ -8754,7 +8754,7 @@ type SiloUserListParams struct {
 
 // UserBuiltinListParams is the request parameters for UserBuiltinList
 type UserBuiltinListParams struct {
-	Limit     int          `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int         `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string       `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    NameSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
@@ -8779,7 +8779,7 @@ type SiloUserViewParams struct {
 
 // SiloUtilizationListParams is the request parameters for SiloUtilizationList
 type SiloUtilizationListParams struct {
-	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
@@ -8805,7 +8805,7 @@ type TimeseriesQueryParams struct {
 // UserListParams is the request parameters for UserList
 type UserListParams struct {
 	Group     string     `json:"group,omitempty" yaml:"group,omitempty"`
-	Limit     int        `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
@@ -8835,7 +8835,7 @@ type VpcFirewallRulesUpdateParams struct {
 // Required fields:
 // - Router
 type VpcRouterRouteListParams struct {
-	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
 	Router    NameOrId         `json:"router,omitempty" yaml:"router,omitempty"`
@@ -8896,7 +8896,7 @@ type VpcRouterRouteUpdateParams struct {
 // Required fields:
 // - Vpc
 type VpcRouterListParams struct {
-	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
@@ -8951,7 +8951,7 @@ type VpcRouterUpdateParams struct {
 // Required fields:
 // - Vpc
 type VpcSubnetListParams struct {
-	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
@@ -9007,7 +9007,7 @@ type VpcSubnetUpdateParams struct {
 // - Subnet
 type VpcSubnetListNetworkInterfacesParams struct {
 	Subnet    NameOrId         `json:"subnet,omitempty" yaml:"subnet,omitempty"`
-	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
@@ -9019,7 +9019,7 @@ type VpcSubnetListNetworkInterfacesParams struct {
 // Required fields:
 // - Project
 type VpcListParams struct {
-	Limit     int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
@@ -10823,7 +10823,7 @@ func (p *NetworkingBgpAnnouncementListParams) Validate() error {
 // Validate verifies all required fields for NetworkingBgpMessageHistoryParams are set
 func (p *NetworkingBgpMessageHistoryParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredNum(int(p.Asn), "Asn")
+	v.HasRequiredNum(p.Asn, "Asn")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -10833,7 +10833,7 @@ func (p *NetworkingBgpMessageHistoryParams) Validate() error {
 // Validate verifies all required fields for NetworkingBgpImportedRoutesIpv4Params are set
 func (p *NetworkingBgpImportedRoutesIpv4Params) Validate() error {
 	v := new(Validator)
-	v.HasRequiredNum(int(p.Asn), "Asn")
+	v.HasRequiredNum(p.Asn, "Asn")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -10865,7 +10865,7 @@ func (p *NetworkingLoopbackAddressDeleteParams) Validate() error {
 	v.HasRequiredStr(string(p.Address), "Address")
 	v.HasRequiredStr(string(p.RackId), "RackId")
 	v.HasRequiredStr(string(p.SwitchLocation), "SwitchLocation")
-	v.HasRequiredNum(int(p.SubnetMask), "SubnetMask")
+	v.HasRequiredNum(p.SubnetMask, "SubnetMask")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}

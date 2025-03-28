@@ -69,7 +69,7 @@ func (c *Client) AffinityGroupList(ctx context.Context, params AffinityGroupList
 		resolveRelative(c.host, "/v1/affinity-groups"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"project":    string(params.Project),
 			"sort_by":    string(params.SortBy),
@@ -115,7 +115,7 @@ func (c *Client) AffinityGroupListAllPages(ctx context.Context, params AffinityG
 	}
 	var allPages []AffinityGroup
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.AffinityGroupList(ctx, params)
 		if err != nil {
@@ -339,7 +339,7 @@ func (c *Client) AffinityGroupMemberList(ctx context.Context, params AffinityGro
 			"affinity_group": string(params.AffinityGroup),
 		},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"project":    string(params.Project),
 			"sort_by":    string(params.SortBy),
@@ -385,7 +385,7 @@ func (c *Client) AffinityGroupMemberListAllPages(ctx context.Context, params Aff
 	}
 	var allPages []AffinityGroupMember
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.AffinityGroupMemberList(ctx, params)
 		if err != nil {
@@ -552,7 +552,7 @@ func (c *Client) AntiAffinityGroupList(ctx context.Context, params AntiAffinityG
 		resolveRelative(c.host, "/v1/anti-affinity-groups"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"project":    string(params.Project),
 			"sort_by":    string(params.SortBy),
@@ -598,7 +598,7 @@ func (c *Client) AntiAffinityGroupListAllPages(ctx context.Context, params AntiA
 	}
 	var allPages []AntiAffinityGroup
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.AntiAffinityGroupList(ctx, params)
 		if err != nil {
@@ -822,7 +822,7 @@ func (c *Client) AntiAffinityGroupMemberList(ctx context.Context, params AntiAff
 			"anti_affinity_group": string(params.AntiAffinityGroup),
 		},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"project":    string(params.Project),
 			"sort_by":    string(params.SortBy),
@@ -868,7 +868,7 @@ func (c *Client) AntiAffinityGroupMemberListAllPages(ctx context.Context, params
 	}
 	var allPages []AntiAffinityGroupMember
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.AntiAffinityGroupMemberList(ctx, params)
 		if err != nil {
@@ -1037,7 +1037,7 @@ func (c *Client) CertificateList(ctx context.Context, params CertificateListPara
 		resolveRelative(c.host, "/v1/certificates"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"sort_by":    string(params.SortBy),
 		},
@@ -1084,7 +1084,7 @@ func (c *Client) CertificateListAllPages(ctx context.Context, params Certificate
 	}
 	var allPages []Certificate
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.CertificateList(ctx, params)
 		if err != nil {
@@ -1249,7 +1249,7 @@ func (c *Client) DiskList(ctx context.Context, params DiskListParams) (*DiskResu
 		resolveRelative(c.host, "/v1/disks"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"project":    string(params.Project),
 			"sort_by":    string(params.SortBy),
@@ -1295,7 +1295,7 @@ func (c *Client) DiskListAllPages(ctx context.Context, params DiskListParams) ([
 	}
 	var allPages []Disk
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.DiskList(ctx, params)
 		if err != nil {
@@ -1629,7 +1629,7 @@ func (c *Client) DiskMetricsList(ctx context.Context, params DiskMetricsListPara
 		},
 		map[string]string{
 			"end_time":   params.EndTime.Format(time.RFC3339),
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"order":      string(params.Order),
 			"page_token": params.PageToken,
 			"project":    string(params.Project),
@@ -1676,7 +1676,7 @@ func (c *Client) DiskMetricsListAllPages(ctx context.Context, params DiskMetrics
 	}
 	var allPages []Measurement
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.DiskMetricsList(ctx, params)
 		if err != nil {
@@ -1707,7 +1707,7 @@ func (c *Client) FloatingIpList(ctx context.Context, params FloatingIpListParams
 		resolveRelative(c.host, "/v1/floating-ips"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"project":    string(params.Project),
 			"sort_by":    string(params.SortBy),
@@ -1753,7 +1753,7 @@ func (c *Client) FloatingIpListAllPages(ctx context.Context, params FloatingIpLi
 	}
 	var allPages []FloatingIp
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.FloatingIpList(ctx, params)
 		if err != nil {
@@ -2078,7 +2078,7 @@ func (c *Client) GroupList(ctx context.Context, params GroupListParams) (*GroupR
 		resolveRelative(c.host, "/v1/groups"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"sort_by":    string(params.SortBy),
 		},
@@ -2123,7 +2123,7 @@ func (c *Client) GroupListAllPages(ctx context.Context, params GroupListParams) 
 	}
 	var allPages []Group
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.GroupList(ctx, params)
 		if err != nil {
@@ -2202,7 +2202,7 @@ func (c *Client) ImageList(ctx context.Context, params ImageListParams) (*ImageR
 		resolveRelative(c.host, "/v1/images"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"project":    string(params.Project),
 			"sort_by":    string(params.SortBy),
@@ -2250,7 +2250,7 @@ func (c *Client) ImageListAllPages(ctx context.Context, params ImageListParams) 
 	}
 	var allPages []Image
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.ImageList(ctx, params)
 		if err != nil {
@@ -2520,7 +2520,7 @@ func (c *Client) InstanceList(ctx context.Context, params InstanceListParams) (*
 		resolveRelative(c.host, "/v1/instances"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"project":    string(params.Project),
 			"sort_by":    string(params.SortBy),
@@ -2566,7 +2566,7 @@ func (c *Client) InstanceListAllPages(ctx context.Context, params InstanceListPa
 	}
 	var allPages []Instance
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.InstanceList(ctx, params)
 		if err != nil {
@@ -2790,7 +2790,7 @@ func (c *Client) InstanceDiskList(ctx context.Context, params InstanceDiskListPa
 			"instance": string(params.Instance),
 		},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"project":    string(params.Project),
 			"sort_by":    string(params.SortBy),
@@ -2836,7 +2836,7 @@ func (c *Client) InstanceDiskListAllPages(ctx context.Context, params InstanceDi
 	}
 	var allPages []Disk
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.InstanceDiskList(ctx, params)
 		if err != nil {
@@ -3162,9 +3162,9 @@ func (c *Client) InstanceSerialConsole(ctx context.Context, params InstanceSeria
 			"instance": string(params.Instance),
 		},
 		map[string]string{
-			"from_start":  strconv.Itoa(params.FromStart),
-			"max_bytes":   strconv.Itoa(params.MaxBytes),
-			"most_recent": strconv.Itoa(params.MostRecent),
+			"from_start":  PointerIntToStr(params.FromStart),
+			"max_bytes":   PointerIntToStr(params.MaxBytes),
+			"most_recent": PointerIntToStr(params.MostRecent),
 			"project":     string(params.Project),
 		},
 	)
@@ -3213,7 +3213,7 @@ func (c *Client) InstanceSerialConsoleStream(ctx context.Context, params Instanc
 			"instance": string(params.Instance),
 		},
 		map[string]string{
-			"most_recent": strconv.Itoa(params.MostRecent),
+			"most_recent": PointerIntToStr(params.MostRecent),
 			"project":     string(params.Project),
 		},
 	)
@@ -3255,7 +3255,7 @@ func (c *Client) InstanceSshPublicKeyList(ctx context.Context, params InstanceSs
 			"instance": string(params.Instance),
 		},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"project":    string(params.Project),
 			"sort_by":    string(params.SortBy),
@@ -3303,7 +3303,7 @@ func (c *Client) InstanceSshPublicKeyListAllPages(ctx context.Context, params In
 	}
 	var allPages []SshKey
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.InstanceSshPublicKeyList(ctx, params)
 		if err != nil {
@@ -3431,7 +3431,7 @@ func (c *Client) InternetGatewayIpAddressList(ctx context.Context, params Intern
 		map[string]string{},
 		map[string]string{
 			"gateway":    string(params.Gateway),
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"project":    string(params.Project),
 			"sort_by":    string(params.SortBy),
@@ -3478,7 +3478,7 @@ func (c *Client) InternetGatewayIpAddressListAllPages(ctx context.Context, param
 	}
 	var allPages []InternetGatewayIpAddress
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.InternetGatewayIpAddressList(ctx, params)
 		if err != nil {
@@ -3604,7 +3604,7 @@ func (c *Client) InternetGatewayIpPoolList(ctx context.Context, params InternetG
 		map[string]string{},
 		map[string]string{
 			"gateway":    string(params.Gateway),
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"project":    string(params.Project),
 			"sort_by":    string(params.SortBy),
@@ -3651,7 +3651,7 @@ func (c *Client) InternetGatewayIpPoolListAllPages(ctx context.Context, params I
 	}
 	var allPages []InternetGatewayIpPool
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.InternetGatewayIpPoolList(ctx, params)
 		if err != nil {
@@ -3776,7 +3776,7 @@ func (c *Client) InternetGatewayList(ctx context.Context, params InternetGateway
 		resolveRelative(c.host, "/v1/internet-gateways"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"project":    string(params.Project),
 			"sort_by":    string(params.SortBy),
@@ -3823,7 +3823,7 @@ func (c *Client) InternetGatewayListAllPages(ctx context.Context, params Interne
 	}
 	var allPages []InternetGateway
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.InternetGatewayList(ctx, params)
 		if err != nil {
@@ -3995,7 +3995,7 @@ func (c *Client) ProjectIpPoolList(ctx context.Context, params ProjectIpPoolList
 		resolveRelative(c.host, "/v1/ip-pools"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"sort_by":    string(params.SortBy),
 		},
@@ -4040,7 +4040,7 @@ func (c *Client) ProjectIpPoolListAllPages(ctx context.Context, params ProjectIp
 	}
 	var allPages []SiloIpPool
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.ProjectIpPoolList(ctx, params)
 		if err != nil {
@@ -4199,7 +4199,7 @@ func (c *Client) CurrentUserGroups(ctx context.Context, params CurrentUserGroups
 		resolveRelative(c.host, "/v1/me/groups"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"sort_by":    string(params.SortBy),
 		},
@@ -4244,7 +4244,7 @@ func (c *Client) CurrentUserGroupsAllPages(ctx context.Context, params CurrentUs
 	}
 	var allPages []Group
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.CurrentUserGroups(ctx, params)
 		if err != nil {
@@ -4276,7 +4276,7 @@ func (c *Client) CurrentUserSshKeyList(ctx context.Context, params CurrentUserSs
 		resolveRelative(c.host, "/v1/me/ssh-keys"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"sort_by":    string(params.SortBy),
 		},
@@ -4322,7 +4322,7 @@ func (c *Client) CurrentUserSshKeyListAllPages(ctx context.Context, params Curre
 	}
 	var allPages []SshKey
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.CurrentUserSshKeyList(ctx, params)
 		if err != nil {
@@ -4491,7 +4491,7 @@ func (c *Client) SiloMetric(ctx context.Context, params SiloMetricParams) (*Meas
 		},
 		map[string]string{
 			"end_time":   params.EndTime.Format(time.RFC3339),
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"order":      string(params.Order),
 			"page_token": params.PageToken,
 			"project":    string(params.Project),
@@ -4539,7 +4539,7 @@ func (c *Client) SiloMetricAllPages(ctx context.Context, params SiloMetricParams
 	}
 	var allPages []Measurement
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.SiloMetric(ctx, params)
 		if err != nil {
@@ -4571,7 +4571,7 @@ func (c *Client) InstanceNetworkInterfaceList(ctx context.Context, params Instan
 		map[string]string{},
 		map[string]string{
 			"instance":   string(params.Instance),
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"project":    string(params.Project),
 			"sort_by":    string(params.SortBy),
@@ -4617,7 +4617,7 @@ func (c *Client) InstanceNetworkInterfaceListAllPages(ctx context.Context, param
 	}
 	var allPages []InstanceNetworkInterface
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.InstanceNetworkInterfaceList(ctx, params)
 		if err != nil {
@@ -4979,7 +4979,7 @@ func (c *Client) ProjectList(ctx context.Context, params ProjectListParams) (*Pr
 		resolveRelative(c.host, "/v1/projects"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"sort_by":    string(params.SortBy),
 		},
@@ -5024,7 +5024,7 @@ func (c *Client) ProjectListAllPages(ctx context.Context, params ProjectListPara
 	}
 	var allPages []Project
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.ProjectList(ctx, params)
 		if err != nil {
@@ -5336,7 +5336,7 @@ func (c *Client) SnapshotList(ctx context.Context, params SnapshotListParams) (*
 		resolveRelative(c.host, "/v1/snapshots"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"project":    string(params.Project),
 			"sort_by":    string(params.SortBy),
@@ -5382,7 +5382,7 @@ func (c *Client) SnapshotListAllPages(ctx context.Context, params SnapshotListPa
 	}
 	var allPages []Snapshot
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.SnapshotList(ctx, params)
 		if err != nil {
@@ -5551,7 +5551,7 @@ func (c *Client) PhysicalDiskList(ctx context.Context, params PhysicalDiskListPa
 		resolveRelative(c.host, "/v1/system/hardware/disks"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"sort_by":    string(params.SortBy),
 		},
@@ -5596,7 +5596,7 @@ func (c *Client) PhysicalDiskListAllPages(ctx context.Context, params PhysicalDi
 	}
 	var allPages []PhysicalDisk
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.PhysicalDiskList(ctx, params)
 		if err != nil {
@@ -5677,7 +5677,7 @@ func (c *Client) NetworkingSwitchPortLldpNeighbors(ctx context.Context, params N
 			"switch_location": string(params.SwitchLocation),
 		},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"sort_by":    string(params.SortBy),
 		},
@@ -5722,7 +5722,7 @@ func (c *Client) NetworkingSwitchPortLldpNeighborsAllPages(ctx context.Context, 
 	}
 	var allPages []LldpNeighbor
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.NetworkingSwitchPortLldpNeighbors(ctx, params)
 		if err != nil {
@@ -5753,7 +5753,7 @@ func (c *Client) RackList(ctx context.Context, params RackListParams) (*RackResu
 		resolveRelative(c.host, "/v1/system/hardware/racks"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"sort_by":    string(params.SortBy),
 		},
@@ -5798,7 +5798,7 @@ func (c *Client) RackListAllPages(ctx context.Context, params RackListParams) ([
 	}
 	var allPages []Rack
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.RackList(ctx, params)
 		if err != nil {
@@ -5875,7 +5875,7 @@ func (c *Client) SledList(ctx context.Context, params SledListParams) (*SledResu
 		resolveRelative(c.host, "/v1/system/hardware/sleds"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"sort_by":    string(params.SortBy),
 		},
@@ -5920,7 +5920,7 @@ func (c *Client) SledListAllPages(ctx context.Context, params SledListParams) ([
 	}
 	var allPages []Sled
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.SledList(ctx, params)
 		if err != nil {
@@ -6001,7 +6001,7 @@ func (c *Client) SledListUninitialized(ctx context.Context, params SledListUnini
 		resolveRelative(c.host, "/v1/system/hardware/sleds-uninitialized"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 		},
 	)
@@ -6045,7 +6045,7 @@ func (c *Client) SledListUninitializedAllPages(ctx context.Context, params SledL
 	}
 	var allPages []UninitializedSled
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.SledListUninitialized(ctx, params)
 		if err != nil {
@@ -6124,7 +6124,7 @@ func (c *Client) SledPhysicalDiskList(ctx context.Context, params SledPhysicalDi
 			"sled_id": params.SledId,
 		},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"sort_by":    string(params.SortBy),
 		},
@@ -6169,7 +6169,7 @@ func (c *Client) SledPhysicalDiskListAllPages(ctx context.Context, params SledPh
 	}
 	var allPages []PhysicalDisk
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.SledPhysicalDiskList(ctx, params)
 		if err != nil {
@@ -6202,7 +6202,7 @@ func (c *Client) SledInstanceList(ctx context.Context, params SledInstanceListPa
 			"sled_id": params.SledId,
 		},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"sort_by":    string(params.SortBy),
 		},
@@ -6247,7 +6247,7 @@ func (c *Client) SledInstanceListAllPages(ctx context.Context, params SledInstan
 	}
 	var allPages []SledInstance
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.SledInstanceList(ctx, params)
 		if err != nil {
@@ -6330,7 +6330,7 @@ func (c *Client) NetworkingSwitchPortList(ctx context.Context, params Networking
 		resolveRelative(c.host, "/v1/system/hardware/switch-port"),
 		map[string]string{},
 		map[string]string{
-			"limit":          strconv.Itoa(params.Limit),
+			"limit":          PointerIntToStr(params.Limit),
 			"page_token":     params.PageToken,
 			"sort_by":        string(params.SortBy),
 			"switch_port_id": params.SwitchPortId,
@@ -6376,7 +6376,7 @@ func (c *Client) NetworkingSwitchPortListAllPages(ctx context.Context, params Ne
 	}
 	var allPages []SwitchPort
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.NetworkingSwitchPortList(ctx, params)
 		if err != nil {
@@ -6631,7 +6631,7 @@ func (c *Client) SwitchList(ctx context.Context, params SwitchListParams) (*Swit
 		resolveRelative(c.host, "/v1/system/hardware/switches"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"sort_by":    string(params.SortBy),
 		},
@@ -6676,7 +6676,7 @@ func (c *Client) SwitchListAllPages(ctx context.Context, params SwitchListParams
 	}
 	var allPages []Switch
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.SwitchList(ctx, params)
 		if err != nil {
@@ -6753,7 +6753,7 @@ func (c *Client) SiloIdentityProviderList(ctx context.Context, params SiloIdenti
 		resolveRelative(c.host, "/v1/system/identity-providers"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"silo":       string(params.Silo),
 			"sort_by":    string(params.SortBy),
@@ -6799,7 +6799,7 @@ func (c *Client) SiloIdentityProviderListAllPages(ctx context.Context, params Si
 	}
 	var allPages []IdentityProvider
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.SiloIdentityProviderList(ctx, params)
 		if err != nil {
@@ -7065,7 +7065,7 @@ func (c *Client) IpPoolList(ctx context.Context, params IpPoolListParams) (*IpPo
 		resolveRelative(c.host, "/v1/system/ip-pools"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"sort_by":    string(params.SortBy),
 		},
@@ -7110,7 +7110,7 @@ func (c *Client) IpPoolListAllPages(ctx context.Context, params IpPoolListParams
 	}
 	var allPages []IpPool
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.IpPoolList(ctx, params)
 		if err != nil {
@@ -7233,7 +7233,7 @@ func (c *Client) IpPoolServiceRangeList(ctx context.Context, params IpPoolServic
 		resolveRelative(c.host, "/v1/system/ip-pools-service/ranges"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 		},
 	)
@@ -7278,7 +7278,7 @@ func (c *Client) IpPoolServiceRangeListAllPages(ctx context.Context, params IpPo
 	}
 	var allPages []IpPoolRange
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.IpPoolServiceRangeList(ctx, params)
 		if err != nil {
@@ -7535,7 +7535,7 @@ func (c *Client) IpPoolRangeList(ctx context.Context, params IpPoolRangeListPara
 			"pool": string(params.Pool),
 		},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 		},
 	)
@@ -7580,7 +7580,7 @@ func (c *Client) IpPoolRangeListAllPages(ctx context.Context, params IpPoolRange
 	}
 	var allPages []IpPoolRange
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.IpPoolRangeList(ctx, params)
 		if err != nil {
@@ -7707,7 +7707,7 @@ func (c *Client) IpPoolSiloList(ctx context.Context, params IpPoolSiloListParams
 			"pool": string(params.Pool),
 		},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"sort_by":    string(params.SortBy),
 		},
@@ -7752,7 +7752,7 @@ func (c *Client) IpPoolSiloListAllPages(ctx context.Context, params IpPoolSiloLi
 	}
 	var allPages []IpPoolSiloLink
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.IpPoolSiloList(ctx, params)
 		if err != nil {
@@ -7980,7 +7980,7 @@ func (c *Client) SystemMetric(ctx context.Context, params SystemMetricParams) (*
 		},
 		map[string]string{
 			"end_time":   params.EndTime.Format(time.RFC3339),
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"order":      string(params.Order),
 			"page_token": params.PageToken,
 			"silo":       string(params.Silo),
@@ -8028,7 +8028,7 @@ func (c *Client) SystemMetricAllPages(ctx context.Context, params SystemMetricPa
 	}
 	var allPages []Measurement
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.SystemMetric(ctx, params)
 		if err != nil {
@@ -8059,7 +8059,7 @@ func (c *Client) NetworkingAddressLotList(ctx context.Context, params Networking
 		resolveRelative(c.host, "/v1/system/networking/address-lot"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"sort_by":    string(params.SortBy),
 		},
@@ -8104,7 +8104,7 @@ func (c *Client) NetworkingAddressLotListAllPages(ctx context.Context, params Ne
 	}
 	var allPages []AddressLot
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.NetworkingAddressLotList(ctx, params)
 		if err != nil {
@@ -8222,7 +8222,7 @@ func (c *Client) NetworkingAddressLotBlockList(ctx context.Context, params Netwo
 			"address_lot": string(params.AddressLot),
 		},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"sort_by":    string(params.SortBy),
 		},
@@ -8267,7 +8267,7 @@ func (c *Client) NetworkingAddressLotBlockListAllPages(ctx context.Context, para
 	}
 	var allPages []AddressLotBlock
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.NetworkingAddressLotBlockList(ctx, params)
 		if err != nil {
@@ -8508,7 +8508,7 @@ func (c *Client) NetworkingBgpConfigList(ctx context.Context, params NetworkingB
 		resolveRelative(c.host, "/v1/system/networking/bgp"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"sort_by":    string(params.SortBy),
 		},
@@ -8553,7 +8553,7 @@ func (c *Client) NetworkingBgpConfigListAllPages(ctx context.Context, params Net
 	}
 	var allPages []BgpConfig
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.NetworkingBgpConfigList(ctx, params)
 		if err != nil {
@@ -8669,7 +8669,7 @@ func (c *Client) NetworkingBgpAnnounceSetList(ctx context.Context, params Networ
 		resolveRelative(c.host, "/v1/system/networking/bgp-announce-set"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"sort_by":    string(params.SortBy),
 		},
@@ -8890,7 +8890,7 @@ func (c *Client) NetworkingBgpMessageHistory(ctx context.Context, params Network
 		resolveRelative(c.host, "/v1/system/networking/bgp-message-history"),
 		map[string]string{},
 		map[string]string{
-			"asn": strconv.Itoa(params.Asn),
+			"asn": PointerIntToStr(params.Asn),
 		},
 	)
 	if err != nil {
@@ -8936,7 +8936,7 @@ func (c *Client) NetworkingBgpImportedRoutesIpv4(ctx context.Context, params Net
 		resolveRelative(c.host, "/v1/system/networking/bgp-routes-ipv4"),
 		map[string]string{},
 		map[string]string{
-			"asn": strconv.Itoa(params.Asn),
+			"asn": PointerIntToStr(params.Asn),
 		},
 	)
 	if err != nil {
@@ -9025,7 +9025,7 @@ func (c *Client) NetworkingLoopbackAddressList(ctx context.Context, params Netwo
 		resolveRelative(c.host, "/v1/system/networking/loopback-address"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"sort_by":    string(params.SortBy),
 		},
@@ -9070,7 +9070,7 @@ func (c *Client) NetworkingLoopbackAddressListAllPages(ctx context.Context, para
 	}
 	var allPages []LoopbackAddress
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.NetworkingLoopbackAddressList(ctx, params)
 		if err != nil {
@@ -9150,7 +9150,7 @@ func (c *Client) NetworkingLoopbackAddressDelete(ctx context.Context, params Net
 		map[string]string{
 			"address":         params.Address,
 			"rack_id":         params.RackId,
-			"subnet_mask":     strconv.Itoa(params.SubnetMask),
+			"subnet_mask":     PointerIntToStr(params.SubnetMask),
 			"switch_location": string(params.SwitchLocation),
 		},
 		map[string]string{},
@@ -9189,7 +9189,7 @@ func (c *Client) NetworkingSwitchPortSettingsList(ctx context.Context, params Ne
 		resolveRelative(c.host, "/v1/system/networking/switch-port-settings"),
 		map[string]string{},
 		map[string]string{
-			"limit":         strconv.Itoa(params.Limit),
+			"limit":         PointerIntToStr(params.Limit),
 			"page_token":    params.PageToken,
 			"port_settings": string(params.PortSettings),
 			"sort_by":       string(params.SortBy),
@@ -9235,7 +9235,7 @@ func (c *Client) NetworkingSwitchPortSettingsListAllPages(ctx context.Context, p
 	}
 	var allPages []SwitchPortSettings
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.NetworkingSwitchPortSettingsList(ctx, params)
 		if err != nil {
@@ -9488,7 +9488,7 @@ func (c *Client) RoleList(ctx context.Context, params RoleListParams) (*RoleResu
 		resolveRelative(c.host, "/v1/system/roles"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 		},
 	)
@@ -9532,7 +9532,7 @@ func (c *Client) RoleListAllPages(ctx context.Context, params RoleListParams) ([
 	}
 	var allPages []Role
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.RoleList(ctx, params)
 		if err != nil {
@@ -9609,7 +9609,7 @@ func (c *Client) SystemQuotasList(ctx context.Context, params SystemQuotasListPa
 		resolveRelative(c.host, "/v1/system/silo-quotas"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"sort_by":    string(params.SortBy),
 		},
@@ -9654,7 +9654,7 @@ func (c *Client) SystemQuotasListAllPages(ctx context.Context, params SystemQuot
 	}
 	var allPages []SiloQuotas
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.SystemQuotasList(ctx, params)
 		if err != nil {
@@ -9686,7 +9686,7 @@ func (c *Client) SiloList(ctx context.Context, params SiloListParams) (*SiloResu
 		resolveRelative(c.host, "/v1/system/silos"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"sort_by":    string(params.SortBy),
 		},
@@ -9732,7 +9732,7 @@ func (c *Client) SiloListAllPages(ctx context.Context, params SiloListParams) ([
 	}
 	var allPages []Silo
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.SiloList(ctx, params)
 		if err != nil {
@@ -9900,7 +9900,7 @@ func (c *Client) SiloIpPoolList(ctx context.Context, params SiloIpPoolListParams
 			"silo": string(params.Silo),
 		},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"sort_by":    string(params.SortBy),
 		},
@@ -9947,7 +9947,7 @@ func (c *Client) SiloIpPoolListAllPages(ctx context.Context, params SiloIpPoolLi
 	}
 	var allPages []SiloIpPool
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.SiloIpPoolList(ctx, params)
 		if err != nil {
@@ -10226,7 +10226,7 @@ func (c *Client) SystemTimeseriesSchemaList(ctx context.Context, params SystemTi
 		resolveRelative(c.host, "/v1/system/timeseries/schemas"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 		},
 	)
@@ -10270,7 +10270,7 @@ func (c *Client) SystemTimeseriesSchemaListAllPages(ctx context.Context, params 
 	}
 	var allPages []TimeseriesSchema
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.SystemTimeseriesSchemaList(ctx, params)
 		if err != nil {
@@ -10301,7 +10301,7 @@ func (c *Client) SiloUserList(ctx context.Context, params SiloUserListParams) (*
 		resolveRelative(c.host, "/v1/system/users"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"silo":       string(params.Silo),
 			"sort_by":    string(params.SortBy),
@@ -10347,7 +10347,7 @@ func (c *Client) SiloUserListAllPages(ctx context.Context, params SiloUserListPa
 	}
 	var allPages []User
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.SiloUserList(ctx, params)
 		if err != nil {
@@ -10378,7 +10378,7 @@ func (c *Client) UserBuiltinList(ctx context.Context, params UserBuiltinListPara
 		resolveRelative(c.host, "/v1/system/users-builtin"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"sort_by":    string(params.SortBy),
 		},
@@ -10423,7 +10423,7 @@ func (c *Client) UserBuiltinListAllPages(ctx context.Context, params UserBuiltin
 	}
 	var allPages []UserBuiltin
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.UserBuiltinList(ctx, params)
 		if err != nil {
@@ -10548,7 +10548,7 @@ func (c *Client) SiloUtilizationList(ctx context.Context, params SiloUtilization
 		resolveRelative(c.host, "/v1/system/utilization/silos"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"sort_by":    string(params.SortBy),
 		},
@@ -10593,7 +10593,7 @@ func (c *Client) SiloUtilizationListAllPages(ctx context.Context, params SiloUti
 	}
 	var allPages []SiloUtilization
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.SiloUtilizationList(ctx, params)
 		if err != nil {
@@ -10671,7 +10671,7 @@ func (c *Client) UserList(ctx context.Context, params UserListParams) (*UserResu
 		map[string]string{},
 		map[string]string{
 			"group":      params.Group,
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"sort_by":    string(params.SortBy),
 		},
@@ -10716,7 +10716,7 @@ func (c *Client) UserListAllPages(ctx context.Context, params UserListParams) ([
 	}
 	var allPages []User
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.UserList(ctx, params)
 		if err != nil {
@@ -10899,7 +10899,7 @@ func (c *Client) VpcRouterRouteList(ctx context.Context, params VpcRouterRouteLi
 		resolveRelative(c.host, "/v1/vpc-router-routes"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"project":    string(params.Project),
 			"router":     string(params.Router),
@@ -10948,7 +10948,7 @@ func (c *Client) VpcRouterRouteListAllPages(ctx context.Context, params VpcRoute
 	}
 	var allPages []RouterRoute
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.VpcRouterRouteList(ctx, params)
 		if err != nil {
@@ -11178,7 +11178,7 @@ func (c *Client) VpcRouterList(ctx context.Context, params VpcRouterListParams) 
 		resolveRelative(c.host, "/v1/vpc-routers"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"project":    string(params.Project),
 			"sort_by":    string(params.SortBy),
@@ -11225,7 +11225,7 @@ func (c *Client) VpcRouterListAllPages(ctx context.Context, params VpcRouterList
 	}
 	var allPages []VpcRouter
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.VpcRouterList(ctx, params)
 		if err != nil {
@@ -11451,7 +11451,7 @@ func (c *Client) VpcSubnetList(ctx context.Context, params VpcSubnetListParams) 
 		resolveRelative(c.host, "/v1/vpc-subnets"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"project":    string(params.Project),
 			"sort_by":    string(params.SortBy),
@@ -11498,7 +11498,7 @@ func (c *Client) VpcSubnetListAllPages(ctx context.Context, params VpcSubnetList
 	}
 	var allPages []VpcSubnet
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.VpcSubnetList(ctx, params)
 		if err != nil {
@@ -11726,7 +11726,7 @@ func (c *Client) VpcSubnetListNetworkInterfaces(ctx context.Context, params VpcS
 			"subnet": string(params.Subnet),
 		},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"project":    string(params.Project),
 			"sort_by":    string(params.SortBy),
@@ -11773,7 +11773,7 @@ func (c *Client) VpcSubnetListNetworkInterfacesAllPages(ctx context.Context, par
 	}
 	var allPages []InstanceNetworkInterface
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.VpcSubnetListNetworkInterfaces(ctx, params)
 		if err != nil {
@@ -11804,7 +11804,7 @@ func (c *Client) VpcList(ctx context.Context, params VpcListParams) (*VpcResults
 		resolveRelative(c.host, "/v1/vpcs"),
 		map[string]string{},
 		map[string]string{
-			"limit":      strconv.Itoa(params.Limit),
+			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"project":    string(params.Project),
 			"sort_by":    string(params.SortBy),
@@ -11850,7 +11850,7 @@ func (c *Client) VpcListAllPages(ctx context.Context, params VpcListParams) ([]V
 	}
 	var allPages []Vpc
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.VpcList(ctx, params)
 		if err != nil {

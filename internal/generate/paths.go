@@ -371,8 +371,8 @@ func buildPathOrQueryParams(paramType string, params map[string]*openapi3.Parame
 				pathParams = append(pathParams, fmt.Sprintf("%q: strconv.FormatBool(%s),", name, n))
 			case "*bool":
 				pathParams = append(pathParams, fmt.Sprintf("%q: strconv.FormatBool(*%s),", name, n))
-			case "int":
-				pathParams = append(pathParams, fmt.Sprintf("%q: strconv.Itoa(%s),", name, n))
+			case "*int":
+				pathParams = append(pathParams, fmt.Sprintf("%q: PointerIntToStr(%s),", name, n))
 			case "*time.Time":
 				pathParams = append(pathParams, fmt.Sprintf("%q: %s.Format(time.RFC3339),", name, n))
 			default:

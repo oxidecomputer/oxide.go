@@ -4,7 +4,7 @@
 	}{{end}}
 	var allPages {{.ResponseType}}
 	params.PageToken = ""
-	params.Limit = 100
+	params.Limit = NewPointer(100)
 	for {
 		page, err := c.{{.WrappedFunction}}(ctx, params)
 		if err != nil {
