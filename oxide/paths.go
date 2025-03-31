@@ -54,489 +54,6 @@ func (c *Client) LoginSaml(ctx context.Context, params LoginSamlParams) error {
 	return nil
 }
 
-// AffinityGroupList: List affinity groups
-//
-// To iterate over all pages, use the `AffinityGroupListAllPages` method, instead.
-func (c *Client) AffinityGroupList(ctx context.Context, params AffinityGroupListParams) (*AffinityGroupResultsPage, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/affinity-groups"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"project":    string(params.Project),
-			"sort_by":    string(params.SortBy),
-		},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body AffinityGroupResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// AffinityGroupListAllPages: List affinity groups
-//
-// This method is a wrapper around the `AffinityGroupList` method.
-// This method returns all the pages at once.
-func (c *Client) AffinityGroupListAllPages(ctx context.Context, params AffinityGroupListParams) ([]AffinityGroup, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	var allPages []AffinityGroup
-	params.PageToken = ""
-	params.Limit = NewPointer(100)
-	for {
-		page, err := c.AffinityGroupList(ctx, params)
-		if err != nil {
-			return nil, err
-		}
-		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == params.PageToken {
-			break
-		}
-		params.PageToken = page.NextPage
-	}
-
-	return allPages, nil
-}
-
-// AffinityGroupCreate: Create an affinity group
-func (c *Client) AffinityGroupCreate(ctx context.Context, params AffinityGroupCreateParams) (*AffinityGroup, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
-
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/affinity-groups"),
-		map[string]string{},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body AffinityGroup
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// AffinityGroupView: Fetch an affinity group
-func (c *Client) AffinityGroupView(ctx context.Context, params AffinityGroupViewParams) (*AffinityGroup, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/affinity-groups/{{.affinity_group}}"),
-		map[string]string{
-			"affinity_group": string(params.AffinityGroup),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body AffinityGroup
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// AffinityGroupUpdate: Update an affinity group
-func (c *Client) AffinityGroupUpdate(ctx context.Context, params AffinityGroupUpdateParams) (*AffinityGroup, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
-
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"PUT",
-		resolveRelative(c.host, "/v1/affinity-groups/{{.affinity_group}}"),
-		map[string]string{
-			"affinity_group": string(params.AffinityGroup),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body AffinityGroup
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// AffinityGroupDelete: Delete an affinity group
-func (c *Client) AffinityGroupDelete(ctx context.Context, params AffinityGroupDeleteParams) error {
-	if err := params.Validate(); err != nil {
-		return err
-	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/affinity-groups/{{.affinity_group}}"),
-		map[string]string{
-			"affinity_group": string(params.AffinityGroup),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
-	if err != nil {
-		return fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// AffinityGroupMemberList: List members of an affinity group
-//
-// To iterate over all pages, use the `AffinityGroupMemberListAllPages` method, instead.
-func (c *Client) AffinityGroupMemberList(ctx context.Context, params AffinityGroupMemberListParams) (*AffinityGroupMemberResultsPage, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/affinity-groups/{{.affinity_group}}/members"),
-		map[string]string{
-			"affinity_group": string(params.AffinityGroup),
-		},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"project":    string(params.Project),
-			"sort_by":    string(params.SortBy),
-		},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body AffinityGroupMemberResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// AffinityGroupMemberListAllPages: List members of an affinity group
-//
-// This method is a wrapper around the `AffinityGroupMemberList` method.
-// This method returns all the pages at once.
-func (c *Client) AffinityGroupMemberListAllPages(ctx context.Context, params AffinityGroupMemberListParams) ([]AffinityGroupMember, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	var allPages []AffinityGroupMember
-	params.PageToken = ""
-	params.Limit = NewPointer(100)
-	for {
-		page, err := c.AffinityGroupMemberList(ctx, params)
-		if err != nil {
-			return nil, err
-		}
-		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == params.PageToken {
-			break
-		}
-		params.PageToken = page.NextPage
-	}
-
-	return allPages, nil
-}
-
-// AffinityGroupMemberInstanceView: Fetch an affinity group member
-func (c *Client) AffinityGroupMemberInstanceView(ctx context.Context, params AffinityGroupMemberInstanceViewParams) (*AffinityGroupMember, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/affinity-groups/{{.affinity_group}}/members/instance/{{.instance}}"),
-		map[string]string{
-			"affinity_group": string(params.AffinityGroup),
-			"instance":       string(params.Instance),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body AffinityGroupMember
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// AffinityGroupMemberInstanceAdd: Add a member to an affinity group
-func (c *Client) AffinityGroupMemberInstanceAdd(ctx context.Context, params AffinityGroupMemberInstanceAddParams) (*AffinityGroupMember, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"POST",
-		resolveRelative(c.host, "/v1/affinity-groups/{{.affinity_group}}/members/instance/{{.instance}}"),
-		map[string]string{
-			"affinity_group": string(params.AffinityGroup),
-			"instance":       string(params.Instance),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body AffinityGroupMember
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// AffinityGroupMemberInstanceDelete: Remove a member from an affinity group
-func (c *Client) AffinityGroupMemberInstanceDelete(ctx context.Context, params AffinityGroupMemberInstanceDeleteParams) error {
-	if err := params.Validate(); err != nil {
-		return err
-	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/affinity-groups/{{.affinity_group}}/members/instance/{{.instance}}"),
-		map[string]string{
-			"affinity_group": string(params.AffinityGroup),
-			"instance":       string(params.Instance),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
-	if err != nil {
-		return fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 // AntiAffinityGroupList: List anti-affinity groups
 //
 // To iterate over all pages, use the `AntiAffinityGroupListAllPages` method, instead.
@@ -614,7 +131,7 @@ func (c *Client) AntiAffinityGroupListAllPages(ctx context.Context, params AntiA
 	return allPages, nil
 }
 
-// AntiAffinityGroupCreate: Create an anti-affinity group
+// AntiAffinityGroupCreate: Create anti-affinity group
 func (c *Client) AntiAffinityGroupCreate(ctx context.Context, params AntiAffinityGroupCreateParams) (*AntiAffinityGroup, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -666,7 +183,7 @@ func (c *Client) AntiAffinityGroupCreate(ctx context.Context, params AntiAffinit
 	return &body, nil
 }
 
-// AntiAffinityGroupView: Fetch an anti-affinity group
+// AntiAffinityGroupView: Fetch anti-affinity group
 func (c *Client) AntiAffinityGroupView(ctx context.Context, params AntiAffinityGroupViewParams) (*AntiAffinityGroup, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -714,7 +231,7 @@ func (c *Client) AntiAffinityGroupView(ctx context.Context, params AntiAffinityG
 	return &body, nil
 }
 
-// AntiAffinityGroupUpdate: Update an anti-affinity group
+// AntiAffinityGroupUpdate: Update anti-affinity group
 func (c *Client) AntiAffinityGroupUpdate(ctx context.Context, params AntiAffinityGroupUpdateParams) (*AntiAffinityGroup, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -768,7 +285,7 @@ func (c *Client) AntiAffinityGroupUpdate(ctx context.Context, params AntiAffinit
 	return &body, nil
 }
 
-// AntiAffinityGroupDelete: Delete an anti-affinity group
+// AntiAffinityGroupDelete: Delete anti-affinity group
 func (c *Client) AntiAffinityGroupDelete(ctx context.Context, params AntiAffinityGroupDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
@@ -805,7 +322,7 @@ func (c *Client) AntiAffinityGroupDelete(ctx context.Context, params AntiAffinit
 	return nil
 }
 
-// AntiAffinityGroupMemberList: List members of an anti-affinity group
+// AntiAffinityGroupMemberList: List anti-affinity group members
 //
 // To iterate over all pages, use the `AntiAffinityGroupMemberListAllPages` method, instead.
 func (c *Client) AntiAffinityGroupMemberList(ctx context.Context, params AntiAffinityGroupMemberListParams) (*AntiAffinityGroupMemberResultsPage, error) {
@@ -858,7 +375,7 @@ func (c *Client) AntiAffinityGroupMemberList(ctx context.Context, params AntiAff
 	return &body, nil
 }
 
-// AntiAffinityGroupMemberListAllPages: List members of an anti-affinity group
+// AntiAffinityGroupMemberListAllPages: List anti-affinity group members
 //
 // This method is a wrapper around the `AntiAffinityGroupMemberList` method.
 // This method returns all the pages at once.
@@ -884,7 +401,7 @@ func (c *Client) AntiAffinityGroupMemberListAllPages(ctx context.Context, params
 	return allPages, nil
 }
 
-// AntiAffinityGroupMemberInstanceView: Fetch an anti-affinity group member
+// AntiAffinityGroupMemberInstanceView: Fetch anti-affinity group member
 func (c *Client) AntiAffinityGroupMemberInstanceView(ctx context.Context, params AntiAffinityGroupMemberInstanceViewParams) (*AntiAffinityGroupMember, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -933,7 +450,7 @@ func (c *Client) AntiAffinityGroupMemberInstanceView(ctx context.Context, params
 	return &body, nil
 }
 
-// AntiAffinityGroupMemberInstanceAdd: Add a member to an anti-affinity group
+// AntiAffinityGroupMemberInstanceAdd: Add member to anti-affinity group
 func (c *Client) AntiAffinityGroupMemberInstanceAdd(ctx context.Context, params AntiAffinityGroupMemberInstanceAddParams) (*AntiAffinityGroupMember, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -982,7 +499,7 @@ func (c *Client) AntiAffinityGroupMemberInstanceAdd(ctx context.Context, params 
 	return &body, nil
 }
 
-// AntiAffinityGroupMemberInstanceDelete: Remove a member from an anti-affinity group
+// AntiAffinityGroupMemberInstanceDelete: Remove member from anti-affinity group
 func (c *Client) AntiAffinityGroupMemberInstanceDelete(ctx context.Context, params AntiAffinityGroupMemberInstanceDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
@@ -2771,6 +2288,85 @@ func (c *Client) InstanceDelete(ctx context.Context, params InstanceDeleteParams
 	}
 
 	return nil
+}
+
+// InstanceAntiAffinityGroupList: List anti-affinity groups containing instance
+//
+// To iterate over all pages, use the `InstanceAntiAffinityGroupListAllPages` method, instead.
+func (c *Client) InstanceAntiAffinityGroupList(ctx context.Context, params InstanceAntiAffinityGroupListParams) (*AntiAffinityGroupResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/instances/{{.instance}}/anti-affinity-groups"),
+		map[string]string{
+			"instance": string(params.Instance),
+		},
+		map[string]string{
+			"limit":      PointerIntToStr(params.Limit),
+			"page_token": params.PageToken,
+			"project":    string(params.Project),
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body AntiAffinityGroupResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// InstanceAntiAffinityGroupListAllPages: List anti-affinity groups containing instance
+//
+// This method is a wrapper around the `InstanceAntiAffinityGroupList` method.
+// This method returns all the pages at once.
+func (c *Client) InstanceAntiAffinityGroupListAllPages(ctx context.Context, params InstanceAntiAffinityGroupListParams) ([]AntiAffinityGroup, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []AntiAffinityGroup
+	params.PageToken = ""
+	params.Limit = NewPointer(100)
+	for {
+		page, err := c.InstanceAntiAffinityGroupList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
 }
 
 // InstanceDiskList: List disks for instance

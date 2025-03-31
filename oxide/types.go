@@ -145,7 +145,7 @@ type AddressLotResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// AffinityGroup is identity-related metadata that's included in nearly all public API objects
+// AffinityGroup is view of an Affinity Group
 //
 // Required fields:
 // - Description
@@ -153,6 +153,7 @@ type AddressLotResultsPage struct {
 // - Id
 // - Name
 // - Policy
+// - ProjectId
 // - TimeCreated
 // - TimeModified
 type AffinityGroup struct {
@@ -167,7 +168,8 @@ type AffinityGroup struct {
 	// Policy is affinity policy used to describe "what to do when a request cannot be satisfied"
 	//
 	// Used for both Affinity and Anti-Affinity Groups
-	Policy AffinityPolicy `json:"policy,omitempty" yaml:"policy,omitempty"`
+	Policy    AffinityPolicy `json:"policy,omitempty" yaml:"policy,omitempty"`
+	ProjectId string         `json:"project_id,omitempty" yaml:"project_id,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
@@ -198,24 +200,47 @@ type AffinityGroupCreate struct {
 // AffinityGroupMemberType is the type definition for a AffinityGroupMemberType.
 type AffinityGroupMemberType string
 
-// AffinityGroupMemberInstance is an instance belonging to this group, identified by UUID.
+// AffinityGroupMemberValue is the type definition for a AffinityGroupMemberValue.
+//
+// Required fields:
+// - Id
+// - Name
+// - RunState
+type AffinityGroupMemberValue struct {
+	Id TypedUuidForInstanceKind `json:"id,omitempty" yaml:"id,omitempty"`
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	// RunState is running state of an Instance (primarily: booted or stopped)
+	//
+	// This typically reflects whether it's starting, running, stopping, or stopped, but also includes states related
+	// to the Instance's lifecycle
+	RunState InstanceState `json:"run_state,omitempty" yaml:"run_state,omitempty"`
+}
+
+// AffinityGroupMemberInstance is an instance belonging to this group
+//
+// Instances can belong to up to 16 affinity groups.
 //
 // Required fields:
 // - Type
 // - Value
 type AffinityGroupMemberInstance struct {
 	Type  AffinityGroupMemberType  `json:"type,omitempty" yaml:"type,omitempty"`
-	Value TypedUuidForInstanceKind `json:"value,omitempty" yaml:"value,omitempty"`
+	Value AffinityGroupMemberValue `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // AffinityGroupMember is a member of an Affinity Group
 //
 // Membership in a group is not exclusive - members may belong to multiple affinity / anti-affinity groups.
+//
+// Affinity Groups can contain up to 32 members.
 type AffinityGroupMember struct {
 	// Type is the type definition for a Type.
 	Type AffinityGroupMemberType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is the type definition for a Value.
-	Value TypedUuidForInstanceKind `json:"value,omitempty" yaml:"value,omitempty"`
+	Value AffinityGroupMemberValue `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // AffinityGroupMemberResultsPage is a single page of results
@@ -315,7 +340,7 @@ type AllowedSourceIps struct {
 	Ips []IpNet `json:"ips,omitempty" yaml:"ips,omitempty"`
 }
 
-// AntiAffinityGroup is identity-related metadata that's included in nearly all public API objects
+// AntiAffinityGroup is view of an Anti-Affinity Group
 //
 // Required fields:
 // - Description
@@ -323,6 +348,7 @@ type AllowedSourceIps struct {
 // - Id
 // - Name
 // - Policy
+// - ProjectId
 // - TimeCreated
 // - TimeModified
 type AntiAffinityGroup struct {
@@ -337,7 +363,8 @@ type AntiAffinityGroup struct {
 	// Policy is affinity policy used to describe "what to do when a request cannot be satisfied"
 	//
 	// Used for both Affinity and Anti-Affinity Groups
-	Policy AffinityPolicy `json:"policy,omitempty" yaml:"policy,omitempty"`
+	Policy    AffinityPolicy `json:"policy,omitempty" yaml:"policy,omitempty"`
+	ProjectId string         `json:"project_id,omitempty" yaml:"project_id,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
@@ -368,24 +395,47 @@ type AntiAffinityGroupCreate struct {
 // AntiAffinityGroupMemberType is the type definition for a AntiAffinityGroupMemberType.
 type AntiAffinityGroupMemberType string
 
-// AntiAffinityGroupMemberInstance is an instance belonging to this group, identified by UUID.
+// AntiAffinityGroupMemberValue is the type definition for a AntiAffinityGroupMemberValue.
+//
+// Required fields:
+// - Id
+// - Name
+// - RunState
+type AntiAffinityGroupMemberValue struct {
+	Id TypedUuidForInstanceKind `json:"id,omitempty" yaml:"id,omitempty"`
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	// RunState is running state of an Instance (primarily: booted or stopped)
+	//
+	// This typically reflects whether it's starting, running, stopping, or stopped, but also includes states related
+	// to the Instance's lifecycle
+	RunState InstanceState `json:"run_state,omitempty" yaml:"run_state,omitempty"`
+}
+
+// AntiAffinityGroupMemberInstance is an instance belonging to this group
+//
+// Instances can belong to up to 16 anti-affinity groups.
 //
 // Required fields:
 // - Type
 // - Value
 type AntiAffinityGroupMemberInstance struct {
-	Type  AntiAffinityGroupMemberType `json:"type,omitempty" yaml:"type,omitempty"`
-	Value TypedUuidForInstanceKind    `json:"value,omitempty" yaml:"value,omitempty"`
+	Type  AntiAffinityGroupMemberType  `json:"type,omitempty" yaml:"type,omitempty"`
+	Value AntiAffinityGroupMemberValue `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // AntiAffinityGroupMember is a member of an Anti-Affinity Group
 //
 // Membership in a group is not exclusive - members may belong to multiple affinity / anti-affinity groups.
+//
+// Anti-Affinity Groups can contain up to 32 members.
 type AntiAffinityGroupMember struct {
 	// Type is the type definition for a Type.
 	Type AntiAffinityGroupMemberType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is the type definition for a Value.
-	Value TypedUuidForInstanceKind `json:"value,omitempty" yaml:"value,omitempty"`
+	Value AntiAffinityGroupMemberValue `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // AntiAffinityGroupMemberResultsPage is a single page of results
@@ -3245,15 +3295,6 @@ type ImageSourceSnapshot struct {
 	Type ImageSourceType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
-// ImageSourceYouCanBootAnythingAsLongAsItsAlpine is boot the Alpine ISO that ships with the Propolis zone.
-// Intended for development purposes only.
-//
-// Required fields:
-// - Type
-type ImageSourceYouCanBootAnythingAsLongAsItsAlpine struct {
-	Type ImageSourceType `json:"type,omitempty" yaml:"type,omitempty"`
-}
-
 // ImageSource is the source of the underlying image.
 type ImageSource struct {
 	// Id is the type definition for a Id.
@@ -3385,6 +3426,8 @@ type InstanceCpuCount uint16
 // - Name
 // - Ncpus
 type InstanceCreate struct {
+	// AntiAffinityGroups is anti-Affinity groups which this instance should be added.
+	AntiAffinityGroups []NameOrId `json:"anti_affinity_groups" yaml:"anti_affinity_groups"`
 	// AutoRestartPolicy is the auto-restart policy for this instance.
 	//
 	// This policy determines whether the instance should be automatically restarted by the control plane on failure.
@@ -5043,6 +5086,15 @@ type SamlIdentityProviderCreate struct {
 // ServiceUsingCertificate is this certificate is intended for access to the external API.
 type ServiceUsingCertificate string
 
+// SetTargetReleaseParams is parameters for PUT requests to `/v1/system/update/target-release`.
+//
+// Required fields:
+// - SystemVersion
+type SetTargetReleaseParams struct {
+	// SystemVersion is version of the system software to make the target release.
+	SystemVersion string `json:"system_version,omitempty" yaml:"system_version,omitempty"`
+}
+
 // Silo is view of a Silo
 //
 // A Silo is the highest level unit of isolation.
@@ -6025,6 +6077,50 @@ type SystemMetricName string
 type Table struct {
 	Name       string     `json:"name,omitempty" yaml:"name,omitempty"`
 	Timeseries Timeseries `json:"timeseries,omitempty" yaml:"timeseries,omitempty"`
+}
+
+// TargetRelease is view of a system software target release.
+//
+// Required fields:
+// - Generation
+// - ReleaseSource
+// - TimeRequested
+type TargetRelease struct {
+	// Generation is the target-release generation number.
+	Generation *int `json:"generation,omitempty" yaml:"generation,omitempty"`
+	// ReleaseSource is the source of the target release.
+	ReleaseSource TargetReleaseSource `json:"release_source,omitempty" yaml:"release_source,omitempty"`
+	// TimeRequested is the time it was set as the target release.
+	TimeRequested *time.Time `json:"time_requested,omitempty" yaml:"time_requested,omitempty"`
+}
+
+// TargetReleaseSourceType is the type definition for a TargetReleaseSourceType.
+type TargetReleaseSourceType string
+
+// TargetReleaseSourceUnspecified is unspecified or unknown source (probably MUPdate).
+//
+// Required fields:
+// - Type
+type TargetReleaseSourceUnspecified struct {
+	Type TargetReleaseSourceType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// TargetReleaseSourceSystemVersion is the specified release of the rack's system software.
+//
+// Required fields:
+// - Type
+// - Version
+type TargetReleaseSourceSystemVersion struct {
+	Type    TargetReleaseSourceType `json:"type,omitempty" yaml:"type,omitempty"`
+	Version string                  `json:"version,omitempty" yaml:"version,omitempty"`
+}
+
+// TargetReleaseSource is source of a system software target release.
+type TargetReleaseSource struct {
+	// Type is the type definition for a Type.
+	Type TargetReleaseSourceType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Version is the type definition for a Version.
+	Version string `json:"version,omitempty" yaml:"version,omitempty"`
 }
 
 // Timeseries is a timeseries contains a timestamped set of values from one source.
@@ -7084,11 +7180,11 @@ type AffinityGroupUpdateParams struct {
 // Required fields:
 // - AffinityGroup
 type AffinityGroupMemberListParams struct {
-	Limit         *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken     string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	Project       NameOrId   `json:"project,omitempty" yaml:"project,omitempty"`
-	SortBy        IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
-	AffinityGroup NameOrId   `json:"affinity_group,omitempty" yaml:"affinity_group,omitempty"`
+	Limit         *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken     string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project       NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy        NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	AffinityGroup NameOrId         `json:"affinity_group,omitempty" yaml:"affinity_group,omitempty"`
 }
 
 // AffinityGroupMemberInstanceDeleteParams is the request parameters for AffinityGroupMemberInstanceDelete
@@ -7179,11 +7275,11 @@ type AntiAffinityGroupUpdateParams struct {
 // Required fields:
 // - AntiAffinityGroup
 type AntiAffinityGroupMemberListParams struct {
-	Limit             *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken         string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	Project           NameOrId   `json:"project,omitempty" yaml:"project,omitempty"`
-	SortBy            IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
-	AntiAffinityGroup NameOrId   `json:"anti_affinity_group,omitempty" yaml:"anti_affinity_group,omitempty"`
+	Limit             *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken         string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project           NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy            NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	AntiAffinityGroup NameOrId         `json:"anti_affinity_group,omitempty" yaml:"anti_affinity_group,omitempty"`
 }
 
 // AntiAffinityGroupMemberInstanceDeleteParams is the request parameters for AntiAffinityGroupMemberInstanceDelete
@@ -7534,6 +7630,30 @@ type InstanceUpdateParams struct {
 	Project  NameOrId        `json:"project,omitempty" yaml:"project,omitempty"`
 	Instance NameOrId        `json:"instance,omitempty" yaml:"instance,omitempty"`
 	Body     *InstanceUpdate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// InstanceAffinityGroupListParams is the request parameters for InstanceAffinityGroupList
+//
+// Required fields:
+// - Instance
+type InstanceAffinityGroupListParams struct {
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Instance  NameOrId         `json:"instance,omitempty" yaml:"instance,omitempty"`
+}
+
+// InstanceAntiAffinityGroupListParams is the request parameters for InstanceAntiAffinityGroupList
+//
+// Required fields:
+// - Instance
+type InstanceAntiAffinityGroupListParams struct {
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Instance  NameOrId         `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
 
 // InstanceDiskListParams is the request parameters for InstanceDiskList
@@ -8741,6 +8861,14 @@ type SystemTimeseriesSchemaListParams struct {
 	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 }
 
+// TargetReleaseUpdateParams is the request parameters for TargetReleaseUpdate
+//
+// Required fields:
+// - Body
+type TargetReleaseUpdateParams struct {
+	Body *SetTargetReleaseParams `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
 // SiloUserListParams is the request parameters for SiloUserList
 //
 // Required fields:
@@ -9744,6 +9872,26 @@ func (p *InstanceViewParams) Validate() error {
 func (p *InstanceUpdateParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Instance), "Instance")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceAffinityGroupListParams are set
+func (p *InstanceAffinityGroupListParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Instance), "Instance")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceAntiAffinityGroupListParams are set
+func (p *InstanceAntiAffinityGroupListParams) Validate() error {
+	v := new(Validator)
 	v.HasRequiredStr(string(p.Instance), "Instance")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
@@ -11058,6 +11206,16 @@ func (p *SystemTimeseriesSchemaListParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for TargetReleaseUpdateParams are set
+func (p *TargetReleaseUpdateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for SiloUserListParams are set
 func (p *SiloUserListParams) Validate() error {
 	v := new(Validator)
@@ -11816,9 +11974,6 @@ const IdpMetadataSourceTypeBase64EncodedXml IdpMetadataSourceType = "base64_enco
 // ImageSourceTypeSnapshot represents the ImageSourceType `"snapshot"`.
 const ImageSourceTypeSnapshot ImageSourceType = "snapshot"
 
-// ImageSourceTypeYouCanBootAnythingAsLongAsItsAlpine represents the ImageSourceType `"you_can_boot_anything_as_long_as_its_alpine"`.
-const ImageSourceTypeYouCanBootAnythingAsLongAsItsAlpine ImageSourceType = "you_can_boot_anything_as_long_as_its_alpine"
-
 // ImportExportPolicyTypeNoFiltering represents the ImportExportPolicyType `"no_filtering"`.
 const ImportExportPolicyTypeNoFiltering ImportExportPolicyType = "no_filtering"
 
@@ -12139,6 +12294,12 @@ const SystemMetricNameCpusProvisioned SystemMetricName = "cpus_provisioned"
 
 // SystemMetricNameRamProvisioned represents the SystemMetricName `"ram_provisioned"`.
 const SystemMetricNameRamProvisioned SystemMetricName = "ram_provisioned"
+
+// TargetReleaseSourceTypeUnspecified represents the TargetReleaseSourceType `"unspecified"`.
+const TargetReleaseSourceTypeUnspecified TargetReleaseSourceType = "unspecified"
+
+// TargetReleaseSourceTypeSystemVersion represents the TargetReleaseSourceType `"system_version"`.
+const TargetReleaseSourceTypeSystemVersion TargetReleaseSourceType = "system_version"
 
 // UnitsCount represents the Units `"count"`.
 const UnitsCount Units = "count"
@@ -12551,7 +12712,6 @@ var IdpMetadataSourceTypeCollection = []IdpMetadataSourceType{
 // ImageSourceTypeCollection is the collection of all ImageSourceType values.
 var ImageSourceTypeCollection = []ImageSourceType{
 	ImageSourceTypeSnapshot,
-	ImageSourceTypeYouCanBootAnythingAsLongAsItsAlpine,
 }
 
 // ImportExportPolicyTypeCollection is the collection of all ImportExportPolicyType values.
@@ -12799,6 +12959,12 @@ var SystemMetricNameCollection = []SystemMetricName{
 	SystemMetricNameCpusProvisioned,
 	SystemMetricNameRamProvisioned,
 	SystemMetricNameVirtualDiskSpaceProvisioned,
+}
+
+// TargetReleaseSourceTypeCollection is the collection of all TargetReleaseSourceType values.
+var TargetReleaseSourceTypeCollection = []TargetReleaseSourceType{
+	TargetReleaseSourceTypeSystemVersion,
+	TargetReleaseSourceTypeUnspecified,
 }
 
 // UnitsCollection is the collection of all Units values.

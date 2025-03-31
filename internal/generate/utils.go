@@ -106,7 +106,7 @@ func isPageParam(s string) bool {
 }
 
 // convertToValidGoType converts a schema type to a valid Go type.
-func convertToValidGoType(property string, r *openapi3.SchemaRef) string {
+func convertToValidGoType(property, typeName string, r *openapi3.SchemaRef) string {
 	// Use reference as it is the type
 	if r.Ref != "" {
 		return getReferenceSchema(r)
@@ -131,7 +131,7 @@ func convertToValidGoType(property string, r *openapi3.SchemaRef) string {
 			return "TODO"
 		}
 
-		return convertToValidGoType(property, r.Value.AllOf[0])
+		return convertToValidGoType(property, "", r.Value.AllOf[0])
 	}
 
 	var schemaType string
@@ -155,8 +155,10 @@ func convertToValidGoType(property string, r *openapi3.SchemaRef) string {
 		// TODO: handle if it is not a reference.
 		schemaType = "[]string"
 	} else if r.Value.Type.Is("object") {
-		// Most likely this is a local object, we will handle it.
-		schemaType = strcase.ToCamel(property)
+		// This is a local object, we make sure there are no duplicates
+		// by concactenating the type name and the property name.
+		schemaType = typeName + strcase.ToCamel(property)
+		println("PROP: %v", property)
 	} else {
 		fmt.Printf("[WARN] TODO: handle type %q for %q, marking as interface{} for now\n", r.Value.Type, property)
 		schemaType = "interface{}"
