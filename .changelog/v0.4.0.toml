@@ -3,7 +3,7 @@ title = "Integers as pointers"
 description = "All integers within the SDK's types are now `*int`. This is due to Go's handling of 0 as the empty value. This is specifically necessary when a field is an integer and also not required. [#274](https://github.com/oxidecomputer/oxide.go/pull/274)"
 
 [[features]]
-title = "Affinity and anti-affinity groups"
+title = "Anti-affinity groups"
 description = "CRUD methods. [#269](https://github.com/oxidecomputer/oxide.go/pull/269)"
 
 [[bugs]]

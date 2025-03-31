@@ -723,19 +723,6 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 				propertyType = typeName + strcase.ToCamel(prop)
 			}
 
-			// DEBUG
-			//	if typeName == "AffinityGroupMember" {
-			//		spew.Dump(p)
-			//	}
-
-			// If it's an object, check if it's referencing a type. If not,
-			// use the corresponding type.
-			//	if p.Value.Type.Is("object") {
-			//		println("%v", prop)
-			//		propertyType = typeName + strcase.ToCamel(prop)
-			//		println("%v", propertyType)
-			//	}
-
 			propertyName := strcase.ToCamel(prop)
 			// Avoids duplication for every enum
 			if !containsMatchFirstWord(parsedProperties, propertyName) {
