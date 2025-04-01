@@ -158,7 +158,6 @@ func convertToValidGoType(property, typeName string, r *openapi3.SchemaRef) stri
 		// This is a local object, we make sure there are no duplicates
 		// by concactenating the type name and the property name.
 		schemaType = typeName + strcase.ToCamel(property)
-		println("PROP: %v", property)
 	} else {
 		fmt.Printf("[WARN] TODO: handle type %q for %q, marking as interface{} for now\n", r.Value.Type, property)
 		schemaType = "interface{}"
