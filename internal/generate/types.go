@@ -138,7 +138,7 @@ func constructParamTypes(paths map[string]*openapi3.PathItem) []TypeTemplate {
 					paramName := strcase.ToCamel(p.Value.Name)
 					field := TypeFields{
 						Name: paramName,
-						Type: convertToValidGoType("", p.Value.Schema),
+						Type: convertToValidGoType("", "", p.Value.Schema),
 					}
 
 					if p.Value.Required {
@@ -167,7 +167,7 @@ func constructParamTypes(paths map[string]*openapi3.PathItem) []TypeTemplate {
 
 						field = TypeFields{
 							Name:              "Body",
-							Type:              "*" + convertToValidGoType("", r.Schema),
+							Type:              "*" + convertToValidGoType("", "", r.Schema),
 							SerializationInfo: "`json:\"body,omitempty\" yaml:\"body,omitempty\"`",
 						}
 					}
@@ -507,7 +507,7 @@ func createTypeObject(schema *openapi3.Schema, name, typeName, description strin
 	for _, k := range keys {
 		v := schemas[k]
 		// Check if we need to generate a type for this type.
-		typeName := convertToValidGoType(k, v)
+		typeName := convertToValidGoType(k, typeName, v)
 
 		if isLocalEnum(v) {
 			typeName = fmt.Sprintf("%s%s", name, strcase.ToCamel(k))
@@ -664,7 +664,7 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 		for _, prop := range keys {
 			p := v.Value.Properties[prop]
 			// We want to collect all the unique properties to create our global oneOf type.
-			propertyType := convertToValidGoType(prop, p)
+			propertyType := convertToValidGoType(prop, typeName, p)
 			properties = append(properties, prop+"="+propertyType)
 		}
 	}
@@ -715,7 +715,7 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 		for _, prop := range keys {
 			p := v.Value.Properties[prop]
 			// We want to collect all the unique properties to create our global oneOf type.
-			propertyType := convertToValidGoType(prop, p)
+			propertyType := convertToValidGoType(prop, typeName, p)
 
 			// Check if we have an enum in order to use the corresponding type instead of
 			// "string"

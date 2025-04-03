@@ -251,7 +251,7 @@ func getSuccessResponseType(o *openapi3.Operation, isGetAllPages bool) (string, 
 			if isGetAllPages {
 
 				if items, ok := content.Schema.Value.Properties["items"]; ok {
-					getAllPagesType = convertToValidGoType("", items)
+					getAllPagesType = convertToValidGoType("", "", items)
 				} else {
 					fmt.Printf("[WARN] TODO: skipping response for %q, since it is a get all pages response and has no `items` property:\n%#v\n", o.OperationID, content.Schema.Value.Properties)
 					return "", "", nil
@@ -361,10 +361,11 @@ func buildPathOrQueryParams(paramType string, params map[string]*openapi3.Parame
 		}
 		sort.Strings(keys)
 		for _, name := range keys {
+			typeName := strcase.ToCamel(name)
 			p := params[name]
-			n := "params." + strcase.ToCamel(name)
+			n := "params." + strcase.ToCamel(typeName)
 
-			switch t := convertToValidGoType(name, p.Schema); t {
+			switch t := convertToValidGoType(name, typeName, p.Schema); t {
 			case "string":
 				pathParams = append(pathParams, fmt.Sprintf("%q: %s,", name, n))
 			case "bool":
