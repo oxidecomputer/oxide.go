@@ -58,7 +58,7 @@ func loadAPIFromFile(file string) (*openapi3.T, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving Omicron version: %v", err)
 	}
-	ov := string(omicronVersion)
+	ov := strings.TrimSpace(string(omicronVersion))
 
 	// TODO: actually host the spec here.
 	// uri := "https://api.oxide.computer"
