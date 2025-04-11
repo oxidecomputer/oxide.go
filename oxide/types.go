@@ -5798,18 +5798,24 @@ type SwitchPort struct {
 	SwitchLocation string `json:"switch_location,omitempty" yaml:"switch_location,omitempty"`
 }
 
-// SwitchPortAddressConfig is an IP address configuration for a port settings object.
+// SwitchPortAddressView is an IP address configuration for a port settings object.
 //
 // Required fields:
 // - Address
 // - AddressLotBlockId
+// - AddressLotId
+// - AddressLotName
 // - InterfaceName
 // - PortSettingsId
-type SwitchPortAddressConfig struct {
+type SwitchPortAddressView struct {
 	// Address is the IP address and prefix.
 	Address IpNet `json:"address,omitempty" yaml:"address,omitempty"`
 	// AddressLotBlockId is the id of the address lot block this address is drawn from.
 	AddressLotBlockId string `json:"address_lot_block_id,omitempty" yaml:"address_lot_block_id,omitempty"`
+	// AddressLotId is the id of the address lot this address is drawn from.
+	AddressLotId string `json:"address_lot_id,omitempty" yaml:"address_lot_id,omitempty"`
+	// AddressLotName is the name of the address lot this address is drawn from.
+	AddressLotName Name `json:"address_lot_name,omitempty" yaml:"address_lot_name,omitempty"`
 	// InterfaceName is the interface name this address belongs to.
 	InterfaceName string `json:"interface_name,omitempty" yaml:"interface_name,omitempty"`
 	// PortSettingsId is the port settings object this address configuration belongs to.
@@ -6015,7 +6021,7 @@ type SwitchPortSettingsResultsPage struct {
 // - VlanInterfaces
 type SwitchPortSettingsView struct {
 	// Addresses is layer 3 IP address settings.
-	Addresses []SwitchPortAddressConfig `json:"addresses,omitempty" yaml:"addresses,omitempty"`
+	Addresses []SwitchPortAddressView `json:"addresses,omitempty" yaml:"addresses,omitempty"`
 	// BgpPeers is bGP peer settings.
 	BgpPeers []BgpPeer `json:"bgp_peers,omitempty" yaml:"bgp_peers,omitempty"`
 	// Groups is switch port settings included from other switch port settings groups.
