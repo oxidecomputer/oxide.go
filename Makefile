@@ -26,11 +26,11 @@ generate: tools
 	@ go mod tidy
 
 .PHONY: build
-build: $(NAME) ## Builds a dynamic package.
+build: $(NAME) ## Builds a dynamic package. This is to be used for CI purposes only.
 
 $(NAME): $(wildcard *.go) $(wildcard */*.go)
 	@echo "+ $@"
-	$(GO) build -tags "$(BUILDTAGS)" ${GO_LDFLAGS} -o $(NAME) .
+	$(GO) build -tags "$(BUILDTAGS)" ${GO_LDFLAGS} -o $(NAME) ./internal/generate/
 
 all: generate test fmt lint staticcheck vet ## Runs a fmt, lint, test, staticcheck, and vet.
 

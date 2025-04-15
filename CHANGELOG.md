@@ -1,3 +1,25 @@
+# v0.4.0 (2025/Apr/15)
+
+Generated from Oxide API version [20250409.0.0](https://github.com/oxidecomputer/omicron/blob/rel/v14/rc1/openapi/nexus.json)
+
+### Breaking changes
+
+- **Integers as pointers:** All integers within the SDK's types are now `*int`. This is due to Go's handling of 0 as the empty value. This is specifically necessary when a field is an integer and also not required. [#274](https://github.com/oxidecomputer/oxide.go/pull/274)
+
+### New features
+
+- **Anti-affinity groups:** CRUD methods. [#269](https://github.com/oxidecomputer/oxide.go/pull/269)
+
+### List of commits
+
+- [0083f51](https://github.com/oxidecomputer/oxide.go/commit/0083f51) Update omicron version to rel/v14/rc1 (#279)
+- [894605d](https://github.com/oxidecomputer/oxide.go/commit/894605d) Update to Omicron 0dad016 (#276)
+- [845061b](https://github.com/oxidecomputer/oxide.go/commit/845061b) Documentation fix (#275)
+- [c8be658](https://github.com/oxidecomputer/oxide.go/commit/c8be658) Set integer fields as pointers (#274)
+- [39db29e](https://github.com/oxidecomputer/oxide.go/commit/39db29e) Bump github.com/getkin/kin-openapi from 0.129.0 to 0.131.0 (#272)
+- [5fd2848](https://github.com/oxidecomputer/oxide.go/commit/5fd2848) Update to omicron 8a40bb8 (#269)
+- [9d49348](https://github.com/oxidecomputer/oxide.go/commit/9d49348) Update to version v0.4.0 (#268)
+
 # v0.3.0 (2025/Feb/18)
 
 Generated from Oxide API version [20250212.0.0](https://github.com/oxidecomputer/omicron/blob/rel/v13/rc0/openapi/nexus.json)
