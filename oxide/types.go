@@ -30,9 +30,12 @@ type Address struct {
 //
 // Required fields:
 // - Addresses
+// - LinkName
 type AddressConfig struct {
 	// Addresses is the set of addresses assigned to the port configuration.
 	Addresses []Address `json:"addresses,omitempty" yaml:"addresses,omitempty"`
+	// LinkName is link to assign the address to
+	LinkName Name `json:"link_name,omitempty" yaml:"link_name,omitempty"`
 }
 
 // AddressLot is represents an address lot object, containing the id of the lot that can be used in other API
@@ -197,9 +200,6 @@ type AffinityGroupCreate struct {
 	Policy AffinityPolicy `json:"policy,omitempty" yaml:"policy,omitempty"`
 }
 
-// AffinityGroupMemberType is the type definition for a AffinityGroupMemberType.
-type AffinityGroupMemberType string
-
 // AffinityGroupMemberValue is the type definition for a AffinityGroupMemberValue.
 //
 // Required fields:
@@ -218,6 +218,9 @@ type AffinityGroupMemberValue struct {
 	// to the Instance's lifecycle
 	RunState InstanceState `json:"run_state,omitempty" yaml:"run_state,omitempty"`
 }
+
+// AffinityGroupMemberType is the type definition for a AffinityGroupMemberType.
+type AffinityGroupMemberType string
 
 // AffinityGroupMemberInstance is an instance belonging to this group
 //
@@ -762,9 +765,12 @@ type BgpPeer struct {
 // BgpPeerConfig is the type definition for a BgpPeerConfig.
 //
 // Required fields:
+// - LinkName
 // - Peers
 type BgpPeerConfig struct {
-	Peers []BgpPeer `json:"peers,omitempty" yaml:"peers,omitempty"`
+	// LinkName is link that the peer is reachable on
+	LinkName Name      `json:"link_name,omitempty" yaml:"link_name,omitempty"`
+	Peers    []BgpPeer `json:"peers,omitempty" yaml:"peers,omitempty"`
 }
 
 // BgpPeerState is initial state. Refuse all incoming BGP connections. No resources allocated to peer.
@@ -4089,6 +4095,7 @@ type L4PortRange string
 //
 // Required fields:
 // - Autoneg
+// - LinkName
 // - Lldp
 // - Mtu
 // - Speed
@@ -4098,6 +4105,8 @@ type LinkConfigCreate struct {
 	// Fec is the requested forward-error correction method.  If this is not specified, the standard FEC for
 	// the underlying media will be applied if it can be determined.
 	Fec LinkFec `json:"fec,omitempty" yaml:"fec,omitempty"`
+	// LinkName is link name
+	LinkName Name `json:"link_name,omitempty" yaml:"link_name,omitempty"`
 	// Lldp is the link-layer discovery protocol (LLDP) configuration for the link.
 	Lldp LldpLinkConfigCreate `json:"lldp,omitempty" yaml:"lldp,omitempty"`
 	// Mtu is maximum transmission unit for the link.
@@ -4774,8 +4783,11 @@ type Route struct {
 // RouteConfig is route configuration data associated with a switch port configuration.
 //
 // Required fields:
+// - LinkName
 // - Routes
 type RouteConfig struct {
+	// LinkName is link the route should be active on
+	LinkName Name `json:"link_name,omitempty" yaml:"link_name,omitempty"`
 	// Routes is the set of routes assigned to a switch port.
 	Routes []Route `json:"routes,omitempty" yaml:"routes,omitempty"`
 }
@@ -5716,10 +5728,13 @@ type SwitchInterfaceConfig struct {
 //
 // Required fields:
 // - Kind
+// - LinkName
 // - V6Enabled
 type SwitchInterfaceConfigCreate struct {
 	// Kind is what kind of switch interface this configuration represents.
 	Kind SwitchInterfaceKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+	// LinkName is link the interface will be assigned to
+	LinkName Name `json:"link_name,omitempty" yaml:"link_name,omitempty"`
 	// V6Enabled is whether or not IPv6 is enabled.
 	V6Enabled *bool `json:"v6_enabled,omitempty" yaml:"v6_enabled,omitempty"`
 }
@@ -5959,16 +5974,16 @@ type SwitchPortSettings struct {
 // - Routes
 type SwitchPortSettingsCreate struct {
 	// Addresses is addresses indexed by interface name.
-	Addresses AddressConfig `json:"addresses,omitempty" yaml:"addresses,omitempty"`
+	Addresses []AddressConfig `json:"addresses,omitempty" yaml:"addresses,omitempty"`
 	// BgpPeers is bGP peers indexed by interface name.
-	BgpPeers    BgpPeerConfig `json:"bgp_peers,omitempty" yaml:"bgp_peers,omitempty"`
-	Description string        `json:"description,omitempty" yaml:"description,omitempty"`
-	Groups      []NameOrId    `json:"groups" yaml:"groups"`
+	BgpPeers    []BgpPeerConfig `json:"bgp_peers,omitempty" yaml:"bgp_peers,omitempty"`
+	Description string          `json:"description,omitempty" yaml:"description,omitempty"`
+	Groups      []NameOrId      `json:"groups" yaml:"groups"`
 	// Interfaces is interfaces indexed by link name.
-	Interfaces SwitchInterfaceConfigCreate `json:"interfaces,omitempty" yaml:"interfaces,omitempty"`
+	Interfaces []SwitchInterfaceConfigCreate `json:"interfaces,omitempty" yaml:"interfaces,omitempty"`
 	// Links is links indexed by phy name. On ports that are not broken out, this is always phy0. On a 2x breakout
 	// the options are phy0 and phy1, on 4x phy0-phy3, etc.
-	Links LinkConfigCreate `json:"links,omitempty" yaml:"links,omitempty"`
+	Links []LinkConfigCreate `json:"links,omitempty" yaml:"links,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
 	// can be at most 63 characters long.
@@ -5976,7 +5991,7 @@ type SwitchPortSettingsCreate struct {
 	// PortConfig is physical switch port configuration.
 	PortConfig SwitchPortConfigCreate `json:"port_config,omitempty" yaml:"port_config,omitempty"`
 	// Routes is routes indexed by interface name.
-	Routes RouteConfig `json:"routes,omitempty" yaml:"routes,omitempty"`
+	Routes []RouteConfig `json:"routes,omitempty" yaml:"routes,omitempty"`
 }
 
 // SwitchPortSettingsGroups is this structure maps a port settings object to a port settings groups. Port
