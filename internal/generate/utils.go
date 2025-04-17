@@ -59,6 +59,10 @@ func isObjectArray(v *openapi3.SchemaRef) bool {
 	return false
 }
 
+func isNullableArray(v *openapi3.SchemaRef) bool {
+	return v.Value.Type.Is("array") && v.Value.Nullable
+}
+
 // formatStringType converts a string schema to a valid Go type.
 func formatStringType(t *openapi3.Schema) string {
 	var format string
