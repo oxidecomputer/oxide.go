@@ -10,6 +10,13 @@ func omitemptyExceptions() []string {
 	return []string{
 		"[]VpcFirewallRuleUpdate",
 		"[]NameOrId",
+
+		// Networking Types
+		"[]AddressConfig",
+		"[]BgpPeerConfig",
+		"[]SwitchInterfaceConfigCreate",
+		"[]LinkConfigCreate",
+		"[]RouteConfig",
 	}
 }
 
