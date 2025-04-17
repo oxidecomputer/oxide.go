@@ -541,12 +541,12 @@ func createTypeObject(schema *openapi3.Schema, name, typeName, description strin
 
 		field.Name = strcase.ToCamel(k)
 		field.Type = typeName
+
 		serInfo := fmt.Sprintf("`json:\"%s,omitempty\" yaml:\"%s,omitempty\"`", k, k)
-		// There are a few types we do not want to omit if empty
-		// TODO: Keep an eye out to see if there is a way to identify all of
-		if sliceContains(omitemptyExceptions(), typeName) {
+		if isNullableArray(v) {
 			serInfo = fmt.Sprintf("`json:\"%s\" yaml:\"%s\"`", k, k)
 		}
+
 		field.SerializationInfo = serInfo
 
 		fields = append(fields, field)

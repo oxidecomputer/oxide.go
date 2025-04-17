@@ -3427,7 +3427,7 @@ type InstanceCpuCount uint16
 // - Ncpus
 type InstanceCreate struct {
 	// AntiAffinityGroups is anti-Affinity groups which this instance should be added.
-	AntiAffinityGroups []NameOrId `json:"anti_affinity_groups" yaml:"anti_affinity_groups"`
+	AntiAffinityGroups []NameOrId `json:"anti_affinity_groups,omitempty" yaml:"anti_affinity_groups,omitempty"`
 	// AutoRestartPolicy is the auto-restart policy for this instance.
 	//
 	// This policy determines whether the instance should be automatically restarted by the control plane on failure.
@@ -4501,7 +4501,7 @@ type PingStatus string
 // - Timestamps
 // - Values
 type Points struct {
-	StartTimes []string `json:"start_times,omitempty" yaml:"start_times,omitempty"`
+	StartTimes []string `json:"start_times" yaml:"start_times"`
 	Timestamps []string `json:"timestamps,omitempty" yaml:"timestamps,omitempty"`
 	Values     []Values `json:"values,omitempty" yaml:"values,omitempty"`
 }
@@ -5957,7 +5957,7 @@ type SwitchPortSettingsCreate struct {
 	// BgpPeers is bGP peers indexed by interface name.
 	BgpPeers    BgpPeerConfig `json:"bgp_peers,omitempty" yaml:"bgp_peers,omitempty"`
 	Description string        `json:"description,omitempty" yaml:"description,omitempty"`
-	Groups      []NameOrId    `json:"groups" yaml:"groups"`
+	Groups      []NameOrId    `json:"groups,omitempty" yaml:"groups,omitempty"`
 	// Interfaces is interfaces indexed by link name.
 	Interfaces SwitchInterfaceConfigCreate `json:"interfaces,omitempty" yaml:"interfaces,omitempty"`
 	// Links is links indexed by phy name. On ports that are not broken out, this is always phy0. On a 2x breakout
@@ -6612,11 +6612,11 @@ type VpcFirewallRuleDirection string
 type VpcFirewallRuleFilter struct {
 	// Hosts is if present, host filters match the "other end" of traffic from the target’s perspective: for
 	// an inbound rule, they match the source of traffic. For an outbound rule, they match the destination.
-	Hosts []VpcFirewallRuleHostFilter `json:"hosts,omitempty" yaml:"hosts,omitempty"`
+	Hosts []VpcFirewallRuleHostFilter `json:"hosts" yaml:"hosts"`
 	// Ports is if present, the destination ports or port ranges this rule applies to.
-	Ports []L4PortRange `json:"ports,omitempty" yaml:"ports,omitempty"`
+	Ports []L4PortRange `json:"ports" yaml:"ports"`
 	// Protocols is if present, the networking protocols this rule applies to.
-	Protocols []VpcFirewallRuleProtocol `json:"protocols,omitempty" yaml:"protocols,omitempty"`
+	Protocols []VpcFirewallRuleProtocol `json:"protocols" yaml:"protocols"`
 }
 
 // VpcFirewallRuleHostFilterType is the type definition for a VpcFirewallRuleHostFilterType.
@@ -6808,7 +6808,7 @@ type VpcFirewallRuleUpdate struct {
 // Required fields:
 // - Rules
 type VpcFirewallRuleUpdateParams struct {
-	Rules []VpcFirewallRuleUpdate `json:"rules" yaml:"rules"`
+	Rules []VpcFirewallRuleUpdate `json:"rules,omitempty" yaml:"rules,omitempty"`
 }
 
 // VpcFirewallRules is collection of a Vpc's firewall rules
