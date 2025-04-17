@@ -200,6 +200,9 @@ type AffinityGroupCreate struct {
 	Policy AffinityPolicy `json:"policy,omitempty" yaml:"policy,omitempty"`
 }
 
+// AffinityGroupMemberType is the type definition for a AffinityGroupMemberType.
+type AffinityGroupMemberType string
+
 // AffinityGroupMemberValue is the type definition for a AffinityGroupMemberValue.
 //
 // Required fields:
@@ -218,9 +221,6 @@ type AffinityGroupMemberValue struct {
 	// to the Instance's lifecycle
 	RunState InstanceState `json:"run_state,omitempty" yaml:"run_state,omitempty"`
 }
-
-// AffinityGroupMemberType is the type definition for a AffinityGroupMemberType.
-type AffinityGroupMemberType string
 
 // AffinityGroupMemberInstance is an instance belonging to this group
 //
@@ -5974,16 +5974,16 @@ type SwitchPortSettings struct {
 // - Routes
 type SwitchPortSettingsCreate struct {
 	// Addresses is addresses indexed by interface name.
-	Addresses []AddressConfig `json:"addresses,omitempty" yaml:"addresses,omitempty"`
+	Addresses []AddressConfig `json:"addresses" yaml:"addresses"`
 	// BgpPeers is bGP peers indexed by interface name.
-	BgpPeers    []BgpPeerConfig `json:"bgp_peers,omitempty" yaml:"bgp_peers,omitempty"`
+	BgpPeers    []BgpPeerConfig `json:"bgp_peers" yaml:"bgp_peers"`
 	Description string          `json:"description,omitempty" yaml:"description,omitempty"`
 	Groups      []NameOrId      `json:"groups" yaml:"groups"`
 	// Interfaces is interfaces indexed by link name.
-	Interfaces []SwitchInterfaceConfigCreate `json:"interfaces,omitempty" yaml:"interfaces,omitempty"`
+	Interfaces []SwitchInterfaceConfigCreate `json:"interfaces" yaml:"interfaces"`
 	// Links is links indexed by phy name. On ports that are not broken out, this is always phy0. On a 2x breakout
 	// the options are phy0 and phy1, on 4x phy0-phy3, etc.
-	Links []LinkConfigCreate `json:"links,omitempty" yaml:"links,omitempty"`
+	Links []LinkConfigCreate `json:"links" yaml:"links"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
 	// can be at most 63 characters long.
@@ -5991,7 +5991,7 @@ type SwitchPortSettingsCreate struct {
 	// PortConfig is physical switch port configuration.
 	PortConfig SwitchPortConfigCreate `json:"port_config,omitempty" yaml:"port_config,omitempty"`
 	// Routes is routes indexed by interface name.
-	Routes []RouteConfig `json:"routes,omitempty" yaml:"routes,omitempty"`
+	Routes []RouteConfig `json:"routes" yaml:"routes"`
 }
 
 // SwitchPortSettingsGroups is this structure maps a port settings object to a port settings groups. Port
