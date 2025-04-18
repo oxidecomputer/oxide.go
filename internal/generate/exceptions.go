@@ -10,6 +10,13 @@ func omitemptyExceptions() []string {
 	return []string{
 		"[]VpcFirewallRuleUpdate",
 		"[]NameOrId",
+
+		// Networking Types
+		"[]AddressConfig",
+		"[]BgpPeerConfig",
+		"[]SwitchInterfaceConfigCreate",
+		"[]LinkConfigCreate",
+		"[]RouteConfig",
 	}
 }
 
@@ -24,5 +31,6 @@ func emptyTypes() []string {
 func nullable() []string {
 	return []string{
 		"InstanceDiskAttachment",
+		"TxEqConfig",
 	}
 }
