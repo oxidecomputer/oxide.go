@@ -395,9 +395,6 @@ type AntiAffinityGroupCreate struct {
 	Policy AffinityPolicy `json:"policy,omitempty" yaml:"policy,omitempty"`
 }
 
-// AntiAffinityGroupMemberType is the type definition for a AntiAffinityGroupMemberType.
-type AntiAffinityGroupMemberType string
-
 // AntiAffinityGroupMemberValue is the type definition for a AntiAffinityGroupMemberValue.
 //
 // Required fields:
@@ -416,6 +413,9 @@ type AntiAffinityGroupMemberValue struct {
 	// to the Instance's lifecycle
 	RunState InstanceState `json:"run_state,omitempty" yaml:"run_state,omitempty"`
 }
+
+// AntiAffinityGroupMemberType is the type definition for a AntiAffinityGroupMemberType.
+type AntiAffinityGroupMemberType string
 
 // AntiAffinityGroupMemberInstance is an instance belonging to this group
 //
@@ -4114,7 +4114,7 @@ type LinkConfigCreate struct {
 	// Speed is the speed of the link.
 	Speed LinkSpeed `json:"speed,omitempty" yaml:"speed,omitempty"`
 	// TxEq is optional tx_eq settings
-	TxEq TxEqConfig `json:"tx_eq,omitempty" yaml:"tx_eq,omitempty"`
+	TxEq *TxEqConfig `json:"tx_eq,omitempty" yaml:"tx_eq,omitempty"`
 }
 
 // LinkFec is firecode forward error correction.
