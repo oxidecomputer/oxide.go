@@ -31,5 +31,6 @@ func emptyTypes() []string {
 func nullable() []string {
 	return []string{
 		"InstanceDiskAttachment",
+		"TxEqConfig",
 	}
 }
