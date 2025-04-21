@@ -7,8 +7,8 @@ title = ""
 description = ""
 
 [[bugs]]
-title = ""
-description = ""
+title = "Type fields"
+description = "All arrays that are nullable in the API no longer have `omitempty` to avoid panics if unset. [#283](https://github.com/oxidecomputer/oxide.go/pull/283)"
 
 [[enhancements]]
 title = ""
