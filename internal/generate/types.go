@@ -724,6 +724,7 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 			}
 
 			propertyName := strcase.ToCamel(prop)
+
 			// Avoids duplication for every enum
 			if !containsMatchFirstWord(parsedProperties, propertyName) {
 				field := TypeFields{
@@ -752,6 +753,15 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 				}
 
 				enumFieldName = strcase.ToCamel(p.Value.Enum[0].(string))
+			}
+
+			// Enums can appear in a valid OpenAPI spec as a OneOf without necessarily
+			// being identified as such. If we find an object with a single property
+			// nested inside a OneOf we will assume this is an enum and modify the name of
+			// the struct that will be created out of this object.
+			// e.g. https://github.com/oxidecomputer/omicron/blob/158c0b205f23772dc6c4c97633fd1769cc0e00d4/openapi/nexus.json#L18637-L18682
+			if len(keys) == 1 && p.Value.Enum == nil {
+				enumFieldName = propertyName
 			}
 		}
 
