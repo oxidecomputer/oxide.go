@@ -16,6 +16,7 @@ func nullable() []string {
 	// the usage of this type. Remove when this is fixed in the upstream API
 	return []string{
 		"InstanceDiskAttachment",
+		"LldpLinkConfig",
 		"TxEqConfig",
 	}
 }
