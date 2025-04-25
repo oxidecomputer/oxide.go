@@ -18,5 +18,6 @@ func nullable() []string {
 		"InstanceDiskAttachment",
 		"LldpLinkConfig",
 		"TxEqConfig",
+		"TxEqConfig2",
 	}
 }
