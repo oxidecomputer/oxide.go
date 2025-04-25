@@ -200,9 +200,6 @@ type AffinityGroupCreate struct {
 	Policy AffinityPolicy `json:"policy,omitempty" yaml:"policy,omitempty"`
 }
 
-// AffinityGroupMemberType is the type definition for a AffinityGroupMemberType.
-type AffinityGroupMemberType string
-
 // AffinityGroupMemberValue is the type definition for a AffinityGroupMemberValue.
 //
 // Required fields:
@@ -221,6 +218,9 @@ type AffinityGroupMemberValue struct {
 	// to the Instance's lifecycle
 	RunState InstanceState `json:"run_state,omitempty" yaml:"run_state,omitempty"`
 }
+
+// AffinityGroupMemberType is the type definition for a AffinityGroupMemberType.
+type AffinityGroupMemberType string
 
 // AffinityGroupMemberInstance is an instance belonging to this group
 //
@@ -5892,7 +5892,7 @@ type SwitchPortLinkConfig struct {
 	// LinkName is the name of this link.
 	LinkName string `json:"link_name,omitempty" yaml:"link_name,omitempty"`
 	// LldpLinkConfig is the link-layer discovery protocol service configuration for this link.
-	LldpLinkConfig LldpLinkConfig `json:"lldp_link_config,omitempty" yaml:"lldp_link_config,omitempty"`
+	LldpLinkConfig *LldpLinkConfig `json:"lldp_link_config,omitempty" yaml:"lldp_link_config,omitempty"`
 	// Mtu is the maximum transmission unit for this link.
 	Mtu *int `json:"mtu,omitempty" yaml:"mtu,omitempty"`
 	// PortSettingsId is the port settings this link configuration belongs to.
