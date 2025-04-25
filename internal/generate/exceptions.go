@@ -4,22 +4,6 @@
 
 package main
 
-// Returns a list of types that should not be omitted when empty
-// for json serialisation
-func omitemptyExceptions() []string {
-	return []string{
-		"[]VpcFirewallRuleUpdate",
-		"[]NameOrId",
-
-		// Networking Types
-		"[]AddressConfig",
-		"[]BgpPeerConfig",
-		"[]SwitchInterfaceConfigCreate",
-		"[]LinkConfigCreate",
-		"[]RouteConfig",
-	}
-}
-
 func emptyTypes() []string {
 	return []string{
 		"BgpMessageHistory",
@@ -27,8 +11,9 @@ func emptyTypes() []string {
 	}
 }
 
-// TODO: Actually handle nullable fields properly
 func nullable() []string {
+	// TODO: This type has a nested required "Type" field, which hinders
+	// the usage of this type. Remove when this is fixed in the upstream API
 	return []string{
 		"InstanceDiskAttachment",
 		"TxEqConfig",

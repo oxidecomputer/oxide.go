@@ -3433,7 +3433,7 @@ type InstanceCpuCount uint16
 // - Ncpus
 type InstanceCreate struct {
 	// AntiAffinityGroups is anti-Affinity groups which this instance should be added.
-	AntiAffinityGroups []NameOrId `json:"anti_affinity_groups" yaml:"anti_affinity_groups"`
+	AntiAffinityGroups []NameOrId `json:"anti_affinity_groups,omitempty" yaml:"anti_affinity_groups,omitempty"`
 	// AutoRestartPolicy is the auto-restart policy for this instance.
 	//
 	// This policy determines whether the instance should be automatically restarted by the control plane on failure.
@@ -3729,6 +3729,40 @@ type InstanceUpdate struct {
 	Memory ByteCount `json:"memory,omitempty" yaml:"memory,omitempty"`
 	// Ncpus is the number of CPUs to assign to this instance.
 	Ncpus InstanceCpuCount `json:"ncpus,omitempty" yaml:"ncpus,omitempty"`
+}
+
+// InterfaceNumUnknown is the type definition for a InterfaceNumUnknown.
+//
+// Required fields:
+// - Unknown
+type InterfaceNumUnknown struct {
+	Unknown *int `json:"unknown,omitempty" yaml:"unknown,omitempty"`
+}
+
+// InterfaceNumIfIndex is the type definition for a InterfaceNumIfIndex.
+//
+// Required fields:
+// - IfIndex
+type InterfaceNumIfIndex struct {
+	IfIndex *int `json:"if_index,omitempty" yaml:"if_index,omitempty"`
+}
+
+// InterfaceNumPortNumber is the type definition for a InterfaceNumPortNumber.
+//
+// Required fields:
+// - PortNumber
+type InterfaceNumPortNumber struct {
+	PortNumber *int `json:"port_number,omitempty" yaml:"port_number,omitempty"`
+}
+
+// InterfaceNum is the type definition for a InterfaceNum.
+type InterfaceNum struct {
+	// Unknown is the type definition for a Unknown.
+	Unknown *int `json:"unknown,omitempty" yaml:"unknown,omitempty"`
+	// IfIndex is the type definition for a IfIndex.
+	IfIndex *int `json:"if_index,omitempty" yaml:"if_index,omitempty"`
+	// PortNumber is the type definition for a PortNumber.
+	PortNumber *int `json:"port_number,omitempty" yaml:"port_number,omitempty"`
 }
 
 // InternetGateway is an internet gateway provides a path between VPC networks and external networks.
@@ -4193,7 +4227,7 @@ type LldpNeighbor struct {
 	// LocalPort is the port on which the neighbor was seen
 	LocalPort string `json:"local_port,omitempty" yaml:"local_port,omitempty"`
 	// ManagementIp is the LLDP management IP(s) advertised by the neighbor
-	ManagementIp []IpNet `json:"management_ip,omitempty" yaml:"management_ip,omitempty"`
+	ManagementIp []ManagementAddress `json:"management_ip,omitempty" yaml:"management_ip,omitempty"`
 	// SystemDescription is the LLDP system description advertised by the neighbor
 	SystemDescription string `json:"system_description,omitempty" yaml:"system_description,omitempty"`
 	// SystemName is the LLDP system name advertised by the neighbor
@@ -4273,6 +4307,17 @@ type LoopbackAddressResultsPage struct {
 // MacAddr is a Media Access Control address, in EUI-48 format
 type MacAddr string
 
+// ManagementAddress is the type definition for a ManagementAddress.
+//
+// Required fields:
+// - Addr
+// - InterfaceNum
+type ManagementAddress struct {
+	Addr         NetworkAddress `json:"addr,omitempty" yaml:"addr,omitempty"`
+	InterfaceNum InterfaceNum   `json:"interface_num,omitempty" yaml:"interface_num,omitempty"`
+	Oid          []string       `json:"oid" yaml:"oid"`
+}
+
 // Measurement is a `Measurement` is a timestamped datum from a single metric
 //
 // Required fields:
@@ -4321,6 +4366,30 @@ type NameOrIdSortMode string
 
 // NameSortMode is sort in increasing order of "name"
 type NameSortMode string
+
+// NetworkAddressIpAddr is the type definition for a NetworkAddressIpAddr.
+//
+// Required fields:
+// - IpAddr
+type NetworkAddressIpAddr struct {
+	IpAddr string `json:"ip_addr,omitempty" yaml:"ip_addr,omitempty"`
+}
+
+// NetworkAddressIeee802 is the type definition for a NetworkAddressIeee802.
+//
+// Required fields:
+// - IEEE802
+type NetworkAddressIeee802 struct {
+	IEEE802 []string `json:"i_e_e_e802,omitempty" yaml:"i_e_e_e802,omitempty"`
+}
+
+// NetworkAddress is the type definition for a NetworkAddress.
+type NetworkAddress struct {
+	// IpAddr is the type definition for a IpAddr.
+	IpAddr string `json:"ip_addr,omitempty" yaml:"ip_addr,omitempty"`
+	// IEEE802 is the type definition for a IEEE802.
+	IEEE802 []string `json:"i_e_e_e802,omitempty" yaml:"i_e_e_e802,omitempty"`
+}
 
 // NetworkInterface is information required to construct a virtual network interface
 //
@@ -4510,7 +4579,7 @@ type PingStatus string
 // - Timestamps
 // - Values
 type Points struct {
-	StartTimes []string `json:"start_times,omitempty" yaml:"start_times,omitempty"`
+	StartTimes []string `json:"start_times" yaml:"start_times"`
 	Timestamps []string `json:"timestamps,omitempty" yaml:"timestamps,omitempty"`
 	Values     []Values `json:"values,omitempty" yaml:"values,omitempty"`
 }
@@ -6633,11 +6702,11 @@ type VpcFirewallRuleDirection string
 type VpcFirewallRuleFilter struct {
 	// Hosts is if present, host filters match the "other end" of traffic from the target’s perspective: for
 	// an inbound rule, they match the source of traffic. For an outbound rule, they match the destination.
-	Hosts []VpcFirewallRuleHostFilter `json:"hosts,omitempty" yaml:"hosts,omitempty"`
+	Hosts []VpcFirewallRuleHostFilter `json:"hosts" yaml:"hosts"`
 	// Ports is if present, the destination ports or port ranges this rule applies to.
-	Ports []L4PortRange `json:"ports,omitempty" yaml:"ports,omitempty"`
+	Ports []L4PortRange `json:"ports" yaml:"ports"`
 	// Protocols is if present, the networking protocols this rule applies to.
-	Protocols []VpcFirewallRuleProtocol `json:"protocols,omitempty" yaml:"protocols,omitempty"`
+	Protocols []VpcFirewallRuleProtocol `json:"protocols" yaml:"protocols"`
 }
 
 // VpcFirewallRuleHostFilterType is the type definition for a VpcFirewallRuleHostFilterType.
@@ -6829,7 +6898,7 @@ type VpcFirewallRuleUpdate struct {
 // Required fields:
 // - Rules
 type VpcFirewallRuleUpdateParams struct {
-	Rules []VpcFirewallRuleUpdate `json:"rules" yaml:"rules"`
+	Rules []VpcFirewallRuleUpdate `json:"rules,omitempty" yaml:"rules,omitempty"`
 }
 
 // VpcFirewallRules is collection of a Vpc's firewall rules
@@ -9019,7 +9088,6 @@ type VpcRouterRouteDeleteParams struct {
 //
 // Required fields:
 // - Route
-// - Router
 type VpcRouterRouteViewParams struct {
 	Route   NameOrId `json:"route,omitempty" yaml:"route,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
@@ -11370,7 +11438,6 @@ func (p *VpcRouterRouteDeleteParams) Validate() error {
 func (p *VpcRouterRouteViewParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.Route), "Route")
-	v.HasRequiredStr(string(p.Router), "Router")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
