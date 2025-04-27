@@ -1,4 +1,4 @@
-{{template "description" .}}func (c *Client) {{.FunctionName}}(ctx context.Context, {{.ParamsString}}) error { {{if .HasParams}}
+{{template "description" .}}func (c *client) {{.FunctionName}}(ctx context.Context, {{.ParamsString}}) error { {{if .HasParams}}
     if err := params.Validate(); err != nil {
 		return err
 	}{{end}}{{if .IsAppJSON}}

@@ -9,7 +9,7 @@ package oxide
 // IpPoolList: List IP pools
 //
 // To iterate over all pages, use the `IpPoolListAllPages` method, instead.
-func (c *Client) IpPoolList(ctx context.Context, params IpPoolListParams, ) (*IpPoolResultsPage, error) { 
+func (c *client) IpPoolList(ctx context.Context, params IpPoolListParams, ) (*IpPoolResultsPage, error) { 
     if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -61,7 +61,7 @@ func (c *Client) IpPoolList(ctx context.Context, params IpPoolListParams, ) (*Ip
 //
 // This method is a wrapper around the `IpPoolList` method.
 // This method returns all the pages at once.
-func (c *Client) IpPoolListAllPages(ctx context.Context, params IpPoolListParams, ) ([]IpPool, error) { 
+func (c *client) IpPoolListAllPages(ctx context.Context, params IpPoolListParams, ) ([]IpPool, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -84,7 +84,7 @@ func (c *Client) IpPoolListAllPages(ctx context.Context, params IpPoolListParams
 }
 
 // IpPoolCreate: Create an IP pool
-func (c *Client) IpPoolCreate(ctx context.Context, params IpPoolCreateParams, ) (*IpPool, error) { 
+func (c *client) IpPoolCreate(ctx context.Context, params IpPoolCreateParams, ) (*IpPool, error) { 
     if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -136,7 +136,7 @@ func (c *Client) IpPoolCreate(ctx context.Context, params IpPoolCreateParams, ) 
 }
 
 // IpPoolView: Fetch an IP pool
-func (c *Client) IpPoolView(ctx context.Context, params IpPoolViewParams, ) (*IpPool, error) { 
+func (c *client) IpPoolView(ctx context.Context, params IpPoolViewParams, ) (*IpPool, error) { 
     if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -183,7 +183,7 @@ func (c *Client) IpPoolView(ctx context.Context, params IpPoolViewParams, ) (*Ip
 }
 
 // IpPoolUpdate: Update an IP Pool
-func (c *Client) IpPoolUpdate(ctx context.Context, params IpPoolUpdateParams, ) (*IpPool, error) { 
+func (c *client) IpPoolUpdate(ctx context.Context, params IpPoolUpdateParams, ) (*IpPool, error) { 
     if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -236,7 +236,7 @@ func (c *Client) IpPoolUpdate(ctx context.Context, params IpPoolUpdateParams, ) 
 }
 
 // IpPoolDelete: Delete an IP Pool
-func (c *Client) IpPoolDelete(ctx context.Context, params IpPoolDeleteParams, ) error { 
+func (c *client) IpPoolDelete(ctx context.Context, params IpPoolDeleteParams, ) error { 
     if err := params.Validate(); err != nil {
 		return err
 	}

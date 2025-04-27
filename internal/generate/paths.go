@@ -45,12 +45,14 @@ type paramsInfo struct {
 }
 
 // Generate the paths.go file.
-func generatePaths(file string, spec *openapi3.T) error {
+func generatePaths(file string, spec *openapi3.T) ([]methodTemplate, error) {
 	f, err := openGeneratedFile(file)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer f.Close()
+
+	methods := make([]methodTemplate, 0)
 
 	// Iterate over all the paths in the spec and write the methods.
 	// We want to ensure we keep the order.
@@ -66,78 +68,87 @@ func generatePaths(file string, spec *openapi3.T) error {
 			continue
 		}
 
-		err := buildPath(f, spec, path, p)
+		tmpMethods, err := buildPath(f, spec, path, p)
 		if err != nil {
-			return err
+			return nil, err
 		}
+		methods = append(methods, tmpMethods...)
 	}
 
-	return nil
+	return methods, nil
 }
 
 // buildPath builds the given path as an http request to the given file.
-func buildPath(f *os.File, spec *openapi3.T, path string, p *openapi3.PathItem) error {
+func buildPath(f *os.File, spec *openapi3.T, path string, p *openapi3.PathItem) ([]methodTemplate, error) {
+	methods := make([]methodTemplate, 0)
 	if p.Get != nil {
-		err := buildMethod(f, spec, http.MethodGet, path, p.Get, false)
+		tmpMethods, err := buildMethod(f, spec, http.MethodGet, path, p.Get, false)
 		if err != nil {
-			return err
+			return nil, err
 		}
+		methods = append(methods, tmpMethods...)
 	}
 
 	if p.Post != nil {
-		err := buildMethod(f, spec, http.MethodPost, path, p.Post, false)
+		tmpMethods, err := buildMethod(f, spec, http.MethodPost, path, p.Post, false)
 		if err != nil {
-			return err
+			return nil, err
 		}
+		methods = append(methods, tmpMethods...)
 	}
 
 	if p.Put != nil {
-		err := buildMethod(f, spec, http.MethodPut, path, p.Put, false)
+		tmpMethods, err := buildMethod(f, spec, http.MethodPut, path, p.Put, false)
 		if err != nil {
-			return err
+			return nil, err
 		}
+		methods = append(methods, tmpMethods...)
 	}
 
 	if p.Delete != nil {
-		err := buildMethod(f, spec, http.MethodDelete, path, p.Delete, false)
+		tmpMethods, err := buildMethod(f, spec, http.MethodDelete, path, p.Delete, false)
 		if err != nil {
-			return err
+			return nil, err
 		}
+		methods = append(methods, tmpMethods...)
 	}
 
 	if p.Patch != nil {
-		err := buildMethod(f, spec, http.MethodPatch, path, p.Patch, false)
+		tmpMethods, err := buildMethod(f, spec, http.MethodPatch, path, p.Patch, false)
 		if err != nil {
-			return err
+			return nil, err
 		}
+		methods = append(methods, tmpMethods...)
 	}
 
 	if p.Head != nil {
-		err := buildMethod(f, spec, http.MethodHead, path, p.Head, false)
+		tmpMethods, err := buildMethod(f, spec, http.MethodHead, path, p.Head, false)
 		if err != nil {
-			return err
+			return nil, err
 		}
+		methods = append(methods, tmpMethods...)
 	}
 
 	if p.Options != nil {
-		err := buildMethod(f, spec, http.MethodOptions, path, p.Options, false)
+		tmpMethods, err := buildMethod(f, spec, http.MethodOptions, path, p.Options, false)
 		if err != nil {
-			return err
+			return nil, err
 		}
+		methods = append(methods, tmpMethods...)
 	}
 
-	return nil
+	return methods, nil
 }
 
-func buildMethod(f *os.File, spec *openapi3.T, method string, path string, o *openapi3.Operation, isGetAllPages bool) error {
+func buildMethod(f *os.File, spec *openapi3.T, method string, path string, o *openapi3.Operation, isGetAllPages bool) ([]methodTemplate, error) {
 	respType, pagedRespType, err := getSuccessResponseType(o, isGetAllPages)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if len(o.Tags) == 0 || o.Tags[0] == "hidden" {
 		fmt.Printf("[WARN] TODO: skipping operation %q, since it has no tag or is hidden\n", o.OperationID)
-		return nil
+		return nil, nil
 	}
 
 	methodName := strcase.ToCamel(o.OperationID)
@@ -147,7 +158,7 @@ func buildMethod(f *os.File, spec *openapi3.T, method string, path string, o *op
 
 	if isGetAllPages {
 		if pagedRespType == "" {
-			return nil
+			return nil, nil
 		}
 	}
 
@@ -165,11 +176,11 @@ func buildMethod(f *os.File, spec *openapi3.T, method string, path string, o *op
 
 	pathParams, err := buildPathOrQueryParams("path", pInfo.parameters)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	queryParams, err := buildPathOrQueryParams("query", pInfo.parameters)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	sanitisedDescription := strings.ReplaceAll(o.Description, "\n", "\n// ")
@@ -211,18 +222,22 @@ func buildMethod(f *os.File, spec *openapi3.T, method string, path string, o *op
 	}
 
 	if err := writeTpl(f, config); err != nil {
-		return err
+		return nil, err
 	}
+
+	methods := make([]methodTemplate, 0)
+	methods = append(methods, config)
 
 	if pInfo.isPageResult && !isGetAllPages {
 		// Run the method again with get all pages for ListAll methods.
-		err := buildMethod(f, spec, method, path, o, true)
+		allPagesMethods, err := buildMethod(f, spec, method, path, o, true)
 		if err != nil {
-			return err
+			return nil, err
 		}
+		methods = append(methods, allPagesMethods...)
 	}
 
-	return nil
+	return methods, nil
 }
 
 func getSuccessResponseType(o *openapi3.Operation, isGetAllPages bool) (string, string, error) {

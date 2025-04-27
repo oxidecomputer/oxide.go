@@ -137,10 +137,11 @@ func Test_buildRequest(t *testing.T) {
 	}
 
 	// Just to get a client to call buildRequest on.
-	c, err := NewClient(&Config{
+	cli, err := NewClient(&Config{
 		Host:  "http://localhost:3000",
 		Token: "foo",
 	})
+	c := cli.(*client)
 	if err != nil {
 		t.Fatalf("failed creating api client: %v", err)
 	}
@@ -171,7 +172,7 @@ func Test_NewClient(t *testing.T) {
 		config         func(string) *Config
 		setHome        bool
 		env            map[string]string
-		expectedClient *Client
+		expectedClient *client
 		expectedError  string
 	}{
 		"succeeds with valid client from config": {
@@ -181,7 +182,7 @@ func Test_NewClient(t *testing.T) {
 					Token: "foo",
 				}
 			},
-			expectedClient: &Client{
+			expectedClient: &client{
 				host:  "http://localhost/",
 				token: "foo",
 				client: &http.Client{
@@ -195,7 +196,7 @@ func Test_NewClient(t *testing.T) {
 				"OXIDE_HOST":  "http://localhost",
 				"OXIDE_TOKEN": "foo",
 			},
-			expectedClient: &Client{
+			expectedClient: &client{
 				host:  "http://localhost/",
 				token: "foo",
 				client: &http.Client{
@@ -217,7 +218,7 @@ func Test_NewClient(t *testing.T) {
 					},
 				}
 			},
-			expectedClient: &Client{
+			expectedClient: &client{
 				host:  "http://localhost/",
 				token: "foo",
 				client: &http.Client{
@@ -233,7 +234,7 @@ func Test_NewClient(t *testing.T) {
 				}
 			},
 			setHome: true,
-			expectedClient: &Client{
+			expectedClient: &client{
 				host:  "http://file-host/",
 				token: "file-token",
 				client: &http.Client{
@@ -249,7 +250,7 @@ func Test_NewClient(t *testing.T) {
 				}
 			},
 			setHome: true,
-			expectedClient: &Client{
+			expectedClient: &client{
 				host:  "http://file-host/",
 				token: "file-token",
 				client: &http.Client{
@@ -265,7 +266,7 @@ func Test_NewClient(t *testing.T) {
 					ConfigDir:         oxideDir,
 				}
 			},
-			expectedClient: &Client{
+			expectedClient: &client{
 				host:  "http://file-host/",
 				token: "file-token",
 				client: &http.Client{
@@ -281,7 +282,7 @@ func Test_NewClient(t *testing.T) {
 					ConfigDir: oxideDir,
 				}
 			},
-			expectedClient: &Client{
+			expectedClient: &client{
 				host:  "http://other-host/",
 				token: "other-token",
 				client: &http.Client{
@@ -301,7 +302,7 @@ func Test_NewClient(t *testing.T) {
 				}
 			},
 			setHome: true,
-			expectedClient: &Client{
+			expectedClient: &client{
 				host:  "http://other-host/",
 				token: "other-token",
 				client: &http.Client{
@@ -440,9 +441,9 @@ func Test_NewClient(t *testing.T) {
 
 			if testCase.expectedError != "" {
 				assert.EqualError(t, err, strings.ReplaceAll(testCase.expectedError, "<OXIDE_DIR>", oxideDir))
+			} else {
+				assert.Equal(t, testCase.expectedClient, c)
 			}
-
-			assert.Equal(t, testCase.expectedClient, c)
 		})
 	}
 }

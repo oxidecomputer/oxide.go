@@ -25,7 +25,7 @@ func Test_loadAPI(t *testing.T) {
 			wantErr: "no such file or directory",
 		},
 		{
-			name:    "file does not exist",
+			name:    "invalid version",
 			args:    args{"generate/test_utils/INVALID_VERSION"},
 			wantErr: "error loading openAPI spec from \"https://raw.githubusercontent.com/oxidecomputer/omicron//openapi/nexus.json\"",
 		},

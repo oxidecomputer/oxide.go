@@ -14,14 +14,15 @@ import (
 
 func Test_generatePaths(t *testing.T) {
 	file := "./test_utils/paths.json"
-	pathsSpec, err := openapi3.NewLoader().LoadFromFile(file)
+	spec, err := openapi3.NewLoader().LoadFromFile(file)
 	if err != nil {
 		t.Error(fmt.Errorf("error loading openAPI spec from %q: %v", file, err))
 	}
 
 	type args struct {
-		file string
-		spec *openapi3.T
+		pathsFile      string
+		interfacesFile string
+		spec           *openapi3.T
 	}
 	tests := []struct {
 		name    string
@@ -29,13 +30,30 @@ func Test_generatePaths(t *testing.T) {
 		wantErr string
 	}{
 		{
-			name:    "fail on non-existent file",
-			args:    args{"sdf/gdsf", pathsSpec},
+			name: "fail on non-existent paths file",
+			args: args{
+				pathsFile:      "sdf/gdsf",
+				interfacesFile: "sdf/gdsf",
+				spec:           spec,
+			},
+			wantErr: "no such file or directory",
+		},
+		{
+			name: "fail on non-existent interfaces file",
+			args: args{
+				pathsFile:      "test_utils/paths_output",
+				interfacesFile: "sdf/gdsf",
+				spec:           spec,
+			},
 			wantErr: "no such file or directory",
 		},
 		{
 			name: "success",
-			args: args{"test_utils/paths_output", pathsSpec},
+			args: args{
+				pathsFile:      "test_utils/paths_output",
+				interfacesFile: "test_utils/interfaces_output",
+				spec:           spec,
+			},
 		},
 	}
 	for _, tt := range tests {
@@ -43,12 +61,22 @@ func Test_generatePaths(t *testing.T) {
 			// TODO: For now the test is not properly generating the "ListAll" methods
 			// This is because there is a separate check to the response type. The way this works
 			// should be changed
-			if err := generatePaths(tt.args.file, tt.args.spec); err != nil {
+			methods, err := generatePaths(tt.args.pathsFile, tt.args.spec)
+			if err != nil {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 
-			if err := compareFiles("test_utils/paths_output_expected", tt.args.file); err != nil {
+			if err := generateInterfaces(tt.args.interfacesFile, methods); err != nil {
+				assert.ErrorContains(t, err, tt.wantErr)
+				return
+			}
+
+			if err := compareFiles("test_utils/paths_output_expected", tt.args.pathsFile); err != nil {
+				t.Error(err)
+			}
+
+			if err := compareFiles("test_utils/interfaces_output_expected", tt.args.interfacesFile); err != nil {
 				t.Error(err)
 			}
 		})

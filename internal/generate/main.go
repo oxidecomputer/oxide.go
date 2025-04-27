@@ -40,7 +40,13 @@ func generateSDK() error {
 	}
 
 	pathsFile := "../../oxide/paths.go"
-	if err := generatePaths(pathsFile, spec); err != nil {
+	methods, err := generatePaths(pathsFile, spec)
+	if err != nil {
+		return err
+	}
+
+	interfacesFile := "../../oxide/interfaces.go"
+	if err := generateInterfaces(interfacesFile, methods); err != nil {
 		return err
 	}
 

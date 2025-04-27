@@ -17,7 +17,7 @@ import (
 )
 
 // LoginSaml: Authenticate a user via SAML
-func (c *Client) LoginSaml(ctx context.Context, params LoginSamlParams) error {
+func (c *client) LoginSaml(ctx context.Context, params LoginSamlParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -57,7 +57,7 @@ func (c *Client) LoginSaml(ctx context.Context, params LoginSamlParams) error {
 // AntiAffinityGroupList: List anti-affinity groups
 //
 // To iterate over all pages, use the `AntiAffinityGroupListAllPages` method, instead.
-func (c *Client) AntiAffinityGroupList(ctx context.Context, params AntiAffinityGroupListParams) (*AntiAffinityGroupResultsPage, error) {
+func (c *client) AntiAffinityGroupList(ctx context.Context, params AntiAffinityGroupListParams) (*AntiAffinityGroupResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -109,7 +109,7 @@ func (c *Client) AntiAffinityGroupList(ctx context.Context, params AntiAffinityG
 //
 // This method is a wrapper around the `AntiAffinityGroupList` method.
 // This method returns all the pages at once.
-func (c *Client) AntiAffinityGroupListAllPages(ctx context.Context, params AntiAffinityGroupListParams) ([]AntiAffinityGroup, error) {
+func (c *client) AntiAffinityGroupListAllPages(ctx context.Context, params AntiAffinityGroupListParams) ([]AntiAffinityGroup, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -132,7 +132,7 @@ func (c *Client) AntiAffinityGroupListAllPages(ctx context.Context, params AntiA
 }
 
 // AntiAffinityGroupCreate: Create anti-affinity group
-func (c *Client) AntiAffinityGroupCreate(ctx context.Context, params AntiAffinityGroupCreateParams) (*AntiAffinityGroup, error) {
+func (c *client) AntiAffinityGroupCreate(ctx context.Context, params AntiAffinityGroupCreateParams) (*AntiAffinityGroup, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -184,7 +184,7 @@ func (c *Client) AntiAffinityGroupCreate(ctx context.Context, params AntiAffinit
 }
 
 // AntiAffinityGroupView: Fetch anti-affinity group
-func (c *Client) AntiAffinityGroupView(ctx context.Context, params AntiAffinityGroupViewParams) (*AntiAffinityGroup, error) {
+func (c *client) AntiAffinityGroupView(ctx context.Context, params AntiAffinityGroupViewParams) (*AntiAffinityGroup, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -232,7 +232,7 @@ func (c *Client) AntiAffinityGroupView(ctx context.Context, params AntiAffinityG
 }
 
 // AntiAffinityGroupUpdate: Update anti-affinity group
-func (c *Client) AntiAffinityGroupUpdate(ctx context.Context, params AntiAffinityGroupUpdateParams) (*AntiAffinityGroup, error) {
+func (c *client) AntiAffinityGroupUpdate(ctx context.Context, params AntiAffinityGroupUpdateParams) (*AntiAffinityGroup, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -286,7 +286,7 @@ func (c *Client) AntiAffinityGroupUpdate(ctx context.Context, params AntiAffinit
 }
 
 // AntiAffinityGroupDelete: Delete anti-affinity group
-func (c *Client) AntiAffinityGroupDelete(ctx context.Context, params AntiAffinityGroupDeleteParams) error {
+func (c *client) AntiAffinityGroupDelete(ctx context.Context, params AntiAffinityGroupDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -325,7 +325,7 @@ func (c *Client) AntiAffinityGroupDelete(ctx context.Context, params AntiAffinit
 // AntiAffinityGroupMemberList: List anti-affinity group members
 //
 // To iterate over all pages, use the `AntiAffinityGroupMemberListAllPages` method, instead.
-func (c *Client) AntiAffinityGroupMemberList(ctx context.Context, params AntiAffinityGroupMemberListParams) (*AntiAffinityGroupMemberResultsPage, error) {
+func (c *client) AntiAffinityGroupMemberList(ctx context.Context, params AntiAffinityGroupMemberListParams) (*AntiAffinityGroupMemberResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -379,7 +379,7 @@ func (c *Client) AntiAffinityGroupMemberList(ctx context.Context, params AntiAff
 //
 // This method is a wrapper around the `AntiAffinityGroupMemberList` method.
 // This method returns all the pages at once.
-func (c *Client) AntiAffinityGroupMemberListAllPages(ctx context.Context, params AntiAffinityGroupMemberListParams) ([]AntiAffinityGroupMember, error) {
+func (c *client) AntiAffinityGroupMemberListAllPages(ctx context.Context, params AntiAffinityGroupMemberListParams) ([]AntiAffinityGroupMember, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -402,7 +402,7 @@ func (c *Client) AntiAffinityGroupMemberListAllPages(ctx context.Context, params
 }
 
 // AntiAffinityGroupMemberInstanceView: Fetch anti-affinity group member
-func (c *Client) AntiAffinityGroupMemberInstanceView(ctx context.Context, params AntiAffinityGroupMemberInstanceViewParams) (*AntiAffinityGroupMember, error) {
+func (c *client) AntiAffinityGroupMemberInstanceView(ctx context.Context, params AntiAffinityGroupMemberInstanceViewParams) (*AntiAffinityGroupMember, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -451,7 +451,7 @@ func (c *Client) AntiAffinityGroupMemberInstanceView(ctx context.Context, params
 }
 
 // AntiAffinityGroupMemberInstanceAdd: Add member to anti-affinity group
-func (c *Client) AntiAffinityGroupMemberInstanceAdd(ctx context.Context, params AntiAffinityGroupMemberInstanceAddParams) (*AntiAffinityGroupMember, error) {
+func (c *client) AntiAffinityGroupMemberInstanceAdd(ctx context.Context, params AntiAffinityGroupMemberInstanceAddParams) (*AntiAffinityGroupMember, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -500,7 +500,7 @@ func (c *Client) AntiAffinityGroupMemberInstanceAdd(ctx context.Context, params 
 }
 
 // AntiAffinityGroupMemberInstanceDelete: Remove member from anti-affinity group
-func (c *Client) AntiAffinityGroupMemberInstanceDelete(ctx context.Context, params AntiAffinityGroupMemberInstanceDeleteParams) error {
+func (c *client) AntiAffinityGroupMemberInstanceDelete(ctx context.Context, params AntiAffinityGroupMemberInstanceDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -542,7 +542,7 @@ func (c *Client) AntiAffinityGroupMemberInstanceDelete(ctx context.Context, para
 // creation date, with the most recent certificates appearing first.
 //
 // To iterate over all pages, use the `CertificateListAllPages` method, instead.
-func (c *Client) CertificateList(ctx context.Context, params CertificateListParams) (*CertificateResultsPage, error) {
+func (c *client) CertificateList(ctx context.Context, params CertificateListParams) (*CertificateResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -595,7 +595,7 @@ func (c *Client) CertificateList(ctx context.Context, params CertificateListPara
 //
 // This method is a wrapper around the `CertificateList` method.
 // This method returns all the pages at once.
-func (c *Client) CertificateListAllPages(ctx context.Context, params CertificateListParams) ([]Certificate, error) {
+func (c *client) CertificateListAllPages(ctx context.Context, params CertificateListParams) ([]Certificate, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -619,7 +619,7 @@ func (c *Client) CertificateListAllPages(ctx context.Context, params Certificate
 
 // CertificateCreate: Create new system-wide x.509 certificate
 // This certificate is automatically used by the Oxide Control plane to serve external connections.
-func (c *Client) CertificateCreate(ctx context.Context, params CertificateCreateParams) (*Certificate, error) {
+func (c *client) CertificateCreate(ctx context.Context, params CertificateCreateParams) (*Certificate, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -670,7 +670,7 @@ func (c *Client) CertificateCreate(ctx context.Context, params CertificateCreate
 
 // CertificateView: Fetch certificate
 // Returns the details of a specific certificate
-func (c *Client) CertificateView(ctx context.Context, params CertificateViewParams) (*Certificate, error) {
+func (c *client) CertificateView(ctx context.Context, params CertificateViewParams) (*Certificate, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -717,7 +717,7 @@ func (c *Client) CertificateView(ctx context.Context, params CertificateViewPara
 
 // CertificateDelete: Delete certificate
 // Permanently delete a certificate. This operation cannot be undone.
-func (c *Client) CertificateDelete(ctx context.Context, params CertificateDeleteParams) error {
+func (c *client) CertificateDelete(ctx context.Context, params CertificateDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -754,7 +754,7 @@ func (c *Client) CertificateDelete(ctx context.Context, params CertificateDelete
 // DiskList: List disks
 //
 // To iterate over all pages, use the `DiskListAllPages` method, instead.
-func (c *Client) DiskList(ctx context.Context, params DiskListParams) (*DiskResultsPage, error) {
+func (c *client) DiskList(ctx context.Context, params DiskListParams) (*DiskResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -806,7 +806,7 @@ func (c *Client) DiskList(ctx context.Context, params DiskListParams) (*DiskResu
 //
 // This method is a wrapper around the `DiskList` method.
 // This method returns all the pages at once.
-func (c *Client) DiskListAllPages(ctx context.Context, params DiskListParams) ([]Disk, error) {
+func (c *client) DiskListAllPages(ctx context.Context, params DiskListParams) ([]Disk, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -829,7 +829,7 @@ func (c *Client) DiskListAllPages(ctx context.Context, params DiskListParams) ([
 }
 
 // DiskCreate: Create a disk
-func (c *Client) DiskCreate(ctx context.Context, params DiskCreateParams) (*Disk, error) {
+func (c *client) DiskCreate(ctx context.Context, params DiskCreateParams) (*Disk, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -881,7 +881,7 @@ func (c *Client) DiskCreate(ctx context.Context, params DiskCreateParams) (*Disk
 }
 
 // DiskView: Fetch disk
-func (c *Client) DiskView(ctx context.Context, params DiskViewParams) (*Disk, error) {
+func (c *client) DiskView(ctx context.Context, params DiskViewParams) (*Disk, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -929,7 +929,7 @@ func (c *Client) DiskView(ctx context.Context, params DiskViewParams) (*Disk, er
 }
 
 // DiskDelete: Delete disk
-func (c *Client) DiskDelete(ctx context.Context, params DiskDeleteParams) error {
+func (c *client) DiskDelete(ctx context.Context, params DiskDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -966,7 +966,7 @@ func (c *Client) DiskDelete(ctx context.Context, params DiskDeleteParams) error 
 }
 
 // DiskBulkWriteImport: Import blocks into disk
-func (c *Client) DiskBulkWriteImport(ctx context.Context, params DiskBulkWriteImportParams) error {
+func (c *client) DiskBulkWriteImport(ctx context.Context, params DiskBulkWriteImportParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -1010,7 +1010,7 @@ func (c *Client) DiskBulkWriteImport(ctx context.Context, params DiskBulkWriteIm
 
 // DiskBulkWriteImportStart: Start importing blocks into disk
 // Start the process of importing blocks into a disk
-func (c *Client) DiskBulkWriteImportStart(ctx context.Context, params DiskBulkWriteImportStartParams) error {
+func (c *client) DiskBulkWriteImportStart(ctx context.Context, params DiskBulkWriteImportStartParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -1048,7 +1048,7 @@ func (c *Client) DiskBulkWriteImportStart(ctx context.Context, params DiskBulkWr
 
 // DiskBulkWriteImportStop: Stop importing blocks into disk
 // Stop the process of importing blocks into a disk
-func (c *Client) DiskBulkWriteImportStop(ctx context.Context, params DiskBulkWriteImportStopParams) error {
+func (c *client) DiskBulkWriteImportStop(ctx context.Context, params DiskBulkWriteImportStopParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -1085,7 +1085,7 @@ func (c *Client) DiskBulkWriteImportStop(ctx context.Context, params DiskBulkWri
 }
 
 // DiskFinalizeImport: Confirm disk block import completion
-func (c *Client) DiskFinalizeImport(ctx context.Context, params DiskFinalizeImportParams) error {
+func (c *client) DiskFinalizeImport(ctx context.Context, params DiskFinalizeImportParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -1130,7 +1130,7 @@ func (c *Client) DiskFinalizeImport(ctx context.Context, params DiskFinalizeImpo
 // DiskMetricsList: Fetch disk metrics
 //
 // To iterate over all pages, use the `DiskMetricsListAllPages` method, instead.
-func (c *Client) DiskMetricsList(ctx context.Context, params DiskMetricsListParams) (*MeasurementResultsPage, error) {
+func (c *client) DiskMetricsList(ctx context.Context, params DiskMetricsListParams) (*MeasurementResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -1187,7 +1187,7 @@ func (c *Client) DiskMetricsList(ctx context.Context, params DiskMetricsListPara
 //
 // This method is a wrapper around the `DiskMetricsList` method.
 // This method returns all the pages at once.
-func (c *Client) DiskMetricsListAllPages(ctx context.Context, params DiskMetricsListParams) ([]Measurement, error) {
+func (c *client) DiskMetricsListAllPages(ctx context.Context, params DiskMetricsListParams) ([]Measurement, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -1212,7 +1212,7 @@ func (c *Client) DiskMetricsListAllPages(ctx context.Context, params DiskMetrics
 // FloatingIpList: List floating IPs
 //
 // To iterate over all pages, use the `FloatingIpListAllPages` method, instead.
-func (c *Client) FloatingIpList(ctx context.Context, params FloatingIpListParams) (*FloatingIpResultsPage, error) {
+func (c *client) FloatingIpList(ctx context.Context, params FloatingIpListParams) (*FloatingIpResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -1264,7 +1264,7 @@ func (c *Client) FloatingIpList(ctx context.Context, params FloatingIpListParams
 //
 // This method is a wrapper around the `FloatingIpList` method.
 // This method returns all the pages at once.
-func (c *Client) FloatingIpListAllPages(ctx context.Context, params FloatingIpListParams) ([]FloatingIp, error) {
+func (c *client) FloatingIpListAllPages(ctx context.Context, params FloatingIpListParams) ([]FloatingIp, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -1287,7 +1287,7 @@ func (c *Client) FloatingIpListAllPages(ctx context.Context, params FloatingIpLi
 }
 
 // FloatingIpCreate: Create floating IP
-func (c *Client) FloatingIpCreate(ctx context.Context, params FloatingIpCreateParams) (*FloatingIp, error) {
+func (c *client) FloatingIpCreate(ctx context.Context, params FloatingIpCreateParams) (*FloatingIp, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -1339,7 +1339,7 @@ func (c *Client) FloatingIpCreate(ctx context.Context, params FloatingIpCreatePa
 }
 
 // FloatingIpView: Fetch floating IP
-func (c *Client) FloatingIpView(ctx context.Context, params FloatingIpViewParams) (*FloatingIp, error) {
+func (c *client) FloatingIpView(ctx context.Context, params FloatingIpViewParams) (*FloatingIp, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -1387,7 +1387,7 @@ func (c *Client) FloatingIpView(ctx context.Context, params FloatingIpViewParams
 }
 
 // FloatingIpUpdate: Update floating IP
-func (c *Client) FloatingIpUpdate(ctx context.Context, params FloatingIpUpdateParams) (*FloatingIp, error) {
+func (c *client) FloatingIpUpdate(ctx context.Context, params FloatingIpUpdateParams) (*FloatingIp, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -1441,7 +1441,7 @@ func (c *Client) FloatingIpUpdate(ctx context.Context, params FloatingIpUpdatePa
 }
 
 // FloatingIpDelete: Delete floating IP
-func (c *Client) FloatingIpDelete(ctx context.Context, params FloatingIpDeleteParams) error {
+func (c *client) FloatingIpDelete(ctx context.Context, params FloatingIpDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -1479,7 +1479,7 @@ func (c *Client) FloatingIpDelete(ctx context.Context, params FloatingIpDeletePa
 
 // FloatingIpAttach: Attach floating IP
 // Attach floating IP to an instance or other resource.
-func (c *Client) FloatingIpAttach(ctx context.Context, params FloatingIpAttachParams) (*FloatingIp, error) {
+func (c *client) FloatingIpAttach(ctx context.Context, params FloatingIpAttachParams) (*FloatingIp, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -1533,7 +1533,7 @@ func (c *Client) FloatingIpAttach(ctx context.Context, params FloatingIpAttachPa
 }
 
 // FloatingIpDetach: Detach floating IP
-func (c *Client) FloatingIpDetach(ctx context.Context, params FloatingIpDetachParams) (*FloatingIp, error) {
+func (c *client) FloatingIpDetach(ctx context.Context, params FloatingIpDetachParams) (*FloatingIp, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -1583,7 +1583,7 @@ func (c *Client) FloatingIpDetach(ctx context.Context, params FloatingIpDetachPa
 // GroupList: List groups
 //
 // To iterate over all pages, use the `GroupListAllPages` method, instead.
-func (c *Client) GroupList(ctx context.Context, params GroupListParams) (*GroupResultsPage, error) {
+func (c *client) GroupList(ctx context.Context, params GroupListParams) (*GroupResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -1634,7 +1634,7 @@ func (c *Client) GroupList(ctx context.Context, params GroupListParams) (*GroupR
 //
 // This method is a wrapper around the `GroupList` method.
 // This method returns all the pages at once.
-func (c *Client) GroupListAllPages(ctx context.Context, params GroupListParams) ([]Group, error) {
+func (c *client) GroupListAllPages(ctx context.Context, params GroupListParams) ([]Group, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -1657,7 +1657,7 @@ func (c *Client) GroupListAllPages(ctx context.Context, params GroupListParams) 
 }
 
 // GroupView: Fetch group
-func (c *Client) GroupView(ctx context.Context, params GroupViewParams) (*Group, error) {
+func (c *client) GroupView(ctx context.Context, params GroupViewParams) (*Group, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -1707,7 +1707,7 @@ func (c *Client) GroupView(ctx context.Context, params GroupViewParams) (*Group,
 // with the most recent images appearing first.
 //
 // To iterate over all pages, use the `ImageListAllPages` method, instead.
-func (c *Client) ImageList(ctx context.Context, params ImageListParams) (*ImageResultsPage, error) {
+func (c *client) ImageList(ctx context.Context, params ImageListParams) (*ImageResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -1761,7 +1761,7 @@ func (c *Client) ImageList(ctx context.Context, params ImageListParams) (*ImageR
 //
 // This method is a wrapper around the `ImageList` method.
 // This method returns all the pages at once.
-func (c *Client) ImageListAllPages(ctx context.Context, params ImageListParams) ([]Image, error) {
+func (c *client) ImageListAllPages(ctx context.Context, params ImageListParams) ([]Image, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -1785,7 +1785,7 @@ func (c *Client) ImageListAllPages(ctx context.Context, params ImageListParams) 
 
 // ImageCreate: Create image
 // Create a new image in a project.
-func (c *Client) ImageCreate(ctx context.Context, params ImageCreateParams) (*Image, error) {
+func (c *client) ImageCreate(ctx context.Context, params ImageCreateParams) (*Image, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -1838,7 +1838,7 @@ func (c *Client) ImageCreate(ctx context.Context, params ImageCreateParams) (*Im
 
 // ImageView: Fetch image
 // Fetch the details for a specific image in a project.
-func (c *Client) ImageView(ctx context.Context, params ImageViewParams) (*Image, error) {
+func (c *client) ImageView(ctx context.Context, params ImageViewParams) (*Image, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -1888,7 +1888,7 @@ func (c *Client) ImageView(ctx context.Context, params ImageViewParams) (*Image,
 // ImageDelete: Delete image
 // Permanently delete an image from a project. This operation cannot be undone. Any instances in the project using
 // the image will continue to run, however new instances can not be created with this image.
-func (c *Client) ImageDelete(ctx context.Context, params ImageDeleteParams) error {
+func (c *client) ImageDelete(ctx context.Context, params ImageDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -1926,7 +1926,7 @@ func (c *Client) ImageDelete(ctx context.Context, params ImageDeleteParams) erro
 
 // ImageDemote: Demote silo image
 // Demote silo image to be visible only to a specified project
-func (c *Client) ImageDemote(ctx context.Context, params ImageDemoteParams) (*Image, error) {
+func (c *client) ImageDemote(ctx context.Context, params ImageDemoteParams) (*Image, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -1975,7 +1975,7 @@ func (c *Client) ImageDemote(ctx context.Context, params ImageDemoteParams) (*Im
 
 // ImagePromote: Promote project image
 // Promote project image to be visible to all projects in the silo
-func (c *Client) ImagePromote(ctx context.Context, params ImagePromoteParams) (*Image, error) {
+func (c *client) ImagePromote(ctx context.Context, params ImagePromoteParams) (*Image, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2025,7 +2025,7 @@ func (c *Client) ImagePromote(ctx context.Context, params ImagePromoteParams) (*
 // InstanceList: List instances
 //
 // To iterate over all pages, use the `InstanceListAllPages` method, instead.
-func (c *Client) InstanceList(ctx context.Context, params InstanceListParams) (*InstanceResultsPage, error) {
+func (c *client) InstanceList(ctx context.Context, params InstanceListParams) (*InstanceResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2077,7 +2077,7 @@ func (c *Client) InstanceList(ctx context.Context, params InstanceListParams) (*
 //
 // This method is a wrapper around the `InstanceList` method.
 // This method returns all the pages at once.
-func (c *Client) InstanceListAllPages(ctx context.Context, params InstanceListParams) ([]Instance, error) {
+func (c *client) InstanceListAllPages(ctx context.Context, params InstanceListParams) ([]Instance, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2100,7 +2100,7 @@ func (c *Client) InstanceListAllPages(ctx context.Context, params InstanceListPa
 }
 
 // InstanceCreate: Create instance
-func (c *Client) InstanceCreate(ctx context.Context, params InstanceCreateParams) (*Instance, error) {
+func (c *client) InstanceCreate(ctx context.Context, params InstanceCreateParams) (*Instance, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2152,7 +2152,7 @@ func (c *Client) InstanceCreate(ctx context.Context, params InstanceCreateParams
 }
 
 // InstanceView: Fetch instance
-func (c *Client) InstanceView(ctx context.Context, params InstanceViewParams) (*Instance, error) {
+func (c *client) InstanceView(ctx context.Context, params InstanceViewParams) (*Instance, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2200,7 +2200,7 @@ func (c *Client) InstanceView(ctx context.Context, params InstanceViewParams) (*
 }
 
 // InstanceUpdate: Update instance
-func (c *Client) InstanceUpdate(ctx context.Context, params InstanceUpdateParams) (*Instance, error) {
+func (c *client) InstanceUpdate(ctx context.Context, params InstanceUpdateParams) (*Instance, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2254,7 +2254,7 @@ func (c *Client) InstanceUpdate(ctx context.Context, params InstanceUpdateParams
 }
 
 // InstanceDelete: Delete instance
-func (c *Client) InstanceDelete(ctx context.Context, params InstanceDeleteParams) error {
+func (c *client) InstanceDelete(ctx context.Context, params InstanceDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -2293,7 +2293,7 @@ func (c *Client) InstanceDelete(ctx context.Context, params InstanceDeleteParams
 // InstanceAntiAffinityGroupList: List anti-affinity groups containing instance
 //
 // To iterate over all pages, use the `InstanceAntiAffinityGroupListAllPages` method, instead.
-func (c *Client) InstanceAntiAffinityGroupList(ctx context.Context, params InstanceAntiAffinityGroupListParams) (*AntiAffinityGroupResultsPage, error) {
+func (c *client) InstanceAntiAffinityGroupList(ctx context.Context, params InstanceAntiAffinityGroupListParams) (*AntiAffinityGroupResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2347,7 +2347,7 @@ func (c *Client) InstanceAntiAffinityGroupList(ctx context.Context, params Insta
 //
 // This method is a wrapper around the `InstanceAntiAffinityGroupList` method.
 // This method returns all the pages at once.
-func (c *Client) InstanceAntiAffinityGroupListAllPages(ctx context.Context, params InstanceAntiAffinityGroupListParams) ([]AntiAffinityGroup, error) {
+func (c *client) InstanceAntiAffinityGroupListAllPages(ctx context.Context, params InstanceAntiAffinityGroupListParams) ([]AntiAffinityGroup, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2372,7 +2372,7 @@ func (c *Client) InstanceAntiAffinityGroupListAllPages(ctx context.Context, para
 // InstanceDiskList: List disks for instance
 //
 // To iterate over all pages, use the `InstanceDiskListAllPages` method, instead.
-func (c *Client) InstanceDiskList(ctx context.Context, params InstanceDiskListParams) (*DiskResultsPage, error) {
+func (c *client) InstanceDiskList(ctx context.Context, params InstanceDiskListParams) (*DiskResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2426,7 +2426,7 @@ func (c *Client) InstanceDiskList(ctx context.Context, params InstanceDiskListPa
 //
 // This method is a wrapper around the `InstanceDiskList` method.
 // This method returns all the pages at once.
-func (c *Client) InstanceDiskListAllPages(ctx context.Context, params InstanceDiskListParams) ([]Disk, error) {
+func (c *client) InstanceDiskListAllPages(ctx context.Context, params InstanceDiskListParams) ([]Disk, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2449,7 +2449,7 @@ func (c *Client) InstanceDiskListAllPages(ctx context.Context, params InstanceDi
 }
 
 // InstanceDiskAttach: Attach disk to instance
-func (c *Client) InstanceDiskAttach(ctx context.Context, params InstanceDiskAttachParams) (*Disk, error) {
+func (c *client) InstanceDiskAttach(ctx context.Context, params InstanceDiskAttachParams) (*Disk, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2503,7 +2503,7 @@ func (c *Client) InstanceDiskAttach(ctx context.Context, params InstanceDiskAtta
 }
 
 // InstanceDiskDetach: Detach disk from instance
-func (c *Client) InstanceDiskDetach(ctx context.Context, params InstanceDiskDetachParams) (*Disk, error) {
+func (c *client) InstanceDiskDetach(ctx context.Context, params InstanceDiskDetachParams) (*Disk, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2557,7 +2557,7 @@ func (c *Client) InstanceDiskDetach(ctx context.Context, params InstanceDiskDeta
 }
 
 // InstanceExternalIpList: List external IP addresses
-func (c *Client) InstanceExternalIpList(ctx context.Context, params InstanceExternalIpListParams) (*ExternalIpResultsPage, error) {
+func (c *client) InstanceExternalIpList(ctx context.Context, params InstanceExternalIpListParams) (*ExternalIpResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2605,7 +2605,7 @@ func (c *Client) InstanceExternalIpList(ctx context.Context, params InstanceExte
 }
 
 // InstanceEphemeralIpAttach: Allocate and attach ephemeral IP to instance
-func (c *Client) InstanceEphemeralIpAttach(ctx context.Context, params InstanceEphemeralIpAttachParams) (*ExternalIp, error) {
+func (c *client) InstanceEphemeralIpAttach(ctx context.Context, params InstanceEphemeralIpAttachParams) (*ExternalIp, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2659,7 +2659,7 @@ func (c *Client) InstanceEphemeralIpAttach(ctx context.Context, params InstanceE
 }
 
 // InstanceEphemeralIpDetach: Detach and deallocate ephemeral IP from instance
-func (c *Client) InstanceEphemeralIpDetach(ctx context.Context, params InstanceEphemeralIpDetachParams) error {
+func (c *client) InstanceEphemeralIpDetach(ctx context.Context, params InstanceEphemeralIpDetachParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -2696,7 +2696,7 @@ func (c *Client) InstanceEphemeralIpDetach(ctx context.Context, params InstanceE
 }
 
 // InstanceReboot: Reboot an instance
-func (c *Client) InstanceReboot(ctx context.Context, params InstanceRebootParams) (*Instance, error) {
+func (c *client) InstanceReboot(ctx context.Context, params InstanceRebootParams) (*Instance, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2744,7 +2744,7 @@ func (c *Client) InstanceReboot(ctx context.Context, params InstanceRebootParams
 }
 
 // InstanceSerialConsole: Fetch instance serial console
-func (c *Client) InstanceSerialConsole(ctx context.Context, params InstanceSerialConsoleParams) (*InstanceSerialConsoleData, error) {
+func (c *client) InstanceSerialConsole(ctx context.Context, params InstanceSerialConsoleParams) (*InstanceSerialConsoleData, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2795,7 +2795,7 @@ func (c *Client) InstanceSerialConsole(ctx context.Context, params InstanceSeria
 }
 
 // InstanceSerialConsoleStream: Stream instance serial console
-func (c *Client) InstanceSerialConsoleStream(ctx context.Context, params InstanceSerialConsoleStreamParams) error {
+func (c *client) InstanceSerialConsoleStream(ctx context.Context, params InstanceSerialConsoleStreamParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -2837,7 +2837,7 @@ func (c *Client) InstanceSerialConsoleStream(ctx context.Context, params Instanc
 // time and will not reflect updates made after the instance is created.
 //
 // To iterate over all pages, use the `InstanceSshPublicKeyListAllPages` method, instead.
-func (c *Client) InstanceSshPublicKeyList(ctx context.Context, params InstanceSshPublicKeyListParams) (*SshKeyResultsPage, error) {
+func (c *client) InstanceSshPublicKeyList(ctx context.Context, params InstanceSshPublicKeyListParams) (*SshKeyResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2893,7 +2893,7 @@ func (c *Client) InstanceSshPublicKeyList(ctx context.Context, params InstanceSs
 //
 // This method is a wrapper around the `InstanceSshPublicKeyList` method.
 // This method returns all the pages at once.
-func (c *Client) InstanceSshPublicKeyListAllPages(ctx context.Context, params InstanceSshPublicKeyListParams) ([]SshKey, error) {
+func (c *client) InstanceSshPublicKeyListAllPages(ctx context.Context, params InstanceSshPublicKeyListParams) ([]SshKey, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2916,7 +2916,7 @@ func (c *Client) InstanceSshPublicKeyListAllPages(ctx context.Context, params In
 }
 
 // InstanceStart: Boot instance
-func (c *Client) InstanceStart(ctx context.Context, params InstanceStartParams) (*Instance, error) {
+func (c *client) InstanceStart(ctx context.Context, params InstanceStartParams) (*Instance, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2964,7 +2964,7 @@ func (c *Client) InstanceStart(ctx context.Context, params InstanceStartParams) 
 }
 
 // InstanceStop: Stop instance
-func (c *Client) InstanceStop(ctx context.Context, params InstanceStopParams) (*Instance, error) {
+func (c *client) InstanceStop(ctx context.Context, params InstanceStopParams) (*Instance, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3014,7 +3014,7 @@ func (c *Client) InstanceStop(ctx context.Context, params InstanceStopParams) (*
 // InternetGatewayIpAddressList: List IP addresses attached to internet gateway
 //
 // To iterate over all pages, use the `InternetGatewayIpAddressListAllPages` method, instead.
-func (c *Client) InternetGatewayIpAddressList(ctx context.Context, params InternetGatewayIpAddressListParams) (*InternetGatewayIpAddressResultsPage, error) {
+func (c *client) InternetGatewayIpAddressList(ctx context.Context, params InternetGatewayIpAddressListParams) (*InternetGatewayIpAddressResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3068,7 +3068,7 @@ func (c *Client) InternetGatewayIpAddressList(ctx context.Context, params Intern
 //
 // This method is a wrapper around the `InternetGatewayIpAddressList` method.
 // This method returns all the pages at once.
-func (c *Client) InternetGatewayIpAddressListAllPages(ctx context.Context, params InternetGatewayIpAddressListParams) ([]InternetGatewayIpAddress, error) {
+func (c *client) InternetGatewayIpAddressListAllPages(ctx context.Context, params InternetGatewayIpAddressListParams) ([]InternetGatewayIpAddress, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3091,7 +3091,7 @@ func (c *Client) InternetGatewayIpAddressListAllPages(ctx context.Context, param
 }
 
 // InternetGatewayIpAddressCreate: Attach IP address to internet gateway
-func (c *Client) InternetGatewayIpAddressCreate(ctx context.Context, params InternetGatewayIpAddressCreateParams) (*InternetGatewayIpAddress, error) {
+func (c *client) InternetGatewayIpAddressCreate(ctx context.Context, params InternetGatewayIpAddressCreateParams) (*InternetGatewayIpAddress, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3145,7 +3145,7 @@ func (c *Client) InternetGatewayIpAddressCreate(ctx context.Context, params Inte
 }
 
 // InternetGatewayIpAddressDelete: Detach IP address from internet gateway
-func (c *Client) InternetGatewayIpAddressDelete(ctx context.Context, params InternetGatewayIpAddressDeleteParams) error {
+func (c *client) InternetGatewayIpAddressDelete(ctx context.Context, params InternetGatewayIpAddressDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -3187,7 +3187,7 @@ func (c *Client) InternetGatewayIpAddressDelete(ctx context.Context, params Inte
 // InternetGatewayIpPoolList: List IP pools attached to internet gateway
 //
 // To iterate over all pages, use the `InternetGatewayIpPoolListAllPages` method, instead.
-func (c *Client) InternetGatewayIpPoolList(ctx context.Context, params InternetGatewayIpPoolListParams) (*InternetGatewayIpPoolResultsPage, error) {
+func (c *client) InternetGatewayIpPoolList(ctx context.Context, params InternetGatewayIpPoolListParams) (*InternetGatewayIpPoolResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3241,7 +3241,7 @@ func (c *Client) InternetGatewayIpPoolList(ctx context.Context, params InternetG
 //
 // This method is a wrapper around the `InternetGatewayIpPoolList` method.
 // This method returns all the pages at once.
-func (c *Client) InternetGatewayIpPoolListAllPages(ctx context.Context, params InternetGatewayIpPoolListParams) ([]InternetGatewayIpPool, error) {
+func (c *client) InternetGatewayIpPoolListAllPages(ctx context.Context, params InternetGatewayIpPoolListParams) ([]InternetGatewayIpPool, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3264,7 +3264,7 @@ func (c *Client) InternetGatewayIpPoolListAllPages(ctx context.Context, params I
 }
 
 // InternetGatewayIpPoolCreate: Attach IP pool to internet gateway
-func (c *Client) InternetGatewayIpPoolCreate(ctx context.Context, params InternetGatewayIpPoolCreateParams) (*InternetGatewayIpPool, error) {
+func (c *client) InternetGatewayIpPoolCreate(ctx context.Context, params InternetGatewayIpPoolCreateParams) (*InternetGatewayIpPool, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3318,7 +3318,7 @@ func (c *Client) InternetGatewayIpPoolCreate(ctx context.Context, params Interne
 }
 
 // InternetGatewayIpPoolDelete: Detach IP pool from internet gateway
-func (c *Client) InternetGatewayIpPoolDelete(ctx context.Context, params InternetGatewayIpPoolDeleteParams) error {
+func (c *client) InternetGatewayIpPoolDelete(ctx context.Context, params InternetGatewayIpPoolDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -3360,7 +3360,7 @@ func (c *Client) InternetGatewayIpPoolDelete(ctx context.Context, params Interne
 // InternetGatewayList: List internet gateways
 //
 // To iterate over all pages, use the `InternetGatewayListAllPages` method, instead.
-func (c *Client) InternetGatewayList(ctx context.Context, params InternetGatewayListParams) (*InternetGatewayResultsPage, error) {
+func (c *client) InternetGatewayList(ctx context.Context, params InternetGatewayListParams) (*InternetGatewayResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3413,7 +3413,7 @@ func (c *Client) InternetGatewayList(ctx context.Context, params InternetGateway
 //
 // This method is a wrapper around the `InternetGatewayList` method.
 // This method returns all the pages at once.
-func (c *Client) InternetGatewayListAllPages(ctx context.Context, params InternetGatewayListParams) ([]InternetGateway, error) {
+func (c *client) InternetGatewayListAllPages(ctx context.Context, params InternetGatewayListParams) ([]InternetGateway, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3436,7 +3436,7 @@ func (c *Client) InternetGatewayListAllPages(ctx context.Context, params Interne
 }
 
 // InternetGatewayCreate: Create VPC internet gateway
-func (c *Client) InternetGatewayCreate(ctx context.Context, params InternetGatewayCreateParams) (*InternetGateway, error) {
+func (c *client) InternetGatewayCreate(ctx context.Context, params InternetGatewayCreateParams) (*InternetGateway, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3489,7 +3489,7 @@ func (c *Client) InternetGatewayCreate(ctx context.Context, params InternetGatew
 }
 
 // InternetGatewayView: Fetch internet gateway
-func (c *Client) InternetGatewayView(ctx context.Context, params InternetGatewayViewParams) (*InternetGateway, error) {
+func (c *client) InternetGatewayView(ctx context.Context, params InternetGatewayViewParams) (*InternetGateway, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3538,7 +3538,7 @@ func (c *Client) InternetGatewayView(ctx context.Context, params InternetGateway
 }
 
 // InternetGatewayDelete: Delete internet gateway
-func (c *Client) InternetGatewayDelete(ctx context.Context, params InternetGatewayDeleteParams) error {
+func (c *client) InternetGatewayDelete(ctx context.Context, params InternetGatewayDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -3579,7 +3579,7 @@ func (c *Client) InternetGatewayDelete(ctx context.Context, params InternetGatew
 // ProjectIpPoolList: List IP pools
 //
 // To iterate over all pages, use the `ProjectIpPoolListAllPages` method, instead.
-func (c *Client) ProjectIpPoolList(ctx context.Context, params ProjectIpPoolListParams) (*SiloIpPoolResultsPage, error) {
+func (c *client) ProjectIpPoolList(ctx context.Context, params ProjectIpPoolListParams) (*SiloIpPoolResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3630,7 +3630,7 @@ func (c *Client) ProjectIpPoolList(ctx context.Context, params ProjectIpPoolList
 //
 // This method is a wrapper around the `ProjectIpPoolList` method.
 // This method returns all the pages at once.
-func (c *Client) ProjectIpPoolListAllPages(ctx context.Context, params ProjectIpPoolListParams) ([]SiloIpPool, error) {
+func (c *client) ProjectIpPoolListAllPages(ctx context.Context, params ProjectIpPoolListParams) ([]SiloIpPool, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3653,7 +3653,7 @@ func (c *Client) ProjectIpPoolListAllPages(ctx context.Context, params ProjectIp
 }
 
 // ProjectIpPoolView: Fetch IP pool
-func (c *Client) ProjectIpPoolView(ctx context.Context, params ProjectIpPoolViewParams) (*SiloIpPool, error) {
+func (c *client) ProjectIpPoolView(ctx context.Context, params ProjectIpPoolViewParams) (*SiloIpPool, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3699,7 +3699,7 @@ func (c *Client) ProjectIpPoolView(ctx context.Context, params ProjectIpPoolView
 }
 
 // LoginLocal: Authenticate a user via username and password
-func (c *Client) LoginLocal(ctx context.Context, params LoginLocalParams) error {
+func (c *client) LoginLocal(ctx context.Context, params LoginLocalParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -3740,7 +3740,7 @@ func (c *Client) LoginLocal(ctx context.Context, params LoginLocalParams) error 
 }
 
 // CurrentUserView: Fetch user for current session
-func (c *Client) CurrentUserView(ctx context.Context) (*CurrentUser, error) {
+func (c *client) CurrentUserView(ctx context.Context) (*CurrentUser, error) {
 	// Create the request
 	req, err := c.buildRequest(
 		ctx,
@@ -3783,7 +3783,7 @@ func (c *Client) CurrentUserView(ctx context.Context) (*CurrentUser, error) {
 // CurrentUserGroups: Fetch current user's groups
 //
 // To iterate over all pages, use the `CurrentUserGroupsAllPages` method, instead.
-func (c *Client) CurrentUserGroups(ctx context.Context, params CurrentUserGroupsParams) (*GroupResultsPage, error) {
+func (c *client) CurrentUserGroups(ctx context.Context, params CurrentUserGroupsParams) (*GroupResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3834,7 +3834,7 @@ func (c *Client) CurrentUserGroups(ctx context.Context, params CurrentUserGroups
 //
 // This method is a wrapper around the `CurrentUserGroups` method.
 // This method returns all the pages at once.
-func (c *Client) CurrentUserGroupsAllPages(ctx context.Context, params CurrentUserGroupsParams) ([]Group, error) {
+func (c *client) CurrentUserGroupsAllPages(ctx context.Context, params CurrentUserGroupsParams) ([]Group, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3860,7 +3860,7 @@ func (c *Client) CurrentUserGroupsAllPages(ctx context.Context, params CurrentUs
 // Lists SSH public keys for the currently authenticated user.
 //
 // To iterate over all pages, use the `CurrentUserSshKeyListAllPages` method, instead.
-func (c *Client) CurrentUserSshKeyList(ctx context.Context, params CurrentUserSshKeyListParams) (*SshKeyResultsPage, error) {
+func (c *client) CurrentUserSshKeyList(ctx context.Context, params CurrentUserSshKeyListParams) (*SshKeyResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3912,7 +3912,7 @@ func (c *Client) CurrentUserSshKeyList(ctx context.Context, params CurrentUserSs
 //
 // This method is a wrapper around the `CurrentUserSshKeyList` method.
 // This method returns all the pages at once.
-func (c *Client) CurrentUserSshKeyListAllPages(ctx context.Context, params CurrentUserSshKeyListParams) ([]SshKey, error) {
+func (c *client) CurrentUserSshKeyListAllPages(ctx context.Context, params CurrentUserSshKeyListParams) ([]SshKey, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3936,7 +3936,7 @@ func (c *Client) CurrentUserSshKeyListAllPages(ctx context.Context, params Curre
 
 // CurrentUserSshKeyCreate: Create SSH public key
 // Create an SSH public key for the currently authenticated user.
-func (c *Client) CurrentUserSshKeyCreate(ctx context.Context, params CurrentUserSshKeyCreateParams) (*SshKey, error) {
+func (c *client) CurrentUserSshKeyCreate(ctx context.Context, params CurrentUserSshKeyCreateParams) (*SshKey, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3987,7 +3987,7 @@ func (c *Client) CurrentUserSshKeyCreate(ctx context.Context, params CurrentUser
 
 // CurrentUserSshKeyView: Fetch SSH public key
 // Fetch SSH public key associated with the currently authenticated user.
-func (c *Client) CurrentUserSshKeyView(ctx context.Context, params CurrentUserSshKeyViewParams) (*SshKey, error) {
+func (c *client) CurrentUserSshKeyView(ctx context.Context, params CurrentUserSshKeyViewParams) (*SshKey, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4034,7 +4034,7 @@ func (c *Client) CurrentUserSshKeyView(ctx context.Context, params CurrentUserSs
 
 // CurrentUserSshKeyDelete: Delete SSH public key
 // Delete an SSH public key associated with the currently authenticated user.
-func (c *Client) CurrentUserSshKeyDelete(ctx context.Context, params CurrentUserSshKeyDeleteParams) error {
+func (c *client) CurrentUserSshKeyDelete(ctx context.Context, params CurrentUserSshKeyDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -4072,7 +4072,7 @@ func (c *Client) CurrentUserSshKeyDelete(ctx context.Context, params CurrentUser
 // View CPU, memory, or storage utilization metrics at the silo or project level.
 //
 // To iterate over all pages, use the `SiloMetricAllPages` method, instead.
-func (c *Client) SiloMetric(ctx context.Context, params SiloMetricParams) (*MeasurementResultsPage, error) {
+func (c *client) SiloMetric(ctx context.Context, params SiloMetricParams) (*MeasurementResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4129,7 +4129,7 @@ func (c *Client) SiloMetric(ctx context.Context, params SiloMetricParams) (*Meas
 //
 // This method is a wrapper around the `SiloMetric` method.
 // This method returns all the pages at once.
-func (c *Client) SiloMetricAllPages(ctx context.Context, params SiloMetricParams) ([]Measurement, error) {
+func (c *client) SiloMetricAllPages(ctx context.Context, params SiloMetricParams) ([]Measurement, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4154,7 +4154,7 @@ func (c *Client) SiloMetricAllPages(ctx context.Context, params SiloMetricParams
 // InstanceNetworkInterfaceList: List network interfaces
 //
 // To iterate over all pages, use the `InstanceNetworkInterfaceListAllPages` method, instead.
-func (c *Client) InstanceNetworkInterfaceList(ctx context.Context, params InstanceNetworkInterfaceListParams) (*InstanceNetworkInterfaceResultsPage, error) {
+func (c *client) InstanceNetworkInterfaceList(ctx context.Context, params InstanceNetworkInterfaceListParams) (*InstanceNetworkInterfaceResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4207,7 +4207,7 @@ func (c *Client) InstanceNetworkInterfaceList(ctx context.Context, params Instan
 //
 // This method is a wrapper around the `InstanceNetworkInterfaceList` method.
 // This method returns all the pages at once.
-func (c *Client) InstanceNetworkInterfaceListAllPages(ctx context.Context, params InstanceNetworkInterfaceListParams) ([]InstanceNetworkInterface, error) {
+func (c *client) InstanceNetworkInterfaceListAllPages(ctx context.Context, params InstanceNetworkInterfaceListParams) ([]InstanceNetworkInterface, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4230,7 +4230,7 @@ func (c *Client) InstanceNetworkInterfaceListAllPages(ctx context.Context, param
 }
 
 // InstanceNetworkInterfaceCreate: Create network interface
-func (c *Client) InstanceNetworkInterfaceCreate(ctx context.Context, params InstanceNetworkInterfaceCreateParams) (*InstanceNetworkInterface, error) {
+func (c *client) InstanceNetworkInterfaceCreate(ctx context.Context, params InstanceNetworkInterfaceCreateParams) (*InstanceNetworkInterface, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4283,7 +4283,7 @@ func (c *Client) InstanceNetworkInterfaceCreate(ctx context.Context, params Inst
 }
 
 // InstanceNetworkInterfaceView: Fetch network interface
-func (c *Client) InstanceNetworkInterfaceView(ctx context.Context, params InstanceNetworkInterfaceViewParams) (*InstanceNetworkInterface, error) {
+func (c *client) InstanceNetworkInterfaceView(ctx context.Context, params InstanceNetworkInterfaceViewParams) (*InstanceNetworkInterface, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4332,7 +4332,7 @@ func (c *Client) InstanceNetworkInterfaceView(ctx context.Context, params Instan
 }
 
 // InstanceNetworkInterfaceUpdate: Update network interface
-func (c *Client) InstanceNetworkInterfaceUpdate(ctx context.Context, params InstanceNetworkInterfaceUpdateParams) (*InstanceNetworkInterface, error) {
+func (c *client) InstanceNetworkInterfaceUpdate(ctx context.Context, params InstanceNetworkInterfaceUpdateParams) (*InstanceNetworkInterface, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4390,7 +4390,7 @@ func (c *Client) InstanceNetworkInterfaceUpdate(ctx context.Context, params Inst
 // Note that the primary interface for an instance cannot be deleted if there are any secondary interfaces. A
 // new primary interface must be designated first. The primary interface can be deleted if there are no secondary
 // interfaces.
-func (c *Client) InstanceNetworkInterfaceDelete(ctx context.Context, params InstanceNetworkInterfaceDeleteParams) error {
+func (c *client) InstanceNetworkInterfaceDelete(ctx context.Context, params InstanceNetworkInterfaceDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -4429,7 +4429,7 @@ func (c *Client) InstanceNetworkInterfaceDelete(ctx context.Context, params Inst
 
 // Ping: Ping API
 // Always responds with Ok if it responds at all.
-func (c *Client) Ping(ctx context.Context) (*Ping, error) {
+func (c *client) Ping(ctx context.Context) (*Ping, error) {
 	// Create the request
 	req, err := c.buildRequest(
 		ctx,
@@ -4470,7 +4470,7 @@ func (c *Client) Ping(ctx context.Context) (*Ping, error) {
 }
 
 // PolicyView: Fetch current silo's IAM policy
-func (c *Client) PolicyView(ctx context.Context) (*SiloRolePolicy, error) {
+func (c *client) PolicyView(ctx context.Context) (*SiloRolePolicy, error) {
 	// Create the request
 	req, err := c.buildRequest(
 		ctx,
@@ -4511,7 +4511,7 @@ func (c *Client) PolicyView(ctx context.Context) (*SiloRolePolicy, error) {
 }
 
 // PolicyUpdate: Update current silo's IAM policy
-func (c *Client) PolicyUpdate(ctx context.Context, params PolicyUpdateParams) (*SiloRolePolicy, error) {
+func (c *client) PolicyUpdate(ctx context.Context, params PolicyUpdateParams) (*SiloRolePolicy, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4563,7 +4563,7 @@ func (c *Client) PolicyUpdate(ctx context.Context, params PolicyUpdateParams) (*
 // ProjectList: List projects
 //
 // To iterate over all pages, use the `ProjectListAllPages` method, instead.
-func (c *Client) ProjectList(ctx context.Context, params ProjectListParams) (*ProjectResultsPage, error) {
+func (c *client) ProjectList(ctx context.Context, params ProjectListParams) (*ProjectResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4614,7 +4614,7 @@ func (c *Client) ProjectList(ctx context.Context, params ProjectListParams) (*Pr
 //
 // This method is a wrapper around the `ProjectList` method.
 // This method returns all the pages at once.
-func (c *Client) ProjectListAllPages(ctx context.Context, params ProjectListParams) ([]Project, error) {
+func (c *client) ProjectListAllPages(ctx context.Context, params ProjectListParams) ([]Project, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4637,7 +4637,7 @@ func (c *Client) ProjectListAllPages(ctx context.Context, params ProjectListPara
 }
 
 // ProjectCreate: Create project
-func (c *Client) ProjectCreate(ctx context.Context, params ProjectCreateParams) (*Project, error) {
+func (c *client) ProjectCreate(ctx context.Context, params ProjectCreateParams) (*Project, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4687,7 +4687,7 @@ func (c *Client) ProjectCreate(ctx context.Context, params ProjectCreateParams) 
 }
 
 // ProjectView: Fetch project
-func (c *Client) ProjectView(ctx context.Context, params ProjectViewParams) (*Project, error) {
+func (c *client) ProjectView(ctx context.Context, params ProjectViewParams) (*Project, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4733,7 +4733,7 @@ func (c *Client) ProjectView(ctx context.Context, params ProjectViewParams) (*Pr
 }
 
 // ProjectUpdate: Update a project
-func (c *Client) ProjectUpdate(ctx context.Context, params ProjectUpdateParams) (*Project, error) {
+func (c *client) ProjectUpdate(ctx context.Context, params ProjectUpdateParams) (*Project, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4785,7 +4785,7 @@ func (c *Client) ProjectUpdate(ctx context.Context, params ProjectUpdateParams) 
 }
 
 // ProjectDelete: Delete project
-func (c *Client) ProjectDelete(ctx context.Context, params ProjectDeleteParams) error {
+func (c *client) ProjectDelete(ctx context.Context, params ProjectDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -4820,7 +4820,7 @@ func (c *Client) ProjectDelete(ctx context.Context, params ProjectDeleteParams) 
 }
 
 // ProjectPolicyView: Fetch project's IAM policy
-func (c *Client) ProjectPolicyView(ctx context.Context, params ProjectPolicyViewParams) (*ProjectRolePolicy, error) {
+func (c *client) ProjectPolicyView(ctx context.Context, params ProjectPolicyViewParams) (*ProjectRolePolicy, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4866,7 +4866,7 @@ func (c *Client) ProjectPolicyView(ctx context.Context, params ProjectPolicyView
 }
 
 // ProjectPolicyUpdate: Update project's IAM policy
-func (c *Client) ProjectPolicyUpdate(ctx context.Context, params ProjectPolicyUpdateParams) (*ProjectRolePolicy, error) {
+func (c *client) ProjectPolicyUpdate(ctx context.Context, params ProjectPolicyUpdateParams) (*ProjectRolePolicy, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4920,7 +4920,7 @@ func (c *Client) ProjectPolicyUpdate(ctx context.Context, params ProjectPolicyUp
 // SnapshotList: List snapshots
 //
 // To iterate over all pages, use the `SnapshotListAllPages` method, instead.
-func (c *Client) SnapshotList(ctx context.Context, params SnapshotListParams) (*SnapshotResultsPage, error) {
+func (c *client) SnapshotList(ctx context.Context, params SnapshotListParams) (*SnapshotResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4972,7 +4972,7 @@ func (c *Client) SnapshotList(ctx context.Context, params SnapshotListParams) (*
 //
 // This method is a wrapper around the `SnapshotList` method.
 // This method returns all the pages at once.
-func (c *Client) SnapshotListAllPages(ctx context.Context, params SnapshotListParams) ([]Snapshot, error) {
+func (c *client) SnapshotListAllPages(ctx context.Context, params SnapshotListParams) ([]Snapshot, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4996,7 +4996,7 @@ func (c *Client) SnapshotListAllPages(ctx context.Context, params SnapshotListPa
 
 // SnapshotCreate: Create snapshot
 // Creates a point-in-time snapshot from a disk.
-func (c *Client) SnapshotCreate(ctx context.Context, params SnapshotCreateParams) (*Snapshot, error) {
+func (c *client) SnapshotCreate(ctx context.Context, params SnapshotCreateParams) (*Snapshot, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5048,7 +5048,7 @@ func (c *Client) SnapshotCreate(ctx context.Context, params SnapshotCreateParams
 }
 
 // SnapshotView: Fetch snapshot
-func (c *Client) SnapshotView(ctx context.Context, params SnapshotViewParams) (*Snapshot, error) {
+func (c *client) SnapshotView(ctx context.Context, params SnapshotViewParams) (*Snapshot, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5096,7 +5096,7 @@ func (c *Client) SnapshotView(ctx context.Context, params SnapshotViewParams) (*
 }
 
 // SnapshotDelete: Delete snapshot
-func (c *Client) SnapshotDelete(ctx context.Context, params SnapshotDeleteParams) error {
+func (c *client) SnapshotDelete(ctx context.Context, params SnapshotDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -5135,7 +5135,7 @@ func (c *Client) SnapshotDelete(ctx context.Context, params SnapshotDeleteParams
 // PhysicalDiskList: List physical disks
 //
 // To iterate over all pages, use the `PhysicalDiskListAllPages` method, instead.
-func (c *Client) PhysicalDiskList(ctx context.Context, params PhysicalDiskListParams) (*PhysicalDiskResultsPage, error) {
+func (c *client) PhysicalDiskList(ctx context.Context, params PhysicalDiskListParams) (*PhysicalDiskResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5186,7 +5186,7 @@ func (c *Client) PhysicalDiskList(ctx context.Context, params PhysicalDiskListPa
 //
 // This method is a wrapper around the `PhysicalDiskList` method.
 // This method returns all the pages at once.
-func (c *Client) PhysicalDiskListAllPages(ctx context.Context, params PhysicalDiskListParams) ([]PhysicalDisk, error) {
+func (c *client) PhysicalDiskListAllPages(ctx context.Context, params PhysicalDiskListParams) ([]PhysicalDisk, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5209,7 +5209,7 @@ func (c *Client) PhysicalDiskListAllPages(ctx context.Context, params PhysicalDi
 }
 
 // PhysicalDiskView: Get a physical disk
-func (c *Client) PhysicalDiskView(ctx context.Context, params PhysicalDiskViewParams) (*PhysicalDisk, error) {
+func (c *client) PhysicalDiskView(ctx context.Context, params PhysicalDiskViewParams) (*PhysicalDisk, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5257,7 +5257,7 @@ func (c *Client) PhysicalDiskView(ctx context.Context, params PhysicalDiskViewPa
 // NetworkingSwitchPortLldpNeighbors: Fetch the LLDP neighbors seen on a switch port
 //
 // To iterate over all pages, use the `NetworkingSwitchPortLldpNeighborsAllPages` method, instead.
-func (c *Client) NetworkingSwitchPortLldpNeighbors(ctx context.Context, params NetworkingSwitchPortLldpNeighborsParams) (*LldpNeighborResultsPage, error) {
+func (c *client) NetworkingSwitchPortLldpNeighbors(ctx context.Context, params NetworkingSwitchPortLldpNeighborsParams) (*LldpNeighborResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5312,7 +5312,7 @@ func (c *Client) NetworkingSwitchPortLldpNeighbors(ctx context.Context, params N
 //
 // This method is a wrapper around the `NetworkingSwitchPortLldpNeighbors` method.
 // This method returns all the pages at once.
-func (c *Client) NetworkingSwitchPortLldpNeighborsAllPages(ctx context.Context, params NetworkingSwitchPortLldpNeighborsParams) ([]LldpNeighbor, error) {
+func (c *client) NetworkingSwitchPortLldpNeighborsAllPages(ctx context.Context, params NetworkingSwitchPortLldpNeighborsParams) ([]LldpNeighbor, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5337,7 +5337,7 @@ func (c *Client) NetworkingSwitchPortLldpNeighborsAllPages(ctx context.Context, 
 // RackList: List racks
 //
 // To iterate over all pages, use the `RackListAllPages` method, instead.
-func (c *Client) RackList(ctx context.Context, params RackListParams) (*RackResultsPage, error) {
+func (c *client) RackList(ctx context.Context, params RackListParams) (*RackResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5388,7 +5388,7 @@ func (c *Client) RackList(ctx context.Context, params RackListParams) (*RackResu
 //
 // This method is a wrapper around the `RackList` method.
 // This method returns all the pages at once.
-func (c *Client) RackListAllPages(ctx context.Context, params RackListParams) ([]Rack, error) {
+func (c *client) RackListAllPages(ctx context.Context, params RackListParams) ([]Rack, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5411,7 +5411,7 @@ func (c *Client) RackListAllPages(ctx context.Context, params RackListParams) ([
 }
 
 // RackView: Fetch rack
-func (c *Client) RackView(ctx context.Context, params RackViewParams) (*Rack, error) {
+func (c *client) RackView(ctx context.Context, params RackViewParams) (*Rack, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5459,7 +5459,7 @@ func (c *Client) RackView(ctx context.Context, params RackViewParams) (*Rack, er
 // SledList: List sleds
 //
 // To iterate over all pages, use the `SledListAllPages` method, instead.
-func (c *Client) SledList(ctx context.Context, params SledListParams) (*SledResultsPage, error) {
+func (c *client) SledList(ctx context.Context, params SledListParams) (*SledResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5510,7 +5510,7 @@ func (c *Client) SledList(ctx context.Context, params SledListParams) (*SledResu
 //
 // This method is a wrapper around the `SledList` method.
 // This method returns all the pages at once.
-func (c *Client) SledListAllPages(ctx context.Context, params SledListParams) ([]Sled, error) {
+func (c *client) SledListAllPages(ctx context.Context, params SledListParams) ([]Sled, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5533,7 +5533,7 @@ func (c *Client) SledListAllPages(ctx context.Context, params SledListParams) ([
 }
 
 // SledAdd: Add sled to initialized rack
-func (c *Client) SledAdd(ctx context.Context, params SledAddParams) (*SledId, error) {
+func (c *client) SledAdd(ctx context.Context, params SledAddParams) (*SledId, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5585,7 +5585,7 @@ func (c *Client) SledAdd(ctx context.Context, params SledAddParams) (*SledId, er
 // SledListUninitialized: List uninitialized sleds
 //
 // To iterate over all pages, use the `SledListUninitializedAllPages` method, instead.
-func (c *Client) SledListUninitialized(ctx context.Context, params SledListUninitializedParams) (*UninitializedSledResultsPage, error) {
+func (c *client) SledListUninitialized(ctx context.Context, params SledListUninitializedParams) (*UninitializedSledResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5635,7 +5635,7 @@ func (c *Client) SledListUninitialized(ctx context.Context, params SledListUnini
 //
 // This method is a wrapper around the `SledListUninitialized` method.
 // This method returns all the pages at once.
-func (c *Client) SledListUninitializedAllPages(ctx context.Context, params SledListUninitializedParams) ([]UninitializedSled, error) {
+func (c *client) SledListUninitializedAllPages(ctx context.Context, params SledListUninitializedParams) ([]UninitializedSled, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5658,7 +5658,7 @@ func (c *Client) SledListUninitializedAllPages(ctx context.Context, params SledL
 }
 
 // SledView: Fetch sled
-func (c *Client) SledView(ctx context.Context, params SledViewParams) (*Sled, error) {
+func (c *client) SledView(ctx context.Context, params SledViewParams) (*Sled, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5706,7 +5706,7 @@ func (c *Client) SledView(ctx context.Context, params SledViewParams) (*Sled, er
 // SledPhysicalDiskList: List physical disks attached to sleds
 //
 // To iterate over all pages, use the `SledPhysicalDiskListAllPages` method, instead.
-func (c *Client) SledPhysicalDiskList(ctx context.Context, params SledPhysicalDiskListParams) (*PhysicalDiskResultsPage, error) {
+func (c *client) SledPhysicalDiskList(ctx context.Context, params SledPhysicalDiskListParams) (*PhysicalDiskResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5759,7 +5759,7 @@ func (c *Client) SledPhysicalDiskList(ctx context.Context, params SledPhysicalDi
 //
 // This method is a wrapper around the `SledPhysicalDiskList` method.
 // This method returns all the pages at once.
-func (c *Client) SledPhysicalDiskListAllPages(ctx context.Context, params SledPhysicalDiskListParams) ([]PhysicalDisk, error) {
+func (c *client) SledPhysicalDiskListAllPages(ctx context.Context, params SledPhysicalDiskListParams) ([]PhysicalDisk, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5784,7 +5784,7 @@ func (c *Client) SledPhysicalDiskListAllPages(ctx context.Context, params SledPh
 // SledInstanceList: List instances running on given sled
 //
 // To iterate over all pages, use the `SledInstanceListAllPages` method, instead.
-func (c *Client) SledInstanceList(ctx context.Context, params SledInstanceListParams) (*SledInstanceResultsPage, error) {
+func (c *client) SledInstanceList(ctx context.Context, params SledInstanceListParams) (*SledInstanceResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5837,7 +5837,7 @@ func (c *Client) SledInstanceList(ctx context.Context, params SledInstanceListPa
 //
 // This method is a wrapper around the `SledInstanceList` method.
 // This method returns all the pages at once.
-func (c *Client) SledInstanceListAllPages(ctx context.Context, params SledInstanceListParams) ([]SledInstance, error) {
+func (c *client) SledInstanceListAllPages(ctx context.Context, params SledInstanceListParams) ([]SledInstance, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5860,7 +5860,7 @@ func (c *Client) SledInstanceListAllPages(ctx context.Context, params SledInstan
 }
 
 // SledSetProvisionPolicy: Set sled provision policy
-func (c *Client) SledSetProvisionPolicy(ctx context.Context, params SledSetProvisionPolicyParams) (*SledProvisionPolicyResponse, error) {
+func (c *client) SledSetProvisionPolicy(ctx context.Context, params SledSetProvisionPolicyParams) (*SledProvisionPolicyResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5914,7 +5914,7 @@ func (c *Client) SledSetProvisionPolicy(ctx context.Context, params SledSetProvi
 // NetworkingSwitchPortList: List switch ports
 //
 // To iterate over all pages, use the `NetworkingSwitchPortListAllPages` method, instead.
-func (c *Client) NetworkingSwitchPortList(ctx context.Context, params NetworkingSwitchPortListParams) (*SwitchPortResultsPage, error) {
+func (c *client) NetworkingSwitchPortList(ctx context.Context, params NetworkingSwitchPortListParams) (*SwitchPortResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5966,7 +5966,7 @@ func (c *Client) NetworkingSwitchPortList(ctx context.Context, params Networking
 //
 // This method is a wrapper around the `NetworkingSwitchPortList` method.
 // This method returns all the pages at once.
-func (c *Client) NetworkingSwitchPortListAllPages(ctx context.Context, params NetworkingSwitchPortListParams) ([]SwitchPort, error) {
+func (c *client) NetworkingSwitchPortListAllPages(ctx context.Context, params NetworkingSwitchPortListParams) ([]SwitchPort, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5989,7 +5989,7 @@ func (c *Client) NetworkingSwitchPortListAllPages(ctx context.Context, params Ne
 }
 
 // NetworkingSwitchPortLldpConfigView: Fetch the LLDP configuration for a switch port
-func (c *Client) NetworkingSwitchPortLldpConfigView(ctx context.Context, params NetworkingSwitchPortLldpConfigViewParams) (*LldpLinkConfig, error) {
+func (c *client) NetworkingSwitchPortLldpConfigView(ctx context.Context, params NetworkingSwitchPortLldpConfigViewParams) (*LldpLinkConfig, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6038,7 +6038,7 @@ func (c *Client) NetworkingSwitchPortLldpConfigView(ctx context.Context, params 
 }
 
 // NetworkingSwitchPortLldpConfigUpdate: Update the LLDP configuration for a switch port
-func (c *Client) NetworkingSwitchPortLldpConfigUpdate(ctx context.Context, params NetworkingSwitchPortLldpConfigUpdateParams) error {
+func (c *client) NetworkingSwitchPortLldpConfigUpdate(ctx context.Context, params NetworkingSwitchPortLldpConfigUpdateParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -6082,7 +6082,7 @@ func (c *Client) NetworkingSwitchPortLldpConfigUpdate(ctx context.Context, param
 }
 
 // NetworkingSwitchPortApplySettings: Apply switch port settings
-func (c *Client) NetworkingSwitchPortApplySettings(ctx context.Context, params NetworkingSwitchPortApplySettingsParams) error {
+func (c *client) NetworkingSwitchPortApplySettings(ctx context.Context, params NetworkingSwitchPortApplySettingsParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -6126,7 +6126,7 @@ func (c *Client) NetworkingSwitchPortApplySettings(ctx context.Context, params N
 }
 
 // NetworkingSwitchPortClearSettings: Clear switch port settings
-func (c *Client) NetworkingSwitchPortClearSettings(ctx context.Context, params NetworkingSwitchPortClearSettingsParams) error {
+func (c *client) NetworkingSwitchPortClearSettings(ctx context.Context, params NetworkingSwitchPortClearSettingsParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -6164,7 +6164,7 @@ func (c *Client) NetworkingSwitchPortClearSettings(ctx context.Context, params N
 }
 
 // NetworkingSwitchPortStatus: Get switch port status
-func (c *Client) NetworkingSwitchPortStatus(ctx context.Context, params NetworkingSwitchPortStatusParams) (*SwitchLinkState, error) {
+func (c *client) NetworkingSwitchPortStatus(ctx context.Context, params NetworkingSwitchPortStatusParams) (*SwitchLinkState, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6215,7 +6215,7 @@ func (c *Client) NetworkingSwitchPortStatus(ctx context.Context, params Networki
 // SwitchList: List switches
 //
 // To iterate over all pages, use the `SwitchListAllPages` method, instead.
-func (c *Client) SwitchList(ctx context.Context, params SwitchListParams) (*SwitchResultsPage, error) {
+func (c *client) SwitchList(ctx context.Context, params SwitchListParams) (*SwitchResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6266,7 +6266,7 @@ func (c *Client) SwitchList(ctx context.Context, params SwitchListParams) (*Swit
 //
 // This method is a wrapper around the `SwitchList` method.
 // This method returns all the pages at once.
-func (c *Client) SwitchListAllPages(ctx context.Context, params SwitchListParams) ([]Switch, error) {
+func (c *client) SwitchListAllPages(ctx context.Context, params SwitchListParams) ([]Switch, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6289,7 +6289,7 @@ func (c *Client) SwitchListAllPages(ctx context.Context, params SwitchListParams
 }
 
 // SwitchView: Fetch switch
-func (c *Client) SwitchView(ctx context.Context, params SwitchViewParams) (*Switch, error) {
+func (c *client) SwitchView(ctx context.Context, params SwitchViewParams) (*Switch, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6337,7 +6337,7 @@ func (c *Client) SwitchView(ctx context.Context, params SwitchViewParams) (*Swit
 // SiloIdentityProviderList: List a silo's IdP's name
 //
 // To iterate over all pages, use the `SiloIdentityProviderListAllPages` method, instead.
-func (c *Client) SiloIdentityProviderList(ctx context.Context, params SiloIdentityProviderListParams) (*IdentityProviderResultsPage, error) {
+func (c *client) SiloIdentityProviderList(ctx context.Context, params SiloIdentityProviderListParams) (*IdentityProviderResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6389,7 +6389,7 @@ func (c *Client) SiloIdentityProviderList(ctx context.Context, params SiloIdenti
 //
 // This method is a wrapper around the `SiloIdentityProviderList` method.
 // This method returns all the pages at once.
-func (c *Client) SiloIdentityProviderListAllPages(ctx context.Context, params SiloIdentityProviderListParams) ([]IdentityProvider, error) {
+func (c *client) SiloIdentityProviderListAllPages(ctx context.Context, params SiloIdentityProviderListParams) ([]IdentityProvider, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6414,7 +6414,7 @@ func (c *Client) SiloIdentityProviderListAllPages(ctx context.Context, params Si
 // LocalIdpUserCreate: Create user
 // Users can only be created in Silos with `provision_type` == `Fixed`. Otherwise, Silo users are just-in-time (JIT)
 // provisioned when a user first logs in using an external Identity Provider.
-func (c *Client) LocalIdpUserCreate(ctx context.Context, params LocalIdpUserCreateParams) (*User, error) {
+func (c *client) LocalIdpUserCreate(ctx context.Context, params LocalIdpUserCreateParams) (*User, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6466,7 +6466,7 @@ func (c *Client) LocalIdpUserCreate(ctx context.Context, params LocalIdpUserCrea
 }
 
 // LocalIdpUserDelete: Delete user
-func (c *Client) LocalIdpUserDelete(ctx context.Context, params LocalIdpUserDeleteParams) error {
+func (c *client) LocalIdpUserDelete(ctx context.Context, params LocalIdpUserDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -6504,7 +6504,7 @@ func (c *Client) LocalIdpUserDelete(ctx context.Context, params LocalIdpUserDele
 
 // LocalIdpUserSetPassword: Set or invalidate user's password
 // Passwords can only be updated for users in Silos with identity mode `LocalOnly`.
-func (c *Client) LocalIdpUserSetPassword(ctx context.Context, params LocalIdpUserSetPasswordParams) error {
+func (c *client) LocalIdpUserSetPassword(ctx context.Context, params LocalIdpUserSetPasswordParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -6547,7 +6547,7 @@ func (c *Client) LocalIdpUserSetPassword(ctx context.Context, params LocalIdpUse
 }
 
 // SamlIdentityProviderCreate: Create SAML IdP
-func (c *Client) SamlIdentityProviderCreate(ctx context.Context, params SamlIdentityProviderCreateParams) (*SamlIdentityProvider, error) {
+func (c *client) SamlIdentityProviderCreate(ctx context.Context, params SamlIdentityProviderCreateParams) (*SamlIdentityProvider, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6599,7 +6599,7 @@ func (c *Client) SamlIdentityProviderCreate(ctx context.Context, params SamlIden
 }
 
 // SamlIdentityProviderView: Fetch SAML IdP
-func (c *Client) SamlIdentityProviderView(ctx context.Context, params SamlIdentityProviderViewParams) (*SamlIdentityProvider, error) {
+func (c *client) SamlIdentityProviderView(ctx context.Context, params SamlIdentityProviderViewParams) (*SamlIdentityProvider, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6649,7 +6649,7 @@ func (c *Client) SamlIdentityProviderView(ctx context.Context, params SamlIdenti
 // IpPoolList: List IP pools
 //
 // To iterate over all pages, use the `IpPoolListAllPages` method, instead.
-func (c *Client) IpPoolList(ctx context.Context, params IpPoolListParams) (*IpPoolResultsPage, error) {
+func (c *client) IpPoolList(ctx context.Context, params IpPoolListParams) (*IpPoolResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6700,7 +6700,7 @@ func (c *Client) IpPoolList(ctx context.Context, params IpPoolListParams) (*IpPo
 //
 // This method is a wrapper around the `IpPoolList` method.
 // This method returns all the pages at once.
-func (c *Client) IpPoolListAllPages(ctx context.Context, params IpPoolListParams) ([]IpPool, error) {
+func (c *client) IpPoolListAllPages(ctx context.Context, params IpPoolListParams) ([]IpPool, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6723,7 +6723,7 @@ func (c *Client) IpPoolListAllPages(ctx context.Context, params IpPoolListParams
 }
 
 // IpPoolCreate: Create IP pool
-func (c *Client) IpPoolCreate(ctx context.Context, params IpPoolCreateParams) (*IpPool, error) {
+func (c *client) IpPoolCreate(ctx context.Context, params IpPoolCreateParams) (*IpPool, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6773,7 +6773,7 @@ func (c *Client) IpPoolCreate(ctx context.Context, params IpPoolCreateParams) (*
 }
 
 // IpPoolServiceView: Fetch Oxide service IP pool
-func (c *Client) IpPoolServiceView(ctx context.Context) (*IpPool, error) {
+func (c *client) IpPoolServiceView(ctx context.Context) (*IpPool, error) {
 	// Create the request
 	req, err := c.buildRequest(
 		ctx,
@@ -6817,7 +6817,7 @@ func (c *Client) IpPoolServiceView(ctx context.Context) (*IpPool, error) {
 // Ranges are ordered by their first address.
 //
 // To iterate over all pages, use the `IpPoolServiceRangeListAllPages` method, instead.
-func (c *Client) IpPoolServiceRangeList(ctx context.Context, params IpPoolServiceRangeListParams) (*IpPoolRangeResultsPage, error) {
+func (c *client) IpPoolServiceRangeList(ctx context.Context, params IpPoolServiceRangeListParams) (*IpPoolRangeResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6868,7 +6868,7 @@ func (c *Client) IpPoolServiceRangeList(ctx context.Context, params IpPoolServic
 //
 // This method is a wrapper around the `IpPoolServiceRangeList` method.
 // This method returns all the pages at once.
-func (c *Client) IpPoolServiceRangeListAllPages(ctx context.Context, params IpPoolServiceRangeListParams) ([]IpPoolRange, error) {
+func (c *client) IpPoolServiceRangeListAllPages(ctx context.Context, params IpPoolServiceRangeListParams) ([]IpPoolRange, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6892,7 +6892,7 @@ func (c *Client) IpPoolServiceRangeListAllPages(ctx context.Context, params IpPo
 
 // IpPoolServiceRangeAdd: Add IP range to Oxide service pool
 // IPv6 ranges are not allowed yet.
-func (c *Client) IpPoolServiceRangeAdd(ctx context.Context, params IpPoolServiceRangeAddParams) (*IpPoolRange, error) {
+func (c *client) IpPoolServiceRangeAdd(ctx context.Context, params IpPoolServiceRangeAddParams) (*IpPoolRange, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6942,7 +6942,7 @@ func (c *Client) IpPoolServiceRangeAdd(ctx context.Context, params IpPoolService
 }
 
 // IpPoolServiceRangeRemove: Remove IP range from Oxide service pool
-func (c *Client) IpPoolServiceRangeRemove(ctx context.Context, params IpPoolServiceRangeRemoveParams) error {
+func (c *client) IpPoolServiceRangeRemove(ctx context.Context, params IpPoolServiceRangeRemoveParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -6981,7 +6981,7 @@ func (c *Client) IpPoolServiceRangeRemove(ctx context.Context, params IpPoolServ
 }
 
 // IpPoolView: Fetch IP pool
-func (c *Client) IpPoolView(ctx context.Context, params IpPoolViewParams) (*IpPool, error) {
+func (c *client) IpPoolView(ctx context.Context, params IpPoolViewParams) (*IpPool, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7027,7 +7027,7 @@ func (c *Client) IpPoolView(ctx context.Context, params IpPoolViewParams) (*IpPo
 }
 
 // IpPoolUpdate: Update IP pool
-func (c *Client) IpPoolUpdate(ctx context.Context, params IpPoolUpdateParams) (*IpPool, error) {
+func (c *client) IpPoolUpdate(ctx context.Context, params IpPoolUpdateParams) (*IpPool, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7079,7 +7079,7 @@ func (c *Client) IpPoolUpdate(ctx context.Context, params IpPoolUpdateParams) (*
 }
 
 // IpPoolDelete: Delete IP pool
-func (c *Client) IpPoolDelete(ctx context.Context, params IpPoolDeleteParams) error {
+func (c *client) IpPoolDelete(ctx context.Context, params IpPoolDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -7117,7 +7117,7 @@ func (c *Client) IpPoolDelete(ctx context.Context, params IpPoolDeleteParams) er
 // Ranges are ordered by their first address.
 //
 // To iterate over all pages, use the `IpPoolRangeListAllPages` method, instead.
-func (c *Client) IpPoolRangeList(ctx context.Context, params IpPoolRangeListParams) (*IpPoolRangeResultsPage, error) {
+func (c *client) IpPoolRangeList(ctx context.Context, params IpPoolRangeListParams) (*IpPoolRangeResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7170,7 +7170,7 @@ func (c *Client) IpPoolRangeList(ctx context.Context, params IpPoolRangeListPara
 //
 // This method is a wrapper around the `IpPoolRangeList` method.
 // This method returns all the pages at once.
-func (c *Client) IpPoolRangeListAllPages(ctx context.Context, params IpPoolRangeListParams) ([]IpPoolRange, error) {
+func (c *client) IpPoolRangeListAllPages(ctx context.Context, params IpPoolRangeListParams) ([]IpPoolRange, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7194,7 +7194,7 @@ func (c *Client) IpPoolRangeListAllPages(ctx context.Context, params IpPoolRange
 
 // IpPoolRangeAdd: Add range to IP pool
 // IPv6 ranges are not allowed yet.
-func (c *Client) IpPoolRangeAdd(ctx context.Context, params IpPoolRangeAddParams) (*IpPoolRange, error) {
+func (c *client) IpPoolRangeAdd(ctx context.Context, params IpPoolRangeAddParams) (*IpPoolRange, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7246,7 +7246,7 @@ func (c *Client) IpPoolRangeAdd(ctx context.Context, params IpPoolRangeAddParams
 }
 
 // IpPoolRangeRemove: Remove range from IP pool
-func (c *Client) IpPoolRangeRemove(ctx context.Context, params IpPoolRangeRemoveParams) error {
+func (c *client) IpPoolRangeRemove(ctx context.Context, params IpPoolRangeRemoveParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -7289,7 +7289,7 @@ func (c *Client) IpPoolRangeRemove(ctx context.Context, params IpPoolRangeRemove
 // IpPoolSiloList: List IP pool's linked silos
 //
 // To iterate over all pages, use the `IpPoolSiloListAllPages` method, instead.
-func (c *Client) IpPoolSiloList(ctx context.Context, params IpPoolSiloListParams) (*IpPoolSiloLinkResultsPage, error) {
+func (c *client) IpPoolSiloList(ctx context.Context, params IpPoolSiloListParams) (*IpPoolSiloLinkResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7342,7 +7342,7 @@ func (c *Client) IpPoolSiloList(ctx context.Context, params IpPoolSiloListParams
 //
 // This method is a wrapper around the `IpPoolSiloList` method.
 // This method returns all the pages at once.
-func (c *Client) IpPoolSiloListAllPages(ctx context.Context, params IpPoolSiloListParams) ([]IpPoolSiloLink, error) {
+func (c *client) IpPoolSiloListAllPages(ctx context.Context, params IpPoolSiloListParams) ([]IpPoolSiloLink, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7367,7 +7367,7 @@ func (c *Client) IpPoolSiloListAllPages(ctx context.Context, params IpPoolSiloLi
 // IpPoolSiloLink: Link IP pool to silo
 // Users in linked silos can allocate external IPs from this pool for their instances. A silo can have at most
 // one default pool. IPs are allocated from the default pool when users ask for one without specifying a pool.
-func (c *Client) IpPoolSiloLink(ctx context.Context, params IpPoolSiloLinkParams) (*IpPoolSiloLink, error) {
+func (c *client) IpPoolSiloLink(ctx context.Context, params IpPoolSiloLinkParams) (*IpPoolSiloLink, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7422,7 +7422,7 @@ func (c *Client) IpPoolSiloLink(ctx context.Context, params IpPoolSiloLinkParams
 // When a user asks for an IP (e.g., at instance create time) without specifying a pool, the IP comes from the
 // default pool if a default is configured. When a pool is made the default for a silo, any existing default will
 // remain linked to the silo, but will no longer be the default.
-func (c *Client) IpPoolSiloUpdate(ctx context.Context, params IpPoolSiloUpdateParams) (*IpPoolSiloLink, error) {
+func (c *client) IpPoolSiloUpdate(ctx context.Context, params IpPoolSiloUpdateParams) (*IpPoolSiloLink, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7476,7 +7476,7 @@ func (c *Client) IpPoolSiloUpdate(ctx context.Context, params IpPoolSiloUpdatePa
 
 // IpPoolSiloUnlink: Unlink IP pool from silo
 // Will fail if there are any outstanding IPs allocated in the silo.
-func (c *Client) IpPoolSiloUnlink(ctx context.Context, params IpPoolSiloUnlinkParams) error {
+func (c *client) IpPoolSiloUnlink(ctx context.Context, params IpPoolSiloUnlinkParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -7512,7 +7512,7 @@ func (c *Client) IpPoolSiloUnlink(ctx context.Context, params IpPoolSiloUnlinkPa
 }
 
 // IpPoolUtilizationView: Fetch IP pool utilization
-func (c *Client) IpPoolUtilizationView(ctx context.Context, params IpPoolUtilizationViewParams) (*IpPoolUtilization, error) {
+func (c *client) IpPoolUtilizationView(ctx context.Context, params IpPoolUtilizationViewParams) (*IpPoolUtilization, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7561,7 +7561,7 @@ func (c *Client) IpPoolUtilizationView(ctx context.Context, params IpPoolUtiliza
 // View CPU, memory, or storage utilization metrics at the fleet or silo level.
 //
 // To iterate over all pages, use the `SystemMetricAllPages` method, instead.
-func (c *Client) SystemMetric(ctx context.Context, params SystemMetricParams) (*MeasurementResultsPage, error) {
+func (c *client) SystemMetric(ctx context.Context, params SystemMetricParams) (*MeasurementResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7618,7 +7618,7 @@ func (c *Client) SystemMetric(ctx context.Context, params SystemMetricParams) (*
 //
 // This method is a wrapper around the `SystemMetric` method.
 // This method returns all the pages at once.
-func (c *Client) SystemMetricAllPages(ctx context.Context, params SystemMetricParams) ([]Measurement, error) {
+func (c *client) SystemMetricAllPages(ctx context.Context, params SystemMetricParams) ([]Measurement, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7643,7 +7643,7 @@ func (c *Client) SystemMetricAllPages(ctx context.Context, params SystemMetricPa
 // NetworkingAddressLotList: List address lots
 //
 // To iterate over all pages, use the `NetworkingAddressLotListAllPages` method, instead.
-func (c *Client) NetworkingAddressLotList(ctx context.Context, params NetworkingAddressLotListParams) (*AddressLotResultsPage, error) {
+func (c *client) NetworkingAddressLotList(ctx context.Context, params NetworkingAddressLotListParams) (*AddressLotResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7694,7 +7694,7 @@ func (c *Client) NetworkingAddressLotList(ctx context.Context, params Networking
 //
 // This method is a wrapper around the `NetworkingAddressLotList` method.
 // This method returns all the pages at once.
-func (c *Client) NetworkingAddressLotListAllPages(ctx context.Context, params NetworkingAddressLotListParams) ([]AddressLot, error) {
+func (c *client) NetworkingAddressLotListAllPages(ctx context.Context, params NetworkingAddressLotListParams) ([]AddressLot, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7717,7 +7717,7 @@ func (c *Client) NetworkingAddressLotListAllPages(ctx context.Context, params Ne
 }
 
 // NetworkingAddressLotCreate: Create address lot
-func (c *Client) NetworkingAddressLotCreate(ctx context.Context, params NetworkingAddressLotCreateParams) (*AddressLotCreateResponse, error) {
+func (c *client) NetworkingAddressLotCreate(ctx context.Context, params NetworkingAddressLotCreateParams) (*AddressLotCreateResponse, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7767,7 +7767,7 @@ func (c *Client) NetworkingAddressLotCreate(ctx context.Context, params Networki
 }
 
 // NetworkingAddressLotDelete: Delete address lot
-func (c *Client) NetworkingAddressLotDelete(ctx context.Context, params NetworkingAddressLotDeleteParams) error {
+func (c *client) NetworkingAddressLotDelete(ctx context.Context, params NetworkingAddressLotDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -7804,7 +7804,7 @@ func (c *Client) NetworkingAddressLotDelete(ctx context.Context, params Networki
 // NetworkingAddressLotBlockList: List blocks in address lot
 //
 // To iterate over all pages, use the `NetworkingAddressLotBlockListAllPages` method, instead.
-func (c *Client) NetworkingAddressLotBlockList(ctx context.Context, params NetworkingAddressLotBlockListParams) (*AddressLotBlockResultsPage, error) {
+func (c *client) NetworkingAddressLotBlockList(ctx context.Context, params NetworkingAddressLotBlockListParams) (*AddressLotBlockResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7857,7 +7857,7 @@ func (c *Client) NetworkingAddressLotBlockList(ctx context.Context, params Netwo
 //
 // This method is a wrapper around the `NetworkingAddressLotBlockList` method.
 // This method returns all the pages at once.
-func (c *Client) NetworkingAddressLotBlockListAllPages(ctx context.Context, params NetworkingAddressLotBlockListParams) ([]AddressLotBlock, error) {
+func (c *client) NetworkingAddressLotBlockListAllPages(ctx context.Context, params NetworkingAddressLotBlockListParams) ([]AddressLotBlock, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7880,7 +7880,7 @@ func (c *Client) NetworkingAddressLotBlockListAllPages(ctx context.Context, para
 }
 
 // NetworkingAllowListView: Get user-facing services IP allowlist
-func (c *Client) NetworkingAllowListView(ctx context.Context) (*AllowList, error) {
+func (c *client) NetworkingAllowListView(ctx context.Context) (*AllowList, error) {
 	// Create the request
 	req, err := c.buildRequest(
 		ctx,
@@ -7921,7 +7921,7 @@ func (c *Client) NetworkingAllowListView(ctx context.Context) (*AllowList, error
 }
 
 // NetworkingAllowListUpdate: Update user-facing services IP allowlist
-func (c *Client) NetworkingAllowListUpdate(ctx context.Context, params NetworkingAllowListUpdateParams) (*AllowList, error) {
+func (c *client) NetworkingAllowListUpdate(ctx context.Context, params NetworkingAllowListUpdateParams) (*AllowList, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7971,7 +7971,7 @@ func (c *Client) NetworkingAllowListUpdate(ctx context.Context, params Networkin
 }
 
 // NetworkingBfdDisable: Disable a BFD session
-func (c *Client) NetworkingBfdDisable(ctx context.Context, params NetworkingBfdDisableParams) error {
+func (c *client) NetworkingBfdDisable(ctx context.Context, params NetworkingBfdDisableParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -8010,7 +8010,7 @@ func (c *Client) NetworkingBfdDisable(ctx context.Context, params NetworkingBfdD
 }
 
 // NetworkingBfdEnable: Enable a BFD session
-func (c *Client) NetworkingBfdEnable(ctx context.Context, params NetworkingBfdEnableParams) error {
+func (c *client) NetworkingBfdEnable(ctx context.Context, params NetworkingBfdEnableParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -8049,7 +8049,7 @@ func (c *Client) NetworkingBfdEnable(ctx context.Context, params NetworkingBfdEn
 }
 
 // NetworkingBfdStatus: Get BFD status
-func (c *Client) NetworkingBfdStatus(ctx context.Context) (*[]BfdStatus, error) {
+func (c *client) NetworkingBfdStatus(ctx context.Context) (*[]BfdStatus, error) {
 	// Create the request
 	req, err := c.buildRequest(
 		ctx,
@@ -8092,7 +8092,7 @@ func (c *Client) NetworkingBfdStatus(ctx context.Context) (*[]BfdStatus, error) 
 // NetworkingBgpConfigList: List BGP configurations
 //
 // To iterate over all pages, use the `NetworkingBgpConfigListAllPages` method, instead.
-func (c *Client) NetworkingBgpConfigList(ctx context.Context, params NetworkingBgpConfigListParams) (*BgpConfigResultsPage, error) {
+func (c *client) NetworkingBgpConfigList(ctx context.Context, params NetworkingBgpConfigListParams) (*BgpConfigResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8143,7 +8143,7 @@ func (c *Client) NetworkingBgpConfigList(ctx context.Context, params NetworkingB
 //
 // This method is a wrapper around the `NetworkingBgpConfigList` method.
 // This method returns all the pages at once.
-func (c *Client) NetworkingBgpConfigListAllPages(ctx context.Context, params NetworkingBgpConfigListParams) ([]BgpConfig, error) {
+func (c *client) NetworkingBgpConfigListAllPages(ctx context.Context, params NetworkingBgpConfigListParams) ([]BgpConfig, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8166,7 +8166,7 @@ func (c *Client) NetworkingBgpConfigListAllPages(ctx context.Context, params Net
 }
 
 // NetworkingBgpConfigCreate: Create new BGP configuration
-func (c *Client) NetworkingBgpConfigCreate(ctx context.Context, params NetworkingBgpConfigCreateParams) (*BgpConfig, error) {
+func (c *client) NetworkingBgpConfigCreate(ctx context.Context, params NetworkingBgpConfigCreateParams) (*BgpConfig, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8216,7 +8216,7 @@ func (c *Client) NetworkingBgpConfigCreate(ctx context.Context, params Networkin
 }
 
 // NetworkingBgpConfigDelete: Delete BGP configuration
-func (c *Client) NetworkingBgpConfigDelete(ctx context.Context, params NetworkingBgpConfigDeleteParams) error {
+func (c *client) NetworkingBgpConfigDelete(ctx context.Context, params NetworkingBgpConfigDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -8253,7 +8253,7 @@ func (c *Client) NetworkingBgpConfigDelete(ctx context.Context, params Networkin
 // NetworkingBgpAnnounceSetList: List BGP announce sets
 //
 // To iterate over all pages, use the `NetworkingBgpAnnounceSetListAllPages` method, instead.
-func (c *Client) NetworkingBgpAnnounceSetList(ctx context.Context, params NetworkingBgpAnnounceSetListParams) (*[]BgpAnnounceSet, error) {
+func (c *client) NetworkingBgpAnnounceSetList(ctx context.Context, params NetworkingBgpAnnounceSetListParams) (*[]BgpAnnounceSet, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8302,7 +8302,7 @@ func (c *Client) NetworkingBgpAnnounceSetList(ctx context.Context, params Networ
 
 // NetworkingBgpAnnounceSetUpdate: Update BGP announce set
 // If the announce set exists, this endpoint replaces the existing announce set with the one specified.
-func (c *Client) NetworkingBgpAnnounceSetUpdate(ctx context.Context, params NetworkingBgpAnnounceSetUpdateParams) (*BgpAnnounceSet, error) {
+func (c *client) NetworkingBgpAnnounceSetUpdate(ctx context.Context, params NetworkingBgpAnnounceSetUpdateParams) (*BgpAnnounceSet, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8352,7 +8352,7 @@ func (c *Client) NetworkingBgpAnnounceSetUpdate(ctx context.Context, params Netw
 }
 
 // NetworkingBgpAnnounceSetDelete: Delete BGP announce set
-func (c *Client) NetworkingBgpAnnounceSetDelete(ctx context.Context, params NetworkingBgpAnnounceSetDeleteParams) error {
+func (c *client) NetworkingBgpAnnounceSetDelete(ctx context.Context, params NetworkingBgpAnnounceSetDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -8387,7 +8387,7 @@ func (c *Client) NetworkingBgpAnnounceSetDelete(ctx context.Context, params Netw
 }
 
 // NetworkingBgpAnnouncementList: Get originated routes for a specified BGP announce set
-func (c *Client) NetworkingBgpAnnouncementList(ctx context.Context, params NetworkingBgpAnnouncementListParams) (*[]BgpAnnouncement, error) {
+func (c *client) NetworkingBgpAnnouncementList(ctx context.Context, params NetworkingBgpAnnouncementListParams) (*[]BgpAnnouncement, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8433,7 +8433,7 @@ func (c *Client) NetworkingBgpAnnouncementList(ctx context.Context, params Netwo
 }
 
 // NetworkingBgpExported: Get BGP exported routes
-func (c *Client) NetworkingBgpExported(ctx context.Context) (*BgpExported, error) {
+func (c *client) NetworkingBgpExported(ctx context.Context) (*BgpExported, error) {
 	// Create the request
 	req, err := c.buildRequest(
 		ctx,
@@ -8474,7 +8474,7 @@ func (c *Client) NetworkingBgpExported(ctx context.Context) (*BgpExported, error
 }
 
 // NetworkingBgpMessageHistory: Get BGP router message history
-func (c *Client) NetworkingBgpMessageHistory(ctx context.Context, params NetworkingBgpMessageHistoryParams) (*AggregateBgpMessageHistory, error) {
+func (c *client) NetworkingBgpMessageHistory(ctx context.Context, params NetworkingBgpMessageHistoryParams) (*AggregateBgpMessageHistory, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8520,7 +8520,7 @@ func (c *Client) NetworkingBgpMessageHistory(ctx context.Context, params Network
 }
 
 // NetworkingBgpImportedRoutesIpv4: Get imported IPv4 BGP routes
-func (c *Client) NetworkingBgpImportedRoutesIpv4(ctx context.Context, params NetworkingBgpImportedRoutesIpv4Params) (*[]BgpImportedRouteIpv4, error) {
+func (c *client) NetworkingBgpImportedRoutesIpv4(ctx context.Context, params NetworkingBgpImportedRoutesIpv4Params) (*[]BgpImportedRouteIpv4, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8566,7 +8566,7 @@ func (c *Client) NetworkingBgpImportedRoutesIpv4(ctx context.Context, params Net
 }
 
 // NetworkingBgpStatus: Get BGP peer status
-func (c *Client) NetworkingBgpStatus(ctx context.Context) (*[]BgpPeerStatus, error) {
+func (c *client) NetworkingBgpStatus(ctx context.Context) (*[]BgpPeerStatus, error) {
 	// Create the request
 	req, err := c.buildRequest(
 		ctx,
@@ -8609,7 +8609,7 @@ func (c *Client) NetworkingBgpStatus(ctx context.Context) (*[]BgpPeerStatus, err
 // NetworkingLoopbackAddressList: List loopback addresses
 //
 // To iterate over all pages, use the `NetworkingLoopbackAddressListAllPages` method, instead.
-func (c *Client) NetworkingLoopbackAddressList(ctx context.Context, params NetworkingLoopbackAddressListParams) (*LoopbackAddressResultsPage, error) {
+func (c *client) NetworkingLoopbackAddressList(ctx context.Context, params NetworkingLoopbackAddressListParams) (*LoopbackAddressResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8660,7 +8660,7 @@ func (c *Client) NetworkingLoopbackAddressList(ctx context.Context, params Netwo
 //
 // This method is a wrapper around the `NetworkingLoopbackAddressList` method.
 // This method returns all the pages at once.
-func (c *Client) NetworkingLoopbackAddressListAllPages(ctx context.Context, params NetworkingLoopbackAddressListParams) ([]LoopbackAddress, error) {
+func (c *client) NetworkingLoopbackAddressListAllPages(ctx context.Context, params NetworkingLoopbackAddressListParams) ([]LoopbackAddress, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8683,7 +8683,7 @@ func (c *Client) NetworkingLoopbackAddressListAllPages(ctx context.Context, para
 }
 
 // NetworkingLoopbackAddressCreate: Create loopback address
-func (c *Client) NetworkingLoopbackAddressCreate(ctx context.Context, params NetworkingLoopbackAddressCreateParams) (*LoopbackAddress, error) {
+func (c *client) NetworkingLoopbackAddressCreate(ctx context.Context, params NetworkingLoopbackAddressCreateParams) (*LoopbackAddress, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8733,7 +8733,7 @@ func (c *Client) NetworkingLoopbackAddressCreate(ctx context.Context, params Net
 }
 
 // NetworkingLoopbackAddressDelete: Delete loopback address
-func (c *Client) NetworkingLoopbackAddressDelete(ctx context.Context, params NetworkingLoopbackAddressDeleteParams) error {
+func (c *client) NetworkingLoopbackAddressDelete(ctx context.Context, params NetworkingLoopbackAddressDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -8773,7 +8773,7 @@ func (c *Client) NetworkingLoopbackAddressDelete(ctx context.Context, params Net
 // NetworkingSwitchPortSettingsList: List switch port settings
 //
 // To iterate over all pages, use the `NetworkingSwitchPortSettingsListAllPages` method, instead.
-func (c *Client) NetworkingSwitchPortSettingsList(ctx context.Context, params NetworkingSwitchPortSettingsListParams) (*SwitchPortSettingsResultsPage, error) {
+func (c *client) NetworkingSwitchPortSettingsList(ctx context.Context, params NetworkingSwitchPortSettingsListParams) (*SwitchPortSettingsResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8825,7 +8825,7 @@ func (c *Client) NetworkingSwitchPortSettingsList(ctx context.Context, params Ne
 //
 // This method is a wrapper around the `NetworkingSwitchPortSettingsList` method.
 // This method returns all the pages at once.
-func (c *Client) NetworkingSwitchPortSettingsListAllPages(ctx context.Context, params NetworkingSwitchPortSettingsListParams) ([]SwitchPortSettings, error) {
+func (c *client) NetworkingSwitchPortSettingsListAllPages(ctx context.Context, params NetworkingSwitchPortSettingsListParams) ([]SwitchPortSettings, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8848,7 +8848,7 @@ func (c *Client) NetworkingSwitchPortSettingsListAllPages(ctx context.Context, p
 }
 
 // NetworkingSwitchPortSettingsCreate: Create switch port settings
-func (c *Client) NetworkingSwitchPortSettingsCreate(ctx context.Context, params NetworkingSwitchPortSettingsCreateParams) (*SwitchPortSettingsView, error) {
+func (c *client) NetworkingSwitchPortSettingsCreate(ctx context.Context, params NetworkingSwitchPortSettingsCreateParams) (*SwitchPortSettingsView, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8898,7 +8898,7 @@ func (c *Client) NetworkingSwitchPortSettingsCreate(ctx context.Context, params 
 }
 
 // NetworkingSwitchPortSettingsDelete: Delete switch port settings
-func (c *Client) NetworkingSwitchPortSettingsDelete(ctx context.Context, params NetworkingSwitchPortSettingsDeleteParams) error {
+func (c *client) NetworkingSwitchPortSettingsDelete(ctx context.Context, params NetworkingSwitchPortSettingsDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -8933,7 +8933,7 @@ func (c *Client) NetworkingSwitchPortSettingsDelete(ctx context.Context, params 
 }
 
 // NetworkingSwitchPortSettingsView: Get information about switch port
-func (c *Client) NetworkingSwitchPortSettingsView(ctx context.Context, params NetworkingSwitchPortSettingsViewParams) (*SwitchPortSettingsView, error) {
+func (c *client) NetworkingSwitchPortSettingsView(ctx context.Context, params NetworkingSwitchPortSettingsViewParams) (*SwitchPortSettingsView, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8979,7 +8979,7 @@ func (c *Client) NetworkingSwitchPortSettingsView(ctx context.Context, params Ne
 }
 
 // SystemPolicyView: Fetch top-level IAM policy
-func (c *Client) SystemPolicyView(ctx context.Context) (*FleetRolePolicy, error) {
+func (c *client) SystemPolicyView(ctx context.Context) (*FleetRolePolicy, error) {
 	// Create the request
 	req, err := c.buildRequest(
 		ctx,
@@ -9020,7 +9020,7 @@ func (c *Client) SystemPolicyView(ctx context.Context) (*FleetRolePolicy, error)
 }
 
 // SystemPolicyUpdate: Update top-level IAM policy
-func (c *Client) SystemPolicyUpdate(ctx context.Context, params SystemPolicyUpdateParams) (*FleetRolePolicy, error) {
+func (c *client) SystemPolicyUpdate(ctx context.Context, params SystemPolicyUpdateParams) (*FleetRolePolicy, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -9072,7 +9072,7 @@ func (c *Client) SystemPolicyUpdate(ctx context.Context, params SystemPolicyUpda
 // RoleList: List built-in roles
 //
 // To iterate over all pages, use the `RoleListAllPages` method, instead.
-func (c *Client) RoleList(ctx context.Context, params RoleListParams) (*RoleResultsPage, error) {
+func (c *client) RoleList(ctx context.Context, params RoleListParams) (*RoleResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -9122,7 +9122,7 @@ func (c *Client) RoleList(ctx context.Context, params RoleListParams) (*RoleResu
 //
 // This method is a wrapper around the `RoleList` method.
 // This method returns all the pages at once.
-func (c *Client) RoleListAllPages(ctx context.Context, params RoleListParams) ([]Role, error) {
+func (c *client) RoleListAllPages(ctx context.Context, params RoleListParams) ([]Role, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -9145,7 +9145,7 @@ func (c *Client) RoleListAllPages(ctx context.Context, params RoleListParams) ([
 }
 
 // RoleView: Fetch built-in role
-func (c *Client) RoleView(ctx context.Context, params RoleViewParams) (*Role, error) {
+func (c *client) RoleView(ctx context.Context, params RoleViewParams) (*Role, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -9193,7 +9193,7 @@ func (c *Client) RoleView(ctx context.Context, params RoleViewParams) (*Role, er
 // SystemQuotasList: Lists resource quotas for all silos
 //
 // To iterate over all pages, use the `SystemQuotasListAllPages` method, instead.
-func (c *Client) SystemQuotasList(ctx context.Context, params SystemQuotasListParams) (*SiloQuotasResultsPage, error) {
+func (c *client) SystemQuotasList(ctx context.Context, params SystemQuotasListParams) (*SiloQuotasResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -9244,7 +9244,7 @@ func (c *Client) SystemQuotasList(ctx context.Context, params SystemQuotasListPa
 //
 // This method is a wrapper around the `SystemQuotasList` method.
 // This method returns all the pages at once.
-func (c *Client) SystemQuotasListAllPages(ctx context.Context, params SystemQuotasListParams) ([]SiloQuotas, error) {
+func (c *client) SystemQuotasListAllPages(ctx context.Context, params SystemQuotasListParams) ([]SiloQuotas, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -9270,7 +9270,7 @@ func (c *Client) SystemQuotasListAllPages(ctx context.Context, params SystemQuot
 // Lists silos that are discoverable based on the current permissions.
 //
 // To iterate over all pages, use the `SiloListAllPages` method, instead.
-func (c *Client) SiloList(ctx context.Context, params SiloListParams) (*SiloResultsPage, error) {
+func (c *client) SiloList(ctx context.Context, params SiloListParams) (*SiloResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -9322,7 +9322,7 @@ func (c *Client) SiloList(ctx context.Context, params SiloListParams) (*SiloResu
 //
 // This method is a wrapper around the `SiloList` method.
 // This method returns all the pages at once.
-func (c *Client) SiloListAllPages(ctx context.Context, params SiloListParams) ([]Silo, error) {
+func (c *client) SiloListAllPages(ctx context.Context, params SiloListParams) ([]Silo, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -9345,7 +9345,7 @@ func (c *Client) SiloListAllPages(ctx context.Context, params SiloListParams) ([
 }
 
 // SiloCreate: Create a silo
-func (c *Client) SiloCreate(ctx context.Context, params SiloCreateParams) (*Silo, error) {
+func (c *client) SiloCreate(ctx context.Context, params SiloCreateParams) (*Silo, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -9396,7 +9396,7 @@ func (c *Client) SiloCreate(ctx context.Context, params SiloCreateParams) (*Silo
 
 // SiloView: Fetch silo
 // Fetch silo by name or ID.
-func (c *Client) SiloView(ctx context.Context, params SiloViewParams) (*Silo, error) {
+func (c *client) SiloView(ctx context.Context, params SiloViewParams) (*Silo, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -9443,7 +9443,7 @@ func (c *Client) SiloView(ctx context.Context, params SiloViewParams) (*Silo, er
 
 // SiloDelete: Delete a silo
 // Delete a silo by name or ID.
-func (c *Client) SiloDelete(ctx context.Context, params SiloDeleteParams) error {
+func (c *client) SiloDelete(ctx context.Context, params SiloDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -9482,7 +9482,7 @@ func (c *Client) SiloDelete(ctx context.Context, params SiloDeleteParams) error 
 // are allocated from the default pool when users ask for one without specifying a pool.
 //
 // To iterate over all pages, use the `SiloIpPoolListAllPages` method, instead.
-func (c *Client) SiloIpPoolList(ctx context.Context, params SiloIpPoolListParams) (*SiloIpPoolResultsPage, error) {
+func (c *client) SiloIpPoolList(ctx context.Context, params SiloIpPoolListParams) (*SiloIpPoolResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -9537,7 +9537,7 @@ func (c *Client) SiloIpPoolList(ctx context.Context, params SiloIpPoolListParams
 //
 // This method is a wrapper around the `SiloIpPoolList` method.
 // This method returns all the pages at once.
-func (c *Client) SiloIpPoolListAllPages(ctx context.Context, params SiloIpPoolListParams) ([]SiloIpPool, error) {
+func (c *client) SiloIpPoolListAllPages(ctx context.Context, params SiloIpPoolListParams) ([]SiloIpPool, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -9560,7 +9560,7 @@ func (c *Client) SiloIpPoolListAllPages(ctx context.Context, params SiloIpPoolLi
 }
 
 // SiloPolicyView: Fetch silo IAM policy
-func (c *Client) SiloPolicyView(ctx context.Context, params SiloPolicyViewParams) (*SiloRolePolicy, error) {
+func (c *client) SiloPolicyView(ctx context.Context, params SiloPolicyViewParams) (*SiloRolePolicy, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -9606,7 +9606,7 @@ func (c *Client) SiloPolicyView(ctx context.Context, params SiloPolicyViewParams
 }
 
 // SiloPolicyUpdate: Update silo IAM policy
-func (c *Client) SiloPolicyUpdate(ctx context.Context, params SiloPolicyUpdateParams) (*SiloRolePolicy, error) {
+func (c *client) SiloPolicyUpdate(ctx context.Context, params SiloPolicyUpdateParams) (*SiloRolePolicy, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -9658,7 +9658,7 @@ func (c *Client) SiloPolicyUpdate(ctx context.Context, params SiloPolicyUpdatePa
 }
 
 // SiloQuotasView: Fetch resource quotas for silo
-func (c *Client) SiloQuotasView(ctx context.Context, params SiloQuotasViewParams) (*SiloQuotas, error) {
+func (c *client) SiloQuotasView(ctx context.Context, params SiloQuotasViewParams) (*SiloQuotas, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -9705,7 +9705,7 @@ func (c *Client) SiloQuotasView(ctx context.Context, params SiloQuotasViewParams
 
 // SiloQuotasUpdate: Update resource quotas for silo
 // If a quota value is not specified, it will remain unchanged.
-func (c *Client) SiloQuotasUpdate(ctx context.Context, params SiloQuotasUpdateParams) (*SiloQuotas, error) {
+func (c *client) SiloQuotasUpdate(ctx context.Context, params SiloQuotasUpdateParams) (*SiloQuotas, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -9758,7 +9758,7 @@ func (c *Client) SiloQuotasUpdate(ctx context.Context, params SiloQuotasUpdatePa
 
 // SystemTimeseriesQuery: Run timeseries query
 // Queries are written in OxQL.
-func (c *Client) SystemTimeseriesQuery(ctx context.Context, params SystemTimeseriesQueryParams) (*OxqlQueryResult, error) {
+func (c *client) SystemTimeseriesQuery(ctx context.Context, params SystemTimeseriesQueryParams) (*OxqlQueryResult, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -9810,7 +9810,7 @@ func (c *Client) SystemTimeseriesQuery(ctx context.Context, params SystemTimeser
 // SystemTimeseriesSchemaList: List timeseries schemas
 //
 // To iterate over all pages, use the `SystemTimeseriesSchemaListAllPages` method, instead.
-func (c *Client) SystemTimeseriesSchemaList(ctx context.Context, params SystemTimeseriesSchemaListParams) (*TimeseriesSchemaResultsPage, error) {
+func (c *client) SystemTimeseriesSchemaList(ctx context.Context, params SystemTimeseriesSchemaListParams) (*TimeseriesSchemaResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -9860,7 +9860,7 @@ func (c *Client) SystemTimeseriesSchemaList(ctx context.Context, params SystemTi
 //
 // This method is a wrapper around the `SystemTimeseriesSchemaList` method.
 // This method returns all the pages at once.
-func (c *Client) SystemTimeseriesSchemaListAllPages(ctx context.Context, params SystemTimeseriesSchemaListParams) ([]TimeseriesSchema, error) {
+func (c *client) SystemTimeseriesSchemaListAllPages(ctx context.Context, params SystemTimeseriesSchemaListParams) ([]TimeseriesSchema, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -9885,7 +9885,7 @@ func (c *Client) SystemTimeseriesSchemaListAllPages(ctx context.Context, params 
 // SiloUserList: List built-in (system) users in silo
 //
 // To iterate over all pages, use the `SiloUserListAllPages` method, instead.
-func (c *Client) SiloUserList(ctx context.Context, params SiloUserListParams) (*UserResultsPage, error) {
+func (c *client) SiloUserList(ctx context.Context, params SiloUserListParams) (*UserResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -9937,7 +9937,7 @@ func (c *Client) SiloUserList(ctx context.Context, params SiloUserListParams) (*
 //
 // This method is a wrapper around the `SiloUserList` method.
 // This method returns all the pages at once.
-func (c *Client) SiloUserListAllPages(ctx context.Context, params SiloUserListParams) ([]User, error) {
+func (c *client) SiloUserListAllPages(ctx context.Context, params SiloUserListParams) ([]User, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -9962,7 +9962,7 @@ func (c *Client) SiloUserListAllPages(ctx context.Context, params SiloUserListPa
 // UserBuiltinList: List built-in users
 //
 // To iterate over all pages, use the `UserBuiltinListAllPages` method, instead.
-func (c *Client) UserBuiltinList(ctx context.Context, params UserBuiltinListParams) (*UserBuiltinResultsPage, error) {
+func (c *client) UserBuiltinList(ctx context.Context, params UserBuiltinListParams) (*UserBuiltinResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -10013,7 +10013,7 @@ func (c *Client) UserBuiltinList(ctx context.Context, params UserBuiltinListPara
 //
 // This method is a wrapper around the `UserBuiltinList` method.
 // This method returns all the pages at once.
-func (c *Client) UserBuiltinListAllPages(ctx context.Context, params UserBuiltinListParams) ([]UserBuiltin, error) {
+func (c *client) UserBuiltinListAllPages(ctx context.Context, params UserBuiltinListParams) ([]UserBuiltin, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -10036,7 +10036,7 @@ func (c *Client) UserBuiltinListAllPages(ctx context.Context, params UserBuiltin
 }
 
 // UserBuiltinView: Fetch built-in user
-func (c *Client) UserBuiltinView(ctx context.Context, params UserBuiltinViewParams) (*UserBuiltin, error) {
+func (c *client) UserBuiltinView(ctx context.Context, params UserBuiltinViewParams) (*UserBuiltin, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -10082,7 +10082,7 @@ func (c *Client) UserBuiltinView(ctx context.Context, params UserBuiltinViewPara
 }
 
 // SiloUserView: Fetch built-in (system) user
-func (c *Client) SiloUserView(ctx context.Context, params SiloUserViewParams) (*User, error) {
+func (c *client) SiloUserView(ctx context.Context, params SiloUserViewParams) (*User, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -10132,7 +10132,7 @@ func (c *Client) SiloUserView(ctx context.Context, params SiloUserViewParams) (*
 // SiloUtilizationList: List current utilization state for all silos
 //
 // To iterate over all pages, use the `SiloUtilizationListAllPages` method, instead.
-func (c *Client) SiloUtilizationList(ctx context.Context, params SiloUtilizationListParams) (*SiloUtilizationResultsPage, error) {
+func (c *client) SiloUtilizationList(ctx context.Context, params SiloUtilizationListParams) (*SiloUtilizationResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -10183,7 +10183,7 @@ func (c *Client) SiloUtilizationList(ctx context.Context, params SiloUtilization
 //
 // This method is a wrapper around the `SiloUtilizationList` method.
 // This method returns all the pages at once.
-func (c *Client) SiloUtilizationListAllPages(ctx context.Context, params SiloUtilizationListParams) ([]SiloUtilization, error) {
+func (c *client) SiloUtilizationListAllPages(ctx context.Context, params SiloUtilizationListParams) ([]SiloUtilization, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -10206,7 +10206,7 @@ func (c *Client) SiloUtilizationListAllPages(ctx context.Context, params SiloUti
 }
 
 // SiloUtilizationView: Fetch current utilization for given silo
-func (c *Client) SiloUtilizationView(ctx context.Context, params SiloUtilizationViewParams) (*SiloUtilization, error) {
+func (c *client) SiloUtilizationView(ctx context.Context, params SiloUtilizationViewParams) (*SiloUtilization, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -10254,7 +10254,7 @@ func (c *Client) SiloUtilizationView(ctx context.Context, params SiloUtilization
 // UserList: List users
 //
 // To iterate over all pages, use the `UserListAllPages` method, instead.
-func (c *Client) UserList(ctx context.Context, params UserListParams) (*UserResultsPage, error) {
+func (c *client) UserList(ctx context.Context, params UserListParams) (*UserResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -10306,7 +10306,7 @@ func (c *Client) UserList(ctx context.Context, params UserListParams) (*UserResu
 //
 // This method is a wrapper around the `UserList` method.
 // This method returns all the pages at once.
-func (c *Client) UserListAllPages(ctx context.Context, params UserListParams) ([]User, error) {
+func (c *client) UserListAllPages(ctx context.Context, params UserListParams) ([]User, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -10329,7 +10329,7 @@ func (c *Client) UserListAllPages(ctx context.Context, params UserListParams) ([
 }
 
 // UtilizationView: Fetch resource utilization for user's current silo
-func (c *Client) UtilizationView(ctx context.Context) (*Utilization, error) {
+func (c *client) UtilizationView(ctx context.Context) (*Utilization, error) {
 	// Create the request
 	req, err := c.buildRequest(
 		ctx,
@@ -10370,7 +10370,7 @@ func (c *Client) UtilizationView(ctx context.Context) (*Utilization, error) {
 }
 
 // VpcFirewallRulesView: List firewall rules
-func (c *Client) VpcFirewallRulesView(ctx context.Context, params VpcFirewallRulesViewParams) (*VpcFirewallRules, error) {
+func (c *client) VpcFirewallRulesView(ctx context.Context, params VpcFirewallRulesViewParams) (*VpcFirewallRules, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -10427,7 +10427,7 @@ func (c *Client) VpcFirewallRulesView(ctx context.Context, params VpcFirewallRul
 // Filters reduce the scope of a firewall rule. Without filters, the rule applies to all packets to the targets
 // (or from the targets, if it's an outbound rule). With multiple filters, the rule applies only to packets matching
 // ALL filters. The maximum number of each type of filter is 256.
-func (c *Client) VpcFirewallRulesUpdate(ctx context.Context, params VpcFirewallRulesUpdateParams) (*VpcFirewallRules, error) {
+func (c *client) VpcFirewallRulesUpdate(ctx context.Context, params VpcFirewallRulesUpdateParams) (*VpcFirewallRules, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -10483,7 +10483,7 @@ func (c *Client) VpcFirewallRulesUpdate(ctx context.Context, params VpcFirewallR
 // List the routes associated with a router in a particular VPC.
 //
 // To iterate over all pages, use the `VpcRouterRouteListAllPages` method, instead.
-func (c *Client) VpcRouterRouteList(ctx context.Context, params VpcRouterRouteListParams) (*RouterRouteResultsPage, error) {
+func (c *client) VpcRouterRouteList(ctx context.Context, params VpcRouterRouteListParams) (*RouterRouteResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -10538,7 +10538,7 @@ func (c *Client) VpcRouterRouteList(ctx context.Context, params VpcRouterRouteLi
 //
 // This method is a wrapper around the `VpcRouterRouteList` method.
 // This method returns all the pages at once.
-func (c *Client) VpcRouterRouteListAllPages(ctx context.Context, params VpcRouterRouteListParams) ([]RouterRoute, error) {
+func (c *client) VpcRouterRouteListAllPages(ctx context.Context, params VpcRouterRouteListParams) ([]RouterRoute, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -10561,7 +10561,7 @@ func (c *Client) VpcRouterRouteListAllPages(ctx context.Context, params VpcRoute
 }
 
 // VpcRouterRouteCreate: Create route
-func (c *Client) VpcRouterRouteCreate(ctx context.Context, params VpcRouterRouteCreateParams) (*RouterRoute, error) {
+func (c *client) VpcRouterRouteCreate(ctx context.Context, params VpcRouterRouteCreateParams) (*RouterRoute, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -10615,7 +10615,7 @@ func (c *Client) VpcRouterRouteCreate(ctx context.Context, params VpcRouterRoute
 }
 
 // VpcRouterRouteView: Fetch route
-func (c *Client) VpcRouterRouteView(ctx context.Context, params VpcRouterRouteViewParams) (*RouterRoute, error) {
+func (c *client) VpcRouterRouteView(ctx context.Context, params VpcRouterRouteViewParams) (*RouterRoute, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -10665,7 +10665,7 @@ func (c *Client) VpcRouterRouteView(ctx context.Context, params VpcRouterRouteVi
 }
 
 // VpcRouterRouteUpdate: Update route
-func (c *Client) VpcRouterRouteUpdate(ctx context.Context, params VpcRouterRouteUpdateParams) (*RouterRoute, error) {
+func (c *client) VpcRouterRouteUpdate(ctx context.Context, params VpcRouterRouteUpdateParams) (*RouterRoute, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -10721,7 +10721,7 @@ func (c *Client) VpcRouterRouteUpdate(ctx context.Context, params VpcRouterRoute
 }
 
 // VpcRouterRouteDelete: Delete route
-func (c *Client) VpcRouterRouteDelete(ctx context.Context, params VpcRouterRouteDeleteParams) error {
+func (c *client) VpcRouterRouteDelete(ctx context.Context, params VpcRouterRouteDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -10762,7 +10762,7 @@ func (c *Client) VpcRouterRouteDelete(ctx context.Context, params VpcRouterRoute
 // VpcRouterList: List routers
 //
 // To iterate over all pages, use the `VpcRouterListAllPages` method, instead.
-func (c *Client) VpcRouterList(ctx context.Context, params VpcRouterListParams) (*VpcRouterResultsPage, error) {
+func (c *client) VpcRouterList(ctx context.Context, params VpcRouterListParams) (*VpcRouterResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -10815,7 +10815,7 @@ func (c *Client) VpcRouterList(ctx context.Context, params VpcRouterListParams) 
 //
 // This method is a wrapper around the `VpcRouterList` method.
 // This method returns all the pages at once.
-func (c *Client) VpcRouterListAllPages(ctx context.Context, params VpcRouterListParams) ([]VpcRouter, error) {
+func (c *client) VpcRouterListAllPages(ctx context.Context, params VpcRouterListParams) ([]VpcRouter, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -10838,7 +10838,7 @@ func (c *Client) VpcRouterListAllPages(ctx context.Context, params VpcRouterList
 }
 
 // VpcRouterCreate: Create VPC router
-func (c *Client) VpcRouterCreate(ctx context.Context, params VpcRouterCreateParams) (*VpcRouter, error) {
+func (c *client) VpcRouterCreate(ctx context.Context, params VpcRouterCreateParams) (*VpcRouter, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -10891,7 +10891,7 @@ func (c *Client) VpcRouterCreate(ctx context.Context, params VpcRouterCreatePara
 }
 
 // VpcRouterView: Fetch router
-func (c *Client) VpcRouterView(ctx context.Context, params VpcRouterViewParams) (*VpcRouter, error) {
+func (c *client) VpcRouterView(ctx context.Context, params VpcRouterViewParams) (*VpcRouter, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -10940,7 +10940,7 @@ func (c *Client) VpcRouterView(ctx context.Context, params VpcRouterViewParams) 
 }
 
 // VpcRouterUpdate: Update router
-func (c *Client) VpcRouterUpdate(ctx context.Context, params VpcRouterUpdateParams) (*VpcRouter, error) {
+func (c *client) VpcRouterUpdate(ctx context.Context, params VpcRouterUpdateParams) (*VpcRouter, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -10995,7 +10995,7 @@ func (c *Client) VpcRouterUpdate(ctx context.Context, params VpcRouterUpdatePara
 }
 
 // VpcRouterDelete: Delete router
-func (c *Client) VpcRouterDelete(ctx context.Context, params VpcRouterDeleteParams) error {
+func (c *client) VpcRouterDelete(ctx context.Context, params VpcRouterDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -11035,7 +11035,7 @@ func (c *Client) VpcRouterDelete(ctx context.Context, params VpcRouterDeletePara
 // VpcSubnetList: List subnets
 //
 // To iterate over all pages, use the `VpcSubnetListAllPages` method, instead.
-func (c *Client) VpcSubnetList(ctx context.Context, params VpcSubnetListParams) (*VpcSubnetResultsPage, error) {
+func (c *client) VpcSubnetList(ctx context.Context, params VpcSubnetListParams) (*VpcSubnetResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -11088,7 +11088,7 @@ func (c *Client) VpcSubnetList(ctx context.Context, params VpcSubnetListParams) 
 //
 // This method is a wrapper around the `VpcSubnetList` method.
 // This method returns all the pages at once.
-func (c *Client) VpcSubnetListAllPages(ctx context.Context, params VpcSubnetListParams) ([]VpcSubnet, error) {
+func (c *client) VpcSubnetListAllPages(ctx context.Context, params VpcSubnetListParams) ([]VpcSubnet, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -11111,7 +11111,7 @@ func (c *Client) VpcSubnetListAllPages(ctx context.Context, params VpcSubnetList
 }
 
 // VpcSubnetCreate: Create subnet
-func (c *Client) VpcSubnetCreate(ctx context.Context, params VpcSubnetCreateParams) (*VpcSubnet, error) {
+func (c *client) VpcSubnetCreate(ctx context.Context, params VpcSubnetCreateParams) (*VpcSubnet, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -11164,7 +11164,7 @@ func (c *Client) VpcSubnetCreate(ctx context.Context, params VpcSubnetCreatePara
 }
 
 // VpcSubnetView: Fetch subnet
-func (c *Client) VpcSubnetView(ctx context.Context, params VpcSubnetViewParams) (*VpcSubnet, error) {
+func (c *client) VpcSubnetView(ctx context.Context, params VpcSubnetViewParams) (*VpcSubnet, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -11213,7 +11213,7 @@ func (c *Client) VpcSubnetView(ctx context.Context, params VpcSubnetViewParams) 
 }
 
 // VpcSubnetUpdate: Update subnet
-func (c *Client) VpcSubnetUpdate(ctx context.Context, params VpcSubnetUpdateParams) (*VpcSubnet, error) {
+func (c *client) VpcSubnetUpdate(ctx context.Context, params VpcSubnetUpdateParams) (*VpcSubnet, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -11268,7 +11268,7 @@ func (c *Client) VpcSubnetUpdate(ctx context.Context, params VpcSubnetUpdatePara
 }
 
 // VpcSubnetDelete: Delete subnet
-func (c *Client) VpcSubnetDelete(ctx context.Context, params VpcSubnetDeleteParams) error {
+func (c *client) VpcSubnetDelete(ctx context.Context, params VpcSubnetDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -11308,7 +11308,7 @@ func (c *Client) VpcSubnetDelete(ctx context.Context, params VpcSubnetDeletePara
 // VpcSubnetListNetworkInterfaces: List network interfaces
 //
 // To iterate over all pages, use the `VpcSubnetListNetworkInterfacesAllPages` method, instead.
-func (c *Client) VpcSubnetListNetworkInterfaces(ctx context.Context, params VpcSubnetListNetworkInterfacesParams) (*InstanceNetworkInterfaceResultsPage, error) {
+func (c *client) VpcSubnetListNetworkInterfaces(ctx context.Context, params VpcSubnetListNetworkInterfacesParams) (*InstanceNetworkInterfaceResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -11363,7 +11363,7 @@ func (c *Client) VpcSubnetListNetworkInterfaces(ctx context.Context, params VpcS
 //
 // This method is a wrapper around the `VpcSubnetListNetworkInterfaces` method.
 // This method returns all the pages at once.
-func (c *Client) VpcSubnetListNetworkInterfacesAllPages(ctx context.Context, params VpcSubnetListNetworkInterfacesParams) ([]InstanceNetworkInterface, error) {
+func (c *client) VpcSubnetListNetworkInterfacesAllPages(ctx context.Context, params VpcSubnetListNetworkInterfacesParams) ([]InstanceNetworkInterface, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -11388,7 +11388,7 @@ func (c *Client) VpcSubnetListNetworkInterfacesAllPages(ctx context.Context, par
 // VpcList: List VPCs
 //
 // To iterate over all pages, use the `VpcListAllPages` method, instead.
-func (c *Client) VpcList(ctx context.Context, params VpcListParams) (*VpcResultsPage, error) {
+func (c *client) VpcList(ctx context.Context, params VpcListParams) (*VpcResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -11440,7 +11440,7 @@ func (c *Client) VpcList(ctx context.Context, params VpcListParams) (*VpcResults
 //
 // This method is a wrapper around the `VpcList` method.
 // This method returns all the pages at once.
-func (c *Client) VpcListAllPages(ctx context.Context, params VpcListParams) ([]Vpc, error) {
+func (c *client) VpcListAllPages(ctx context.Context, params VpcListParams) ([]Vpc, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -11463,7 +11463,7 @@ func (c *Client) VpcListAllPages(ctx context.Context, params VpcListParams) ([]V
 }
 
 // VpcCreate: Create VPC
-func (c *Client) VpcCreate(ctx context.Context, params VpcCreateParams) (*Vpc, error) {
+func (c *client) VpcCreate(ctx context.Context, params VpcCreateParams) (*Vpc, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -11515,7 +11515,7 @@ func (c *Client) VpcCreate(ctx context.Context, params VpcCreateParams) (*Vpc, e
 }
 
 // VpcView: Fetch VPC
-func (c *Client) VpcView(ctx context.Context, params VpcViewParams) (*Vpc, error) {
+func (c *client) VpcView(ctx context.Context, params VpcViewParams) (*Vpc, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -11563,7 +11563,7 @@ func (c *Client) VpcView(ctx context.Context, params VpcViewParams) (*Vpc, error
 }
 
 // VpcUpdate: Update a VPC
-func (c *Client) VpcUpdate(ctx context.Context, params VpcUpdateParams) (*Vpc, error) {
+func (c *client) VpcUpdate(ctx context.Context, params VpcUpdateParams) (*Vpc, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -11617,7 +11617,7 @@ func (c *Client) VpcUpdate(ctx context.Context, params VpcUpdateParams) (*Vpc, e
 }
 
 // VpcDelete: Delete VPC
-func (c *Client) VpcDelete(ctx context.Context, params VpcDeleteParams) error {
+func (c *client) VpcDelete(ctx context.Context, params VpcDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
