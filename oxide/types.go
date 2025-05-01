@@ -30,9 +30,12 @@ type Address struct {
 //
 // Required fields:
 // - Addresses
+// - LinkName
 type AddressConfig struct {
 	// Addresses is the set of addresses assigned to the port configuration.
 	Addresses []Address `json:"addresses,omitempty" yaml:"addresses,omitempty"`
+	// LinkName is link to assign the address to
+	LinkName Name `json:"link_name,omitempty" yaml:"link_name,omitempty"`
 }
 
 // AddressLot is represents an address lot object, containing the id of the lot that can be used in other API
@@ -762,9 +765,12 @@ type BgpPeer struct {
 // BgpPeerConfig is the type definition for a BgpPeerConfig.
 //
 // Required fields:
+// - LinkName
 // - Peers
 type BgpPeerConfig struct {
-	Peers []BgpPeer `json:"peers,omitempty" yaml:"peers,omitempty"`
+	// LinkName is link that the peer is reachable on
+	LinkName Name      `json:"link_name,omitempty" yaml:"link_name,omitempty"`
+	Peers    []BgpPeer `json:"peers,omitempty" yaml:"peers,omitempty"`
 }
 
 // BgpPeerState is initial state. Refuse all incoming BGP connections. No resources allocated to peer.
@@ -3725,40 +3731,6 @@ type InstanceUpdate struct {
 	Ncpus InstanceCpuCount `json:"ncpus,omitempty" yaml:"ncpus,omitempty"`
 }
 
-// InterfaceNumUnknown is the type definition for a InterfaceNumUnknown.
-//
-// Required fields:
-// - Unknown
-type InterfaceNumUnknown struct {
-	Unknown *int `json:"unknown,omitempty" yaml:"unknown,omitempty"`
-}
-
-// InterfaceNumIfIndex is the type definition for a InterfaceNumIfIndex.
-//
-// Required fields:
-// - IfIndex
-type InterfaceNumIfIndex struct {
-	IfIndex *int `json:"if_index,omitempty" yaml:"if_index,omitempty"`
-}
-
-// InterfaceNumPortNumber is the type definition for a InterfaceNumPortNumber.
-//
-// Required fields:
-// - PortNumber
-type InterfaceNumPortNumber struct {
-	PortNumber *int `json:"port_number,omitempty" yaml:"port_number,omitempty"`
-}
-
-// InterfaceNum is the type definition for a InterfaceNum.
-type InterfaceNum struct {
-	// Unknown is the type definition for a Unknown.
-	Unknown *int `json:"unknown,omitempty" yaml:"unknown,omitempty"`
-	// IfIndex is the type definition for a IfIndex.
-	IfIndex *int `json:"if_index,omitempty" yaml:"if_index,omitempty"`
-	// PortNumber is the type definition for a PortNumber.
-	PortNumber *int `json:"port_number,omitempty" yaml:"port_number,omitempty"`
-}
-
 // InternetGateway is an internet gateway provides a path between VPC networks and external networks.
 //
 // Required fields:
@@ -4123,6 +4095,7 @@ type L4PortRange string
 //
 // Required fields:
 // - Autoneg
+// - LinkName
 // - Lldp
 // - Mtu
 // - Speed
@@ -4132,6 +4105,8 @@ type LinkConfigCreate struct {
 	// Fec is the requested forward-error correction method.  If this is not specified, the standard FEC for
 	// the underlying media will be applied if it can be determined.
 	Fec LinkFec `json:"fec,omitempty" yaml:"fec,omitempty"`
+	// LinkName is link name
+	LinkName Name `json:"link_name,omitempty" yaml:"link_name,omitempty"`
 	// Lldp is the link-layer discovery protocol (LLDP) configuration for the link.
 	Lldp LldpLinkConfigCreate `json:"lldp,omitempty" yaml:"lldp,omitempty"`
 	// Mtu is maximum transmission unit for the link.
@@ -4139,7 +4114,7 @@ type LinkConfigCreate struct {
 	// Speed is the speed of the link.
 	Speed LinkSpeed `json:"speed,omitempty" yaml:"speed,omitempty"`
 	// TxEq is optional tx_eq settings
-	TxEq TxEqConfig `json:"tx_eq,omitempty" yaml:"tx_eq,omitempty"`
+	TxEq *TxEqConfig `json:"tx_eq,omitempty" yaml:"tx_eq,omitempty"`
 }
 
 // LinkFec is firecode forward error correction.
@@ -4218,7 +4193,7 @@ type LldpNeighbor struct {
 	// LocalPort is the port on which the neighbor was seen
 	LocalPort string `json:"local_port,omitempty" yaml:"local_port,omitempty"`
 	// ManagementIp is the LLDP management IP(s) advertised by the neighbor
-	ManagementIp []ManagementAddress `json:"management_ip,omitempty" yaml:"management_ip,omitempty"`
+	ManagementIp []IpNet `json:"management_ip,omitempty" yaml:"management_ip,omitempty"`
 	// SystemDescription is the LLDP system description advertised by the neighbor
 	SystemDescription string `json:"system_description,omitempty" yaml:"system_description,omitempty"`
 	// SystemName is the LLDP system name advertised by the neighbor
@@ -4298,17 +4273,6 @@ type LoopbackAddressResultsPage struct {
 // MacAddr is a Media Access Control address, in EUI-48 format
 type MacAddr string
 
-// ManagementAddress is the type definition for a ManagementAddress.
-//
-// Required fields:
-// - Addr
-// - InterfaceNum
-type ManagementAddress struct {
-	Addr         NetworkAddress `json:"addr,omitempty" yaml:"addr,omitempty"`
-	InterfaceNum InterfaceNum   `json:"interface_num,omitempty" yaml:"interface_num,omitempty"`
-	Oid          []string       `json:"oid" yaml:"oid"`
-}
-
 // Measurement is a `Measurement` is a timestamped datum from a single metric
 //
 // Required fields:
@@ -4357,30 +4321,6 @@ type NameOrIdSortMode string
 
 // NameSortMode is sort in increasing order of "name"
 type NameSortMode string
-
-// NetworkAddressIpAddr is the type definition for a NetworkAddressIpAddr.
-//
-// Required fields:
-// - IpAddr
-type NetworkAddressIpAddr struct {
-	IpAddr string `json:"ip_addr,omitempty" yaml:"ip_addr,omitempty"`
-}
-
-// NetworkAddressIeee802 is the type definition for a NetworkAddressIeee802.
-//
-// Required fields:
-// - IEEE802
-type NetworkAddressIeee802 struct {
-	IEEE802 []string `json:"i_e_e_e802,omitempty" yaml:"i_e_e_e802,omitempty"`
-}
-
-// NetworkAddress is the type definition for a NetworkAddress.
-type NetworkAddress struct {
-	// IpAddr is the type definition for a IpAddr.
-	IpAddr string `json:"ip_addr,omitempty" yaml:"ip_addr,omitempty"`
-	// IEEE802 is the type definition for a IEEE802.
-	IEEE802 []string `json:"i_e_e_e802,omitempty" yaml:"i_e_e_e802,omitempty"`
-}
 
 // NetworkInterface is information required to construct a virtual network interface
 //
@@ -4843,8 +4783,11 @@ type Route struct {
 // RouteConfig is route configuration data associated with a switch port configuration.
 //
 // Required fields:
+// - LinkName
 // - Routes
 type RouteConfig struct {
+	// LinkName is link the route should be active on
+	LinkName Name `json:"link_name,omitempty" yaml:"link_name,omitempty"`
 	// Routes is the set of routes assigned to a switch port.
 	Routes []Route `json:"routes,omitempty" yaml:"routes,omitempty"`
 }
@@ -5785,10 +5728,13 @@ type SwitchInterfaceConfig struct {
 //
 // Required fields:
 // - Kind
+// - LinkName
 // - V6Enabled
 type SwitchInterfaceConfigCreate struct {
 	// Kind is what kind of switch interface this configuration represents.
 	Kind SwitchInterfaceKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+	// LinkName is link the interface will be assigned to
+	LinkName Name `json:"link_name,omitempty" yaml:"link_name,omitempty"`
 	// V6Enabled is whether or not IPv6 is enabled.
 	V6Enabled *bool `json:"v6_enabled,omitempty" yaml:"v6_enabled,omitempty"`
 }
@@ -5867,18 +5813,24 @@ type SwitchPort struct {
 	SwitchLocation string `json:"switch_location,omitempty" yaml:"switch_location,omitempty"`
 }
 
-// SwitchPortAddressConfig is an IP address configuration for a port settings object.
+// SwitchPortAddressView is an IP address configuration for a port settings object.
 //
 // Required fields:
 // - Address
 // - AddressLotBlockId
+// - AddressLotId
+// - AddressLotName
 // - InterfaceName
 // - PortSettingsId
-type SwitchPortAddressConfig struct {
+type SwitchPortAddressView struct {
 	// Address is the IP address and prefix.
 	Address IpNet `json:"address,omitempty" yaml:"address,omitempty"`
 	// AddressLotBlockId is the id of the address lot block this address is drawn from.
 	AddressLotBlockId string `json:"address_lot_block_id,omitempty" yaml:"address_lot_block_id,omitempty"`
+	// AddressLotId is the id of the address lot this address is drawn from.
+	AddressLotId string `json:"address_lot_id,omitempty" yaml:"address_lot_id,omitempty"`
+	// AddressLotName is the name of the address lot this address is drawn from.
+	AddressLotName Name `json:"address_lot_name,omitempty" yaml:"address_lot_name,omitempty"`
 	// InterfaceName is the interface name this address belongs to.
 	InterfaceName string `json:"interface_name,omitempty" yaml:"interface_name,omitempty"`
 	// PortSettingsId is the port settings object this address configuration belongs to.
@@ -5939,16 +5891,16 @@ type SwitchPortLinkConfig struct {
 	Fec LinkFec `json:"fec,omitempty" yaml:"fec,omitempty"`
 	// LinkName is the name of this link.
 	LinkName string `json:"link_name,omitempty" yaml:"link_name,omitempty"`
-	// LldpLinkConfigId is the link-layer discovery protocol service configuration id for this link.
-	LldpLinkConfigId string `json:"lldp_link_config_id,omitempty" yaml:"lldp_link_config_id,omitempty"`
+	// LldpLinkConfig is the link-layer discovery protocol service configuration for this link.
+	LldpLinkConfig *LldpLinkConfig `json:"lldp_link_config,omitempty" yaml:"lldp_link_config,omitempty"`
 	// Mtu is the maximum transmission unit for this link.
 	Mtu *int `json:"mtu,omitempty" yaml:"mtu,omitempty"`
 	// PortSettingsId is the port settings this link configuration belongs to.
 	PortSettingsId string `json:"port_settings_id,omitempty" yaml:"port_settings_id,omitempty"`
 	// Speed is the configured speed of the link.
 	Speed LinkSpeed `json:"speed,omitempty" yaml:"speed,omitempty"`
-	// TxEqConfigId is the tx_eq configuration id for this link.
-	TxEqConfigId string `json:"tx_eq_config_id,omitempty" yaml:"tx_eq_config_id,omitempty"`
+	// TxEqConfig is the tx_eq configuration for this link.
+	TxEqConfig *TxEqConfig2 `json:"tx_eq_config,omitempty" yaml:"tx_eq_config,omitempty"`
 }
 
 // SwitchPortResultsPage is a single page of results
@@ -5973,7 +5925,7 @@ type SwitchPortRouteConfig struct {
 	// Dst is the route's destination network.
 	Dst IpNet `json:"dst,omitempty" yaml:"dst,omitempty"`
 	// Gw is the route's gateway address.
-	Gw IpNet `json:"gw,omitempty" yaml:"gw,omitempty"`
+	Gw string `json:"gw,omitempty" yaml:"gw,omitempty"`
 	// InterfaceName is the interface name this route configuration is assigned to.
 	InterfaceName string `json:"interface_name,omitempty" yaml:"interface_name,omitempty"`
 	// PortSettingsId is the port settings object this route configuration belongs to.
@@ -6022,16 +5974,16 @@ type SwitchPortSettings struct {
 // - Routes
 type SwitchPortSettingsCreate struct {
 	// Addresses is addresses indexed by interface name.
-	Addresses AddressConfig `json:"addresses,omitempty" yaml:"addresses,omitempty"`
+	Addresses []AddressConfig `json:"addresses,omitempty" yaml:"addresses,omitempty"`
 	// BgpPeers is bGP peers indexed by interface name.
-	BgpPeers    BgpPeerConfig `json:"bgp_peers,omitempty" yaml:"bgp_peers,omitempty"`
-	Description string        `json:"description,omitempty" yaml:"description,omitempty"`
-	Groups      []NameOrId    `json:"groups,omitempty" yaml:"groups,omitempty"`
+	BgpPeers    []BgpPeerConfig `json:"bgp_peers,omitempty" yaml:"bgp_peers,omitempty"`
+	Description string          `json:"description,omitempty" yaml:"description,omitempty"`
+	Groups      []NameOrId      `json:"groups,omitempty" yaml:"groups,omitempty"`
 	// Interfaces is interfaces indexed by link name.
-	Interfaces SwitchInterfaceConfigCreate `json:"interfaces,omitempty" yaml:"interfaces,omitempty"`
+	Interfaces []SwitchInterfaceConfigCreate `json:"interfaces,omitempty" yaml:"interfaces,omitempty"`
 	// Links is links indexed by phy name. On ports that are not broken out, this is always phy0. On a 2x breakout
 	// the options are phy0 and phy1, on 4x phy0-phy3, etc.
-	Links LinkConfigCreate `json:"links,omitempty" yaml:"links,omitempty"`
+	Links []LinkConfigCreate `json:"links,omitempty" yaml:"links,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
 	// can be at most 63 characters long.
@@ -6039,7 +5991,7 @@ type SwitchPortSettingsCreate struct {
 	// PortConfig is physical switch port configuration.
 	PortConfig SwitchPortConfigCreate `json:"port_config,omitempty" yaml:"port_config,omitempty"`
 	// Routes is routes indexed by interface name.
-	Routes RouteConfig `json:"routes,omitempty" yaml:"routes,omitempty"`
+	Routes []RouteConfig `json:"routes,omitempty" yaml:"routes,omitempty"`
 }
 
 // SwitchPortSettingsGroups is this structure maps a port settings object to a port settings groups. Port
@@ -6075,24 +6027,20 @@ type SwitchPortSettingsResultsPage struct {
 // - BgpPeers
 // - Groups
 // - Interfaces
-// - LinkLldp
 // - Links
 // - Port
 // - Routes
 // - Settings
-// - TxEq
 // - VlanInterfaces
 type SwitchPortSettingsView struct {
 	// Addresses is layer 3 IP address settings.
-	Addresses []SwitchPortAddressConfig `json:"addresses,omitempty" yaml:"addresses,omitempty"`
+	Addresses []SwitchPortAddressView `json:"addresses,omitempty" yaml:"addresses,omitempty"`
 	// BgpPeers is bGP peer settings.
 	BgpPeers []BgpPeer `json:"bgp_peers,omitempty" yaml:"bgp_peers,omitempty"`
 	// Groups is switch port settings included from other switch port settings groups.
 	Groups []SwitchPortSettingsGroups `json:"groups,omitempty" yaml:"groups,omitempty"`
 	// Interfaces is layer 3 interface settings.
 	Interfaces []SwitchInterfaceConfig `json:"interfaces,omitempty" yaml:"interfaces,omitempty"`
-	// LinkLldp is link-layer discovery protocol (LLDP) settings.
-	LinkLldp []LldpLinkConfig `json:"link_lldp,omitempty" yaml:"link_lldp,omitempty"`
 	// Links is layer 2 link settings.
 	Links []SwitchPortLinkConfig `json:"links,omitempty" yaml:"links,omitempty"`
 	// Port is layer 1 physical port settings.
@@ -6101,8 +6049,6 @@ type SwitchPortSettingsView struct {
 	Routes []SwitchPortRouteConfig `json:"routes,omitempty" yaml:"routes,omitempty"`
 	// Settings is the primary switch port settings handle.
 	Settings SwitchPortSettings `json:"settings,omitempty" yaml:"settings,omitempty"`
-	// TxEq is tX equalization settings.  These are optional, and most links will not need them.
-	TxEq []string `json:"tx_eq,omitempty" yaml:"tx_eq,omitempty"`
 	// VlanInterfaces is vlan interface settings.
 	VlanInterfaces []SwitchVlanInterfaceConfig `json:"vlan_interfaces,omitempty" yaml:"vlan_interfaces,omitempty"`
 }
@@ -6278,6 +6224,21 @@ type TimeseriesSchemaResultsPage struct {
 // TxEqConfig is per-port tx-eq overrides.  This can be used to fine-tune the transceiver equalization settings
 // to improve signal integrity.
 type TxEqConfig struct {
+	// Main is main tap
+	Main *int `json:"main,omitempty" yaml:"main,omitempty"`
+	// Post1 is post-cursor tap1
+	Post1 *int `json:"post1,omitempty" yaml:"post1,omitempty"`
+	// Post2 is post-cursor tap2
+	Post2 *int `json:"post2,omitempty" yaml:"post2,omitempty"`
+	// Pre1 is pre-cursor tap1
+	Pre1 *int `json:"pre1,omitempty" yaml:"pre1,omitempty"`
+	// Pre2 is pre-cursor tap2
+	Pre2 *int `json:"pre2,omitempty" yaml:"pre2,omitempty"`
+}
+
+// TxEqConfig2 is per-port tx-eq overrides.  This can be used to fine-tune the transceiver equalization settings
+// to improve signal integrity.
+type TxEqConfig2 struct {
 	// Main is main tap
 	Main *int `json:"main,omitempty" yaml:"main,omitempty"`
 	// Post1 is post-cursor tap1
@@ -9067,6 +9028,7 @@ type VpcRouterRouteDeleteParams struct {
 //
 // Required fields:
 // - Route
+// - Router
 type VpcRouterRouteViewParams struct {
 	Route   NameOrId `json:"route,omitempty" yaml:"route,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
@@ -11417,6 +11379,7 @@ func (p *VpcRouterRouteDeleteParams) Validate() error {
 func (p *VpcRouterRouteViewParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.Route), "Route")
+	v.HasRequiredStr(string(p.Router), "Router")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
