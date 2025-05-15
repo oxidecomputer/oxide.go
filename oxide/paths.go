@@ -6334,7 +6334,8 @@ func (c *Client) SwitchView(ctx context.Context, params SwitchViewParams) (*Swit
 	return &body, nil
 }
 
-// SiloIdentityProviderList: List a silo's IdP's name
+// SiloIdentityProviderList: List identity providers for silo
+// List identity providers for silo by silo name or ID.
 //
 // To iterate over all pages, use the `SiloIdentityProviderListAllPages` method, instead.
 func (c *Client) SiloIdentityProviderList(ctx context.Context, params SiloIdentityProviderListParams) (*IdentityProviderResultsPage, error) {
@@ -6385,7 +6386,8 @@ func (c *Client) SiloIdentityProviderList(ctx context.Context, params SiloIdenti
 	return &body, nil
 }
 
-// SiloIdentityProviderListAllPages: List a silo's IdP's name
+// SiloIdentityProviderListAllPages: List identity providers for silo
+// List identity providers for silo by silo name or ID.
 //
 // This method is a wrapper around the `SiloIdentityProviderList` method.
 // This method returns all the pages at once.
@@ -6546,7 +6548,7 @@ func (c *Client) LocalIdpUserSetPassword(ctx context.Context, params LocalIdpUse
 	return nil
 }
 
-// SamlIdentityProviderCreate: Create SAML IdP
+// SamlIdentityProviderCreate: Create SAML identity provider
 func (c *Client) SamlIdentityProviderCreate(ctx context.Context, params SamlIdentityProviderCreateParams) (*SamlIdentityProvider, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -6598,7 +6600,7 @@ func (c *Client) SamlIdentityProviderCreate(ctx context.Context, params SamlIden
 	return &body, nil
 }
 
-// SamlIdentityProviderView: Fetch SAML IdP
+// SamlIdentityProviderView: Fetch SAML identity provider
 func (c *Client) SamlIdentityProviderView(ctx context.Context, params SamlIdentityProviderViewParams) (*SamlIdentityProvider, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -8773,7 +8775,7 @@ func (c *Client) NetworkingLoopbackAddressDelete(ctx context.Context, params Net
 // NetworkingSwitchPortSettingsList: List switch port settings
 //
 // To iterate over all pages, use the `NetworkingSwitchPortSettingsListAllPages` method, instead.
-func (c *Client) NetworkingSwitchPortSettingsList(ctx context.Context, params NetworkingSwitchPortSettingsListParams) (*SwitchPortSettingsResultsPage, error) {
+func (c *Client) NetworkingSwitchPortSettingsList(ctx context.Context, params NetworkingSwitchPortSettingsListParams) (*SwitchPortSettingsIdentityResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8812,7 +8814,7 @@ func (c *Client) NetworkingSwitchPortSettingsList(ctx context.Context, params Ne
 		return nil, errors.New("request returned an empty body in the response")
 	}
 
-	var body SwitchPortSettingsResultsPage
+	var body SwitchPortSettingsIdentityResultsPage
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -8825,11 +8827,11 @@ func (c *Client) NetworkingSwitchPortSettingsList(ctx context.Context, params Ne
 //
 // This method is a wrapper around the `NetworkingSwitchPortSettingsList` method.
 // This method returns all the pages at once.
-func (c *Client) NetworkingSwitchPortSettingsListAllPages(ctx context.Context, params NetworkingSwitchPortSettingsListParams) ([]SwitchPortSettings, error) {
+func (c *Client) NetworkingSwitchPortSettingsListAllPages(ctx context.Context, params NetworkingSwitchPortSettingsListParams) ([]SwitchPortSettingsIdentity, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	var allPages []SwitchPortSettings
+	var allPages []SwitchPortSettingsIdentity
 	params.PageToken = ""
 	params.Limit = NewPointer(100)
 	for {
@@ -8848,7 +8850,7 @@ func (c *Client) NetworkingSwitchPortSettingsListAllPages(ctx context.Context, p
 }
 
 // NetworkingSwitchPortSettingsCreate: Create switch port settings
-func (c *Client) NetworkingSwitchPortSettingsCreate(ctx context.Context, params NetworkingSwitchPortSettingsCreateParams) (*SwitchPortSettingsView, error) {
+func (c *Client) NetworkingSwitchPortSettingsCreate(ctx context.Context, params NetworkingSwitchPortSettingsCreateParams) (*SwitchPortSettings, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8888,7 +8890,7 @@ func (c *Client) NetworkingSwitchPortSettingsCreate(ctx context.Context, params 
 		return nil, errors.New("request returned an empty body in the response")
 	}
 
-	var body SwitchPortSettingsView
+	var body SwitchPortSettings
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -8933,7 +8935,7 @@ func (c *Client) NetworkingSwitchPortSettingsDelete(ctx context.Context, params 
 }
 
 // NetworkingSwitchPortSettingsView: Get information about switch port
-func (c *Client) NetworkingSwitchPortSettingsView(ctx context.Context, params NetworkingSwitchPortSettingsViewParams) (*SwitchPortSettingsView, error) {
+func (c *Client) NetworkingSwitchPortSettingsView(ctx context.Context, params NetworkingSwitchPortSettingsViewParams) (*SwitchPortSettings, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8969,7 +8971,7 @@ func (c *Client) NetworkingSwitchPortSettingsView(ctx context.Context, params Ne
 		return nil, errors.New("request returned an empty body in the response")
 	}
 
-	var body SwitchPortSettingsView
+	var body SwitchPortSettings
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -11633,6 +11635,746 @@ func (c *Client) VpcDelete(ctx context.Context, params VpcDeleteParams) error {
 		map[string]string{
 			"project": string(params.Project),
 		},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// WebhookDeliveryList: List delivery attempts to webhook receiver
+// Optional query parameters to this endpoint may be used to filter deliveries by state. If none of the `failed`,
+// `pending` or `delivered` query parameters are present, all deliveries are returned. If one or more of these
+// parameters are provided, only those which are set to "true" are included in the response.
+//
+// To iterate over all pages, use the `WebhookDeliveryListAllPages` method, instead.
+func (c *Client) WebhookDeliveryList(ctx context.Context, params WebhookDeliveryListParams) (*WebhookDeliveryResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/webhooks/deliveries"),
+		map[string]string{},
+		map[string]string{
+			"delivered":  strconv.FormatBool(*params.Delivered),
+			"failed":     strconv.FormatBool(*params.Failed),
+			"limit":      PointerIntToStr(params.Limit),
+			"page_token": params.PageToken,
+			"pending":    strconv.FormatBool(*params.Pending),
+			"receiver":   string(params.Receiver),
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body WebhookDeliveryResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// WebhookDeliveryListAllPages: List delivery attempts to webhook receiver
+// Optional query parameters to this endpoint may be used to filter deliveries by state. If none of the `failed`,
+// `pending` or `delivered` query parameters are present, all deliveries are returned. If one or more of these
+// parameters are provided, only those which are set to "true" are included in the response.
+//
+// This method is a wrapper around the `WebhookDeliveryList` method.
+// This method returns all the pages at once.
+func (c *Client) WebhookDeliveryListAllPages(ctx context.Context, params WebhookDeliveryListParams) ([]WebhookDelivery, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []WebhookDelivery
+	params.PageToken = ""
+	params.Limit = NewPointer(100)
+	for {
+		page, err := c.WebhookDeliveryList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
+}
+
+// WebhookDeliveryResend: Request re-delivery of webhook event
+func (c *Client) WebhookDeliveryResend(ctx context.Context, params WebhookDeliveryResendParams) (*WebhookDeliveryId, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"POST",
+		resolveRelative(c.host, "/v1/webhooks/deliveries/{{.event_id}}/resend"),
+		map[string]string{
+			"event_id": params.EventId,
+		},
+		map[string]string{
+			"receiver": string(params.Receiver),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body WebhookDeliveryId
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// WebhookEventClassList: List webhook event classes
+//
+// To iterate over all pages, use the `WebhookEventClassListAllPages` method, instead.
+func (c *Client) WebhookEventClassList(ctx context.Context, params WebhookEventClassListParams) (*EventClassResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/webhooks/event-classes"),
+		map[string]string{},
+		map[string]string{
+			"filter":     string(params.Filter),
+			"limit":      PointerIntToStr(params.Limit),
+			"page_token": params.PageToken,
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body EventClassResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// WebhookEventClassListAllPages: List webhook event classes
+//
+// This method is a wrapper around the `WebhookEventClassList` method.
+// This method returns all the pages at once.
+func (c *Client) WebhookEventClassListAllPages(ctx context.Context, params WebhookEventClassListParams) ([]EventClass, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []EventClass
+	params.PageToken = ""
+	params.Limit = NewPointer(100)
+	for {
+		page, err := c.WebhookEventClassList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
+}
+
+// WebhookReceiverList: List webhook receivers
+//
+// To iterate over all pages, use the `WebhookReceiverListAllPages` method, instead.
+func (c *Client) WebhookReceiverList(ctx context.Context, params WebhookReceiverListParams) (*WebhookReceiverResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/webhooks/receivers"),
+		map[string]string{},
+		map[string]string{
+			"limit":      PointerIntToStr(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body WebhookReceiverResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// WebhookReceiverListAllPages: List webhook receivers
+//
+// This method is a wrapper around the `WebhookReceiverList` method.
+// This method returns all the pages at once.
+func (c *Client) WebhookReceiverListAllPages(ctx context.Context, params WebhookReceiverListParams) ([]WebhookReceiver, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []WebhookReceiver
+	params.PageToken = ""
+	params.Limit = NewPointer(100)
+	for {
+		page, err := c.WebhookReceiverList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
+}
+
+// WebhookReceiverCreate: Create webhook receiver
+func (c *Client) WebhookReceiverCreate(ctx context.Context, params WebhookReceiverCreateParams) (*WebhookReceiver, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"POST",
+		resolveRelative(c.host, "/v1/webhooks/receivers"),
+		map[string]string{},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body WebhookReceiver
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// WebhookReceiverView: Fetch webhook receiver
+func (c *Client) WebhookReceiverView(ctx context.Context, params WebhookReceiverViewParams) (*WebhookReceiver, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/webhooks/receivers/{{.receiver}}"),
+		map[string]string{
+			"receiver": string(params.Receiver),
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body WebhookReceiver
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// WebhookReceiverUpdate: Update webhook receiver
+// Note that receiver secrets are NOT added or removed using this endpoint. Instead, use the `/v1/webhooks/{secrets}/?receiver={receiver}` endpoint
+// to add and remove secrets.
+func (c *Client) WebhookReceiverUpdate(ctx context.Context, params WebhookReceiverUpdateParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"PUT",
+		resolveRelative(c.host, "/v1/webhooks/receivers/{{.receiver}}"),
+		map[string]string{
+			"receiver": string(params.Receiver),
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// WebhookReceiverDelete: Delete webhook receiver
+func (c *Client) WebhookReceiverDelete(ctx context.Context, params WebhookReceiverDeleteParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"DELETE",
+		resolveRelative(c.host, "/v1/webhooks/receivers/{{.receiver}}"),
+		map[string]string{
+			"receiver": string(params.Receiver),
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// WebhookReceiverProbe: Send liveness probe to webhook receiver
+// This endpoint synchronously sends a liveness probe request to the selected webhook receiver. The response message
+// describes the outcome of the probe request: either the response from the receiver endpoint, or an indication of
+// why the probe failed.
+//
+// Note that the response status is `200 OK` as long as a probe request was able to be sent to the receiver endpoint.
+// If the receiver responds with another status code, including an error, this will be indicated by the response
+// body, *not* the status of the response.
+//
+// The `resend` query parameter can be used to request re-delivery of failed events if the liveness probe succeeds.
+// If it is set to true and the webhook receiver responds to the probe request with a `2xx` status code, any
+// events for which delivery to this receiver has failed will be queued for re-delivery.
+func (c *Client) WebhookReceiverProbe(ctx context.Context, params WebhookReceiverProbeParams) (*WebhookProbeResult, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"POST",
+		resolveRelative(c.host, "/v1/webhooks/receivers/{{.receiver}}/probe"),
+		map[string]string{
+			"receiver": string(params.Receiver),
+		},
+		map[string]string{
+			"resend": strconv.FormatBool(*params.Resend),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body WebhookProbeResult
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// WebhookReceiverSubscriptionAdd: Add webhook receiver subscription
+func (c *Client) WebhookReceiverSubscriptionAdd(ctx context.Context, params WebhookReceiverSubscriptionAddParams) (*WebhookSubscriptionCreated, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"POST",
+		resolveRelative(c.host, "/v1/webhooks/receivers/{{.receiver}}/subscriptions"),
+		map[string]string{
+			"receiver": string(params.Receiver),
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body WebhookSubscriptionCreated
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// WebhookReceiverSubscriptionRemove: Remove webhook receiver subscription
+func (c *Client) WebhookReceiverSubscriptionRemove(ctx context.Context, params WebhookReceiverSubscriptionRemoveParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"DELETE",
+		resolveRelative(c.host, "/v1/webhooks/receivers/{{.receiver}}/subscriptions/{{.subscription}}"),
+		map[string]string{
+			"receiver":     string(params.Receiver),
+			"subscription": string(params.Subscription),
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// WebhookSecretsList: List webhook receiver secret IDs
+func (c *Client) WebhookSecretsList(ctx context.Context, params WebhookSecretsListParams) (*WebhookSecrets, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/webhooks/secrets"),
+		map[string]string{},
+		map[string]string{
+			"receiver": string(params.Receiver),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body WebhookSecrets
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// WebhookSecretsAdd: Add secret to webhook receiver
+func (c *Client) WebhookSecretsAdd(ctx context.Context, params WebhookSecretsAddParams) (*WebhookSecret, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"POST",
+		resolveRelative(c.host, "/v1/webhooks/secrets"),
+		map[string]string{},
+		map[string]string{
+			"receiver": string(params.Receiver),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body WebhookSecret
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// WebhookSecretsDelete: Remove secret from webhook receiver
+func (c *Client) WebhookSecretsDelete(ctx context.Context, params WebhookSecretsDeleteParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"DELETE",
+		resolveRelative(c.host, "/v1/webhooks/secrets/{{.secret_id}}"),
+		map[string]string{
+			"secret_id": params.SecretId,
+		},
+		map[string]string{},
 	)
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
