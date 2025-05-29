@@ -84,10 +84,10 @@ help:
 # This way linting tools don't need to be downloaded/installed every time you
 # want to run the linters or generate the SDK.
 VERSION_DIR:=$(GOBIN)/versions
-VERSION_GOIMPORTS:=v0.26.0
-VERSION_GOLANGCILINT:=v1.61.0
-VERSION_STATICCHECK:=2024.1.1
-VERSION_WHATSIT:=1f5eb3ea
+VERSION_GOIMPORTS:=v0.33.0
+VERSION_GOLANGCILINT:=v1.64.8
+VERSION_STATICCHECK:=2025.1.1
+VERSION_WHATSIT:=053446d
 
 tools: $(GOBIN)/golangci-lint $(GOBIN)/goimports $(GOBIN)/staticcheck
 
@@ -104,7 +104,7 @@ $(VERSION_DIR)/.version-golangci-lint-$(VERSION_GOLANGCILINT): | $(VERSION_DIR)
 	@ echo $(VERSION_GOLANGCILINT) > $(VERSION_DIR)/.version-golangci-lint-$(VERSION_GOLANGCILINT)
 
 $(GOBIN)/golangci-lint: $(VERSION_DIR)/.version-golangci-lint-$(VERSION_GOLANGCILINT) | $(GOBIN)
-	@ echo "-> Installing golangci-lint..."
+	@ echo "-> Installing golangci-lint $(VERSION_GOLANGCILINT)..."
 	@ curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(GOBIN) $(VERSION_GOLANGCILINT)
 
 $(VERSION_DIR)/.version-goimports-$(VERSION_GOIMPORTS): | $(VERSION_DIR)
@@ -112,7 +112,7 @@ $(VERSION_DIR)/.version-goimports-$(VERSION_GOIMPORTS): | $(VERSION_DIR)
 	@ echo $(VERSION_GOIMPORTS) > $(VERSION_DIR)/.version-goimports-$(VERSION_GOIMPORTS)
 
 $(GOBIN)/goimports: $(VERSION_DIR)/.version-goimports-$(VERSION_GOIMPORTS) | $(GOBIN)
-	@ echo "-> Installing goimports..."
+	@ echo "-> Installing goimports $(VERSION_GOIMPORTS)..."
 	@ go install golang.org/x/tools/cmd/goimports@$(VERSION_GOIMPORTS)
 
 $(VERSION_DIR)/.version-staticcheck-$(VERSION_STATICCHECK): | $(VERSION_DIR)
@@ -120,7 +120,7 @@ $(VERSION_DIR)/.version-staticcheck-$(VERSION_STATICCHECK): | $(VERSION_DIR)
 	@ echo $(VERSION_STATICCHECK) > $(VERSION_DIR)/.version-staticcheck-$(VERSION_STATICCHECK)
 
 $(GOBIN)/staticcheck: $(VERSION_DIR)/.version-staticcheck-$(VERSION_STATICCHECK) | $(GOBIN)
-	@ echo "-> Installing staticcheck..."
+	@ echo "-> Installing staticcheck $(VERSION_STATICCHECK)..."
 	@ go install honnef.co/go/tools/cmd/staticcheck@$(VERSION_STATICCHECK)
 
 $(VERSION_DIR)/.version-whatsit-$(VERSION_WHATSIT): | $(VERSION_DIR)
@@ -129,5 +129,5 @@ $(VERSION_DIR)/.version-whatsit-$(VERSION_WHATSIT): | $(VERSION_DIR)
 
 # TODO: actually release a version of whatsit to use the tag flag
 $(GOBIN)/whatsit: $(VERSION_DIR)/.version-whatsit-$(VERSION_WHATSIT) | $(GOBIN)
-	@ echo "-> Installing whatsit..."
+	@ echo "-> Installing whatsit $(VERSION_WHATSIT)..."
 	@ cargo install --git ssh://git@github.com/oxidecomputer/whatsit.git --rev $(VERSION_WHATSIT) --branch main --root ./ 
