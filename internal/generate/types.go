@@ -542,9 +542,13 @@ func createTypeObject(schema *openapi3.Schema, name, typeName, description strin
 		field.Name = strcase.ToCamel(k)
 		field.Type = typeName
 
+		// TODO: Set omitzero on all types.
+		// https://github.com/oxidecomputer/oxide.go/issues/290
 		serInfo := fmt.Sprintf("`json:\"%s,omitempty\" yaml:\"%s,omitempty\"`", k, k)
 		if isNullableArray(v) {
 			serInfo = fmt.Sprintf("`json:\"%s\" yaml:\"%s\"`", k, k)
+		} else if sliceContains(omitzeroTypes(), typeName) {
+			serInfo = fmt.Sprintf("`json:\"%s,omitzero\" yaml:\"%s,omitzero\"`", k, k)
 		}
 
 		field.SerializationInfo = serInfo

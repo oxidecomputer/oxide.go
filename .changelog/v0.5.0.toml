@@ -1,6 +1,8 @@
 [[breaking]]
 title = "Update to Go 1.24"
 description = "Updated the SDK's Go version to Go 1.24. Consumers of this SDK will need to update to Go 1.24 as well. [#291](https://github.com/oxidecomputer/oxide.go/pull/291)"
+title = "Set `omitzero` on specific types"
+description = "Set `omitzero` on specific types so that clients can pass an empty slice and have it serialized as `[]`. Requires Go 1.24 or later. [#289](https://github.com/oxidecomputer/oxide.go/pull/289)"
 
 [[features]]
 title = ""

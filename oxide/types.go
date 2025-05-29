@@ -3427,7 +3427,7 @@ type InstanceCpuCount uint16
 // - Ncpus
 type InstanceCreate struct {
 	// AntiAffinityGroups is anti-Affinity groups which this instance should be added.
-	AntiAffinityGroups []NameOrId `json:"anti_affinity_groups,omitempty" yaml:"anti_affinity_groups,omitempty"`
+	AntiAffinityGroups []NameOrId `json:"anti_affinity_groups,omitzero" yaml:"anti_affinity_groups,omitzero"`
 	// AutoRestartPolicy is the auto-restart policy for this instance.
 	//
 	// This policy determines whether the instance should be automatically restarted by the control plane on failure.
@@ -5143,7 +5143,7 @@ type SamlIdentityProviderCreate struct {
 	// can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// SigningKeypair is request signing key pair
-	SigningKeypair DerEncodedKeyPair `json:"signing_keypair,omitempty" yaml:"signing_keypair,omitempty"`
+	SigningKeypair DerEncodedKeyPair `json:"signing_keypair,omitzero" yaml:"signing_keypair,omitzero"`
 	// SloUrl is service provider endpoint where the idp should send log out requests
 	SloUrl string `json:"slo_url,omitempty" yaml:"slo_url,omitempty"`
 	// SpClientId is sp's client id
@@ -6026,7 +6026,7 @@ type SwitchPortSettingsCreate struct {
 	// BgpPeers is bGP peers indexed by interface name.
 	BgpPeers    BgpPeerConfig `json:"bgp_peers,omitempty" yaml:"bgp_peers,omitempty"`
 	Description string        `json:"description,omitempty" yaml:"description,omitempty"`
-	Groups      []NameOrId    `json:"groups,omitempty" yaml:"groups,omitempty"`
+	Groups      []NameOrId    `json:"groups,omitzero" yaml:"groups,omitzero"`
 	// Interfaces is interfaces indexed by link name.
 	Interfaces SwitchInterfaceConfigCreate `json:"interfaces,omitempty" yaml:"interfaces,omitempty"`
 	// Links is links indexed by phy name. On ports that are not broken out, this is always phy0. On a 2x breakout
@@ -6877,7 +6877,7 @@ type VpcFirewallRuleUpdate struct {
 // Required fields:
 // - Rules
 type VpcFirewallRuleUpdateParams struct {
-	Rules []VpcFirewallRuleUpdate `json:"rules,omitempty" yaml:"rules,omitempty"`
+	Rules []VpcFirewallRuleUpdate `json:"rules,omitzero" yaml:"rules,omitzero"`
 }
 
 // VpcFirewallRules is collection of a Vpc's firewall rules
