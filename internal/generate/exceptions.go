@@ -4,6 +4,16 @@
 
 package main
 
+// omitzeroTypes returns a slice of types that should be tagged with omitzero
+// for serialization and deserialization.
+func omitzeroTypes() []string {
+	return []string{
+		"[]VpcFirewallRuleUpdate",
+		"[]NameOrId",
+		"DerEncodedKeyPair",
+	}
+}
+
 func emptyTypes() []string {
 	return []string{
 		"BgpMessageHistory",
