@@ -30,9 +30,13 @@ type Address struct {
 //
 // Required fields:
 // - Addresses
+// - LinkName
 type AddressConfig struct {
 	// Addresses is the set of addresses assigned to the port configuration.
 	Addresses []Address `json:"addresses,omitempty" yaml:"addresses,omitempty"`
+	// LinkName is link to assign the addresses to. On ports that are not broken out, this is always phy0. On
+	// a 2x breakout the options are phy0 and phy1, on 4x phy0-phy3, etc.
+	LinkName Name `json:"link_name,omitempty" yaml:"link_name,omitempty"`
 }
 
 // AddressLot is represents an address lot object, containing the id of the lot that can be used in other API
@@ -285,6 +289,206 @@ type AggregateBgpMessageHistory struct {
 	SwitchHistories []SwitchBgpHistory `json:"switch_histories,omitempty" yaml:"switch_histories,omitempty"`
 }
 
+// AlertClass is an alert class.
+//
+// Required fields:
+// - Description
+// - Name
+type AlertClass struct {
+	// Description is a description of what this alert class represents.
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Name is the name of the alert class.
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
+}
+
+// AlertClassResultsPage is a single page of results
+//
+// Required fields:
+// - Items
+type AlertClassResultsPage struct {
+	// Items is list of items on this page of results
+	Items []AlertClass `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// AlertDelivery is a delivery of a webhook event.
+//
+// Required fields:
+// - AlertClass
+// - AlertId
+// - Attempts
+// - Id
+// - ReceiverId
+// - State
+// - TimeStarted
+// - Trigger
+type AlertDelivery struct {
+	// AlertClass is the event class.
+	AlertClass string `json:"alert_class,omitempty" yaml:"alert_class,omitempty"`
+	// AlertId is the UUID of the event.
+	AlertId TypedUuidForAlertKind `json:"alert_id,omitempty" yaml:"alert_id,omitempty"`
+	// Attempts is individual attempts to deliver this webhook event, and their outcomes.
+	Attempts AlertDeliveryAttempts `json:"attempts,omitempty" yaml:"attempts,omitempty"`
+	// Id is the UUID of this delivery attempt.
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// ReceiverId is the UUID of the alert receiver that this event was delivered to.
+	ReceiverId TypedUuidForAlertReceiverKind `json:"receiver_id,omitempty" yaml:"receiver_id,omitempty"`
+	// State is the state of this delivery.
+	State AlertDeliveryState `json:"state,omitempty" yaml:"state,omitempty"`
+	// TimeStarted is the time at which this delivery began (i.e. the event was dispatched to the receiver).
+	TimeStarted *time.Time `json:"time_started,omitempty" yaml:"time_started,omitempty"`
+	// Trigger is why this delivery was performed.
+	Trigger AlertDeliveryTrigger `json:"trigger,omitempty" yaml:"trigger,omitempty"`
+}
+
+// AlertDeliveryAttemptsWebhook is a list of attempts to deliver an alert to a webhook receiver.
+//
+// Required fields:
+// - Webhook
+type AlertDeliveryAttemptsWebhook struct {
+	Webhook []WebhookDeliveryAttempt `json:"webhook,omitempty" yaml:"webhook,omitempty"`
+}
+
+// AlertDeliveryAttempts is a list of attempts to deliver an alert to a receiver.
+//
+// The type of the delivery attempt model depends on the receiver type, as it may contain information specific to
+// that delivery mechanism. For example, webhook delivery attempts contain the HTTP status code of the webhook request.
+type AlertDeliveryAttempts struct {
+	// Webhook is the type definition for a Webhook.
+	Webhook []WebhookDeliveryAttempt `json:"webhook,omitempty" yaml:"webhook,omitempty"`
+}
+
+// AlertDeliveryId is the type definition for a AlertDeliveryId.
+//
+// Required fields:
+// - DeliveryId
+type AlertDeliveryId struct {
+	DeliveryId string `json:"delivery_id,omitempty" yaml:"delivery_id,omitempty"`
+}
+
+// AlertDeliveryResultsPage is a single page of results
+//
+// Required fields:
+// - Items
+type AlertDeliveryResultsPage struct {
+	// Items is list of items on this page of results
+	Items []AlertDelivery `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// AlertDeliveryState is the webhook event has not yet been delivered successfully.
+//
+// Either no delivery attempts have yet been performed, or the delivery has failed at least once but has retries
+// remaining.
+type AlertDeliveryState string
+
+// AlertDeliveryTrigger is delivery was triggered by the alert itself.
+type AlertDeliveryTrigger string
+
+// AlertProbeResult is data describing the result of an alert receiver liveness probe attempt.
+//
+// Required fields:
+// - Probe
+type AlertProbeResult struct {
+	// Probe is the outcome of the probe delivery.
+	Probe AlertDelivery `json:"probe,omitempty" yaml:"probe,omitempty"`
+	// ResendsStarted is if the probe request succeeded, and resending failed deliveries on success was requested, the
+	// number of new delivery attempts started. Otherwise, if the probe did not succeed, or resending failed deliveries
+	// was not requested, this is null.
+	//
+	// Note that this may be 0, if there were no events found which had not been delivered successfully to this receiver.
+	//
+	ResendsStarted *int `json:"resends_started,omitempty" yaml:"resends_started,omitempty"`
+}
+
+// AlertReceiver is the configuration for an alert receiver.
+//
+// Required fields:
+// - Description
+// - Id
+// - Kind
+// - Name
+// - Subscriptions
+// - TimeCreated
+// - TimeModified
+type AlertReceiver struct {
+	// Description is human-readable free-form text about a resource
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Kind is configuration specific to the kind of alert receiver that this is.
+	Kind AlertReceiverKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+	// Name is unique, mutable, user-controlled identifier for each resource
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	// Subscriptions is the list of alert classes to which this receiver is subscribed.
+	Subscriptions []AlertSubscription `json:"subscriptions,omitempty" yaml:"subscriptions,omitempty"`
+	// TimeCreated is timestamp when this resource was created
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	// TimeModified is timestamp when this resource was last modified
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+}
+
+// AlertReceiverKindKind is the type definition for a AlertReceiverKindKind.
+type AlertReceiverKindKind string
+
+// AlertReceiverKindWebhook is webhook-specific alert receiver configuration.
+//
+// Required fields:
+// - Endpoint
+// - Kind
+// - Secrets
+type AlertReceiverKindWebhook struct {
+	// Endpoint is the URL that webhook notification requests are sent to.
+	Endpoint string                `json:"endpoint,omitempty" yaml:"endpoint,omitempty"`
+	Kind     AlertReceiverKindKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+	Secrets  []WebhookSecret       `json:"secrets,omitempty" yaml:"secrets,omitempty"`
+}
+
+// AlertReceiverKind is the possible alert delivery mechanisms for an alert receiver.
+type AlertReceiverKind struct {
+	// Endpoint is the URL that webhook notification requests are sent to.
+	Endpoint string `json:"endpoint,omitempty" yaml:"endpoint,omitempty"`
+	// Kind is the type definition for a Kind.
+	Kind AlertReceiverKindKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+	// Secrets is the type definition for a Secrets.
+	Secrets []WebhookSecret `json:"secrets,omitempty" yaml:"secrets,omitempty"`
+}
+
+// AlertReceiverResultsPage is a single page of results
+//
+// Required fields:
+// - Items
+type AlertReceiverResultsPage struct {
+	// Items is list of items on this page of results
+	Items []AlertReceiver `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// AlertSubscription is a webhook event class subscription matches either a single event class exactly, or
+// a glob pattern including wildcards that may match multiple event classes
+type AlertSubscription string
+
+// AlertSubscriptionCreate is the type definition for a AlertSubscriptionCreate.
+//
+// Required fields:
+// - Subscription
+type AlertSubscriptionCreate struct {
+	// Subscription is the event class pattern to subscribe to.
+	Subscription AlertSubscription `json:"subscription,omitempty" yaml:"subscription,omitempty"`
+}
+
+// AlertSubscriptionCreated is the type definition for a AlertSubscriptionCreated.
+//
+// Required fields:
+// - Subscription
+type AlertSubscriptionCreated struct {
+	// Subscription is the new subscription added to the receiver.
+	Subscription AlertSubscription `json:"subscription,omitempty" yaml:"subscription,omitempty"`
+}
+
 // AllowList is allowlist of IPs or subnets that can make requests to user-facing services.
 //
 // Required fields:
@@ -392,9 +596,6 @@ type AntiAffinityGroupCreate struct {
 	Policy AffinityPolicy `json:"policy,omitempty" yaml:"policy,omitempty"`
 }
 
-// AntiAffinityGroupMemberType is the type definition for a AntiAffinityGroupMemberType.
-type AntiAffinityGroupMemberType string
-
 // AntiAffinityGroupMemberValue is the type definition for a AntiAffinityGroupMemberValue.
 //
 // Required fields:
@@ -413,6 +614,9 @@ type AntiAffinityGroupMemberValue struct {
 	// to the Instance's lifecycle
 	RunState InstanceState `json:"run_state,omitempty" yaml:"run_state,omitempty"`
 }
+
+// AntiAffinityGroupMemberType is the type definition for a AntiAffinityGroupMemberType.
+type AntiAffinityGroupMemberType string
 
 // AntiAffinityGroupMemberInstance is an instance belonging to this group
 //
@@ -742,7 +946,7 @@ type BgpPeer struct {
 	// InterfaceName is the name of interface to peer on. This is relative to the port configuration this BGP
 	// peer configuration is a part of. For example this value could be phy0 to refer to a primary physical interface.
 	// Or it could be vlan47 to refer to a VLAN interface.
-	InterfaceName string `json:"interface_name,omitempty" yaml:"interface_name,omitempty"`
+	InterfaceName Name `json:"interface_name,omitempty" yaml:"interface_name,omitempty"`
 	// Keepalive is how often to send keepalive requests (seconds).
 	Keepalive *int `json:"keepalive,omitempty" yaml:"keepalive,omitempty"`
 	// LocalPref is apply a local preference to routes received from this peer.
@@ -762,9 +966,13 @@ type BgpPeer struct {
 // BgpPeerConfig is the type definition for a BgpPeerConfig.
 //
 // Required fields:
+// - LinkName
 // - Peers
 type BgpPeerConfig struct {
-	Peers []BgpPeer `json:"peers,omitempty" yaml:"peers,omitempty"`
+	// LinkName is link that the peer is reachable on. On ports that are not broken out, this is always phy0. On
+	// a 2x breakout the options are phy0 and phy1, on 4x phy0-phy3, etc.
+	LinkName Name      `json:"link_name,omitempty" yaml:"link_name,omitempty"`
+	Peers    []BgpPeer `json:"peers,omitempty" yaml:"peers,omitempty"`
 }
 
 // BgpPeerState is initial state. Refuse all incoming BGP connections. No resources allocated to peer.
@@ -1894,6 +2102,20 @@ type DerEncodedKeyPair struct {
 	PublicCert string `json:"public_cert,omitempty" yaml:"public_cert,omitempty"`
 }
 
+// DeviceAccessToken is view of a device access token
+//
+// Required fields:
+// - Id
+// - TimeCreated
+type DeviceAccessToken struct {
+	// Id is a unique, immutable, system-controlled identifier for the token. Note that this ID is not the bearer
+	// token itself, which starts with "oxide-token-"
+	Id          string     `json:"id,omitempty" yaml:"id,omitempty"`
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	// TimeExpires is expiration timestamp. A null value means the token does not automatically expire.
+	TimeExpires *time.Time `json:"time_expires,omitempty" yaml:"time_expires,omitempty"`
+}
+
 // DeviceAccessTokenRequest is the type definition for a DeviceAccessTokenRequest.
 //
 // Required fields:
@@ -1906,12 +2128,26 @@ type DeviceAccessTokenRequest struct {
 	GrantType  string `json:"grant_type,omitempty" yaml:"grant_type,omitempty"`
 }
 
+// DeviceAccessTokenResultsPage is a single page of results
+//
+// Required fields:
+// - Items
+type DeviceAccessTokenResultsPage struct {
+	// Items is list of items on this page of results
+	Items []DeviceAccessToken `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
 // DeviceAuthRequest is the type definition for a DeviceAuthRequest.
 //
 // Required fields:
 // - ClientId
 type DeviceAuthRequest struct {
 	ClientId string `json:"client_id,omitempty" yaml:"client_id,omitempty"`
+	// TtlSeconds is optional lifetime for the access token in seconds. If not specified, the silo's max TTL
+	// will be used (if set).
+	TtlSeconds *int `json:"ttl_seconds,omitempty" yaml:"ttl_seconds,omitempty"`
 }
 
 // DeviceAuthVerify is the type definition for a DeviceAuthVerify.
@@ -2241,7 +2477,8 @@ type Distributionint64 struct {
 
 // EphemeralIpCreate is parameters for creating an ephemeral IP address for an instance.
 type EphemeralIpCreate struct {
-	// Pool is name or ID of the IP pool used to allocate an address
+	// Pool is name or ID of the IP pool used to allocate an address. If unspecified, the default IP pool will
+	// be used.
 	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 }
 
@@ -2332,7 +2569,7 @@ type ExternalIp struct {
 type ExternalIpCreateType string
 
 // ExternalIpCreateEphemeral is an IP address providing both inbound and outbound access. The address is
-// automatically-assigned from the provided IP Pool, or the current silo's default pool if not specified.
+// automatically assigned from the provided IP pool or the default IP pool if not specified.
 //
 // Required fields:
 // - Type
@@ -3439,20 +3676,26 @@ type InstanceCreate struct {
 	// mechanisms, such as on a per-project basis. In that case, any configured default policy will be used if
 	// this is `null`.
 	AutoRestartPolicy InstanceAutoRestartPolicy `json:"auto_restart_policy,omitempty" yaml:"auto_restart_policy,omitempty"`
-	// BootDisk is the disk this instance should boot into. This disk can either be attached if it already exists,
-	// or created, if it should be a new disk.
+	// BootDisk is the disk the instance is configured to boot from.
 	//
-	// It is strongly recommended to either provide a boot disk at instance creation, or update the instance after
-	// creation to set a boot disk.
+	// This disk can either be attached if it already exists or created along with the instance.
 	//
-	// An instance without an explicit boot disk can be booted: the options are as managed by UEFI, and as controlled by
-	// the guest OS, but with some risk.  If this instance later has a disk attached or detached, it is possible that
-	// boot options can end up reordered, with the intended boot disk moved after the EFI shell in boot priority. This
-	// may result in an instance that only boots to the EFI shell until the desired disk is set as an explicit boot
-	// disk and the instance rebooted.
+	// Specifying a boot disk is optional but recommended to ensure predictable boot behavior. The boot disk can
+	// be set during instance creation or later if the instance is stopped. The boot disk counts against the disk
+	// attachment limit.
+	//
+	// An instance that does not have a boot disk set will use the boot options specified in its UEFI settings, which
+	// are controlled by both the instance's UEFI firmware and the guest operating system. Boot options can change
+	// as disks are attached and detached, which may result in an instance that only boots to the EFI shell until
+	// a boot disk is set.
 	BootDisk    *InstanceDiskAttachment `json:"boot_disk,omitempty" yaml:"boot_disk,omitempty"`
 	Description string                  `json:"description,omitempty" yaml:"description,omitempty"`
-	// Disks is the disks to be created or attached for this instance.
+	// Disks is a list of disks to be attached to the instance.
+	//
+	// Disk attachments of type "create" will be created, while those of type "attach" must already exist.
+	//
+	// The order of this list does not guarantee a boot order for the instance. Use the boot_disk attribute to
+	// specify a boot disk. When boot_disk is specified it will count against the disk attachment limit.
 	Disks []InstanceDiskAttachment `json:"disks,omitempty" yaml:"disks,omitempty"`
 	// ExternalIps is the external IP addresses provided to this instance.
 	//
@@ -4123,22 +4366,26 @@ type L4PortRange string
 //
 // Required fields:
 // - Autoneg
+// - LinkName
 // - Lldp
 // - Mtu
 // - Speed
 type LinkConfigCreate struct {
-	// Autoneg is whether or not to set autonegotiation
+	// Autoneg is whether or not to set autonegotiation.
 	Autoneg *bool `json:"autoneg,omitempty" yaml:"autoneg,omitempty"`
 	// Fec is the requested forward-error correction method.  If this is not specified, the standard FEC for
 	// the underlying media will be applied if it can be determined.
 	Fec LinkFec `json:"fec,omitempty" yaml:"fec,omitempty"`
+	// LinkName is link name. On ports that are not broken out, this is always phy0. On a 2x breakout the options
+	// are phy0 and phy1, on 4x phy0-phy3, etc.
+	LinkName Name `json:"link_name,omitempty" yaml:"link_name,omitempty"`
 	// Lldp is the link-layer discovery protocol (LLDP) configuration for the link.
 	Lldp LldpLinkConfigCreate `json:"lldp,omitempty" yaml:"lldp,omitempty"`
 	// Mtu is maximum transmission unit for the link.
 	Mtu *int `json:"mtu,omitempty" yaml:"mtu,omitempty"`
 	// Speed is the speed of the link.
 	Speed LinkSpeed `json:"speed,omitempty" yaml:"speed,omitempty"`
-	// TxEq is optional tx_eq settings
+	// TxEq is optional tx_eq settings.
 	TxEq TxEqConfig `json:"tx_eq,omitempty" yaml:"tx_eq,omitempty"`
 }
 
@@ -4165,7 +4412,7 @@ type LldpLinkConfig struct {
 	// LinkName is the LLDP link name TLV.
 	LinkName string `json:"link_name,omitempty" yaml:"link_name,omitempty"`
 	// ManagementIp is the LLDP management IP TLV.
-	ManagementIp IpNet `json:"management_ip,omitempty" yaml:"management_ip,omitempty"`
+	ManagementIp string `json:"management_ip,omitempty" yaml:"management_ip,omitempty"`
 	// SystemDescription is the LLDP system description TLV.
 	SystemDescription string `json:"system_description,omitempty" yaml:"system_description,omitempty"`
 	// SystemName is the LLDP system name TLV.
@@ -4843,8 +5090,12 @@ type Route struct {
 // RouteConfig is route configuration data associated with a switch port configuration.
 //
 // Required fields:
+// - LinkName
 // - Routes
 type RouteConfig struct {
+	// LinkName is link name. On ports that are not broken out, this is always phy0. On a 2x breakout the options
+	// are phy0 and phy1, on 4x phy0-phy3, etc.
+	LinkName Name `json:"link_name,omitempty" yaml:"link_name,omitempty"`
 	// Routes is the set of routes assigned to a switch port.
 	Routes []Route `json:"routes,omitempty" yaml:"routes,omitempty"`
 }
@@ -5198,6 +5449,27 @@ type Silo struct {
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+}
+
+// SiloAuthSettings is view of silo authentication settings
+//
+// Required fields:
+// - SiloId
+type SiloAuthSettings struct {
+	// DeviceTokenMaxTtlSeconds is maximum lifetime of a device token in seconds. If set to null, users will be
+	// able to create tokens that do not expire.
+	DeviceTokenMaxTtlSeconds *int   `json:"device_token_max_ttl_seconds,omitempty" yaml:"device_token_max_ttl_seconds,omitempty"`
+	SiloId                   string `json:"silo_id,omitempty" yaml:"silo_id,omitempty"`
+}
+
+// SiloAuthSettingsUpdate is updateable properties of a silo's settings.
+//
+// Required fields:
+// - DeviceTokenMaxTtlSeconds
+type SiloAuthSettingsUpdate struct {
+	// DeviceTokenMaxTtlSeconds is maximum lifetime of a device token in seconds. If set to null, users will be
+	// able to create tokens that do not expire.
+	DeviceTokenMaxTtlSeconds *int `json:"device_token_max_ttl_seconds,omitempty" yaml:"device_token_max_ttl_seconds,omitempty"`
 }
 
 // SiloCreate is create-time parameters for a `Silo`
@@ -5771,7 +6043,7 @@ type SwitchInterfaceConfig struct {
 	// Id is a unique identifier for this switch interface.
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 	// InterfaceName is the name of this switch interface.
-	InterfaceName string `json:"interface_name,omitempty" yaml:"interface_name,omitempty"`
+	InterfaceName Name `json:"interface_name,omitempty" yaml:"interface_name,omitempty"`
 	// Kind is the switch interface kind.
 	Kind SwitchInterfaceKind2 `json:"kind,omitempty" yaml:"kind,omitempty"`
 	// PortSettingsId is the port settings object this switch interface configuration belongs to.
@@ -5785,10 +6057,14 @@ type SwitchInterfaceConfig struct {
 //
 // Required fields:
 // - Kind
+// - LinkName
 // - V6Enabled
 type SwitchInterfaceConfigCreate struct {
 	// Kind is what kind of switch interface this configuration represents.
 	Kind SwitchInterfaceKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+	// LinkName is link name. On ports that are not broken out, this is always phy0. On a 2x breakout the options
+	// are phy0 and phy1, on 4x phy0-phy3, etc.
+	LinkName Name `json:"link_name,omitempty" yaml:"link_name,omitempty"`
 	// V6Enabled is whether or not IPv6 is enabled.
 	V6Enabled *bool `json:"v6_enabled,omitempty" yaml:"v6_enabled,omitempty"`
 }
@@ -5857,7 +6133,7 @@ type SwitchPort struct {
 	// Id is the id of the switch port.
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 	// PortName is the name of this switch port.
-	PortName string `json:"port_name,omitempty" yaml:"port_name,omitempty"`
+	PortName Name `json:"port_name,omitempty" yaml:"port_name,omitempty"`
 	// PortSettingsId is the primary settings group of this switch port. Will be `None` until this switch port
 	// is configured.
 	PortSettingsId string `json:"port_settings_id,omitempty" yaml:"port_settings_id,omitempty"`
@@ -5867,20 +6143,26 @@ type SwitchPort struct {
 	SwitchLocation string `json:"switch_location,omitempty" yaml:"switch_location,omitempty"`
 }
 
-// SwitchPortAddressConfig is an IP address configuration for a port settings object.
+// SwitchPortAddressView is an IP address configuration for a port settings object.
 //
 // Required fields:
 // - Address
 // - AddressLotBlockId
+// - AddressLotId
+// - AddressLotName
 // - InterfaceName
 // - PortSettingsId
-type SwitchPortAddressConfig struct {
+type SwitchPortAddressView struct {
 	// Address is the IP address and prefix.
 	Address IpNet `json:"address,omitempty" yaml:"address,omitempty"`
 	// AddressLotBlockId is the id of the address lot block this address is drawn from.
 	AddressLotBlockId string `json:"address_lot_block_id,omitempty" yaml:"address_lot_block_id,omitempty"`
+	// AddressLotId is the id of the address lot this address is drawn from.
+	AddressLotId string `json:"address_lot_id,omitempty" yaml:"address_lot_id,omitempty"`
+	// AddressLotName is the name of the address lot this address is drawn from.
+	AddressLotName Name `json:"address_lot_name,omitempty" yaml:"address_lot_name,omitempty"`
 	// InterfaceName is the interface name this address belongs to.
-	InterfaceName string `json:"interface_name,omitempty" yaml:"interface_name,omitempty"`
+	InterfaceName Name `json:"interface_name,omitempty" yaml:"interface_name,omitempty"`
 	// PortSettingsId is the port settings object this address configuration belongs to.
 	PortSettingsId string `json:"port_settings_id,omitempty" yaml:"port_settings_id,omitempty"`
 	// VlanId is an optional VLAN ID
@@ -5938,17 +6220,17 @@ type SwitchPortLinkConfig struct {
 	// the underlying media will be applied if it can be determined.
 	Fec LinkFec `json:"fec,omitempty" yaml:"fec,omitempty"`
 	// LinkName is the name of this link.
-	LinkName string `json:"link_name,omitempty" yaml:"link_name,omitempty"`
-	// LldpLinkConfigId is the link-layer discovery protocol service configuration id for this link.
-	LldpLinkConfigId string `json:"lldp_link_config_id,omitempty" yaml:"lldp_link_config_id,omitempty"`
+	LinkName Name `json:"link_name,omitempty" yaml:"link_name,omitempty"`
+	// LldpLinkConfig is the link-layer discovery protocol service configuration for this link.
+	LldpLinkConfig LldpLinkConfig `json:"lldp_link_config,omitempty" yaml:"lldp_link_config,omitempty"`
 	// Mtu is the maximum transmission unit for this link.
 	Mtu *int `json:"mtu,omitempty" yaml:"mtu,omitempty"`
 	// PortSettingsId is the port settings this link configuration belongs to.
 	PortSettingsId string `json:"port_settings_id,omitempty" yaml:"port_settings_id,omitempty"`
 	// Speed is the configured speed of the link.
 	Speed LinkSpeed `json:"speed,omitempty" yaml:"speed,omitempty"`
-	// TxEqConfigId is the tx_eq configuration id for this link.
-	TxEqConfigId string `json:"tx_eq_config_id,omitempty" yaml:"tx_eq_config_id,omitempty"`
+	// TxEqConfig is the tx_eq configuration for this link.
+	TxEqConfig TxEqConfig2 `json:"tx_eq_config,omitempty" yaml:"tx_eq_config,omitempty"`
 }
 
 // SwitchPortResultsPage is a single page of results
@@ -5973,9 +6255,9 @@ type SwitchPortRouteConfig struct {
 	// Dst is the route's destination network.
 	Dst IpNet `json:"dst,omitempty" yaml:"dst,omitempty"`
 	// Gw is the route's gateway address.
-	Gw IpNet `json:"gw,omitempty" yaml:"gw,omitempty"`
+	Gw string `json:"gw,omitempty" yaml:"gw,omitempty"`
 	// InterfaceName is the interface name this route configuration is assigned to.
-	InterfaceName string `json:"interface_name,omitempty" yaml:"interface_name,omitempty"`
+	InterfaceName Name `json:"interface_name,omitempty" yaml:"interface_name,omitempty"`
 	// PortSettingsId is the port settings object this route configuration belongs to.
 	PortSettingsId string `json:"port_settings_id,omitempty" yaml:"port_settings_id,omitempty"`
 	// RibPriority is rIB Priority indicating priority within and across protocols.
@@ -5985,25 +6267,50 @@ type SwitchPortRouteConfig struct {
 	VlanId *int `json:"vlan_id,omitempty" yaml:"vlan_id,omitempty"`
 }
 
-// SwitchPortSettings is a switch port settings identity whose id may be used to view additional details.
+// SwitchPortSettings is this structure contains all port settings information in one place. It's a convenience data
+// structure for getting a complete view of a particular port's settings.
 //
 // Required fields:
+// - Addresses
+// - BgpPeers
 // - Description
+// - Groups
 // - Id
+// - Interfaces
+// - Links
 // - Name
+// - Port
+// - Routes
 // - TimeCreated
 // - TimeModified
+// - VlanInterfaces
 type SwitchPortSettings struct {
+	// Addresses is layer 3 IP address settings.
+	Addresses []SwitchPortAddressView `json:"addresses,omitempty" yaml:"addresses,omitempty"`
+	// BgpPeers is bGP peer settings.
+	BgpPeers []BgpPeer `json:"bgp_peers,omitempty" yaml:"bgp_peers,omitempty"`
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Groups is switch port settings included from other switch port settings groups.
+	Groups []SwitchPortSettingsGroups `json:"groups,omitempty" yaml:"groups,omitempty"`
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Interfaces is layer 3 interface settings.
+	Interfaces []SwitchInterfaceConfig `json:"interfaces,omitempty" yaml:"interfaces,omitempty"`
+	// Links is layer 2 link settings.
+	Links []SwitchPortLinkConfig `json:"links,omitempty" yaml:"links,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	// Port is layer 1 physical port settings.
+	Port SwitchPortConfig `json:"port,omitempty" yaml:"port,omitempty"`
+	// Routes is iP route settings.
+	Routes []SwitchPortRouteConfig `json:"routes,omitempty" yaml:"routes,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+	// VlanInterfaces is vlan interface settings.
+	VlanInterfaces []SwitchVlanInterfaceConfig `json:"vlan_interfaces,omitempty" yaml:"vlan_interfaces,omitempty"`
 }
 
 // SwitchPortSettingsCreate is parameters for creating switch port settings. Switch port settings are the
@@ -6012,34 +6319,29 @@ type SwitchPortSettings struct {
 //
 // Required fields:
 // - Addresses
-// - BgpPeers
 // - Description
-// - Groups
-// - Interfaces
 // - Links
 // - Name
 // - PortConfig
-// - Routes
 type SwitchPortSettingsCreate struct {
-	// Addresses is addresses indexed by interface name.
-	Addresses AddressConfig `json:"addresses,omitempty" yaml:"addresses,omitempty"`
-	// BgpPeers is bGP peers indexed by interface name.
-	BgpPeers    BgpPeerConfig `json:"bgp_peers,omitempty" yaml:"bgp_peers,omitempty"`
-	Description string        `json:"description,omitempty" yaml:"description,omitempty"`
-	Groups      []NameOrId    `json:"groups,omitzero" yaml:"groups,omitzero"`
-	// Interfaces is interfaces indexed by link name.
-	Interfaces SwitchInterfaceConfigCreate `json:"interfaces,omitempty" yaml:"interfaces,omitempty"`
-	// Links is links indexed by phy name. On ports that are not broken out, this is always phy0. On a 2x breakout
-	// the options are phy0 and phy1, on 4x phy0-phy3, etc.
-	Links LinkConfigCreate `json:"links,omitempty" yaml:"links,omitempty"`
+	// Addresses is address configurations.
+	Addresses []AddressConfig `json:"addresses,omitempty" yaml:"addresses,omitempty"`
+	// BgpPeers is bGP peer configurations.
+	BgpPeers    []BgpPeerConfig `json:"bgp_peers,omitempty" yaml:"bgp_peers,omitempty"`
+	Description string          `json:"description,omitempty" yaml:"description,omitempty"`
+	Groups      []NameOrId      `json:"groups,omitzero" yaml:"groups,omitzero"`
+	// Interfaces is interface configurations.
+	Interfaces []SwitchInterfaceConfigCreate `json:"interfaces,omitempty" yaml:"interfaces,omitempty"`
+	// Links is link configurations.
+	Links []LinkConfigCreate `json:"links,omitempty" yaml:"links,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
 	// can be at most 63 characters long.
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// PortConfig is physical switch port configuration.
 	PortConfig SwitchPortConfigCreate `json:"port_config,omitempty" yaml:"port_config,omitempty"`
-	// Routes is routes indexed by interface name.
-	Routes RouteConfig `json:"routes,omitempty" yaml:"routes,omitempty"`
+	// Routes is route configurations.
+	Routes []RouteConfig `json:"routes,omitempty" yaml:"routes,omitempty"`
 }
 
 // SwitchPortSettingsGroups is this structure maps a port settings object to a port settings groups. Port
@@ -6056,55 +6358,36 @@ type SwitchPortSettingsGroups struct {
 	PortSettingsId string `json:"port_settings_id,omitempty" yaml:"port_settings_id,omitempty"`
 }
 
-// SwitchPortSettingsResultsPage is a single page of results
+// SwitchPortSettingsIdentity is a switch port settings identity whose id may be used to view additional details.
+//
+// Required fields:
+// - Description
+// - Id
+// - Name
+// - TimeCreated
+// - TimeModified
+type SwitchPortSettingsIdentity struct {
+	// Description is human-readable free-form text about a resource
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Name is unique, mutable, user-controlled identifier for each resource
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	// TimeCreated is timestamp when this resource was created
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	// TimeModified is timestamp when this resource was last modified
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+}
+
+// SwitchPortSettingsIdentityResultsPage is a single page of results
 //
 // Required fields:
 // - Items
-type SwitchPortSettingsResultsPage struct {
+type SwitchPortSettingsIdentityResultsPage struct {
 	// Items is list of items on this page of results
-	Items []SwitchPortSettings `json:"items,omitempty" yaml:"items,omitempty"`
+	Items []SwitchPortSettingsIdentity `json:"items,omitempty" yaml:"items,omitempty"`
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
-}
-
-// SwitchPortSettingsView is this structure contains all port settings information in one place. It's a
-// convenience data structure for getting a complete view of a particular port's settings.
-//
-// Required fields:
-// - Addresses
-// - BgpPeers
-// - Groups
-// - Interfaces
-// - LinkLldp
-// - Links
-// - Port
-// - Routes
-// - Settings
-// - TxEq
-// - VlanInterfaces
-type SwitchPortSettingsView struct {
-	// Addresses is layer 3 IP address settings.
-	Addresses []SwitchPortAddressConfig `json:"addresses,omitempty" yaml:"addresses,omitempty"`
-	// BgpPeers is bGP peer settings.
-	BgpPeers []BgpPeer `json:"bgp_peers,omitempty" yaml:"bgp_peers,omitempty"`
-	// Groups is switch port settings included from other switch port settings groups.
-	Groups []SwitchPortSettingsGroups `json:"groups,omitempty" yaml:"groups,omitempty"`
-	// Interfaces is layer 3 interface settings.
-	Interfaces []SwitchInterfaceConfig `json:"interfaces,omitempty" yaml:"interfaces,omitempty"`
-	// LinkLldp is link-layer discovery protocol (LLDP) settings.
-	LinkLldp []LldpLinkConfig `json:"link_lldp,omitempty" yaml:"link_lldp,omitempty"`
-	// Links is layer 2 link settings.
-	Links []SwitchPortLinkConfig `json:"links,omitempty" yaml:"links,omitempty"`
-	// Port is layer 1 physical port settings.
-	Port SwitchPortConfig `json:"port,omitempty" yaml:"port,omitempty"`
-	// Routes is iP route settings.
-	Routes []SwitchPortRouteConfig `json:"routes,omitempty" yaml:"routes,omitempty"`
-	// Settings is the primary switch port settings handle.
-	Settings SwitchPortSettings `json:"settings,omitempty" yaml:"settings,omitempty"`
-	// TxEq is tX equalization settings.  These are optional, and most links will not need them.
-	TxEq []string `json:"tx_eq,omitempty" yaml:"tx_eq,omitempty"`
-	// VlanInterfaces is vlan interface settings.
-	VlanInterfaces []SwitchVlanInterfaceConfig `json:"vlan_interfaces,omitempty" yaml:"vlan_interfaces,omitempty"`
 }
 
 // SwitchResultsPage is a single page of results
@@ -6191,6 +6474,9 @@ type TargetReleaseSource struct {
 	// Version is the type definition for a Version.
 	Version string `json:"version,omitempty" yaml:"version,omitempty"`
 }
+
+// TimeAndIdSortMode is sort in increasing order of timestamp and ID, i.e., earliest first
+type TimeAndIdSortMode string
 
 // Timeseries is a timeseries contains a timestamped set of values from one source.
 //
@@ -6289,6 +6575,27 @@ type TxEqConfig struct {
 	// Pre2 is pre-cursor tap2
 	Pre2 *int `json:"pre2,omitempty" yaml:"pre2,omitempty"`
 }
+
+// TxEqConfig2 is per-port tx-eq overrides.  This can be used to fine-tune the transceiver equalization settings
+// to improve signal integrity.
+type TxEqConfig2 struct {
+	// Main is main tap
+	Main *int `json:"main,omitempty" yaml:"main,omitempty"`
+	// Post1 is post-cursor tap1
+	Post1 *int `json:"post1,omitempty" yaml:"post1,omitempty"`
+	// Post2 is post-cursor tap2
+	Post2 *int `json:"post2,omitempty" yaml:"post2,omitempty"`
+	// Pre1 is pre-cursor tap1
+	Pre1 *int `json:"pre1,omitempty" yaml:"pre1,omitempty"`
+	// Pre2 is pre-cursor tap2
+	Pre2 *int `json:"pre2,omitempty" yaml:"pre2,omitempty"`
+}
+
+// TypedUuidForAlertKind is the type definition for a TypedUuidForAlertKind.
+type TypedUuidForAlertKind string
+
+// TypedUuidForAlertReceiverKind is the type definition for a TypedUuidForAlertReceiverKind.
+type TypedUuidForAlertReceiverKind string
 
 // TypedUuidForInstanceKind is the type definition for a TypedUuidForInstanceKind.
 type TypedUuidForInstanceKind string
@@ -6873,9 +7180,6 @@ type VpcFirewallRuleUpdate struct {
 }
 
 // VpcFirewallRuleUpdateParams is updated list of firewall rules. Will replace all existing rules.
-//
-// Required fields:
-// - Rules
 type VpcFirewallRuleUpdateParams struct {
 	Rules []VpcFirewallRuleUpdate `json:"rules,omitzero" yaml:"rules,omitzero"`
 }
@@ -7050,6 +7354,133 @@ type VpcUpdate struct {
 	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
+// WebhookCreate is create-time identity-related parameters
+//
+// Required fields:
+// - Description
+// - Endpoint
+// - Name
+// - Secrets
+type WebhookCreate struct {
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Endpoint is the URL that webhook notification requests should be sent to
+	Endpoint string `json:"endpoint,omitempty" yaml:"endpoint,omitempty"`
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	// Secrets is a non-empty list of secret keys used to sign webhook payloads.
+	Secrets []string `json:"secrets,omitempty" yaml:"secrets,omitempty"`
+	// Subscriptions is a list of webhook event class subscriptions.
+	//
+	// If this list is empty or is not included in the request body, the webhook will not be subscribed to any events.
+	//
+	Subscriptions []AlertSubscription `json:"subscriptions,omitempty" yaml:"subscriptions,omitempty"`
+}
+
+// WebhookDeliveryAttempt is an individual delivery attempt for a webhook event.
+//
+// This represents a single HTTP request that was sent to the receiver, and its outcome.
+//
+// Required fields:
+// - Attempt
+// - Result
+// - TimeSent
+type WebhookDeliveryAttempt struct {
+	// Attempt is the attempt number.
+	Attempt  *int                    `json:"attempt,omitempty" yaml:"attempt,omitempty"`
+	Response WebhookDeliveryResponse `json:"response,omitempty" yaml:"response,omitempty"`
+	// Result is the outcome of this delivery attempt: either the event was delivered successfully, or the request
+	// failed for one of several reasons.
+	Result WebhookDeliveryAttemptResult `json:"result,omitempty" yaml:"result,omitempty"`
+	// TimeSent is the time at which the webhook delivery was attempted.
+	TimeSent *time.Time `json:"time_sent,omitempty" yaml:"time_sent,omitempty"`
+}
+
+// WebhookDeliveryAttemptResult is the webhook event has been delivered successfully.
+type WebhookDeliveryAttemptResult string
+
+// WebhookDeliveryResponse is the response received from a webhook receiver endpoint.
+//
+// Required fields:
+// - DurationMs
+// - Status
+type WebhookDeliveryResponse struct {
+	// DurationMs is the response time of the webhook endpoint, in milliseconds.
+	DurationMs *int `json:"duration_ms,omitempty" yaml:"duration_ms,omitempty"`
+	// Status is the HTTP status code returned from the webhook endpoint.
+	Status *int `json:"status,omitempty" yaml:"status,omitempty"`
+}
+
+// WebhookReceiver is the configuration for a webhook alert receiver.
+//
+// Required fields:
+// - Description
+// - Endpoint
+// - Id
+// - Name
+// - Secrets
+// - Subscriptions
+// - TimeCreated
+// - TimeModified
+type WebhookReceiver struct {
+	// Description is human-readable free-form text about a resource
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Endpoint is the URL that webhook notification requests are sent to.
+	Endpoint string `json:"endpoint,omitempty" yaml:"endpoint,omitempty"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// Name is unique, mutable, user-controlled identifier for each resource
+	Name    Name            `json:"name,omitempty" yaml:"name,omitempty"`
+	Secrets []WebhookSecret `json:"secrets,omitempty" yaml:"secrets,omitempty"`
+	// Subscriptions is the list of alert classes to which this receiver is subscribed.
+	Subscriptions []AlertSubscription `json:"subscriptions,omitempty" yaml:"subscriptions,omitempty"`
+	// TimeCreated is timestamp when this resource was created
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	// TimeModified is timestamp when this resource was last modified
+	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+}
+
+// WebhookReceiverUpdate is parameters to update a webhook configuration.
+type WebhookReceiverUpdate struct {
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Endpoint is the URL that webhook notification requests should be sent to
+	Endpoint string `json:"endpoint,omitempty" yaml:"endpoint,omitempty"`
+	Name     Name   `json:"name,omitempty" yaml:"name,omitempty"`
+}
+
+// WebhookSecret is a view of a shared secret key assigned to a webhook receiver.
+//
+// Once a secret is created, the value of the secret is not available in the API, as it must remain secret. Instead,
+// secrets are referenced by their unique IDs assigned when they are created.
+//
+// Required fields:
+// - Id
+// - TimeCreated
+type WebhookSecret struct {
+	// Id is the public unique ID of the secret.
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// TimeCreated is the UTC timestamp at which this secret was created.
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+}
+
+// WebhookSecretCreate is the type definition for a WebhookSecretCreate.
+//
+// Required fields:
+// - Secret
+type WebhookSecretCreate struct {
+	// Secret is the value of the shared secret key.
+	Secret string `json:"secret,omitempty" yaml:"secret,omitempty"`
+}
+
+// WebhookSecrets is a list of the IDs of secrets associated with a webhook receiver.
+//
+// Required fields:
+// - Secrets
+type WebhookSecrets struct {
+	Secrets []WebhookSecret `json:"secrets,omitempty" yaml:"secrets,omitempty"`
+}
+
 // DeviceAuthRequestParams is the request parameters for DeviceAuthRequest
 //
 // Required fields:
@@ -7125,61 +7556,66 @@ type SupportBundleListParams struct {
 // SupportBundleDeleteParams is the request parameters for SupportBundleDelete
 //
 // Required fields:
-// - SupportBundle
+// - BundleId
 type SupportBundleDeleteParams struct {
-	SupportBundle string `json:"support_bundle,omitempty" yaml:"support_bundle,omitempty"`
+	BundleId string `json:"bundle_id,omitempty" yaml:"bundle_id,omitempty"`
 }
 
 // SupportBundleViewParams is the request parameters for SupportBundleView
 //
 // Required fields:
-// - SupportBundle
+// - BundleId
 type SupportBundleViewParams struct {
-	SupportBundle string `json:"support_bundle,omitempty" yaml:"support_bundle,omitempty"`
+	BundleId string `json:"bundle_id,omitempty" yaml:"bundle_id,omitempty"`
 }
 
 // SupportBundleDownloadParams is the request parameters for SupportBundleDownload
 //
 // Required fields:
-// - SupportBundle
+// - BundleId
 type SupportBundleDownloadParams struct {
-	SupportBundle string `json:"support_bundle,omitempty" yaml:"support_bundle,omitempty"`
+	Range    string `json:"range,omitempty" yaml:"range,omitempty"`
+	BundleId string `json:"bundle_id,omitempty" yaml:"bundle_id,omitempty"`
 }
 
 // SupportBundleHeadParams is the request parameters for SupportBundleHead
 //
 // Required fields:
-// - SupportBundle
+// - BundleId
 type SupportBundleHeadParams struct {
-	SupportBundle string `json:"support_bundle,omitempty" yaml:"support_bundle,omitempty"`
+	Range    string `json:"range,omitempty" yaml:"range,omitempty"`
+	BundleId string `json:"bundle_id,omitempty" yaml:"bundle_id,omitempty"`
 }
 
 // SupportBundleDownloadFileParams is the request parameters for SupportBundleDownloadFile
 //
 // Required fields:
+// - BundleId
 // - File
-// - SupportBundle
 type SupportBundleDownloadFileParams struct {
-	File          string `json:"file,omitempty" yaml:"file,omitempty"`
-	SupportBundle string `json:"support_bundle,omitempty" yaml:"support_bundle,omitempty"`
+	Range    string `json:"range,omitempty" yaml:"range,omitempty"`
+	BundleId string `json:"bundle_id,omitempty" yaml:"bundle_id,omitempty"`
+	File     string `json:"file,omitempty" yaml:"file,omitempty"`
 }
 
 // SupportBundleHeadFileParams is the request parameters for SupportBundleHeadFile
 //
 // Required fields:
+// - BundleId
 // - File
-// - SupportBundle
 type SupportBundleHeadFileParams struct {
-	File          string `json:"file,omitempty" yaml:"file,omitempty"`
-	SupportBundle string `json:"support_bundle,omitempty" yaml:"support_bundle,omitempty"`
+	Range    string `json:"range,omitempty" yaml:"range,omitempty"`
+	BundleId string `json:"bundle_id,omitempty" yaml:"bundle_id,omitempty"`
+	File     string `json:"file,omitempty" yaml:"file,omitempty"`
 }
 
 // SupportBundleIndexParams is the request parameters for SupportBundleIndex
 //
 // Required fields:
-// - SupportBundle
+// - BundleId
 type SupportBundleIndexParams struct {
-	SupportBundle string `json:"support_bundle,omitempty" yaml:"support_bundle,omitempty"`
+	Range    string `json:"range,omitempty" yaml:"range,omitempty"`
+	BundleId string `json:"bundle_id,omitempty" yaml:"bundle_id,omitempty"`
 }
 
 // LoginSamlParams is the request parameters for LoginSaml
@@ -7289,6 +7725,89 @@ type AffinityGroupMemberInstanceAddParams struct {
 	Instance      NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
 
+// AlertClassListParams is the request parameters for AlertClassList
+type AlertClassListParams struct {
+	Limit     *int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string            `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Filter    AlertSubscription `json:"filter,omitempty" yaml:"filter,omitempty"`
+}
+
+// AlertReceiverListParams is the request parameters for AlertReceiverList
+type AlertReceiverListParams struct {
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// AlertReceiverDeleteParams is the request parameters for AlertReceiverDelete
+//
+// Required fields:
+// - Receiver
+type AlertReceiverDeleteParams struct {
+	Receiver NameOrId `json:"receiver,omitempty" yaml:"receiver,omitempty"`
+}
+
+// AlertReceiverViewParams is the request parameters for AlertReceiverView
+//
+// Required fields:
+// - Receiver
+type AlertReceiverViewParams struct {
+	Receiver NameOrId `json:"receiver,omitempty" yaml:"receiver,omitempty"`
+}
+
+// AlertDeliveryListParams is the request parameters for AlertDeliveryList
+//
+// Required fields:
+// - Receiver
+type AlertDeliveryListParams struct {
+	Receiver  NameOrId          `json:"receiver,omitempty" yaml:"receiver,omitempty"`
+	Delivered *bool             `json:"delivered,omitempty" yaml:"delivered,omitempty"`
+	Failed    *bool             `json:"failed,omitempty" yaml:"failed,omitempty"`
+	Pending   *bool             `json:"pending,omitempty" yaml:"pending,omitempty"`
+	Limit     *int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string            `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    TimeAndIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// AlertReceiverProbeParams is the request parameters for AlertReceiverProbe
+//
+// Required fields:
+// - Receiver
+type AlertReceiverProbeParams struct {
+	Receiver NameOrId `json:"receiver,omitempty" yaml:"receiver,omitempty"`
+	Resend   *bool    `json:"resend,omitempty" yaml:"resend,omitempty"`
+}
+
+// AlertReceiverSubscriptionAddParams is the request parameters for AlertReceiverSubscriptionAdd
+//
+// Required fields:
+// - Receiver
+// - Body
+type AlertReceiverSubscriptionAddParams struct {
+	Receiver NameOrId                 `json:"receiver,omitempty" yaml:"receiver,omitempty"`
+	Body     *AlertSubscriptionCreate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// AlertReceiverSubscriptionRemoveParams is the request parameters for AlertReceiverSubscriptionRemove
+//
+// Required fields:
+// - Receiver
+// - Subscription
+type AlertReceiverSubscriptionRemoveParams struct {
+	Receiver     NameOrId          `json:"receiver,omitempty" yaml:"receiver,omitempty"`
+	Subscription AlertSubscription `json:"subscription,omitempty" yaml:"subscription,omitempty"`
+}
+
+// AlertDeliveryResendParams is the request parameters for AlertDeliveryResend
+//
+// Required fields:
+// - AlertId
+// - Receiver
+type AlertDeliveryResendParams struct {
+	AlertId  string   `json:"alert_id,omitempty" yaml:"alert_id,omitempty"`
+	Receiver NameOrId `json:"receiver,omitempty" yaml:"receiver,omitempty"`
+}
+
 // AntiAffinityGroupListParams is the request parameters for AntiAffinityGroupList
 //
 // Required fields:
@@ -7382,6 +7901,14 @@ type AntiAffinityGroupMemberInstanceAddParams struct {
 	Project           NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 	AntiAffinityGroup NameOrId `json:"anti_affinity_group,omitempty" yaml:"anti_affinity_group,omitempty"`
 	Instance          NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+}
+
+// AuthSettingsUpdateParams is the request parameters for AuthSettingsUpdate
+//
+// Required fields:
+// - Body
+type AuthSettingsUpdateParams struct {
+	Body *SiloAuthSettingsUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // CertificateListParams is the request parameters for CertificateList
@@ -7992,6 +8519,21 @@ type LoginLocalParams struct {
 	Body     *UsernamePasswordCredentials `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+// CurrentUserAccessTokenListParams is the request parameters for CurrentUserAccessTokenList
+type CurrentUserAccessTokenListParams struct {
+	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// CurrentUserAccessTokenDeleteParams is the request parameters for CurrentUserAccessTokenDelete
+//
+// Required fields:
+// - TokenId
+type CurrentUserAccessTokenDeleteParams struct {
+	TokenId string `json:"token_id,omitempty" yaml:"token_id,omitempty"`
+}
+
 // CurrentUserGroupsParams is the request parameters for CurrentUserGroups
 type CurrentUserGroupsParams struct {
 	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -8457,7 +8999,6 @@ type SamlIdentityProviderCreateParams struct {
 //
 // Required fields:
 // - Provider
-// - Silo
 type SamlIdentityProviderViewParams struct {
 	Provider NameOrId `json:"provider,omitempty" yaml:"provider,omitempty"`
 	Silo     NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
@@ -9260,6 +9801,50 @@ type VpcUpdateParams struct {
 	Body    *VpcUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+// WebhookReceiverCreateParams is the request parameters for WebhookReceiverCreate
+//
+// Required fields:
+// - Body
+type WebhookReceiverCreateParams struct {
+	Body *WebhookCreate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// WebhookReceiverUpdateParams is the request parameters for WebhookReceiverUpdate
+//
+// Required fields:
+// - Receiver
+// - Body
+type WebhookReceiverUpdateParams struct {
+	Receiver NameOrId               `json:"receiver,omitempty" yaml:"receiver,omitempty"`
+	Body     *WebhookReceiverUpdate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// WebhookSecretsListParams is the request parameters for WebhookSecretsList
+//
+// Required fields:
+// - Receiver
+type WebhookSecretsListParams struct {
+	Receiver NameOrId `json:"receiver,omitempty" yaml:"receiver,omitempty"`
+}
+
+// WebhookSecretsAddParams is the request parameters for WebhookSecretsAdd
+//
+// Required fields:
+// - Receiver
+// - Body
+type WebhookSecretsAddParams struct {
+	Receiver NameOrId             `json:"receiver,omitempty" yaml:"receiver,omitempty"`
+	Body     *WebhookSecretCreate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// WebhookSecretsDeleteParams is the request parameters for WebhookSecretsDelete
+//
+// Required fields:
+// - SecretId
+type WebhookSecretsDeleteParams struct {
+	SecretId string `json:"secret_id,omitempty" yaml:"secret_id,omitempty"`
+}
+
 // Validate verifies all required fields for DeviceAuthRequestParams are set
 func (p *DeviceAuthRequestParams) Validate() error {
 	v := new(Validator)
@@ -9344,7 +9929,7 @@ func (p *SupportBundleListParams) Validate() error {
 // Validate verifies all required fields for SupportBundleDeleteParams are set
 func (p *SupportBundleDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.SupportBundle), "SupportBundle")
+	v.HasRequiredStr(string(p.BundleId), "BundleId")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -9354,7 +9939,7 @@ func (p *SupportBundleDeleteParams) Validate() error {
 // Validate verifies all required fields for SupportBundleViewParams are set
 func (p *SupportBundleViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.SupportBundle), "SupportBundle")
+	v.HasRequiredStr(string(p.BundleId), "BundleId")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -9364,7 +9949,7 @@ func (p *SupportBundleViewParams) Validate() error {
 // Validate verifies all required fields for SupportBundleDownloadParams are set
 func (p *SupportBundleDownloadParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.SupportBundle), "SupportBundle")
+	v.HasRequiredStr(string(p.BundleId), "BundleId")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -9374,7 +9959,7 @@ func (p *SupportBundleDownloadParams) Validate() error {
 // Validate verifies all required fields for SupportBundleHeadParams are set
 func (p *SupportBundleHeadParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.SupportBundle), "SupportBundle")
+	v.HasRequiredStr(string(p.BundleId), "BundleId")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -9384,8 +9969,8 @@ func (p *SupportBundleHeadParams) Validate() error {
 // Validate verifies all required fields for SupportBundleDownloadFileParams are set
 func (p *SupportBundleDownloadFileParams) Validate() error {
 	v := new(Validator)
+	v.HasRequiredStr(string(p.BundleId), "BundleId")
 	v.HasRequiredStr(string(p.File), "File")
-	v.HasRequiredStr(string(p.SupportBundle), "SupportBundle")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -9395,8 +9980,8 @@ func (p *SupportBundleDownloadFileParams) Validate() error {
 // Validate verifies all required fields for SupportBundleHeadFileParams are set
 func (p *SupportBundleHeadFileParams) Validate() error {
 	v := new(Validator)
+	v.HasRequiredStr(string(p.BundleId), "BundleId")
 	v.HasRequiredStr(string(p.File), "File")
-	v.HasRequiredStr(string(p.SupportBundle), "SupportBundle")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -9406,7 +9991,7 @@ func (p *SupportBundleHeadFileParams) Validate() error {
 // Validate verifies all required fields for SupportBundleIndexParams are set
 func (p *SupportBundleIndexParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.SupportBundle), "SupportBundle")
+	v.HasRequiredStr(string(p.BundleId), "BundleId")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -9519,6 +10104,97 @@ func (p *AffinityGroupMemberInstanceAddParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for AlertClassListParams are set
+func (p *AlertClassListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AlertReceiverListParams are set
+func (p *AlertReceiverListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AlertReceiverDeleteParams are set
+func (p *AlertReceiverDeleteParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Receiver), "Receiver")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AlertReceiverViewParams are set
+func (p *AlertReceiverViewParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Receiver), "Receiver")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AlertDeliveryListParams are set
+func (p *AlertDeliveryListParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Receiver), "Receiver")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AlertReceiverProbeParams are set
+func (p *AlertReceiverProbeParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Receiver), "Receiver")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AlertReceiverSubscriptionAddParams are set
+func (p *AlertReceiverSubscriptionAddParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Receiver), "Receiver")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AlertReceiverSubscriptionRemoveParams are set
+func (p *AlertReceiverSubscriptionRemoveParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Receiver), "Receiver")
+	v.HasRequiredStr(string(p.Subscription), "Subscription")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AlertDeliveryResendParams are set
+func (p *AlertDeliveryResendParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.AlertId), "AlertId")
+	v.HasRequiredStr(string(p.Receiver), "Receiver")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for AntiAffinityGroupListParams are set
 func (p *AntiAffinityGroupListParams) Validate() error {
 	v := new(Validator)
@@ -9607,6 +10283,16 @@ func (p *AntiAffinityGroupMemberInstanceAddParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.AntiAffinityGroup), "AntiAffinityGroup")
 	v.HasRequiredStr(string(p.Instance), "Instance")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AuthSettingsUpdateParams are set
+func (p *AuthSettingsUpdateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -10220,6 +10906,25 @@ func (p *LoginLocalParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for CurrentUserAccessTokenListParams are set
+func (p *CurrentUserAccessTokenListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for CurrentUserAccessTokenDeleteParams are set
+func (p *CurrentUserAccessTokenDeleteParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.TokenId), "TokenId")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for CurrentUserGroupsParams are set
 func (p *CurrentUserGroupsParams) Validate() error {
 	v := new(Validator)
@@ -10717,7 +11422,6 @@ func (p *SamlIdentityProviderCreateParams) Validate() error {
 func (p *SamlIdentityProviderViewParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.Provider), "Provider")
-	v.HasRequiredStr(string(p.Silo), "Silo")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -11597,6 +12301,58 @@ func (p *VpcUpdateParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for WebhookReceiverCreateParams are set
+func (p *WebhookReceiverCreateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for WebhookReceiverUpdateParams are set
+func (p *WebhookReceiverUpdateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Receiver), "Receiver")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for WebhookSecretsListParams are set
+func (p *WebhookSecretsListParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Receiver), "Receiver")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for WebhookSecretsAddParams are set
+func (p *WebhookSecretsAddParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Receiver), "Receiver")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for WebhookSecretsDeleteParams are set
+func (p *WebhookSecretsDeleteParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.SecretId), "SecretId")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // AddressLotKindInfra represents the AddressLotKind `"infra"`.
 const AddressLotKindInfra AddressLotKind = "infra"
 
@@ -11611,6 +12367,27 @@ const AffinityPolicyAllow AffinityPolicy = "allow"
 
 // AffinityPolicyFail represents the AffinityPolicy `"fail"`.
 const AffinityPolicyFail AffinityPolicy = "fail"
+
+// AlertDeliveryStatePending represents the AlertDeliveryState `"pending"`.
+const AlertDeliveryStatePending AlertDeliveryState = "pending"
+
+// AlertDeliveryStateDelivered represents the AlertDeliveryState `"delivered"`.
+const AlertDeliveryStateDelivered AlertDeliveryState = "delivered"
+
+// AlertDeliveryStateFailed represents the AlertDeliveryState `"failed"`.
+const AlertDeliveryStateFailed AlertDeliveryState = "failed"
+
+// AlertDeliveryTriggerAlert represents the AlertDeliveryTrigger `"alert"`.
+const AlertDeliveryTriggerAlert AlertDeliveryTrigger = "alert"
+
+// AlertDeliveryTriggerResend represents the AlertDeliveryTrigger `"resend"`.
+const AlertDeliveryTriggerResend AlertDeliveryTrigger = "resend"
+
+// AlertDeliveryTriggerProbe represents the AlertDeliveryTrigger `"probe"`.
+const AlertDeliveryTriggerProbe AlertDeliveryTrigger = "probe"
+
+// AlertReceiverKindKindWebhook represents the AlertReceiverKindKind `"webhook"`.
+const AlertReceiverKindKindWebhook AlertReceiverKindKind = "webhook"
 
 // AllowedSourceIpsAllowAny represents the AllowedSourceIpsAllow `"any"`.
 const AllowedSourceIpsAllowAny AllowedSourceIpsAllow = "any"
@@ -12368,6 +13145,12 @@ const TargetReleaseSourceTypeUnspecified TargetReleaseSourceType = "unspecified"
 // TargetReleaseSourceTypeSystemVersion represents the TargetReleaseSourceType `"system_version"`.
 const TargetReleaseSourceTypeSystemVersion TargetReleaseSourceType = "system_version"
 
+// TimeAndIdSortModeAscending represents the TimeAndIdSortMode `"ascending"`.
+const TimeAndIdSortModeAscending TimeAndIdSortMode = "ascending"
+
+// TimeAndIdSortModeDescending represents the TimeAndIdSortMode `"descending"`.
+const TimeAndIdSortModeDescending TimeAndIdSortMode = "descending"
+
 // UnitsCount represents the Units `"count"`.
 const UnitsCount Units = "count"
 
@@ -12485,6 +13268,18 @@ const VpcRouterKindSystem VpcRouterKind = "system"
 // VpcRouterKindCustom represents the VpcRouterKind `"custom"`.
 const VpcRouterKindCustom VpcRouterKind = "custom"
 
+// WebhookDeliveryAttemptResultSucceeded represents the WebhookDeliveryAttemptResult `"succeeded"`.
+const WebhookDeliveryAttemptResultSucceeded WebhookDeliveryAttemptResult = "succeeded"
+
+// WebhookDeliveryAttemptResultFailedHttpError represents the WebhookDeliveryAttemptResult `"failed_http_error"`.
+const WebhookDeliveryAttemptResultFailedHttpError WebhookDeliveryAttemptResult = "failed_http_error"
+
+// WebhookDeliveryAttemptResultFailedUnreachable represents the WebhookDeliveryAttemptResult `"failed_unreachable"`.
+const WebhookDeliveryAttemptResultFailedUnreachable WebhookDeliveryAttemptResult = "failed_unreachable"
+
+// WebhookDeliveryAttemptResultFailedTimeout represents the WebhookDeliveryAttemptResult `"failed_timeout"`.
+const WebhookDeliveryAttemptResultFailedTimeout WebhookDeliveryAttemptResult = "failed_timeout"
+
 // AddressLotKindCollection is the collection of all AddressLotKind values.
 var AddressLotKindCollection = []AddressLotKind{
 	AddressLotKindInfra,
@@ -12500,6 +13295,25 @@ var AffinityGroupMemberTypeCollection = []AffinityGroupMemberType{
 var AffinityPolicyCollection = []AffinityPolicy{
 	AffinityPolicyAllow,
 	AffinityPolicyFail,
+}
+
+// AlertDeliveryStateCollection is the collection of all AlertDeliveryState values.
+var AlertDeliveryStateCollection = []AlertDeliveryState{
+	AlertDeliveryStateDelivered,
+	AlertDeliveryStateFailed,
+	AlertDeliveryStatePending,
+}
+
+// AlertDeliveryTriggerCollection is the collection of all AlertDeliveryTrigger values.
+var AlertDeliveryTriggerCollection = []AlertDeliveryTrigger{
+	AlertDeliveryTriggerAlert,
+	AlertDeliveryTriggerProbe,
+	AlertDeliveryTriggerResend,
+}
+
+// AlertReceiverKindKindCollection is the collection of all AlertReceiverKindKind values.
+var AlertReceiverKindKindCollection = []AlertReceiverKindKind{
+	AlertReceiverKindKindWebhook,
 }
 
 // AllowedSourceIpsAllowCollection is the collection of all AllowedSourceIpsAllow values.
@@ -13034,6 +13848,12 @@ var TargetReleaseSourceTypeCollection = []TargetReleaseSourceType{
 	TargetReleaseSourceTypeUnspecified,
 }
 
+// TimeAndIdSortModeCollection is the collection of all TimeAndIdSortMode values.
+var TimeAndIdSortModeCollection = []TimeAndIdSortMode{
+	TimeAndIdSortModeAscending,
+	TimeAndIdSortModeDescending,
+}
+
 // UnitsCollection is the collection of all Units values.
 var UnitsCollection = []Units{
 	UnitsAmps,
@@ -13111,4 +13931,12 @@ var VpcFirewallRuleTargetTypeCollection = []VpcFirewallRuleTargetType{
 var VpcRouterKindCollection = []VpcRouterKind{
 	VpcRouterKindCustom,
 	VpcRouterKindSystem,
+}
+
+// WebhookDeliveryAttemptResultCollection is the collection of all WebhookDeliveryAttemptResult values.
+var WebhookDeliveryAttemptResultCollection = []WebhookDeliveryAttemptResult{
+	WebhookDeliveryAttemptResultFailedHttpError,
+	WebhookDeliveryAttemptResultFailedTimeout,
+	WebhookDeliveryAttemptResultFailedUnreachable,
+	WebhookDeliveryAttemptResultSucceeded,
 }
