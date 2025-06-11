@@ -1,3 +1,32 @@
+# v0.5.0 (2025/Jun/11)
+
+Generated from Oxide API version [20250604.0.0](https://github.com/oxidecomputer/omicron/blob/rel/v15/rc1/openapi/nexus.json)
+
+### Breaking changes
+
+- **Go version update:** Updated the SDK's Go version to Go 1.24. Consumers of this SDK will need to update to Go 1.24 as well. [#291](https://github.com/oxidecomputer/oxide.go/pull/291)
+- **Set `omitzero` on specific types:** Clients can pass an empty slice and have it serialized as `[]`. Requires Go 1.24 or later. [#289](https://github.com/oxidecomputer/oxide.go/pull/289)
+
+### New features
+
+- **SiloAuthSettings:** Methods to view and update authentication settings. Namely, set token expiration. [#294](https://github.com/oxidecomputer/oxide.go/pull/294)
+- **CurrentUserAccessToken:** Methods to view and delete a current user's auth tokens. [#294](https://github.com/oxidecomputer/oxide.go/pull/294)
+
+### Bug fixes
+
+- **Type fields:** All arrays that are nullable in the API no longer have `omitempty` to avoid panics if unset. [#283](https://github.com/oxidecomputer/oxide.go/pull/283)
+
+### List of commits
+
+- [a3144ae](https://github.com/oxidecomputer/oxide.go/commit/a3144ae) Update omicron to rc15 (#295)
+- [c075870](https://github.com/oxidecomputer/oxide.go/commit/c075870) Update to omicron 760d1b0 (#294)
+- [ecfa72d](https://github.com/oxidecomputer/oxide.go/commit/ecfa72d) generate: set omitzero on specific types (#289)
+- [855352f](https://github.com/oxidecomputer/oxide.go/commit/855352f) go: update to 1.24 (#291)
+- [2e4943b](https://github.com/oxidecomputer/oxide.go/commit/2e4943b) Bump github.com/getkin/kin-openapi from 0.131.0 to 0.132.0 (#286)
+- [65b1d0f](https://github.com/oxidecomputer/oxide.go/commit/65b1d0f) Update to omicron 5cfd735 (#284)
+- [719d3ae](https://github.com/oxidecomputer/oxide.go/commit/719d3ae) Handle nullable arrays (#283)
+- [a79eb2c](https://github.com/oxidecomputer/oxide.go/commit/a79eb2c) Bump version to v0.5.0 (#281)
+
 # v0.4.0 (2025/Apr/15)
 
 Generated from Oxide API version [20250409.0.0](https://github.com/oxidecomputer/omicron/blob/rel/v14/rc1/openapi/nexus.json)
