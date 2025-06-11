@@ -1,5 +1,7 @@
 # v0.5.0 (2025/Jun/11)
 
+Generated from Oxide API version [20250604.0.0](https://github.com/oxidecomputer/omicron/blob/rel/v15/rc1/openapi/nexus.json)
+
 ### Breaking changes
 
 - **Go version update:** Updated the SDK's Go version to Go 1.24. Consumers of this SDK will need to update to Go 1.24 as well. [#291](https://github.com/oxidecomputer/oxide.go/pull/291)
