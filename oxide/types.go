@@ -596,6 +596,9 @@ type AntiAffinityGroupCreate struct {
 	Policy AffinityPolicy `json:"policy,omitempty" yaml:"policy,omitempty"`
 }
 
+// AntiAffinityGroupMemberType is the type definition for a AntiAffinityGroupMemberType.
+type AntiAffinityGroupMemberType string
+
 // AntiAffinityGroupMemberValue is the type definition for a AntiAffinityGroupMemberValue.
 //
 // Required fields:
@@ -614,9 +617,6 @@ type AntiAffinityGroupMemberValue struct {
 	// to the Instance's lifecycle
 	RunState InstanceState `json:"run_state,omitempty" yaml:"run_state,omitempty"`
 }
-
-// AntiAffinityGroupMemberType is the type definition for a AntiAffinityGroupMemberType.
-type AntiAffinityGroupMemberType string
 
 // AntiAffinityGroupMemberInstance is an instance belonging to this group
 //
@@ -668,6 +668,21 @@ type AntiAffinityGroupResultsPage struct {
 type AntiAffinityGroupUpdate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
+}
+
+// ArtifactId is an identifier for an artifact.
+//
+// Required fields:
+// - Kind
+// - Name
+// - Version
+type ArtifactId struct {
+	// Kind is the kind of artifact this is.
+	Kind string `json:"kind,omitempty" yaml:"kind,omitempty"`
+	// Name is the artifact's name.
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
+	// Version is the artifact's version.
+	Version string `json:"version,omitempty" yaml:"version,omitempty"`
 }
 
 // AuthzScope is timeseries data is limited to fleet readers.
@@ -5702,7 +5717,7 @@ type Sled struct {
 	Policy SledPolicy `json:"policy,omitempty" yaml:"policy,omitempty"`
 	// RackId is the rack to which this Sled is currently attached
 	RackId string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
-	// State is the current state Nexus believes the sled to be in.
+	// State is the current state of the sled.
 	State SledState `json:"state,omitempty" yaml:"state,omitempty"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
@@ -6559,6 +6574,88 @@ type TimeseriesSchemaResultsPage struct {
 	Items []TimeseriesSchema `json:"items,omitempty" yaml:"items,omitempty"`
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// TufArtifactMeta is metadata about an individual TUF artifact.
+//
+// Found within a `TufRepoDescription`.
+//
+// Required fields:
+// - Hash
+// - Id
+// - Size
+type TufArtifactMeta struct {
+	// Hash is the hash of the artifact.
+	Hash string `json:"hash,omitempty" yaml:"hash,omitempty"`
+	// Id is the artifact ID.
+	Id ArtifactId `json:"id,omitempty" yaml:"id,omitempty"`
+	// Size is the size of the artifact in bytes.
+	Size *int `json:"size,omitempty" yaml:"size,omitempty"`
+}
+
+// TufRepoDescription is a description of an uploaded TUF repository.
+//
+// Required fields:
+// - Artifacts
+// - Repo
+type TufRepoDescription struct {
+	// Artifacts is information about the artifacts present in the repository.
+	Artifacts []TufArtifactMeta `json:"artifacts,omitempty" yaml:"artifacts,omitempty"`
+	// Repo is information about the repository.
+	Repo TufRepoMeta `json:"repo,omitempty" yaml:"repo,omitempty"`
+}
+
+// TufRepoGetResponse is data about a successful TUF repo get from Nexus.
+//
+// Required fields:
+// - Description
+type TufRepoGetResponse struct {
+	// Description is the description of the repository.
+	Description TufRepoDescription `json:"description,omitempty" yaml:"description,omitempty"`
+}
+
+// TufRepoInsertResponse is data about a successful TUF repo import into Nexus.
+//
+// Required fields:
+// - Recorded
+// - Status
+type TufRepoInsertResponse struct {
+	// Recorded is the repository as present in the database.
+	Recorded TufRepoDescription `json:"recorded,omitempty" yaml:"recorded,omitempty"`
+	// Status is whether this repository already existed or is new.
+	Status TufRepoInsertStatus `json:"status,omitempty" yaml:"status,omitempty"`
+}
+
+// TufRepoInsertStatus is the repository already existed in the database.
+type TufRepoInsertStatus string
+
+// TufRepoMeta is metadata about a TUF repository.
+//
+// Found within a `TufRepoDescription`.
+//
+// Required fields:
+// - FileName
+// - Hash
+// - SystemVersion
+// - TargetsRoleVersion
+// - ValidUntil
+type TufRepoMeta struct {
+	// FileName is the file name of the repository.
+	//
+	// This is purely used for debugging and may not always be correct (e.g. with wicket, we read the file contents from
+	// stdin so we don't know the correct file name).
+	FileName string `json:"file_name,omitempty" yaml:"file_name,omitempty"`
+	// Hash is the hash of the repository.
+	//
+	// This is a slight abuse of `ArtifactHash`, since that's the hash of individual artifacts within the repository. However,
+	// we use it here for convenience.
+	Hash string `json:"hash,omitempty" yaml:"hash,omitempty"`
+	// SystemVersion is the system version in artifacts.json.
+	SystemVersion string `json:"system_version,omitempty" yaml:"system_version,omitempty"`
+	// TargetsRoleVersion is the version of the targets role.
+	TargetsRoleVersion *int `json:"targets_role_version,omitempty" yaml:"targets_role_version,omitempty"`
+	// ValidUntil is the time until which the repo is valid.
+	ValidUntil *time.Time `json:"valid_until,omitempty" yaml:"valid_until,omitempty"`
 }
 
 // TxEqConfig is per-port tx-eq overrides.  This can be used to fine-tune the transceiver equalization settings
@@ -9471,6 +9568,24 @@ type SystemTimeseriesSchemaListParams struct {
 	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 }
 
+// SystemUpdatePutRepositoryParams is the request parameters for SystemUpdatePutRepository
+//
+// Required fields:
+// - FileName
+// - Body
+type SystemUpdatePutRepositoryParams struct {
+	FileName string    `json:"file_name,omitempty" yaml:"file_name,omitempty"`
+	Body     io.Reader `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// SystemUpdateGetRepositoryParams is the request parameters for SystemUpdateGetRepository
+//
+// Required fields:
+// - SystemVersion
+type SystemUpdateGetRepositoryParams struct {
+	SystemVersion string `json:"system_version,omitempty" yaml:"system_version,omitempty"`
+}
+
 // TargetReleaseUpdateParams is the request parameters for TargetReleaseUpdate
 //
 // Required fields:
@@ -11978,6 +12093,27 @@ func (p *SystemTimeseriesSchemaListParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for SystemUpdatePutRepositoryParams are set
+func (p *SystemUpdatePutRepositoryParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.FileName), "FileName")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SystemUpdateGetRepositoryParams are set
+func (p *SystemUpdateGetRepositoryParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.SystemVersion), "SystemVersion")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for TargetReleaseUpdateParams are set
 func (p *TargetReleaseUpdateParams) Validate() error {
 	v := new(Validator)
@@ -13151,6 +13287,12 @@ const TimeAndIdSortModeAscending TimeAndIdSortMode = "ascending"
 // TimeAndIdSortModeDescending represents the TimeAndIdSortMode `"descending"`.
 const TimeAndIdSortModeDescending TimeAndIdSortMode = "descending"
 
+// TufRepoInsertStatusAlreadyExists represents the TufRepoInsertStatus `"already_exists"`.
+const TufRepoInsertStatusAlreadyExists TufRepoInsertStatus = "already_exists"
+
+// TufRepoInsertStatusInserted represents the TufRepoInsertStatus `"inserted"`.
+const TufRepoInsertStatusInserted TufRepoInsertStatus = "inserted"
+
 // UnitsCount represents the Units `"count"`.
 const UnitsCount Units = "count"
 
@@ -13852,6 +13994,12 @@ var TargetReleaseSourceTypeCollection = []TargetReleaseSourceType{
 var TimeAndIdSortModeCollection = []TimeAndIdSortMode{
 	TimeAndIdSortModeAscending,
 	TimeAndIdSortModeDescending,
+}
+
+// TufRepoInsertStatusCollection is the collection of all TufRepoInsertStatus values.
+var TufRepoInsertStatusCollection = []TufRepoInsertStatus{
+	TufRepoInsertStatusAlreadyExists,
+	TufRepoInsertStatusInserted,
 }
 
 // UnitsCollection is the collection of all Units values.
