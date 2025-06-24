@@ -135,8 +135,18 @@ func buildMethod(f *os.File, spec *openapi3.T, method string, path string, o *op
 		return err
 	}
 
-	if len(o.Tags) == 0 || o.Tags[0] == "hidden" {
-		fmt.Printf("[WARN] TODO: skipping operation %q, since it has no tag or is hidden\n", o.OperationID)
+	if len(o.Tags) == 0 {
+		fmt.Printf("[WARN] TODO: skipping operation %q, since it has no tag\n", o.OperationID)
+		return nil
+	}
+
+	if o.Tags[0] == "experimental" {
+		fmt.Printf("[WARN] TODO: skipping operation %q, since it is experimental\n", o.OperationID)
+		return nil
+	}
+
+	if o.Tags[0] == "console-auth" {
+		fmt.Printf("[WARN] TODO: skipping operation %q, since it is for console authentication\n", o.OperationID)
 		return nil
 	}
 
