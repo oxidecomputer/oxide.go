@@ -4401,7 +4401,7 @@ type LinkConfigCreate struct {
 	// Speed is the speed of the link.
 	Speed LinkSpeed `json:"speed,omitempty" yaml:"speed,omitempty"`
 	// TxEq is optional tx_eq settings.
-	TxEq TxEqConfig `json:"tx_eq,omitempty" yaml:"tx_eq,omitempty"`
+	TxEq *TxEqConfig `json:"tx_eq,omitempty" yaml:"tx_eq,omitempty"`
 }
 
 // LinkFec is firecode forward error correction.
@@ -6237,7 +6237,7 @@ type SwitchPortLinkConfig struct {
 	// LinkName is the name of this link.
 	LinkName Name `json:"link_name,omitempty" yaml:"link_name,omitempty"`
 	// LldpLinkConfig is the link-layer discovery protocol service configuration for this link.
-	LldpLinkConfig LldpLinkConfig `json:"lldp_link_config,omitempty" yaml:"lldp_link_config,omitempty"`
+	LldpLinkConfig *LldpLinkConfig `json:"lldp_link_config,omitempty" yaml:"lldp_link_config,omitempty"`
 	// Mtu is the maximum transmission unit for this link.
 	Mtu *int `json:"mtu,omitempty" yaml:"mtu,omitempty"`
 	// PortSettingsId is the port settings this link configuration belongs to.
@@ -6245,7 +6245,7 @@ type SwitchPortLinkConfig struct {
 	// Speed is the configured speed of the link.
 	Speed LinkSpeed `json:"speed,omitempty" yaml:"speed,omitempty"`
 	// TxEqConfig is the tx_eq configuration for this link.
-	TxEqConfig TxEqConfig2 `json:"tx_eq_config,omitempty" yaml:"tx_eq_config,omitempty"`
+	TxEqConfig *TxEqConfig2 `json:"tx_eq_config,omitempty" yaml:"tx_eq_config,omitempty"`
 }
 
 // SwitchPortResultsPage is a single page of results
