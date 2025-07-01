@@ -33,8 +33,8 @@ import (
 
 func main() {
 	cfg := oxide.Config{
-		Address: "https://api.oxide.computer",
-		Token:   "oxide-abc123",
+		Host:  "https://api.oxide.computer",
+		Token: "oxide-abc123",
 	}
 	client, err := oxide.NewClient(&cfg)
 	if err != nil {
