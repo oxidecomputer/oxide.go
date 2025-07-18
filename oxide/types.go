@@ -201,9 +201,6 @@ type AffinityGroupCreate struct {
 	Policy AffinityPolicy `json:"policy,omitempty" yaml:"policy,omitempty"`
 }
 
-// AffinityGroupMemberType is the type definition for a AffinityGroupMemberType.
-type AffinityGroupMemberType string
-
 // AffinityGroupMemberValue is the type definition for a AffinityGroupMemberValue.
 //
 // Required fields:
@@ -222,6 +219,9 @@ type AffinityGroupMemberValue struct {
 	// to the Instance's lifecycle
 	RunState InstanceState `json:"run_state,omitempty" yaml:"run_state,omitempty"`
 }
+
+// AffinityGroupMemberType is the type definition for a AffinityGroupMemberType.
+type AffinityGroupMemberType string
 
 // AffinityGroupMemberInstance is an instance belonging to this group
 //
@@ -1683,6 +1683,30 @@ type CertificateResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+// ConsoleSession is view of a console session
+//
+// Required fields:
+// - Id
+// - TimeCreated
+// - TimeLastUsed
+type ConsoleSession struct {
+	// Id is a unique, immutable, system-controlled identifier for the session
+	Id           string     `json:"id,omitempty" yaml:"id,omitempty"`
+	TimeCreated  *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	TimeLastUsed *time.Time `json:"time_last_used,omitempty" yaml:"time_last_used,omitempty"`
+}
+
+// ConsoleSessionResultsPage is a single page of results
+//
+// Required fields:
+// - Items
+type ConsoleSessionResultsPage struct {
+	// Items is list of items on this page of results
+	Items []ConsoleSession `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
 // Cumulativedouble is a cumulative or counter data type.
 //
 // Required fields:
@@ -2515,10 +2539,12 @@ type ExternalIpKind string
 //
 // Required fields:
 // - Ip
+// - IpPoolId
 // - Kind
 type ExternalIpEphemeral struct {
-	Ip   string         `json:"ip,omitempty" yaml:"ip,omitempty"`
-	Kind ExternalIpKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+	Ip       string         `json:"ip,omitempty" yaml:"ip,omitempty"`
+	IpPoolId string         `json:"ip_pool_id,omitempty" yaml:"ip_pool_id,omitempty"`
+	Kind     ExternalIpKind `json:"kind,omitempty" yaml:"kind,omitempty"`
 }
 
 // ExternalIpFloating is a Floating IP is a well-known IP address which can be attached and detached from
@@ -2560,6 +2586,8 @@ type ExternalIpFloating struct {
 type ExternalIp struct {
 	// Ip is the type definition for a Ip.
 	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
+	// IpPoolId is the type definition for a IpPoolId.
+	IpPoolId string `json:"ip_pool_id,omitempty" yaml:"ip_pool_id,omitempty"`
 	// Kind is the type definition for a Kind.
 	Kind ExternalIpKind `json:"kind,omitempty" yaml:"kind,omitempty"`
 	// Description is human-readable free-form text about a resource
@@ -2568,8 +2596,6 @@ type ExternalIp struct {
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 	// InstanceId is the ID of the instance that this Floating IP is attached to, if it is presently in use.
 	InstanceId string `json:"instance_id,omitempty" yaml:"instance_id,omitempty"`
-	// IpPoolId is the ID of the IP pool this resource belongs to.
-	IpPoolId string `json:"ip_pool_id,omitempty" yaml:"ip_pool_id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// ProjectId is the project this resource exists within.
@@ -3383,6 +3409,10 @@ type Histogramuint8 struct {
 // Hostname is a hostname identifies a host on a network, and is usually a dot-delimited sequence of labels,
 // where each label contains only letters, digits, or the hyphen. See RFCs 1035 and 952 for more details.
 type Hostname string
+
+// IcmpParamRange is an inclusive-inclusive range of ICMP(v6) types or codes. The second value may be omitted
+// to represent a single parameter.
+type IcmpParamRange string
 
 // IdSortMode is sort in increasing order of "id"
 type IdSortMode string
@@ -5060,31 +5090,6 @@ type RackResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// Role is view of a Role
-//
-// Required fields:
-// - Description
-// - Name
-type Role struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// Name is role names consist of two string components separated by dot (".").
-	Name RoleName `json:"name,omitempty" yaml:"name,omitempty"`
-}
-
-// RoleName is role names consist of two string components separated by dot (".").
-type RoleName string
-
-// RoleResultsPage is a single page of results
-//
-// Required fields:
-// - Items
-type RoleResultsPage struct {
-	// Items is list of items on this page of results
-	Items []Role `json:"items,omitempty" yaml:"items,omitempty"`
-	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
-}
-
 // Route is a route to a destination network through a gateway address.
 //
 // Required fields:
@@ -5095,8 +5100,7 @@ type Route struct {
 	Dst IpNet `json:"dst,omitempty" yaml:"dst,omitempty"`
 	// Gw is the route gateway.
 	Gw string `json:"gw,omitempty" yaml:"gw,omitempty"`
-	// RibPriority is local preference for route. Higher preference indictes precedence within and across protocols.
-	//
+	// RibPriority is route RIB priority. Higher priority indicates precedence within and across protocols.
 	RibPriority *int `json:"rib_priority,omitempty" yaml:"rib_priority,omitempty"`
 	// Vid is vLAN id the gateway is reachable over.
 	Vid *int `json:"vid,omitempty" yaml:"vid,omitempty"`
@@ -5416,6 +5420,17 @@ type SamlIdentityProviderCreate struct {
 	SpClientId string `json:"sp_client_id,omitempty" yaml:"sp_client_id,omitempty"`
 	// TechnicalContactEmail is customer's technical contact for saml configuration
 	TechnicalContactEmail string `json:"technical_contact_email,omitempty" yaml:"technical_contact_email,omitempty"`
+}
+
+// ServiceIcmpConfig is configuration of inbound ICMP allowed by API services.
+//
+// Required fields:
+// - Enabled
+type ServiceIcmpConfig struct {
+	// Enabled is when enabled, Nexus is able to receive ICMP Destination Unreachable type 3 (port unreachable) and
+	// type 4 (fragmentation needed), Redirect, and Time Exceeded messages. These enable Nexus to perform Path MTU
+	// discovery and better cope with fragmentation issues. Otherwise all inbound ICMP traffic will be dropped.
+	Enabled *bool `json:"enabled,omitempty" yaml:"enabled,omitempty"`
 }
 
 // ServiceUsingCertificate is this certificate is intended for access to the external API.
@@ -5978,6 +5993,12 @@ type SshKeyResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+// SupportBundleCreate is the type definition for a SupportBundleCreate.
+type SupportBundleCreate struct {
+	// UserComment is user comment for the support bundle
+	UserComment string `json:"user_comment,omitempty" yaml:"user_comment,omitempty"`
+}
+
 // SupportBundleInfo is the type definition for a SupportBundleInfo.
 //
 // Required fields:
@@ -5991,6 +6012,7 @@ type SupportBundleInfo struct {
 	ReasonForFailure  string                        `json:"reason_for_failure,omitempty" yaml:"reason_for_failure,omitempty"`
 	State             SupportBundleState            `json:"state,omitempty" yaml:"state,omitempty"`
 	TimeCreated       *time.Time                    `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	UserComment       string                        `json:"user_comment,omitempty" yaml:"user_comment,omitempty"`
 }
 
 // SupportBundleInfoResultsPage is a single page of results
@@ -6012,6 +6034,12 @@ type SupportBundleInfoResultsPage struct {
 // If a user no longer wants to access a Support Bundle, they can request cancellation, which will transition to
 // the "Destroying" state.
 type SupportBundleState string
+
+// SupportBundleUpdate is the type definition for a SupportBundleUpdate.
+type SupportBundleUpdate struct {
+	// UserComment is user comment for the support bundle
+	UserComment string `json:"user_comment,omitempty" yaml:"user_comment,omitempty"`
+}
 
 // Switch is an operator's view of a Switch.
 //
@@ -6275,7 +6303,7 @@ type SwitchPortRouteConfig struct {
 	InterfaceName Name `json:"interface_name,omitempty" yaml:"interface_name,omitempty"`
 	// PortSettingsId is the port settings object this route configuration belongs to.
 	PortSettingsId string `json:"port_settings_id,omitempty" yaml:"port_settings_id,omitempty"`
-	// RibPriority is rIB Priority indicating priority within and across protocols.
+	// RibPriority is route RIB priority. Higher priority indicates precedence within and across protocols.
 	RibPriority *int `json:"rib_priority,omitempty" yaml:"rib_priority,omitempty"`
 	// VlanId is the VLAN identifier for the route. Use this if the gateway is reachable over an 802.1Q tagged L2
 	// segment.
@@ -6737,6 +6765,32 @@ type UninitializedSledResultsPage struct {
 // Units is the type definition for a Units.
 type Units string
 
+// UpdatesTrustRoot is trusted root role used by the update system to verify update repositories.
+//
+// Required fields:
+// - Id
+// - RootRole
+// - TimeCreated
+type UpdatesTrustRoot struct {
+	// Id is the UUID of this trusted root role.
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// RootRole is the trusted root role itself, a JSON document as described by The Update Framework.
+	RootRole interface{} `json:"root_role,omitempty" yaml:"root_role,omitempty"`
+	// TimeCreated is time the trusted root role was added.
+	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+}
+
+// UpdatesTrustRootResultsPage is a single page of results
+//
+// Required fields:
+// - Items
+type UpdatesTrustRootResultsPage struct {
+	// Items is list of items on this page of results
+	Items []UpdatesTrustRoot `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
 // User is view of a User
 //
 // Required fields:
@@ -7031,6 +7085,15 @@ type VpcCreate struct {
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
+// VpcFirewallIcmpFilter is the type definition for a VpcFirewallIcmpFilter.
+//
+// Required fields:
+// - IcmpType
+type VpcFirewallIcmpFilter struct {
+	Code     IcmpParamRange `json:"code,omitempty" yaml:"code,omitempty"`
+	IcmpType *int           `json:"icmp_type,omitempty" yaml:"icmp_type,omitempty"`
+}
+
 // VpcFirewallRule is a single rule in a VPC firewall
 //
 // Required fields:
@@ -7165,8 +7228,42 @@ type VpcFirewallRuleHostFilter struct {
 	Value any `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
+// VpcFirewallRuleProtocolType is the type definition for a VpcFirewallRuleProtocolType.
+type VpcFirewallRuleProtocolType string
+
+// VpcFirewallRuleProtocolTcp is the type definition for a VpcFirewallRuleProtocolTcp.
+//
+// Required fields:
+// - Type
+type VpcFirewallRuleProtocolTcp struct {
+	Type VpcFirewallRuleProtocolType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// VpcFirewallRuleProtocolUdp is the type definition for a VpcFirewallRuleProtocolUdp.
+//
+// Required fields:
+// - Type
+type VpcFirewallRuleProtocolUdp struct {
+	Type VpcFirewallRuleProtocolType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+// VpcFirewallRuleProtocolIcmp is the type definition for a VpcFirewallRuleProtocolIcmp.
+//
+// Required fields:
+// - Type
+// - Value
+type VpcFirewallRuleProtocolIcmp struct {
+	Type  VpcFirewallRuleProtocolType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value VpcFirewallIcmpFilter       `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
 // VpcFirewallRuleProtocol is the protocols that may be specified in a firewall rule's filter
-type VpcFirewallRuleProtocol string
+type VpcFirewallRuleProtocol struct {
+	// Type is the type definition for a Type.
+	Type VpcFirewallRuleProtocolType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is the type definition for a Value.
+	Value VpcFirewallIcmpFilter `json:"value,omitempty" yaml:"value,omitempty"`
+}
 
 // VpcFirewallRuleStatus is the type definition for a VpcFirewallRuleStatus.
 type VpcFirewallRuleStatus string
@@ -7645,9 +7742,17 @@ type ProbeViewParams struct {
 
 // SupportBundleListParams is the request parameters for SupportBundleList
 type SupportBundleListParams struct {
-	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit     *int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string            `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    TimeAndIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// SupportBundleCreateParams is the request parameters for SupportBundleCreate
+//
+// Required fields:
+// - Body
+type SupportBundleCreateParams struct {
+	Body *SupportBundleCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // SupportBundleDeleteParams is the request parameters for SupportBundleDelete
@@ -7664,6 +7769,16 @@ type SupportBundleDeleteParams struct {
 // - BundleId
 type SupportBundleViewParams struct {
 	BundleId string `json:"bundle_id,omitempty" yaml:"bundle_id,omitempty"`
+}
+
+// SupportBundleUpdateParams is the request parameters for SupportBundleUpdate
+//
+// Required fields:
+// - BundleId
+// - Body
+type SupportBundleUpdateParams struct {
+	BundleId string               `json:"bundle_id,omitempty" yaml:"bundle_id,omitempty"`
+	Body     *SupportBundleUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // SupportBundleDownloadParams is the request parameters for SupportBundleDownload
@@ -9389,6 +9504,14 @@ type NetworkingBgpImportedRoutesIpv4Params struct {
 	Asn *int `json:"asn,omitempty" yaml:"asn,omitempty"`
 }
 
+// NetworkingInboundIcmpUpdateParams is the request parameters for NetworkingInboundIcmpUpdate
+//
+// Required fields:
+// - Body
+type NetworkingInboundIcmpUpdateParams struct {
+	Body *ServiceIcmpConfig `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
 // NetworkingLoopbackAddressListParams is the request parameters for NetworkingLoopbackAddressList
 type NetworkingLoopbackAddressListParams struct {
 	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -9453,20 +9576,6 @@ type NetworkingSwitchPortSettingsViewParams struct {
 // - Body
 type SystemPolicyUpdateParams struct {
 	Body *FleetRolePolicy `json:"body,omitempty" yaml:"body,omitempty"`
-}
-
-// RoleListParams is the request parameters for RoleList
-type RoleListParams struct {
-	Limit     *int   `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-}
-
-// RoleViewParams is the request parameters for RoleView
-//
-// Required fields:
-// - RoleName
-type RoleViewParams struct {
-	RoleName string `json:"role_name,omitempty" yaml:"role_name,omitempty"`
 }
 
 // SystemQuotasListParams is the request parameters for SystemQuotasList
@@ -9594,6 +9703,37 @@ type TargetReleaseUpdateParams struct {
 	Body *SetTargetReleaseParams `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+// SystemUpdateTrustRootListParams is the request parameters for SystemUpdateTrustRootList
+type SystemUpdateTrustRootListParams struct {
+	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// SystemUpdateTrustRootCreateParams is the request parameters for SystemUpdateTrustRootCreate
+//
+// Required fields:
+// - Body
+type SystemUpdateTrustRootCreateParams struct {
+	Body *interface{} `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// SystemUpdateTrustRootDeleteParams is the request parameters for SystemUpdateTrustRootDelete
+//
+// Required fields:
+// - TrustRootId
+type SystemUpdateTrustRootDeleteParams struct {
+	TrustRootId string `json:"trust_root_id,omitempty" yaml:"trust_root_id,omitempty"`
+}
+
+// SystemUpdateTrustRootViewParams is the request parameters for SystemUpdateTrustRootView
+//
+// Required fields:
+// - TrustRootId
+type SystemUpdateTrustRootViewParams struct {
+	TrustRootId string `json:"trust_root_id,omitempty" yaml:"trust_root_id,omitempty"`
+}
+
 // SiloUserListParams is the request parameters for SiloUserList
 //
 // Required fields:
@@ -9658,6 +9798,44 @@ type TimeseriesQueryParams struct {
 // UserListParams is the request parameters for UserList
 type UserListParams struct {
 	Group     string     `json:"group,omitempty" yaml:"group,omitempty"`
+	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// UserViewParams is the request parameters for UserView
+//
+// Required fields:
+// - UserId
+type UserViewParams struct {
+	UserId string `json:"user_id,omitempty" yaml:"user_id,omitempty"`
+}
+
+// UserTokenListParams is the request parameters for UserTokenList
+//
+// Required fields:
+// - UserId
+type UserTokenListParams struct {
+	UserId    string     `json:"user_id,omitempty" yaml:"user_id,omitempty"`
+	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// UserLogoutParams is the request parameters for UserLogout
+//
+// Required fields:
+// - UserId
+type UserLogoutParams struct {
+	UserId string `json:"user_id,omitempty" yaml:"user_id,omitempty"`
+}
+
+// UserSessionListParams is the request parameters for UserSessionList
+//
+// Required fields:
+// - UserId
+type UserSessionListParams struct {
+	UserId    string     `json:"user_id,omitempty" yaml:"user_id,omitempty"`
 	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
@@ -10041,6 +10219,16 @@ func (p *SupportBundleListParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for SupportBundleCreateParams are set
+func (p *SupportBundleCreateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for SupportBundleDeleteParams are set
 func (p *SupportBundleDeleteParams) Validate() error {
 	v := new(Validator)
@@ -10054,6 +10242,17 @@ func (p *SupportBundleDeleteParams) Validate() error {
 // Validate verifies all required fields for SupportBundleViewParams are set
 func (p *SupportBundleViewParams) Validate() error {
 	v := new(Validator)
+	v.HasRequiredStr(string(p.BundleId), "BundleId")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SupportBundleUpdateParams are set
+func (p *SupportBundleUpdateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
 	v.HasRequiredStr(string(p.BundleId), "BundleId")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
@@ -11875,6 +12074,16 @@ func (p *NetworkingBgpImportedRoutesIpv4Params) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for NetworkingInboundIcmpUpdateParams are set
+func (p *NetworkingInboundIcmpUpdateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for NetworkingLoopbackAddressListParams are set
 func (p *NetworkingLoopbackAddressListParams) Validate() error {
 	v := new(Validator)
@@ -11949,25 +12158,6 @@ func (p *NetworkingSwitchPortSettingsViewParams) Validate() error {
 func (p *SystemPolicyUpdateParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredObj(p.Body, "Body")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for RoleListParams are set
-func (p *RoleListParams) Validate() error {
-	v := new(Validator)
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for RoleViewParams are set
-func (p *RoleViewParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredStr(string(p.RoleName), "RoleName")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -12124,6 +12314,45 @@ func (p *TargetReleaseUpdateParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for SystemUpdateTrustRootListParams are set
+func (p *SystemUpdateTrustRootListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SystemUpdateTrustRootCreateParams are set
+func (p *SystemUpdateTrustRootCreateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SystemUpdateTrustRootDeleteParams are set
+func (p *SystemUpdateTrustRootDeleteParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.TrustRootId), "TrustRootId")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SystemUpdateTrustRootViewParams are set
+func (p *SystemUpdateTrustRootViewParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.TrustRootId), "TrustRootId")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for SiloUserListParams are set
 func (p *SiloUserListParams) Validate() error {
 	v := new(Validator)
@@ -12196,6 +12425,46 @@ func (p *TimeseriesQueryParams) Validate() error {
 // Validate verifies all required fields for UserListParams are set
 func (p *UserListParams) Validate() error {
 	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for UserViewParams are set
+func (p *UserViewParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.UserId), "UserId")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for UserTokenListParams are set
+func (p *UserTokenListParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.UserId), "UserId")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for UserLogoutParams are set
+func (p *UserLogoutParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.UserId), "UserId")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for UserSessionListParams are set
+func (p *UserSessionListParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.UserId), "UserId")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -13281,11 +13550,11 @@ const TargetReleaseSourceTypeUnspecified TargetReleaseSourceType = "unspecified"
 // TargetReleaseSourceTypeSystemVersion represents the TargetReleaseSourceType `"system_version"`.
 const TargetReleaseSourceTypeSystemVersion TargetReleaseSourceType = "system_version"
 
-// TimeAndIdSortModeAscending represents the TimeAndIdSortMode `"ascending"`.
-const TimeAndIdSortModeAscending TimeAndIdSortMode = "ascending"
+// TimeAndIdSortModeTimeAndIdAscending represents the TimeAndIdSortMode `"time_and_id_ascending"`.
+const TimeAndIdSortModeTimeAndIdAscending TimeAndIdSortMode = "time_and_id_ascending"
 
-// TimeAndIdSortModeDescending represents the TimeAndIdSortMode `"descending"`.
-const TimeAndIdSortModeDescending TimeAndIdSortMode = "descending"
+// TimeAndIdSortModeTimeAndIdDescending represents the TimeAndIdSortMode `"time_and_id_descending"`.
+const TimeAndIdSortModeTimeAndIdDescending TimeAndIdSortMode = "time_and_id_descending"
 
 // TufRepoInsertStatusAlreadyExists represents the TufRepoInsertStatus `"already_exists"`.
 const TufRepoInsertStatusAlreadyExists TufRepoInsertStatus = "already_exists"
@@ -13374,14 +13643,14 @@ const VpcFirewallRuleHostFilterTypeIp VpcFirewallRuleHostFilterType = "ip"
 // VpcFirewallRuleHostFilterTypeIpNet represents the VpcFirewallRuleHostFilterType `"ip_net"`.
 const VpcFirewallRuleHostFilterTypeIpNet VpcFirewallRuleHostFilterType = "ip_net"
 
-// VpcFirewallRuleProtocolTcp represents the VpcFirewallRuleProtocol `"TCP"`.
-const VpcFirewallRuleProtocolTcp VpcFirewallRuleProtocol = "TCP"
+// VpcFirewallRuleProtocolTypeTcp represents the VpcFirewallRuleProtocolType `"tcp"`.
+const VpcFirewallRuleProtocolTypeTcp VpcFirewallRuleProtocolType = "tcp"
 
-// VpcFirewallRuleProtocolUdp represents the VpcFirewallRuleProtocol `"UDP"`.
-const VpcFirewallRuleProtocolUdp VpcFirewallRuleProtocol = "UDP"
+// VpcFirewallRuleProtocolTypeUdp represents the VpcFirewallRuleProtocolType `"udp"`.
+const VpcFirewallRuleProtocolTypeUdp VpcFirewallRuleProtocolType = "udp"
 
-// VpcFirewallRuleProtocolIcmp represents the VpcFirewallRuleProtocol `"ICMP"`.
-const VpcFirewallRuleProtocolIcmp VpcFirewallRuleProtocol = "ICMP"
+// VpcFirewallRuleProtocolTypeIcmp represents the VpcFirewallRuleProtocolType `"icmp"`.
+const VpcFirewallRuleProtocolTypeIcmp VpcFirewallRuleProtocolType = "icmp"
 
 // VpcFirewallRuleStatusDisabled represents the VpcFirewallRuleStatus `"disabled"`.
 const VpcFirewallRuleStatusDisabled VpcFirewallRuleStatus = "disabled"
@@ -13992,8 +14261,8 @@ var TargetReleaseSourceTypeCollection = []TargetReleaseSourceType{
 
 // TimeAndIdSortModeCollection is the collection of all TimeAndIdSortMode values.
 var TimeAndIdSortModeCollection = []TimeAndIdSortMode{
-	TimeAndIdSortModeAscending,
-	TimeAndIdSortModeDescending,
+	TimeAndIdSortModeTimeAndIdAscending,
+	TimeAndIdSortModeTimeAndIdDescending,
 }
 
 // TufRepoInsertStatusCollection is the collection of all TufRepoInsertStatus values.
@@ -14053,11 +14322,11 @@ var VpcFirewallRuleHostFilterTypeCollection = []VpcFirewallRuleHostFilterType{
 	VpcFirewallRuleHostFilterTypeVpc,
 }
 
-// VpcFirewallRuleProtocolCollection is the collection of all VpcFirewallRuleProtocol values.
-var VpcFirewallRuleProtocolCollection = []VpcFirewallRuleProtocol{
-	VpcFirewallRuleProtocolIcmp,
-	VpcFirewallRuleProtocolTcp,
-	VpcFirewallRuleProtocolUdp,
+// VpcFirewallRuleProtocolTypeCollection is the collection of all VpcFirewallRuleProtocolType values.
+var VpcFirewallRuleProtocolTypeCollection = []VpcFirewallRuleProtocolType{
+	VpcFirewallRuleProtocolTypeIcmp,
+	VpcFirewallRuleProtocolTypeTcp,
+	VpcFirewallRuleProtocolTypeUdp,
 }
 
 // VpcFirewallRuleStatusCollection is the collection of all VpcFirewallRuleStatus values.
