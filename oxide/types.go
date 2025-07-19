@@ -2595,7 +2595,7 @@ type ExternalIp struct {
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 	// InstanceId is the ID of the instance that this Floating IP is attached to, if it is presently in use.
-	InstanceId string `json:"instance_id,omitempty" yaml:"instance_id,omitempty"`
+	InstanceId string `json:"instance_id,omitzero" yaml:"instance_id,omitzero"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// ProjectId is the project this resource exists within.
@@ -2635,7 +2635,7 @@ type ExternalIpCreateFloating struct {
 // ExternalIpCreate is parameters for creating an external IP address for instances.
 type ExternalIpCreate struct {
 	// Pool is the type definition for a Pool.
-	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Pool NameOrId `json:"pool,omitzero" yaml:"pool,omitzero"`
 	// Type is the type definition for a Type.
 	Type ExternalIpCreateType `json:"type,omitempty" yaml:"type,omitempty"`
 	// FloatingIp is the type definition for a FloatingIp.
@@ -7262,7 +7262,7 @@ type VpcFirewallRuleProtocol struct {
 	// Type is the type definition for a Type.
 	Type VpcFirewallRuleProtocolType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is the type definition for a Value.
-	Value VpcFirewallIcmpFilter `json:"value,omitempty" yaml:"value,omitempty"`
+	Value VpcFirewallIcmpFilter `json:"value,omitzero" yaml:"value,omitzero"`
 }
 
 // VpcFirewallRuleStatus is the type definition for a VpcFirewallRuleStatus.

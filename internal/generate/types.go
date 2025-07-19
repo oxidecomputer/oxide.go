@@ -743,6 +743,11 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 					field.Type = "any"
 				}
 
+				// Check if the field is nullable and use omitzero instead of omitempty.
+				if p.Value != nil && p.Value.Nullable {
+					field.SerializationInfo = fmt.Sprintf("`json:\"%s,omitzero\" yaml:\"%s,omitzero\"`", prop, prop)
+				}
+
 				fields = append(fields, field)
 
 				parsedProperties = append(parsedProperties, propertyName)
