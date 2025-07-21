@@ -138,36 +138,63 @@ func convertToValidGoType(property, typeName string, r *openapi3.SchemaRef) stri
 		return convertToValidGoType(property, "", r.Value.AllOf[0])
 	}
 
-	var schemaType string
+	if r.Value.Type.Is("object") {
+		// This is a local object, we make sure there are no duplicates
+		// by concactenating the type name and the property name.
+		return typeName + strcase.ToCamel(property)
+	}
 
-	if r.Value.Type.Is("string") {
-		schemaType = formatStringType(r.Value)
-	} else if r.Value.Type.Is("integer") {
+	return schemaValueToGoType(r.Value, property)
+}
+
+func schemaValueToGoType(schemaValue *openapi3.Schema, property string) string {
+	if schemaValue.Type == nil {
+		fmt.Printf("[WARN] TODO: handle nil type for %q, marking as any for now\n", property)
+		return "any"
+	}
+
+	if schemaValue.Type.Is("string") {
+		return formatStringType(schemaValue)
+	}
+
+	if schemaValue.Type.Is("integer") {
 		// It is necessary to use pointers for integer types as we need
 		// to differentiate between an empty value and a 0.
-		schemaType = "*int"
-	} else if r.Value.Type.Is("number") {
-		schemaType = "float64"
-	} else if r.Value.Type.Is("boolean") {
+		return "*int"
+	}
+
+	if schemaValue.Type.Is("number") {
+		return "float64"
+	}
+
+	if schemaValue.Type.Is("boolean") {
 		// Using a pointer here as the json encoder takes false as null
-		schemaType = "*bool"
-	} else if r.Value.Type.Is("array") {
-		reference := getReferenceSchema(r.Value.Items)
+		return "*bool"
+	}
+
+	if schemaValue.Type.Is("array") {
+		// We handle the case of an array that does not have any item definition
+		if schemaValue.Items == nil {
+			return "[]any"
+		}
+
+		reference := getReferenceSchema(schemaValue.Items)
 		if reference != "" {
 			return fmt.Sprintf("[]%s", reference)
 		}
-		// TODO: handle if it is not a reference.
-		schemaType = "[]string"
-	} else if r.Value.Type.Is("object") {
-		// This is a local object, we make sure there are no duplicates
-		// by concactenating the type name and the property name.
-		schemaType = typeName + strcase.ToCamel(property)
-	} else {
-		fmt.Printf("[WARN] TODO: handle type %q for %q, marking as interface{} for now\n", r.Value.Type, property)
-		schemaType = "interface{}"
+
+		schemaType := schemaValueToGoType(schemaValue.Items.Value, property)
+		// We don't anticipate the need for slices of pointers
+		schemaType = strings.TrimPrefix(schemaType, "*")
+		return fmt.Sprintf("[]%v", schemaType)
 	}
 
-	return schemaType
+	if schemaValue.Type.Is("object") {
+		return "object"
+	}
+
+	fmt.Printf("[WARN] TODO: handle type %q for %q, marking as any for now\n", schemaValue.Type, property)
+	return "any"
 }
 
 func getReferenceSchema(v *openapi3.SchemaRef) string {

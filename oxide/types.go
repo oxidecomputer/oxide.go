@@ -947,7 +947,7 @@ type BgpPeer struct {
 	// BgpConfig is the global BGP configuration used for establishing a session with this peer.
 	BgpConfig NameOrId `json:"bgp_config,omitempty" yaml:"bgp_config,omitempty"`
 	// Communities is include the provided communities in updates sent to the peer.
-	Communities []string `json:"communities,omitempty" yaml:"communities,omitempty"`
+	Communities []int `json:"communities,omitempty" yaml:"communities,omitempty"`
 	// ConnectRetry is how long to to wait between TCP connection retries (seconds).
 	ConnectRetry *int `json:"connect_retry,omitempty" yaml:"connect_retry,omitempty"`
 	// DelayOpen is how long to delay sending an open request after establishing a TCP session (seconds).
@@ -1869,7 +1869,7 @@ type DatumString struct {
 // - Datum
 // - Type
 type DatumBytes struct {
-	Datum []string  `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Datum []int     `json:"datum,omitempty" yaml:"datum,omitempty"`
 	Type  DatumType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
@@ -2456,15 +2456,15 @@ type DiskState struct {
 // - SquaredMean
 // - SumOfSamples
 type Distributiondouble struct {
-	Bins         []string `json:"bins,omitempty" yaml:"bins,omitempty"`
-	Counts       []string `json:"counts,omitempty" yaml:"counts,omitempty"`
-	Max          float64  `json:"max,omitempty" yaml:"max,omitempty"`
-	Min          float64  `json:"min,omitempty" yaml:"min,omitempty"`
-	P50          Quantile `json:"p50,omitempty" yaml:"p50,omitempty"`
-	P90          Quantile `json:"p90,omitempty" yaml:"p90,omitempty"`
-	P99          Quantile `json:"p99,omitempty" yaml:"p99,omitempty"`
-	SquaredMean  float64  `json:"squared_mean,omitempty" yaml:"squared_mean,omitempty"`
-	SumOfSamples float64  `json:"sum_of_samples,omitempty" yaml:"sum_of_samples,omitempty"`
+	Bins         []float64 `json:"bins,omitempty" yaml:"bins,omitempty"`
+	Counts       []int     `json:"counts,omitempty" yaml:"counts,omitempty"`
+	Max          float64   `json:"max,omitempty" yaml:"max,omitempty"`
+	Min          float64   `json:"min,omitempty" yaml:"min,omitempty"`
+	P50          Quantile  `json:"p50,omitempty" yaml:"p50,omitempty"`
+	P90          Quantile  `json:"p90,omitempty" yaml:"p90,omitempty"`
+	P99          Quantile  `json:"p99,omitempty" yaml:"p99,omitempty"`
+	SquaredMean  float64   `json:"squared_mean,omitempty" yaml:"squared_mean,omitempty"`
+	SumOfSamples float64   `json:"sum_of_samples,omitempty" yaml:"sum_of_samples,omitempty"`
 }
 
 // Distributionint64 is a distribution is a sequence of bins and counts in those bins, and some statistical information
@@ -2479,8 +2479,8 @@ type Distributiondouble struct {
 // - SquaredMean
 // - SumOfSamples
 type Distributionint64 struct {
-	Bins         []string `json:"bins,omitempty" yaml:"bins,omitempty"`
-	Counts       []string `json:"counts,omitempty" yaml:"counts,omitempty"`
+	Bins         []int    `json:"bins,omitempty" yaml:"bins,omitempty"`
+	Counts       []int    `json:"counts,omitempty" yaml:"counts,omitempty"`
 	Max          *int     `json:"max,omitempty" yaml:"max,omitempty"`
 	Min          *int     `json:"min,omitempty" yaml:"min,omitempty"`
 	P50          Quantile `json:"p50,omitempty" yaml:"p50,omitempty"`
@@ -3947,7 +3947,7 @@ type InstanceResultsPage struct {
 type InstanceSerialConsoleData struct {
 	// Data is the bytes starting from the requested offset up to either the end of the buffer or the request's `max_bytes`.
 	// Provided as a u8 array rather than a string, as it may not be UTF-8.
-	Data []string `json:"data,omitempty" yaml:"data,omitempty"`
+	Data []int `json:"data,omitempty" yaml:"data,omitempty"`
 	// LastByteOffset is the absolute offset since boot (suitable for use as `byte_offset` in a subsequent request)
 	// of the last byte returned in `data`.
 	LastByteOffset *int `json:"last_byte_offset,omitempty" yaml:"last_byte_offset,omitempty"`
@@ -4568,7 +4568,7 @@ type MacAddr string
 type ManagementAddress struct {
 	Addr         NetworkAddress `json:"addr,omitempty" yaml:"addr,omitempty"`
 	InterfaceNum InterfaceNum   `json:"interface_num,omitempty" yaml:"interface_num,omitempty"`
-	Oid          []string       `json:"oid" yaml:"oid"`
+	Oid          []int          `json:"oid" yaml:"oid"`
 }
 
 // Measurement is a `Measurement` is a timestamped datum from a single metric
@@ -4633,7 +4633,7 @@ type NetworkAddressIpAddr struct {
 // Required fields:
 // - IEEE802
 type NetworkAddressIeee802 struct {
-	IEEE802 []string `json:"i_e_e_e802,omitempty" yaml:"i_e_e_e802,omitempty"`
+	IEEE802 []int `json:"i_e_e_e802,omitempty" yaml:"i_e_e_e802,omitempty"`
 }
 
 // NetworkAddress is the type definition for a NetworkAddress.
@@ -4641,7 +4641,7 @@ type NetworkAddress struct {
 	// IpAddr is the type definition for a IpAddr.
 	IpAddr string `json:"ip_addr,omitempty" yaml:"ip_addr,omitempty"`
 	// IEEE802 is the type definition for a IEEE802.
-	IEEE802 []string `json:"i_e_e_e802,omitempty" yaml:"i_e_e_e802,omitempty"`
+	IEEE802 []int `json:"i_e_e_e802,omitempty" yaml:"i_e_e_e802,omitempty"`
 }
 
 // NetworkInterface is information required to construct a virtual network interface
@@ -4832,9 +4832,9 @@ type PingStatus string
 // - Timestamps
 // - Values
 type Points struct {
-	StartTimes []string `json:"start_times" yaml:"start_times"`
-	Timestamps []string `json:"timestamps,omitempty" yaml:"timestamps,omitempty"`
-	Values     []Values `json:"values,omitempty" yaml:"values,omitempty"`
+	StartTimes []time.Time `json:"start_times" yaml:"start_times"`
+	Timestamps []time.Time `json:"timestamps,omitempty" yaml:"timestamps,omitempty"`
+	Values     []Values    `json:"values,omitempty" yaml:"values,omitempty"`
 }
 
 // Probe is identity-related metadata that's included in nearly all public API objects
@@ -5021,15 +5021,15 @@ type ProjectUpdate struct {
 // - P
 type Quantile struct {
 	// DesiredMarkerPositions is the desired marker positions.
-	DesiredMarkerPositions []string `json:"desired_marker_positions,omitempty" yaml:"desired_marker_positions,omitempty"`
+	DesiredMarkerPositions []float64 `json:"desired_marker_positions,omitempty" yaml:"desired_marker_positions,omitempty"`
 	// MarkerHeights is the heights of the markers.
-	MarkerHeights []string `json:"marker_heights,omitempty" yaml:"marker_heights,omitempty"`
+	MarkerHeights []float64 `json:"marker_heights,omitempty" yaml:"marker_heights,omitempty"`
 	// MarkerPositions is the positions of the markers.
 	//
 	// We track sample size in the 5th position, as useful observations won't start until we've filled the heights at
 	// the 6th sample anyway This does deviate from the paper, but it's a more useful representation that works according
 	// to the paper's algorithm.
-	MarkerPositions []string `json:"marker_positions,omitempty" yaml:"marker_positions,omitempty"`
+	MarkerPositions []int `json:"marker_positions,omitempty" yaml:"marker_positions,omitempty"`
 	// P is the p value for the quantile.
 	P float64 `json:"p,omitempty" yaml:"p,omitempty"`
 }
@@ -6882,7 +6882,7 @@ type ValueArrayType string
 // - Values
 type ValueArrayInteger struct {
 	Type   ValueArrayType `json:"type,omitempty" yaml:"type,omitempty"`
-	Values []string       `json:"values,omitempty" yaml:"values,omitempty"`
+	Values []int          `json:"values,omitempty" yaml:"values,omitempty"`
 }
 
 // ValueArrayDouble is the type definition for a ValueArrayDouble.
@@ -6892,7 +6892,7 @@ type ValueArrayInteger struct {
 // - Values
 type ValueArrayDouble struct {
 	Type   ValueArrayType `json:"type,omitempty" yaml:"type,omitempty"`
-	Values []string       `json:"values,omitempty" yaml:"values,omitempty"`
+	Values []float64      `json:"values,omitempty" yaml:"values,omitempty"`
 }
 
 // ValueArrayBoolean is the type definition for a ValueArrayBoolean.
@@ -6902,7 +6902,7 @@ type ValueArrayDouble struct {
 // - Values
 type ValueArrayBoolean struct {
 	Type   ValueArrayType `json:"type,omitempty" yaml:"type,omitempty"`
-	Values []string       `json:"values,omitempty" yaml:"values,omitempty"`
+	Values []bool         `json:"values,omitempty" yaml:"values,omitempty"`
 }
 
 // ValueArrayString is the type definition for a ValueArrayString.
@@ -6922,7 +6922,7 @@ type ValueArrayString struct {
 // - Values
 type ValueArrayIntegerDistribution struct {
 	Type   ValueArrayType `json:"type,omitempty" yaml:"type,omitempty"`
-	Values []string       `json:"values,omitempty" yaml:"values,omitempty"`
+	Values []any          `json:"values,omitempty" yaml:"values,omitempty"`
 }
 
 // ValueArrayDoubleDistribution is the type definition for a ValueArrayDoubleDistribution.
@@ -6932,7 +6932,7 @@ type ValueArrayIntegerDistribution struct {
 // - Values
 type ValueArrayDoubleDistribution struct {
 	Type   ValueArrayType `json:"type,omitempty" yaml:"type,omitempty"`
-	Values []string       `json:"values,omitempty" yaml:"values,omitempty"`
+	Values []any          `json:"values,omitempty" yaml:"values,omitempty"`
 }
 
 // ValueArray is list of data values for one timeseries.
@@ -6942,7 +6942,7 @@ type ValueArray struct {
 	// Type is the type definition for a Type.
 	Type ValueArrayType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Values is the type definition for a Values.
-	Values []string `json:"values,omitempty" yaml:"values,omitempty"`
+	Values any `json:"values,omitempty" yaml:"values,omitempty"`
 }
 
 // Values is a single list of values, for one dimension of a timeseries.
