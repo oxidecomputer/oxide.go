@@ -1,6 +1,6 @@
 [[breaking]]
-title = ""
-description = ""
+title = "`VpcFirewallRuleProtocol` type change"
+description = "Changed the type of the `VpcFirewallRuleProtocol` struct to reflect upstream API changes. [#304](https://github.com/oxidecomputer/oxide.go/pull/304)"
 
 [[features]]
 title = ""
