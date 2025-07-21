@@ -9331,6 +9331,86 @@ func (c *Client) NetworkingBgpStatus(ctx context.Context) (*[]BgpPeerStatus, err
 	return &body, nil
 }
 
+// NetworkingInboundIcmpView: Return whether API services can receive limited ICMP traffic
+func (c *Client) NetworkingInboundIcmpView(ctx context.Context) (*ServiceIcmpConfig, error) {
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/networking/inbound-icmp"),
+		map[string]string{},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body ServiceIcmpConfig
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// NetworkingInboundIcmpUpdate: Set whether API services can receive limited ICMP traffic
+func (c *Client) NetworkingInboundIcmpUpdate(ctx context.Context, params NetworkingInboundIcmpUpdateParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"PUT",
+		resolveRelative(c.host, "/v1/system/networking/inbound-icmp"),
+		map[string]string{},
+		map[string]string{},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // NetworkingLoopbackAddressList: List loopback addresses
 //
 // To iterate over all pages, use the `NetworkingLoopbackAddressListAllPages` method, instead.
@@ -9786,127 +9866,6 @@ func (c *Client) SystemPolicyUpdate(ctx context.Context, params SystemPolicyUpda
 	}
 
 	var body FleetRolePolicy
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// RoleList: List built-in roles
-//
-// To iterate over all pages, use the `RoleListAllPages` method, instead.
-func (c *Client) RoleList(ctx context.Context, params RoleListParams) (*RoleResultsPage, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/roles"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-		},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body RoleResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// RoleListAllPages: List built-in roles
-//
-// This method is a wrapper around the `RoleList` method.
-// This method returns all the pages at once.
-func (c *Client) RoleListAllPages(ctx context.Context, params RoleListParams) ([]Role, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	var allPages []Role
-	params.PageToken = ""
-	params.Limit = NewPointer(100)
-	for {
-		page, err := c.RoleList(ctx, params)
-		if err != nil {
-			return nil, err
-		}
-		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == params.PageToken {
-			break
-		}
-		params.PageToken = page.NextPage
-	}
-
-	return allPages, nil
-}
-
-// RoleView: Fetch built-in role
-func (c *Client) RoleView(ctx context.Context, params RoleViewParams) (*Role, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/roles/{{.role_name}}"),
-		map[string]string{
-			"role_name": params.RoleName,
-		},
-		map[string]string{},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body Role
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -11040,6 +10999,245 @@ func (c *Client) UserListAllPages(ctx context.Context, params UserListParams) ([
 	params.Limit = NewPointer(100)
 	for {
 		page, err := c.UserList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
+}
+
+// UserView: Fetch user
+func (c *Client) UserView(ctx context.Context, params UserViewParams) (*User, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/users/{{.user_id}}"),
+		map[string]string{
+			"user_id": params.UserId,
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body User
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// UserTokenList: List user's access tokens
+//
+// To iterate over all pages, use the `UserTokenListAllPages` method, instead.
+func (c *Client) UserTokenList(ctx context.Context, params UserTokenListParams) (*DeviceAccessTokenResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/users/{{.user_id}}/access-tokens"),
+		map[string]string{
+			"user_id": params.UserId,
+		},
+		map[string]string{
+			"limit":      PointerIntToStr(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body DeviceAccessTokenResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// UserTokenListAllPages: List user's access tokens
+//
+// This method is a wrapper around the `UserTokenList` method.
+// This method returns all the pages at once.
+func (c *Client) UserTokenListAllPages(ctx context.Context, params UserTokenListParams) ([]DeviceAccessToken, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []DeviceAccessToken
+	params.PageToken = ""
+	params.Limit = NewPointer(100)
+	for {
+		page, err := c.UserTokenList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
+}
+
+// UserLogout: Log user out
+// Silo admins can use this endpoint to log the specified user out by deleting all of their tokens AND sessions. This
+// cannot be undone.
+func (c *Client) UserLogout(ctx context.Context, params UserLogoutParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"POST",
+		resolveRelative(c.host, "/v1/users/{{.user_id}}/logout"),
+		map[string]string{
+			"user_id": params.UserId,
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// UserSessionList: List user's console sessions
+//
+// To iterate over all pages, use the `UserSessionListAllPages` method, instead.
+func (c *Client) UserSessionList(ctx context.Context, params UserSessionListParams) (*ConsoleSessionResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/users/{{.user_id}}/sessions"),
+		map[string]string{
+			"user_id": params.UserId,
+		},
+		map[string]string{
+			"limit":      PointerIntToStr(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body ConsoleSessionResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// UserSessionListAllPages: List user's console sessions
+//
+// This method is a wrapper around the `UserSessionList` method.
+// This method returns all the pages at once.
+func (c *Client) UserSessionListAllPages(ctx context.Context, params UserSessionListParams) ([]ConsoleSession, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []ConsoleSession
+	params.PageToken = ""
+	params.Limit = NewPointer(100)
+	for {
+		page, err := c.UserSessionList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
