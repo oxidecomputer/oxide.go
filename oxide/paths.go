@@ -1736,88 +1736,6 @@ func (c *Client) DiskFinalizeImport(ctx context.Context, params DiskFinalizeImpo
 	return nil
 }
 
-// DiskMetricsList: Fetch disk metrics
-//
-// To iterate over all pages, use the `DiskMetricsListAllPages` method, instead.
-func (c *Client) DiskMetricsList(ctx context.Context, params DiskMetricsListParams) (*MeasurementResultsPage, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/disks/{{.disk}}/metrics/{{.metric}}"),
-		map[string]string{
-			"disk":   string(params.Disk),
-			"metric": string(params.Metric),
-		},
-		map[string]string{
-			"end_time":   params.EndTime.Format(time.RFC3339),
-			"limit":      PointerIntToStr(params.Limit),
-			"order":      string(params.Order),
-			"page_token": params.PageToken,
-			"project":    string(params.Project),
-			"start_time": params.StartTime.Format(time.RFC3339),
-		},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body MeasurementResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// DiskMetricsListAllPages: Fetch disk metrics
-//
-// This method is a wrapper around the `DiskMetricsList` method.
-// This method returns all the pages at once.
-func (c *Client) DiskMetricsListAllPages(ctx context.Context, params DiskMetricsListParams) ([]Measurement, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	var allPages []Measurement
-	params.PageToken = ""
-	params.Limit = NewPointer(100)
-	for {
-		page, err := c.DiskMetricsList(ctx, params)
-		if err != nil {
-			return nil, err
-		}
-		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == params.PageToken {
-			break
-		}
-		params.PageToken = page.NextPage
-	}
-
-	return allPages, nil
-}
-
 // FloatingIpList: List floating IPs
 //
 // To iterate over all pages, use the `FloatingIpListAllPages` method, instead.
@@ -8483,6 +8401,52 @@ func (c *Client) NetworkingAddressLotCreate(ctx context.Context, params Networki
 	}
 
 	var body AddressLotCreateResponse
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// NetworkingAddressLotView: Fetch address lot
+func (c *Client) NetworkingAddressLotView(ctx context.Context, params NetworkingAddressLotViewParams) (*AddressLotViewResponse, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/networking/address-lot/{{.address_lot}}"),
+		map[string]string{
+			"address_lot": string(params.AddressLot),
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body AddressLotViewResponse
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}

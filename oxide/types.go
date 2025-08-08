@@ -149,6 +149,18 @@ type AddressLotResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+// AddressLotViewResponse is an address lot and associated blocks resulting from viewing an address lot.
+//
+// Required fields:
+// - Blocks
+// - Lot
+type AddressLotViewResponse struct {
+	// Blocks is the address lot blocks.
+	Blocks []AddressLotBlock `json:"blocks,omitempty" yaml:"blocks,omitempty"`
+	// Lot is the address lot.
+	Lot AddressLot `json:"lot,omitempty" yaml:"lot,omitempty"`
+}
+
 // AffinityGroup is view of an Affinity Group
 //
 // Required fields:
@@ -201,6 +213,9 @@ type AffinityGroupCreate struct {
 	Policy AffinityPolicy `json:"policy,omitempty" yaml:"policy,omitempty"`
 }
 
+// AffinityGroupMemberType is the type definition for a AffinityGroupMemberType.
+type AffinityGroupMemberType string
+
 // AffinityGroupMemberValue is the type definition for a AffinityGroupMemberValue.
 //
 // Required fields:
@@ -219,9 +234,6 @@ type AffinityGroupMemberValue struct {
 	// to the Instance's lifecycle
 	RunState InstanceState `json:"run_state,omitempty" yaml:"run_state,omitempty"`
 }
-
-// AffinityGroupMemberType is the type definition for a AffinityGroupMemberType.
-type AffinityGroupMemberType string
 
 // AffinityGroupMemberInstance is an instance belonging to this group
 //
@@ -596,9 +608,6 @@ type AntiAffinityGroupCreate struct {
 	Policy AffinityPolicy `json:"policy,omitempty" yaml:"policy,omitempty"`
 }
 
-// AntiAffinityGroupMemberType is the type definition for a AntiAffinityGroupMemberType.
-type AntiAffinityGroupMemberType string
-
 // AntiAffinityGroupMemberValue is the type definition for a AntiAffinityGroupMemberValue.
 //
 // Required fields:
@@ -617,6 +626,9 @@ type AntiAffinityGroupMemberValue struct {
 	// to the Instance's lifecycle
 	RunState InstanceState `json:"run_state,omitempty" yaml:"run_state,omitempty"`
 }
+
+// AntiAffinityGroupMemberType is the type definition for a AntiAffinityGroupMemberType.
+type AntiAffinityGroupMemberType string
 
 // AntiAffinityGroupMemberInstance is an instance belonging to this group
 //
@@ -2275,9 +2287,6 @@ type DiskCreate struct {
 	Size ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
 }
 
-// DiskMetricName is the type definition for a DiskMetricName.
-type DiskMetricName string
-
 // DiskPath is the type definition for a DiskPath.
 //
 // Required fields:
@@ -2535,6 +2544,28 @@ type Error struct {
 // ExternalIpKind is the type definition for a ExternalIpKind.
 type ExternalIpKind string
 
+// ExternalIpSnat is a source NAT IP address.
+//
+// SNAT addresses are ephemeral addresses used only for outbound connectivity.
+//
+// Required fields:
+// - FirstPort
+// - Ip
+// - IpPoolId
+// - Kind
+// - LastPort
+type ExternalIpSnat struct {
+	// FirstPort is the first usable port within the IP address.
+	FirstPort *int `json:"first_port,omitempty" yaml:"first_port,omitempty"`
+	// Ip is the IP address.
+	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
+	// IpPoolId is iD of the IP Pool from which the address is taken.
+	IpPoolId string         `json:"ip_pool_id,omitempty" yaml:"ip_pool_id,omitempty"`
+	Kind     ExternalIpKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+	// LastPort is the last usable port within the IP address.
+	LastPort *int `json:"last_port,omitempty" yaml:"last_port,omitempty"`
+}
+
 // ExternalIpEphemeral is the type definition for a ExternalIpEphemeral.
 //
 // Required fields:
@@ -2584,12 +2615,16 @@ type ExternalIpFloating struct {
 
 // ExternalIp is the type definition for a ExternalIp.
 type ExternalIp struct {
-	// Ip is the type definition for a Ip.
+	// FirstPort is the first usable port within the IP address.
+	FirstPort *int `json:"first_port,omitempty" yaml:"first_port,omitempty"`
+	// Ip is the IP address.
 	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
-	// IpPoolId is the type definition for a IpPoolId.
+	// IpPoolId is iD of the IP Pool from which the address is taken.
 	IpPoolId string `json:"ip_pool_id,omitempty" yaml:"ip_pool_id,omitempty"`
 	// Kind is the type definition for a Kind.
 	Kind ExternalIpKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+	// LastPort is the last usable port within the IP address.
+	LastPort *int `json:"last_port,omitempty" yaml:"last_port,omitempty"`
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Id is unique, immutable, system-controlled identifier for each resource
@@ -8233,24 +8268,6 @@ type DiskFinalizeImportParams struct {
 	Body    *FinalizeDisk `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
-// DiskMetricsListParams is the request parameters for DiskMetricsList
-//
-// Required fields:
-// - EndTime
-// - StartTime
-// - Disk
-// - Metric
-type DiskMetricsListParams struct {
-	Disk      NameOrId        `json:"disk,omitempty" yaml:"disk,omitempty"`
-	Metric    DiskMetricName  `json:"metric,omitempty" yaml:"metric,omitempty"`
-	EndTime   *time.Time      `json:"end_time,omitempty" yaml:"end_time,omitempty"`
-	Limit     *int            `json:"limit,omitempty" yaml:"limit,omitempty"`
-	Order     PaginationOrder `json:"order,omitempty" yaml:"order,omitempty"`
-	PageToken string          `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	StartTime *time.Time      `json:"start_time,omitempty" yaml:"start_time,omitempty"`
-	Project   NameOrId        `json:"project,omitempty" yaml:"project,omitempty"`
-}
-
 // FloatingIpListParams is the request parameters for FloatingIpList
 //
 // Required fields:
@@ -9396,6 +9413,14 @@ type NetworkingAddressLotCreateParams struct {
 // Required fields:
 // - AddressLot
 type NetworkingAddressLotDeleteParams struct {
+	AddressLot NameOrId `json:"address_lot,omitempty" yaml:"address_lot,omitempty"`
+}
+
+// NetworkingAddressLotViewParams is the request parameters for NetworkingAddressLotView
+//
+// Required fields:
+// - AddressLot
+type NetworkingAddressLotViewParams struct {
 	AddressLot NameOrId `json:"address_lot,omitempty" yaml:"address_lot,omitempty"`
 }
 
@@ -10734,17 +10759,6 @@ func (p *DiskFinalizeImportParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for DiskMetricsListParams are set
-func (p *DiskMetricsListParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredStr(string(p.Disk), "Disk")
-	v.HasRequiredStr(string(p.Metric), "Metric")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
 // Validate verifies all required fields for FloatingIpListParams are set
 func (p *FloatingIpListParams) Validate() error {
 	v := new(Validator)
@@ -11946,6 +11960,16 @@ func (p *NetworkingAddressLotDeleteParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for NetworkingAddressLotViewParams are set
+func (p *NetworkingAddressLotViewParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.AddressLot), "AddressLot")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for NetworkingAddressLotBlockListParams are set
 func (p *NetworkingAddressLotBlockListParams) Validate() error {
 	v := new(Validator)
@@ -13031,24 +13055,6 @@ const DatumTypeMissing DatumType = "missing"
 // DigestTypeSha256 represents the DigestType `"sha256"`.
 const DigestTypeSha256 DigestType = "sha256"
 
-// DiskMetricNameActivated represents the DiskMetricName `"activated"`.
-const DiskMetricNameActivated DiskMetricName = "activated"
-
-// DiskMetricNameFlush represents the DiskMetricName `"flush"`.
-const DiskMetricNameFlush DiskMetricName = "flush"
-
-// DiskMetricNameRead represents the DiskMetricName `"read"`.
-const DiskMetricNameRead DiskMetricName = "read"
-
-// DiskMetricNameReadBytes represents the DiskMetricName `"read_bytes"`.
-const DiskMetricNameReadBytes DiskMetricName = "read_bytes"
-
-// DiskMetricNameWrite represents the DiskMetricName `"write"`.
-const DiskMetricNameWrite DiskMetricName = "write"
-
-// DiskMetricNameWriteBytes represents the DiskMetricName `"write_bytes"`.
-const DiskMetricNameWriteBytes DiskMetricName = "write_bytes"
-
 // DiskSourceTypeBlank represents the DiskSourceType `"blank"`.
 const DiskSourceTypeBlank DiskSourceType = "blank"
 
@@ -13096,6 +13102,9 @@ const DiskStateStateDestroyed DiskStateState = "destroyed"
 
 // DiskStateStateFaulted represents the DiskStateState `"faulted"`.
 const DiskStateStateFaulted DiskStateState = "faulted"
+
+// ExternalIpKindSnat represents the ExternalIpKind `"snat"`.
+const ExternalIpKindSnat ExternalIpKind = "snat"
 
 // ExternalIpKindEphemeral represents the ExternalIpKind `"ephemeral"`.
 const ExternalIpKindEphemeral ExternalIpKind = "ephemeral"
@@ -13878,16 +13887,6 @@ var DigestTypeCollection = []DigestType{
 	DigestTypeSha256,
 }
 
-// DiskMetricNameCollection is the collection of all DiskMetricName values.
-var DiskMetricNameCollection = []DiskMetricName{
-	DiskMetricNameActivated,
-	DiskMetricNameFlush,
-	DiskMetricNameRead,
-	DiskMetricNameReadBytes,
-	DiskMetricNameWrite,
-	DiskMetricNameWriteBytes,
-}
-
 // DiskSourceTypeCollection is the collection of all DiskSourceType values.
 var DiskSourceTypeCollection = []DiskSourceType{
 	DiskSourceTypeBlank,
@@ -13922,6 +13921,7 @@ var ExternalIpCreateTypeCollection = []ExternalIpCreateType{
 var ExternalIpKindCollection = []ExternalIpKind{
 	ExternalIpKindEphemeral,
 	ExternalIpKindFloating,
+	ExternalIpKindSnat,
 }
 
 // FailureDomainCollection is the collection of all FailureDomain values.
