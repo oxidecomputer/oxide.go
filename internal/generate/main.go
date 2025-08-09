@@ -24,10 +24,24 @@ func main() {
 }
 
 func generateSDK() error {
-	versionFile := "../VERSION_OMICRON"
-	spec, err := loadAPIFromFile(versionFile)
-	if err != nil {
-		return err
+	// By default, load the Omicron OpenAPI spec from upstream using a version
+	// hash specified in `../VERSION_OMICRON`. For local testing, optionally
+	// specify a path to an OpenAPI spec file in the `OPENAPI_SPEC_PATH`
+	// environment variable, and use its contents instead.
+	var spec *openapi3.T
+	var err error
+	specFileOverride := os.Getenv("OPENAPI_SPEC_PATH")
+	if specFileOverride != "" {
+		spec, err = openapi3.NewLoader().LoadFromFile(specFileOverride)
+		if err != nil {
+			return err
+		}
+	} else {
+		versionFile := "../VERSION_OMICRON"
+		spec, err = loadAPIFromFile(versionFile)
+		if err != nil {
+			return err
+		}
 	}
 
 	typesFile := "../../oxide/types.go"
