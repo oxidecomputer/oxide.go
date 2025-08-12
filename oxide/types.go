@@ -12,6 +12,8 @@ import (
 	"time"
 )
 
+// Check if bot removes this.
+
 // Address is an address tied to an address lot.
 //
 // Required fields:
