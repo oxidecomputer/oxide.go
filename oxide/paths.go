@@ -5773,6 +5773,102 @@ func (c *Client) SnapshotDelete(ctx context.Context, params SnapshotDeleteParams
 	return nil
 }
 
+// AuditLogList: View audit log
+// A single item in the audit log represents both the beginning and end of the logged operation (represented by
+// `time_started` and `time_completed`) so that clients do not have to find multiple entries and match them up
+// by request ID to get the full picture of an operation. Because timestamps may not be unique, entries have
+// also have a unique `id` that can be used to deduplicate items fetched from overlapping time intervals.
+//
+// Audit log entries are designed to be immutable: once you see an entry, fetching it again will never get you
+// a different result. The list is ordered by `time_completed`, not `time_started`. If you fetch the audit log
+// for a time range that is fully in the past, the resulting list is guaranteed to be complete, i.e., fetching the
+// same timespan again later will always produce the same set of entries.
+//
+// To iterate over all pages, use the `AuditLogListAllPages` method, instead.
+func (c *Client) AuditLogList(ctx context.Context, params AuditLogListParams) (*AuditLogEntryResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/audit-log"),
+		map[string]string{},
+		map[string]string{
+			"end_time":   params.EndTime.Format(time.RFC3339),
+			"limit":      PointerIntToStr(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+			"start_time": params.StartTime.Format(time.RFC3339),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body AuditLogEntryResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// AuditLogListAllPages: View audit log
+// A single item in the audit log represents both the beginning and end of the logged operation (represented by
+// `time_started` and `time_completed`) so that clients do not have to find multiple entries and match them up
+// by request ID to get the full picture of an operation. Because timestamps may not be unique, entries have
+// also have a unique `id` that can be used to deduplicate items fetched from overlapping time intervals.
+//
+// Audit log entries are designed to be immutable: once you see an entry, fetching it again will never get you
+// a different result. The list is ordered by `time_completed`, not `time_started`. If you fetch the audit log
+// for a time range that is fully in the past, the resulting list is guaranteed to be complete, i.e., fetching the
+// same timespan again later will always produce the same set of entries.
+//
+// This method is a wrapper around the `AuditLogList` method.
+// This method returns all the pages at once.
+func (c *Client) AuditLogListAllPages(ctx context.Context, params AuditLogListParams) ([]AuditLogEntry, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []AuditLogEntry
+	params.PageToken = ""
+	params.Limit = NewPointer(100)
+	for {
+		page, err := c.AuditLogList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
+}
+
 // PhysicalDiskList: List physical disks
 //
 // To iterate over all pages, use the `PhysicalDiskListAllPages` method, instead.
@@ -8401,6 +8497,52 @@ func (c *Client) NetworkingAddressLotCreate(ctx context.Context, params Networki
 	}
 
 	var body AddressLotCreateResponse
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// NetworkingAddressLotView: Fetch address lot
+func (c *Client) NetworkingAddressLotView(ctx context.Context, params NetworkingAddressLotViewParams) (*AddressLotViewResponse, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/networking/address-lot/{{.address_lot}}"),
+		map[string]string{
+			"address_lot": string(params.AddressLot),
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body AddressLotViewResponse
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}

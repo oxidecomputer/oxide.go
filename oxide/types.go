@@ -149,6 +149,18 @@ type AddressLotResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+// AddressLotViewResponse is an address lot and associated blocks resulting from viewing an address lot.
+//
+// Required fields:
+// - Blocks
+// - Lot
+type AddressLotViewResponse struct {
+	// Blocks is the address lot blocks.
+	Blocks []AddressLotBlock `json:"blocks,omitempty" yaml:"blocks,omitempty"`
+	// Lot is the address lot.
+	Lot AddressLot `json:"lot,omitempty" yaml:"lot,omitempty"`
+}
+
 // AffinityGroup is view of an Affinity Group
 //
 // Required fields:
@@ -201,6 +213,9 @@ type AffinityGroupCreate struct {
 	Policy AffinityPolicy `json:"policy,omitempty" yaml:"policy,omitempty"`
 }
 
+// AffinityGroupMemberType is the type definition for a AffinityGroupMemberType.
+type AffinityGroupMemberType string
+
 // AffinityGroupMemberValue is the type definition for a AffinityGroupMemberValue.
 //
 // Required fields:
@@ -219,9 +234,6 @@ type AffinityGroupMemberValue struct {
 	// to the Instance's lifecycle
 	RunState InstanceState `json:"run_state,omitempty" yaml:"run_state,omitempty"`
 }
-
-// AffinityGroupMemberType is the type definition for a AffinityGroupMemberType.
-type AffinityGroupMemberType string
 
 // AffinityGroupMemberInstance is an instance belonging to this group
 //
@@ -683,6 +695,150 @@ type ArtifactId struct {
 	Name string `json:"name,omitempty" yaml:"name,omitempty"`
 	// Version is the artifact's version.
 	Version string `json:"version,omitempty" yaml:"version,omitempty"`
+}
+
+// AuditLogEntry is audit log entry
+//
+// Required fields:
+// - Actor
+// - Id
+// - OperationId
+// - RequestId
+// - RequestUri
+// - Result
+// - SourceIp
+// - TimeCompleted
+// - TimeStarted
+type AuditLogEntry struct {
+	Actor AuditLogEntryActor `json:"actor,omitempty" yaml:"actor,omitempty"`
+	// AuthMethod is how the user authenticated the request. Possible values are "session_cookie" and "access_token". Optional
+	// because it will not be defined on unauthenticated requests like login attempts.
+	AuthMethod string `json:"auth_method,omitempty" yaml:"auth_method,omitempty"`
+	// Id is unique identifier for the audit log entry
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// OperationId is aPI endpoint ID, e.g., `project_create`
+	OperationId string `json:"operation_id,omitempty" yaml:"operation_id,omitempty"`
+	// RequestId is request ID for tracing requests through the system
+	RequestId string `json:"request_id,omitempty" yaml:"request_id,omitempty"`
+	// RequestUri is uRI of the request, truncated to 512 characters. Will only include host and scheme for HTTP/2
+	// requests. For HTTP/1.1, the URI will consist of only the path and query.
+	RequestUri string `json:"request_uri,omitempty" yaml:"request_uri,omitempty"`
+	// Result is result of the operation
+	Result AuditLogEntryResult `json:"result,omitempty" yaml:"result,omitempty"`
+	// SourceIp is iP address that made the request
+	SourceIp string `json:"source_ip,omitempty" yaml:"source_ip,omitempty"`
+	// TimeCompleted is time operation completed
+	TimeCompleted *time.Time `json:"time_completed,omitempty" yaml:"time_completed,omitempty"`
+	// TimeStarted is when the request was received
+	TimeStarted *time.Time `json:"time_started,omitempty" yaml:"time_started,omitempty"`
+	// UserAgent is user agent string from the request, truncated to 256 characters.
+	UserAgent string `json:"user_agent,omitempty" yaml:"user_agent,omitempty"`
+}
+
+// AuditLogEntryActorKind is the type definition for a AuditLogEntryActorKind.
+type AuditLogEntryActorKind string
+
+// AuditLogEntryActorUserBuiltin is the type definition for a AuditLogEntryActorUserBuiltin.
+//
+// Required fields:
+// - Kind
+// - UserBuiltinId
+type AuditLogEntryActorUserBuiltin struct {
+	Kind          AuditLogEntryActorKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+	UserBuiltinId string                 `json:"user_builtin_id,omitempty" yaml:"user_builtin_id,omitempty"`
+}
+
+// AuditLogEntryActorSiloUser is the type definition for a AuditLogEntryActorSiloUser.
+//
+// Required fields:
+// - Kind
+// - SiloId
+// - SiloUserId
+type AuditLogEntryActorSiloUser struct {
+	Kind       AuditLogEntryActorKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+	SiloId     string                 `json:"silo_id,omitempty" yaml:"silo_id,omitempty"`
+	SiloUserId string                 `json:"silo_user_id,omitempty" yaml:"silo_user_id,omitempty"`
+}
+
+// AuditLogEntryActorUnauthenticated is the type definition for a AuditLogEntryActorUnauthenticated.
+//
+// Required fields:
+// - Kind
+type AuditLogEntryActorUnauthenticated struct {
+	Kind AuditLogEntryActorKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+}
+
+// AuditLogEntryActor is the type definition for a AuditLogEntryActor.
+type AuditLogEntryActor struct {
+	// Kind is the type definition for a Kind.
+	Kind AuditLogEntryActorKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+	// UserBuiltinId is the type definition for a UserBuiltinId.
+	UserBuiltinId string `json:"user_builtin_id,omitempty" yaml:"user_builtin_id,omitempty"`
+	// SiloId is the type definition for a SiloId.
+	SiloId string `json:"silo_id,omitempty" yaml:"silo_id,omitempty"`
+	// SiloUserId is the type definition for a SiloUserId.
+	SiloUserId string `json:"silo_user_id,omitempty" yaml:"silo_user_id,omitempty"`
+}
+
+// AuditLogEntryResultKind is the type definition for a AuditLogEntryResultKind.
+type AuditLogEntryResultKind string
+
+// AuditLogEntryResultSuccess is the operation completed successfully
+//
+// Required fields:
+// - HttpStatusCode
+// - Kind
+type AuditLogEntryResultSuccess struct {
+	// HttpStatusCode is hTTP status code
+	HttpStatusCode *int                    `json:"http_status_code,omitempty" yaml:"http_status_code,omitempty"`
+	Kind           AuditLogEntryResultKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+}
+
+// AuditLogEntryResultError is the operation failed
+//
+// Required fields:
+// - ErrorMessage
+// - HttpStatusCode
+// - Kind
+type AuditLogEntryResultError struct {
+	ErrorCode    string `json:"error_code,omitempty" yaml:"error_code,omitempty"`
+	ErrorMessage string `json:"error_message,omitempty" yaml:"error_message,omitempty"`
+	// HttpStatusCode is hTTP status code
+	HttpStatusCode *int                    `json:"http_status_code,omitempty" yaml:"http_status_code,omitempty"`
+	Kind           AuditLogEntryResultKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+}
+
+// AuditLogEntryResultUnknown is after the logged operation completed, our attempt to write the result to
+// the audit log failed, so it was automatically marked completed later by a background job. This does not imply
+// that the operation itself timed out or failed, only our attempts to log its result.
+//
+// Required fields:
+// - Kind
+type AuditLogEntryResultUnknown struct {
+	Kind AuditLogEntryResultKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+}
+
+// AuditLogEntryResult is result of an audit log entry
+type AuditLogEntryResult struct {
+	// HttpStatusCode is hTTP status code
+	HttpStatusCode *int `json:"http_status_code,omitempty" yaml:"http_status_code,omitempty"`
+	// Kind is the type definition for a Kind.
+	Kind AuditLogEntryResultKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+	// ErrorCode is the type definition for a ErrorCode.
+	ErrorCode string `json:"error_code,omitzero" yaml:"error_code,omitzero"`
+	// ErrorMessage is the type definition for a ErrorMessage.
+	ErrorMessage string `json:"error_message,omitempty" yaml:"error_message,omitempty"`
+}
+
+// AuditLogEntryResultsPage is a single page of results
+//
+// Required fields:
+// - Items
+type AuditLogEntryResultsPage struct {
+	// Items is list of items on this page of results
+	Items []AuditLogEntry `json:"items,omitempty" yaml:"items,omitempty"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
 // AuthzScope is timeseries data is limited to fleet readers.
@@ -6640,6 +6796,10 @@ type TufArtifactMeta struct {
 	Hash string `json:"hash,omitempty" yaml:"hash,omitempty"`
 	// Id is the artifact ID.
 	Id ArtifactId `json:"id,omitempty" yaml:"id,omitempty"`
+	// Sign is contents of the `SIGN` field of a Hubris archive caboose, i.e., an identifier for the set of
+	// valid signing keys. Currently only applicable to RoT image and bootloader artifacts, where it will be an
+	// LPC55 Root Key Table Hash (RKTH).
+	Sign []int `json:"sign" yaml:"sign"`
 	// Size is the size of the artifact in bytes.
 	Size *int `json:"size,omitempty" yaml:"size,omitempty"`
 }
@@ -8966,6 +9126,18 @@ type SnapshotViewParams struct {
 	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
+// AuditLogListParams is the request parameters for AuditLogList
+//
+// Required fields:
+// - StartTime
+type AuditLogListParams struct {
+	EndTime   *time.Time        `json:"end_time,omitempty" yaml:"end_time,omitempty"`
+	Limit     *int              `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string            `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    TimeAndIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	StartTime *time.Time        `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+}
+
 // PhysicalDiskListParams is the request parameters for PhysicalDiskList
 type PhysicalDiskListParams struct {
 	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -9401,6 +9573,14 @@ type NetworkingAddressLotCreateParams struct {
 // Required fields:
 // - AddressLot
 type NetworkingAddressLotDeleteParams struct {
+	AddressLot NameOrId `json:"address_lot,omitempty" yaml:"address_lot,omitempty"`
+}
+
+// NetworkingAddressLotViewParams is the request parameters for NetworkingAddressLotView
+//
+// Required fields:
+// - AddressLot
+type NetworkingAddressLotViewParams struct {
 	AddressLot NameOrId `json:"address_lot,omitempty" yaml:"address_lot,omitempty"`
 }
 
@@ -11463,6 +11643,15 @@ func (p *SnapshotViewParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for AuditLogListParams are set
+func (p *AuditLogListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for PhysicalDiskListParams are set
 func (p *PhysicalDiskListParams) Validate() error {
 	v := new(Validator)
@@ -11932,6 +12121,16 @@ func (p *NetworkingAddressLotCreateParams) Validate() error {
 
 // Validate verifies all required fields for NetworkingAddressLotDeleteParams are set
 func (p *NetworkingAddressLotDeleteParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.AddressLot), "AddressLot")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingAddressLotViewParams are set
+func (p *NetworkingAddressLotViewParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.AddressLot), "AddressLot")
 	if !v.IsValid() {
@@ -12796,6 +12995,24 @@ const AllowedSourceIpsAllowList AllowedSourceIpsAllow = "list"
 
 // AntiAffinityGroupMemberTypeInstance represents the AntiAffinityGroupMemberType `"instance"`.
 const AntiAffinityGroupMemberTypeInstance AntiAffinityGroupMemberType = "instance"
+
+// AuditLogEntryActorKindUserBuiltin represents the AuditLogEntryActorKind `"user_builtin"`.
+const AuditLogEntryActorKindUserBuiltin AuditLogEntryActorKind = "user_builtin"
+
+// AuditLogEntryActorKindSiloUser represents the AuditLogEntryActorKind `"silo_user"`.
+const AuditLogEntryActorKindSiloUser AuditLogEntryActorKind = "silo_user"
+
+// AuditLogEntryActorKindUnauthenticated represents the AuditLogEntryActorKind `"unauthenticated"`.
+const AuditLogEntryActorKindUnauthenticated AuditLogEntryActorKind = "unauthenticated"
+
+// AuditLogEntryResultKindSuccess represents the AuditLogEntryResultKind `"success"`.
+const AuditLogEntryResultKindSuccess AuditLogEntryResultKind = "success"
+
+// AuditLogEntryResultKindError represents the AuditLogEntryResultKind `"error"`.
+const AuditLogEntryResultKindError AuditLogEntryResultKind = "error"
+
+// AuditLogEntryResultKindUnknown represents the AuditLogEntryResultKind `"unknown"`.
+const AuditLogEntryResultKindUnknown AuditLogEntryResultKind = "unknown"
 
 // AuthzScopeFleet represents the AuthzScope `"fleet"`.
 const AuthzScopeFleet AuthzScope = "fleet"
@@ -13715,6 +13932,20 @@ var AllowedSourceIpsAllowCollection = []AllowedSourceIpsAllow{
 // AntiAffinityGroupMemberTypeCollection is the collection of all AntiAffinityGroupMemberType values.
 var AntiAffinityGroupMemberTypeCollection = []AntiAffinityGroupMemberType{
 	AntiAffinityGroupMemberTypeInstance,
+}
+
+// AuditLogEntryActorKindCollection is the collection of all AuditLogEntryActorKind values.
+var AuditLogEntryActorKindCollection = []AuditLogEntryActorKind{
+	AuditLogEntryActorKindSiloUser,
+	AuditLogEntryActorKindUnauthenticated,
+	AuditLogEntryActorKindUserBuiltin,
+}
+
+// AuditLogEntryResultKindCollection is the collection of all AuditLogEntryResultKind values.
+var AuditLogEntryResultKindCollection = []AuditLogEntryResultKind{
+	AuditLogEntryResultKindError,
+	AuditLogEntryResultKindSuccess,
+	AuditLogEntryResultKindUnknown,
 }
 
 // AuthzScopeCollection is the collection of all AuthzScope values.
