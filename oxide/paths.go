@@ -8505,52 +8505,6 @@ func (c *Client) NetworkingAddressLotCreate(ctx context.Context, params Networki
 	return &body, nil
 }
 
-// NetworkingAddressLotView: Fetch address lot
-func (c *Client) NetworkingAddressLotView(ctx context.Context, params NetworkingAddressLotViewParams) (*AddressLotViewResponse, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/networking/address-lot/{{.address_lot}}"),
-		map[string]string{
-			"address_lot": string(params.AddressLot),
-		},
-		map[string]string{},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body AddressLotViewResponse
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
 // NetworkingAddressLotDelete: Delete address lot
 func (c *Client) NetworkingAddressLotDelete(ctx context.Context, params NetworkingAddressLotDeleteParams) error {
 	if err := params.Validate(); err != nil {
