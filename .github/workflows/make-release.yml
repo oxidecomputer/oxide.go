@@ -20,6 +20,7 @@ jobs:
       - name: Ensure no files changed
         shell: bash
         run: |
+          git diff
           if [[ `git status --porcelain` ]]; then
             echo "Files changed, exiting";
             exit 1;
