@@ -1,3 +1,27 @@
+# v0.6.0 (2025/Aug/13)
+
+### Breaking changes
+
+- **`VpcFirewallRuleProtocol` type change:** Changed the type of the `VpcFirewallRuleProtocol` struct to reflect upstream API changes. [#304](https://github.com/oxidecomputer/oxide.go/pull/304)
+
+### List of commits
+
+- [289bbe3](https://github.com/oxidecomputer/oxide.go/commit/289bbe3) Bump actions/checkout from 4 to 5 (#312)
+- [6291866](https://github.com/oxidecomputer/oxide.go/commit/6291866) oxide: update omicron version to dfac975. (#313)
+- [ad9db82](https://github.com/oxidecomputer/oxide.go/commit/ad9db82) ci/cd: trigger on all push events (#315)
+- [bc81674](https://github.com/oxidecomputer/oxide.go/commit/bc81674) actions: update triggers. (#314)
+- [e5de454](https://github.com/oxidecomputer/oxide.go/commit/e5de454) oxide: optionally build from local openapi spec. (#311)
+- [3145079](https://github.com/oxidecomputer/oxide.go/commit/3145079) Update codeowners file (#310)
+- [62f5313](https://github.com/oxidecomputer/oxide.go/commit/62f5313) misc: use github team for codeowners (#308)
+- [d8df86d](https://github.com/oxidecomputer/oxide.go/commit/d8df86d) oxide: update to omicron version 68a8c4b (#307)
+- [34f4570](https://github.com/oxidecomputer/oxide.go/commit/34f4570) oxide: update to omicron version 53aea85 (#304)
+- [01e729a](https://github.com/oxidecomputer/oxide.go/commit/01e729a) [bugfix] Use the correct type for arrays (#305)
+- [83ef11f](https://github.com/oxidecomputer/oxide.go/commit/83ef11f) misc: add codeowners (#301)
+- [a8e00fb](https://github.com/oxidecomputer/oxide.go/commit/a8e00fb) misc: update readme example code (#300)
+- [a289a27](https://github.com/oxidecomputer/oxide.go/commit/a289a27) Add missing fields to network types (#278)
+- [a65e25f](https://github.com/oxidecomputer/oxide.go/commit/a65e25f) Update to Omicron 1b4b019 (#298)
+- [c63d62d](https://github.com/oxidecomputer/oxide.go/commit/c63d62d) Bump SDK version to v0.6.0 (#297)
+
 # v0.5.0 (2025/Jun/11)
 
 Generated from Oxide API version [20250604.0.0](https://github.com/oxidecomputer/omicron/blob/rel/v15/rc1/openapi/nexus.json)
