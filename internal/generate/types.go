@@ -81,11 +81,7 @@ func generateTypes(file string, spec *openapi3.T) error {
 func constructParamTypes(paths map[string]*openapi3.PathItem) []TypeTemplate {
 	paramTypes := make([]TypeTemplate, 0)
 
-	keys := make([]string, 0)
-	for k := range paths {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
+	keys := sortedKeys(paths)
 	for _, path := range keys {
 		p := paths[path]
 		if p.Ref != "" {
@@ -93,11 +89,7 @@ func constructParamTypes(paths map[string]*openapi3.PathItem) []TypeTemplate {
 			continue
 		}
 		ops := p.Operations()
-		keys := make([]string, 0)
-		for k := range ops {
-			keys = append(keys, k)
-		}
-		sort.Strings(keys)
+		keys := sortedKeys(ops)
 		for _, op := range keys {
 			o := ops[op]
 			requiredFields := ""
@@ -195,11 +187,7 @@ func constructParamTypes(paths map[string]*openapi3.PathItem) []TypeTemplate {
 func constructParamValidation(paths map[string]*openapi3.PathItem) []ValidationTemplate {
 	validationMethods := make([]ValidationTemplate, 0)
 
-	keys := make([]string, 0)
-	for k := range paths {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
+	keys := sortedKeys(paths)
 	for _, path := range keys {
 		p := paths[path]
 		if p.Ref != "" {
@@ -207,11 +195,7 @@ func constructParamValidation(paths map[string]*openapi3.PathItem) []ValidationT
 			continue
 		}
 		ops := p.Operations()
-		keys := make([]string, 0)
-		for k := range ops {
-			keys = append(keys, k)
-		}
-		sort.Strings(keys)
+		keys := sortedKeys(ops)
 		for _, op := range keys {
 			o := ops[op]
 			if len(o.Parameters) > 0 || o.RequestBody != nil {
@@ -256,11 +240,7 @@ func constructTypes(schemas openapi3.Schemas) ([]TypeTemplate, []EnumTemplate) {
 	typeCollection := make([]TypeTemplate, 0)
 	enumCollection := make([]EnumTemplate, 0)
 
-	keys := make([]string, 0)
-	for k := range schemas {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
+	keys := sortedKeys(schemas)
 	for _, name := range keys {
 		s := schemas[name]
 		if s.Ref != "" {
@@ -300,12 +280,7 @@ func constructEnums(enumStrCollection map[string][]string) []EnumTemplate {
 	enumCollection := make([]EnumTemplate, 0)
 
 	// Iterate over all the enum types and add in the slices.
-	// We want to ensure we keep the order
-	keys := make([]string, 0)
-	for k := range enumStrCollection {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
+	keys := sortedKeys(enumStrCollection)
 	for _, name := range keys {
 		// TODO: Remove once all types are constructed through structs
 		enums := enumStrCollection[name]
@@ -445,7 +420,9 @@ func populateTypeTemplates(name string, s *openapi3.Schema, enumFieldName string
 		typeTpl = createTypeObject(s, name, typeName, formatTypeDescription(typeName, s))
 
 		// Iterate over the properties and append the types, if we need to.
-		for k, v := range s.Properties {
+		properties := sortedKeys(s.Properties)
+		for _, k := range properties {
+			v := s.Properties[k]
 			if isLocalEnum(v) {
 				tt, et := populateTypeTemplates(fmt.Sprintf("%s%s", name, strcase.ToCamel(k)), v.Value, "")
 				types = append(types, tt...)
@@ -497,13 +474,8 @@ func createTypeObject(schema *openapi3.Schema, name, typeName, description strin
 	}
 
 	schemas := schema.Properties
-	// We want to ensure we keep the order
-	keys := make([]string, 0)
-	for k := range schemas {
-		keys = append(keys, k)
-	}
 	fields := []TypeFields{}
-	sort.Strings(keys)
+	keys := sortedKeys(schemas)
 	for _, k := range keys {
 		v := schemas[k]
 		// Check if we need to generate a type for this type.
@@ -658,12 +630,7 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 	fields := make([]TypeFields, 0)
 	for _, v := range s.OneOf {
 		// Iterate over all the schema components in the spec and write the types.
-		// We want to ensure we keep the order.
-		keys := make([]string, 0)
-		for k := range v.Value.Properties {
-			keys = append(keys, k)
-		}
-		sort.Strings(keys)
+		keys := sortedKeys(v.Value.Properties)
 
 		for _, prop := range keys {
 			p := v.Value.Properties[prop]
@@ -710,12 +677,7 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 		var enumFieldName string
 
 		// Iterate over all the schema components in the spec and write the types.
-		// We want to ensure we keep the order.
-		keys := make([]string, 0)
-		for k := range v.Value.Properties {
-			keys = append(keys, k)
-		}
-		sort.Strings(keys)
+		keys := sortedKeys(v.Value.Properties)
 		for _, prop := range keys {
 			p := v.Value.Properties[prop]
 			// We want to collect all the unique properties to create our global oneOf type.
