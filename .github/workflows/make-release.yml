@@ -33,9 +33,9 @@ jobs:
         id: extract_prerelease
         run: |
           if cat VERSION | grep -q "rc"; then
-            echo "##[set-output name=prerelease;]$(echo true)"
+            echo prerelease=true >> $GITHUB_OUTPUT
           else
-            echo "##[set-output name=prerelease;]$(echo false)"
+            echo prerelease=false >> $GITHUB_OUTPUT
           fi
       - name: Create a Release
         uses: softprops/action-gh-release@v2
