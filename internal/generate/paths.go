@@ -53,12 +53,7 @@ func generatePaths(file string, spec *openapi3.T) error {
 	defer f.Close()
 
 	// Iterate over all the paths in the spec and write the methods.
-	// We want to ensure we keep the order.
-	keys := make([]string, 0)
-	for k := range spec.Paths.Map() {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
+	keys := sortedKeys(spec.Paths.Map())
 	for _, path := range keys {
 		p := spec.Paths.Map()[path]
 		if p.Ref != "" {

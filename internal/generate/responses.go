@@ -6,7 +6,6 @@ package main
 
 import (
 	"fmt"
-	"sort"
 	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
@@ -25,12 +24,7 @@ func generateResponses(file string, spec *openapi3.T) error {
 	enumCollection := make([]EnumTemplate, 0)
 	typeValidationCollection := make([]ValidationTemplate, 0)
 	// Iterate over all the responses in the spec and write the types.
-	// We want to ensure we keep the order so the diffs don't look like shit.
-	keys := make([]string, 0)
-	for k := range spec.Components.Responses {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
+	keys := sortedKeys(spec.Components.Responses)
 	for _, name := range keys {
 		r := spec.Components.Responses[name]
 		if r.Ref != "" {
