@@ -7,8 +7,10 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"maps"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"unicode"
 
@@ -264,4 +266,10 @@ func allItemsAreSame[T comparable](a []T) bool {
 		}
 	}
 	return true
+}
+
+// sortedKeys returns a []string of sorted keys from a map. Used to ensure
+// deterministic ordering of generated code.
+func sortedKeys[T any](m map[string]T) []string {
+	return slices.Sorted(maps.Keys(m))
 }
