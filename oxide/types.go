@@ -149,6 +149,18 @@ type AddressLotResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+// AddressLotViewResponse is an address lot and associated blocks resulting from viewing an address lot.
+//
+// Required fields:
+// - Blocks
+// - Lot
+type AddressLotViewResponse struct {
+	// Blocks is the address lot blocks.
+	Blocks []AddressLotBlock `json:"blocks,omitempty" yaml:"blocks,omitempty"`
+	// Lot is the address lot.
+	Lot AddressLot `json:"lot,omitempty" yaml:"lot,omitempty"`
+}
+
 // AffinityGroup is view of an Affinity Group
 //
 // Required fields:
@@ -596,9 +608,6 @@ type AntiAffinityGroupCreate struct {
 	Policy AffinityPolicy `json:"policy,omitempty" yaml:"policy,omitempty"`
 }
 
-// AntiAffinityGroupMemberType is the type definition for a AntiAffinityGroupMemberType.
-type AntiAffinityGroupMemberType string
-
 // AntiAffinityGroupMemberValue is the type definition for a AntiAffinityGroupMemberValue.
 //
 // Required fields:
@@ -617,6 +626,9 @@ type AntiAffinityGroupMemberValue struct {
 	// to the Instance's lifecycle
 	RunState InstanceState `json:"run_state,omitempty" yaml:"run_state,omitempty"`
 }
+
+// AntiAffinityGroupMemberType is the type definition for a AntiAffinityGroupMemberType.
+type AntiAffinityGroupMemberType string
 
 // AntiAffinityGroupMemberInstance is an instance belonging to this group
 //
@@ -9564,6 +9576,14 @@ type NetworkingAddressLotDeleteParams struct {
 	AddressLot NameOrId `json:"address_lot,omitempty" yaml:"address_lot,omitempty"`
 }
 
+// NetworkingAddressLotViewParams is the request parameters for NetworkingAddressLotView
+//
+// Required fields:
+// - AddressLot
+type NetworkingAddressLotViewParams struct {
+	AddressLot NameOrId `json:"address_lot,omitempty" yaml:"address_lot,omitempty"`
+}
+
 // NetworkingAddressLotBlockListParams is the request parameters for NetworkingAddressLotBlockList
 //
 // Required fields:
@@ -12101,6 +12121,16 @@ func (p *NetworkingAddressLotCreateParams) Validate() error {
 
 // Validate verifies all required fields for NetworkingAddressLotDeleteParams are set
 func (p *NetworkingAddressLotDeleteParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.AddressLot), "AddressLot")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingAddressLotViewParams are set
+func (p *NetworkingAddressLotViewParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.AddressLot), "AddressLot")
 	if !v.IsValid() {
