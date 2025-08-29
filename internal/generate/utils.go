@@ -53,14 +53,6 @@ func isLocalObject(v *openapi3.SchemaRef) bool {
 	return v.Ref == "" && v.Value.Type.Is("object") && len(v.Value.Properties) > 0
 }
 
-func isObjectArray(v *openapi3.SchemaRef) bool {
-	if v.Value.AdditionalProperties.Schema != nil {
-		return v.Value.AdditionalProperties.Schema.Value.Type.Is("array")
-	}
-
-	return false
-}
-
 func isNullableArray(v *openapi3.SchemaRef) bool {
 	return v.Value.Type.Is("array") && v.Value.Nullable
 }

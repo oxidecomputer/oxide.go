@@ -490,14 +490,25 @@ func createTypeObject(schema *openapi3.Schema, name, typeName, description strin
 			typeName = fmt.Sprintf("%s%s", name, strcase.ToCamel(k))
 		}
 
-		// When additional properties is set and is type array, it means
-		// the type will be a map.
-		// TODO correctness: Currently our API spec does not specify what
-		// type the key will be, so we set it to string to avoid errors.
-		// If the type of the key is defined in our spec in the future,
-		// this should be changed to reflect that type.
-		if isObjectArray(v) {
-			typeName = fmt.Sprintf("map[string][]%s", typeName)
+		// When `additionalProperties` is set, the type will be a map.
+		// See the spec for details: https://spec.openapis.org/oas/v3.0.3.html#x4-7-24-3-3-model-with-map-dictionary-properties.
+		//
+		// TODO correctness: Currently our API spec does not specify
+		// what type the key will be, so we set it to string to avoid
+		// errors.  If the type of the key is defined in our spec in
+		// the future, this should be changed to reflect that type.
+		if v.Value.AdditionalProperties.Schema != nil {
+			if v.Value.AdditionalProperties.Schema.Value.Type.Is("array") {
+				// When `additionalProperties` has a schema of
+				// type "array", use a map of string to a slice
+				// of the nested type.
+				typeName = fmt.Sprintf("map[string][]%s", typeName)
+			} else {
+				// If the schema type isn't explicitly set to
+				// "array", use a map of string to the nested
+				// type.
+				typeName = fmt.Sprintf("map[string]%s", typeName)
+			}
 		}
 
 		// If a type is nullable we'll want a pointer

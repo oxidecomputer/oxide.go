@@ -6248,7 +6248,7 @@ type Switch struct {
 // - Switch
 type SwitchBgpHistory struct {
 	// History is message history indexed by peer address.
-	History BgpMessageHistory `json:"history,omitempty" yaml:"history,omitempty"`
+	History map[string]BgpMessageHistory `json:"history,omitempty" yaml:"history,omitempty"`
 	// Switch is switch this message history is associated with.
 	Switch SwitchLocation `json:"switch,omitempty" yaml:"switch,omitempty"`
 }
@@ -6649,8 +6649,8 @@ type SystemMetricName string
 // - Name
 // - Timeseries
 type Table struct {
-	Name       string     `json:"name,omitempty" yaml:"name,omitempty"`
-	Timeseries Timeseries `json:"timeseries,omitempty" yaml:"timeseries,omitempty"`
+	Name       string                `json:"name,omitempty" yaml:"name,omitempty"`
+	Timeseries map[string]Timeseries `json:"timeseries,omitempty" yaml:"timeseries,omitempty"`
 }
 
 // TargetRelease is view of a system software target release.
@@ -6709,7 +6709,7 @@ type TimeAndIdSortMode string
 // - Fields
 // - Points
 type Timeseries struct {
-	Fields FieldValue `json:"fields,omitempty" yaml:"fields,omitempty"`
+	Fields map[string]FieldValue `json:"fields,omitempty" yaml:"fields,omitempty"`
 	// Points is timepoints and values for one timeseries.
 	Points Points `json:"points,omitempty" yaml:"points,omitempty"`
 }
