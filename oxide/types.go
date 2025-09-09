@@ -223,7 +223,7 @@ type AffinityGroupMemberType string
 // - Name
 // - RunState
 type AffinityGroupMemberValue struct {
-	Id TypedUuidForInstanceKind `json:"id,omitempty" yaml:"id,omitempty"`
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
 	// can be at most 63 characters long.
@@ -339,13 +339,13 @@ type AlertDelivery struct {
 	// AlertClass is the event class.
 	AlertClass string `json:"alert_class,omitempty" yaml:"alert_class,omitempty"`
 	// AlertId is the UUID of the event.
-	AlertId TypedUuidForAlertKind `json:"alert_id,omitempty" yaml:"alert_id,omitempty"`
+	AlertId string `json:"alert_id,omitempty" yaml:"alert_id,omitempty"`
 	// Attempts is individual attempts to deliver this webhook event, and their outcomes.
 	Attempts AlertDeliveryAttempts `json:"attempts,omitempty" yaml:"attempts,omitempty"`
 	// Id is the UUID of this delivery attempt.
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 	// ReceiverId is the UUID of the alert receiver that this event was delivered to.
-	ReceiverId TypedUuidForAlertReceiverKind `json:"receiver_id,omitempty" yaml:"receiver_id,omitempty"`
+	ReceiverId string `json:"receiver_id,omitempty" yaml:"receiver_id,omitempty"`
 	// State is the state of this delivery.
 	State AlertDeliveryState `json:"state,omitempty" yaml:"state,omitempty"`
 	// TimeStarted is the time at which this delivery began (i.e. the event was dispatched to the receiver).
@@ -618,7 +618,7 @@ type AntiAffinityGroupMemberType string
 // - Name
 // - RunState
 type AntiAffinityGroupMemberValue struct {
-	Id TypedUuidForInstanceKind `json:"id,omitempty" yaml:"id,omitempty"`
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
 	// can be at most 63 characters long.
@@ -1907,13 +1907,21 @@ type Cumulativeuint64 struct {
 //
 // Required fields:
 // - DisplayName
+// - FleetViewer
 // - Id
+// - SiloAdmin
 // - SiloId
 // - SiloName
 type CurrentUser struct {
 	// DisplayName is human-readable name that can identify the user
 	DisplayName string `json:"display_name,omitempty" yaml:"display_name,omitempty"`
+	// FleetViewer is whether this user has the viewer role on the fleet. Used by the web console to determine whether
+	// to show system-level UI.
+	FleetViewer *bool  `json:"fleet_viewer,omitempty" yaml:"fleet_viewer,omitempty"`
 	Id          string `json:"id,omitempty" yaml:"id,omitempty"`
+	// SiloAdmin is whether this user has the admin role on their silo. Used by the web console to determine whether
+	// to show admin-only UI elements.
+	SiloAdmin *bool `json:"silo_admin,omitempty" yaml:"silo_admin,omitempty"`
 	// SiloId is uuid of the silo to which this user belongs
 	SiloId string `json:"silo_id,omitempty" yaml:"silo_id,omitempty"`
 	// SiloName is name of the silo to which this user belongs.
@@ -4103,6 +4111,8 @@ type InstanceNetworkInterfaceCreate struct {
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// SubnetName is the VPC Subnet in which to create the interface.
 	SubnetName Name `json:"subnet_name,omitempty" yaml:"subnet_name,omitempty"`
+	// TransitIps is a set of additional networks that this interface may send and receive traffic on.
+	TransitIps []IpNet `json:"transit_ips,omitempty" yaml:"transit_ips,omitempty"`
 	// VpcName is the VPC in which to create the interface.
 	VpcName Name `json:"vpc_name,omitempty" yaml:"vpc_name,omitempty"`
 }
@@ -4389,6 +4399,7 @@ type IpNet interface{}
 // Required fields:
 // - Description
 // - Id
+// - IpVersion
 // - Name
 // - TimeCreated
 // - TimeModified
@@ -4397,6 +4408,8 @@ type IpPool struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// IpVersion is the IP version for the pool.
+	IpVersion IpVersion `json:"ip_version,omitempty" yaml:"ip_version,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// TimeCreated is timestamp when this resource was created
@@ -4412,6 +4425,10 @@ type IpPool struct {
 // - Name
 type IpPoolCreate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// IpVersion is the IP version of the pool.
+	//
+	// The default is IPv4.
+	IpVersion IpVersion `json:"ip_version,omitempty" yaml:"ip_version,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
 	// can be at most 63 characters long.
@@ -4509,20 +4526,28 @@ type IpPoolUpdate struct {
 	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
-// IpPoolUtilization is the type definition for a IpPoolUtilization.
+// IpPoolUtilization is the utilization of IP addresses in a pool.
+//
+// Note that both the count of remaining addresses and the total capacity are integers, reported as floating point
+// numbers. This accommodates allocations larger than a 64-bit integer, which is common with IPv6 address spaces.
+// With very large IP Pools (> 2**53 addresses), integer precision will be lost, in exchange for representing the
+// entire range. In such a case the pool still has many available addresses.
 //
 // Required fields:
-// - Ipv4
-// - Ipv6
+// - Capacity
+// - Remaining
 type IpPoolUtilization struct {
-	// Ipv4 is number of allocated and total available IPv4 addresses in pool
-	Ipv4 Ipv4Utilization `json:"ipv4,omitempty" yaml:"ipv4,omitempty"`
-	// Ipv6 is number of allocated and total available IPv6 addresses in pool
-	Ipv6 Ipv6Utilization `json:"ipv6,omitempty" yaml:"ipv6,omitempty"`
+	// Capacity is the total number of addresses in the pool.
+	Capacity float64 `json:"capacity,omitempty" yaml:"capacity,omitempty"`
+	// Remaining is the number of remaining addresses in the pool.
+	Remaining float64 `json:"remaining,omitempty" yaml:"remaining,omitempty"`
 }
 
 // IpRange is the type definition for a IpRange.
 type IpRange interface{}
+
+// IpVersion is the IP address version.
+type IpVersion string
 
 // Ipv4Net is an IPv4 subnet, including prefix and prefix length
 type Ipv4Net string
@@ -4539,19 +4564,6 @@ type Ipv4Range struct {
 	Last  string `json:"last,omitempty" yaml:"last,omitempty"`
 }
 
-// Ipv4Utilization is the type definition for a Ipv4Utilization.
-//
-// Required fields:
-// - Allocated
-// - Capacity
-type Ipv4Utilization struct {
-	// Allocated is the number of IPv4 addresses allocated from this pool
-	Allocated *int `json:"allocated,omitempty" yaml:"allocated,omitempty"`
-	// Capacity is the total number of IPv4 addresses in the pool, i.e., the sum of the lengths of the IPv4 ranges.
-	// Unlike IPv6 capacity, can be a 32-bit integer because there are only 2^32 IPv4 addresses.
-	Capacity *int `json:"capacity,omitempty" yaml:"capacity,omitempty"`
-}
-
 // Ipv6Net is an IPv6 subnet, including prefix and subnet mask
 type Ipv6Net string
 
@@ -4565,21 +4577,6 @@ type Ipv6Net string
 type Ipv6Range struct {
 	First string `json:"first,omitempty" yaml:"first,omitempty"`
 	Last  string `json:"last,omitempty" yaml:"last,omitempty"`
-}
-
-// Ipv6Utilization is the type definition for a Ipv6Utilization.
-//
-// Required fields:
-// - Allocated
-// - Capacity
-type Ipv6Utilization struct {
-	// Allocated is the number of IPv6 addresses allocated from this pool. A 128-bit integer string to match the
-	// capacity field.
-	Allocated string `json:"allocated,omitempty" yaml:"allocated,omitempty"`
-	// Capacity is the total number of IPv6 addresses in the pool, i.e., the sum of the lengths of the IPv6 ranges.
-	// An IPv6 range can contain up to 2^128 addresses, so we represent this value in JSON as a numeric string with
-	// a custom "uint128" format.
-	Capacity string `json:"capacity,omitempty" yaml:"capacity,omitempty"`
 }
 
 // L4PortRange is an inclusive-inclusive range of IP ports. The second port may be omitted to represent a
@@ -4931,7 +4928,22 @@ type NetworkInterfaceKind struct {
 // - Tables
 type OxqlQueryResult struct {
 	// Tables is tables resulting from the query, each containing timeseries.
-	Tables []Table `json:"tables,omitempty" yaml:"tables,omitempty"`
+	Tables []OxqlTable `json:"tables,omitempty" yaml:"tables,omitempty"`
+}
+
+// OxqlTable is a table represents one or more timeseries with the same schema.
+//
+// A table is the result of an OxQL query. It contains a name, usually the name of the timeseries schema from
+// which the data is derived, and any number of timeseries, which contain the actual data.
+//
+// Required fields:
+// - Name
+// - Timeseries
+type OxqlTable struct {
+	// Name is the name of the table.
+	Name string `json:"name,omitempty" yaml:"name,omitempty"`
+	// Timeseries is the set of timeseries in the table, ordered by key.
+	Timeseries []Timeseries `json:"timeseries,omitempty" yaml:"timeseries,omitempty"`
 }
 
 // PaginationOrder is the order in which the client wants to page through the requested collection
@@ -5638,6 +5650,9 @@ type SetTargetReleaseParams struct {
 // - TimeCreated
 // - TimeModified
 type Silo struct {
+	// AdminGroupName is optionally, silos can have a group name that is automatically granted the silo admin role.
+	//
+	AdminGroupName string `json:"admin_group_name,omitempty" yaml:"admin_group_name,omitempty"`
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Discoverable is a silo where discoverable is false can be retrieved only by its id - it will not be part
@@ -6186,12 +6201,12 @@ type SupportBundleCreate struct {
 // - State
 // - TimeCreated
 type SupportBundleInfo struct {
-	Id                TypedUuidForSupportBundleKind `json:"id,omitempty" yaml:"id,omitempty"`
-	ReasonForCreation string                        `json:"reason_for_creation,omitempty" yaml:"reason_for_creation,omitempty"`
-	ReasonForFailure  string                        `json:"reason_for_failure,omitempty" yaml:"reason_for_failure,omitempty"`
-	State             SupportBundleState            `json:"state,omitempty" yaml:"state,omitempty"`
-	TimeCreated       *time.Time                    `json:"time_created,omitempty" yaml:"time_created,omitempty"`
-	UserComment       string                        `json:"user_comment,omitempty" yaml:"user_comment,omitempty"`
+	Id                string             `json:"id,omitempty" yaml:"id,omitempty"`
+	ReasonForCreation string             `json:"reason_for_creation,omitempty" yaml:"reason_for_creation,omitempty"`
+	ReasonForFailure  string             `json:"reason_for_failure,omitempty" yaml:"reason_for_failure,omitempty"`
+	State             SupportBundleState `json:"state,omitempty" yaml:"state,omitempty"`
+	TimeCreated       *time.Time         `json:"time_created,omitempty" yaml:"time_created,omitempty"`
+	UserComment       string             `json:"user_comment,omitempty" yaml:"user_comment,omitempty"`
 }
 
 // SupportBundleInfoResultsPage is a single page of results
@@ -6640,19 +6655,6 @@ type SwitchVlanInterfaceConfig struct {
 // SystemMetricName is the type definition for a SystemMetricName.
 type SystemMetricName string
 
-// Table is a table represents one or more timeseries with the same schema.
-//
-// A table is the result of an OxQL query. It contains a name, usually the name of the timeseries schema from
-// which the data is derived, and any number of timeseries, which contain the actual data.
-//
-// Required fields:
-// - Name
-// - Timeseries
-type Table struct {
-	Name       string                `json:"name,omitempty" yaml:"name,omitempty"`
-	Timeseries map[string]Timeseries `json:"timeseries,omitempty" yaml:"timeseries,omitempty"`
-}
-
 // TargetRelease is view of a system software target release.
 //
 // Required fields:
@@ -6792,6 +6794,12 @@ type TimeseriesSchemaResultsPage struct {
 // - Id
 // - Size
 type TufArtifactMeta struct {
+	// Board is contents of the `BORD` field of a Hubris archive caboose. Only applicable to artifacts that are
+	// Hubris archives.
+	//
+	// This field should always be `Some(_)` if `sign` is `Some(_)`, but the opposite is not true (SP images will
+	// have a `board` but not a `sign`).
+	Board string `json:"board,omitempty" yaml:"board,omitempty"`
 	// Hash is the hash of the artifact.
 	Hash string `json:"hash,omitempty" yaml:"hash,omitempty"`
 	// Id is the artifact ID.
@@ -6898,18 +6906,6 @@ type TxEqConfig2 struct {
 	// Pre2 is pre-cursor tap2
 	Pre2 *int `json:"pre2,omitempty" yaml:"pre2,omitempty"`
 }
-
-// TypedUuidForAlertKind is the type definition for a TypedUuidForAlertKind.
-type TypedUuidForAlertKind string
-
-// TypedUuidForAlertReceiverKind is the type definition for a TypedUuidForAlertReceiverKind.
-type TypedUuidForAlertReceiverKind string
-
-// TypedUuidForInstanceKind is the type definition for a TypedUuidForInstanceKind.
-type TypedUuidForInstanceKind string
-
-// TypedUuidForSupportBundleKind is the type definition for a TypedUuidForSupportBundleKind.
-type TypedUuidForSupportBundleKind string
 
 // UninitializedSled is a sled that has not been added to an initialized rack yet
 //
@@ -13476,6 +13472,12 @@ const InstanceStateFailed InstanceState = "failed"
 // InstanceStateDestroyed represents the InstanceState `"destroyed"`.
 const InstanceStateDestroyed InstanceState = "destroyed"
 
+// IpVersionV4 represents the IpVersion `"v4"`.
+const IpVersionV4 IpVersion = "v4"
+
+// IpVersionV6 represents the IpVersion `"v6"`.
+const IpVersionV6 IpVersion = "v6"
+
 // LinkFecFirecode represents the LinkFec `"firecode"`.
 const LinkFecFirecode LinkFec = "firecode"
 
@@ -14244,6 +14246,12 @@ var InstanceStateCollection = []InstanceState{
 	InstanceStateStarting,
 	InstanceStateStopped,
 	InstanceStateStopping,
+}
+
+// IpVersionCollection is the collection of all IpVersion values.
+var IpVersionCollection = []IpVersion{
+	IpVersionV4,
+	IpVersionV6,
 }
 
 // LinkFecCollection is the collection of all LinkFec values.
