@@ -10626,6 +10626,412 @@ func (c *Client) SystemTimeseriesSchemaListAllPages(ctx context.Context, params 
 	return allPages, nil
 }
 
+// SystemUpdatePutRepository: Upload system release repository
+// System release repositories are verified by the updates trust store.
+func (c *Client) SystemUpdatePutRepository(ctx context.Context, params SystemUpdatePutRepositoryParams) (*TufRepoInsertResponse, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	b := params.Body
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"PUT",
+		resolveRelative(c.host, "/v1/system/update/repository"),
+		map[string]string{},
+		map[string]string{
+			"file_name": params.FileName,
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body TufRepoInsertResponse
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SystemUpdateGetRepository: Fetch system release repository description by version
+func (c *Client) SystemUpdateGetRepository(ctx context.Context, params SystemUpdateGetRepositoryParams) (*TufRepoGetResponse, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/update/repository/{{.system_version}}"),
+		map[string]string{
+			"system_version": params.SystemVersion,
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body TufRepoGetResponse
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// TargetReleaseView: Get the current target release of the rack's system software
+// This may not correspond to the actual software running on the rack at the time of request; it is instead the
+// release that the rack reconfigurator should be moving towards as a goal state. After some number of planning and
+// execution phases, the software running on the rack should eventually correspond to the release described here.
+func (c *Client) TargetReleaseView(ctx context.Context) (*TargetRelease, error) {
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/update/target-release"),
+		map[string]string{},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body TargetRelease
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// TargetReleaseUpdate: Set the current target release of the rack's system software
+// The rack reconfigurator will treat the software specified here as a goal state for the rack's software, and
+// attempt to asynchronously update to that release.
+func (c *Client) TargetReleaseUpdate(ctx context.Context, params TargetReleaseUpdateParams) (*TargetRelease, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"PUT",
+		resolveRelative(c.host, "/v1/system/update/target-release"),
+		map[string]string{},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body TargetRelease
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SystemUpdateTrustRootList: List root roles in the updates trust store
+// A root role is a JSON document describing the cryptographic keys that are trusted to sign system release repositories,
+// as described by The Update Framework. Uploading a repository requires its metadata to be signed by keys trusted
+// by the trust store.
+//
+// To iterate over all pages, use the `SystemUpdateTrustRootListAllPages` method, instead.
+func (c *Client) SystemUpdateTrustRootList(ctx context.Context, params SystemUpdateTrustRootListParams) (*UpdatesTrustRootResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/update/trust-roots"),
+		map[string]string{},
+		map[string]string{
+			"limit":      PointerIntToStr(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body UpdatesTrustRootResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SystemUpdateTrustRootListAllPages: List root roles in the updates trust store
+// A root role is a JSON document describing the cryptographic keys that are trusted to sign system release repositories,
+// as described by The Update Framework. Uploading a repository requires its metadata to be signed by keys trusted
+// by the trust store.
+//
+// This method is a wrapper around the `SystemUpdateTrustRootList` method.
+// This method returns all the pages at once.
+func (c *Client) SystemUpdateTrustRootListAllPages(ctx context.Context, params SystemUpdateTrustRootListParams) ([]UpdatesTrustRoot, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []UpdatesTrustRoot
+	params.PageToken = ""
+	params.Limit = NewPointer(100)
+	for {
+		page, err := c.SystemUpdateTrustRootList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
+}
+
+// SystemUpdateTrustRootCreate: Add trusted root role to updates trust store
+func (c *Client) SystemUpdateTrustRootCreate(ctx context.Context, params SystemUpdateTrustRootCreateParams) (*UpdatesTrustRoot, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"POST",
+		resolveRelative(c.host, "/v1/system/update/trust-roots"),
+		map[string]string{},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body UpdatesTrustRoot
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SystemUpdateTrustRootView: Fetch trusted root role
+func (c *Client) SystemUpdateTrustRootView(ctx context.Context, params SystemUpdateTrustRootViewParams) (*UpdatesTrustRoot, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/update/trust-roots/{{.trust_root_id}}"),
+		map[string]string{
+			"trust_root_id": params.TrustRootId,
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body UpdatesTrustRoot
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SystemUpdateTrustRootDelete: Delete trusted root role
+// Note that this method does not currently check for any uploaded system release repositories that would become
+// untrusted after deleting the root role.
+func (c *Client) SystemUpdateTrustRootDelete(ctx context.Context, params SystemUpdateTrustRootDeleteParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"DELETE",
+		resolveRelative(c.host, "/v1/system/update/trust-roots/{{.trust_root_id}}"),
+		map[string]string{
+			"trust_root_id": params.TrustRootId,
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // SiloUserList: List built-in (system) users in silo
 //
 // To iterate over all pages, use the `SiloUserListAllPages` method, instead.
