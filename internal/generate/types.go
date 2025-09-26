@@ -517,9 +517,16 @@ func createTypeObject(schema *openapi3.Schema, name, typeName, description strin
 		// they can be set to a null value, but they must not be
 		// omitted. The sdk should present these fields to the user as
 		// optional, and serialize them to `null` if not provided.
-		isRequiredNullable := v.Value.Nullable && slices.Contains(required, k)
-		if (slices.Contains(nullable(), typeName) || isRequiredNullable) && !strings.HasPrefix(typeName, "*") {
-			typeName = fmt.Sprintf("*%s", typeName)
+		isRequired := slices.Contains(required, k)
+		isRequiredNullable := v.Value.Nullable && isRequired
+		if slices.Contains(nullable(), typeName) || isRequiredNullable {
+			// We may have already decided to use a pointer. For
+			// example, convertToValidGoType always uses pointers
+			// for ints and bools. Prefix the type with "*", unless
+			// we've already made it a pointer upstream.
+			if !strings.HasPrefix(typeName, "*") {
+				typeName = fmt.Sprintf("*%s", typeName)
+			}
 		}
 
 		field := TypeFields{}
@@ -531,10 +538,13 @@ func createTypeObject(schema *openapi3.Schema, name, typeName, description strin
 		field.Name = strcase.ToCamel(k)
 		field.Type = typeName
 
-		// TODO: Set omitzero on all types.
-		// https://github.com/oxidecomputer/oxide.go/issues/290
+		// Configure json/yaml struct tags. By default, omit empty/zero
+		// values, but retain them for required fields.
+		//
+		// TODO: Use `omitzero` rather than `omitempty` on all relevant
+		// fields: https://github.com/oxidecomputer/oxide.go/issues/290
 		serInfo := fmt.Sprintf("`json:\"%s,omitempty\" yaml:\"%s,omitempty\"`", k, k)
-		if isNullableArray(v) || isRequiredNullable {
+		if isNullableArray(v) || isRequired {
 			serInfo = fmt.Sprintf("`json:\"%s\" yaml:\"%s\"`", k, k)
 		} else if slices.Contains(omitzeroTypes(), typeName) {
 			serInfo = fmt.Sprintf("`json:\"%s,omitzero\" yaml:\"%s,omitzero\"`", k, k)
