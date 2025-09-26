@@ -7,6 +7,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"slices"
 	"sort"
 	"strings"
 
@@ -393,7 +394,7 @@ func populateTypeTemplates(name string, s *openapi3.Schema, enumFieldName string
 	typeTpl := TypeTemplate{}
 
 	// TODO: remove workaround once no more type objects are empty
-	if sliceContains(emptyTypes(), name) {
+	if slices.Contains(emptyTypes(), name) {
 		bgpOT := getObjectType(s)
 		if bgpOT != "" {
 			panic("[ERROR] " + name + " is no longer an empty type. Remove workaround in exceptions.go")
@@ -474,6 +475,7 @@ func createTypeObject(schema *openapi3.Schema, name, typeName, description strin
 	}
 
 	schemas := schema.Properties
+	required := schema.Required
 	fields := []TypeFields{}
 	keys := sortedKeys(schemas)
 	for _, k := range keys {
@@ -511,9 +513,20 @@ func createTypeObject(schema *openapi3.Schema, name, typeName, description strin
 			}
 		}
 
-		// If a type is nullable we'll want a pointer
-		if sliceContains(nullable(), typeName) {
-			typeName = fmt.Sprintf("*%s", typeName)
+		// Omicron includes fields that are both required and nullable:
+		// they can be set to a null value, but they must not be
+		// omitted. The sdk should present these fields to the user as
+		// optional, and serialize them to `null` if not provided.
+		isRequired := slices.Contains(required, k)
+		isRequiredNullable := v.Value.Nullable && isRequired
+		if slices.Contains(nullable(), typeName) || isRequiredNullable {
+			// We may have already decided to use a pointer. For
+			// example, convertToValidGoType always uses pointers
+			// for ints and bools. Prefix the type with "*", unless
+			// we've already made it a pointer upstream.
+			if !strings.HasPrefix(typeName, "*") {
+				typeName = fmt.Sprintf("*%s", typeName)
+			}
 		}
 
 		field := TypeFields{}
@@ -525,12 +538,15 @@ func createTypeObject(schema *openapi3.Schema, name, typeName, description strin
 		field.Name = strcase.ToCamel(k)
 		field.Type = typeName
 
-		// TODO: Set omitzero on all types.
-		// https://github.com/oxidecomputer/oxide.go/issues/290
+		// Configure json/yaml struct tags. By default, omit empty/zero
+		// values, but retain them for required fields.
+		//
+		// TODO: Use `omitzero` rather than `omitempty` on all relevant
+		// fields: https://github.com/oxidecomputer/oxide.go/issues/290
 		serInfo := fmt.Sprintf("`json:\"%s,omitempty\" yaml:\"%s,omitempty\"`", k, k)
-		if isNullableArray(v) {
+		if isNullableArray(v) || isRequired {
 			serInfo = fmt.Sprintf("`json:\"%s\" yaml:\"%s\"`", k, k)
-		} else if sliceContains(omitzeroTypes(), typeName) {
+		} else if slices.Contains(omitzeroTypes(), typeName) {
 			serInfo = fmt.Sprintf("`json:\"%s,omitzero\" yaml:\"%s,omitzero\"`", k, k)
 		}
 
@@ -658,7 +674,7 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 	for _, v := range properties {
 		parts := strings.Split(v, "=")
 		key := parts[0]
-		if !sliceContains(typeKeys, key) {
+		if !slices.Contains(typeKeys, key) {
 			typeKeys = append(typeKeys, key)
 		}
 	}
@@ -712,7 +728,7 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 				}
 
 				// We set the type of a field as "any" if every element of the oneOf property isn't the same
-				if sliceContains(genericTypes, prop) {
+				if slices.Contains(genericTypes, prop) {
 					field.Type = "any"
 				}
 

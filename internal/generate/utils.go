@@ -234,21 +234,7 @@ func verifyNotAGoType(str string) string {
 func isNumericType(str string) bool {
 	numTypes := []string{"int", "int8", "int16", "int32", "int64", "uint", "uint8",
 		"uint16", "uint32", "uint64", "uintptr", "float32", "float64"}
-	for _, v := range numTypes {
-		if str == v {
-			return true
-		}
-	}
-	return false
-}
-
-func sliceContains[T comparable](s []T, str T) bool {
-	for _, a := range s {
-		if a == str {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(numTypes, str)
 }
 
 func allItemsAreSame[T comparable](a []T) bool {

@@ -141,7 +141,7 @@ func Test_createTypeObject(t *testing.T) {
 						Description:       "",
 						Name:              "Type",
 						Type:              "DiskSourceType",
-						SerializationInfo: "`json:\"type,omitempty\" yaml:\"type,omitempty\"`",
+						SerializationInfo: "`json:\"type\" yaml:\"type\"`",
 					},
 				},
 			},
@@ -252,10 +252,10 @@ func Test_createOneOf(t *testing.T) {
 					Type:        "struct",
 					Fields: []TypeFields{
 						{
-							Description: "", Name: "Type", Type: "ImageSourceType", SerializationInfo: "`json:\"type,omitempty\" yaml:\"type,omitempty\"`",
+							Description: "", Name: "Type", Type: "ImageSourceType", SerializationInfo: "`json:\"type\" yaml:\"type\"`",
 						},
 						{
-							Description: "", Name: "Url", Type: "string", SerializationInfo: "`json:\"url,omitempty\" yaml:\"url,omitempty\"`",
+							Description: "", Name: "Url", Type: "string", SerializationInfo: "`json:\"url\" yaml:\"url\"`",
 						},
 					},
 				},
@@ -265,10 +265,10 @@ func Test_createOneOf(t *testing.T) {
 					Type:        "struct",
 					Fields: []TypeFields{
 						{
-							Description: "", Name: "Id", Type: "string", SerializationInfo: "`json:\"id,omitempty\" yaml:\"id,omitempty\"`",
+							Description: "", Name: "Id", Type: "string", SerializationInfo: "`json:\"id\" yaml:\"id\"`",
 						},
 						{
-							Description: "", Name: "Type", Type: "ImageSourceType", SerializationInfo: "`json:\"type,omitempty\" yaml:\"type,omitempty\"`",
+							Description: "", Name: "Type", Type: "ImageSourceType", SerializationInfo: "`json:\"type\" yaml:\"type\"`",
 						},
 					},
 				},
