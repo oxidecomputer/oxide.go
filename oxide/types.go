@@ -3848,6 +3848,9 @@ type Instance struct {
 	AutoRestartPolicy InstanceAutoRestartPolicy `json:"auto_restart_policy,omitempty" yaml:"auto_restart_policy,omitempty"`
 	// BootDiskId is the ID of the disk used to boot this Instance, if a specific one is assigned.
 	BootDiskId string `json:"boot_disk_id,omitempty" yaml:"boot_disk_id,omitempty"`
+	// CpuPlatform is the CPU platform for this instance. If this is `null`, the instance requires no particular CPU
+	// platform.
+	CpuPlatform InstanceCpuPlatform `json:"cpu_platform,omitempty" yaml:"cpu_platform,omitempty"`
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Hostname is rFC1035-compliant hostname for the Instance.
@@ -3886,6 +3889,9 @@ type InstanceAutoRestartPolicy string
 // InstanceCpuCount is the number of CPUs in an Instance
 type InstanceCpuCount uint16
 
+// InstanceCpuPlatform is an AMD Milan-like CPU platform.
+type InstanceCpuPlatform string
+
 // InstanceCreate is create-time parameters for an `Instance`
 //
 // Required fields:
@@ -3920,8 +3926,12 @@ type InstanceCreate struct {
 	// are controlled by both the instance's UEFI firmware and the guest operating system. Boot options can change
 	// as disks are attached and detached, which may result in an instance that only boots to the EFI shell until
 	// a boot disk is set.
-	BootDisk    *InstanceDiskAttachment `json:"boot_disk,omitempty" yaml:"boot_disk,omitempty"`
-	Description string                  `json:"description,omitempty" yaml:"description,omitempty"`
+	BootDisk *InstanceDiskAttachment `json:"boot_disk,omitempty" yaml:"boot_disk,omitempty"`
+	// CpuPlatform is the CPU platform to be used for this instance. If this is `null`, the instance requires no
+	// particular CPU platform; when it is started the instance will have the most general CPU platform supported by
+	// the sled it is initially placed on.
+	CpuPlatform InstanceCpuPlatform `json:"cpu_platform,omitempty" yaml:"cpu_platform,omitempty"`
+	Description string              `json:"description,omitempty" yaml:"description,omitempty"`
 	// Disks is a list of disks to be attached to the instance.
 	//
 	// Disk attachments of type "create" will be created, while those of type "attach" must already exist.
@@ -4178,10 +4188,13 @@ type InstanceState string
 // InstanceUpdate is parameters of an `Instance` that can be reconfigured after creation.
 //
 // Required fields:
+// - AutoRestartPolicy
+// - BootDisk
+// - CpuPlatform
 // - Memory
 // - Ncpus
 type InstanceUpdate struct {
-	// AutoRestartPolicy is sets the auto-restart policy for this instance.
+	// AutoRestartPolicy is the auto-restart policy for this instance.
 	//
 	// This policy determines whether the instance should be automatically restarted by the control plane on failure.
 	// If this is `null`, any explicitly configured auto-restart policy will be unset, and the control plane will
@@ -4191,14 +4204,25 @@ type InstanceUpdate struct {
 	// will be automatically restarted. However, in the future, the default policy may be configurable through other
 	// mechanisms, such as on a per-project basis. In that case, any configured default policy will be used if
 	// this is `null`.
-	AutoRestartPolicy InstanceAutoRestartPolicy `json:"auto_restart_policy,omitempty" yaml:"auto_restart_policy,omitempty"`
-	// BootDisk is name or ID of the disk the instance should be instructed to boot from.
+	AutoRestartPolicy *InstanceAutoRestartPolicy `json:"auto_restart_policy" yaml:"auto_restart_policy"`
+	// BootDisk is the disk the instance is configured to boot from.
 	//
-	// If not provided, unset the instance's boot disk.
-	BootDisk NameOrId `json:"boot_disk,omitempty" yaml:"boot_disk,omitempty"`
-	// Memory is the amount of memory to assign to this instance.
+	// Setting a boot disk is optional but recommended to ensure predictable boot behavior. The boot disk can be
+	// set during instance creation or later if the instance is stopped. The boot disk counts against the disk attachment
+	// limit.
+	//
+	// An instance that does not have a boot disk set will use the boot options specified in its UEFI settings, which
+	// are controlled by both the instance's UEFI firmware and the guest operating system. Boot options can change
+	// as disks are attached and detached, which may result in an instance that only boots to the EFI shell until
+	// a boot disk is set.
+	BootDisk *NameOrId `json:"boot_disk" yaml:"boot_disk"`
+	// CpuPlatform is the CPU platform to be used for this instance. If this is `null`, the instance requires no
+	// particular CPU platform; when it is started the instance will have the most general CPU platform supported by
+	// the sled it is initially placed on.
+	CpuPlatform *InstanceCpuPlatform `json:"cpu_platform" yaml:"cpu_platform"`
+	// Memory is the amount of RAM (in bytes) to be allocated to the instance
 	Memory ByteCount `json:"memory,omitempty" yaml:"memory,omitempty"`
-	// Ncpus is the number of CPUs to assign to this instance.
+	// Ncpus is the number of vCPUs to be allocated to the instance
 	Ncpus InstanceCpuCount `json:"ncpus,omitempty" yaml:"ncpus,omitempty"`
 }
 
@@ -4388,6 +4412,30 @@ type InternetGatewayResultsPage struct {
 	Items []InternetGateway `json:"items,omitempty" yaml:"items,omitempty"`
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// IoCount is a count of bytes / rows accessed during a query.
+//
+// Required fields:
+// - Bytes
+// - Rows
+type IoCount struct {
+	// Bytes is the number of bytes accessed.
+	Bytes *int `json:"bytes,omitempty" yaml:"bytes,omitempty"`
+	// Rows is the number of rows accessed.
+	Rows *int `json:"rows,omitempty" yaml:"rows,omitempty"`
+}
+
+// IoSummary is summary of the I/O resources used by a query.
+//
+// Required fields:
+// - Read
+// - Written
+type IoSummary struct {
+	// Read is the bytes and rows read by the query.
+	Read IoCount `json:"read,omitempty" yaml:"read,omitempty"`
+	// Written is the bytes and rows written by the query.
+	Written IoCount `json:"written,omitempty" yaml:"written,omitempty"`
 }
 
 // IpNet is the type definition for a IpNet.
@@ -4927,8 +4975,28 @@ type NetworkInterfaceKind struct {
 // Required fields:
 // - Tables
 type OxqlQueryResult struct {
+	// QuerySummaries is summaries of queries run against ClickHouse.
+	QuerySummaries []OxqlQuerySummary `json:"query_summaries" yaml:"query_summaries"`
 	// Tables is tables resulting from the query, each containing timeseries.
 	Tables []OxqlTable `json:"tables,omitempty" yaml:"tables,omitempty"`
+}
+
+// OxqlQuerySummary is basic metadata about the resource usage of a single ClickHouse SQL query.
+//
+// Required fields:
+// - ElapsedMs
+// - Id
+// - IoSummary
+// - Query
+type OxqlQuerySummary struct {
+	// ElapsedMs is the total duration of the ClickHouse query (network plus execution).
+	ElapsedMs *int `json:"elapsed_ms,omitempty" yaml:"elapsed_ms,omitempty"`
+	// Id is the database-assigned query ID.
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
+	// IoSummary is summary of the data read and written.
+	IoSummary IoSummary `json:"io_summary,omitempty" yaml:"io_summary,omitempty"`
+	// Query is the raw ClickHouse SQL query.
+	Query string `json:"query,omitempty" yaml:"query,omitempty"`
 }
 
 // OxqlTable is a table represents one or more timeseries with the same schema.
@@ -5693,7 +5761,7 @@ type SiloAuthSettings struct {
 type SiloAuthSettingsUpdate struct {
 	// DeviceTokenMaxTtlSeconds is maximum lifetime of a device token in seconds. If set to null, users will be
 	// able to create tokens that do not expire.
-	DeviceTokenMaxTtlSeconds *int `json:"device_token_max_ttl_seconds,omitempty" yaml:"device_token_max_ttl_seconds,omitempty"`
+	DeviceTokenMaxTtlSeconds *int `json:"device_token_max_ttl_seconds" yaml:"device_token_max_ttl_seconds"`
 }
 
 // SiloCreate is create-time parameters for a `Silo`
@@ -6735,6 +6803,8 @@ type TimeseriesName string
 // Required fields:
 // - Query
 type TimeseriesQuery struct {
+	// IncludeSummaries is whether to include ClickHouse query summaries in the response.
+	IncludeSummaries *bool `json:"include_summaries,omitempty" yaml:"include_summaries,omitempty"`
 	// Query is a timeseries query string, written in the Oximeter query language.
 	Query string `json:"query,omitempty" yaml:"query,omitempty"`
 }
@@ -7433,7 +7503,7 @@ type VpcFirewallRuleProtocolUdp struct {
 // - Value
 type VpcFirewallRuleProtocolIcmp struct {
 	Type  VpcFirewallRuleProtocolType `json:"type,omitempty" yaml:"type,omitempty"`
-	Value VpcFirewallIcmpFilter       `json:"value,omitempty" yaml:"value,omitempty"`
+	Value *VpcFirewallIcmpFilter      `json:"value" yaml:"value"`
 }
 
 // VpcFirewallRuleProtocol is the protocols that may be specified in a firewall rule's filter
@@ -13427,6 +13497,12 @@ const InstanceAutoRestartPolicyNever InstanceAutoRestartPolicy = "never"
 // InstanceAutoRestartPolicyBestEffort represents the InstanceAutoRestartPolicy `"best_effort"`.
 const InstanceAutoRestartPolicyBestEffort InstanceAutoRestartPolicy = "best_effort"
 
+// InstanceCpuPlatformAmdMilan represents the InstanceCpuPlatform `"amd_milan"`.
+const InstanceCpuPlatformAmdMilan InstanceCpuPlatform = "amd_milan"
+
+// InstanceCpuPlatformAmdTurin represents the InstanceCpuPlatform `"amd_turin"`.
+const InstanceCpuPlatformAmdTurin InstanceCpuPlatform = "amd_turin"
+
 // InstanceDiskAttachmentTypeCreate represents the InstanceDiskAttachmentType `"create"`.
 const InstanceDiskAttachmentTypeCreate InstanceDiskAttachmentType = "create"
 
@@ -14219,6 +14295,12 @@ var ImportExportPolicyTypeCollection = []ImportExportPolicyType{
 var InstanceAutoRestartPolicyCollection = []InstanceAutoRestartPolicy{
 	InstanceAutoRestartPolicyBestEffort,
 	InstanceAutoRestartPolicyNever,
+}
+
+// InstanceCpuPlatformCollection is the collection of all InstanceCpuPlatform values.
+var InstanceCpuPlatformCollection = []InstanceCpuPlatform{
+	InstanceCpuPlatformAmdMilan,
+	InstanceCpuPlatformAmdTurin,
 }
 
 // InstanceDiskAttachmentTypeCollection is the collection of all InstanceDiskAttachmentType values.
