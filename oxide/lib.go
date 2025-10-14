@@ -301,3 +301,22 @@ func (c *Client) buildRequest(ctx context.Context, body io.Reader, method, uri s
 
 	return req, nil
 }
+
+type Request struct {
+	Method string
+	Path   string
+	Body   io.Reader
+	Params map[string]string
+	Query  map[string]string
+}
+
+// MakeRequest takes a `Request` that defines the desired API request, builds
+// the URI using the configured API host, and sends the request to the API.
+func (c *Client) MakeRequest(ctx context.Context, req Request) (*http.Response, error) {
+	uri := resolveRelative(c.host, req.Path)
+	httpReq, err := c.buildRequest(ctx, req.Body, req.Method, uri, req.Params, req.Query)
+	if err != nil {
+		return nil, fmt.Errorf("building request failed: %v", err)
+	}
+	return c.client.Do(httpReq)
+}
