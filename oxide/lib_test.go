@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"net/http/httptest"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -469,4 +470,67 @@ user = "other-user"
 	require.NoError(t, os.WriteFile(filepath.Join(oxideDir, "config.toml"), []byte(`default-profile = "file"`), 0o644))
 
 	return tmpDir
+}
+
+func Test_MakeRequest(t *testing.T) {
+	tests := []struct {
+		name          string
+		request       Request
+		expectedQuery string
+	}{
+		{
+			name: "request without optional fields",
+			request: Request{
+				Method: http.MethodGet,
+				Path:   "/v1/projects",
+			},
+			expectedQuery: "",
+		},
+		{
+			name: "request with all fields",
+			request: Request{
+				Method: http.MethodPost,
+				Path:   "/v1/projects",
+				Body:   strings.NewReader(`{"name":"my-project"}`),
+				Params: map[string]string{
+					"project": "my-project",
+				},
+				Query: map[string]string{
+					"project": "my-project",
+				},
+			},
+			expectedQuery: "project=my-project",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			var capturedRequest *http.Request
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				capturedRequest = r
+				w.WriteHeader(http.StatusOK)
+				_, err := w.Write([]byte(`{"status":"ok"}`))
+				require.NoError(t, err)
+			}))
+			defer server.Close()
+
+			client, err := NewClient(&Config{
+				Host:  server.URL,
+				Token: "test-token",
+			})
+			require.NoError(t, err)
+
+			resp, err := client.MakeRequest(context.Background(), tc.request)
+			require.NoError(t, err)
+			require.NotNil(t, resp)
+			defer resp.Body.Close()
+
+			require.NotNil(t, capturedRequest)
+			assert.Equal(t, tc.request.Method, capturedRequest.Method)
+			assert.Equal(t, tc.request.Path, capturedRequest.URL.Path)
+			assert.Equal(t, tc.expectedQuery, capturedRequest.URL.RawQuery)
+
+			assert.Equal(t, http.StatusOK, resp.StatusCode)
+		})
+	}
 }
