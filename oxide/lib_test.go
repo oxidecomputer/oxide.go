@@ -227,11 +227,48 @@ func Test_NewClient(t *testing.T) {
 				userAgent: "bob",
 			},
 		},
+		"succeeds with config, overrides env": {
+			env: map[string]string{
+				"OXIDE_PROFILE": "file",
+			},
+			config: func(string) *Config {
+				return &Config{
+					Host:  "http://localhost",
+					Token: "foo",
+				}
+			},
+			setHome: true,
+			expectedClient: &Client{
+				host:  "http://localhost/",
+				token: "foo",
+				client: &http.Client{
+					Timeout: 600 * time.Second,
+				},
+				userAgent: defaultUserAgent(),
+			},
+		},
 		"succeeds with profile": {
 			config: func(string) *Config {
 				return &Config{
 					Profile: "file",
 				}
+			},
+			setHome: true,
+			expectedClient: &Client{
+				host:  "http://file-host/",
+				token: "file-token",
+				client: &http.Client{
+					Timeout: 600 * time.Second,
+				},
+				userAgent: defaultUserAgent(),
+			},
+		},
+		"succeeds with profile from env": {
+			env: map[string]string{
+				"OXIDE_PROFILE": "file",
+			},
+			config: func(string) *Config {
+				return &Config{}
 			},
 			setHome: true,
 			expectedClient: &Client{
@@ -305,6 +342,24 @@ func Test_NewClient(t *testing.T) {
 			expectedClient: &Client{
 				host:  "http://other-host/",
 				token: "other-token",
+				client: &http.Client{
+					Timeout: 600 * time.Second,
+				},
+				userAgent: defaultUserAgent(),
+			},
+		},
+		"succeeds with host and token from different sources ": {
+			env: map[string]string{
+				"OXIDE_TOKEN": "foo",
+			},
+			config: func(string) *Config {
+				return &Config{
+					Host: "http://localhost",
+				}
+			},
+			expectedClient: &Client{
+				host:  "http://localhost/",
+				token: "foo",
 				client: &http.Client{
 					Timeout: 600 * time.Second,
 				},
@@ -441,6 +496,8 @@ func Test_NewClient(t *testing.T) {
 
 			if testCase.expectedError != "" {
 				assert.EqualError(t, err, strings.ReplaceAll(testCase.expectedError, "<OXIDE_DIR>", oxideDir))
+			} else {
+				assert.NoError(t, err)
 			}
 
 			assert.Equal(t, testCase.expectedClient, c)
