@@ -7462,6 +7462,7 @@ func (c *Client) IpPoolListAllPages(ctx context.Context, params IpPoolListParams
 }
 
 // IpPoolCreate: Create IP pool
+// IPv6 is not yet supported for unicast pools.
 func (c *Client) IpPoolCreate(ctx context.Context, params IpPoolCreateParams) (*IpPool, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -7931,8 +7932,14 @@ func (c *Client) IpPoolRangeListAllPages(ctx context.Context, params IpPoolRange
 	return allPages, nil
 }
 
-// IpPoolRangeAdd: Add range to IP pool
-// IPv6 ranges are not allowed yet.
+// IpPoolRangeAdd: Add range to IP pool.
+// IPv6 ranges are not allowed yet for unicast pools.
+//
+// For multicast pools, all ranges must be either Any-Source Multicast (ASM) or Source-Specific Multicast (SSM),
+// but not both. Mixing ASM and SSM ranges in the same pool is not allowed.
+//
+// ASM: IPv4 addresses outside 232.0.0.0/8, IPv6 addresses with flag field != 3 SSM: IPv4 addresses in 232.0.0.0/8, IPv6
+// addresses with flag field = 3
 func (c *Client) IpPoolRangeAdd(ctx context.Context, params IpPoolRangeAddParams) (*IpPoolRange, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -9934,6 +9941,188 @@ func (c *Client) SystemPolicyUpdate(ctx context.Context, params SystemPolicyUpda
 	return &body, nil
 }
 
+// ScimTokenList: List SCIM tokens
+// Specify the silo by name or ID using the `silo` query parameter.
+func (c *Client) ScimTokenList(ctx context.Context, params ScimTokenListParams) (*[]ScimClientBearerToken, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/scim/tokens"),
+		map[string]string{},
+		map[string]string{
+			"silo": string(params.Silo),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body []ScimClientBearerToken
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// ScimTokenCreate: Create SCIM token
+// Specify the silo by name or ID using the `silo` query parameter. Be sure to save the bearer token in the
+// response. It will not be retrievable later through the token view and list endpoints.
+func (c *Client) ScimTokenCreate(ctx context.Context, params ScimTokenCreateParams) (*ScimClientBearerTokenValue, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"POST",
+		resolveRelative(c.host, "/v1/system/scim/tokens"),
+		map[string]string{},
+		map[string]string{
+			"silo": string(params.Silo),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body ScimClientBearerTokenValue
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// ScimTokenView: Fetch SCIM token
+// Specify the silo by name or ID using the `silo` query parameter.
+func (c *Client) ScimTokenView(ctx context.Context, params ScimTokenViewParams) (*ScimClientBearerToken, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/scim/tokens/{{.token_id}}"),
+		map[string]string{
+			"token_id": params.TokenId,
+		},
+		map[string]string{
+			"silo": string(params.Silo),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body ScimClientBearerToken
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// ScimTokenDelete: Delete SCIM token
+// Specify the silo by name or ID using the `silo` query parameter.
+func (c *Client) ScimTokenDelete(ctx context.Context, params ScimTokenDeleteParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"DELETE",
+		resolveRelative(c.host, "/v1/system/scim/tokens/{{.token_id}}"),
+		map[string]string{
+			"token_id": params.TokenId,
+		},
+		map[string]string{
+			"silo": string(params.Silo),
+		},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // SystemQuotasList: Lists resource quotas for all silos
 //
 // To iterate over all pages, use the `SystemQuotasListAllPages` method, instead.
@@ -10626,9 +10815,87 @@ func (c *Client) SystemTimeseriesSchemaListAllPages(ctx context.Context, params 
 	return allPages, nil
 }
 
-// SystemUpdatePutRepository: Upload system release repository
+// SystemUpdateRepositoryList: List all TUF repositories
+// Returns a paginated list of all TUF repositories ordered by system version (newest first by default).
+//
+// To iterate over all pages, use the `SystemUpdateRepositoryListAllPages` method, instead.
+func (c *Client) SystemUpdateRepositoryList(ctx context.Context, params SystemUpdateRepositoryListParams) (*TufRepoResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/update/repositories"),
+		map[string]string{},
+		map[string]string{
+			"limit":      PointerIntToStr(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body TufRepoResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SystemUpdateRepositoryListAllPages: List all TUF repositories
+// Returns a paginated list of all TUF repositories ordered by system version (newest first by default).
+//
+// This method is a wrapper around the `SystemUpdateRepositoryList` method.
+// This method returns all the pages at once.
+func (c *Client) SystemUpdateRepositoryListAllPages(ctx context.Context, params SystemUpdateRepositoryListParams) ([]TufRepo, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []TufRepo
+	params.PageToken = ""
+	params.Limit = NewPointer(100)
+	for {
+		page, err := c.SystemUpdateRepositoryList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
+}
+
+// SystemUpdateRepositoryUpload: Upload system release repository
 // System release repositories are verified by the updates trust store.
-func (c *Client) SystemUpdatePutRepository(ctx context.Context, params SystemUpdatePutRepositoryParams) (*TufRepoInsertResponse, error) {
+func (c *Client) SystemUpdateRepositoryUpload(ctx context.Context, params SystemUpdateRepositoryUploadParams) (*TufRepoUpload, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -10639,7 +10906,7 @@ func (c *Client) SystemUpdatePutRepository(ctx context.Context, params SystemUpd
 		ctx,
 		b,
 		"PUT",
-		resolveRelative(c.host, "/v1/system/update/repository"),
+		resolveRelative(c.host, "/v1/system/update/repositories"),
 		map[string]string{},
 		map[string]string{
 			"file_name": params.FileName,
@@ -10666,7 +10933,7 @@ func (c *Client) SystemUpdatePutRepository(ctx context.Context, params SystemUpd
 		return nil, errors.New("request returned an empty body in the response")
 	}
 
-	var body TufRepoInsertResponse
+	var body TufRepoUpload
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -10675,8 +10942,8 @@ func (c *Client) SystemUpdatePutRepository(ctx context.Context, params SystemUpd
 	return &body, nil
 }
 
-// SystemUpdateGetRepository: Fetch system release repository description by version
-func (c *Client) SystemUpdateGetRepository(ctx context.Context, params SystemUpdateGetRepositoryParams) (*TufRepoGetResponse, error) {
+// SystemUpdateRepositoryView: Fetch system release repository by version
+func (c *Client) SystemUpdateRepositoryView(ctx context.Context, params SystemUpdateRepositoryViewParams) (*TufRepo, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -10685,7 +10952,7 @@ func (c *Client) SystemUpdateGetRepository(ctx context.Context, params SystemUpd
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.host, "/v1/system/update/repository/{{.system_version}}"),
+		resolveRelative(c.host, "/v1/system/update/repositories/{{.system_version}}"),
 		map[string]string{
 			"system_version": params.SystemVersion,
 		},
@@ -10712,7 +10979,7 @@ func (c *Client) SystemUpdateGetRepository(ctx context.Context, params SystemUpd
 		return nil, errors.New("request returned an empty body in the response")
 	}
 
-	var body TufRepoGetResponse
+	var body TufRepo
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -10721,17 +10988,15 @@ func (c *Client) SystemUpdateGetRepository(ctx context.Context, params SystemUpd
 	return &body, nil
 }
 
-// TargetReleaseView: Get the current target release of the rack's system software
-// This may not correspond to the actual software running on the rack at the time of request; it is instead the
-// release that the rack reconfigurator should be moving towards as a goal state. After some number of planning and
-// execution phases, the software running on the rack should eventually correspond to the release described here.
-func (c *Client) TargetReleaseView(ctx context.Context) (*TargetRelease, error) {
+// SystemUpdateStatus: Fetch system update status
+// Returns information about the current target release and the progress of system software updates.
+func (c *Client) SystemUpdateStatus(ctx context.Context) (*UpdateStatus, error) {
 	// Create the request
 	req, err := c.buildRequest(
 		ctx,
 		nil,
 		"GET",
-		resolveRelative(c.host, "/v1/system/update/target-release"),
+		resolveRelative(c.host, "/v1/system/update/status"),
 		map[string]string{},
 		map[string]string{},
 	)
@@ -10756,7 +11021,7 @@ func (c *Client) TargetReleaseView(ctx context.Context) (*TargetRelease, error) 
 		return nil, errors.New("request returned an empty body in the response")
 	}
 
-	var body TargetRelease
+	var body UpdateStatus
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -10765,17 +11030,18 @@ func (c *Client) TargetReleaseView(ctx context.Context) (*TargetRelease, error) 
 	return &body, nil
 }
 
-// TargetReleaseUpdate: Set the current target release of the rack's system software
-// The rack reconfigurator will treat the software specified here as a goal state for the rack's software, and
-// attempt to asynchronously update to that release.
-func (c *Client) TargetReleaseUpdate(ctx context.Context, params TargetReleaseUpdateParams) (*TargetRelease, error) {
+// TargetReleaseUpdate: Set target release
+// Set the current target release of the rack's system software. The rack reconfigurator will treat the software
+// specified here as a goal state for the rack's software, and attempt to asynchronously update to that release.
+// Use the update status endpoint to view the current target release.
+func (c *Client) TargetReleaseUpdate(ctx context.Context, params TargetReleaseUpdateParams) error {
 	if err := params.Validate(); err != nil {
-		return nil, err
+		return err
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+		return fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
 	// Create the request
@@ -10788,33 +11054,22 @@ func (c *Client) TargetReleaseUpdate(ctx context.Context, params TargetReleaseUp
 		map[string]string{},
 	)
 	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
+		return fmt.Errorf("error building request: %v", err)
 	}
 
 	// Send the request.
 	resp, err := c.client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
+		return fmt.Errorf("error sending request: %v", err)
 	}
 	defer resp.Body.Close()
 
 	// Create and return an HTTPError when an error response code is received.
 	if err := NewHTTPError(resp); err != nil {
-		return nil, err
+		return err
 	}
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body TargetRelease
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
+	return nil
 }
 
 // SystemUpdateTrustRootList: List root roles in the updates trust store
