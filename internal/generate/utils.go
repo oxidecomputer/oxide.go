@@ -110,15 +110,17 @@ func convertToValidGoType(property, typeName string, r *openapi3.SchemaRef) stri
 		return getReferenceSchema(r)
 	}
 
-	if r.Value.AdditionalProperties.Schema != nil {
-		if r.Value.AdditionalProperties.Schema.Ref != "" {
-			return getReferenceSchema(r.Value.AdditionalProperties.Schema)
-		} else if r.Value.AdditionalProperties.Schema.Value.Items.Ref != "" {
-			ref := getReferenceSchema(r.Value.AdditionalProperties.Schema.Value.Items)
-			if r.Value.AdditionalProperties.Schema.Value.Items.Value.Type.Is("array") {
+	if schema := r.Value.AdditionalProperties.Schema; schema != nil {
+		if schema.Ref != "" {
+			return getReferenceSchema(schema)
+		} else if schema.Value.Items != nil && schema.Value.Items.Ref != "" {
+			ref := getReferenceSchema(schema.Value.Items)
+			if schema.Value.Items.Value.Type.Is("array") {
 				return "[]" + ref
 			}
 			return ref
+		} else {
+			return schemaValueToGoType(schema.Value, property)
 		}
 	}
 
