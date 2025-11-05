@@ -682,21 +682,6 @@ type AntiAffinityGroupUpdate struct {
 	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
-// ArtifactId is an identifier for an artifact.
-//
-// Required fields:
-// - Kind
-// - Name
-// - Version
-type ArtifactId struct {
-	// Kind is the kind of artifact this is.
-	Kind string `json:"kind" yaml:"kind"`
-	// Name is the artifact's name.
-	Name string `json:"name" yaml:"name"`
-	// Version is the artifact's version.
-	Version string `json:"version" yaml:"version"`
-}
-
 // AuditLogEntry is audit log entry
 //
 // Required fields:
@@ -758,6 +743,16 @@ type AuditLogEntryActorSiloUser struct {
 	Kind       AuditLogEntryActorKind `json:"kind" yaml:"kind"`
 	SiloId     string                 `json:"silo_id" yaml:"silo_id"`
 	SiloUserId string                 `json:"silo_user_id" yaml:"silo_user_id"`
+}
+
+// AuditLogEntryActorScim is the type definition for a AuditLogEntryActorScim.
+//
+// Required fields:
+// - Kind
+// - SiloId
+type AuditLogEntryActorScim struct {
+	Kind   AuditLogEntryActorKind `json:"kind" yaml:"kind"`
+	SiloId string                 `json:"silo_id" yaml:"silo_id"`
 }
 
 // AuditLogEntryActorUnauthenticated is the type definition for a AuditLogEntryActorUnauthenticated.
@@ -4414,30 +4409,6 @@ type InternetGatewayResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// IoCount is a count of bytes / rows accessed during a query.
-//
-// Required fields:
-// - Bytes
-// - Rows
-type IoCount struct {
-	// Bytes is the number of bytes accessed.
-	Bytes *int `json:"bytes" yaml:"bytes"`
-	// Rows is the number of rows accessed.
-	Rows *int `json:"rows" yaml:"rows"`
-}
-
-// IoSummary is summary of the I/O resources used by a query.
-//
-// Required fields:
-// - Read
-// - Written
-type IoSummary struct {
-	// Read is the bytes and rows read by the query.
-	Read IoCount `json:"read" yaml:"read"`
-	// Written is the bytes and rows written by the query.
-	Written IoCount `json:"written" yaml:"written"`
-}
-
 // IpNet is the type definition for a IpNet.
 type IpNet interface{}
 
@@ -4449,6 +4420,7 @@ type IpNet interface{}
 // - Id
 // - IpVersion
 // - Name
+// - PoolType
 // - TimeCreated
 // - TimeModified
 type IpPool struct {
@@ -4460,13 +4432,21 @@ type IpPool struct {
 	IpVersion IpVersion `json:"ip_version" yaml:"ip_version"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name" yaml:"name"`
+	// PoolType is type of IP pool (unicast or multicast)
+	PoolType IpPoolType `json:"pool_type" yaml:"pool_type"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
 
-// IpPoolCreate is create-time parameters for an `IpPool`
+// IpPoolCreate is create-time parameters for an `IpPool`.
+//
+// For multicast pools, all ranges must be either Any-Source Multicast (ASM) or Source-Specific Multicast (SSM),
+// but not both. Mixing ASM and SSM ranges in the same pool is not allowed.
+//
+// ASM: IPv4 addresses outside 232.0.0.0/8, IPv6 addresses with flag field != 3 SSM: IPv4 addresses in 232.0.0.0/8, IPv6
+// addresses with flag field = 3
 //
 // Required fields:
 // - Description
@@ -4481,6 +4461,8 @@ type IpPoolCreate struct {
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
 	// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
+	// PoolType is type of IP pool (defaults to Unicast)
+	PoolType IpPoolType `json:"pool_type,omitempty" yaml:"pool_type,omitempty"`
 }
 
 // IpPoolLinkSilo is the type definition for a IpPoolLinkSilo.
@@ -4567,6 +4549,9 @@ type IpPoolSiloUpdate struct {
 	// pool is made default, an existing default will remain linked but will no longer be the default.
 	IsDefault *bool `json:"is_default" yaml:"is_default"`
 }
+
+// IpPoolType is unicast IP pool for standard IP allocations.
+type IpPoolType string
 
 // IpPoolUpdate is parameters for updating an IP Pool
 type IpPoolUpdate struct {
@@ -4975,28 +4960,8 @@ type NetworkInterfaceKind struct {
 // Required fields:
 // - Tables
 type OxqlQueryResult struct {
-	// QuerySummaries is summaries of queries run against ClickHouse.
-	QuerySummaries []OxqlQuerySummary `json:"query_summaries" yaml:"query_summaries"`
 	// Tables is tables resulting from the query, each containing timeseries.
 	Tables []OxqlTable `json:"tables" yaml:"tables"`
-}
-
-// OxqlQuerySummary is basic metadata about the resource usage of a single ClickHouse SQL query.
-//
-// Required fields:
-// - ElapsedMs
-// - Id
-// - IoSummary
-// - Query
-type OxqlQuerySummary struct {
-	// ElapsedMs is the total duration of the ClickHouse query (network plus execution).
-	ElapsedMs *int `json:"elapsed_ms" yaml:"elapsed_ms"`
-	// Id is the database-assigned query ID.
-	Id string `json:"id" yaml:"id"`
-	// IoSummary is summary of the data read and written.
-	IoSummary IoSummary `json:"io_summary" yaml:"io_summary"`
-	// Query is the raw ClickHouse SQL query.
-	Query string `json:"query" yaml:"query"`
 }
 
 // OxqlTable is a table represents one or more timeseries with the same schema.
@@ -5679,6 +5644,31 @@ type SamlIdentityProviderCreate struct {
 	SpClientId string `json:"sp_client_id" yaml:"sp_client_id"`
 	// TechnicalContactEmail is customer's technical contact for saml configuration
 	TechnicalContactEmail string `json:"technical_contact_email" yaml:"technical_contact_email"`
+}
+
+// ScimClientBearerToken is the type definition for a ScimClientBearerToken.
+//
+// Required fields:
+// - Id
+// - TimeCreated
+type ScimClientBearerToken struct {
+	Id          string     `json:"id" yaml:"id"`
+	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
+	TimeExpires *time.Time `json:"time_expires,omitempty" yaml:"time_expires,omitempty"`
+}
+
+// ScimClientBearerTokenValue is the POST response is the only time the generated bearer token is returned to
+// the client.
+//
+// Required fields:
+// - BearerToken
+// - Id
+// - TimeCreated
+type ScimClientBearerTokenValue struct {
+	BearerToken string     `json:"bearer_token" yaml:"bearer_token"`
+	Id          string     `json:"id" yaml:"id"`
+	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
+	TimeExpires *time.Time `json:"time_expires,omitempty" yaml:"time_expires,omitempty"`
 }
 
 // ServiceIcmpConfig is configuration of inbound ICMP allowed by API services.
@@ -6723,48 +6713,16 @@ type SwitchVlanInterfaceConfig struct {
 // SystemMetricName is the type definition for a SystemMetricName.
 type SystemMetricName string
 
-// TargetRelease is view of a system software target release.
+// TargetRelease is view of a system software target release
 //
 // Required fields:
-// - Generation
-// - ReleaseSource
 // - TimeRequested
-type TargetRelease struct {
-	// Generation is the target-release generation number.
-	Generation *int `json:"generation" yaml:"generation"`
-	// ReleaseSource is the source of the target release.
-	ReleaseSource TargetReleaseSource `json:"release_source" yaml:"release_source"`
-	// TimeRequested is the time it was set as the target release.
-	TimeRequested *time.Time `json:"time_requested" yaml:"time_requested"`
-}
-
-// TargetReleaseSourceType is the type definition for a TargetReleaseSourceType.
-type TargetReleaseSourceType string
-
-// TargetReleaseSourceUnspecified is unspecified or unknown source (probably MUPdate).
-//
-// Required fields:
-// - Type
-type TargetReleaseSourceUnspecified struct {
-	Type TargetReleaseSourceType `json:"type" yaml:"type"`
-}
-
-// TargetReleaseSourceSystemVersion is the specified release of the rack's system software.
-//
-// Required fields:
-// - Type
 // - Version
-type TargetReleaseSourceSystemVersion struct {
-	Type    TargetReleaseSourceType `json:"type" yaml:"type"`
-	Version string                  `json:"version" yaml:"version"`
-}
-
-// TargetReleaseSource is source of a system software target release.
-type TargetReleaseSource struct {
-	// Type is the type definition for a Type.
-	Type TargetReleaseSourceType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Version is the type definition for a Version.
-	Version string `json:"version,omitempty" yaml:"version,omitempty"`
+type TargetRelease struct {
+	// TimeRequested is time this was set as the target release
+	TimeRequested *time.Time `json:"time_requested" yaml:"time_requested"`
+	// Version is the specified release of the rack's system software
+	Version string `json:"version" yaml:"version"`
 }
 
 // TimeAndIdSortMode is sort in increasing order of timestamp and ID, i.e., earliest first
@@ -6803,8 +6761,6 @@ type TimeseriesName string
 // Required fields:
 // - Query
 type TimeseriesQuery struct {
-	// IncludeSummaries is whether to include ClickHouse query summaries in the response.
-	IncludeSummaries *bool `json:"include_summaries,omitempty" yaml:"include_summaries,omitempty"`
 	// Query is a timeseries query string, written in the Oximeter query language.
 	Query string `json:"query" yaml:"query"`
 }
@@ -6855,97 +6811,55 @@ type TimeseriesSchemaResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// TufArtifactMeta is metadata about an individual TUF artifact.
-//
-// Found within a `TufRepoDescription`.
-//
-// Required fields:
-// - Hash
-// - Id
-// - Size
-type TufArtifactMeta struct {
-	// Board is contents of the `BORD` field of a Hubris archive caboose. Only applicable to artifacts that are
-	// Hubris archives.
-	//
-	// This field should always be `Some(_)` if `sign` is `Some(_)`, but the opposite is not true (SP images will
-	// have a `board` but not a `sign`).
-	Board string `json:"board,omitempty" yaml:"board,omitempty"`
-	// Hash is the hash of the artifact.
-	Hash string `json:"hash" yaml:"hash"`
-	// Id is the artifact ID.
-	Id ArtifactId `json:"id" yaml:"id"`
-	// Sign is contents of the `SIGN` field of a Hubris archive caboose, i.e., an identifier for the set of
-	// valid signing keys. Currently only applicable to RoT image and bootloader artifacts, where it will be an
-	// LPC55 Root Key Table Hash (RKTH).
-	Sign []int `json:"sign" yaml:"sign"`
-	// Size is the size of the artifact in bytes.
-	Size *int `json:"size" yaml:"size"`
-}
-
-// TufRepoDescription is a description of an uploaded TUF repository.
-//
-// Required fields:
-// - Artifacts
-// - Repo
-type TufRepoDescription struct {
-	// Artifacts is information about the artifacts present in the repository.
-	Artifacts []TufArtifactMeta `json:"artifacts" yaml:"artifacts"`
-	// Repo is information about the repository.
-	Repo TufRepoMeta `json:"repo" yaml:"repo"`
-}
-
-// TufRepoGetResponse is data about a successful TUF repo get from Nexus.
-//
-// Required fields:
-// - Description
-type TufRepoGetResponse struct {
-	// Description is the description of the repository.
-	Description TufRepoDescription `json:"description" yaml:"description"`
-}
-
-// TufRepoInsertResponse is data about a successful TUF repo import into Nexus.
-//
-// Required fields:
-// - Recorded
-// - Status
-type TufRepoInsertResponse struct {
-	// Recorded is the repository as present in the database.
-	Recorded TufRepoDescription `json:"recorded" yaml:"recorded"`
-	// Status is whether this repository already existed or is new.
-	Status TufRepoInsertStatus `json:"status" yaml:"status"`
-}
-
-// TufRepoInsertStatus is the repository already existed in the database.
-type TufRepoInsertStatus string
-
-// TufRepoMeta is metadata about a TUF repository.
-//
-// Found within a `TufRepoDescription`.
+// TufRepo is metadata about a TUF repository
 //
 // Required fields:
 // - FileName
 // - Hash
 // - SystemVersion
-// - TargetsRoleVersion
-// - ValidUntil
-type TufRepoMeta struct {
-	// FileName is the file name of the repository.
+// - TimeCreated
+type TufRepo struct {
+	// FileName is the file name of the repository, as reported by the client that uploaded it
 	//
-	// This is purely used for debugging and may not always be correct (e.g. with wicket, we read the file contents from
-	// stdin so we don't know the correct file name).
+	// This is intended for debugging. The file name may not match any particular pattern, and even if it does, it
+	// may not be accurate since it's just what the client reported.
 	FileName string `json:"file_name" yaml:"file_name"`
-	// Hash is the hash of the repository.
-	//
-	// This is a slight abuse of `ArtifactHash`, since that's the hash of individual artifacts within the repository. However,
-	// we use it here for convenience.
+	// Hash is the hash of the repository
 	Hash string `json:"hash" yaml:"hash"`
-	// SystemVersion is the system version in artifacts.json.
+	// SystemVersion is the system version for this repository
+	//
+	// The system version is a top-level version number applied to all the software in the repository.
 	SystemVersion string `json:"system_version" yaml:"system_version"`
-	// TargetsRoleVersion is the version of the targets role.
-	TargetsRoleVersion *int `json:"targets_role_version" yaml:"targets_role_version"`
-	// ValidUntil is the time until which the repo is valid.
-	ValidUntil *time.Time `json:"valid_until" yaml:"valid_until"`
+	// TimeCreated is time the repository was uploaded
+	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
 }
+
+// TufRepoResultsPage is a single page of results
+//
+// Required fields:
+// - Items
+type TufRepoResultsPage struct {
+	// Items is list of items on this page of results
+	Items []TufRepo `json:"items" yaml:"items"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// TufRepoUpload is the type definition for a TufRepoUpload.
+//
+// Required fields:
+// - Repo
+// - Status
+type TufRepoUpload struct {
+	// Repo is metadata about a TUF repository
+	Repo TufRepo `json:"repo" yaml:"repo"`
+	// Status is whether the uploaded TUF repo already existed or was new and had to be inserted. Part of `TufRepoUpload`.
+	//
+	Status TufRepoUploadStatus `json:"status" yaml:"status"`
+}
+
+// TufRepoUploadStatus is the repository already existed in the database
+type TufRepoUploadStatus string
 
 // TxEqConfig is per-port tx-eq overrides.  This can be used to fine-tune the transceiver equalization settings
 // to improve signal integrity.
@@ -7013,6 +6927,43 @@ type UninitializedSledResultsPage struct {
 
 // Units is the type definition for a Units.
 type Units string
+
+// UpdateStatus is the type definition for a UpdateStatus.
+//
+// Required fields:
+// - ComponentsByReleaseVersion
+// - Suspended
+// - TargetRelease
+// - TimeLastStepPlanned
+type UpdateStatus struct {
+	// ComponentsByReleaseVersion is count of components running each release version
+	//
+	// Keys will be either:
+	//
+	// * Semver-like release version strings * "install dataset", representing the initial rack software before any
+	// updates * "unknown", which means there is no TUF repo uploaded that matches the software running on the component)
+	//
+	ComponentsByReleaseVersion map[string]*int `json:"components_by_release_version" yaml:"components_by_release_version"`
+	// Suspended is whether automatic update is suspended due to manual update activity
+	//
+	// After a manual support procedure that changes the system software, automatic update activity is suspended to
+	// avoid undoing the change. To resume automatic update, first upload the TUF repository matching the manually applied
+	// update, then set that as the target release.
+	Suspended *bool `json:"suspended" yaml:"suspended"`
+	// TargetRelease is current target release of the system software
+	//
+	// This may not correspond to the actual system software running at the time of request; it is instead the release
+	// that the system should be moving towards as a goal state. The system asynchronously updates software to
+	// match this target release.
+	//
+	// Will only be null if a target release has never been set. In that case, the system is not automatically attempting
+	// to manage software versions.
+	TargetRelease *TargetRelease `json:"target_release" yaml:"target_release"`
+	// TimeLastStepPlanned is time of most recent update planning activity
+	//
+	// This is intended as a rough indicator of the last time something happened in the update planner.
+	TimeLastStepPlanned *time.Time `json:"time_last_step_planned" yaml:"time_last_step_planned"`
+}
 
 // UpdatesTrustRoot is trusted root role used by the update system to verify update repositories.
 //
@@ -7259,6 +7210,9 @@ type Values struct {
 	// Values is the data values.
 	Values ValueArray `json:"values" yaml:"values"`
 }
+
+// VersionSortMode is sort in increasing semantic version order (oldest first)
+type VersionSortMode string
 
 // VirtualResourceCounts is a collection of resource counts used to describe capacity and utilization
 //
@@ -9829,6 +9783,42 @@ type SystemPolicyUpdateParams struct {
 	Body *FleetRolePolicy `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+// ScimTokenListParams is the request parameters for ScimTokenList
+//
+// Required fields:
+// - Silo
+type ScimTokenListParams struct {
+	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
+}
+
+// ScimTokenCreateParams is the request parameters for ScimTokenCreate
+//
+// Required fields:
+// - Silo
+type ScimTokenCreateParams struct {
+	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
+}
+
+// ScimTokenDeleteParams is the request parameters for ScimTokenDelete
+//
+// Required fields:
+// - TokenId
+// - Silo
+type ScimTokenDeleteParams struct {
+	TokenId string   `json:"token_id,omitempty" yaml:"token_id,omitempty"`
+	Silo    NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
+}
+
+// ScimTokenViewParams is the request parameters for ScimTokenView
+//
+// Required fields:
+// - TokenId
+// - Silo
+type ScimTokenViewParams struct {
+	TokenId string   `json:"token_id,omitempty" yaml:"token_id,omitempty"`
+	Silo    NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
+}
+
 // SystemQuotasListParams is the request parameters for SystemQuotasList
 type SystemQuotasListParams struct {
 	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
@@ -9928,21 +9918,28 @@ type SystemTimeseriesSchemaListParams struct {
 	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 }
 
-// SystemUpdatePutRepositoryParams is the request parameters for SystemUpdatePutRepository
+// SystemUpdateRepositoryListParams is the request parameters for SystemUpdateRepositoryList
+type SystemUpdateRepositoryListParams struct {
+	Limit     *int            `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string          `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    VersionSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// SystemUpdateRepositoryUploadParams is the request parameters for SystemUpdateRepositoryUpload
 //
 // Required fields:
 // - FileName
 // - Body
-type SystemUpdatePutRepositoryParams struct {
+type SystemUpdateRepositoryUploadParams struct {
 	FileName string    `json:"file_name,omitempty" yaml:"file_name,omitempty"`
 	Body     io.Reader `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
-// SystemUpdateGetRepositoryParams is the request parameters for SystemUpdateGetRepository
+// SystemUpdateRepositoryViewParams is the request parameters for SystemUpdateRepositoryView
 //
 // Required fields:
 // - SystemVersion
-type SystemUpdateGetRepositoryParams struct {
+type SystemUpdateRepositoryViewParams struct {
 	SystemVersion string `json:"system_version,omitempty" yaml:"system_version,omitempty"`
 }
 
@@ -12423,6 +12420,48 @@ func (p *SystemPolicyUpdateParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for ScimTokenListParams are set
+func (p *ScimTokenListParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Silo), "Silo")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ScimTokenCreateParams are set
+func (p *ScimTokenCreateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Silo), "Silo")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ScimTokenDeleteParams are set
+func (p *ScimTokenDeleteParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.TokenId), "TokenId")
+	v.HasRequiredStr(string(p.Silo), "Silo")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ScimTokenViewParams are set
+func (p *ScimTokenViewParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.TokenId), "TokenId")
+	v.HasRequiredStr(string(p.Silo), "Silo")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for SystemQuotasListParams are set
 func (p *SystemQuotasListParams) Validate() error {
 	v := new(Validator)
@@ -12542,8 +12581,17 @@ func (p *SystemTimeseriesSchemaListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for SystemUpdatePutRepositoryParams are set
-func (p *SystemUpdatePutRepositoryParams) Validate() error {
+// Validate verifies all required fields for SystemUpdateRepositoryListParams are set
+func (p *SystemUpdateRepositoryListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SystemUpdateRepositoryUploadParams are set
+func (p *SystemUpdateRepositoryUploadParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredObj(p.Body, "Body")
 	v.HasRequiredStr(string(p.FileName), "FileName")
@@ -12553,8 +12601,8 @@ func (p *SystemUpdatePutRepositoryParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for SystemUpdateGetRepositoryParams are set
-func (p *SystemUpdateGetRepositoryParams) Validate() error {
+// Validate verifies all required fields for SystemUpdateRepositoryViewParams are set
+func (p *SystemUpdateRepositoryViewParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.SystemVersion), "SystemVersion")
 	if !v.IsValid() {
@@ -13068,6 +13116,9 @@ const AuditLogEntryActorKindUserBuiltin AuditLogEntryActorKind = "user_builtin"
 // AuditLogEntryActorKindSiloUser represents the AuditLogEntryActorKind `"silo_user"`.
 const AuditLogEntryActorKindSiloUser AuditLogEntryActorKind = "silo_user"
 
+// AuditLogEntryActorKindScim represents the AuditLogEntryActorKind `"scim"`.
+const AuditLogEntryActorKindScim AuditLogEntryActorKind = "scim"
+
 // AuditLogEntryActorKindUnauthenticated represents the AuditLogEntryActorKind `"unauthenticated"`.
 const AuditLogEntryActorKindUnauthenticated AuditLogEntryActorKind = "unauthenticated"
 
@@ -13548,6 +13599,12 @@ const InstanceStateFailed InstanceState = "failed"
 // InstanceStateDestroyed represents the InstanceState `"destroyed"`.
 const InstanceStateDestroyed InstanceState = "destroyed"
 
+// IpPoolTypeUnicast represents the IpPoolType `"unicast"`.
+const IpPoolTypeUnicast IpPoolType = "unicast"
+
+// IpPoolTypeMulticast represents the IpPoolType `"multicast"`.
+const IpPoolTypeMulticast IpPoolType = "multicast"
+
 // IpVersionV4 represents the IpVersion `"v4"`.
 const IpVersionV4 IpVersion = "v4"
 
@@ -13662,6 +13719,9 @@ const ProjectRoleAdmin ProjectRole = "admin"
 // ProjectRoleCollaborator represents the ProjectRole `"collaborator"`.
 const ProjectRoleCollaborator ProjectRole = "collaborator"
 
+// ProjectRoleLimitedCollaborator represents the ProjectRole `"limited_collaborator"`.
+const ProjectRoleLimitedCollaborator ProjectRole = "limited_collaborator"
+
 // ProjectRoleViewer represents the ProjectRole `"viewer"`.
 const ProjectRoleViewer ProjectRole = "viewer"
 
@@ -13716,11 +13776,17 @@ const SiloIdentityModeSamlJit SiloIdentityMode = "saml_jit"
 // SiloIdentityModeLocalOnly represents the SiloIdentityMode `"local_only"`.
 const SiloIdentityModeLocalOnly SiloIdentityMode = "local_only"
 
+// SiloIdentityModeSamlScim represents the SiloIdentityMode `"saml_scim"`.
+const SiloIdentityModeSamlScim SiloIdentityMode = "saml_scim"
+
 // SiloRoleAdmin represents the SiloRole `"admin"`.
 const SiloRoleAdmin SiloRole = "admin"
 
 // SiloRoleCollaborator represents the SiloRole `"collaborator"`.
 const SiloRoleCollaborator SiloRole = "collaborator"
+
+// SiloRoleLimitedCollaborator represents the SiloRole `"limited_collaborator"`.
+const SiloRoleLimitedCollaborator SiloRole = "limited_collaborator"
 
 // SiloRoleViewer represents the SiloRole `"viewer"`.
 const SiloRoleViewer SiloRole = "viewer"
@@ -13818,23 +13884,17 @@ const SystemMetricNameCpusProvisioned SystemMetricName = "cpus_provisioned"
 // SystemMetricNameRamProvisioned represents the SystemMetricName `"ram_provisioned"`.
 const SystemMetricNameRamProvisioned SystemMetricName = "ram_provisioned"
 
-// TargetReleaseSourceTypeUnspecified represents the TargetReleaseSourceType `"unspecified"`.
-const TargetReleaseSourceTypeUnspecified TargetReleaseSourceType = "unspecified"
-
-// TargetReleaseSourceTypeSystemVersion represents the TargetReleaseSourceType `"system_version"`.
-const TargetReleaseSourceTypeSystemVersion TargetReleaseSourceType = "system_version"
-
 // TimeAndIdSortModeTimeAndIdAscending represents the TimeAndIdSortMode `"time_and_id_ascending"`.
 const TimeAndIdSortModeTimeAndIdAscending TimeAndIdSortMode = "time_and_id_ascending"
 
 // TimeAndIdSortModeTimeAndIdDescending represents the TimeAndIdSortMode `"time_and_id_descending"`.
 const TimeAndIdSortModeTimeAndIdDescending TimeAndIdSortMode = "time_and_id_descending"
 
-// TufRepoInsertStatusAlreadyExists represents the TufRepoInsertStatus `"already_exists"`.
-const TufRepoInsertStatusAlreadyExists TufRepoInsertStatus = "already_exists"
+// TufRepoUploadStatusAlreadyExists represents the TufRepoUploadStatus `"already_exists"`.
+const TufRepoUploadStatusAlreadyExists TufRepoUploadStatus = "already_exists"
 
-// TufRepoInsertStatusInserted represents the TufRepoInsertStatus `"inserted"`.
-const TufRepoInsertStatusInserted TufRepoInsertStatus = "inserted"
+// TufRepoUploadStatusInserted represents the TufRepoUploadStatus `"inserted"`.
+const TufRepoUploadStatusInserted TufRepoUploadStatus = "inserted"
 
 // UnitsCount represents the Units `"count"`.
 const UnitsCount Units = "count"
@@ -13889,6 +13949,12 @@ const ValueArrayTypeIntegerDistribution ValueArrayType = "integer_distribution"
 
 // ValueArrayTypeDoubleDistribution represents the ValueArrayType `"double_distribution"`.
 const ValueArrayTypeDoubleDistribution ValueArrayType = "double_distribution"
+
+// VersionSortModeVersionAscending represents the VersionSortMode `"version_ascending"`.
+const VersionSortModeVersionAscending VersionSortMode = "version_ascending"
+
+// VersionSortModeVersionDescending represents the VersionSortMode `"version_descending"`.
+const VersionSortModeVersionDescending VersionSortMode = "version_descending"
 
 // VpcFirewallRuleActionAllow represents the VpcFirewallRuleAction `"allow"`.
 const VpcFirewallRuleActionAllow VpcFirewallRuleAction = "allow"
@@ -14014,6 +14080,7 @@ var AntiAffinityGroupMemberTypeCollection = []AntiAffinityGroupMemberType{
 
 // AuditLogEntryActorKindCollection is the collection of all AuditLogEntryActorKind values.
 var AuditLogEntryActorKindCollection = []AuditLogEntryActorKind{
+	AuditLogEntryActorKindScim,
 	AuditLogEntryActorKindSiloUser,
 	AuditLogEntryActorKindUnauthenticated,
 	AuditLogEntryActorKindUserBuiltin,
@@ -14330,6 +14397,12 @@ var InstanceStateCollection = []InstanceState{
 	InstanceStateStopping,
 }
 
+// IpPoolTypeCollection is the collection of all IpPoolType values.
+var IpPoolTypeCollection = []IpPoolType{
+	IpPoolTypeMulticast,
+	IpPoolTypeUnicast,
+}
+
 // IpVersionCollection is the collection of all IpVersion values.
 var IpVersionCollection = []IpVersion{
 	IpVersionV4,
@@ -14422,6 +14495,7 @@ var ProbeExternalIpKindCollection = []ProbeExternalIpKind{
 var ProjectRoleCollection = []ProjectRole{
 	ProjectRoleAdmin,
 	ProjectRoleCollaborator,
+	ProjectRoleLimitedCollaborator,
 	ProjectRoleViewer,
 }
 
@@ -14460,12 +14534,14 @@ var ServiceUsingCertificateCollection = []ServiceUsingCertificate{
 var SiloIdentityModeCollection = []SiloIdentityMode{
 	SiloIdentityModeLocalOnly,
 	SiloIdentityModeSamlJit,
+	SiloIdentityModeSamlScim,
 }
 
 // SiloRoleCollection is the collection of all SiloRole values.
 var SiloRoleCollection = []SiloRole{
 	SiloRoleAdmin,
 	SiloRoleCollaborator,
+	SiloRoleLimitedCollaborator,
 	SiloRoleViewer,
 }
 
@@ -14544,22 +14620,16 @@ var SystemMetricNameCollection = []SystemMetricName{
 	SystemMetricNameVirtualDiskSpaceProvisioned,
 }
 
-// TargetReleaseSourceTypeCollection is the collection of all TargetReleaseSourceType values.
-var TargetReleaseSourceTypeCollection = []TargetReleaseSourceType{
-	TargetReleaseSourceTypeSystemVersion,
-	TargetReleaseSourceTypeUnspecified,
-}
-
 // TimeAndIdSortModeCollection is the collection of all TimeAndIdSortMode values.
 var TimeAndIdSortModeCollection = []TimeAndIdSortMode{
 	TimeAndIdSortModeTimeAndIdAscending,
 	TimeAndIdSortModeTimeAndIdDescending,
 }
 
-// TufRepoInsertStatusCollection is the collection of all TufRepoInsertStatus values.
-var TufRepoInsertStatusCollection = []TufRepoInsertStatus{
-	TufRepoInsertStatusAlreadyExists,
-	TufRepoInsertStatusInserted,
+// TufRepoUploadStatusCollection is the collection of all TufRepoUploadStatus values.
+var TufRepoUploadStatusCollection = []TufRepoUploadStatus{
+	TufRepoUploadStatusAlreadyExists,
+	TufRepoUploadStatusInserted,
 }
 
 // UnitsCollection is the collection of all Units values.
@@ -14590,6 +14660,12 @@ var ValueArrayTypeCollection = []ValueArrayType{
 	ValueArrayTypeInteger,
 	ValueArrayTypeIntegerDistribution,
 	ValueArrayTypeString,
+}
+
+// VersionSortModeCollection is the collection of all VersionSortMode values.
+var VersionSortModeCollection = []VersionSortMode{
+	VersionSortModeVersionAscending,
+	VersionSortModeVersionDescending,
 }
 
 // VpcFirewallRuleActionCollection is the collection of all VpcFirewallRuleAction values.
