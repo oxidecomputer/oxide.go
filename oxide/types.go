@@ -13719,6 +13719,9 @@ const ProjectRoleAdmin ProjectRole = "admin"
 // ProjectRoleCollaborator represents the ProjectRole `"collaborator"`.
 const ProjectRoleCollaborator ProjectRole = "collaborator"
 
+// ProjectRoleLimitedCollaborator represents the ProjectRole `"limited_collaborator"`.
+const ProjectRoleLimitedCollaborator ProjectRole = "limited_collaborator"
+
 // ProjectRoleViewer represents the ProjectRole `"viewer"`.
 const ProjectRoleViewer ProjectRole = "viewer"
 
@@ -13781,6 +13784,9 @@ const SiloRoleAdmin SiloRole = "admin"
 
 // SiloRoleCollaborator represents the SiloRole `"collaborator"`.
 const SiloRoleCollaborator SiloRole = "collaborator"
+
+// SiloRoleLimitedCollaborator represents the SiloRole `"limited_collaborator"`.
+const SiloRoleLimitedCollaborator SiloRole = "limited_collaborator"
 
 // SiloRoleViewer represents the SiloRole `"viewer"`.
 const SiloRoleViewer SiloRole = "viewer"
@@ -14489,6 +14495,7 @@ var ProbeExternalIpKindCollection = []ProbeExternalIpKind{
 var ProjectRoleCollection = []ProjectRole{
 	ProjectRoleAdmin,
 	ProjectRoleCollaborator,
+	ProjectRoleLimitedCollaborator,
 	ProjectRoleViewer,
 }
 
@@ -14534,6 +14541,7 @@ var SiloIdentityModeCollection = []SiloIdentityMode{
 var SiloRoleCollection = []SiloRole{
 	SiloRoleAdmin,
 	SiloRoleCollaborator,
+	SiloRoleLimitedCollaborator,
 	SiloRoleViewer,
 }
 
