@@ -1,4 +1,38 @@
+# v0.7.0 (2025/Nov/11)
+
+Generated from Oxide API version [20251008.0.0](https://github.com/oxidecomputer/omicron/blob/rel/v17/rc3/openapi/nexus.json)
+
+### Enhancements
+
+- **Support `OXIDE_PROFILE`:** Added support for specifying the Oxide profile via the `OXIDE_PROFILE` environment variable. [#332](https://github.com/oxidecomputer/oxide.go/pull/332)
+
+### Bug fixes
+
+- **Handle `map[string]any` types:** Updated the SDK to correctly handle `map[string]any` types. [#325](https://github.com/oxidecomputer/oxide.go/pull/325)
+- **Handle required nullable types:** Updated the SDK to correctly handle required nullable types. [#329](https://github.com/oxidecomputer/oxide.go/pull/329)
+
+### List of commits
+
+- [2a9e69d](https://github.com/oxidecomputer/oxide.go/commit/2a9e69d) chore: update changelog (#335)
+- [9eaced7](https://github.com/oxidecomputer/oxide.go/commit/9eaced7) feat: bump to r17-rc3 (#334)
+- [e0646c8](https://github.com/oxidecomputer/oxide.go/commit/e0646c8) oxide: bump API to 48c0c1b (#333)
+- [a9bbb37](https://github.com/oxidecomputer/oxide.go/commit/a9bbb37) client: add support for OXIDE_PROFILE (#332)
+- [bd541f4](https://github.com/oxidecomputer/oxide.go/commit/bd541f4) Make buildRequest method public. (#331)
+- [b94b9b5](https://github.com/oxidecomputer/oxide.go/commit/b94b9b5) Bump actions/setup-go from 5 to 6 (#326)
+- [b8c3f7e](https://github.com/oxidecomputer/oxide.go/commit/b8c3f7e) Handle required nullable types. (#329)
+- [02b6f67](https://github.com/oxidecomputer/oxide.go/commit/02b6f67) omicron: bump to commit e44ad55. (#327)
+- [75e4f83](https://github.com/oxidecomputer/oxide.go/commit/75e4f83) Bump github.com/getkin/kin-openapi from 0.132.0 to 0.133.0 (#323)
+- [3e0eed0](https://github.com/oxidecomputer/oxide.go/commit/3e0eed0) generate: handle map[string]any types correctly. (#325)
+- [d5356df](https://github.com/oxidecomputer/oxide.go/commit/d5356df) Bump github.com/stretchr/testify from 1.11.0 to 1.11.1 (#324)
+- [c22ab12](https://github.com/oxidecomputer/oxide.go/commit/c22ab12) Bump github.com/stretchr/testify from 1.10.0 to 1.11.0 (#322)
+- [729a349](https://github.com/oxidecomputer/oxide.go/commit/729a349) misc: sort type properties before generating. (#320)
+- [7037f6b](https://github.com/oxidecomputer/oxide.go/commit/7037f6b) misc: update deprecated actions syntax. (#321)
+- [ee0ab7a](https://github.com/oxidecomputer/oxide.go/commit/ee0ab7a) oxide: bump omicron to 71fbb2b. (#319)
+- [b56a0b2](https://github.com/oxidecomputer/oxide.go/commit/b56a0b2) misc: bump to v0.7.0 (#318)
+
 # v0.6.0 (2025/Aug/13)
+
+Generated from Oxide API version [20250730.0.0](https://github.com/oxidecomputer/omicron/blob/rel/v16/rc0/openapi/nexus.json)
 
 ### Breaking changes
 
