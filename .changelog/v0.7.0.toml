@@ -7,9 +7,13 @@ title = ""
 description = ""
 
 [[bugs]]
-title = ""
-description = ""
+title = "Handle `map[string]any` types"
+description = "Updated the SDK to correctly handle `map[string]any` types. [#325](https://github.com/oxidecomputer/oxide.go/pull/325)"
+
+[[bugs]]
+title = "Handle required nullable types"
+description = "Updated the SDK to correctly handle required nullable types. [#329](https://github.com/oxidecomputer/oxide.go/pull/329)"
 
 [[enhancements]]
-title = ""
-description = ""
+title = "Support `OXIDE_PROFILE`"
+description = "Added support for specifying the Oxide profile via the `OXIDE_PROFILE` environment variable. [#332](https://github.com/oxidecomputer/oxide.go/pull/332)"
