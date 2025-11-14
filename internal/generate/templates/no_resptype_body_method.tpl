@@ -4,7 +4,7 @@
 	}{{end}}{{if .IsAppJSON}}
     // Encode the request body as json.
     b := new(bytes.Buffer)
-    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+    if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
         return fmt.Errorf("encoding json body request failed: %v", err)
     }{{else}}
     b := params.Body{{end}}

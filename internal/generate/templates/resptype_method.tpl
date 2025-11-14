@@ -37,7 +37,7 @@
     }
 
     var body {{.ResponseType}}
-    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+    if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
         return nil, fmt.Errorf("error decoding response body: %v", err)
     }
 
