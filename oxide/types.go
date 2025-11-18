@@ -7,6 +7,7 @@
 package oxide
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"time"
@@ -7189,6 +7190,21 @@ type ValueArrayDoubleDistribution struct {
 	Values []any          `json:"values" yaml:"values"`
 }
 
+// ValueArrayValues is an interface implemented by the concrete value array types.
+// This ensures type safety while allowing ValueArray.Values to hold any of the specific types.
+type ValueArrayValues interface {
+	// isValueArrayValues is a private marker method to ensure only valid types implement this interface
+	isValueArrayValues()
+}
+
+// Implement the ValueArrayValues interface for each concrete type
+func (ValueArrayInteger) isValueArrayValues()             {}
+func (ValueArrayDouble) isValueArrayValues()              {}
+func (ValueArrayBoolean) isValueArrayValues()             {}
+func (ValueArrayString) isValueArrayValues()              {}
+func (ValueArrayIntegerDistribution) isValueArrayValues() {}
+func (ValueArrayDoubleDistribution) isValueArrayValues()  {}
+
 // ValueArray is list of data values for one timeseries.
 //
 // Each element is an option, where `None` represents a missing sample.
@@ -7196,7 +7212,65 @@ type ValueArray struct {
 	// Type is the type definition for a Type.
 	Type ValueArrayType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Values is the type definition for a Values.
-	Values any `json:"values,omitempty" yaml:"values,omitempty"`
+	Values ValueArrayValues `json:"values,omitempty" yaml:"values,omitempty"`
+}
+
+// UnmarshalJSON implements custom JSON unmarshaling for ValueArray.
+// It inspects the "type" field and unmarshals into the appropriate concrete type.
+func (v *ValueArray) UnmarshalJSON(data []byte) error {
+	// First, unmarshal just the type field
+	var typeOnly struct {
+		Type ValueArrayType `json:"type"`
+	}
+	if err := json.Unmarshal(data, &typeOnly); err != nil {
+		return err
+	}
+
+	v.Type = typeOnly.Type
+
+	// Based on the type, unmarshal into the appropriate concrete type
+	switch typeOnly.Type {
+	case ValueArrayTypeInteger:
+		var val ValueArrayInteger
+		if err := json.Unmarshal(data, &val); err != nil {
+			return err
+		}
+		v.Values = val
+	case ValueArrayTypeDouble:
+		var val ValueArrayDouble
+		if err := json.Unmarshal(data, &val); err != nil {
+			return err
+		}
+		v.Values = val
+	case ValueArrayTypeBoolean:
+		var val ValueArrayBoolean
+		if err := json.Unmarshal(data, &val); err != nil {
+			return err
+		}
+		v.Values = val
+	case ValueArrayTypeString:
+		var val ValueArrayString
+		if err := json.Unmarshal(data, &val); err != nil {
+			return err
+		}
+		v.Values = val
+	case ValueArrayTypeIntegerDistribution:
+		var val ValueArrayIntegerDistribution
+		if err := json.Unmarshal(data, &val); err != nil {
+			return err
+		}
+		v.Values = val
+	case ValueArrayTypeDoubleDistribution:
+		var val ValueArrayDoubleDistribution
+		if err := json.Unmarshal(data, &val); err != nil {
+			return err
+		}
+		v.Values = val
+	default:
+		return fmt.Errorf("unknown ValueArrayType: %s", typeOnly.Type)
+	}
+
+	return nil
 }
 
 // Values is a single list of values, for one dimension of a timeseries.
