@@ -7175,8 +7175,8 @@ type ValueArrayString struct {
 // - Type
 // - Values
 type ValueArrayIntegerDistribution struct {
-	Type   ValueArrayType `json:"type" yaml:"type"`
-	Values []any          `json:"values" yaml:"values"`
+	Type   ValueArrayType      `json:"type" yaml:"type"`
+	Values []Distributionint64 `json:"values" yaml:"values"`
 }
 
 // ValueArrayDoubleDistribution is the type definition for a ValueArrayDoubleDistribution.
@@ -7185,8 +7185,8 @@ type ValueArrayIntegerDistribution struct {
 // - Type
 // - Values
 type ValueArrayDoubleDistribution struct {
-	Type   ValueArrayType `json:"type" yaml:"type"`
-	Values []any          `json:"values" yaml:"values"`
+	Type   ValueArrayType       `json:"type" yaml:"type"`
+	Values []Distributiondouble `json:"values" yaml:"values"`
 }
 
 // ValueArray is list of data values for one timeseries.

@@ -144,6 +144,22 @@ func convertToValidGoType(property, typeName string, r *openapi3.SchemaRef) stri
 }
 
 func schemaValueToGoType(schemaValue *openapi3.Schema, property string) string {
+	// In the special case of an array of nullable items, we represent the
+	// item type with an allOf of length 1. In this case, return the schema
+	// of the 0th entry in anyOf.
+	if len(schemaValue.AllOf) == 1 {
+		value := schemaValue.AllOf[0]
+		reference := getReferenceSchema(value)
+		if reference == "" {
+			fmt.Printf("[WARN] TODO: handle allOf %+v for %q, marking as any for now\n", value, property)
+			return "any"
+		}
+		if schemaValue.Nullable {
+			reference = fmt.Sprintf("*%s", reference)
+		}
+		return reference
+	}
+
 	if schemaValue.Type == nil {
 		fmt.Printf("[WARN] TODO: handle nil type for %q, marking as any for now\n", property)
 		return "any"
