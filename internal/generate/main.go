@@ -59,6 +59,11 @@ func generateSDK() error {
 		return err
 	}
 
+	versionFile := "../../oxide/version.go"
+	if err := generateVersion(versionFile, spec); err != nil {
+		return err
+	}
+
 	return nil
 }
 
