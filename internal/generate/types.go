@@ -6,6 +6,7 @@ package main
 
 import (
 	"fmt"
+	"maps"
 	"os"
 	"slices"
 	"sort"
@@ -34,6 +35,18 @@ type TypeTemplate struct {
 	Type string
 	// Fields holds the information for the field
 	Fields []TypeFields
+
+	// OneOfInterface is the name of the oneOf interface that this type should implement. By convention, all concrete types that implement a oneOf interface must define a single method, called "is${{.OneOfInterface}}", which accepts no arguments and has no return value.
+	OneOfInterface string
+
+	// DiscriminatorKey is the name of the discriminator key used to determine the type of a complex oneOf field: commonly "type", "kind", etc.
+	DiscriminatorKey string
+	// DiscriminatorType is the generated type name of the discriminator field, and should be constructed as "{{.OneOfName}}Type": MetricType, ValueArrayType, etc.
+	DiscriminatorType string
+	// DiscriminatorMappings maps oneOf enum constant (e.g. DatumTypeBool) to their concrete types (e.g. DatumBool).
+	DiscriminatorMappings []DiscriminatorMapping
+	// OneOfField is the name of the field that holds the oneOf variants (e.g., "Datum", "Values")
+	OneOfField string
 }
 
 // TypeFields holds the information for each type field
@@ -50,6 +63,12 @@ type EnumTemplate struct {
 	Name        string
 	ValueType   string
 	Value       string
+}
+
+// DiscriminatorMapping maps a discriminator enum value to its concrete type
+type DiscriminatorMapping struct {
+	EnumConstant string // The enum constant to match in switch (e.g., "DatumTypeBool")
+	ConcreteType string // The concrete type to unmarshal into (e.g., "DatumBool")
 }
 
 // ValidationTemplate holds information about the fields that
@@ -256,7 +275,7 @@ func constructTypes(schemas openapi3.Schemas) ([]TypeTemplate, []EnumTemplate) {
 
 		// Set name as a valid Go type name
 		name = strcase.ToCamel(name)
-		typeTpl, enumTpl := populateTypeTemplates(name, s.Value, "")
+		typeTpl, enumTpl := populateTypeTemplates(name, s.Value, "", "")
 		typeCollection = append(typeCollection, typeTpl...)
 		enumCollection = append(enumCollection, enumTpl...)
 	}
@@ -326,7 +345,12 @@ func writeTypes(f *os.File, typeCollection []TypeTemplate, typeValidationCollect
 
 		fmt.Fprintf(f, "%s\n", splitDocString(tt.Description))
 		fmt.Fprintf(f, "type %s %s", tt.Name, tt.Type)
-		if tt.Fields != nil {
+
+		if tt.Type == "interface" {
+			fmt.Fprintf(f, " {\n")
+			fmt.Fprintf(f, "\tis%s()\n", tt.Name)
+			fmt.Fprint(f, "}\n")
+		} else if tt.Fields != nil {
 			fmt.Fprint(f, " {\n")
 			for _, ft := range tt.Fields {
 				if ft.Description != "" {
@@ -335,6 +359,36 @@ func writeTypes(f *os.File, typeCollection []TypeTemplate, typeValidationCollect
 				fmt.Fprintf(f, "\t%s %s %s\n", ft.Name, ft.Type, ft.SerializationInfo)
 			}
 			fmt.Fprint(f, "}\n")
+
+			if tt.DiscriminatorKey != "" && len(tt.DiscriminatorMappings) > 0 && tt.OneOfField != "" {
+				fmt.Fprintf(f, "func (v *%s) UnmarshalJSON(data []byte) error {\n", tt.Name)
+				fmt.Fprintf(f, "\tvar peek struct {\n")
+				fmt.Fprintf(f, "\t\tdiscriminator %s `json:\"%s\"`\n", tt.DiscriminatorType, tt.DiscriminatorKey)
+				fmt.Fprintf(f, "\t}\n")
+				fmt.Fprintf(f, "\tif err := json.Unmarshal(data, &peek); err != nil {\n")
+				fmt.Fprintf(f, "\t\treturn err\n")
+				fmt.Fprintf(f, "\t}\n")
+				fmt.Fprintf(f, "\tswitch peek.discriminator {\n")
+
+				for _, mapping := range tt.DiscriminatorMappings {
+					fmt.Fprintf(f, "\tcase %s:\n", mapping.EnumConstant)
+					fmt.Fprintf(f, "\t\tvar val %s\n", mapping.ConcreteType)
+					fmt.Fprintf(f, "\t\tif err := json.Unmarshal(data, &val); err != nil {\n")
+					fmt.Fprintf(f, "\t\t\treturn err\n")
+					fmt.Fprintf(f, "\t\t}\n")
+					fmt.Fprintf(f, "\tv.%s = val\n", tt.OneOfField)
+				}
+
+				fmt.Fprintf(f, "\tdefault:\n")
+				fmt.Fprintf(f, "\t\treturn fmt.Errorf(\"unknown %s discriminator value: %%v\", peek.discriminator)\n", tt.DiscriminatorKey)
+				fmt.Fprintf(f, "\t}\n")
+				fmt.Fprintf(f, "\treturn nil\n")
+				fmt.Fprint(f, "}\n")
+			}
+		}
+		if tt.OneOfInterface != "" {
+			fmt.Fprintf(f, "\n")
+			fmt.Fprintf(f, "func (%s) is%s() {}\n", tt.Name, tt.OneOfInterface)
 		}
 		fmt.Fprint(f, "\n")
 	}
@@ -381,7 +435,7 @@ func writeTypes(f *os.File, typeCollection []TypeTemplate, typeValidationCollect
 // populateTypeTemplates populates the template of a type definition for the given schema.
 // The additional parameter is only used as a suffix for the type name.
 // This is mostly for oneOf types.
-func populateTypeTemplates(name string, s *openapi3.Schema, enumFieldName string) ([]TypeTemplate, []EnumTemplate) {
+func populateTypeTemplates(name string, s *openapi3.Schema, enumFieldName string, interfaceName string) ([]TypeTemplate, []EnumTemplate) {
 	typeName := name
 
 	// Type name will change for each enum type
@@ -419,20 +473,21 @@ func populateTypeTemplates(name string, s *openapi3.Schema, enumFieldName string
 		typeTpl.Name = typeName
 	case "object":
 		typeTpl = createTypeObject(s, name, typeName, formatTypeDescription(typeName, s))
+		typeTpl.OneOfInterface = interfaceName
 
 		// Iterate over the properties and append the types, if we need to.
 		properties := sortedKeys(s.Properties)
 		for _, k := range properties {
 			v := s.Properties[k]
 			if isLocalEnum(v) {
-				tt, et := populateTypeTemplates(fmt.Sprintf("%s%s", name, strcase.ToCamel(k)), v.Value, "")
+				tt, et := populateTypeTemplates(fmt.Sprintf("%s%s", name, strcase.ToCamel(k)), v.Value, "", "")
 				types = append(types, tt...)
 				enumTypes = append(enumTypes, et...)
 			}
 
 			// TODO: So far this code is never hit with the current openapi spec
 			if isLocalObject(v) {
-				tt, et := populateTypeTemplates(fmt.Sprintf("%s%s", name, strcase.ToCamel(k)), v.Value, "")
+				tt, et := populateTypeTemplates(fmt.Sprintf("%s%s", name, strcase.ToCamel(k)), v.Value, "", "")
 				types = append(types, tt...)
 				enumTypes = append(enumTypes, et...)
 			}
@@ -698,6 +753,11 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 		}
 	}
 
+	maybeDiscriminators := map[string]struct{}{}
+	discriminatorMappings := []DiscriminatorMapping{}
+	discriminatorToDiscriminatorType := map[string]string{}
+	interfaceName := ""
+
 	for _, v := range s.OneOf {
 		// We want to iterate over the properties of the embedded object
 		// and find the type that is a string.
@@ -707,16 +767,24 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 		keys := sortedKeys(v.Value.Properties)
 		for _, prop := range keys {
 			p := v.Value.Properties[prop]
+			propertyName := strcase.ToCamel(prop)
+
 			// We want to collect all the unique properties to create our global oneOf type.
 			propertyType := convertToValidGoType(prop, typeName, p)
 
+			if propertyType == "string" && len(p.Value.Enum) == 1 {
+				maybeDiscriminators[prop] = struct{}{}
+				discriminatorToDiscriminatorType[prop] = typeName + strcase.ToCamel(prop)
+				discriminatorMappings = append(discriminatorMappings, DiscriminatorMapping{
+					EnumConstant: fmt.Sprintf("%s%s%s", typeName, propertyName, strcase.ToCamel(p.Value.Enum[0].(string))),
+					ConcreteType: fmt.Sprintf("%s%s", typeName, strcase.ToCamel(p.Value.Enum[0].(string))),
+				})
+			}
 			// Check if we have an enum in order to use the corresponding type instead of
 			// "string"
 			if propertyType == "string" && len(p.Value.Enum) != 0 {
 				propertyType = typeName + strcase.ToCamel(prop)
 			}
-
-			propertyName := strcase.ToCamel(prop)
 
 			// Avoids duplication for every enum
 			if !containsMatchFirstWord(parsedProperties, propertyName) {
@@ -729,7 +797,8 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 
 				// We set the type of a field as "any" if every element of the oneOf property isn't the same
 				if slices.Contains(genericTypes, prop) {
-					field.Type = "any"
+					interfaceName = fmt.Sprintf("%s%s", typeName, propertyName)
+					field.Type = fmt.Sprintf("%s%s", typeName, propertyName)
 				}
 
 				// Check if the field is nullable and use omitzero instead of omitempty.
@@ -765,7 +834,7 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 
 		// TODO: This is the only place that has an "additional name" at the end
 		// TODO: This is where the "allOf" is being detected
-		tt, et := populateTypeTemplates(name, v.Value, enumFieldName)
+		tt, et := populateTypeTemplates(name, v.Value, enumFieldName, interfaceName)
 		typeTpls = append(typeTpls, tt...)
 		enumTpls = append(enumTpls, et...)
 	}
@@ -778,17 +847,38 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 			return typeTpls, enumTpls
 		}
 	}
+	discriminator := ""
+	if len(maybeDiscriminators) == 1 {
+		discriminator = slices.Collect(maps.Keys(maybeDiscriminators))[0]
+	}
+
+	genericFieldName := ""
+	if len(genericTypes) == 1 {
+		genericFieldName = strcase.ToCamel(genericTypes[0])
+	}
 
 	// Make sure to only create structs if the oneOf is not a replacement for enums on the API spec
 	if len(fields) > 0 {
 		typeTpl := TypeTemplate{
-			Description: formatTypeDescription(typeName, s),
-			Name:        typeName,
-			Type:        "struct",
-			Fields:      fields,
+			Description:           formatTypeDescription(typeName, s),
+			Name:                  typeName,
+			Type:                  "struct",
+			Fields:                fields,
+			DiscriminatorKey:      discriminator,
+			DiscriminatorType:     discriminatorToDiscriminatorType[discriminator],
+			DiscriminatorMappings: discriminatorMappings,
+			OneOfField:            genericFieldName,
 		}
 		typeTpls = append(typeTpls, typeTpl)
 	}
+
+	if interfaceName != "" {
+		typeTpls = append(typeTpls, TypeTemplate{
+			Name: interfaceName,
+			Type: "interface",
+		})
+	}
+
 	return typeTpls, enumTpls
 }
 
