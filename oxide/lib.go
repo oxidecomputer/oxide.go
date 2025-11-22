@@ -194,7 +194,7 @@ func NewClient(cfg *Config) (*Client, error) {
 
 // defaultUserAgent builds and returns the default user agent string.
 func defaultUserAgent() string {
-	return fmt.Sprintf("oxide.go/%s", version)
+	return fmt.Sprintf("oxide.go/%s", sdkVersion)
 }
 
 // getProfile determines the path of the user's credentials file
@@ -305,6 +305,7 @@ func (c *Client) buildRequest(ctx context.Context, body io.Reader, method, uri s
 
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.token))
+	req.Header.Set("API-Version", openAPIVersion)
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, params); err != nil {
