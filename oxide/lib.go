@@ -6,6 +6,7 @@ package oxide
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -40,6 +41,37 @@ const (
 	defaultConfigDir = ".config" + string(filepath.Separator) + "oxide"
 )
 
+// JSONEncoder is an interface for encoding values to an output stream.
+type JSONEncoder interface {
+	Encode(v any) error
+}
+
+// JSONDecoder is an interface for decoding values from an input stream.
+type JSONDecoder interface {
+	Decode(v any) error
+}
+
+// JSONCodec is an interface that provides methods for creating JSON encoders and decoders.
+type JSONCodec interface {
+	NewEncoder(w io.Writer) JSONEncoder
+	NewDecoder(r io.Reader) JSONDecoder
+}
+
+func defaultJSONCodec() JSONCodec {
+	return stdJSONCodec{}
+}
+
+// stdJSONCodec is the default implementation using the standard library.
+type stdJSONCodec struct{}
+
+func (stdJSONCodec) NewEncoder(w io.Writer) JSONEncoder {
+	return json.NewEncoder(w)
+}
+
+func (stdJSONCodec) NewDecoder(r io.Reader) JSONDecoder {
+	return json.NewDecoder(r)
+}
+
 // Config is the configuration that can be set on a Client.
 type Config struct {
 	// Base URL of the Oxide API including the scheme. For example,
@@ -69,6 +101,10 @@ type Config struct {
 	// config.toml file for authentication. Will be overridden by
 	// the Profile field.
 	UseDefaultProfile bool
+
+	// A custom JSON codec for encoding and decoding. If not provided,
+	// the standard library's json.NewEncoder and json.NewDecoder will be used.
+	JSONCodec JSONCodec
 }
 
 // Client which conforms to the OpenAPI3 specification for this service.
@@ -85,6 +121,9 @@ type Client struct {
 
 	// The user agent string to add to every API request.
 	userAgent string
+
+	// JSON codec for encoding and decoding.
+	jsonCodec JSONCodec
 }
 
 type authCredentials struct {
@@ -106,6 +145,7 @@ func NewClient(cfg *Config) (*Client, error) {
 	profile := os.Getenv(ProfileEnvVar)
 	useDefaultProfile := false
 	userAgent := defaultUserAgent()
+	jsonCodec := defaultJSONCodec()
 	httpClient := &http.Client{
 		Timeout: 600 * time.Second,
 	}
@@ -137,6 +177,10 @@ func NewClient(cfg *Config) (*Client, error) {
 
 		if cfg.HTTPClient != nil {
 			httpClient = cfg.HTTPClient
+		}
+
+		if cfg.JSONCodec != nil {
+			jsonCodec = cfg.JSONCodec
 		}
 	}
 
@@ -187,6 +231,7 @@ func NewClient(cfg *Config) (*Client, error) {
 		host:      host,
 		userAgent: userAgent,
 		client:    httpClient,
+		jsonCodec: jsonCodec,
 	}
 
 	return client, nil
@@ -289,6 +334,16 @@ func parseBaseURL(baseURL string) (string, error) {
 	}
 
 	return b, nil
+}
+
+// newJSONEncoder creates a new JSON encoder for the given writer using the configured codec.
+func (c *Client) newJSONEncoder(w io.Writer) JSONEncoder {
+	return c.jsonCodec.NewEncoder(w)
+}
+
+// newJSONDecoder creates a new JSON decoder for the given reader using the configured codec.
+func (c *Client) newJSONDecoder(r io.Reader) JSONDecoder {
+	return c.jsonCodec.NewDecoder(r)
 }
 
 // buildRequest creates an HTTP request to interact with the Oxide API.

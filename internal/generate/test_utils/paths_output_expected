@@ -49,7 +49,7 @@ func (c *Client) IpPoolList(ctx context.Context, params IpPoolListParams, ) (*Ip
     }
 
     var body IpPoolResultsPage
-    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+    if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
         return nil, fmt.Errorf("error decoding response body: %v", err)
     }
 
@@ -90,7 +90,7 @@ func (c *Client) IpPoolCreate(ctx context.Context, params IpPoolCreateParams, ) 
 	}
     // Encode the request body as json.
     b := new(bytes.Buffer)
-    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+    if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
         return nil, fmt.Errorf("encoding json body request failed: %v", err)
     }
 
@@ -127,7 +127,7 @@ func (c *Client) IpPoolCreate(ctx context.Context, params IpPoolCreateParams, ) 
     }
 
     var body IpPool
-    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+    if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
         return nil, fmt.Errorf("error decoding response body: %v", err)
     }
 
@@ -174,7 +174,7 @@ func (c *Client) IpPoolView(ctx context.Context, params IpPoolViewParams, ) (*Ip
     }
 
     var body IpPool
-    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+    if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
         return nil, fmt.Errorf("error decoding response body: %v", err)
     }
 
@@ -189,7 +189,7 @@ func (c *Client) IpPoolUpdate(ctx context.Context, params IpPoolUpdateParams, ) 
 	}
     // Encode the request body as json.
     b := new(bytes.Buffer)
-    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+    if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
         return nil, fmt.Errorf("encoding json body request failed: %v", err)
     }
 
@@ -227,7 +227,7 @@ func (c *Client) IpPoolUpdate(ctx context.Context, params IpPoolUpdateParams, ) 
     }
 
     var body IpPool
-    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+    if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
         return nil, fmt.Errorf("error decoding response body: %v", err)
     }
 

@@ -9,7 +9,6 @@ package oxide
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"strconv"
@@ -96,7 +95,7 @@ func (c *Client) AlertClassList(ctx context.Context, params AlertClassListParams
 	}
 
 	var body AlertClassResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -172,7 +171,7 @@ func (c *Client) AlertReceiverList(ctx context.Context, params AlertReceiverList
 	}
 
 	var body AlertReceiverResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -244,7 +243,7 @@ func (c *Client) AlertReceiverView(ctx context.Context, params AlertReceiverView
 	}
 
 	var body AlertReceiver
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -337,7 +336,7 @@ func (c *Client) AlertDeliveryList(ctx context.Context, params AlertDeliveryList
 	}
 
 	var body AlertDeliveryResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -428,7 +427,7 @@ func (c *Client) AlertReceiverProbe(ctx context.Context, params AlertReceiverPro
 	}
 
 	var body AlertProbeResult
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -443,7 +442,7 @@ func (c *Client) AlertReceiverSubscriptionAdd(ctx context.Context, params AlertR
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -480,7 +479,7 @@ func (c *Client) AlertReceiverSubscriptionAdd(ctx context.Context, params AlertR
 	}
 
 	var body AlertSubscriptionCreated
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -564,7 +563,7 @@ func (c *Client) AlertDeliveryResend(ctx context.Context, params AlertDeliveryRe
 	}
 
 	var body AlertDeliveryId
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -615,7 +614,7 @@ func (c *Client) AntiAffinityGroupList(ctx context.Context, params AntiAffinityG
 	}
 
 	var body AntiAffinityGroupResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -656,7 +655,7 @@ func (c *Client) AntiAffinityGroupCreate(ctx context.Context, params AntiAffinit
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -693,7 +692,7 @@ func (c *Client) AntiAffinityGroupCreate(ctx context.Context, params AntiAffinit
 	}
 
 	var body AntiAffinityGroup
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -741,7 +740,7 @@ func (c *Client) AntiAffinityGroupView(ctx context.Context, params AntiAffinityG
 	}
 
 	var body AntiAffinityGroup
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -756,7 +755,7 @@ func (c *Client) AntiAffinityGroupUpdate(ctx context.Context, params AntiAffinit
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -795,7 +794,7 @@ func (c *Client) AntiAffinityGroupUpdate(ctx context.Context, params AntiAffinit
 	}
 
 	var body AntiAffinityGroup
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -885,7 +884,7 @@ func (c *Client) AntiAffinityGroupMemberList(ctx context.Context, params AntiAff
 	}
 
 	var body AntiAffinityGroupMemberResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -960,7 +959,7 @@ func (c *Client) AntiAffinityGroupMemberInstanceView(ctx context.Context, params
 	}
 
 	var body AntiAffinityGroupMember
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -1009,7 +1008,7 @@ func (c *Client) AntiAffinityGroupMemberInstanceAdd(ctx context.Context, params 
 	}
 
 	var body AntiAffinityGroupMember
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -1088,7 +1087,7 @@ func (c *Client) AuthSettingsView(ctx context.Context) (*SiloAuthSettings, error
 	}
 
 	var body SiloAuthSettings
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -1103,7 +1102,7 @@ func (c *Client) AuthSettingsUpdate(ctx context.Context, params AuthSettingsUpda
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -1138,7 +1137,7 @@ func (c *Client) AuthSettingsUpdate(ctx context.Context, params AuthSettingsUpda
 	}
 
 	var body SiloAuthSettings
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -1190,7 +1189,7 @@ func (c *Client) CertificateList(ctx context.Context, params CertificateListPara
 	}
 
 	var body CertificateResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -1234,7 +1233,7 @@ func (c *Client) CertificateCreate(ctx context.Context, params CertificateCreate
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -1269,7 +1268,7 @@ func (c *Client) CertificateCreate(ctx context.Context, params CertificateCreate
 	}
 
 	var body Certificate
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -1316,7 +1315,7 @@ func (c *Client) CertificateView(ctx context.Context, params CertificateViewPara
 	}
 
 	var body Certificate
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -1403,7 +1402,7 @@ func (c *Client) DiskList(ctx context.Context, params DiskListParams) (*DiskResu
 	}
 
 	var body DiskResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -1444,7 +1443,7 @@ func (c *Client) DiskCreate(ctx context.Context, params DiskCreateParams) (*Disk
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -1481,7 +1480,7 @@ func (c *Client) DiskCreate(ctx context.Context, params DiskCreateParams) (*Disk
 	}
 
 	var body Disk
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -1529,7 +1528,7 @@ func (c *Client) DiskView(ctx context.Context, params DiskViewParams) (*Disk, er
 	}
 
 	var body Disk
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -1581,7 +1580,7 @@ func (c *Client) DiskBulkWriteImport(ctx context.Context, params DiskBulkWriteIm
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -1700,7 +1699,7 @@ func (c *Client) DiskFinalizeImport(ctx context.Context, params DiskFinalizeImpo
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -1779,7 +1778,7 @@ func (c *Client) FloatingIpList(ctx context.Context, params FloatingIpListParams
 	}
 
 	var body FloatingIpResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -1820,7 +1819,7 @@ func (c *Client) FloatingIpCreate(ctx context.Context, params FloatingIpCreatePa
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -1857,7 +1856,7 @@ func (c *Client) FloatingIpCreate(ctx context.Context, params FloatingIpCreatePa
 	}
 
 	var body FloatingIp
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -1905,7 +1904,7 @@ func (c *Client) FloatingIpView(ctx context.Context, params FloatingIpViewParams
 	}
 
 	var body FloatingIp
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -1920,7 +1919,7 @@ func (c *Client) FloatingIpUpdate(ctx context.Context, params FloatingIpUpdatePa
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -1959,7 +1958,7 @@ func (c *Client) FloatingIpUpdate(ctx context.Context, params FloatingIpUpdatePa
 	}
 
 	var body FloatingIp
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -2012,7 +2011,7 @@ func (c *Client) FloatingIpAttach(ctx context.Context, params FloatingIpAttachPa
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -2051,7 +2050,7 @@ func (c *Client) FloatingIpAttach(ctx context.Context, params FloatingIpAttachPa
 	}
 
 	var body FloatingIp
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -2099,7 +2098,7 @@ func (c *Client) FloatingIpDetach(ctx context.Context, params FloatingIpDetachPa
 	}
 
 	var body FloatingIp
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -2149,7 +2148,7 @@ func (c *Client) GroupList(ctx context.Context, params GroupListParams) (*GroupR
 	}
 
 	var body GroupResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -2221,7 +2220,7 @@ func (c *Client) GroupView(ctx context.Context, params GroupViewParams) (*Group,
 	}
 
 	var body Group
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -2274,7 +2273,7 @@ func (c *Client) ImageList(ctx context.Context, params ImageListParams) (*ImageR
 	}
 
 	var body ImageResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -2318,7 +2317,7 @@ func (c *Client) ImageCreate(ctx context.Context, params ImageCreateParams) (*Im
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -2355,7 +2354,7 @@ func (c *Client) ImageCreate(ctx context.Context, params ImageCreateParams) (*Im
 	}
 
 	var body Image
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -2404,7 +2403,7 @@ func (c *Client) ImageView(ctx context.Context, params ImageViewParams) (*Image,
 	}
 
 	var body Image
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -2492,7 +2491,7 @@ func (c *Client) ImageDemote(ctx context.Context, params ImageDemoteParams) (*Im
 	}
 
 	var body Image
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -2541,7 +2540,7 @@ func (c *Client) ImagePromote(ctx context.Context, params ImagePromoteParams) (*
 	}
 
 	var body Image
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -2592,7 +2591,7 @@ func (c *Client) InstanceList(ctx context.Context, params InstanceListParams) (*
 	}
 
 	var body InstanceResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -2633,7 +2632,7 @@ func (c *Client) InstanceCreate(ctx context.Context, params InstanceCreateParams
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -2670,7 +2669,7 @@ func (c *Client) InstanceCreate(ctx context.Context, params InstanceCreateParams
 	}
 
 	var body Instance
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -2718,7 +2717,7 @@ func (c *Client) InstanceView(ctx context.Context, params InstanceViewParams) (*
 	}
 
 	var body Instance
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -2733,7 +2732,7 @@ func (c *Client) InstanceUpdate(ctx context.Context, params InstanceUpdateParams
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -2772,7 +2771,7 @@ func (c *Client) InstanceUpdate(ctx context.Context, params InstanceUpdateParams
 	}
 
 	var body Instance
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -2862,7 +2861,7 @@ func (c *Client) InstanceAntiAffinityGroupList(ctx context.Context, params Insta
 	}
 
 	var body AntiAffinityGroupResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -2941,7 +2940,7 @@ func (c *Client) InstanceDiskList(ctx context.Context, params InstanceDiskListPa
 	}
 
 	var body DiskResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -2982,7 +2981,7 @@ func (c *Client) InstanceDiskAttach(ctx context.Context, params InstanceDiskAtta
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -3021,7 +3020,7 @@ func (c *Client) InstanceDiskAttach(ctx context.Context, params InstanceDiskAtta
 	}
 
 	var body Disk
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -3036,7 +3035,7 @@ func (c *Client) InstanceDiskDetach(ctx context.Context, params InstanceDiskDeta
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -3075,7 +3074,7 @@ func (c *Client) InstanceDiskDetach(ctx context.Context, params InstanceDiskDeta
 	}
 
 	var body Disk
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -3123,7 +3122,7 @@ func (c *Client) InstanceExternalIpList(ctx context.Context, params InstanceExte
 	}
 
 	var body ExternalIpResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -3138,7 +3137,7 @@ func (c *Client) InstanceEphemeralIpAttach(ctx context.Context, params InstanceE
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -3177,7 +3176,7 @@ func (c *Client) InstanceEphemeralIpAttach(ctx context.Context, params InstanceE
 	}
 
 	var body ExternalIp
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -3262,7 +3261,7 @@ func (c *Client) InstanceReboot(ctx context.Context, params InstanceRebootParams
 	}
 
 	var body Instance
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -3313,7 +3312,7 @@ func (c *Client) InstanceSerialConsole(ctx context.Context, params InstanceSeria
 	}
 
 	var body InstanceSerialConsoleData
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -3406,7 +3405,7 @@ func (c *Client) InstanceSshPublicKeyList(ctx context.Context, params InstanceSs
 	}
 
 	var body SshKeyResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -3482,7 +3481,7 @@ func (c *Client) InstanceStart(ctx context.Context, params InstanceStartParams) 
 	}
 
 	var body Instance
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -3530,7 +3529,7 @@ func (c *Client) InstanceStop(ctx context.Context, params InstanceStopParams) (*
 	}
 
 	var body Instance
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -3583,7 +3582,7 @@ func (c *Client) InternetGatewayIpAddressList(ctx context.Context, params Intern
 	}
 
 	var body InternetGatewayIpAddressResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -3624,7 +3623,7 @@ func (c *Client) InternetGatewayIpAddressCreate(ctx context.Context, params Inte
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -3663,7 +3662,7 @@ func (c *Client) InternetGatewayIpAddressCreate(ctx context.Context, params Inte
 	}
 
 	var body InternetGatewayIpAddress
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -3756,7 +3755,7 @@ func (c *Client) InternetGatewayIpPoolList(ctx context.Context, params InternetG
 	}
 
 	var body InternetGatewayIpPoolResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -3797,7 +3796,7 @@ func (c *Client) InternetGatewayIpPoolCreate(ctx context.Context, params Interne
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -3836,7 +3835,7 @@ func (c *Client) InternetGatewayIpPoolCreate(ctx context.Context, params Interne
 	}
 
 	var body InternetGatewayIpPool
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -3928,7 +3927,7 @@ func (c *Client) InternetGatewayList(ctx context.Context, params InternetGateway
 	}
 
 	var body InternetGatewayResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -3969,7 +3968,7 @@ func (c *Client) InternetGatewayCreate(ctx context.Context, params InternetGatew
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -4007,7 +4006,7 @@ func (c *Client) InternetGatewayCreate(ctx context.Context, params InternetGatew
 	}
 
 	var body InternetGateway
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -4056,7 +4055,7 @@ func (c *Client) InternetGatewayView(ctx context.Context, params InternetGateway
 	}
 
 	var body InternetGateway
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -4145,7 +4144,7 @@ func (c *Client) ProjectIpPoolList(ctx context.Context, params ProjectIpPoolList
 	}
 
 	var body SiloIpPoolResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -4217,7 +4216,7 @@ func (c *Client) ProjectIpPoolView(ctx context.Context, params ProjectIpPoolView
 	}
 
 	var body SiloIpPool
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -4232,7 +4231,7 @@ func (c *Client) LoginLocal(ctx context.Context, params LoginLocalParams) error 
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -4299,7 +4298,7 @@ func (c *Client) CurrentUserView(ctx context.Context) (*CurrentUser, error) {
 	}
 
 	var body CurrentUser
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -4350,7 +4349,7 @@ func (c *Client) CurrentUserAccessTokenList(ctx context.Context, params CurrentU
 	}
 
 	var body DeviceAccessTokenResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -4463,7 +4462,7 @@ func (c *Client) CurrentUserGroups(ctx context.Context, params CurrentUserGroups
 	}
 
 	var body GroupResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -4540,7 +4539,7 @@ func (c *Client) CurrentUserSshKeyList(ctx context.Context, params CurrentUserSs
 	}
 
 	var body SshKeyResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -4583,7 +4582,7 @@ func (c *Client) CurrentUserSshKeyCreate(ctx context.Context, params CurrentUser
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -4618,7 +4617,7 @@ func (c *Client) CurrentUserSshKeyCreate(ctx context.Context, params CurrentUser
 	}
 
 	var body SshKey
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -4665,7 +4664,7 @@ func (c *Client) CurrentUserSshKeyView(ctx context.Context, params CurrentUserSs
 	}
 
 	var body SshKey
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -4757,7 +4756,7 @@ func (c *Client) SiloMetric(ctx context.Context, params SiloMetricParams) (*Meas
 	}
 
 	var body MeasurementResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -4836,7 +4835,7 @@ func (c *Client) InstanceNetworkInterfaceList(ctx context.Context, params Instan
 	}
 
 	var body InstanceNetworkInterfaceResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -4877,7 +4876,7 @@ func (c *Client) InstanceNetworkInterfaceCreate(ctx context.Context, params Inst
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -4915,7 +4914,7 @@ func (c *Client) InstanceNetworkInterfaceCreate(ctx context.Context, params Inst
 	}
 
 	var body InstanceNetworkInterface
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -4964,7 +4963,7 @@ func (c *Client) InstanceNetworkInterfaceView(ctx context.Context, params Instan
 	}
 
 	var body InstanceNetworkInterface
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -4979,7 +4978,7 @@ func (c *Client) InstanceNetworkInterfaceUpdate(ctx context.Context, params Inst
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -5019,7 +5018,7 @@ func (c *Client) InstanceNetworkInterfaceUpdate(ctx context.Context, params Inst
 	}
 
 	var body InstanceNetworkInterface
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -5102,7 +5101,7 @@ func (c *Client) Ping(ctx context.Context) (*Ping, error) {
 	}
 
 	var body Ping
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -5143,7 +5142,7 @@ func (c *Client) PolicyView(ctx context.Context) (*SiloRolePolicy, error) {
 	}
 
 	var body SiloRolePolicy
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -5158,7 +5157,7 @@ func (c *Client) PolicyUpdate(ctx context.Context, params PolicyUpdateParams) (*
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -5193,7 +5192,7 @@ func (c *Client) PolicyUpdate(ctx context.Context, params PolicyUpdateParams) (*
 	}
 
 	var body SiloRolePolicy
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -5243,7 +5242,7 @@ func (c *Client) ProjectList(ctx context.Context, params ProjectListParams) (*Pr
 	}
 
 	var body ProjectResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -5284,7 +5283,7 @@ func (c *Client) ProjectCreate(ctx context.Context, params ProjectCreateParams) 
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -5319,7 +5318,7 @@ func (c *Client) ProjectCreate(ctx context.Context, params ProjectCreateParams) 
 	}
 
 	var body Project
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -5365,7 +5364,7 @@ func (c *Client) ProjectView(ctx context.Context, params ProjectViewParams) (*Pr
 	}
 
 	var body Project
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -5380,7 +5379,7 @@ func (c *Client) ProjectUpdate(ctx context.Context, params ProjectUpdateParams) 
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -5417,7 +5416,7 @@ func (c *Client) ProjectUpdate(ctx context.Context, params ProjectUpdateParams) 
 	}
 
 	var body Project
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -5498,7 +5497,7 @@ func (c *Client) ProjectPolicyView(ctx context.Context, params ProjectPolicyView
 	}
 
 	var body ProjectRolePolicy
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -5513,7 +5512,7 @@ func (c *Client) ProjectPolicyUpdate(ctx context.Context, params ProjectPolicyUp
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -5550,7 +5549,7 @@ func (c *Client) ProjectPolicyUpdate(ctx context.Context, params ProjectPolicyUp
 	}
 
 	var body ProjectRolePolicy
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -5601,7 +5600,7 @@ func (c *Client) SnapshotList(ctx context.Context, params SnapshotListParams) (*
 	}
 
 	var body SnapshotResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -5643,7 +5642,7 @@ func (c *Client) SnapshotCreate(ctx context.Context, params SnapshotCreateParams
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -5680,7 +5679,7 @@ func (c *Client) SnapshotCreate(ctx context.Context, params SnapshotCreateParams
 	}
 
 	var body Snapshot
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -5728,7 +5727,7 @@ func (c *Client) SnapshotView(ctx context.Context, params SnapshotViewParams) (*
 	}
 
 	var body Snapshot
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -5826,7 +5825,7 @@ func (c *Client) AuditLogList(ctx context.Context, params AuditLogListParams) (*
 	}
 
 	var body AuditLogEntryResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -5911,7 +5910,7 @@ func (c *Client) PhysicalDiskList(ctx context.Context, params PhysicalDiskListPa
 	}
 
 	var body PhysicalDiskResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -5983,7 +5982,7 @@ func (c *Client) PhysicalDiskView(ctx context.Context, params PhysicalDiskViewPa
 	}
 
 	var body PhysicalDisk
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -6037,7 +6036,7 @@ func (c *Client) NetworkingSwitchPortLldpNeighbors(ctx context.Context, params N
 	}
 
 	var body LldpNeighborResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -6113,7 +6112,7 @@ func (c *Client) RackList(ctx context.Context, params RackListParams) (*RackResu
 	}
 
 	var body RackResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -6185,7 +6184,7 @@ func (c *Client) RackView(ctx context.Context, params RackViewParams) (*Rack, er
 	}
 
 	var body Rack
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -6235,7 +6234,7 @@ func (c *Client) SledList(ctx context.Context, params SledListParams) (*SledResu
 	}
 
 	var body SledResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -6276,7 +6275,7 @@ func (c *Client) SledAdd(ctx context.Context, params SledAddParams) (*SledId, er
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -6311,7 +6310,7 @@ func (c *Client) SledAdd(ctx context.Context, params SledAddParams) (*SledId, er
 	}
 
 	var body SledId
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -6360,7 +6359,7 @@ func (c *Client) SledListUninitialized(ctx context.Context, params SledListUnini
 	}
 
 	var body UninitializedSledResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -6432,7 +6431,7 @@ func (c *Client) SledView(ctx context.Context, params SledViewParams) (*Sled, er
 	}
 
 	var body Sled
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -6484,7 +6483,7 @@ func (c *Client) SledPhysicalDiskList(ctx context.Context, params SledPhysicalDi
 	}
 
 	var body PhysicalDiskResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -6562,7 +6561,7 @@ func (c *Client) SledInstanceList(ctx context.Context, params SledInstanceListPa
 	}
 
 	var body SledInstanceResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -6603,7 +6602,7 @@ func (c *Client) SledSetProvisionPolicy(ctx context.Context, params SledSetProvi
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -6640,7 +6639,7 @@ func (c *Client) SledSetProvisionPolicy(ctx context.Context, params SledSetProvi
 	}
 
 	var body SledProvisionPolicyResponse
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -6691,7 +6690,7 @@ func (c *Client) NetworkingSwitchPortList(ctx context.Context, params Networking
 	}
 
 	var body SwitchPortResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -6766,7 +6765,7 @@ func (c *Client) NetworkingSwitchPortLldpConfigView(ctx context.Context, params 
 	}
 
 	var body LldpLinkConfig
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -6781,7 +6780,7 @@ func (c *Client) NetworkingSwitchPortLldpConfigUpdate(ctx context.Context, param
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -6825,7 +6824,7 @@ func (c *Client) NetworkingSwitchPortApplySettings(ctx context.Context, params N
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -6941,7 +6940,7 @@ func (c *Client) NetworkingSwitchPortStatus(ctx context.Context, params Networki
 	}
 
 	var body SwitchLinkState
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -6991,7 +6990,7 @@ func (c *Client) SwitchList(ctx context.Context, params SwitchListParams) (*Swit
 	}
 
 	var body SwitchResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -7063,7 +7062,7 @@ func (c *Client) SwitchView(ctx context.Context, params SwitchViewParams) (*Swit
 	}
 
 	var body Switch
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -7115,7 +7114,7 @@ func (c *Client) SiloIdentityProviderList(ctx context.Context, params SiloIdenti
 	}
 
 	var body IdentityProviderResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -7159,7 +7158,7 @@ func (c *Client) LocalIdpUserCreate(ctx context.Context, params LocalIdpUserCrea
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -7196,7 +7195,7 @@ func (c *Client) LocalIdpUserCreate(ctx context.Context, params LocalIdpUserCrea
 	}
 
 	var body User
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -7249,7 +7248,7 @@ func (c *Client) LocalIdpUserSetPassword(ctx context.Context, params LocalIdpUse
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -7292,7 +7291,7 @@ func (c *Client) SamlIdentityProviderCreate(ctx context.Context, params SamlIden
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -7329,7 +7328,7 @@ func (c *Client) SamlIdentityProviderCreate(ctx context.Context, params SamlIden
 	}
 
 	var body SamlIdentityProvider
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -7377,7 +7376,7 @@ func (c *Client) SamlIdentityProviderView(ctx context.Context, params SamlIdenti
 	}
 
 	var body SamlIdentityProvider
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -7427,7 +7426,7 @@ func (c *Client) IpPoolList(ctx context.Context, params IpPoolListParams) (*IpPo
 	}
 
 	var body IpPoolResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -7469,7 +7468,7 @@ func (c *Client) IpPoolCreate(ctx context.Context, params IpPoolCreateParams) (*
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -7504,7 +7503,7 @@ func (c *Client) IpPoolCreate(ctx context.Context, params IpPoolCreateParams) (*
 	}
 
 	var body IpPool
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -7545,7 +7544,7 @@ func (c *Client) IpPoolServiceView(ctx context.Context) (*IpPool, error) {
 	}
 
 	var body IpPool
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -7595,7 +7594,7 @@ func (c *Client) IpPoolServiceRangeList(ctx context.Context, params IpPoolServic
 	}
 
 	var body IpPoolRangeResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -7638,7 +7637,7 @@ func (c *Client) IpPoolServiceRangeAdd(ctx context.Context, params IpPoolService
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -7673,7 +7672,7 @@ func (c *Client) IpPoolServiceRangeAdd(ctx context.Context, params IpPoolService
 	}
 
 	var body IpPoolRange
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -7688,7 +7687,7 @@ func (c *Client) IpPoolServiceRangeRemove(ctx context.Context, params IpPoolServ
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -7758,7 +7757,7 @@ func (c *Client) IpPoolView(ctx context.Context, params IpPoolViewParams) (*IpPo
 	}
 
 	var body IpPool
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -7773,7 +7772,7 @@ func (c *Client) IpPoolUpdate(ctx context.Context, params IpPoolUpdateParams) (*
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -7810,7 +7809,7 @@ func (c *Client) IpPoolUpdate(ctx context.Context, params IpPoolUpdateParams) (*
 	}
 
 	var body IpPool
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -7897,7 +7896,7 @@ func (c *Client) IpPoolRangeList(ctx context.Context, params IpPoolRangeListPara
 	}
 
 	var body IpPoolRangeResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -7946,7 +7945,7 @@ func (c *Client) IpPoolRangeAdd(ctx context.Context, params IpPoolRangeAddParams
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -7983,7 +7982,7 @@ func (c *Client) IpPoolRangeAdd(ctx context.Context, params IpPoolRangeAddParams
 	}
 
 	var body IpPoolRange
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -7998,7 +7997,7 @@ func (c *Client) IpPoolRangeRemove(ctx context.Context, params IpPoolRangeRemove
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -8076,7 +8075,7 @@ func (c *Client) IpPoolSiloList(ctx context.Context, params IpPoolSiloListParams
 	}
 
 	var body IpPoolSiloLinkResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -8119,7 +8118,7 @@ func (c *Client) IpPoolSiloLink(ctx context.Context, params IpPoolSiloLinkParams
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -8156,7 +8155,7 @@ func (c *Client) IpPoolSiloLink(ctx context.Context, params IpPoolSiloLinkParams
 	}
 
 	var body IpPoolSiloLink
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -8174,7 +8173,7 @@ func (c *Client) IpPoolSiloUpdate(ctx context.Context, params IpPoolSiloUpdatePa
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -8212,7 +8211,7 @@ func (c *Client) IpPoolSiloUpdate(ctx context.Context, params IpPoolSiloUpdatePa
 	}
 
 	var body IpPoolSiloLink
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -8295,7 +8294,7 @@ func (c *Client) IpPoolUtilizationView(ctx context.Context, params IpPoolUtiliza
 	}
 
 	var body IpPoolUtilization
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -8351,7 +8350,7 @@ func (c *Client) SystemMetric(ctx context.Context, params SystemMetricParams) (*
 	}
 
 	var body MeasurementResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -8428,7 +8427,7 @@ func (c *Client) NetworkingAddressLotList(ctx context.Context, params Networking
 	}
 
 	var body AddressLotResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -8469,7 +8468,7 @@ func (c *Client) NetworkingAddressLotCreate(ctx context.Context, params Networki
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -8504,7 +8503,7 @@ func (c *Client) NetworkingAddressLotCreate(ctx context.Context, params Networki
 	}
 
 	var body AddressLotCreateResponse
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -8550,7 +8549,7 @@ func (c *Client) NetworkingAddressLotView(ctx context.Context, params Networking
 	}
 
 	var body AddressLotViewResponse
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -8637,7 +8636,7 @@ func (c *Client) NetworkingAddressLotBlockList(ctx context.Context, params Netwo
 	}
 
 	var body AddressLotBlockResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -8704,7 +8703,7 @@ func (c *Client) NetworkingAllowListView(ctx context.Context) (*AllowList, error
 	}
 
 	var body AllowList
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -8719,7 +8718,7 @@ func (c *Client) NetworkingAllowListUpdate(ctx context.Context, params Networkin
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -8754,7 +8753,7 @@ func (c *Client) NetworkingAllowListUpdate(ctx context.Context, params Networkin
 	}
 
 	var body AllowList
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -8769,7 +8768,7 @@ func (c *Client) NetworkingBfdDisable(ctx context.Context, params NetworkingBfdD
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -8808,7 +8807,7 @@ func (c *Client) NetworkingBfdEnable(ctx context.Context, params NetworkingBfdEn
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -8873,7 +8872,7 @@ func (c *Client) NetworkingBfdStatus(ctx context.Context) (*[]BfdStatus, error) 
 	}
 
 	var body []BfdStatus
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -8923,7 +8922,7 @@ func (c *Client) NetworkingBgpConfigList(ctx context.Context, params NetworkingB
 	}
 
 	var body BgpConfigResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -8964,7 +8963,7 @@ func (c *Client) NetworkingBgpConfigCreate(ctx context.Context, params Networkin
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -8999,7 +8998,7 @@ func (c *Client) NetworkingBgpConfigCreate(ctx context.Context, params Networkin
 	}
 
 	var body BgpConfig
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -9084,7 +9083,7 @@ func (c *Client) NetworkingBgpAnnounceSetList(ctx context.Context, params Networ
 	}
 
 	var body []BgpAnnounceSet
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -9100,7 +9099,7 @@ func (c *Client) NetworkingBgpAnnounceSetUpdate(ctx context.Context, params Netw
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -9135,7 +9134,7 @@ func (c *Client) NetworkingBgpAnnounceSetUpdate(ctx context.Context, params Netw
 	}
 
 	var body BgpAnnounceSet
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -9216,7 +9215,7 @@ func (c *Client) NetworkingBgpAnnouncementList(ctx context.Context, params Netwo
 	}
 
 	var body []BgpAnnouncement
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -9257,7 +9256,7 @@ func (c *Client) NetworkingBgpExported(ctx context.Context) (*BgpExported, error
 	}
 
 	var body BgpExported
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -9303,7 +9302,7 @@ func (c *Client) NetworkingBgpMessageHistory(ctx context.Context, params Network
 	}
 
 	var body AggregateBgpMessageHistory
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -9349,7 +9348,7 @@ func (c *Client) NetworkingBgpImportedRoutesIpv4(ctx context.Context, params Net
 	}
 
 	var body []BgpImportedRouteIpv4
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -9390,7 +9389,7 @@ func (c *Client) NetworkingBgpStatus(ctx context.Context) (*[]BgpPeerStatus, err
 	}
 
 	var body []BgpPeerStatus
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -9431,7 +9430,7 @@ func (c *Client) NetworkingInboundIcmpView(ctx context.Context) (*ServiceIcmpCon
 	}
 
 	var body ServiceIcmpConfig
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -9446,7 +9445,7 @@ func (c *Client) NetworkingInboundIcmpUpdate(ctx context.Context, params Network
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -9520,7 +9519,7 @@ func (c *Client) NetworkingLoopbackAddressList(ctx context.Context, params Netwo
 	}
 
 	var body LoopbackAddressResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -9561,7 +9560,7 @@ func (c *Client) NetworkingLoopbackAddressCreate(ctx context.Context, params Net
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -9596,7 +9595,7 @@ func (c *Client) NetworkingLoopbackAddressCreate(ctx context.Context, params Net
 	}
 
 	var body LoopbackAddress
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -9685,7 +9684,7 @@ func (c *Client) NetworkingSwitchPortSettingsList(ctx context.Context, params Ne
 	}
 
 	var body SwitchPortSettingsIdentityResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -9726,7 +9725,7 @@ func (c *Client) NetworkingSwitchPortSettingsCreate(ctx context.Context, params 
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -9761,7 +9760,7 @@ func (c *Client) NetworkingSwitchPortSettingsCreate(ctx context.Context, params 
 	}
 
 	var body SwitchPortSettings
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -9842,7 +9841,7 @@ func (c *Client) NetworkingSwitchPortSettingsView(ctx context.Context, params Ne
 	}
 
 	var body SwitchPortSettings
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -9883,7 +9882,7 @@ func (c *Client) SystemPolicyView(ctx context.Context) (*FleetRolePolicy, error)
 	}
 
 	var body FleetRolePolicy
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -9898,7 +9897,7 @@ func (c *Client) SystemPolicyUpdate(ctx context.Context, params SystemPolicyUpda
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -9933,7 +9932,7 @@ func (c *Client) SystemPolicyUpdate(ctx context.Context, params SystemPolicyUpda
 	}
 
 	var body FleetRolePolicy
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -9980,7 +9979,7 @@ func (c *Client) ScimTokenList(ctx context.Context, params ScimTokenListParams) 
 	}
 
 	var body []ScimClientBearerToken
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -10028,7 +10027,7 @@ func (c *Client) ScimTokenCreate(ctx context.Context, params ScimTokenCreatePara
 	}
 
 	var body ScimClientBearerTokenValue
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -10077,7 +10076,7 @@ func (c *Client) ScimTokenView(ctx context.Context, params ScimTokenViewParams) 
 	}
 
 	var body ScimClientBearerToken
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -10165,7 +10164,7 @@ func (c *Client) SystemQuotasList(ctx context.Context, params SystemQuotasListPa
 	}
 
 	var body SiloQuotasResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -10242,7 +10241,7 @@ func (c *Client) SiloList(ctx context.Context, params SiloListParams) (*SiloResu
 	}
 
 	var body SiloResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -10284,7 +10283,7 @@ func (c *Client) SiloCreate(ctx context.Context, params SiloCreateParams) (*Silo
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -10319,7 +10318,7 @@ func (c *Client) SiloCreate(ctx context.Context, params SiloCreateParams) (*Silo
 	}
 
 	var body Silo
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -10366,7 +10365,7 @@ func (c *Client) SiloView(ctx context.Context, params SiloViewParams) (*Silo, er
 	}
 
 	var body Silo
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -10456,7 +10455,7 @@ func (c *Client) SiloIpPoolList(ctx context.Context, params SiloIpPoolListParams
 	}
 
 	var body SiloIpPoolResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -10530,7 +10529,7 @@ func (c *Client) SiloPolicyView(ctx context.Context, params SiloPolicyViewParams
 	}
 
 	var body SiloRolePolicy
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -10545,7 +10544,7 @@ func (c *Client) SiloPolicyUpdate(ctx context.Context, params SiloPolicyUpdatePa
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -10582,7 +10581,7 @@ func (c *Client) SiloPolicyUpdate(ctx context.Context, params SiloPolicyUpdatePa
 	}
 
 	var body SiloRolePolicy
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -10628,7 +10627,7 @@ func (c *Client) SiloQuotasView(ctx context.Context, params SiloQuotasViewParams
 	}
 
 	var body SiloQuotas
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -10644,7 +10643,7 @@ func (c *Client) SiloQuotasUpdate(ctx context.Context, params SiloQuotasUpdatePa
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -10681,7 +10680,7 @@ func (c *Client) SiloQuotasUpdate(ctx context.Context, params SiloQuotasUpdatePa
 	}
 
 	var body SiloQuotas
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -10697,7 +10696,7 @@ func (c *Client) SystemTimeseriesQuery(ctx context.Context, params SystemTimeser
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -10732,7 +10731,7 @@ func (c *Client) SystemTimeseriesQuery(ctx context.Context, params SystemTimeser
 	}
 
 	var body OxqlQueryResult
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -10781,7 +10780,7 @@ func (c *Client) SystemTimeseriesSchemaList(ctx context.Context, params SystemTi
 	}
 
 	var body TimeseriesSchemaResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -10858,7 +10857,7 @@ func (c *Client) SystemUpdateRepositoryList(ctx context.Context, params SystemUp
 	}
 
 	var body TufRepoResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -10934,7 +10933,7 @@ func (c *Client) SystemUpdateRepositoryUpload(ctx context.Context, params System
 	}
 
 	var body TufRepoUpload
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -10980,7 +10979,7 @@ func (c *Client) SystemUpdateRepositoryView(ctx context.Context, params SystemUp
 	}
 
 	var body TufRepo
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -11022,7 +11021,7 @@ func (c *Client) SystemUpdateStatus(ctx context.Context) (*UpdateStatus, error) 
 	}
 
 	var body UpdateStatus
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -11040,7 +11039,7 @@ func (c *Client) TargetReleaseUpdate(ctx context.Context, params TargetReleaseUp
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -11117,7 +11116,7 @@ func (c *Client) SystemUpdateTrustRootList(ctx context.Context, params SystemUpd
 	}
 
 	var body UpdatesTrustRootResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -11161,7 +11160,7 @@ func (c *Client) SystemUpdateTrustRootCreate(ctx context.Context, params SystemU
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -11196,7 +11195,7 @@ func (c *Client) SystemUpdateTrustRootCreate(ctx context.Context, params SystemU
 	}
 
 	var body UpdatesTrustRoot
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -11242,7 +11241,7 @@ func (c *Client) SystemUpdateTrustRootView(ctx context.Context, params SystemUpd
 	}
 
 	var body UpdatesTrustRoot
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -11330,7 +11329,7 @@ func (c *Client) SiloUserList(ctx context.Context, params SiloUserListParams) (*
 	}
 
 	var body UserResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -11406,7 +11405,7 @@ func (c *Client) UserBuiltinList(ctx context.Context, params UserBuiltinListPara
 	}
 
 	var body UserBuiltinResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -11478,7 +11477,7 @@ func (c *Client) UserBuiltinView(ctx context.Context, params UserBuiltinViewPara
 	}
 
 	var body UserBuiltin
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -11526,7 +11525,7 @@ func (c *Client) SiloUserView(ctx context.Context, params SiloUserViewParams) (*
 	}
 
 	var body User
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -11576,7 +11575,7 @@ func (c *Client) SiloUtilizationList(ctx context.Context, params SiloUtilization
 	}
 
 	var body SiloUtilizationResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -11648,7 +11647,7 @@ func (c *Client) SiloUtilizationView(ctx context.Context, params SiloUtilization
 	}
 
 	var body SiloUtilization
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -11699,7 +11698,7 @@ func (c *Client) UserList(ctx context.Context, params UserListParams) (*UserResu
 	}
 
 	var body UserResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -11771,7 +11770,7 @@ func (c *Client) UserView(ctx context.Context, params UserViewParams) (*User, er
 	}
 
 	var body User
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -11823,7 +11822,7 @@ func (c *Client) UserTokenList(ctx context.Context, params UserTokenListParams) 
 	}
 
 	var body DeviceAccessTokenResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -11938,7 +11937,7 @@ func (c *Client) UserSessionList(ctx context.Context, params UserSessionListPara
 	}
 
 	var body ConsoleSessionResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -12005,7 +12004,7 @@ func (c *Client) UtilizationView(ctx context.Context) (*Utilization, error) {
 	}
 
 	var body Utilization
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -12052,7 +12051,7 @@ func (c *Client) VpcFirewallRulesView(ctx context.Context, params VpcFirewallRul
 	}
 
 	var body VpcFirewallRules
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -12077,7 +12076,7 @@ func (c *Client) VpcFirewallRulesUpdate(ctx context.Context, params VpcFirewallR
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -12115,7 +12114,7 @@ func (c *Client) VpcFirewallRulesUpdate(ctx context.Context, params VpcFirewallR
 	}
 
 	var body VpcFirewallRules
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -12169,7 +12168,7 @@ func (c *Client) VpcRouterRouteList(ctx context.Context, params VpcRouterRouteLi
 	}
 
 	var body RouterRouteResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -12211,7 +12210,7 @@ func (c *Client) VpcRouterRouteCreate(ctx context.Context, params VpcRouterRoute
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -12250,7 +12249,7 @@ func (c *Client) VpcRouterRouteCreate(ctx context.Context, params VpcRouterRoute
 	}
 
 	var body RouterRoute
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -12300,7 +12299,7 @@ func (c *Client) VpcRouterRouteView(ctx context.Context, params VpcRouterRouteVi
 	}
 
 	var body RouterRoute
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -12315,7 +12314,7 @@ func (c *Client) VpcRouterRouteUpdate(ctx context.Context, params VpcRouterRoute
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -12356,7 +12355,7 @@ func (c *Client) VpcRouterRouteUpdate(ctx context.Context, params VpcRouterRoute
 	}
 
 	var body RouterRoute
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -12447,7 +12446,7 @@ func (c *Client) VpcRouterList(ctx context.Context, params VpcRouterListParams) 
 	}
 
 	var body VpcRouterResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -12488,7 +12487,7 @@ func (c *Client) VpcRouterCreate(ctx context.Context, params VpcRouterCreatePara
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -12526,7 +12525,7 @@ func (c *Client) VpcRouterCreate(ctx context.Context, params VpcRouterCreatePara
 	}
 
 	var body VpcRouter
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -12575,7 +12574,7 @@ func (c *Client) VpcRouterView(ctx context.Context, params VpcRouterViewParams) 
 	}
 
 	var body VpcRouter
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -12590,7 +12589,7 @@ func (c *Client) VpcRouterUpdate(ctx context.Context, params VpcRouterUpdatePara
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -12630,7 +12629,7 @@ func (c *Client) VpcRouterUpdate(ctx context.Context, params VpcRouterUpdatePara
 	}
 
 	var body VpcRouter
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -12720,7 +12719,7 @@ func (c *Client) VpcSubnetList(ctx context.Context, params VpcSubnetListParams) 
 	}
 
 	var body VpcSubnetResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -12761,7 +12760,7 @@ func (c *Client) VpcSubnetCreate(ctx context.Context, params VpcSubnetCreatePara
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -12799,7 +12798,7 @@ func (c *Client) VpcSubnetCreate(ctx context.Context, params VpcSubnetCreatePara
 	}
 
 	var body VpcSubnet
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -12848,7 +12847,7 @@ func (c *Client) VpcSubnetView(ctx context.Context, params VpcSubnetViewParams) 
 	}
 
 	var body VpcSubnet
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -12863,7 +12862,7 @@ func (c *Client) VpcSubnetUpdate(ctx context.Context, params VpcSubnetUpdatePara
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -12903,7 +12902,7 @@ func (c *Client) VpcSubnetUpdate(ctx context.Context, params VpcSubnetUpdatePara
 	}
 
 	var body VpcSubnet
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -12995,7 +12994,7 @@ func (c *Client) VpcSubnetListNetworkInterfaces(ctx context.Context, params VpcS
 	}
 
 	var body InstanceNetworkInterfaceResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -13072,7 +13071,7 @@ func (c *Client) VpcList(ctx context.Context, params VpcListParams) (*VpcResults
 	}
 
 	var body VpcResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -13113,7 +13112,7 @@ func (c *Client) VpcCreate(ctx context.Context, params VpcCreateParams) (*Vpc, e
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -13150,7 +13149,7 @@ func (c *Client) VpcCreate(ctx context.Context, params VpcCreateParams) (*Vpc, e
 	}
 
 	var body Vpc
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -13198,7 +13197,7 @@ func (c *Client) VpcView(ctx context.Context, params VpcViewParams) (*Vpc, error
 	}
 
 	var body Vpc
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -13213,7 +13212,7 @@ func (c *Client) VpcUpdate(ctx context.Context, params VpcUpdateParams) (*Vpc, e
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -13252,7 +13251,7 @@ func (c *Client) VpcUpdate(ctx context.Context, params VpcUpdateParams) (*Vpc, e
 	}
 
 	var body Vpc
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -13304,7 +13303,7 @@ func (c *Client) WebhookReceiverCreate(ctx context.Context, params WebhookReceiv
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -13339,7 +13338,7 @@ func (c *Client) WebhookReceiverCreate(ctx context.Context, params WebhookReceiv
 	}
 
 	var body WebhookReceiver
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -13356,7 +13355,7 @@ func (c *Client) WebhookReceiverUpdate(ctx context.Context, params WebhookReceiv
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -13428,7 +13427,7 @@ func (c *Client) WebhookSecretsList(ctx context.Context, params WebhookSecretsLi
 	}
 
 	var body WebhookSecrets
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 
@@ -13443,7 +13442,7 @@ func (c *Client) WebhookSecretsAdd(ctx context.Context, params WebhookSecretsAdd
 	}
 	// Encode the request body as json.
 	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+	if err := c.newJSONEncoder(b).Encode(params.Body); err != nil {
 		return nil, fmt.Errorf("encoding json body request failed: %v", err)
 	}
 
@@ -13480,7 +13479,7 @@ func (c *Client) WebhookSecretsAdd(ctx context.Context, params WebhookSecretsAdd
 	}
 
 	var body WebhookSecret
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := c.newJSONDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
 

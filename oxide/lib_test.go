@@ -22,6 +22,17 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// customJSONCodec is a custom JSON codec for testing custom codec functionality.
+type customJSONCodec struct{}
+
+func (customJSONCodec) NewEncoder(w io.Writer) JSONEncoder {
+	return json.NewEncoder(w)
+}
+
+func (customJSONCodec) NewDecoder(r io.Reader) JSONDecoder {
+	return json.NewDecoder(r)
+}
+
 func Test_buildRequest(t *testing.T) {
 	t.Parallel()
 
@@ -189,6 +200,7 @@ func Test_NewClient(t *testing.T) {
 					Timeout: 600 * time.Second,
 				},
 				userAgent: defaultUserAgent(),
+				jsonCodec: defaultJSONCodec(),
 			},
 		},
 		"succeeds with valid client from env": {
@@ -203,6 +215,7 @@ func Test_NewClient(t *testing.T) {
 					Timeout: 600 * time.Second,
 				},
 				userAgent: defaultUserAgent(),
+				jsonCodec: defaultJSONCodec(),
 			},
 		},
 		"succeeds with valid client from env and config": {
@@ -225,6 +238,7 @@ func Test_NewClient(t *testing.T) {
 					Timeout: 500 * time.Second,
 				},
 				userAgent: "bob",
+				jsonCodec: defaultJSONCodec(),
 			},
 		},
 		"succeeds with config, overrides env": {
@@ -245,6 +259,7 @@ func Test_NewClient(t *testing.T) {
 					Timeout: 600 * time.Second,
 				},
 				userAgent: defaultUserAgent(),
+				jsonCodec: defaultJSONCodec(),
 			},
 		},
 		"succeeds with profile": {
@@ -261,6 +276,7 @@ func Test_NewClient(t *testing.T) {
 					Timeout: 600 * time.Second,
 				},
 				userAgent: defaultUserAgent(),
+				jsonCodec: defaultJSONCodec(),
 			},
 		},
 		"succeeds with profile from env": {
@@ -278,6 +294,7 @@ func Test_NewClient(t *testing.T) {
 					Timeout: 600 * time.Second,
 				},
 				userAgent: defaultUserAgent(),
+				jsonCodec: defaultJSONCodec(),
 			},
 		},
 		"succeeds with default profile": {
@@ -294,6 +311,7 @@ func Test_NewClient(t *testing.T) {
 					Timeout: 600 * time.Second,
 				},
 				userAgent: defaultUserAgent(),
+				jsonCodec: defaultJSONCodec(),
 			},
 		},
 		"succeeds with config dir and default profile": {
@@ -310,6 +328,7 @@ func Test_NewClient(t *testing.T) {
 					Timeout: 600 * time.Second,
 				},
 				userAgent: defaultUserAgent(),
+				jsonCodec: defaultJSONCodec(),
 			},
 		},
 		"succeeds with config dir and profile": {
@@ -326,6 +345,7 @@ func Test_NewClient(t *testing.T) {
 					Timeout: 600 * time.Second,
 				},
 				userAgent: defaultUserAgent(),
+				jsonCodec: defaultJSONCodec(),
 			},
 		},
 		"succeeds with profile, overrides env": {
@@ -346,6 +366,7 @@ func Test_NewClient(t *testing.T) {
 					Timeout: 600 * time.Second,
 				},
 				userAgent: defaultUserAgent(),
+				jsonCodec: defaultJSONCodec(),
 			},
 		},
 		"succeeds with host and token from different sources ": {
@@ -364,6 +385,25 @@ func Test_NewClient(t *testing.T) {
 					Timeout: 600 * time.Second,
 				},
 				userAgent: defaultUserAgent(),
+				jsonCodec: defaultJSONCodec(),
+			},
+		},
+		"succeeds with custom json codec": {
+			config: func(string) *Config {
+				return &Config{
+					Host:      "http://localhost",
+					Token:     "foo",
+					JSONCodec: customJSONCodec{},
+				}
+			},
+			expectedClient: &Client{
+				host:  "http://localhost/",
+				token: "foo",
+				client: &http.Client{
+					Timeout: 600 * time.Second,
+				},
+				userAgent: defaultUserAgent(),
+				jsonCodec: customJSONCodec{},
 			},
 		},
 		"fails with missing address using config": {
