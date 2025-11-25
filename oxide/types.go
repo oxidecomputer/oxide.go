@@ -1929,7 +1929,7 @@ type DatumDatum interface {
 }
 
 // DatumBool is the type definition for a DatumBool.
-type DatumBool *bool
+type DatumBool bool
 
 func (DatumBool) isDatumDatum() {}
 
@@ -2442,7 +2442,7 @@ func (v *Datum) UnmarshalJSON(data []byte) error {
 		}
 		v.Datum = val
 	default:
-		return fmt.Errorf("unknown Datum discriminator value for type %s: %v", string(data), peek.Discriminator)
+		return fmt.Errorf("unknown Datum discriminator value for type: %v", peek.Discriminator)
 	}
 	v.Type = peek.Discriminator
 	return nil
@@ -3083,7 +3083,7 @@ type FieldValueUuid string
 func (FieldValueUuid) isFieldValueValue() {}
 
 // FieldValueBool is the type definition for a FieldValueBool.
-type FieldValueBool *bool
+type FieldValueBool bool
 
 func (FieldValueBool) isFieldValueValue() {}
 
@@ -3212,7 +3212,7 @@ func (v *FieldValue) UnmarshalJSON(data []byte) error {
 		}
 		v.Value = val.Value
 	default:
-		return fmt.Errorf("unknown FieldValue discriminator value for type %s: %v", string(data), peek.Discriminator)
+		return fmt.Errorf("unknown FieldValue discriminator value for type: %v", peek.Discriminator)
 	}
 	v.Type = peek.Discriminator
 	return nil
@@ -5665,7 +5665,7 @@ func (v *RouteDestination) UnmarshalJSON(data []byte) error {
 		}
 		v.Value = val.Value
 	default:
-		return fmt.Errorf("unknown RouteDestination discriminator value for type %s: %v", string(data), peek.Discriminator)
+		return fmt.Errorf("unknown RouteDestination discriminator value for type: %v", peek.Discriminator)
 	}
 	v.Type = peek.Discriminator
 	return nil
@@ -5790,7 +5790,7 @@ func (v *RouteTarget) UnmarshalJSON(data []byte) error {
 		}
 		v.Value = val
 	default:
-		return fmt.Errorf("unknown RouteTarget discriminator value for type %s: %v", string(data), peek.Discriminator)
+		return fmt.Errorf("unknown RouteTarget discriminator value for type: %v", peek.Discriminator)
 	}
 	v.Type = peek.Discriminator
 	return nil
@@ -7570,7 +7570,7 @@ func (v *ValueArray) UnmarshalJSON(data []byte) error {
 		}
 		v.Values = val
 	default:
-		return fmt.Errorf("unknown ValueArray discriminator value for type %s: %v", string(data), peek.Discriminator)
+		return fmt.Errorf("unknown ValueArray discriminator value for type: %v", peek.Discriminator)
 	}
 	v.Type = peek.Discriminator
 	return nil
@@ -7830,7 +7830,7 @@ func (v *VpcFirewallRuleHostFilter) UnmarshalJSON(data []byte) error {
 		}
 		v.Value = val
 	default:
-		return fmt.Errorf("unknown VpcFirewallRuleHostFilter discriminator value for type %s: %v", string(data), peek.Discriminator)
+		return fmt.Errorf("unknown VpcFirewallRuleHostFilter discriminator value for type: %v", peek.Discriminator)
 	}
 	v.Type = peek.Discriminator
 	return nil
@@ -7973,7 +7973,7 @@ func (v *VpcFirewallRuleTarget) UnmarshalJSON(data []byte) error {
 		}
 		v.Value = val
 	default:
-		return fmt.Errorf("unknown VpcFirewallRuleTarget discriminator value for type %s: %v", string(data), peek.Discriminator)
+		return fmt.Errorf("unknown VpcFirewallRuleTarget discriminator value for type: %v", peek.Discriminator)
 	}
 	v.Type = peek.Discriminator
 	return nil
