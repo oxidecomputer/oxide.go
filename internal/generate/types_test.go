@@ -273,7 +273,10 @@ func Test_createOneOf(t *testing.T) {
 					},
 				},
 				{
-					Description: "// ImageSource is the source of the underlying image.", Name: "ImageSource", Type: "struct", Fields: []TypeFields{
+					Description: "// ImageSource is the source of the underlying image.",
+					Name:        "ImageSource",
+					Type:        "struct",
+					Fields: []TypeFields{
 						{
 							Description: "// Type is the type definition for a Type.", Name: "Type", Type: "ImageSourceType", SerializationInfo: "`json:\"type,omitempty\" yaml:\"type,omitempty\"`",
 						},
@@ -284,6 +287,22 @@ func Test_createOneOf(t *testing.T) {
 							Description: "// Id is the type definition for a Id.", Name: "Id", Type: "string", SerializationInfo: "`json:\"id,omitempty\" yaml:\"id,omitempty\"`",
 						},
 					},
+					DiscriminatorKey:   "type",
+					DiscriminatorField: "Type",
+					DiscriminatorType:  "ImageSourceType",
+					DiscriminatorMappings: []DiscriminatorMapping{
+						{
+							EnumConstant: "ImageSourceTypeUrl",
+							ConcreteType: "ImageSourceUrl",
+							ObjectType:   "",
+						},
+						{
+							EnumConstant: "ImageSourceTypeSnapshot",
+							ConcreteType: "ImageSourceSnapshot",
+							ObjectType:   "",
+						},
+					},
+					VariantField: "",
 				},
 			},
 			want1: []EnumTemplate{
