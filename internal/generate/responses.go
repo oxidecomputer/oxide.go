@@ -62,7 +62,7 @@ func populateResponseType(name string, r *openapi3.Response) ([]TypeTemplate, []
 			continue
 		}
 
-		tt, et := populateTypeTemplates(respName, s.Value, "")
+		tt, et := populateTypeTemplates(respName, s.Value, "", "")
 		types = append(types, tt...)
 		enumTypes = append(enumTypes, et...)
 
