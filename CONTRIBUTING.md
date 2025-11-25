@@ -16,9 +16,8 @@ $ make all
 
 ## Releasing a new SDK version
 
-1. Make sure the following files have the new version you want to release.
-   - [`VERSION`](./VERSION)
-   - [`oxide/version.go`](./oxide/version.go): Updated via [`internal/generate/version.go`](./internal/generate/version.go)
+1. Update the [`VERSION`](./VERSION) file with the new version you want to release.
+   - The [`oxide/version.go`](./oxide/version.go) file will be automatically updated when you run `make generate`
 2. Make sure you have run `make all` and pushed any changes. The release
    will fail if running `make all` causes any changes to the generated
    code.

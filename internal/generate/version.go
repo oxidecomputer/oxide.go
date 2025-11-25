@@ -12,7 +12,7 @@ import (
 )
 
 // generateVersion generates the version.go file with both SDK and API versions.
-func generateVersion(file string, spec *openapi3.T) error {
+func generateVersion(file string, spec *openapi3.T, sdkVersion string) error {
 	f, err := openGeneratedFile(file)
 	if err != nil {
 		return err
@@ -36,7 +36,7 @@ func generateVersion(file string, spec *openapi3.T) error {
 		SDKVersion     string
 		OpenAPIVersion string
 	}{
-		SDKVersion:     "v0.8.0",
+		SDKVersion:     sdkVersion,
 		OpenAPIVersion: apiVersion,
 	}
 
