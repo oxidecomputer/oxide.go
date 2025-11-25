@@ -255,15 +255,6 @@ func isNumericType(str string) bool {
 	return slices.Contains(numTypes, str)
 }
 
-func allItemsAreSame[T comparable](a []T) bool {
-	for _, v := range a {
-		if v != a[0] {
-			return false
-		}
-	}
-	return true
-}
-
 // sortedKeys returns a []string of sorted keys from a map. Used to ensure
 // deterministic ordering of generated code.
 func sortedKeys[T any](m map[string]T) []string {
