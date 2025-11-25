@@ -361,8 +361,11 @@ func writeTypes(f *os.File, typeCollection []TypeTemplate, typeValidationCollect
 			fmt.Fprint(f, "}\n")
 		}
 
+		// Write custom UnmarshalJSON method for oneOf types.
 		if tt.DiscriminatorKey != "" && tt.VariantField != "" {
 			fmt.Fprintf(f, "func (v *%s) UnmarshalJSON(data []byte) error {\n", tt.Name)
+
+			// Check the discriminator to decide which type to unmarshal to.
 			fmt.Fprintf(f, "\tvar peek struct {\n")
 			fmt.Fprintf(f, "\t\tDiscriminator %s `json:\"%s\"`\n", tt.DiscriminatorType, tt.DiscriminatorKey)
 			fmt.Fprintf(f, "\t}\n")
@@ -371,10 +374,12 @@ func writeTypes(f *os.File, typeCollection []TypeTemplate, typeValidationCollect
 			fmt.Fprintf(f, "\t}\n")
 			fmt.Fprintf(f, "\tswitch peek.Discriminator {\n")
 
+			// Construct a case for each possible variant.
 			for _, mapping := range tt.DiscriminatorMappings {
 				fmt.Fprintf(f, "\tcase %s:\n", mapping.EnumConstant)
 
-				if slices.Contains([]string{"string", "int", "*bool"}, mapping.ObjectType) {
+				// For objects, unmarshal into the corresponding struct. For simple types, unmarshal into a temporary struct, then grab the value from it.
+				if isSimpleType(mapping.ObjectType) {
 					fmt.Fprintf(f, "\t\ttype value struct {\n")
 					fmt.Fprintf(f, "\t\t\tValue %s `json:\"%s\"`\n", mapping.ConcreteType, strings.ToLower(tt.VariantField))
 					fmt.Fprintf(f, "\t\t}\n")
@@ -392,7 +397,7 @@ func writeTypes(f *os.File, typeCollection []TypeTemplate, typeValidationCollect
 				}
 			}
 			fmt.Fprintf(f, "\tdefault:\n")
-			fmt.Fprintf(f, "\t\treturn fmt.Errorf(\"unknown %s discriminator value for %s %%s: %%v\", string(data), peek.Discriminator)\n", tt.Name, tt.DiscriminatorKey)
+			fmt.Fprintf(f, "\t\treturn fmt.Errorf(\"unknown %s discriminator value for %s: %%v\", peek.Discriminator)\n", tt.Name, tt.DiscriminatorKey)
 			fmt.Fprintf(f, "\t}\n")
 			fmt.Fprintf(f, "\tv.%s = peek.Discriminator\n", tt.DiscriminatorField)
 			fmt.Fprintf(f, "\treturn nil\n")
@@ -479,7 +484,7 @@ func populateTypeTemplates(name string, s *openapi3.Schema, enumFieldName string
 	case "string", "*bool", "int", "int8", "int16", "int32", "int64", "uint", "uint8",
 		"uint16", "uint32", "uint64", "uintptr", "float32", "float64":
 		typeTpl.Description = formatTypeDescription(typeName, s)
-		typeTpl.Type = ot
+		typeTpl.Type = strings.TrimPrefix(ot, "*")
 		typeTpl.Name = typeName
 	case "array":
 		typeTpl.Description = formatTypeDescription(typeName, s)
@@ -850,33 +855,29 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 		// TODO: This is the only place that has an "additional name" at the end
 		// TODO: This is where the "allOf" is being detected
 		if len(variantFields) == 1 && v.Value.Properties[variantFields[0]] != nil {
-			variantType := getObjectType(v.Value.Properties[variantFields[0]].Value)
-			// if slices.Contains([]string{"string", "*bool", "int", "int8", "int16", "int32", "int64", "uint", "uint8",
-			// 	"uint16", "uint32", "uint64", "uintptr", "float32", "float64", "bytes"}, variantType) {
-			if !slices.Contains([]string{"array", "object", "all_of", "any_of", "one_of", "string_enum"}, variantType) {
-				tt, _ := populateTypeTemplates(name, v.Value.Properties[variantFields[0]].Value, enumFieldName, variantInterface)
+			variantField := variantFields[0]
+			variantType := getObjectType(v.Value.Properties[variantField].Value)
+			if isSimpleType(variantType) {
+				// Special case: process the variant field property separately
+				tt, _ := populateTypeTemplates(name, v.Value.Properties[variantField].Value, enumFieldName, variantInterface)
 				typeTpls = append(typeTpls, tt...)
-				// enumTpls = append(enumTpls, et...)
-				fooTT, et := populateTypeTemplates(name, v.Value, enumFieldName, variantInterface)
-				// typeTpls = append(typeTpls, tt...)
+				parentTT, et := populateTypeTemplates(name, v.Value, enumFieldName, variantInterface)
 				enumTpls = append(enumTpls, et...)
 
-				for idx, tt := range fooTT {
-					if strings.HasSuffix(tt.Name, "Type") {
-						fmt.Printf("DEBUG TT TYPE %d %s %s %+v\n", idx, name, enumFieldName, tt)
+				// Only include parent types with Type suffix
+				for _, tt := range parentTT {
+					if strings.HasSuffix(tt.Name, strcase.ToCamel(discriminator)) {
 						typeTpls = append(typeTpls, tt)
 					}
 				}
-			} else {
-				tt, et := populateTypeTemplates(name, v.Value, enumFieldName, variantInterface)
-				typeTpls = append(typeTpls, tt...)
-				enumTpls = append(enumTpls, et...)
+				continue
 			}
-		} else {
-			tt, et := populateTypeTemplates(name, v.Value, enumFieldName, variantInterface)
-			typeTpls = append(typeTpls, tt...)
-			enumTpls = append(enumTpls, et...)
 		}
+
+		// Normal case: process the parent schema
+		tt, et := populateTypeTemplates(name, v.Value, enumFieldName, variantInterface)
+		typeTpls = append(typeTpls, tt...)
+		enumTpls = append(enumTpls, et...)
 	}
 
 	// TODO: For now AllOf values within a OneOf are treated as enums
@@ -957,4 +958,10 @@ func formatTypeDescription(name string, s *openapi3.Schema) string {
 		return fmt.Sprintf("// %s is %s", name, toLowerFirstLetter(strings.ReplaceAll(s.Description, "\n", "\n// ")))
 	}
 	return fmt.Sprintf("// %s is the type definition for a %s.", name, name)
+}
+
+func isSimpleType(t string) bool {
+	simpleTypes := []string{"string", "*bool", "int", "int8", "int16", "int32", "int64", "uint", "uint8",
+		"uint16", "uint32", "uint64", "uintptr", "float32", "float64"}
+	return slices.Contains(simpleTypes, t)
 }
