@@ -44,6 +44,12 @@ func generateSDK() error {
 		}
 	}
 
+	sdkVersionFile := "../VERSION"
+	sdkVersion, err := loadSDKVersionFromFile(sdkVersionFile)
+	if err != nil {
+		return err
+	}
+
 	typesFile := "../../oxide/types.go"
 	if err := generateTypes(typesFile, spec); err != nil {
 		return err
@@ -59,7 +65,32 @@ func generateSDK() error {
 		return err
 	}
 
+	versionFile := "../../oxide/version.go"
+	if err := generateVersion(versionFile, spec, sdkVersion); err != nil {
+		return err
+	}
+
 	return nil
+}
+
+func loadSDKVersionFromFile(file string) (string, error) {
+	wd, err := os.Getwd()
+	if err != nil {
+		return "", fmt.Errorf("error getting current working directory: %w", err)
+	}
+
+	f := filepath.Join(filepath.Dir(wd), file)
+	version, err := os.ReadFile(f)
+	if err != nil {
+		return "", fmt.Errorf("error retrieving SDK version: %w", err)
+	}
+
+	sdkVersion := strings.TrimSpace(string(version))
+	if sdkVersion == "" {
+		return "", fmt.Errorf("sdk version cannot be empty: %s", file)
+	}
+
+	return sdkVersion, nil
 }
 
 func loadAPIFromFile(file string) (*openapi3.T, error) {
