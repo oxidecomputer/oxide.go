@@ -7,6 +7,7 @@
 package oxide
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"time"
@@ -1923,128 +1924,72 @@ type CurrentUser struct {
 	SiloName Name `json:"silo_name" yaml:"silo_name"`
 }
 
+type datumDatum interface {
+	isdatumDatum()
+}
+
+// DatumBool is the type definition for a DatumBool.
+type DatumBool bool
+
+func (DatumBool) isdatumDatum() {}
+
 // DatumType is the type definition for a DatumType.
 type DatumType string
 
-// DatumBool is the type definition for a DatumBool.
-//
-// Required fields:
-// - Datum
-// - Type
-type DatumBool struct {
-	Datum *bool     `json:"datum" yaml:"datum"`
-	Type  DatumType `json:"type" yaml:"type"`
-}
-
 // DatumI8 is the type definition for a DatumI8.
-//
-// Required fields:
-// - Datum
-// - Type
-type DatumI8 struct {
-	Datum *int      `json:"datum" yaml:"datum"`
-	Type  DatumType `json:"type" yaml:"type"`
-}
+type DatumI8 int8
+
+func (DatumI8) isdatumDatum() {}
 
 // DatumU8 is the type definition for a DatumU8.
-//
-// Required fields:
-// - Datum
-// - Type
-type DatumU8 struct {
-	Datum *int      `json:"datum" yaml:"datum"`
-	Type  DatumType `json:"type" yaml:"type"`
-}
+type DatumU8 uint8
+
+func (DatumU8) isdatumDatum() {}
 
 // DatumI16 is the type definition for a DatumI16.
-//
-// Required fields:
-// - Datum
-// - Type
-type DatumI16 struct {
-	Datum *int      `json:"datum" yaml:"datum"`
-	Type  DatumType `json:"type" yaml:"type"`
-}
+type DatumI16 int16
+
+func (DatumI16) isdatumDatum() {}
 
 // DatumU16 is the type definition for a DatumU16.
-//
-// Required fields:
-// - Datum
-// - Type
-type DatumU16 struct {
-	Datum *int      `json:"datum" yaml:"datum"`
-	Type  DatumType `json:"type" yaml:"type"`
-}
+type DatumU16 uint16
+
+func (DatumU16) isdatumDatum() {}
 
 // DatumI32 is the type definition for a DatumI32.
-//
-// Required fields:
-// - Datum
-// - Type
-type DatumI32 struct {
-	Datum *int      `json:"datum" yaml:"datum"`
-	Type  DatumType `json:"type" yaml:"type"`
-}
+type DatumI32 int32
+
+func (DatumI32) isdatumDatum() {}
 
 // DatumU32 is the type definition for a DatumU32.
-//
-// Required fields:
-// - Datum
-// - Type
-type DatumU32 struct {
-	Datum *int      `json:"datum" yaml:"datum"`
-	Type  DatumType `json:"type" yaml:"type"`
-}
+type DatumU32 uint32
+
+func (DatumU32) isdatumDatum() {}
 
 // DatumI64 is the type definition for a DatumI64.
-//
-// Required fields:
-// - Datum
-// - Type
-type DatumI64 struct {
-	Datum *int      `json:"datum" yaml:"datum"`
-	Type  DatumType `json:"type" yaml:"type"`
-}
+type DatumI64 int64
+
+func (DatumI64) isdatumDatum() {}
 
 // DatumU64 is the type definition for a DatumU64.
-//
-// Required fields:
-// - Datum
-// - Type
-type DatumU64 struct {
-	Datum *int      `json:"datum" yaml:"datum"`
-	Type  DatumType `json:"type" yaml:"type"`
-}
+type DatumU64 uint64
+
+func (DatumU64) isdatumDatum() {}
 
 // DatumF32 is the type definition for a DatumF32.
-//
-// Required fields:
-// - Datum
-// - Type
-type DatumF32 struct {
-	Datum float64   `json:"datum" yaml:"datum"`
-	Type  DatumType `json:"type" yaml:"type"`
-}
+type DatumF32 float64
+
+func (DatumF32) isdatumDatum() {}
 
 // DatumF64 is the type definition for a DatumF64.
-//
-// Required fields:
-// - Datum
-// - Type
-type DatumF64 struct {
-	Datum float64   `json:"datum" yaml:"datum"`
-	Type  DatumType `json:"type" yaml:"type"`
-}
+type DatumF64 float64
+
+func (DatumF64) isdatumDatum() {}
 
 // DatumString is the type definition for a DatumString.
-//
-// Required fields:
-// - Datum
-// - Type
-type DatumString struct {
-	Datum string    `json:"datum" yaml:"datum"`
-	Type  DatumType `json:"type" yaml:"type"`
-}
+type DatumString string
+
+func (DatumString) isdatumDatum() {}
 
 // DatumBytes is the type definition for a DatumBytes.
 //
@@ -2055,6 +2000,8 @@ type DatumBytes struct {
 	Datum []int     `json:"datum" yaml:"datum"`
 	Type  DatumType `json:"type" yaml:"type"`
 }
+
+func (DatumBytes) isdatumDatum() {}
 
 // DatumCumulativeI64 is the type definition for a DatumCumulativeI64.
 //
@@ -2067,6 +2014,8 @@ type DatumCumulativeI64 struct {
 	Type  DatumType       `json:"type" yaml:"type"`
 }
 
+func (DatumCumulativeI64) isdatumDatum() {}
+
 // DatumCumulativeU64 is the type definition for a DatumCumulativeU64.
 //
 // Required fields:
@@ -2077,6 +2026,8 @@ type DatumCumulativeU64 struct {
 	Datum Cumulativeuint64 `json:"datum" yaml:"datum"`
 	Type  DatumType        `json:"type" yaml:"type"`
 }
+
+func (DatumCumulativeU64) isdatumDatum() {}
 
 // DatumCumulativeF32 is the type definition for a DatumCumulativeF32.
 //
@@ -2089,6 +2040,8 @@ type DatumCumulativeF32 struct {
 	Type  DatumType       `json:"type" yaml:"type"`
 }
 
+func (DatumCumulativeF32) isdatumDatum() {}
+
 // DatumCumulativeF64 is the type definition for a DatumCumulativeF64.
 //
 // Required fields:
@@ -2099,6 +2052,8 @@ type DatumCumulativeF64 struct {
 	Datum Cumulativedouble `json:"datum" yaml:"datum"`
 	Type  DatumType        `json:"type" yaml:"type"`
 }
+
+func (DatumCumulativeF64) isdatumDatum() {}
 
 // DatumHistogramI8 is the type definition for a DatumHistogramI8.
 //
@@ -2117,6 +2072,8 @@ type DatumHistogramI8 struct {
 	Type  DatumType     `json:"type" yaml:"type"`
 }
 
+func (DatumHistogramI8) isdatumDatum() {}
+
 // DatumHistogramU8 is the type definition for a DatumHistogramU8.
 //
 // Required fields:
@@ -2133,6 +2090,8 @@ type DatumHistogramU8 struct {
 	Datum Histogramuint8 `json:"datum" yaml:"datum"`
 	Type  DatumType      `json:"type" yaml:"type"`
 }
+
+func (DatumHistogramU8) isdatumDatum() {}
 
 // DatumHistogramI16 is the type definition for a DatumHistogramI16.
 //
@@ -2151,6 +2110,8 @@ type DatumHistogramI16 struct {
 	Type  DatumType      `json:"type" yaml:"type"`
 }
 
+func (DatumHistogramI16) isdatumDatum() {}
+
 // DatumHistogramU16 is the type definition for a DatumHistogramU16.
 //
 // Required fields:
@@ -2167,6 +2128,8 @@ type DatumHistogramU16 struct {
 	Datum Histogramuint16 `json:"datum" yaml:"datum"`
 	Type  DatumType       `json:"type" yaml:"type"`
 }
+
+func (DatumHistogramU16) isdatumDatum() {}
 
 // DatumHistogramI32 is the type definition for a DatumHistogramI32.
 //
@@ -2185,6 +2148,8 @@ type DatumHistogramI32 struct {
 	Type  DatumType      `json:"type" yaml:"type"`
 }
 
+func (DatumHistogramI32) isdatumDatum() {}
+
 // DatumHistogramU32 is the type definition for a DatumHistogramU32.
 //
 // Required fields:
@@ -2201,6 +2166,8 @@ type DatumHistogramU32 struct {
 	Datum Histogramuint32 `json:"datum" yaml:"datum"`
 	Type  DatumType       `json:"type" yaml:"type"`
 }
+
+func (DatumHistogramU32) isdatumDatum() {}
 
 // DatumHistogramI64 is the type definition for a DatumHistogramI64.
 //
@@ -2219,6 +2186,8 @@ type DatumHistogramI64 struct {
 	Type  DatumType      `json:"type" yaml:"type"`
 }
 
+func (DatumHistogramI64) isdatumDatum() {}
+
 // DatumHistogramU64 is the type definition for a DatumHistogramU64.
 //
 // Required fields:
@@ -2235,6 +2204,8 @@ type DatumHistogramU64 struct {
 	Datum Histogramuint64 `json:"datum" yaml:"datum"`
 	Type  DatumType       `json:"type" yaml:"type"`
 }
+
+func (DatumHistogramU64) isdatumDatum() {}
 
 // DatumHistogramF32 is the type definition for a DatumHistogramF32.
 //
@@ -2253,6 +2224,8 @@ type DatumHistogramF32 struct {
 	Type  DatumType      `json:"type" yaml:"type"`
 }
 
+func (DatumHistogramF32) isdatumDatum() {}
+
 // DatumHistogramF64 is the type definition for a DatumHistogramF64.
 //
 // Required fields:
@@ -2270,6 +2243,8 @@ type DatumHistogramF64 struct {
 	Type  DatumType       `json:"type" yaml:"type"`
 }
 
+func (DatumHistogramF64) isdatumDatum() {}
+
 // DatumMissing is the type definition for a DatumMissing.
 //
 // Required fields:
@@ -2280,12 +2255,198 @@ type DatumMissing struct {
 	Type  DatumType    `json:"type" yaml:"type"`
 }
 
+func (DatumMissing) isdatumDatum() {}
+
 // Datum is a `Datum` is a single sampled data point from a metric.
 type Datum struct {
 	// Datum is the type definition for a Datum.
-	Datum any `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Datum datumDatum `json:"datum,omitempty" yaml:"datum,omitempty"`
 	// Type is the type definition for a Type.
 	Type DatumType `json:"type,omitempty" yaml:"type,omitempty"`
+}
+
+func (v *Datum) UnmarshalJSON(data []byte) error {
+	var peek struct {
+		Discriminator DatumType       `json:"type"`
+		Value         json.RawMessage `json:"datum"`
+	}
+	if err := json.Unmarshal(data, &peek); err != nil {
+		return err
+	}
+	switch peek.Discriminator {
+	case DatumTypeBool:
+		var val DatumBool
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Datum = val
+	case DatumTypeI8:
+		var val DatumI8
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Datum = val
+	case DatumTypeU8:
+		var val DatumU8
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Datum = val
+	case DatumTypeI16:
+		var val DatumI16
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Datum = val
+	case DatumTypeU16:
+		var val DatumU16
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Datum = val
+	case DatumTypeI32:
+		var val DatumI32
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Datum = val
+	case DatumTypeU32:
+		var val DatumU32
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Datum = val
+	case DatumTypeI64:
+		var val DatumI64
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Datum = val
+	case DatumTypeU64:
+		var val DatumU64
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Datum = val
+	case DatumTypeF32:
+		var val DatumF32
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Datum = val
+	case DatumTypeF64:
+		var val DatumF64
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Datum = val
+	case DatumTypeString:
+		var val DatumString
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Datum = val
+	case DatumTypeBytes:
+		var val DatumBytes
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Datum = val
+	case DatumTypeCumulativeI64:
+		var val DatumCumulativeI64
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Datum = val
+	case DatumTypeCumulativeU64:
+		var val DatumCumulativeU64
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Datum = val
+	case DatumTypeCumulativeF32:
+		var val DatumCumulativeF32
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Datum = val
+	case DatumTypeCumulativeF64:
+		var val DatumCumulativeF64
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Datum = val
+	case DatumTypeHistogramI8:
+		var val DatumHistogramI8
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Datum = val
+	case DatumTypeHistogramU8:
+		var val DatumHistogramU8
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Datum = val
+	case DatumTypeHistogramI16:
+		var val DatumHistogramI16
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Datum = val
+	case DatumTypeHistogramU16:
+		var val DatumHistogramU16
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Datum = val
+	case DatumTypeHistogramI32:
+		var val DatumHistogramI32
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Datum = val
+	case DatumTypeHistogramU32:
+		var val DatumHistogramU32
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Datum = val
+	case DatumTypeHistogramI64:
+		var val DatumHistogramI64
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Datum = val
+	case DatumTypeHistogramU64:
+		var val DatumHistogramU64
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Datum = val
+	case DatumTypeHistogramF32:
+		var val DatumHistogramF32
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Datum = val
+	case DatumTypeHistogramF64:
+		var val DatumHistogramF64
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Datum = val
+	case DatumTypeMissing:
+		var val DatumMissing
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Datum = val
+	default:
+		return fmt.Errorf("unknown Datum discriminator value for type: %v", peek.Discriminator)
+	}
+	v.Type = peek.Discriminator
+	return nil
 }
 
 // DerEncodedKeyPair is the type definition for a DerEncodedKeyPair.
@@ -2860,135 +3021,167 @@ type FieldSource string
 // FieldType is the `FieldType` identifies the data type of a target or metric field.
 type FieldType string
 
+type fieldValueValue interface {
+	isfieldValueValue()
+}
+
+// FieldValueString is the type definition for a FieldValueString.
+type FieldValueString string
+
+func (FieldValueString) isfieldValueValue() {}
+
 // FieldValueType is the type definition for a FieldValueType.
 type FieldValueType string
 
-// FieldValueString is the type definition for a FieldValueString.
-//
-// Required fields:
-// - Type
-// - Value
-type FieldValueString struct {
-	Type  FieldValueType `json:"type" yaml:"type"`
-	Value string         `json:"value" yaml:"value"`
-}
-
 // FieldValueI8 is the type definition for a FieldValueI8.
-//
-// Required fields:
-// - Type
-// - Value
-type FieldValueI8 struct {
-	Type  FieldValueType `json:"type" yaml:"type"`
-	Value *int           `json:"value" yaml:"value"`
-}
+type FieldValueI8 int8
+
+func (FieldValueI8) isfieldValueValue() {}
 
 // FieldValueU8 is the type definition for a FieldValueU8.
-//
-// Required fields:
-// - Type
-// - Value
-type FieldValueU8 struct {
-	Type  FieldValueType `json:"type" yaml:"type"`
-	Value *int           `json:"value" yaml:"value"`
-}
+type FieldValueU8 uint8
+
+func (FieldValueU8) isfieldValueValue() {}
 
 // FieldValueI16 is the type definition for a FieldValueI16.
-//
-// Required fields:
-// - Type
-// - Value
-type FieldValueI16 struct {
-	Type  FieldValueType `json:"type" yaml:"type"`
-	Value *int           `json:"value" yaml:"value"`
-}
+type FieldValueI16 int16
+
+func (FieldValueI16) isfieldValueValue() {}
 
 // FieldValueU16 is the type definition for a FieldValueU16.
-//
-// Required fields:
-// - Type
-// - Value
-type FieldValueU16 struct {
-	Type  FieldValueType `json:"type" yaml:"type"`
-	Value *int           `json:"value" yaml:"value"`
-}
+type FieldValueU16 uint16
+
+func (FieldValueU16) isfieldValueValue() {}
 
 // FieldValueI32 is the type definition for a FieldValueI32.
-//
-// Required fields:
-// - Type
-// - Value
-type FieldValueI32 struct {
-	Type  FieldValueType `json:"type" yaml:"type"`
-	Value *int           `json:"value" yaml:"value"`
-}
+type FieldValueI32 int32
+
+func (FieldValueI32) isfieldValueValue() {}
 
 // FieldValueU32 is the type definition for a FieldValueU32.
-//
-// Required fields:
-// - Type
-// - Value
-type FieldValueU32 struct {
-	Type  FieldValueType `json:"type" yaml:"type"`
-	Value *int           `json:"value" yaml:"value"`
-}
+type FieldValueU32 uint32
+
+func (FieldValueU32) isfieldValueValue() {}
 
 // FieldValueI64 is the type definition for a FieldValueI64.
-//
-// Required fields:
-// - Type
-// - Value
-type FieldValueI64 struct {
-	Type  FieldValueType `json:"type" yaml:"type"`
-	Value *int           `json:"value" yaml:"value"`
-}
+type FieldValueI64 int64
+
+func (FieldValueI64) isfieldValueValue() {}
 
 // FieldValueU64 is the type definition for a FieldValueU64.
-//
-// Required fields:
-// - Type
-// - Value
-type FieldValueU64 struct {
-	Type  FieldValueType `json:"type" yaml:"type"`
-	Value *int           `json:"value" yaml:"value"`
-}
+type FieldValueU64 uint64
+
+func (FieldValueU64) isfieldValueValue() {}
 
 // FieldValueIpAddr is the type definition for a FieldValueIpAddr.
-//
-// Required fields:
-// - Type
-// - Value
-type FieldValueIpAddr struct {
-	Type  FieldValueType `json:"type" yaml:"type"`
-	Value string         `json:"value" yaml:"value"`
-}
+type FieldValueIpAddr string
+
+func (FieldValueIpAddr) isfieldValueValue() {}
 
 // FieldValueUuid is the type definition for a FieldValueUuid.
-//
-// Required fields:
-// - Type
-// - Value
-type FieldValueUuid struct {
-	Type  FieldValueType `json:"type" yaml:"type"`
-	Value string         `json:"value" yaml:"value"`
-}
+type FieldValueUuid string
+
+func (FieldValueUuid) isfieldValueValue() {}
 
 // FieldValueBool is the type definition for a FieldValueBool.
-//
-// Required fields:
-// - Type
-// - Value
-type FieldValueBool struct {
-	Type  FieldValueType `json:"type" yaml:"type"`
-	Value *bool          `json:"value" yaml:"value"`
-}
+type FieldValueBool bool
+
+func (FieldValueBool) isfieldValueValue() {}
 
 // FieldValue is the `FieldValue` contains the value of a target or metric field.
 type FieldValue struct {
 	// Type is the type definition for a Type.
 	Type FieldValueType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is the type definition for a Value.
-	Value any `json:"value,omitempty" yaml:"value,omitempty"`
+	Value fieldValueValue `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+func (v *FieldValue) UnmarshalJSON(data []byte) error {
+	var peek struct {
+		Discriminator FieldValueType  `json:"type"`
+		Value         json.RawMessage `json:"value"`
+	}
+	if err := json.Unmarshal(data, &peek); err != nil {
+		return err
+	}
+	switch peek.Discriminator {
+	case FieldValueTypeString:
+		var val FieldValueString
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Value = val
+	case FieldValueTypeI8:
+		var val FieldValueI8
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Value = val
+	case FieldValueTypeU8:
+		var val FieldValueU8
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Value = val
+	case FieldValueTypeI16:
+		var val FieldValueI16
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Value = val
+	case FieldValueTypeU16:
+		var val FieldValueU16
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Value = val
+	case FieldValueTypeI32:
+		var val FieldValueI32
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Value = val
+	case FieldValueTypeU32:
+		var val FieldValueU32
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Value = val
+	case FieldValueTypeI64:
+		var val FieldValueI64
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Value = val
+	case FieldValueTypeU64:
+		var val FieldValueU64
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Value = val
+	case FieldValueTypeIpAddr:
+		var val FieldValueIpAddr
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Value = val
+	case FieldValueTypeUuid:
+		var val FieldValueUuid
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Value = val
+	case FieldValueTypeBool:
+		var val FieldValueBool
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Value = val
+	default:
+		return fmt.Errorf("unknown FieldValue discriminator value for type: %v", peek.Discriminator)
+	}
+	v.Type = peek.Discriminator
+	return nil
 }
 
 // FinalizeDisk is parameters for finalizing a disk
@@ -5343,18 +5536,17 @@ type RouteConfig struct {
 	Routes []Route `json:"routes" yaml:"routes"`
 }
 
+type routeDestinationValue interface {
+	isrouteDestinationValue()
+}
+
+// RouteDestinationIp is the type definition for a RouteDestinationIp.
+type RouteDestinationIp string
+
+func (RouteDestinationIp) isrouteDestinationValue() {}
+
 // RouteDestinationType is the type definition for a RouteDestinationType.
 type RouteDestinationType string
-
-// RouteDestinationIp is route applies to traffic destined for the specified IP address
-//
-// Required fields:
-// - Type
-// - Value
-type RouteDestinationIp struct {
-	Type  RouteDestinationType `json:"type" yaml:"type"`
-	Value string               `json:"value" yaml:"value"`
-}
 
 // RouteDestinationIpNet is route applies to traffic destined for the specified IP subnet
 //
@@ -5366,31 +5558,21 @@ type RouteDestinationIpNet struct {
 	Value IpNet                `json:"value" yaml:"value"`
 }
 
-// RouteDestinationVpc is route applies to traffic destined for the specified VPC
-//
-// Required fields:
-// - Type
-// - Value
-type RouteDestinationVpc struct {
-	Type RouteDestinationType `json:"type" yaml:"type"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
-	Value Name `json:"value" yaml:"value"`
-}
+func (RouteDestinationIpNet) isrouteDestinationValue() {}
 
-// RouteDestinationSubnet is route applies to traffic destined for the specified VPC subnet
-//
-// Required fields:
-// - Type
-// - Value
-type RouteDestinationSubnet struct {
-	Type RouteDestinationType `json:"type" yaml:"type"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
-	Value Name `json:"value" yaml:"value"`
-}
+// RouteDestinationVpc is names must begin with a lower case ASCII letter, be composed exclusively of lowercase
+// ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may
+// contain a UUID. They can be at most 63 characters long.
+type RouteDestinationVpc string
+
+func (RouteDestinationVpc) isrouteDestinationValue() {}
+
+// RouteDestinationSubnet is names must begin with a lower case ASCII letter, be composed exclusively of
+// lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but
+// they may contain a UUID. They can be at most 63 characters long.
+type RouteDestinationSubnet string
+
+func (RouteDestinationSubnet) isrouteDestinationValue() {}
 
 // RouteDestination is a `RouteDestination` is used to match traffic with a routing rule based on the destination
 // of that traffic.
@@ -5401,73 +5583,88 @@ type RouteDestination struct {
 	// Type is the type definition for a Type.
 	Type RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is the type definition for a Value.
-	Value any `json:"value,omitempty" yaml:"value,omitempty"`
+	Value routeDestinationValue `json:"value,omitempty" yaml:"value,omitempty"`
 }
+
+func (v *RouteDestination) UnmarshalJSON(data []byte) error {
+	var peek struct {
+		Discriminator RouteDestinationType `json:"type"`
+		Value         json.RawMessage      `json:"value"`
+	}
+	if err := json.Unmarshal(data, &peek); err != nil {
+		return err
+	}
+	switch peek.Discriminator {
+	case RouteDestinationTypeIp:
+		var val RouteDestinationIp
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Value = val
+	case RouteDestinationTypeIpNet:
+		var val RouteDestinationIpNet
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Value = val
+	case RouteDestinationTypeVpc:
+		var val RouteDestinationVpc
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Value = val
+	case RouteDestinationTypeSubnet:
+		var val RouteDestinationSubnet
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Value = val
+	default:
+		return fmt.Errorf("unknown RouteDestination discriminator value for type: %v", peek.Discriminator)
+	}
+	v.Type = peek.Discriminator
+	return nil
+}
+
+type routeTargetValue interface {
+	isrouteTargetValue()
+}
+
+// RouteTargetIp is the type definition for a RouteTargetIp.
+type RouteTargetIp string
+
+func (RouteTargetIp) isrouteTargetValue() {}
 
 // RouteTargetType is the type definition for a RouteTargetType.
 type RouteTargetType string
 
-// RouteTargetIp is forward traffic to a particular IP address.
-//
-// Required fields:
-// - Type
-// - Value
-type RouteTargetIp struct {
-	Type  RouteTargetType `json:"type" yaml:"type"`
-	Value string          `json:"value" yaml:"value"`
-}
+// RouteTargetVpc is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII,
+// uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a
+// UUID. They can be at most 63 characters long.
+type RouteTargetVpc string
 
-// RouteTargetVpc is forward traffic to a VPC
-//
-// Required fields:
-// - Type
-// - Value
-type RouteTargetVpc struct {
-	Type RouteTargetType `json:"type" yaml:"type"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
-	Value Name `json:"value" yaml:"value"`
-}
+func (RouteTargetVpc) isrouteTargetValue() {}
 
-// RouteTargetSubnet is forward traffic to a VPC Subnet
-//
-// Required fields:
-// - Type
-// - Value
-type RouteTargetSubnet struct {
-	Type RouteTargetType `json:"type" yaml:"type"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
-	Value Name `json:"value" yaml:"value"`
-}
+// RouteTargetSubnet is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII,
+// uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a
+// UUID. They can be at most 63 characters long.
+type RouteTargetSubnet string
 
-// RouteTargetInstance is forward traffic to a specific instance
-//
-// Required fields:
-// - Type
-// - Value
-type RouteTargetInstance struct {
-	Type RouteTargetType `json:"type" yaml:"type"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
-	Value Name `json:"value" yaml:"value"`
-}
+func (RouteTargetSubnet) isrouteTargetValue() {}
 
-// RouteTargetInternetGateway is forward traffic to an internet gateway
-//
-// Required fields:
-// - Type
-// - Value
-type RouteTargetInternetGateway struct {
-	Type RouteTargetType `json:"type" yaml:"type"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
-	Value Name `json:"value" yaml:"value"`
-}
+// RouteTargetInstance is names must begin with a lower case ASCII letter, be composed exclusively of lowercase
+// ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may
+// contain a UUID. They can be at most 63 characters long.
+type RouteTargetInstance string
+
+func (RouteTargetInstance) isrouteTargetValue() {}
+
+// RouteTargetInternetGateway is names must begin with a lower case ASCII letter, be composed exclusively of
+// lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but
+// they may contain a UUID. They can be at most 63 characters long.
+type RouteTargetInternetGateway string
+
+func (RouteTargetInternetGateway) isrouteTargetValue() {}
 
 // RouteTargetDrop is drop matching traffic
 //
@@ -5477,13 +5674,67 @@ type RouteTargetDrop struct {
 	Type RouteTargetType `json:"type" yaml:"type"`
 }
 
+func (RouteTargetDrop) isrouteTargetValue() {}
+
 // RouteTarget is a `RouteTarget` describes the possible locations that traffic matching a route destination can
 // be sent.
 type RouteTarget struct {
 	// Type is the type definition for a Type.
 	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is the type definition for a Value.
-	Value any `json:"value,omitempty" yaml:"value,omitempty"`
+	Value routeTargetValue `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+func (v *RouteTarget) UnmarshalJSON(data []byte) error {
+	var peek struct {
+		Discriminator RouteTargetType `json:"type"`
+		Value         json.RawMessage `json:"value"`
+	}
+	if err := json.Unmarshal(data, &peek); err != nil {
+		return err
+	}
+	switch peek.Discriminator {
+	case RouteTargetTypeIp:
+		var val RouteTargetIp
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Value = val
+	case RouteTargetTypeVpc:
+		var val RouteTargetVpc
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Value = val
+	case RouteTargetTypeSubnet:
+		var val RouteTargetSubnet
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Value = val
+	case RouteTargetTypeInstance:
+		var val RouteTargetInstance
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Value = val
+	case RouteTargetTypeInternetGateway:
+		var val RouteTargetInternetGateway
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Value = val
+	case RouteTargetTypeDrop:
+		var val RouteTargetDrop
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Value = val
+	default:
+		return fmt.Errorf("unknown RouteTarget discriminator value for type: %v", peek.Discriminator)
+	}
+	v.Type = peek.Discriminator
+	return nil
 }
 
 // RouterRoute is a route defines a rule that governs where traffic should be sent based on its destination.
@@ -7126,6 +7377,10 @@ type Utilization struct {
 	Provisioned VirtualResourceCounts `json:"provisioned" yaml:"provisioned"`
 }
 
+type valueArrayValues interface {
+	isvalueArrayValues()
+}
+
 // ValueArrayType is the type definition for a ValueArrayType.
 type ValueArrayType string
 
@@ -7139,6 +7394,8 @@ type ValueArrayInteger struct {
 	Values []int          `json:"values" yaml:"values"`
 }
 
+func (ValueArrayInteger) isvalueArrayValues() {}
+
 // ValueArrayDouble is the type definition for a ValueArrayDouble.
 //
 // Required fields:
@@ -7148,6 +7405,8 @@ type ValueArrayDouble struct {
 	Type   ValueArrayType `json:"type" yaml:"type"`
 	Values []float64      `json:"values" yaml:"values"`
 }
+
+func (ValueArrayDouble) isvalueArrayValues() {}
 
 // ValueArrayBoolean is the type definition for a ValueArrayBoolean.
 //
@@ -7159,6 +7418,8 @@ type ValueArrayBoolean struct {
 	Values []bool         `json:"values" yaml:"values"`
 }
 
+func (ValueArrayBoolean) isvalueArrayValues() {}
+
 // ValueArrayString is the type definition for a ValueArrayString.
 //
 // Required fields:
@@ -7168,6 +7429,8 @@ type ValueArrayString struct {
 	Type   ValueArrayType `json:"type" yaml:"type"`
 	Values []string       `json:"values" yaml:"values"`
 }
+
+func (ValueArrayString) isvalueArrayValues() {}
 
 // ValueArrayIntegerDistribution is the type definition for a ValueArrayIntegerDistribution.
 //
@@ -7179,6 +7442,8 @@ type ValueArrayIntegerDistribution struct {
 	Values []Distributionint64 `json:"values" yaml:"values"`
 }
 
+func (ValueArrayIntegerDistribution) isvalueArrayValues() {}
+
 // ValueArrayDoubleDistribution is the type definition for a ValueArrayDoubleDistribution.
 //
 // Required fields:
@@ -7189,6 +7454,8 @@ type ValueArrayDoubleDistribution struct {
 	Values []Distributiondouble `json:"values" yaml:"values"`
 }
 
+func (ValueArrayDoubleDistribution) isvalueArrayValues() {}
+
 // ValueArray is list of data values for one timeseries.
 //
 // Each element is an option, where `None` represents a missing sample.
@@ -7196,7 +7463,59 @@ type ValueArray struct {
 	// Type is the type definition for a Type.
 	Type ValueArrayType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Values is the type definition for a Values.
-	Values any `json:"values,omitempty" yaml:"values,omitempty"`
+	Values valueArrayValues `json:"values,omitempty" yaml:"values,omitempty"`
+}
+
+func (v *ValueArray) UnmarshalJSON(data []byte) error {
+	var peek struct {
+		Discriminator ValueArrayType  `json:"type"`
+		Value         json.RawMessage `json:"values"`
+	}
+	if err := json.Unmarshal(data, &peek); err != nil {
+		return err
+	}
+	switch peek.Discriminator {
+	case ValueArrayTypeInteger:
+		var val ValueArrayInteger
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Values = val
+	case ValueArrayTypeDouble:
+		var val ValueArrayDouble
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Values = val
+	case ValueArrayTypeBoolean:
+		var val ValueArrayBoolean
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Values = val
+	case ValueArrayTypeString:
+		var val ValueArrayString
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Values = val
+	case ValueArrayTypeIntegerDistribution:
+		var val ValueArrayIntegerDistribution
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Values = val
+	case ValueArrayTypeDoubleDistribution:
+		var val ValueArrayDoubleDistribution
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Values = val
+	default:
+		return fmt.Errorf("unknown ValueArray discriminator value for type: %v", peek.Discriminator)
+	}
+	v.Type = peek.Discriminator
+	return nil
 }
 
 // Values is a single list of values, for one dimension of a timeseries.
@@ -7358,57 +7677,38 @@ type VpcFirewallRuleFilter struct {
 	Protocols []VpcFirewallRuleProtocol `json:"protocols" yaml:"protocols"`
 }
 
+type vpcFirewallRuleHostFilterValue interface {
+	isvpcFirewallRuleHostFilterValue()
+}
+
+// VpcFirewallRuleHostFilterVpc is names must begin with a lower case ASCII letter, be composed exclusively of
+// lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but
+// they may contain a UUID. They can be at most 63 characters long.
+type VpcFirewallRuleHostFilterVpc string
+
+func (VpcFirewallRuleHostFilterVpc) isvpcFirewallRuleHostFilterValue() {}
+
 // VpcFirewallRuleHostFilterType is the type definition for a VpcFirewallRuleHostFilterType.
 type VpcFirewallRuleHostFilterType string
 
-// VpcFirewallRuleHostFilterVpc is the rule applies to traffic from/to all instances in the VPC
-//
-// Required fields:
-// - Type
-// - Value
-type VpcFirewallRuleHostFilterVpc struct {
-	Type VpcFirewallRuleHostFilterType `json:"type" yaml:"type"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
-	Value Name `json:"value" yaml:"value"`
-}
+// VpcFirewallRuleHostFilterSubnet is names must begin with a lower case ASCII letter, be composed exclusively of
+// lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but
+// they may contain a UUID. They can be at most 63 characters long.
+type VpcFirewallRuleHostFilterSubnet string
 
-// VpcFirewallRuleHostFilterSubnet is the rule applies to traffic from/to all instances in the VPC Subnet
-//
-// Required fields:
-// - Type
-// - Value
-type VpcFirewallRuleHostFilterSubnet struct {
-	Type VpcFirewallRuleHostFilterType `json:"type" yaml:"type"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
-	Value Name `json:"value" yaml:"value"`
-}
+func (VpcFirewallRuleHostFilterSubnet) isvpcFirewallRuleHostFilterValue() {}
 
-// VpcFirewallRuleHostFilterInstance is the rule applies to traffic from/to this specific instance
-//
-// Required fields:
-// - Type
-// - Value
-type VpcFirewallRuleHostFilterInstance struct {
-	Type VpcFirewallRuleHostFilterType `json:"type" yaml:"type"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
-	Value Name `json:"value" yaml:"value"`
-}
+// VpcFirewallRuleHostFilterInstance is names must begin with a lower case ASCII letter, be composed exclusively
+// of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID,
+// but they may contain a UUID. They can be at most 63 characters long.
+type VpcFirewallRuleHostFilterInstance string
 
-// VpcFirewallRuleHostFilterIp is the rule applies to traffic from/to a specific IP address
-//
-// Required fields:
-// - Type
-// - Value
-type VpcFirewallRuleHostFilterIp struct {
-	Type  VpcFirewallRuleHostFilterType `json:"type" yaml:"type"`
-	Value string                        `json:"value" yaml:"value"`
-}
+func (VpcFirewallRuleHostFilterInstance) isvpcFirewallRuleHostFilterValue() {}
+
+// VpcFirewallRuleHostFilterIp is the type definition for a VpcFirewallRuleHostFilterIp.
+type VpcFirewallRuleHostFilterIp string
+
+func (VpcFirewallRuleHostFilterIp) isvpcFirewallRuleHostFilterValue() {}
 
 // VpcFirewallRuleHostFilterIpNet is the rule applies to traffic from/to a specific IP subnet
 //
@@ -7420,6 +7720,8 @@ type VpcFirewallRuleHostFilterIpNet struct {
 	Value IpNet                         `json:"value" yaml:"value"`
 }
 
+func (VpcFirewallRuleHostFilterIpNet) isvpcFirewallRuleHostFilterValue() {}
+
 // VpcFirewallRuleHostFilter is the `VpcFirewallRuleHostFilter` is used to filter traffic on the basis of
 // its source or destination host.
 type VpcFirewallRuleHostFilter struct {
@@ -7428,7 +7730,53 @@ type VpcFirewallRuleHostFilter struct {
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
 	// can be at most 63 characters long.
-	Value any `json:"value,omitempty" yaml:"value,omitempty"`
+	Value vpcFirewallRuleHostFilterValue `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+func (v *VpcFirewallRuleHostFilter) UnmarshalJSON(data []byte) error {
+	var peek struct {
+		Discriminator VpcFirewallRuleHostFilterType `json:"type"`
+		Value         json.RawMessage               `json:"value"`
+	}
+	if err := json.Unmarshal(data, &peek); err != nil {
+		return err
+	}
+	switch peek.Discriminator {
+	case VpcFirewallRuleHostFilterTypeVpc:
+		var val VpcFirewallRuleHostFilterVpc
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Value = val
+	case VpcFirewallRuleHostFilterTypeSubnet:
+		var val VpcFirewallRuleHostFilterSubnet
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Value = val
+	case VpcFirewallRuleHostFilterTypeInstance:
+		var val VpcFirewallRuleHostFilterInstance
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Value = val
+	case VpcFirewallRuleHostFilterTypeIp:
+		var val VpcFirewallRuleHostFilterIp
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Value = val
+	case VpcFirewallRuleHostFilterTypeIpNet:
+		var val VpcFirewallRuleHostFilterIpNet
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Value = val
+	default:
+		return fmt.Errorf("unknown VpcFirewallRuleHostFilter discriminator value for type: %v", peek.Discriminator)
+	}
+	v.Type = peek.Discriminator
+	return nil
 }
 
 // VpcFirewallRuleProtocolType is the type definition for a VpcFirewallRuleProtocolType.
@@ -7471,57 +7819,38 @@ type VpcFirewallRuleProtocol struct {
 // VpcFirewallRuleStatus is the type definition for a VpcFirewallRuleStatus.
 type VpcFirewallRuleStatus string
 
+type vpcFirewallRuleTargetValue interface {
+	isvpcFirewallRuleTargetValue()
+}
+
+// VpcFirewallRuleTargetVpc is names must begin with a lower case ASCII letter, be composed exclusively of
+// lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but
+// they may contain a UUID. They can be at most 63 characters long.
+type VpcFirewallRuleTargetVpc string
+
+func (VpcFirewallRuleTargetVpc) isvpcFirewallRuleTargetValue() {}
+
 // VpcFirewallRuleTargetType is the type definition for a VpcFirewallRuleTargetType.
 type VpcFirewallRuleTargetType string
 
-// VpcFirewallRuleTargetVpc is the rule applies to all instances in the VPC
-//
-// Required fields:
-// - Type
-// - Value
-type VpcFirewallRuleTargetVpc struct {
-	Type VpcFirewallRuleTargetType `json:"type" yaml:"type"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
-	Value Name `json:"value" yaml:"value"`
-}
+// VpcFirewallRuleTargetSubnet is names must begin with a lower case ASCII letter, be composed exclusively of
+// lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but
+// they may contain a UUID. They can be at most 63 characters long.
+type VpcFirewallRuleTargetSubnet string
 
-// VpcFirewallRuleTargetSubnet is the rule applies to all instances in the VPC Subnet
-//
-// Required fields:
-// - Type
-// - Value
-type VpcFirewallRuleTargetSubnet struct {
-	Type VpcFirewallRuleTargetType `json:"type" yaml:"type"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
-	Value Name `json:"value" yaml:"value"`
-}
+func (VpcFirewallRuleTargetSubnet) isvpcFirewallRuleTargetValue() {}
 
-// VpcFirewallRuleTargetInstance is the rule applies to this specific instance
-//
-// Required fields:
-// - Type
-// - Value
-type VpcFirewallRuleTargetInstance struct {
-	Type VpcFirewallRuleTargetType `json:"type" yaml:"type"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
-	Value Name `json:"value" yaml:"value"`
-}
+// VpcFirewallRuleTargetInstance is names must begin with a lower case ASCII letter, be composed exclusively of
+// lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but
+// they may contain a UUID. They can be at most 63 characters long.
+type VpcFirewallRuleTargetInstance string
 
-// VpcFirewallRuleTargetIp is the rule applies to a specific IP address
-//
-// Required fields:
-// - Type
-// - Value
-type VpcFirewallRuleTargetIp struct {
-	Type  VpcFirewallRuleTargetType `json:"type" yaml:"type"`
-	Value string                    `json:"value" yaml:"value"`
-}
+func (VpcFirewallRuleTargetInstance) isvpcFirewallRuleTargetValue() {}
+
+// VpcFirewallRuleTargetIp is the type definition for a VpcFirewallRuleTargetIp.
+type VpcFirewallRuleTargetIp string
+
+func (VpcFirewallRuleTargetIp) isvpcFirewallRuleTargetValue() {}
 
 // VpcFirewallRuleTargetIpNet is the rule applies to a specific IP subnet
 //
@@ -7533,6 +7862,8 @@ type VpcFirewallRuleTargetIpNet struct {
 	Value IpNet                     `json:"value" yaml:"value"`
 }
 
+func (VpcFirewallRuleTargetIpNet) isvpcFirewallRuleTargetValue() {}
+
 // VpcFirewallRuleTarget is a `VpcFirewallRuleTarget` is used to specify the set of instances to which a
 // firewall rule applies. You can target instances directly by name, or specify a VPC, VPC subnet, IP, or IP
 // subnet, which will apply the rule to traffic going to all matching instances. Targets are additive: the rule
@@ -7543,7 +7874,53 @@ type VpcFirewallRuleTarget struct {
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
 	// can be at most 63 characters long.
-	Value any `json:"value,omitempty" yaml:"value,omitempty"`
+	Value vpcFirewallRuleTargetValue `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+func (v *VpcFirewallRuleTarget) UnmarshalJSON(data []byte) error {
+	var peek struct {
+		Discriminator VpcFirewallRuleTargetType `json:"type"`
+		Value         json.RawMessage           `json:"value"`
+	}
+	if err := json.Unmarshal(data, &peek); err != nil {
+		return err
+	}
+	switch peek.Discriminator {
+	case VpcFirewallRuleTargetTypeVpc:
+		var val VpcFirewallRuleTargetVpc
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Value = val
+	case VpcFirewallRuleTargetTypeSubnet:
+		var val VpcFirewallRuleTargetSubnet
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Value = val
+	case VpcFirewallRuleTargetTypeInstance:
+		var val VpcFirewallRuleTargetInstance
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Value = val
+	case VpcFirewallRuleTargetTypeIp:
+		var val VpcFirewallRuleTargetIp
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Value = val
+	case VpcFirewallRuleTargetTypeIpNet:
+		var val VpcFirewallRuleTargetIpNet
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
+			return err
+		}
+		v.Value = val
+	default:
+		return fmt.Errorf("unknown VpcFirewallRuleTarget discriminator value for type: %v", peek.Discriminator)
+	}
+	v.Type = peek.Discriminator
+	return nil
 }
 
 // VpcFirewallRuleUpdate is a single rule in a VPC firewall
