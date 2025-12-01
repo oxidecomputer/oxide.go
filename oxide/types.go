@@ -2267,7 +2267,8 @@ type Datum struct {
 
 func (v *Datum) UnmarshalJSON(data []byte) error {
 	var peek struct {
-		Discriminator DatumType `json:"type"`
+		Discriminator DatumType       `json:"type"`
+		Value         json.RawMessage `json:"datum"`
 	}
 	if err := json.Unmarshal(data, &peek); err != nil {
 		return err
@@ -2275,169 +2276,169 @@ func (v *Datum) UnmarshalJSON(data []byte) error {
 	switch peek.Discriminator {
 	case DatumTypeBool:
 		var val DatumBool
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Datum = val
 	case DatumTypeI8:
 		var val DatumI8
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Datum = val
 	case DatumTypeU8:
 		var val DatumU8
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Datum = val
 	case DatumTypeI16:
 		var val DatumI16
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Datum = val
 	case DatumTypeU16:
 		var val DatumU16
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Datum = val
 	case DatumTypeI32:
 		var val DatumI32
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Datum = val
 	case DatumTypeU32:
 		var val DatumU32
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Datum = val
 	case DatumTypeI64:
 		var val DatumI64
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Datum = val
 	case DatumTypeU64:
 		var val DatumU64
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Datum = val
 	case DatumTypeF32:
 		var val DatumF32
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Datum = val
 	case DatumTypeF64:
 		var val DatumF64
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Datum = val
 	case DatumTypeString:
 		var val DatumString
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Datum = val
 	case DatumTypeBytes:
 		var val DatumBytes
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Datum = val
 	case DatumTypeCumulativeI64:
 		var val DatumCumulativeI64
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Datum = val
 	case DatumTypeCumulativeU64:
 		var val DatumCumulativeU64
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Datum = val
 	case DatumTypeCumulativeF32:
 		var val DatumCumulativeF32
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Datum = val
 	case DatumTypeCumulativeF64:
 		var val DatumCumulativeF64
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Datum = val
 	case DatumTypeHistogramI8:
 		var val DatumHistogramI8
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Datum = val
 	case DatumTypeHistogramU8:
 		var val DatumHistogramU8
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Datum = val
 	case DatumTypeHistogramI16:
 		var val DatumHistogramI16
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Datum = val
 	case DatumTypeHistogramU16:
 		var val DatumHistogramU16
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Datum = val
 	case DatumTypeHistogramI32:
 		var val DatumHistogramI32
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Datum = val
 	case DatumTypeHistogramU32:
 		var val DatumHistogramU32
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Datum = val
 	case DatumTypeHistogramI64:
 		var val DatumHistogramI64
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Datum = val
 	case DatumTypeHistogramU64:
 		var val DatumHistogramU64
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Datum = val
 	case DatumTypeHistogramF32:
 		var val DatumHistogramF32
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Datum = val
 	case DatumTypeHistogramF64:
 		var val DatumHistogramF64
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Datum = val
 	case DatumTypeMissing:
 		var val DatumMissing
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Datum = val
@@ -3097,120 +3098,85 @@ type FieldValue struct {
 
 func (v *FieldValue) UnmarshalJSON(data []byte) error {
 	var peek struct {
-		Discriminator FieldValueType `json:"type"`
+		Discriminator FieldValueType  `json:"type"`
+		Value         json.RawMessage `json:"value"`
 	}
 	if err := json.Unmarshal(data, &peek); err != nil {
 		return err
 	}
 	switch peek.Discriminator {
 	case FieldValueTypeString:
-		type value struct {
-			Value FieldValueString `json:"value"`
-		}
-		var val value
-		if err := json.Unmarshal(data, &val); err != nil {
+		var val FieldValueString
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
-		v.Value = val.Value
+		v.Value = val
 	case FieldValueTypeI8:
-		type value struct {
-			Value FieldValueI8 `json:"value"`
-		}
-		var val value
-		if err := json.Unmarshal(data, &val); err != nil {
+		var val FieldValueI8
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
-		v.Value = val.Value
+		v.Value = val
 	case FieldValueTypeU8:
-		type value struct {
-			Value FieldValueU8 `json:"value"`
-		}
-		var val value
-		if err := json.Unmarshal(data, &val); err != nil {
+		var val FieldValueU8
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
-		v.Value = val.Value
+		v.Value = val
 	case FieldValueTypeI16:
-		type value struct {
-			Value FieldValueI16 `json:"value"`
-		}
-		var val value
-		if err := json.Unmarshal(data, &val); err != nil {
+		var val FieldValueI16
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
-		v.Value = val.Value
+		v.Value = val
 	case FieldValueTypeU16:
-		type value struct {
-			Value FieldValueU16 `json:"value"`
-		}
-		var val value
-		if err := json.Unmarshal(data, &val); err != nil {
+		var val FieldValueU16
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
-		v.Value = val.Value
+		v.Value = val
 	case FieldValueTypeI32:
-		type value struct {
-			Value FieldValueI32 `json:"value"`
-		}
-		var val value
-		if err := json.Unmarshal(data, &val); err != nil {
+		var val FieldValueI32
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
-		v.Value = val.Value
+		v.Value = val
 	case FieldValueTypeU32:
-		type value struct {
-			Value FieldValueU32 `json:"value"`
-		}
-		var val value
-		if err := json.Unmarshal(data, &val); err != nil {
+		var val FieldValueU32
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
-		v.Value = val.Value
+		v.Value = val
 	case FieldValueTypeI64:
-		type value struct {
-			Value FieldValueI64 `json:"value"`
-		}
-		var val value
-		if err := json.Unmarshal(data, &val); err != nil {
+		var val FieldValueI64
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
-		v.Value = val.Value
+		v.Value = val
 	case FieldValueTypeU64:
-		type value struct {
-			Value FieldValueU64 `json:"value"`
-		}
-		var val value
-		if err := json.Unmarshal(data, &val); err != nil {
+		var val FieldValueU64
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
-		v.Value = val.Value
+		v.Value = val
 	case FieldValueTypeIpAddr:
-		type value struct {
-			Value FieldValueIpAddr `json:"value"`
-		}
-		var val value
-		if err := json.Unmarshal(data, &val); err != nil {
+		var val FieldValueIpAddr
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
-		v.Value = val.Value
+		v.Value = val
 	case FieldValueTypeUuid:
-		type value struct {
-			Value FieldValueUuid `json:"value"`
-		}
-		var val value
-		if err := json.Unmarshal(data, &val); err != nil {
+		var val FieldValueUuid
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
-		v.Value = val.Value
+		v.Value = val
 	case FieldValueTypeBool:
-		type value struct {
-			Value FieldValueBool `json:"value"`
-		}
-		var val value
-		if err := json.Unmarshal(data, &val); err != nil {
+		var val FieldValueBool
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
-		v.Value = val.Value
+		v.Value = val
 	default:
 		return fmt.Errorf("unknown FieldValue discriminator value for type: %v", peek.Discriminator)
 	}
@@ -5623,47 +5589,36 @@ type RouteDestination struct {
 func (v *RouteDestination) UnmarshalJSON(data []byte) error {
 	var peek struct {
 		Discriminator RouteDestinationType `json:"type"`
+		Value         json.RawMessage      `json:"value"`
 	}
 	if err := json.Unmarshal(data, &peek); err != nil {
 		return err
 	}
 	switch peek.Discriminator {
 	case RouteDestinationTypeIp:
-		type value struct {
-			Value RouteDestinationIp `json:"value"`
-		}
-		var val value
-		if err := json.Unmarshal(data, &val); err != nil {
+		var val RouteDestinationIp
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
-		v.Value = val.Value
+		v.Value = val
 	case RouteDestinationTypeIpNet:
-		type value struct {
-			Value RouteDestinationIpNet `json:"value"`
-		}
-		var val value
-		if err := json.Unmarshal(data, &val); err != nil {
+		var val RouteDestinationIpNet
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
-		v.Value = val.Value
+		v.Value = val
 	case RouteDestinationTypeVpc:
-		type value struct {
-			Value RouteDestinationVpc `json:"value"`
-		}
-		var val value
-		if err := json.Unmarshal(data, &val); err != nil {
+		var val RouteDestinationVpc
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
-		v.Value = val.Value
+		v.Value = val
 	case RouteDestinationTypeSubnet:
-		type value struct {
-			Value RouteDestinationSubnet `json:"value"`
-		}
-		var val value
-		if err := json.Unmarshal(data, &val); err != nil {
+		var val RouteDestinationSubnet
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
-		v.Value = val.Value
+		v.Value = val
 	default:
 		return fmt.Errorf("unknown RouteDestination discriminator value for type: %v", peek.Discriminator)
 	}
@@ -5733,59 +5688,45 @@ type RouteTarget struct {
 func (v *RouteTarget) UnmarshalJSON(data []byte) error {
 	var peek struct {
 		Discriminator RouteTargetType `json:"type"`
+		Value         json.RawMessage `json:"value"`
 	}
 	if err := json.Unmarshal(data, &peek); err != nil {
 		return err
 	}
 	switch peek.Discriminator {
 	case RouteTargetTypeIp:
-		type value struct {
-			Value RouteTargetIp `json:"value"`
-		}
-		var val value
-		if err := json.Unmarshal(data, &val); err != nil {
+		var val RouteTargetIp
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
-		v.Value = val.Value
+		v.Value = val
 	case RouteTargetTypeVpc:
-		type value struct {
-			Value RouteTargetVpc `json:"value"`
-		}
-		var val value
-		if err := json.Unmarshal(data, &val); err != nil {
+		var val RouteTargetVpc
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
-		v.Value = val.Value
+		v.Value = val
 	case RouteTargetTypeSubnet:
-		type value struct {
-			Value RouteTargetSubnet `json:"value"`
-		}
-		var val value
-		if err := json.Unmarshal(data, &val); err != nil {
+		var val RouteTargetSubnet
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
-		v.Value = val.Value
+		v.Value = val
 	case RouteTargetTypeInstance:
-		type value struct {
-			Value RouteTargetInstance `json:"value"`
-		}
-		var val value
-		if err := json.Unmarshal(data, &val); err != nil {
+		var val RouteTargetInstance
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
-		v.Value = val.Value
+		v.Value = val
 	case RouteTargetTypeInternetGateway:
-		type value struct {
-			Value RouteTargetInternetGateway `json:"value"`
-		}
-		var val value
-		if err := json.Unmarshal(data, &val); err != nil {
+		var val RouteTargetInternetGateway
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
-		v.Value = val.Value
+		v.Value = val
 	case RouteTargetTypeDrop:
 		var val RouteTargetDrop
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Value = val
@@ -7527,7 +7468,8 @@ type ValueArray struct {
 
 func (v *ValueArray) UnmarshalJSON(data []byte) error {
 	var peek struct {
-		Discriminator ValueArrayType `json:"type"`
+		Discriminator ValueArrayType  `json:"type"`
+		Value         json.RawMessage `json:"values"`
 	}
 	if err := json.Unmarshal(data, &peek); err != nil {
 		return err
@@ -7535,37 +7477,37 @@ func (v *ValueArray) UnmarshalJSON(data []byte) error {
 	switch peek.Discriminator {
 	case ValueArrayTypeInteger:
 		var val ValueArrayInteger
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Values = val
 	case ValueArrayTypeDouble:
 		var val ValueArrayDouble
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Values = val
 	case ValueArrayTypeBoolean:
 		var val ValueArrayBoolean
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Values = val
 	case ValueArrayTypeString:
 		var val ValueArrayString
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Values = val
 	case ValueArrayTypeIntegerDistribution:
 		var val ValueArrayIntegerDistribution
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Values = val
 	case ValueArrayTypeDoubleDistribution:
 		var val ValueArrayDoubleDistribution
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Values = val
@@ -7794,6 +7736,7 @@ type VpcFirewallRuleHostFilter struct {
 func (v *VpcFirewallRuleHostFilter) UnmarshalJSON(data []byte) error {
 	var peek struct {
 		Discriminator VpcFirewallRuleHostFilterType `json:"type"`
+		Value         json.RawMessage               `json:"value"`
 	}
 	if err := json.Unmarshal(data, &peek); err != nil {
 		return err
@@ -7801,31 +7744,31 @@ func (v *VpcFirewallRuleHostFilter) UnmarshalJSON(data []byte) error {
 	switch peek.Discriminator {
 	case VpcFirewallRuleHostFilterTypeVpc:
 		var val VpcFirewallRuleHostFilterVpc
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Value = val
 	case VpcFirewallRuleHostFilterTypeSubnet:
 		var val VpcFirewallRuleHostFilterSubnet
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Value = val
 	case VpcFirewallRuleHostFilterTypeInstance:
 		var val VpcFirewallRuleHostFilterInstance
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Value = val
 	case VpcFirewallRuleHostFilterTypeIp:
 		var val VpcFirewallRuleHostFilterIp
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Value = val
 	case VpcFirewallRuleHostFilterTypeIpNet:
 		var val VpcFirewallRuleHostFilterIpNet
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Value = val
@@ -7937,6 +7880,7 @@ type VpcFirewallRuleTarget struct {
 func (v *VpcFirewallRuleTarget) UnmarshalJSON(data []byte) error {
 	var peek struct {
 		Discriminator VpcFirewallRuleTargetType `json:"type"`
+		Value         json.RawMessage           `json:"value"`
 	}
 	if err := json.Unmarshal(data, &peek); err != nil {
 		return err
@@ -7944,31 +7888,31 @@ func (v *VpcFirewallRuleTarget) UnmarshalJSON(data []byte) error {
 	switch peek.Discriminator {
 	case VpcFirewallRuleTargetTypeVpc:
 		var val VpcFirewallRuleTargetVpc
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Value = val
 	case VpcFirewallRuleTargetTypeSubnet:
 		var val VpcFirewallRuleTargetSubnet
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Value = val
 	case VpcFirewallRuleTargetTypeInstance:
 		var val VpcFirewallRuleTargetInstance
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Value = val
 	case VpcFirewallRuleTargetTypeIp:
 		var val VpcFirewallRuleTargetIp
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Value = val
 	case VpcFirewallRuleTargetTypeIpNet:
 		var val VpcFirewallRuleTargetIpNet
-		if err := json.Unmarshal(data, &val); err != nil {
+		if err := json.Unmarshal(peek.Value, &val); err != nil {
 			return err
 		}
 		v.Value = val

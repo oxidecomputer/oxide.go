@@ -368,6 +368,7 @@ func writeTypes(f *os.File, typeCollection []TypeTemplate, typeValidationCollect
 			// Check the discriminator to decide which type to unmarshal to.
 			fmt.Fprintf(f, "\tvar peek struct {\n")
 			fmt.Fprintf(f, "\t\tDiscriminator %s `json:\"%s\"`\n", tt.DiscriminatorType, tt.DiscriminatorKey)
+			fmt.Fprintf(f, "\t\tValue json.RawMessage `json:\"%s\"`\n", strings.ToLower(tt.VariantField))
 			fmt.Fprintf(f, "\t}\n")
 			fmt.Fprintf(f, "\tif err := json.Unmarshal(data, &peek); err != nil {\n")
 			fmt.Fprintf(f, "\t\treturn err\n")
@@ -380,17 +381,14 @@ func writeTypes(f *os.File, typeCollection []TypeTemplate, typeValidationCollect
 
 				// For objects, unmarshal into the corresponding struct. For simple types, unmarshal into a temporary struct, then grab the value from it.
 				if isSimpleType(mapping.ObjectType) {
-					fmt.Fprintf(f, "\t\ttype value struct {\n")
-					fmt.Fprintf(f, "\t\t\tValue %s `json:\"%s\"`\n", mapping.ConcreteType, strings.ToLower(tt.VariantField))
-					fmt.Fprintf(f, "\t\t}\n")
-					fmt.Fprintf(f, "\t\tvar val value\n")
-					fmt.Fprintf(f, "\t\tif err := json.Unmarshal(data, &val); err != nil {\n")
+					fmt.Fprintf(f, "\t\tvar val %s\n", mapping.ConcreteType)
+					fmt.Fprintf(f, "\t\tif err := json.Unmarshal(peek.Value, &val); err != nil {\n")
 					fmt.Fprintf(f, "\t\t\treturn err\n")
 					fmt.Fprintf(f, "\t\t}\n")
-					fmt.Fprintf(f, "\tv.%s = val.Value\n", tt.VariantField)
+					fmt.Fprintf(f, "\tv.%s = val\n", tt.VariantField)
 				} else {
 					fmt.Fprintf(f, "\t\tvar val %s\n", mapping.ConcreteType)
-					fmt.Fprintf(f, "\t\tif err := json.Unmarshal(data, &val); err != nil {\n")
+					fmt.Fprintf(f, "\t\tif err := json.Unmarshal(peek.Value, &val); err != nil {\n")
 					fmt.Fprintf(f, "\t\t\treturn err\n")
 					fmt.Fprintf(f, "\t\t}\n")
 					fmt.Fprintf(f, "\tv.%s = val\n", tt.VariantField)
