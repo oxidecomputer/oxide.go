@@ -1924,14 +1924,14 @@ type CurrentUser struct {
 	SiloName Name `json:"silo_name" yaml:"silo_name"`
 }
 
-type DatumDatum interface {
-	isDatumDatum()
+type datumDatum interface {
+	isdatumDatum()
 }
 
 // DatumBool is the type definition for a DatumBool.
 type DatumBool bool
 
-func (DatumBool) isDatumDatum() {}
+func (DatumBool) isdatumDatum() {}
 
 // DatumType is the type definition for a DatumType.
 type DatumType string
@@ -1939,57 +1939,57 @@ type DatumType string
 // DatumI8 is the type definition for a DatumI8.
 type DatumI8 int8
 
-func (DatumI8) isDatumDatum() {}
+func (DatumI8) isdatumDatum() {}
 
 // DatumU8 is the type definition for a DatumU8.
 type DatumU8 uint8
 
-func (DatumU8) isDatumDatum() {}
+func (DatumU8) isdatumDatum() {}
 
 // DatumI16 is the type definition for a DatumI16.
 type DatumI16 int16
 
-func (DatumI16) isDatumDatum() {}
+func (DatumI16) isdatumDatum() {}
 
 // DatumU16 is the type definition for a DatumU16.
 type DatumU16 uint16
 
-func (DatumU16) isDatumDatum() {}
+func (DatumU16) isdatumDatum() {}
 
 // DatumI32 is the type definition for a DatumI32.
 type DatumI32 int32
 
-func (DatumI32) isDatumDatum() {}
+func (DatumI32) isdatumDatum() {}
 
 // DatumU32 is the type definition for a DatumU32.
 type DatumU32 uint32
 
-func (DatumU32) isDatumDatum() {}
+func (DatumU32) isdatumDatum() {}
 
 // DatumI64 is the type definition for a DatumI64.
 type DatumI64 int64
 
-func (DatumI64) isDatumDatum() {}
+func (DatumI64) isdatumDatum() {}
 
 // DatumU64 is the type definition for a DatumU64.
 type DatumU64 uint64
 
-func (DatumU64) isDatumDatum() {}
+func (DatumU64) isdatumDatum() {}
 
 // DatumF32 is the type definition for a DatumF32.
 type DatumF32 float64
 
-func (DatumF32) isDatumDatum() {}
+func (DatumF32) isdatumDatum() {}
 
 // DatumF64 is the type definition for a DatumF64.
 type DatumF64 float64
 
-func (DatumF64) isDatumDatum() {}
+func (DatumF64) isdatumDatum() {}
 
 // DatumString is the type definition for a DatumString.
 type DatumString string
 
-func (DatumString) isDatumDatum() {}
+func (DatumString) isdatumDatum() {}
 
 // DatumBytes is the type definition for a DatumBytes.
 //
@@ -2001,7 +2001,7 @@ type DatumBytes struct {
 	Type  DatumType `json:"type" yaml:"type"`
 }
 
-func (DatumBytes) isDatumDatum() {}
+func (DatumBytes) isdatumDatum() {}
 
 // DatumCumulativeI64 is the type definition for a DatumCumulativeI64.
 //
@@ -2014,7 +2014,7 @@ type DatumCumulativeI64 struct {
 	Type  DatumType       `json:"type" yaml:"type"`
 }
 
-func (DatumCumulativeI64) isDatumDatum() {}
+func (DatumCumulativeI64) isdatumDatum() {}
 
 // DatumCumulativeU64 is the type definition for a DatumCumulativeU64.
 //
@@ -2027,7 +2027,7 @@ type DatumCumulativeU64 struct {
 	Type  DatumType        `json:"type" yaml:"type"`
 }
 
-func (DatumCumulativeU64) isDatumDatum() {}
+func (DatumCumulativeU64) isdatumDatum() {}
 
 // DatumCumulativeF32 is the type definition for a DatumCumulativeF32.
 //
@@ -2040,7 +2040,7 @@ type DatumCumulativeF32 struct {
 	Type  DatumType       `json:"type" yaml:"type"`
 }
 
-func (DatumCumulativeF32) isDatumDatum() {}
+func (DatumCumulativeF32) isdatumDatum() {}
 
 // DatumCumulativeF64 is the type definition for a DatumCumulativeF64.
 //
@@ -2053,7 +2053,7 @@ type DatumCumulativeF64 struct {
 	Type  DatumType        `json:"type" yaml:"type"`
 }
 
-func (DatumCumulativeF64) isDatumDatum() {}
+func (DatumCumulativeF64) isdatumDatum() {}
 
 // DatumHistogramI8 is the type definition for a DatumHistogramI8.
 //
@@ -2072,7 +2072,7 @@ type DatumHistogramI8 struct {
 	Type  DatumType     `json:"type" yaml:"type"`
 }
 
-func (DatumHistogramI8) isDatumDatum() {}
+func (DatumHistogramI8) isdatumDatum() {}
 
 // DatumHistogramU8 is the type definition for a DatumHistogramU8.
 //
@@ -2091,7 +2091,7 @@ type DatumHistogramU8 struct {
 	Type  DatumType      `json:"type" yaml:"type"`
 }
 
-func (DatumHistogramU8) isDatumDatum() {}
+func (DatumHistogramU8) isdatumDatum() {}
 
 // DatumHistogramI16 is the type definition for a DatumHistogramI16.
 //
@@ -2110,7 +2110,7 @@ type DatumHistogramI16 struct {
 	Type  DatumType      `json:"type" yaml:"type"`
 }
 
-func (DatumHistogramI16) isDatumDatum() {}
+func (DatumHistogramI16) isdatumDatum() {}
 
 // DatumHistogramU16 is the type definition for a DatumHistogramU16.
 //
@@ -2129,7 +2129,7 @@ type DatumHistogramU16 struct {
 	Type  DatumType       `json:"type" yaml:"type"`
 }
 
-func (DatumHistogramU16) isDatumDatum() {}
+func (DatumHistogramU16) isdatumDatum() {}
 
 // DatumHistogramI32 is the type definition for a DatumHistogramI32.
 //
@@ -2148,7 +2148,7 @@ type DatumHistogramI32 struct {
 	Type  DatumType      `json:"type" yaml:"type"`
 }
 
-func (DatumHistogramI32) isDatumDatum() {}
+func (DatumHistogramI32) isdatumDatum() {}
 
 // DatumHistogramU32 is the type definition for a DatumHistogramU32.
 //
@@ -2167,7 +2167,7 @@ type DatumHistogramU32 struct {
 	Type  DatumType       `json:"type" yaml:"type"`
 }
 
-func (DatumHistogramU32) isDatumDatum() {}
+func (DatumHistogramU32) isdatumDatum() {}
 
 // DatumHistogramI64 is the type definition for a DatumHistogramI64.
 //
@@ -2186,7 +2186,7 @@ type DatumHistogramI64 struct {
 	Type  DatumType      `json:"type" yaml:"type"`
 }
 
-func (DatumHistogramI64) isDatumDatum() {}
+func (DatumHistogramI64) isdatumDatum() {}
 
 // DatumHistogramU64 is the type definition for a DatumHistogramU64.
 //
@@ -2205,7 +2205,7 @@ type DatumHistogramU64 struct {
 	Type  DatumType       `json:"type" yaml:"type"`
 }
 
-func (DatumHistogramU64) isDatumDatum() {}
+func (DatumHistogramU64) isdatumDatum() {}
 
 // DatumHistogramF32 is the type definition for a DatumHistogramF32.
 //
@@ -2224,7 +2224,7 @@ type DatumHistogramF32 struct {
 	Type  DatumType      `json:"type" yaml:"type"`
 }
 
-func (DatumHistogramF32) isDatumDatum() {}
+func (DatumHistogramF32) isdatumDatum() {}
 
 // DatumHistogramF64 is the type definition for a DatumHistogramF64.
 //
@@ -2243,7 +2243,7 @@ type DatumHistogramF64 struct {
 	Type  DatumType       `json:"type" yaml:"type"`
 }
 
-func (DatumHistogramF64) isDatumDatum() {}
+func (DatumHistogramF64) isdatumDatum() {}
 
 // DatumMissing is the type definition for a DatumMissing.
 //
@@ -2255,12 +2255,12 @@ type DatumMissing struct {
 	Type  DatumType    `json:"type" yaml:"type"`
 }
 
-func (DatumMissing) isDatumDatum() {}
+func (DatumMissing) isdatumDatum() {}
 
 // Datum is a `Datum` is a single sampled data point from a metric.
 type Datum struct {
 	// Datum is the type definition for a Datum.
-	Datum DatumDatum `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Datum datumDatum `json:"datum,omitempty" yaml:"datum,omitempty"`
 	// Type is the type definition for a Type.
 	Type DatumType `json:"type,omitempty" yaml:"type,omitempty"`
 }
@@ -3020,14 +3020,14 @@ type FieldSource string
 // FieldType is the `FieldType` identifies the data type of a target or metric field.
 type FieldType string
 
-type FieldValueValue interface {
-	isFieldValueValue()
+type fieldValueValue interface {
+	isfieldValueValue()
 }
 
 // FieldValueString is the type definition for a FieldValueString.
 type FieldValueString string
 
-func (FieldValueString) isFieldValueValue() {}
+func (FieldValueString) isfieldValueValue() {}
 
 // FieldValueType is the type definition for a FieldValueType.
 type FieldValueType string
@@ -3035,64 +3035,64 @@ type FieldValueType string
 // FieldValueI8 is the type definition for a FieldValueI8.
 type FieldValueI8 int8
 
-func (FieldValueI8) isFieldValueValue() {}
+func (FieldValueI8) isfieldValueValue() {}
 
 // FieldValueU8 is the type definition for a FieldValueU8.
 type FieldValueU8 uint8
 
-func (FieldValueU8) isFieldValueValue() {}
+func (FieldValueU8) isfieldValueValue() {}
 
 // FieldValueI16 is the type definition for a FieldValueI16.
 type FieldValueI16 int16
 
-func (FieldValueI16) isFieldValueValue() {}
+func (FieldValueI16) isfieldValueValue() {}
 
 // FieldValueU16 is the type definition for a FieldValueU16.
 type FieldValueU16 uint16
 
-func (FieldValueU16) isFieldValueValue() {}
+func (FieldValueU16) isfieldValueValue() {}
 
 // FieldValueI32 is the type definition for a FieldValueI32.
 type FieldValueI32 int32
 
-func (FieldValueI32) isFieldValueValue() {}
+func (FieldValueI32) isfieldValueValue() {}
 
 // FieldValueU32 is the type definition for a FieldValueU32.
 type FieldValueU32 uint32
 
-func (FieldValueU32) isFieldValueValue() {}
+func (FieldValueU32) isfieldValueValue() {}
 
 // FieldValueI64 is the type definition for a FieldValueI64.
 type FieldValueI64 int64
 
-func (FieldValueI64) isFieldValueValue() {}
+func (FieldValueI64) isfieldValueValue() {}
 
 // FieldValueU64 is the type definition for a FieldValueU64.
 type FieldValueU64 uint64
 
-func (FieldValueU64) isFieldValueValue() {}
+func (FieldValueU64) isfieldValueValue() {}
 
 // FieldValueIpAddr is the type definition for a FieldValueIpAddr.
 type FieldValueIpAddr string
 
-func (FieldValueIpAddr) isFieldValueValue() {}
+func (FieldValueIpAddr) isfieldValueValue() {}
 
 // FieldValueUuid is the type definition for a FieldValueUuid.
 type FieldValueUuid string
 
-func (FieldValueUuid) isFieldValueValue() {}
+func (FieldValueUuid) isfieldValueValue() {}
 
 // FieldValueBool is the type definition for a FieldValueBool.
 type FieldValueBool bool
 
-func (FieldValueBool) isFieldValueValue() {}
+func (FieldValueBool) isfieldValueValue() {}
 
 // FieldValue is the `FieldValue` contains the value of a target or metric field.
 type FieldValue struct {
 	// Type is the type definition for a Type.
 	Type FieldValueType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is the type definition for a Value.
-	Value FieldValueValue `json:"value,omitempty" yaml:"value,omitempty"`
+	Value fieldValueValue `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 func (v *FieldValue) UnmarshalJSON(data []byte) error {
@@ -5570,14 +5570,14 @@ type RouteConfig struct {
 	Routes []Route `json:"routes" yaml:"routes"`
 }
 
-type RouteDestinationValue interface {
-	isRouteDestinationValue()
+type routeDestinationValue interface {
+	isrouteDestinationValue()
 }
 
 // RouteDestinationIp is the type definition for a RouteDestinationIp.
 type RouteDestinationIp string
 
-func (RouteDestinationIp) isRouteDestinationValue() {}
+func (RouteDestinationIp) isrouteDestinationValue() {}
 
 // RouteDestinationType is the type definition for a RouteDestinationType.
 type RouteDestinationType string
@@ -5592,21 +5592,21 @@ type RouteDestinationIpNet struct {
 	Value IpNet                `json:"value" yaml:"value"`
 }
 
-func (RouteDestinationIpNet) isRouteDestinationValue() {}
+func (RouteDestinationIpNet) isrouteDestinationValue() {}
 
 // RouteDestinationVpc is names must begin with a lower case ASCII letter, be composed exclusively of lowercase
 // ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may
 // contain a UUID. They can be at most 63 characters long.
 type RouteDestinationVpc string
 
-func (RouteDestinationVpc) isRouteDestinationValue() {}
+func (RouteDestinationVpc) isrouteDestinationValue() {}
 
 // RouteDestinationSubnet is names must begin with a lower case ASCII letter, be composed exclusively of
 // lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but
 // they may contain a UUID. They can be at most 63 characters long.
 type RouteDestinationSubnet string
 
-func (RouteDestinationSubnet) isRouteDestinationValue() {}
+func (RouteDestinationSubnet) isrouteDestinationValue() {}
 
 // RouteDestination is a `RouteDestination` is used to match traffic with a routing rule based on the destination
 // of that traffic.
@@ -5617,7 +5617,7 @@ type RouteDestination struct {
 	// Type is the type definition for a Type.
 	Type RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is the type definition for a Value.
-	Value RouteDestinationValue `json:"value,omitempty" yaml:"value,omitempty"`
+	Value routeDestinationValue `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 func (v *RouteDestination) UnmarshalJSON(data []byte) error {
@@ -5671,14 +5671,14 @@ func (v *RouteDestination) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-type RouteTargetValue interface {
-	isRouteTargetValue()
+type routeTargetValue interface {
+	isrouteTargetValue()
 }
 
 // RouteTargetIp is the type definition for a RouteTargetIp.
 type RouteTargetIp string
 
-func (RouteTargetIp) isRouteTargetValue() {}
+func (RouteTargetIp) isrouteTargetValue() {}
 
 // RouteTargetType is the type definition for a RouteTargetType.
 type RouteTargetType string
@@ -5688,28 +5688,28 @@ type RouteTargetType string
 // UUID. They can be at most 63 characters long.
 type RouteTargetVpc string
 
-func (RouteTargetVpc) isRouteTargetValue() {}
+func (RouteTargetVpc) isrouteTargetValue() {}
 
 // RouteTargetSubnet is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII,
 // uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a
 // UUID. They can be at most 63 characters long.
 type RouteTargetSubnet string
 
-func (RouteTargetSubnet) isRouteTargetValue() {}
+func (RouteTargetSubnet) isrouteTargetValue() {}
 
 // RouteTargetInstance is names must begin with a lower case ASCII letter, be composed exclusively of lowercase
 // ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may
 // contain a UUID. They can be at most 63 characters long.
 type RouteTargetInstance string
 
-func (RouteTargetInstance) isRouteTargetValue() {}
+func (RouteTargetInstance) isrouteTargetValue() {}
 
 // RouteTargetInternetGateway is names must begin with a lower case ASCII letter, be composed exclusively of
 // lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but
 // they may contain a UUID. They can be at most 63 characters long.
 type RouteTargetInternetGateway string
 
-func (RouteTargetInternetGateway) isRouteTargetValue() {}
+func (RouteTargetInternetGateway) isrouteTargetValue() {}
 
 // RouteTargetDrop is drop matching traffic
 //
@@ -5719,7 +5719,7 @@ type RouteTargetDrop struct {
 	Type RouteTargetType `json:"type" yaml:"type"`
 }
 
-func (RouteTargetDrop) isRouteTargetValue() {}
+func (RouteTargetDrop) isrouteTargetValue() {}
 
 // RouteTarget is a `RouteTarget` describes the possible locations that traffic matching a route destination can
 // be sent.
@@ -5727,7 +5727,7 @@ type RouteTarget struct {
 	// Type is the type definition for a Type.
 	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Value is the type definition for a Value.
-	Value RouteTargetValue `json:"value,omitempty" yaml:"value,omitempty"`
+	Value routeTargetValue `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 func (v *RouteTarget) UnmarshalJSON(data []byte) error {
@@ -7436,8 +7436,8 @@ type Utilization struct {
 	Provisioned VirtualResourceCounts `json:"provisioned" yaml:"provisioned"`
 }
 
-type ValueArrayValues interface {
-	isValueArrayValues()
+type valueArrayValues interface {
+	isvalueArrayValues()
 }
 
 // ValueArrayType is the type definition for a ValueArrayType.
@@ -7453,7 +7453,7 @@ type ValueArrayInteger struct {
 	Values []int          `json:"values" yaml:"values"`
 }
 
-func (ValueArrayInteger) isValueArrayValues() {}
+func (ValueArrayInteger) isvalueArrayValues() {}
 
 // ValueArrayDouble is the type definition for a ValueArrayDouble.
 //
@@ -7465,7 +7465,7 @@ type ValueArrayDouble struct {
 	Values []float64      `json:"values" yaml:"values"`
 }
 
-func (ValueArrayDouble) isValueArrayValues() {}
+func (ValueArrayDouble) isvalueArrayValues() {}
 
 // ValueArrayBoolean is the type definition for a ValueArrayBoolean.
 //
@@ -7477,7 +7477,7 @@ type ValueArrayBoolean struct {
 	Values []bool         `json:"values" yaml:"values"`
 }
 
-func (ValueArrayBoolean) isValueArrayValues() {}
+func (ValueArrayBoolean) isvalueArrayValues() {}
 
 // ValueArrayString is the type definition for a ValueArrayString.
 //
@@ -7489,7 +7489,7 @@ type ValueArrayString struct {
 	Values []string       `json:"values" yaml:"values"`
 }
 
-func (ValueArrayString) isValueArrayValues() {}
+func (ValueArrayString) isvalueArrayValues() {}
 
 // ValueArrayIntegerDistribution is the type definition for a ValueArrayIntegerDistribution.
 //
@@ -7501,7 +7501,7 @@ type ValueArrayIntegerDistribution struct {
 	Values []Distributionint64 `json:"values" yaml:"values"`
 }
 
-func (ValueArrayIntegerDistribution) isValueArrayValues() {}
+func (ValueArrayIntegerDistribution) isvalueArrayValues() {}
 
 // ValueArrayDoubleDistribution is the type definition for a ValueArrayDoubleDistribution.
 //
@@ -7513,7 +7513,7 @@ type ValueArrayDoubleDistribution struct {
 	Values []Distributiondouble `json:"values" yaml:"values"`
 }
 
-func (ValueArrayDoubleDistribution) isValueArrayValues() {}
+func (ValueArrayDoubleDistribution) isvalueArrayValues() {}
 
 // ValueArray is list of data values for one timeseries.
 //
@@ -7522,7 +7522,7 @@ type ValueArray struct {
 	// Type is the type definition for a Type.
 	Type ValueArrayType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Values is the type definition for a Values.
-	Values ValueArrayValues `json:"values,omitempty" yaml:"values,omitempty"`
+	Values valueArrayValues `json:"values,omitempty" yaml:"values,omitempty"`
 }
 
 func (v *ValueArray) UnmarshalJSON(data []byte) error {
@@ -7735,8 +7735,8 @@ type VpcFirewallRuleFilter struct {
 	Protocols []VpcFirewallRuleProtocol `json:"protocols" yaml:"protocols"`
 }
 
-type VpcFirewallRuleHostFilterValue interface {
-	isVpcFirewallRuleHostFilterValue()
+type vpcFirewallRuleHostFilterValue interface {
+	isvpcFirewallRuleHostFilterValue()
 }
 
 // VpcFirewallRuleHostFilterVpc is names must begin with a lower case ASCII letter, be composed exclusively of
@@ -7744,7 +7744,7 @@ type VpcFirewallRuleHostFilterValue interface {
 // they may contain a UUID. They can be at most 63 characters long.
 type VpcFirewallRuleHostFilterVpc string
 
-func (VpcFirewallRuleHostFilterVpc) isVpcFirewallRuleHostFilterValue() {}
+func (VpcFirewallRuleHostFilterVpc) isvpcFirewallRuleHostFilterValue() {}
 
 // VpcFirewallRuleHostFilterType is the type definition for a VpcFirewallRuleHostFilterType.
 type VpcFirewallRuleHostFilterType string
@@ -7754,19 +7754,19 @@ type VpcFirewallRuleHostFilterType string
 // they may contain a UUID. They can be at most 63 characters long.
 type VpcFirewallRuleHostFilterSubnet string
 
-func (VpcFirewallRuleHostFilterSubnet) isVpcFirewallRuleHostFilterValue() {}
+func (VpcFirewallRuleHostFilterSubnet) isvpcFirewallRuleHostFilterValue() {}
 
 // VpcFirewallRuleHostFilterInstance is names must begin with a lower case ASCII letter, be composed exclusively
 // of lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID,
 // but they may contain a UUID. They can be at most 63 characters long.
 type VpcFirewallRuleHostFilterInstance string
 
-func (VpcFirewallRuleHostFilterInstance) isVpcFirewallRuleHostFilterValue() {}
+func (VpcFirewallRuleHostFilterInstance) isvpcFirewallRuleHostFilterValue() {}
 
 // VpcFirewallRuleHostFilterIp is the type definition for a VpcFirewallRuleHostFilterIp.
 type VpcFirewallRuleHostFilterIp string
 
-func (VpcFirewallRuleHostFilterIp) isVpcFirewallRuleHostFilterValue() {}
+func (VpcFirewallRuleHostFilterIp) isvpcFirewallRuleHostFilterValue() {}
 
 // VpcFirewallRuleHostFilterIpNet is the rule applies to traffic from/to a specific IP subnet
 //
@@ -7778,7 +7778,7 @@ type VpcFirewallRuleHostFilterIpNet struct {
 	Value IpNet                         `json:"value" yaml:"value"`
 }
 
-func (VpcFirewallRuleHostFilterIpNet) isVpcFirewallRuleHostFilterValue() {}
+func (VpcFirewallRuleHostFilterIpNet) isvpcFirewallRuleHostFilterValue() {}
 
 // VpcFirewallRuleHostFilter is the `VpcFirewallRuleHostFilter` is used to filter traffic on the basis of
 // its source or destination host.
@@ -7788,7 +7788,7 @@ type VpcFirewallRuleHostFilter struct {
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
 	// can be at most 63 characters long.
-	Value VpcFirewallRuleHostFilterValue `json:"value,omitempty" yaml:"value,omitempty"`
+	Value vpcFirewallRuleHostFilterValue `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 func (v *VpcFirewallRuleHostFilter) UnmarshalJSON(data []byte) error {
@@ -7876,8 +7876,8 @@ type VpcFirewallRuleProtocol struct {
 // VpcFirewallRuleStatus is the type definition for a VpcFirewallRuleStatus.
 type VpcFirewallRuleStatus string
 
-type VpcFirewallRuleTargetValue interface {
-	isVpcFirewallRuleTargetValue()
+type vpcFirewallRuleTargetValue interface {
+	isvpcFirewallRuleTargetValue()
 }
 
 // VpcFirewallRuleTargetVpc is names must begin with a lower case ASCII letter, be composed exclusively of
@@ -7885,7 +7885,7 @@ type VpcFirewallRuleTargetValue interface {
 // they may contain a UUID. They can be at most 63 characters long.
 type VpcFirewallRuleTargetVpc string
 
-func (VpcFirewallRuleTargetVpc) isVpcFirewallRuleTargetValue() {}
+func (VpcFirewallRuleTargetVpc) isvpcFirewallRuleTargetValue() {}
 
 // VpcFirewallRuleTargetType is the type definition for a VpcFirewallRuleTargetType.
 type VpcFirewallRuleTargetType string
@@ -7895,19 +7895,19 @@ type VpcFirewallRuleTargetType string
 // they may contain a UUID. They can be at most 63 characters long.
 type VpcFirewallRuleTargetSubnet string
 
-func (VpcFirewallRuleTargetSubnet) isVpcFirewallRuleTargetValue() {}
+func (VpcFirewallRuleTargetSubnet) isvpcFirewallRuleTargetValue() {}
 
 // VpcFirewallRuleTargetInstance is names must begin with a lower case ASCII letter, be composed exclusively of
 // lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but
 // they may contain a UUID. They can be at most 63 characters long.
 type VpcFirewallRuleTargetInstance string
 
-func (VpcFirewallRuleTargetInstance) isVpcFirewallRuleTargetValue() {}
+func (VpcFirewallRuleTargetInstance) isvpcFirewallRuleTargetValue() {}
 
 // VpcFirewallRuleTargetIp is the type definition for a VpcFirewallRuleTargetIp.
 type VpcFirewallRuleTargetIp string
 
-func (VpcFirewallRuleTargetIp) isVpcFirewallRuleTargetValue() {}
+func (VpcFirewallRuleTargetIp) isvpcFirewallRuleTargetValue() {}
 
 // VpcFirewallRuleTargetIpNet is the rule applies to a specific IP subnet
 //
@@ -7919,7 +7919,7 @@ type VpcFirewallRuleTargetIpNet struct {
 	Value IpNet                     `json:"value" yaml:"value"`
 }
 
-func (VpcFirewallRuleTargetIpNet) isVpcFirewallRuleTargetValue() {}
+func (VpcFirewallRuleTargetIpNet) isvpcFirewallRuleTargetValue() {}
 
 // VpcFirewallRuleTarget is a `VpcFirewallRuleTarget` is used to specify the set of instances to which a
 // firewall rule applies. You can target instances directly by name, or specify a VPC, VPC subnet, IP, or IP
@@ -7931,7 +7931,7 @@ type VpcFirewallRuleTarget struct {
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
 	// can be at most 63 characters long.
-	Value VpcFirewallRuleTargetValue `json:"value,omitempty" yaml:"value,omitempty"`
+	Value vpcFirewallRuleTargetValue `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 func (v *VpcFirewallRuleTarget) UnmarshalJSON(data []byte) error {

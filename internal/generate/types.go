@@ -760,7 +760,8 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 	variantInterface := ""
 	if len(variantFields) == 1 && len(variantTypes) == 1 {
 		variantField = strcase.ToCamel(variantFields[0])
-		variantInterface = fmt.Sprintf("%s%s", typeName, strcase.ToCamel(variantTypes[0]))
+		// Note: the variant interface is only used to define the tagged enum, and not of interest to users, so we make it private.
+		variantInterface = fmt.Sprintf("%s%s", strcase.ToLowerCamel(typeName), strcase.ToCamel(variantTypes[0]))
 		typeTpls = append(typeTpls, TypeTemplate{
 			Name: variantInterface,
 			Type: "interface",
