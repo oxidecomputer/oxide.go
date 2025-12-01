@@ -649,54 +649,34 @@ func createAllOf(s *openapi3.Schema, stringEnums map[string][]string, name, type
 }
 
 func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []EnumTemplate) {
+	discriminatorKeys := map[string]struct{}{}
+	propertyToVariantTypes := map[string]map[string]struct{}{}
+	for _, variantRef := range s.OneOf {
+		for propName, propRef := range variantRef.Value.Properties {
+			if len(propRef.Value.Enum) == 1 {
+				discriminatorKeys[propName] = struct{}{}
+			}
+			if _, ok := propertyToVariantTypes[propName]; !ok {
+				propertyToVariantTypes[propName] = map[string]struct{}{}
+			}
+			goType := convertToValidGoType(propName, typeName, propRef)
+			propertyToVariantTypes[propName][goType] = struct{}{}
+		}
+	}
+	if len(discriminatorKeys) > 1 {
+		panic(fmt.Sprintf("[ERROR] Found multiple discriminator properties for type %s: %+v", name, discriminatorKeys))
+	}
+	variantProperties := []string{}
+	for propName, variantTypes := range propertyToVariantTypes {
+		if len(variantTypes) > 1 {
+			variantProperties = append(variantProperties, propName)
+		}
+	}
+
 	var parsedProperties []string
-	var properties []string
-	var genericTypes []string
 	enumTpls := make([]EnumTemplate, 0)
 	typeTpls := make([]TypeTemplate, 0)
 	fields := make([]TypeFields, 0)
-	for _, v := range s.OneOf {
-		// Iterate over all the schema components in the spec and write the types.
-		keys := sortedKeys(v.Value.Properties)
-
-		for _, prop := range keys {
-			p := v.Value.Properties[prop]
-			// We want to collect all the unique properties to create our global oneOf type.
-			propertyType := convertToValidGoType(prop, typeName, p)
-			properties = append(properties, prop+"="+propertyType)
-		}
-	}
-
-	// When dealing with oneOf sometimes property types will not be the same, we want to
-	// catch these to set them as "any" when we generate the type.
-	typeKeys := []string{}
-	// First we gather all unique properties
-	for _, v := range properties {
-		parts := strings.Split(v, "=")
-		key := parts[0]
-		if !slices.Contains(typeKeys, key) {
-			typeKeys = append(typeKeys, key)
-		}
-	}
-
-	// For each of the properties above we gather all possible types
-	// and gather all of those that are not. We will be setting those
-	// as a generic type
-	for _, k := range typeKeys {
-		values := []string{}
-		for _, v := range properties {
-			parts := strings.Split(v, "=")
-			key := parts[0]
-			value := parts[1]
-			if key == k {
-				values = append(values, value)
-			}
-		}
-
-		if !allItemsAreSame(values) {
-			genericTypes = append(genericTypes, k)
-		}
-	}
 
 	for _, v := range s.OneOf {
 		// We want to iterate over the properties of the embedded object
@@ -719,6 +699,7 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 			propertyName := strcase.ToCamel(prop)
 
 			// Avoids duplication for every enum
+			fmt.Printf("DEBUG FIELD %s %s\n", typeName, propertyName)
 			if !containsMatchFirstWord(parsedProperties, propertyName) {
 				field := TypeFields{
 					Description:       formatTypeDescription(propertyName, p.Value),
@@ -728,7 +709,7 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 				}
 
 				// We set the type of a field as "any" if every element of the oneOf property isn't the same
-				if slices.Contains(genericTypes, prop) {
+				if slices.Contains(variantProperties, prop) {
 					field.Type = "any"
 				}
 
