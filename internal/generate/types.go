@@ -98,9 +98,9 @@ func constructParamTypes(paths map[string]*openapi3.PathItem) []TypeTemplate {
 			// Some required fields are defined in vendor extensions
 			for k, v := range o.Extensions {
 				if k == "x-dropshot-pagination" {
-					for i, j := range v.(map[string]interface{}) {
+					for i, j := range v.(map[string]any) {
 						if i == "required" {
-							values, ok := j.([]interface{})
+							values, ok := j.([]any)
 							if ok {
 								for _, field := range values {
 									str, ok := field.(string)
@@ -631,7 +631,7 @@ func createAllOf(s *openapi3.Schema, stringEnums map[string][]string, name, type
 		typeTpl := TypeTemplate{
 			Description: formatTypeDescription(name, s),
 			Name:        typeName,
-			Type:        "interface{}",
+			Type:        "any",
 		}
 
 		// TODO: See above about making a more idiomatic approach, this is a small workaround

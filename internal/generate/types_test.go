@@ -44,7 +44,7 @@ func Test_generateTypes(t *testing.T) {
 										Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Format: "uuid"},
 									},
 									"type": &openapi3.SchemaRef{
-										Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []interface{}{"snapshot"}},
+										Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []any{"snapshot"}},
 									},
 								},
 							},
@@ -58,7 +58,7 @@ func Test_generateTypes(t *testing.T) {
 										Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Format: "uuid"},
 									},
 									"type": &openapi3.SchemaRef{
-										Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []interface{}{"image"}},
+										Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []any{"image"}},
 									},
 								},
 							},
@@ -110,7 +110,7 @@ func Test_createTypeObject(t *testing.T) {
 				Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Format: "uuid"},
 			},
 			"type": {
-				Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []interface{}{"snapshot"}},
+				Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []any{"snapshot"}},
 			},
 		}}
 
@@ -156,7 +156,7 @@ func Test_createTypeObject(t *testing.T) {
 }
 
 func Test_createStringEnum(t *testing.T) {
-	typesSpec := &openapi3.Schema{Enum: []interface{}{"admin", "collaborator", "viewer"}}
+	typesSpec := &openapi3.Schema{Enum: []any{"admin", "collaborator", "viewer"}}
 	enums := map[string][]string{}
 	type args struct {
 		s           *openapi3.Schema
@@ -202,7 +202,7 @@ func Test_createOneOf(t *testing.T) {
 					Type: &openapi3.Types{"object"},
 					Properties: map[string]*openapi3.SchemaRef{
 						"type": {
-							Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []interface{}{"url"}},
+							Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []any{"url"}},
 						},
 						"url": {
 							Value: &openapi3.Schema{Type: &openapi3.Types{"string"}},
@@ -219,7 +219,7 @@ func Test_createOneOf(t *testing.T) {
 							Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Format: "uuid"},
 						},
 						"type": {
-							Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []interface{}{"snapshot"}},
+							Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []any{"snapshot"}},
 						},
 					},
 					Required: []string{"id", "type"},
@@ -307,7 +307,7 @@ func Test_createAllOf(t *testing.T) {
 		AllOf: openapi3.SchemaRefs{
 			&openapi3.SchemaRef{
 				Ref:   "#/components/schemas/Ipv4Range",
-				Value: &openapi3.Schema{Enum: []interface{}{}},
+				Value: &openapi3.Schema{Enum: []any{}},
 			},
 		},
 	}
@@ -330,7 +330,7 @@ func Test_createAllOf(t *testing.T) {
 			args: args{typeSpecAllOf, enums, "IpRange", "IpRange"},
 			want: []TypeTemplate{
 				{
-					Description: "// IpRange is the type definition for a IpRange.", Name: "IpRange", Type: "interface{}",
+					Description: "// IpRange is the type definition for a IpRange.", Name: "IpRange", Type: "any",
 				},
 			},
 		},
