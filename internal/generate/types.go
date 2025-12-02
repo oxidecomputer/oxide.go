@@ -98,9 +98,9 @@ func constructParamTypes(paths map[string]*openapi3.PathItem) []TypeTemplate {
 			// Some required fields are defined in vendor extensions
 			for k, v := range o.Extensions {
 				if k == "x-dropshot-pagination" {
-					for i, j := range v.(map[string]interface{}) {
+					for i, j := range v.(map[string]any) {
 						if i == "required" {
-							values, ok := j.([]interface{})
+							values, ok := j.([]any)
 							if ok {
 								for _, field := range values {
 									str, ok := field.(string)
@@ -631,7 +631,7 @@ func createAllOf(s *openapi3.Schema, stringEnums map[string][]string, name, type
 		typeTpl := TypeTemplate{
 			Description: formatTypeDescription(name, s),
 			Name:        typeName,
-			Type:        "interface{}",
+			Type:        "any",
 		}
 
 		// TODO: See above about making a more idiomatic approach, this is a small workaround
@@ -648,147 +648,112 @@ func createAllOf(s *openapi3.Schema, stringEnums map[string][]string, name, type
 	return typeTpls
 }
 
+type oneOfVariant struct {
+	schema    *openapi3.Schema
+	enumField string
+}
+
 func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []EnumTemplate) {
-	var parsedProperties []string
-	var properties []string
-	var genericTypes []string
+	// Collect metadata about variants.
+	discriminatorKeys := map[string]struct{}{}
+	propertyToVariantTypes := map[string]map[string]struct{}{}
+	oneOfItems := []oneOfVariant{}
+	for _, variantRef := range s.OneOf {
+		item := oneOfVariant{schema: variantRef.Value}
+		keys := sortedKeys(variantRef.Value.Properties)
+		for _, propName := range keys {
+			propRef := variantRef.Value.Properties[propName]
+			propertyField := strcase.ToCamel(propName)
+
+			if len(propRef.Value.Enum) == 1 {
+				discriminatorKeys[propName] = struct{}{}
+				item.enumField = strcase.ToCamel(propRef.Value.Enum[0].(string))
+			} else if len(propRef.Value.Enum) > 1 {
+				fmt.Printf("[WARN] TODO: oneOf for %q -> %q enum %#v\n", name, propName, propRef.Value.Enum)
+			} else if propRef.Value.Enum == nil && len(keys) == 1 {
+				item.enumField = propertyField
+			}
+			if _, ok := propertyToVariantTypes[propName]; !ok {
+				propertyToVariantTypes[propName] = map[string]struct{}{}
+			}
+			goType := convertToValidGoType(propName, typeName, propRef)
+			propertyToVariantTypes[propName][goType] = struct{}{}
+		}
+		oneOfItems = append(oneOfItems, item)
+	}
+
+	// Check invariant: there must be exactly zero or one discriminator field.
+	if len(discriminatorKeys) > 1 {
+		panic(fmt.Sprintf("[ERROR] Found multiple discriminator properties for type %s: %+v", name, discriminatorKeys))
+	}
+
+	// Find properties that have different types across variants.
+	variantProperties := map[string]struct{}{}
+	for propName, variantTypes := range propertyToVariantTypes {
+		if len(variantTypes) > 1 {
+			variantProperties[propName] = struct{}{}
+		}
+	}
+
 	enumTpls := make([]EnumTemplate, 0)
 	typeTpls := make([]TypeTemplate, 0)
-	fields := make([]TypeFields, 0)
-	for _, v := range s.OneOf {
-		// Iterate over all the schema components in the spec and write the types.
-		keys := sortedKeys(v.Value.Properties)
 
-		for _, prop := range keys {
-			p := v.Value.Properties[prop]
-			// We want to collect all the unique properties to create our global oneOf type.
-			propertyType := convertToValidGoType(prop, typeName, p)
-			properties = append(properties, prop+"="+propertyType)
-		}
-	}
-
-	// When dealing with oneOf sometimes property types will not be the same, we want to
-	// catch these to set them as "any" when we generate the type.
-	typeKeys := []string{}
-	// First we gather all unique properties
-	for _, v := range properties {
-		parts := strings.Split(v, "=")
-		key := parts[0]
-		if !slices.Contains(typeKeys, key) {
-			typeKeys = append(typeKeys, key)
-		}
-	}
-
-	// For each of the properties above we gather all possible types
-	// and gather all of those that are not. We will be setting those
-	// as a generic type
-	for _, k := range typeKeys {
-		values := []string{}
-		for _, v := range properties {
-			parts := strings.Split(v, "=")
-			key := parts[0]
-			value := parts[1]
-			if key == k {
-				values = append(values, value)
-			}
-		}
-
-		if !allItemsAreSame(values) {
-			genericTypes = append(genericTypes, k)
-		}
-	}
-
-	for _, v := range s.OneOf {
-		// We want to iterate over the properties of the embedded object
-		// and find the type that is a string.
-		var enumFieldName string
-
-		// Iterate over all the schema components in the spec and write the types.
-		keys := sortedKeys(v.Value.Properties)
-		for _, prop := range keys {
-			p := v.Value.Properties[prop]
-			// We want to collect all the unique properties to create our global oneOf type.
-			propertyType := convertToValidGoType(prop, typeName, p)
-
-			// Check if we have an enum in order to use the corresponding type instead of
-			// "string"
-			if propertyType == "string" && len(p.Value.Enum) != 0 {
-				propertyType = typeName + strcase.ToCamel(prop)
-			}
-
-			propertyName := strcase.ToCamel(prop)
-
-			// Avoids duplication for every enum
-			if !containsMatchFirstWord(parsedProperties, propertyName) {
-				field := TypeFields{
-					Description:       formatTypeDescription(propertyName, p.Value),
-					Name:              propertyName,
-					Type:              propertyType,
-					SerializationInfo: fmt.Sprintf("`json:\"%s,omitempty\" yaml:\"%s,omitempty\"`", prop, prop),
-				}
-
-				// We set the type of a field as "any" if every element of the oneOf property isn't the same
-				if slices.Contains(genericTypes, prop) {
-					field.Type = "any"
-				}
-
-				// Check if the field is nullable and use omitzero instead of omitempty.
-				if p.Value != nil && p.Value.Nullable {
-					field.SerializationInfo = fmt.Sprintf("`json:\"%s,omitzero\" yaml:\"%s,omitzero\"`", prop, prop)
-				}
-
-				fields = append(fields, field)
-
-				parsedProperties = append(parsedProperties, propertyName)
-			}
-
-			if p.Value.Enum != nil {
-				// We want to get the enum value.
-				// Make sure there is only one.
-				if len(p.Value.Enum) != 1 {
-					fmt.Printf("[WARN] TODO: oneOf for %q -> %q enum %#v\n", name, prop, p.Value.Enum)
-					continue
-				}
-
-				enumFieldName = strcase.ToCamel(p.Value.Enum[0].(string))
-			}
-
-			// Enums can appear in a valid OpenAPI spec as a OneOf without necessarily
-			// being identified as such. If we find an object with a single property
-			// nested inside a OneOf we will assume this is an enum and modify the name of
-			// the struct that will be created out of this object.
-			// e.g. https://github.com/oxidecomputer/omicron/blob/158c0b205f23772dc6c4c97633fd1769cc0e00d4/openapi/nexus.json#L18637-L18682
-			if len(keys) == 1 && p.Value.Enum == nil {
-				enumFieldName = propertyName
-			}
-		}
-
-		// TODO: This is the only place that has an "additional name" at the end
-		// TODO: This is where the "allOf" is being detected
-		tt, et := populateTypeTemplates(name, v.Value, enumFieldName)
+	// Build types and enums for each variant.
+	for _, v := range oneOfItems {
+		tt, et := populateTypeTemplates(name, v.schema, v.enumField)
 		typeTpls = append(typeTpls, tt...)
 		enumTpls = append(enumTpls, et...)
 	}
 
-	// TODO: For now AllOf values within a OneOf are treated as enums
-	// because that's how they are being used. Keep an eye out if this
-	// changes
-	for _, v := range s.OneOf {
-		if v.Value.AllOf != nil {
-			return typeTpls, enumTpls
+	// Build the struct type for the oneOf field, if defined.
+	oneOfFields := []TypeFields{}
+	seenFields := map[string]struct{}{}
+	for _, variantRef := range s.OneOf {
+		for _, propName := range sortedKeys(variantRef.Value.Properties) {
+			if _, ok := seenFields[propName]; ok {
+				continue
+			}
+			seenFields[propName] = struct{}{}
+
+			propRef := variantRef.Value.Properties[propName]
+			propertyField := strcase.ToCamel(propName)
+			propertyType := convertToValidGoType(propName, typeName, propRef)
+
+			// Use the enum type name instead of "string" when the property has an enum.
+			if propertyType == "string" && len(propRef.Value.Enum) != 0 {
+				propertyType = typeName + strcase.ToCamel(propName)
+			}
+
+			// Use "any" if this property has different types across variants.
+			if _, ok := variantProperties[propName]; ok {
+				propertyType = "any"
+			}
+
+			field := TypeFields{
+				Description:       formatTypeDescription(propertyField, propRef.Value),
+				Name:              propertyField,
+				Type:              propertyType,
+				SerializationInfo: fmt.Sprintf("`json:\"%s,omitempty\" yaml:\"%s,omitempty\"`", propName, propName),
+			}
+
+			// Check if the field is nullable and use omitzero instead of omitempty.
+			if propRef.Value != nil && propRef.Value.Nullable {
+				field.SerializationInfo = fmt.Sprintf("`json:\"%s,omitzero\" yaml:\"%s,omitzero\"`", propName, propName)
+			}
+
+			oneOfFields = append(oneOfFields, field)
 		}
 	}
-
-	// Make sure to only create structs if the oneOf is not a replacement for enums on the API spec
-	if len(fields) > 0 {
+	if len(oneOfFields) > 0 {
 		typeTpl := TypeTemplate{
 			Description: formatTypeDescription(typeName, s),
 			Name:        typeName,
 			Type:        "struct",
-			Fields:      fields,
+			Fields:      oneOfFields,
 		}
 		typeTpls = append(typeTpls, typeTpl)
 	}
+
 	return typeTpls, enumTpls
 }
 

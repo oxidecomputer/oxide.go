@@ -44,7 +44,7 @@ func Test_generateTypes(t *testing.T) {
 										Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Format: "uuid"},
 									},
 									"type": &openapi3.SchemaRef{
-										Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []interface{}{"snapshot"}},
+										Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []any{"snapshot"}},
 									},
 								},
 							},
@@ -58,7 +58,7 @@ func Test_generateTypes(t *testing.T) {
 										Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Format: "uuid"},
 									},
 									"type": &openapi3.SchemaRef{
-										Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []interface{}{"image"}},
+										Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []any{"image"}},
 									},
 								},
 							},
@@ -110,7 +110,7 @@ func Test_createTypeObject(t *testing.T) {
 				Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Format: "uuid"},
 			},
 			"type": {
-				Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []interface{}{"snapshot"}},
+				Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []any{"snapshot"}},
 			},
 		}}
 
@@ -156,7 +156,7 @@ func Test_createTypeObject(t *testing.T) {
 }
 
 func Test_createStringEnum(t *testing.T) {
-	typesSpec := &openapi3.Schema{Enum: []interface{}{"admin", "collaborator", "viewer"}}
+	typesSpec := &openapi3.Schema{Enum: []any{"admin", "collaborator", "viewer"}}
 	enums := map[string][]string{}
 	type args struct {
 		s           *openapi3.Schema
@@ -194,55 +194,57 @@ func Test_createStringEnum(t *testing.T) {
 }
 
 func Test_createOneOf(t *testing.T) {
-	typeSpec := &openapi3.Schema{
-		Description: "The source of the underlying image.",
-		OneOf: openapi3.SchemaRefs{
-			&openapi3.SchemaRef{
-				Value: &openapi3.Schema{
-					Type: &openapi3.Types{"object"},
-					Properties: map[string]*openapi3.SchemaRef{
-						"type": {
-							Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []interface{}{"url"}},
-						},
-						"url": {
-							Value: &openapi3.Schema{Type: &openapi3.Types{"string"}},
-						},
-					},
-					Required: []string{"type", "url"},
-				},
-			},
-			&openapi3.SchemaRef{
-				Value: &openapi3.Schema{
-					Type: &openapi3.Types{"object"},
-					Properties: map[string]*openapi3.SchemaRef{
-						"id": {
-							Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Format: "uuid"},
-						},
-						"type": {
-							Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []interface{}{"snapshot"}},
-						},
-					},
-					Required: []string{"id", "type"},
-				},
-			},
-		},
-	}
-
 	type args struct {
 		s        *openapi3.Schema
 		name     string
 		typeName string
 	}
 	tests := []struct {
-		name  string
-		args  args
-		want  []TypeTemplate
-		want1 []EnumTemplate
+		name      string
+		args      args
+		wantTypes []TypeTemplate
+		wantEnums []EnumTemplate
 	}{
 		{
-			name: "success",
-			args: args{typeSpec, "ImageSource", "ImageSource"},
-			want: []TypeTemplate{
+			name: "success: all variants of same type",
+			args: args{
+				s: &openapi3.Schema{
+					Description: "The source of the underlying image.",
+					OneOf: openapi3.SchemaRefs{
+						&openapi3.SchemaRef{
+							Value: &openapi3.Schema{
+								Type: &openapi3.Types{"object"},
+								Properties: map[string]*openapi3.SchemaRef{
+									"type": {
+										Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []any{"url"}},
+									},
+									"url": {
+										Value: &openapi3.Schema{Type: &openapi3.Types{"string"}},
+									},
+								},
+								Required: []string{"type", "url"},
+							},
+						},
+						&openapi3.SchemaRef{
+							Value: &openapi3.Schema{
+								Type: &openapi3.Types{"object"},
+								Properties: map[string]*openapi3.SchemaRef{
+									"id": {
+										Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Format: "uuid"},
+									},
+									"type": {
+										Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []any{"snapshot"}},
+									},
+								},
+								Required: []string{"id", "type"},
+							},
+						},
+					},
+				},
+				name:     "ImageSource",
+				typeName: "ImageSource",
+			},
+			wantTypes: []TypeTemplate{
 				{
 					Description: "// ImageSourceType is the type definition for a ImageSourceType.", Name: "ImageSourceType", Type: "string",
 				},
@@ -286,19 +288,119 @@ func Test_createOneOf(t *testing.T) {
 					},
 				},
 			},
-			want1: []EnumTemplate{
+			wantEnums: []EnumTemplate{
 				{Description: "// ImageSourceTypeUrl represents the ImageSourceType `\"url\"`.", Name: "ImageSourceTypeUrl", ValueType: "const", Value: "ImageSourceType = \"url\""},
 				{Description: "// ImageSourceTypeSnapshot represents the ImageSourceType `\"snapshot\"`.", Name: "ImageSourceTypeSnapshot", ValueType: "const", Value: "ImageSourceType = \"snapshot\""},
 			},
 		},
+		{
+			name: "success: variants use different types",
+			args: args{
+				s: &openapi3.Schema{
+					Description: "A value that can be a string or an integer.",
+					OneOf: openapi3.SchemaRefs{
+						&openapi3.SchemaRef{
+							Value: &openapi3.Schema{
+								Type: &openapi3.Types{"object"},
+								Properties: map[string]*openapi3.SchemaRef{
+									"type": {
+										Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []any{"string"}},
+									},
+									"value": {
+										Value: &openapi3.Schema{Type: &openapi3.Types{"string"}},
+									},
+								},
+							},
+						},
+						&openapi3.SchemaRef{
+							Value: &openapi3.Schema{
+								Type: &openapi3.Types{"object"},
+								Properties: map[string]*openapi3.SchemaRef{
+									"type": {
+										Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []any{"integer"}},
+									},
+									"value": {
+										Value: &openapi3.Schema{Type: &openapi3.Types{"integer"}},
+									},
+								},
+							},
+						},
+					},
+				},
+				name:     "FieldValue",
+				typeName: "FieldValue",
+			},
+			wantTypes: []TypeTemplate{
+				{
+					Description: "// FieldValueType is the type definition for a FieldValueType.",
+					Name:        "FieldValueType",
+					Type:        "string",
+				},
+				{
+					Description: "// FieldValueString is the type definition for a FieldValueString.",
+					Name:        "FieldValueString",
+					Type:        "struct",
+					Fields: []TypeFields{
+						{Name: "Type", Type: "FieldValueType", SerializationInfo: "`json:\"type,omitempty\" yaml:\"type,omitempty\"`"},
+						{Name: "Value", Type: "string", SerializationInfo: "`json:\"value,omitempty\" yaml:\"value,omitempty\"`"},
+					},
+				},
+				{
+					Description: "// FieldValueInteger is the type definition for a FieldValueInteger.",
+					Name:        "FieldValueInteger",
+					Type:        "struct",
+					Fields: []TypeFields{
+						{Name: "Type", Type: "FieldValueType", SerializationInfo: "`json:\"type,omitempty\" yaml:\"type,omitempty\"`"},
+						{Name: "Value", Type: "*int", SerializationInfo: "`json:\"value,omitempty\" yaml:\"value,omitempty\"`"},
+					},
+				},
+				{
+					Description: "// FieldValue is a value that can be a string or an integer.",
+					Name:        "FieldValue",
+					Type:        "struct",
+					Fields: []TypeFields{
+						{Description: "// Type is the type definition for a Type.", Name: "Type", Type: "FieldValueType", SerializationInfo: "`json:\"type,omitempty\" yaml:\"type,omitempty\"`"},
+						{Description: "// Value is the type definition for a Value.", Name: "Value", Type: "any", SerializationInfo: "`json:\"value,omitempty\" yaml:\"value,omitempty\"`"},
+					},
+				},
+			},
+			wantEnums: []EnumTemplate{
+				{Description: "// FieldValueTypeString represents the FieldValueType `\"string\"`.", Name: "FieldValueTypeString", ValueType: "const", Value: "FieldValueType = \"string\""},
+				{Description: "// FieldValueTypeInteger represents the FieldValueType `\"integer\"`.", Name: "FieldValueTypeInteger", ValueType: "const", Value: "FieldValueType = \"integer\""},
+			},
+		},
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, got1 := createOneOf(tt.args.s, tt.args.name, tt.args.typeName)
-			assert.Equal(t, tt.want, got)
-			assert.Equal(t, tt.want1, got1)
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			got, got1 := createOneOf(tc.args.s, tc.args.name, tc.args.typeName)
+			assert.Equal(t, tc.wantTypes, got)
+			assert.Equal(t, tc.wantEnums, got1)
 		})
 	}
+
+	t.Run("panics on multiple discriminator properties", func(t *testing.T) {
+		schema := &openapi3.Schema{
+			OneOf: openapi3.SchemaRefs{
+				&openapi3.SchemaRef{
+					Value: &openapi3.Schema{
+						Type: &openapi3.Types{"object"},
+						Properties: map[string]*openapi3.SchemaRef{
+							"type": {
+								Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []any{"foo"}},
+							},
+							"kind": {
+								Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []any{"bar"}},
+							},
+						},
+					},
+				},
+			},
+		}
+		assert.PanicsWithValue(t,
+			"[ERROR] Found multiple discriminator properties for type BadType: map[kind:{} type:{}]",
+			func() { createOneOf(schema, "BadType", "BadType") },
+		)
+	})
 }
 
 func Test_createAllOf(t *testing.T) {
@@ -307,7 +409,7 @@ func Test_createAllOf(t *testing.T) {
 		AllOf: openapi3.SchemaRefs{
 			&openapi3.SchemaRef{
 				Ref:   "#/components/schemas/Ipv4Range",
-				Value: &openapi3.Schema{Enum: []interface{}{}},
+				Value: &openapi3.Schema{Enum: []any{}},
 			},
 		},
 	}
@@ -330,7 +432,7 @@ func Test_createAllOf(t *testing.T) {
 			args: args{typeSpecAllOf, enums, "IpRange", "IpRange"},
 			want: []TypeTemplate{
 				{
-					Description: "// IpRange is the type definition for a IpRange.", Name: "IpRange", Type: "interface{}",
+					Description: "// IpRange is the type definition for a IpRange.", Name: "IpRange", Type: "any",
 				},
 			},
 		},

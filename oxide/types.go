@@ -4410,7 +4410,7 @@ type InternetGatewayResultsPage struct {
 }
 
 // IpNet is the type definition for a IpNet.
-type IpNet interface{}
+type IpNet any
 
 // IpPool is a collection of IP ranges. If a pool is linked to a silo, IP addresses from the pool can be
 // allocated within that silo
@@ -4577,7 +4577,7 @@ type IpPoolUtilization struct {
 }
 
 // IpRange is the type definition for a IpRange.
-type IpRange interface{}
+type IpRange any
 
 // IpVersion is the IP address version.
 type IpVersion string
