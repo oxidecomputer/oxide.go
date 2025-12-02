@@ -668,6 +668,8 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 			if len(propRef.Value.Enum) == 1 {
 				discriminatorKeys[propName] = struct{}{}
 				item.enumField = strcase.ToCamel(propRef.Value.Enum[0].(string))
+			} else if len(propRef.Value.Enum) > 1 {
+				fmt.Printf("[WARN] TODO: oneOf for %q -> %q enum %#v\n", name, propName, propRef.Value.Enum)
 			} else if propRef.Value.Enum == nil && len(keys) == 1 {
 				item.enumField = propertyField
 			}

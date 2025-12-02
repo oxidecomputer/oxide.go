@@ -82,23 +82,6 @@ func toLowerFirstLetter(str string) string {
 	return ""
 }
 
-func trimStringFromSpace(s string) string {
-	if idx := strings.Index(s, " "); idx != -1 {
-		return s[:idx]
-	}
-	return s
-}
-
-func containsMatchFirstWord(s []string, str string) bool {
-	for _, v := range s {
-		if trimStringFromSpace(v) == trimStringFromSpace(str) {
-			return true
-		}
-	}
-
-	return false
-}
-
 func isPageParam(s string) bool {
 	return s == "nextPage" || s == "pageToken" || s == "limit"
 }
