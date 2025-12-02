@@ -648,7 +648,7 @@ func createAllOf(s *openapi3.Schema, stringEnums map[string][]string, name, type
 	return typeTpls
 }
 
-type oneOfItem struct {
+type oneOfVariant struct {
 	schema    *openapi3.Schema
 	enumField string
 }
@@ -657,9 +657,9 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 	// Collect metadata about variants.
 	discriminatorKeys := map[string]struct{}{}
 	propertyToVariantTypes := map[string]map[string]struct{}{}
-	oneOfItems := []oneOfItem{}
+	oneOfItems := []oneOfVariant{}
 	for _, variantRef := range s.OneOf {
-		item := oneOfItem{schema: variantRef.Value}
+		item := oneOfVariant{schema: variantRef.Value}
 		keys := sortedKeys(variantRef.Value.Properties)
 		for _, propName := range keys {
 			propRef := variantRef.Value.Properties[propName]
@@ -688,10 +688,10 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 	}
 
 	// Find properties that have different types across variants.
-	variantProperties := []string{}
+	variantProperties := map[string]struct{}{}
 	for propName, variantTypes := range propertyToVariantTypes {
 		if len(variantTypes) > 1 {
-			variantProperties = append(variantProperties, propName)
+			variantProperties[propName] = struct{}{}
 		}
 	}
 
@@ -700,8 +700,6 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 
 	// Build types and enums for each variant.
 	for _, v := range oneOfItems {
-		// TODO: This is the only place that has an "additional name" at the end
-		// TODO: This is where the "allOf" is being detected
 		tt, et := populateTypeTemplates(name, v.schema, v.enumField)
 		typeTpls = append(typeTpls, tt...)
 		enumTpls = append(enumTpls, et...)
@@ -727,7 +725,7 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 			}
 
 			// Use "any" if this property has different types across variants.
-			if slices.Contains(variantProperties, propName) {
+			if _, ok := variantProperties[propName]; ok {
 				propertyType = "any"
 			}
 
