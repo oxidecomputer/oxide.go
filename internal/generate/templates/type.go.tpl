@@ -3,9 +3,9 @@
 type {{.Name}} {{.Type}} {
 {{- range .Fields}}
 {{- if .Description}}
-	{{splitDocString .Description}}
+	{{.Description}}
 {{- end}}
-	{{.Name}} {{.Type}} {{.SerializationInfo}}
+	{{.Name}} {{.Type}} {{.StructTag}}
 {{- end}}
 }
 
