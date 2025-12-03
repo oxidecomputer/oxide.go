@@ -5,11 +5,13 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"slices"
 	"sort"
 	"strings"
+	"text/template"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/iancoleman/strcase"
@@ -36,7 +38,21 @@ type TypeTemplate struct {
 	Fields []TypeFields
 }
 
-// TypeFields holds the information for each type field
+// Render renders the TypeTemplate to a Go type.
+func (t TypeTemplate) Render() string {
+	funcMap := template.FuncMap{
+		"splitDocString": splitDocString,
+	}
+	tmpl := template.Must(template.New("type.tpl").Funcs(funcMap).ParseFiles("./templates/type.tpl"))
+
+	var buf bytes.Buffer
+	if err := tmpl.Execute(&buf, t); err != nil {
+		panic(err)
+	}
+	return buf.String()
+}
+
+// TypeFields holds the information for each type field.
 type TypeFields struct {
 	Description       string
 	Name              string
@@ -44,7 +60,15 @@ type TypeFields struct {
 	SerializationInfo string
 }
 
-// EnumTemplate holds the information for enum types
+// Render renders the TypeFields to a Go type field.
+func (f TypeFields) Render() string {
+	if f.Description != "" {
+		return fmt.Sprintf("\t%s\n\t%s %s %s\n", splitDocString(f.Description), f.Name, f.Type, f.SerializationInfo)
+	}
+	return fmt.Sprintf("\t%s %s %s\n", f.Name, f.Type, f.SerializationInfo)
+}
+
+// EnumTemplate holds the information for enum types.
 type EnumTemplate struct {
 	Description string
 	Name        string
@@ -52,13 +76,29 @@ type EnumTemplate struct {
 	Value       string
 }
 
+// Render renders the EnumTemplate as var/const enum item.
+func (e EnumTemplate) Render() string {
+	return fmt.Sprintf("%s\n%s %s %s\n\n", splitDocString(e.Description), e.ValueType, e.Name, e.Value)
+}
+
 // ValidationTemplate holds information about the fields that
-// need to be validated
+// need to be validated.
 type ValidationTemplate struct {
 	RequiredObjects []string
 	RequiredStrings []string
 	RequiredNums    []string
 	AssociatedType  string
+}
+
+// Render renders the ValidationTemplate as a Go method.
+func (v ValidationTemplate) Render() string {
+	tmpl := template.Must(template.ParseFiles("./templates/validation.tpl"))
+
+	var buf bytes.Buffer
+	if err := tmpl.Execute(&buf, v); err != nil {
+		panic(err)
+	}
+	return buf.String()
 }
 
 // Generate the types file.
@@ -315,66 +355,16 @@ func constructEnums(enumStrCollection map[string][]string) []EnumTemplate {
 
 // writeTypes iterates over the templates, constructs the different types and writes to file
 func writeTypes(f *os.File, typeCollection []TypeTemplate, typeValidationCollection []ValidationTemplate, enumCollection []EnumTemplate) {
-	// Write all collected types to file
 	for _, tt := range typeCollection {
-		// If an empty template manages to get through, ignore it.
-		// if there is a weirdly constructed template, then let it get through
-		// so it's evident to us.
-		if tt.Name == "" && tt.Type == "" && tt.Description == "" {
-			continue
-		}
-
-		fmt.Fprintf(f, "%s\n", splitDocString(tt.Description))
-		fmt.Fprintf(f, "type %s %s", tt.Name, tt.Type)
-		if tt.Fields != nil {
-			fmt.Fprint(f, " {\n")
-			for _, ft := range tt.Fields {
-				if ft.Description != "" {
-					fmt.Fprintf(f, "\t%s\n", splitDocString(ft.Description))
-				}
-				fmt.Fprintf(f, "\t%s %s %s\n", ft.Name, ft.Type, ft.SerializationInfo)
-			}
-			fmt.Fprint(f, "}\n")
-		}
-		fmt.Fprint(f, "\n")
+		fmt.Fprint(f, tt.Render())
 	}
 
-	// Write all collected validation methods to file
 	for _, vm := range typeValidationCollection {
-		if vm.AssociatedType == "" {
-			continue
-		}
-
-		fmt.Fprintf(f, "// Validate verifies all required fields for %s are set\n", vm.AssociatedType)
-		fmt.Fprintf(f, "func (p *%s) Validate() error {\n", vm.AssociatedType)
-		fmt.Fprintln(f, "v := new(Validator)")
-		for _, o := range vm.RequiredObjects {
-			fmt.Fprintf(f, "v.HasRequiredObj(p.%s, \"%s\")\n", o, o)
-		}
-		for _, s := range vm.RequiredStrings {
-			fmt.Fprintf(f, "v.HasRequiredStr(string(p.%s), \"%s\")\n", s, s)
-		}
-		for _, i := range vm.RequiredNums {
-			fmt.Fprintf(f, "v.HasRequiredNum(p.%s, \"%s\")\n", i, i)
-		}
-		fmt.Fprintln(f, "if !v.IsValid() {")
-		// Unfortunately I have to craft the following line this way as I get
-		// unwanted newlines otherwise :(
-		n := `\n`
-		fmt.Fprintf(f, "return fmt.Errorf(\"validation error:%v%v\", v.Error())", n, `%v`)
-		fmt.Fprintln(f, "}")
-		fmt.Fprintln(f, "return nil")
-		fmt.Fprintln(f, "}")
+		fmt.Fprint(f, vm.Render())
 	}
 
-	// Write all collected enums to file
 	for _, et := range enumCollection {
-		if et.Name == "" {
-			continue
-		}
-
-		fmt.Fprintf(f, "%s\n", splitDocString(et.Description))
-		fmt.Fprintf(f, "%s %s %s\n\n", et.ValueType, et.Name, et.Value)
+		fmt.Fprint(f, et.Render())
 	}
 }
 
