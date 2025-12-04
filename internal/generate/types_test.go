@@ -188,6 +188,56 @@ func TestTypeFields_StructTag(t *testing.T) {
 	})
 }
 
+func TestTypeFields_IsPointer(t *testing.T) {
+	tests := []struct {
+		name     string
+		field    TypeFields
+		expected bool
+	}{
+		{
+			name:     "nil schema",
+			field:    TypeFields{Name: "Body", Schema: nil},
+			expected: false,
+		},
+		{
+			name: "nullable required",
+			field: TypeFields{
+				Name:     "Config",
+				Type:     "SomeConfig",
+				Schema:   &openapi3.SchemaRef{Value: &openapi3.Schema{Type: &openapi3.Types{"object"}, Nullable: true}},
+				Required: true,
+			},
+			expected: true,
+		},
+		{
+			name: "nullable not required",
+			field: TypeFields{
+				Name:     "Config",
+				Type:     "SomeConfig",
+				Schema:   &openapi3.SchemaRef{Value: &openapi3.Schema{Type: &openapi3.Types{"object"}, Nullable: true}},
+				Required: false,
+			},
+			expected: false,
+		},
+		{
+			name: "not nullable required",
+			field: TypeFields{
+				Name:     "Config",
+				Type:     "SomeConfig",
+				Schema:   &openapi3.SchemaRef{Value: &openapi3.Schema{Type: &openapi3.Types{"object"}, Nullable: false}},
+				Required: true,
+			},
+			expected: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.expected, tt.field.IsPointer())
+		})
+	}
+}
+
 func Test_createTypeObject(t *testing.T) {
 	typesSpec := openapi3.Schema{
 		Required: []string{"type"},
