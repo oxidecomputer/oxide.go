@@ -102,33 +102,68 @@ func (f TypeField) Description() string {
 }
 
 // StructTag returns the JSON/YAML struct tags for this field.
+// Configure json/yaml struct tags. By default, omit empty/zero
+// values, but retain them for required fields.
+//
+// TODO: Use `omitzero` rather than `omitempty` on all relevant
+// fields: https://github.com/oxidecomputer/oxide.go/issues/290
 func (f TypeField) StructTag() string {
-	// Derive the omit directive.
 	var omitDirective string
 	switch {
 	case f.OmitDirective != "":
-		// Explicit override.
 		omitDirective = f.OmitDirective
 	case f.Schema == nil:
-		// Special case: no schema (e.g., Body field).
 		omitDirective = "omitempty"
 	case f.Required || isNullableArray(f.Schema):
-		// Required or nullable array: no directive (always serialize).
 		omitDirective = ""
 	case slices.Contains(omitzeroTypes(), f.Type):
-		// Special types: omitzero.
 		omitDirective = "omitzero"
 	default:
 		omitDirective = "omitempty"
 	}
 
-	// Build the tag value.
 	tagValue := f.MarshalKey
 	if omitDirective != "" {
 		tagValue = f.MarshalKey + "," + omitDirective
 	}
 
 	return fmt.Sprintf("`json:\"%s\" yaml:\"%s\"`", tagValue, tagValue)
+}
+
+// IsPointer returns whether this field should be a pointer type.
+//
+// Note: Primitive type pointer logic (int, bool, time) is handled in
+// schemaValueToGoType() because those types can appear in nested contexts
+// (map values, array items) that don't go through TypeField.
+func (f TypeField) IsPointer() bool {
+	if f.Schema == nil {
+		return false
+	}
+
+	v := f.Schema.Value
+
+	// Required + nullable fields should be pointers (Omicron API pattern):
+	// they can be set to a null value, but they must not be omitted.
+	// The SDK presents these fields as optional and serializes them to
+	// `null` if not provided.
+	if f.Required && v.Nullable {
+		return true
+	}
+
+	// Check hardcoded nullable exceptions (upstream API workarounds)
+	if slices.Contains(nullable(), f.Type) {
+		return true
+	}
+
+	return false
+}
+
+// GoType returns the Go type for this field, with pointer prefix if needed.
+func (f TypeField) GoType() string {
+	if f.IsPointer() && !strings.HasPrefix(f.Type, "*") {
+		return "*" + f.Type
+	}
+	return f.Type
 }
 
 // EnumTemplate holds the information for enum types.
@@ -562,22 +597,7 @@ func createTypeObject(schema *openapi3.Schema, name, typeName, description strin
 			}
 		}
 
-		// Omicron includes fields that are both required and nullable:
-		// they can be set to a null value, but they must not be
-		// omitted. The sdk should present these fields to the user as
-		// optional, and serialize them to `null` if not provided.
 		isRequired := slices.Contains(required, k)
-		isRequiredNullable := v.Value.Nullable && isRequired
-		if slices.Contains(nullable(), typeName) || isRequiredNullable {
-			// We may have already decided to use a pointer. For
-			// example, convertToValidGoType always uses pointers
-			// for ints and bools. Prefix the type with "*", unless
-			// we've already made it a pointer upstream.
-			if !strings.HasPrefix(typeName, "*") {
-				typeName = fmt.Sprintf("*%s", typeName)
-			}
-		}
-
 		field := TypeField{
 			Name:       strcase.ToCamel(k),
 			Type:       typeName,
@@ -585,6 +605,7 @@ func createTypeObject(schema *openapi3.Schema, name, typeName, description strin
 			Schema:     v,
 			Required:   isRequired,
 		}
+		// Note: pointer prefix is applied by TypeField.GoType() based on IsPointer()
 
 		fields = append(fields, field)
 

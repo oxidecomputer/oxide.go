@@ -188,6 +188,56 @@ func TestTypeField_StructTag(t *testing.T) {
 	})
 }
 
+func TestTypeField_IsPointer(t *testing.T) {
+	tests := []struct {
+		name     string
+		field    TypeField
+		expected bool
+	}{
+		{
+			name:     "nil schema",
+			field:    TypeField{Name: "Body", Schema: nil},
+			expected: false,
+		},
+		{
+			name: "nullable required",
+			field: TypeField{
+				Name:     "Config",
+				Type:     "SomeConfig",
+				Schema:   &openapi3.SchemaRef{Value: &openapi3.Schema{Type: &openapi3.Types{"object"}, Nullable: true}},
+				Required: true,
+			},
+			expected: true,
+		},
+		{
+			name: "nullable not required",
+			field: TypeField{
+				Name:     "Config",
+				Type:     "SomeConfig",
+				Schema:   &openapi3.SchemaRef{Value: &openapi3.Schema{Type: &openapi3.Types{"object"}, Nullable: true}},
+				Required: false,
+			},
+			expected: false,
+		},
+		{
+			name: "not nullable required",
+			field: TypeField{
+				Name:     "Config",
+				Type:     "SomeConfig",
+				Schema:   &openapi3.SchemaRef{Value: &openapi3.Schema{Type: &openapi3.Types{"object"}, Nullable: false}},
+				Required: true,
+			},
+			expected: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.expected, tt.field.IsPointer())
+		})
+	}
+}
+
 func Test_createTypeObject(t *testing.T) {
 	typesSpec := openapi3.Schema{
 		Required: []string{"type"},
@@ -338,14 +388,14 @@ func Test_createOneOf(t *testing.T) {
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			gotTypes, gotEnums := createOneOf(tt.schema, tt.typeName, tt.typeName)
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			gotTypes, gotEnums := createOneOf(tc.schema, tc.typeName, tc.typeName)
 
-			if diff := cmp.Diff(tt.wantTypes, gotTypes, cmpIgnoreSchema); diff != "" {
+			if diff := cmp.Diff(tc.wantTypes, gotTypes, cmpIgnoreSchema); diff != "" {
 				t.Errorf("types mismatch (-want +got):\n%s", diff)
 			}
-			assert.Equal(t, tt.wantEnums, gotEnums)
+			assert.Equal(t, tc.wantEnums, gotEnums)
 		})
 	}
 }

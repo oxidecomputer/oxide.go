@@ -5,7 +5,7 @@ type {{.Name}} {{.Type}} {
 {{- if .Description}}
 	{{.Description}}
 {{- end}}
-	{{.Name}} {{.Type}} {{.StructTag}}
+	{{.Name}} {{.GoType}} {{.StructTag}}
 {{- end}}
 }
 

@@ -59,19 +59,13 @@ func isNullableArray(v *openapi3.SchemaRef) bool {
 
 // formatStringType converts a string schema to a valid Go type.
 func formatStringType(t *openapi3.Schema) string {
-	var format string
 	switch t.Format {
-	case "date-time":
-		format = "*time.Time"
-	case "date":
-		format = "*time.Time"
-	case "time":
-		format = "*time.Time"
+	case "date-time", "date", "time":
+		// Time types need pointers for JSON marshaling
+		return "*time.Time"
 	default:
-		format = "string"
+		return "string"
 	}
-
-	return format
 }
 
 // toLowerFirstLetter returns the given string with the first letter converted to lower case.
@@ -199,10 +193,6 @@ func schemaValueToGoType(schemaValue *openapi3.Schema, property string) string {
 		// We don't anticipate the need for slices of pointers
 		schemaType = strings.TrimPrefix(schemaType, "*")
 		return fmt.Sprintf("[]%v", schemaType)
-	}
-
-	if schemaValue.Type.Is("object") {
-		return "object"
 	}
 
 	fmt.Printf("[WARN] TODO: handle type %q for %q, marking as any for now\n", schemaValue.Type, property)
