@@ -38,10 +38,103 @@ type TypeTemplate struct {
 
 // TypeFields holds the information for each type field
 type TypeFields struct {
-	Description       string
-	Name              string
-	Type              string
-	SerializationInfo string
+	Schema     *openapi3.SchemaRef
+	Name       string
+	Type       string
+	MarshalKey string
+	Required   bool
+
+	// FallbackDescription generates a generic description for the field when the Schema doesn't have one.
+	// TODO: Drop this, since generated descriptions don't contain useful information.
+	FallbackDescription bool
+
+	// OmitDirective overrides the derived omit directive for the field.
+	// TODO: Drop this; we should set omit directives consistently rather than using overrides.
+	OmitDirective string
+}
+
+// Description returns the formatted description comment for this field.
+func (f TypeFields) Description() string {
+	if f.Schema == nil {
+		return ""
+	}
+	if f.Schema.Value.Description != "" {
+		return fmt.Sprintf("// %s is %s", f.Name, toLowerFirstLetter(
+			strings.ReplaceAll(f.Schema.Value.Description, "\n", "\n// ")))
+	}
+	if f.FallbackDescription {
+		return fmt.Sprintf("// %s is the type definition for a %s.", f.Name, f.Name)
+	}
+	return ""
+}
+
+// StructTag returns the JSON/YAML struct tags for this field.
+func (f TypeFields) StructTag() string {
+	// Configure json/yaml struct tags. By default, omit empty/zero
+	// values, but retain them for required fields.
+	//
+	// TODO: Use `omitzero` rather than `omitempty` on all relevant
+	// fields: https://github.com/oxidecomputer/oxide.go/issues/290
+	var omitDirective string
+	switch {
+	case f.OmitDirective != "":
+		omitDirective = f.OmitDirective
+	case f.Schema == nil:
+		omitDirective = "omitempty"
+	case f.Required || isNullableArray(f.Schema):
+		omitDirective = ""
+	case slices.Contains(omitzeroTypes(), f.Type):
+		omitDirective = "omitzero"
+	default:
+		omitDirective = "omitempty"
+	}
+
+	// Build the tag value.
+	tagValue := f.MarshalKey
+	if omitDirective != "" {
+		tagValue = f.MarshalKey + "," + omitDirective
+	}
+
+	return fmt.Sprintf("`json:\"%s\" yaml:\"%s\"`", tagValue, tagValue)
+}
+
+// IsPointer returns whether this field should be a pointer type.
+// This consolidates the field-level pointer decision logic:
+//   - Required + nullable fields (Omicron API pattern) need pointers
+//   - Types in the nullable() exception list need pointers
+//
+// Note: Primitive type pointer logic (int, bool, time) is handled in
+// schemaValueToGoType() because those types can appear in nested contexts
+// (map values, array items) that don't go through TypeFields.
+func (f TypeFields) IsPointer() bool {
+	if f.Schema == nil {
+		return false
+	}
+
+	v := f.Schema.Value
+
+	// Required + nullable fields should be pointers (Omicron API pattern):
+	// they can be set to a null value, but they must not be omitted.
+	// The SDK presents these fields as optional and serializes them to
+	// `null` if not provided.
+	if f.Required && v.Nullable {
+		return true
+	}
+
+	// Check hardcoded nullable exceptions (upstream API workarounds)
+	if slices.Contains(nullable(), f.Type) {
+		return true
+	}
+
+	return false
+}
+
+// GoType returns the Go type for this field, with pointer prefix if needed.
+func (f TypeFields) GoType() string {
+	if f.IsPointer() && !strings.HasPrefix(f.Type, "*") {
+		return "*" + f.Type
+	}
+	return f.Type
 }
 
 // EnumTemplate holds the information for enum types
@@ -129,17 +222,17 @@ func constructParamTypes(paths map[string]*openapi3.PathItem) []TypeTemplate {
 					}
 
 					paramName := strcase.ToCamel(p.Value.Name)
+					paramType := convertToValidGoType("", "", p.Value.Schema)
 					field := TypeFields{
-						Name: paramName,
-						Type: convertToValidGoType("", "", p.Value.Schema),
+						Name:       paramName,
+						Type:       paramType,
+						MarshalKey: p.Value.Name,
+						Schema:     nil, // nil so StructTag always uses omitempty
 					}
 
 					if p.Value.Required {
 						requiredFields = requiredFields + fmt.Sprintf("\n// - %s", paramName)
 					}
-
-					serInfo := fmt.Sprintf("`json:\"%s,omitempty\" yaml:\"%s,omitempty\"`", p.Value.Name, p.Value.Name)
-					field.SerializationInfo = serInfo
 
 					fields = append(fields, field)
 				}
@@ -151,17 +244,19 @@ func constructParamTypes(paths map[string]*openapi3.PathItem) []TypeTemplate {
 						// TODO: Handle other mime types in a more idiomatic way
 						if mt != "application/json" {
 							field = TypeFields{
-								Name:              "Body",
-								Type:              "io.Reader",
-								SerializationInfo: "`json:\"body,omitempty\" yaml:\"body,omitempty\"`",
+								Name:       "Body",
+								Type:       "io.Reader",
+								MarshalKey: "body",
+								Schema:     nil, // no schema for non-JSON body
 							}
 							break
 						}
 
 						field = TypeFields{
-							Name:              "Body",
-							Type:              "*" + convertToValidGoType("", "", r.Schema),
-							SerializationInfo: "`json:\"body,omitempty\" yaml:\"body,omitempty\"`",
+							Name:       "Body",
+							Type:       "*" + convertToValidGoType("", "", r.Schema),
+							MarshalKey: "body",
+							Schema:     nil, // Body uses special serialization
 						}
 					}
 					// Body is always a required field
@@ -329,10 +424,10 @@ func writeTypes(f *os.File, typeCollection []TypeTemplate, typeValidationCollect
 		if tt.Fields != nil {
 			fmt.Fprint(f, " {\n")
 			for _, ft := range tt.Fields {
-				if ft.Description != "" {
-					fmt.Fprintf(f, "\t%s\n", splitDocString(ft.Description))
+				if desc := ft.Description(); desc != "" {
+					fmt.Fprintf(f, "\t%s\n", splitDocString(desc))
 				}
-				fmt.Fprintf(f, "\t%s %s %s\n", ft.Name, ft.Type, ft.SerializationInfo)
+				fmt.Fprintf(f, "\t%s %s %s\n", ft.Name, ft.GoType(), ft.StructTag())
 			}
 			fmt.Fprint(f, "}\n")
 		}
@@ -513,44 +608,15 @@ func createTypeObject(schema *openapi3.Schema, name, typeName, description strin
 			}
 		}
 
-		// Omicron includes fields that are both required and nullable:
-		// they can be set to a null value, but they must not be
-		// omitted. The sdk should present these fields to the user as
-		// optional, and serialize them to `null` if not provided.
 		isRequired := slices.Contains(required, k)
-		isRequiredNullable := v.Value.Nullable && isRequired
-		if slices.Contains(nullable(), typeName) || isRequiredNullable {
-			// We may have already decided to use a pointer. For
-			// example, convertToValidGoType always uses pointers
-			// for ints and bools. Prefix the type with "*", unless
-			// we've already made it a pointer upstream.
-			if !strings.HasPrefix(typeName, "*") {
-				typeName = fmt.Sprintf("*%s", typeName)
-			}
+		field := TypeFields{
+			Name:       strcase.ToCamel(k),
+			Type:       typeName,
+			MarshalKey: k,
+			Schema:     v,
+			Required:   isRequired,
 		}
-
-		field := TypeFields{}
-		if v.Value.Description != "" {
-			desc := fmt.Sprintf("// %s is %s", strcase.ToCamel(k), toLowerFirstLetter(strings.ReplaceAll(v.Value.Description, "\n", "\n// ")))
-			field.Description = desc
-		}
-
-		field.Name = strcase.ToCamel(k)
-		field.Type = typeName
-
-		// Configure json/yaml struct tags. By default, omit empty/zero
-		// values, but retain them for required fields.
-		//
-		// TODO: Use `omitzero` rather than `omitempty` on all relevant
-		// fields: https://github.com/oxidecomputer/oxide.go/issues/290
-		serInfo := fmt.Sprintf("`json:\"%s,omitempty\" yaml:\"%s,omitempty\"`", k, k)
-		if isNullableArray(v) || isRequired {
-			serInfo = fmt.Sprintf("`json:\"%s\" yaml:\"%s\"`", k, k)
-		} else if slices.Contains(omitzeroTypes(), typeName) {
-			serInfo = fmt.Sprintf("`json:\"%s,omitzero\" yaml:\"%s,omitzero\"`", k, k)
-		}
-
-		field.SerializationInfo = serInfo
+		// Note: pointer prefix is applied by TypeFields.GoType() based on IsPointer()
 
 		fields = append(fields, field)
 
@@ -720,21 +786,24 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 
 			// Avoids duplication for every enum
 			if !containsMatchFirstWord(parsedProperties, propertyName) {
-				field := TypeFields{
-					Description:       formatTypeDescription(propertyName, p.Value),
-					Name:              propertyName,
-					Type:              propertyType,
-					SerializationInfo: fmt.Sprintf("`json:\"%s,omitempty\" yaml:\"%s,omitempty\"`", prop, prop),
-				}
-
 				// We set the type of a field as "any" if every element of the oneOf property isn't the same
 				if slices.Contains(genericTypes, prop) {
-					field.Type = "any"
+					propertyType = "any"
 				}
 
-				// Check if the field is nullable and use omitzero instead of omitempty.
+				// Determine omit directive: nullable fields in oneOf use omitzero.
+				var omitDirective string
 				if p.Value != nil && p.Value.Nullable {
-					field.SerializationInfo = fmt.Sprintf("`json:\"%s,omitzero\" yaml:\"%s,omitzero\"`", prop, prop)
+					omitDirective = "omitzero"
+				}
+
+				field := TypeFields{
+					Name:                propertyName,
+					Type:                propertyType,
+					MarshalKey:          prop,
+					Schema:              p,
+					FallbackDescription: true,
+					OmitDirective:       omitDirective,
 				}
 
 				fields = append(fields, field)
