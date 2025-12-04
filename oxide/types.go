@@ -23,7 +23,7 @@ type Address struct {
 	// AddressLot is the address lot this address is drawn from.
 	AddressLot NameOrId `json:"address_lot" yaml:"address_lot"`
 	// VlanId is optional VLAN ID for this address
-	VlanId *int `json:"vlan_id,omitempty" yaml:"vlan_id,omitempty"`
+	VlanId *int `json:"vlan_id,omitzero" yaml:"vlan_id,omitzero"`
 }
 
 // AddressConfig is a set of addresses associated with a port configuration.
@@ -100,7 +100,7 @@ type AddressLotBlockResultsPage struct {
 	// Items is list of items on this page of results
 	Items []AddressLotBlock `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // AddressLotCreate is parameters for creating an address lot.
@@ -146,7 +146,7 @@ type AddressLotResultsPage struct {
 	// Items is list of items on this page of results
 	Items []AddressLot `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // AddressLotViewResponse is an address lot and associated blocks resulting from viewing an address lot.
@@ -267,7 +267,7 @@ type AffinityGroupMemberResultsPage struct {
 	// Items is list of items on this page of results
 	Items []AffinityGroupMember `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // AffinityGroupResultsPage is a single page of results
@@ -278,13 +278,13 @@ type AffinityGroupResultsPage struct {
 	// Items is list of items on this page of results
 	Items []AffinityGroup `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // AffinityGroupUpdate is updateable properties of an `AffinityGroup`
 type AffinityGroupUpdate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	Description string `json:"description,omitzero" yaml:"description,omitzero"`
+	Name        Name   `json:"name,omitzero" yaml:"name,omitzero"`
 }
 
 // AffinityPolicy is if the affinity request cannot be satisfied, allow it anyway.
@@ -321,7 +321,7 @@ type AlertClassResultsPage struct {
 	// Items is list of items on this page of results
 	Items []AlertClass `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // AlertDelivery is a delivery of a webhook event.
@@ -387,7 +387,7 @@ type AlertDeliveryResultsPage struct {
 	// Items is list of items on this page of results
 	Items []AlertDelivery `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // AlertDeliveryState is the webhook event has not yet been delivered successfully.
@@ -412,7 +412,7 @@ type AlertProbeResult struct {
 	//
 	// Note that this may be 0, if there were no events found which had not been delivered successfully to this receiver.
 	//
-	ResendsStarted *int `json:"resends_started,omitempty" yaml:"resends_started,omitempty"`
+	ResendsStarted *int `json:"resends_started,omitzero" yaml:"resends_started,omitzero"`
 }
 
 // AlertReceiver is the configuration for an alert receiver.
@@ -476,7 +476,7 @@ type AlertReceiverResultsPage struct {
 	// Items is list of items on this page of results
 	Items []AlertReceiver `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // AlertSubscription is a webhook event class subscription matches either a single event class exactly, or
@@ -662,7 +662,7 @@ type AntiAffinityGroupMemberResultsPage struct {
 	// Items is list of items on this page of results
 	Items []AntiAffinityGroupMember `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // AntiAffinityGroupResultsPage is a single page of results
@@ -673,13 +673,13 @@ type AntiAffinityGroupResultsPage struct {
 	// Items is list of items on this page of results
 	Items []AntiAffinityGroup `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // AntiAffinityGroupUpdate is updateable properties of an `AntiAffinityGroup`
 type AntiAffinityGroupUpdate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	Description string `json:"description,omitzero" yaml:"description,omitzero"`
+	Name        Name   `json:"name,omitzero" yaml:"name,omitzero"`
 }
 
 // AuditLogEntry is audit log entry
@@ -698,7 +698,7 @@ type AuditLogEntry struct {
 	Actor AuditLogEntryActor `json:"actor" yaml:"actor"`
 	// AuthMethod is how the user authenticated the request. Possible values are "session_cookie" and "access_token". Optional
 	// because it will not be defined on unauthenticated requests like login attempts.
-	AuthMethod string `json:"auth_method,omitempty" yaml:"auth_method,omitempty"`
+	AuthMethod string `json:"auth_method,omitzero" yaml:"auth_method,omitzero"`
 	// Id is unique identifier for the audit log entry
 	Id string `json:"id" yaml:"id"`
 	// OperationId is aPI endpoint ID, e.g., `project_create`
@@ -717,7 +717,7 @@ type AuditLogEntry struct {
 	// TimeStarted is when the request was received
 	TimeStarted *time.Time `json:"time_started" yaml:"time_started"`
 	// UserAgent is user agent string from the request, truncated to 256 characters.
-	UserAgent string `json:"user_agent,omitempty" yaml:"user_agent,omitempty"`
+	UserAgent string `json:"user_agent,omitzero" yaml:"user_agent,omitzero"`
 }
 
 // AuditLogEntryActorKind is the type definition for a AuditLogEntryActorKind.
@@ -796,7 +796,7 @@ type AuditLogEntryResultSuccess struct {
 // - HttpStatusCode
 // - Kind
 type AuditLogEntryResultError struct {
-	ErrorCode    string `json:"error_code,omitempty" yaml:"error_code,omitempty"`
+	ErrorCode    string `json:"error_code,omitzero" yaml:"error_code,omitzero"`
 	ErrorMessage string `json:"error_message" yaml:"error_message"`
 	// HttpStatusCode is hTTP status code
 	HttpStatusCode *int                    `json:"http_status_code" yaml:"http_status_code"`
@@ -833,7 +833,7 @@ type AuditLogEntryResultsPage struct {
 	// Items is list of items on this page of results
 	Items []AuditLogEntry `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // AuthzScope is timeseries data is limited to fleet readers.
@@ -880,7 +880,7 @@ type BfdSessionEnable struct {
 	DetectionThreshold *int `json:"detection_threshold" yaml:"detection_threshold"`
 	// Local is address the Oxide switch will listen on for BFD traffic. If `None` then the unspecified address (0.0.0.0
 	// or ::) is used.
-	Local string `json:"local,omitempty" yaml:"local,omitempty"`
+	Local string `json:"local,omitzero" yaml:"local,omitzero"`
 	// Mode is select either single-hop (RFC 5881) or multi-hop (RFC 5883)
 	Mode BfdMode `json:"mode" yaml:"mode"`
 	// Remote is address of the remote peer to establish a BFD session with.
@@ -906,7 +906,7 @@ type BfdState string
 // - Switch
 type BfdStatus struct {
 	DetectionThreshold *int   `json:"detection_threshold" yaml:"detection_threshold"`
-	Local              string `json:"local,omitempty" yaml:"local,omitempty"`
+	Local              string `json:"local,omitzero" yaml:"local,omitzero"`
 	// Mode is bFD connection mode.
 	Mode       BfdMode  `json:"mode" yaml:"mode"`
 	Peer       string   `json:"peer" yaml:"peer"`
@@ -1006,7 +1006,7 @@ type BgpConfig struct {
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 	// Vrf is optional virtual routing and forwarding identifier for this BGP configuration.
-	Vrf string `json:"vrf,omitempty" yaml:"vrf,omitempty"`
+	Vrf string `json:"vrf,omitzero" yaml:"vrf,omitzero"`
 }
 
 // BgpConfigCreate is parameters for creating a BGP configuration. This includes and autonomous system number
@@ -1027,7 +1027,7 @@ type BgpConfigCreate struct {
 	// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 	// Vrf is optional virtual routing and forwarding identifier for this BGP configuration.
-	Vrf Name `json:"vrf,omitempty" yaml:"vrf,omitempty"`
+	Vrf Name `json:"vrf,omitzero" yaml:"vrf,omitzero"`
 }
 
 // BgpConfigResultsPage is a single page of results
@@ -1038,7 +1038,7 @@ type BgpConfigResultsPage struct {
 	// Items is list of items on this page of results
 	Items []BgpConfig `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // BgpExported is the current status of a BGP peer.
@@ -1116,17 +1116,17 @@ type BgpPeer struct {
 	// Keepalive is how often to send keepalive requests (seconds).
 	Keepalive *int `json:"keepalive" yaml:"keepalive"`
 	// LocalPref is apply a local preference to routes received from this peer.
-	LocalPref *int `json:"local_pref,omitempty" yaml:"local_pref,omitempty"`
+	LocalPref *int `json:"local_pref,omitzero" yaml:"local_pref,omitzero"`
 	// Md5AuthKey is use the given key for TCP-MD5 authentication with the peer.
-	Md5AuthKey string `json:"md5_auth_key,omitempty" yaml:"md5_auth_key,omitempty"`
+	Md5AuthKey string `json:"md5_auth_key,omitzero" yaml:"md5_auth_key,omitzero"`
 	// MinTtl is require messages from a peer have a minimum IP time to live field.
-	MinTtl *int `json:"min_ttl,omitempty" yaml:"min_ttl,omitempty"`
+	MinTtl *int `json:"min_ttl,omitzero" yaml:"min_ttl,omitzero"`
 	// MultiExitDiscriminator is apply the provided multi-exit discriminator (MED) updates sent to the peer.
-	MultiExitDiscriminator *int `json:"multi_exit_discriminator,omitempty" yaml:"multi_exit_discriminator,omitempty"`
+	MultiExitDiscriminator *int `json:"multi_exit_discriminator,omitzero" yaml:"multi_exit_discriminator,omitzero"`
 	// RemoteAsn is require that a peer has a specified ASN.
-	RemoteAsn *int `json:"remote_asn,omitempty" yaml:"remote_asn,omitempty"`
+	RemoteAsn *int `json:"remote_asn,omitzero" yaml:"remote_asn,omitzero"`
 	// VlanId is associate a VLAN ID with a peer.
-	VlanId *int `json:"vlan_id,omitempty" yaml:"vlan_id,omitempty"`
+	VlanId *int `json:"vlan_id,omitzero" yaml:"vlan_id,omitzero"`
 }
 
 // BgpPeerConfig is the type definition for a BgpPeerConfig.
@@ -1831,7 +1831,7 @@ type CertificateResultsPage struct {
 	// Items is list of items on this page of results
 	Items []Certificate `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // ConsoleSession is view of a console session
@@ -1855,7 +1855,7 @@ type ConsoleSessionResultsPage struct {
 	// Items is list of items on this page of results
 	Items []ConsoleSession `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // Cumulativedouble is a cumulative or counter data type.
@@ -2311,7 +2311,7 @@ type DeviceAccessToken struct {
 	Id          string     `json:"id" yaml:"id"`
 	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
 	// TimeExpires is expiration timestamp. A null value means the token does not automatically expire.
-	TimeExpires *time.Time `json:"time_expires,omitempty" yaml:"time_expires,omitempty"`
+	TimeExpires *time.Time `json:"time_expires,omitzero" yaml:"time_expires,omitzero"`
 }
 
 // DeviceAccessTokenRequest is the type definition for a DeviceAccessTokenRequest.
@@ -2334,7 +2334,7 @@ type DeviceAccessTokenResultsPage struct {
 	// Items is list of items on this page of results
 	Items []DeviceAccessToken `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // DeviceAuthRequest is the type definition for a DeviceAuthRequest.
@@ -2345,7 +2345,7 @@ type DeviceAuthRequest struct {
 	ClientId string `json:"client_id" yaml:"client_id"`
 	// TtlSeconds is optional lifetime for the access token in seconds. If not specified, the silo's max TTL
 	// will be used (if set).
-	TtlSeconds *int `json:"ttl_seconds,omitempty" yaml:"ttl_seconds,omitempty"`
+	TtlSeconds *int `json:"ttl_seconds,omitzero" yaml:"ttl_seconds,omitzero"`
 }
 
 // DeviceAuthVerify is the type definition for a DeviceAuthVerify.
@@ -2399,14 +2399,14 @@ type Disk struct {
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id" yaml:"id"`
 	// ImageId is iD of image from which disk was created, if any
-	ImageId string `json:"image_id,omitempty" yaml:"image_id,omitempty"`
+	ImageId string `json:"image_id,omitzero" yaml:"image_id,omitzero"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name      Name   `json:"name" yaml:"name"`
 	ProjectId string `json:"project_id" yaml:"project_id"`
 	// Size is byte count to express memory or storage capacity.
 	Size ByteCount `json:"size" yaml:"size"`
 	// SnapshotId is iD of snapshot from which disk was created, if any
-	SnapshotId string `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
+	SnapshotId string `json:"snapshot_id,omitzero" yaml:"snapshot_id,omitzero"`
 	// State is state of a Disk
 	State DiskState `json:"state" yaml:"state"`
 	// TimeCreated is timestamp when this resource was created
@@ -2451,7 +2451,7 @@ type DiskResultsPage struct {
 	// Items is list of items on this page of results
 	Items []Disk `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // DiskSourceType is the type definition for a DiskSourceType.
@@ -2638,11 +2638,11 @@ type DiskState struct {
 type Distributiondouble struct {
 	Bins         []float64 `json:"bins" yaml:"bins"`
 	Counts       []int     `json:"counts" yaml:"counts"`
-	Max          float64   `json:"max,omitempty" yaml:"max,omitempty"`
-	Min          float64   `json:"min,omitempty" yaml:"min,omitempty"`
-	P50          Quantile  `json:"p50,omitempty" yaml:"p50,omitempty"`
-	P90          Quantile  `json:"p90,omitempty" yaml:"p90,omitempty"`
-	P99          Quantile  `json:"p99,omitempty" yaml:"p99,omitempty"`
+	Max          float64   `json:"max,omitzero" yaml:"max,omitzero"`
+	Min          float64   `json:"min,omitzero" yaml:"min,omitzero"`
+	P50          Quantile  `json:"p50,omitzero" yaml:"p50,omitzero"`
+	P90          Quantile  `json:"p90,omitzero" yaml:"p90,omitzero"`
+	P99          Quantile  `json:"p99,omitzero" yaml:"p99,omitzero"`
 	SquaredMean  float64   `json:"squared_mean" yaml:"squared_mean"`
 	SumOfSamples float64   `json:"sum_of_samples" yaml:"sum_of_samples"`
 }
@@ -2661,11 +2661,11 @@ type Distributiondouble struct {
 type Distributionint64 struct {
 	Bins         []int    `json:"bins" yaml:"bins"`
 	Counts       []int    `json:"counts" yaml:"counts"`
-	Max          *int     `json:"max,omitempty" yaml:"max,omitempty"`
-	Min          *int     `json:"min,omitempty" yaml:"min,omitempty"`
-	P50          Quantile `json:"p50,omitempty" yaml:"p50,omitempty"`
-	P90          Quantile `json:"p90,omitempty" yaml:"p90,omitempty"`
-	P99          Quantile `json:"p99,omitempty" yaml:"p99,omitempty"`
+	Max          *int     `json:"max,omitzero" yaml:"max,omitzero"`
+	Min          *int     `json:"min,omitzero" yaml:"min,omitzero"`
+	P50          Quantile `json:"p50,omitzero" yaml:"p50,omitzero"`
+	P90          Quantile `json:"p90,omitzero" yaml:"p90,omitzero"`
+	P99          Quantile `json:"p99,omitzero" yaml:"p99,omitzero"`
 	SquaredMean  float64  `json:"squared_mean" yaml:"squared_mean"`
 	SumOfSamples *int     `json:"sum_of_samples" yaml:"sum_of_samples"`
 }
@@ -2674,7 +2674,7 @@ type Distributionint64 struct {
 type EphemeralIpCreate struct {
 	// Pool is name or ID of the IP pool used to allocate an address. If unspecified, the default IP pool will
 	// be used.
-	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Pool NameOrId `json:"pool,omitzero" yaml:"pool,omitzero"`
 }
 
 // Error is error information from a response.
@@ -2683,7 +2683,7 @@ type EphemeralIpCreate struct {
 // - Message
 // - RequestId
 type Error struct {
-	ErrorCode string `json:"error_code,omitempty" yaml:"error_code,omitempty"`
+	ErrorCode string `json:"error_code,omitzero" yaml:"error_code,omitzero"`
 	Message   string `json:"message" yaml:"message"`
 	RequestId string `json:"request_id" yaml:"request_id"`
 }
@@ -2744,7 +2744,7 @@ type ExternalIpFloating struct {
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id" yaml:"id"`
 	// InstanceId is the ID of the instance that this Floating IP is attached to, if it is presently in use.
-	InstanceId string `json:"instance_id,omitempty" yaml:"instance_id,omitempty"`
+	InstanceId string `json:"instance_id,omitzero" yaml:"instance_id,omitzero"`
 	// Ip is the IP address held by this resource.
 	Ip string `json:"ip" yaml:"ip"`
 	// IpPoolId is the ID of the IP pool this resource belongs to.
@@ -2797,7 +2797,7 @@ type ExternalIpCreateType string
 // Required fields:
 // - Type
 type ExternalIpCreateEphemeral struct {
-	Pool NameOrId             `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Pool NameOrId             `json:"pool,omitzero" yaml:"pool,omitzero"`
 	Type ExternalIpCreateType `json:"type" yaml:"type"`
 }
 
@@ -2832,7 +2832,7 @@ type ExternalIpResultsPage struct {
 	// Items is list of items on this page of results
 	Items []ExternalIp `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // FailureDomain is instances are considered co-located if they are on the same sled
@@ -2996,7 +2996,7 @@ type FinalizeDisk struct {
 	// SnapshotName is if specified a snapshot of the disk will be created with the given name during finalization. If
 	// not specified, a snapshot for the disk will _not_ be created. A snapshot can be manually created once the
 	// disk transitions into the `Detached` state.
-	SnapshotName Name `json:"snapshot_name,omitempty" yaml:"snapshot_name,omitempty"`
+	SnapshotName Name `json:"snapshot_name,omitzero" yaml:"snapshot_name,omitzero"`
 }
 
 // FleetRole is the type definition for a FleetRole.
@@ -3048,7 +3048,7 @@ type FloatingIp struct {
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id" yaml:"id"`
 	// InstanceId is the ID of the instance that this Floating IP is attached to, if it is presently in use.
-	InstanceId string `json:"instance_id,omitempty" yaml:"instance_id,omitempty"`
+	InstanceId string `json:"instance_id,omitzero" yaml:"instance_id,omitzero"`
 	// Ip is the IP address held by this resource.
 	Ip string `json:"ip" yaml:"ip"`
 	// IpPoolId is the ID of the IP pool this resource belongs to.
@@ -3084,13 +3084,13 @@ type FloatingIpCreate struct {
 	Description string `json:"description" yaml:"description"`
 	// Ip is an IP address to reserve for use as a floating IP. This field is optional: when not set, an address
 	// will be automatically chosen from `pool`. If set, then the IP must be available in the resolved `pool`.
-	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
+	Ip string `json:"ip,omitzero" yaml:"ip,omitzero"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
 	// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 	// Pool is the parent IP pool that a floating IP is pulled from. If unset, the default pool is selected.
-	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Pool NameOrId `json:"pool,omitzero" yaml:"pool,omitzero"`
 }
 
 // FloatingIpParentKind is the type of resource that a floating IP is attached to
@@ -3104,13 +3104,13 @@ type FloatingIpResultsPage struct {
 	// Items is list of items on this page of results
 	Items []FloatingIp `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // FloatingIpUpdate is updateable identity-related parameters
 type FloatingIpUpdate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	Description string `json:"description,omitzero" yaml:"description,omitzero"`
+	Name        Name   `json:"name,omitzero" yaml:"name,omitzero"`
 }
 
 // Group is view of a Group
@@ -3135,7 +3135,7 @@ type GroupResultsPage struct {
 	// Items is list of items on this page of results
 	Items []Group `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // Histogramdouble is histogram metric
@@ -3631,7 +3631,7 @@ type IdentityProviderResultsPage struct {
 	// Items is list of items on this page of results
 	Items []IdentityProvider `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // IdentityProviderType is sAML identity provider
@@ -3694,7 +3694,7 @@ type Image struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description" yaml:"description"`
 	// Digest is hash of the image contents, if applicable
-	Digest Digest `json:"digest,omitempty" yaml:"digest,omitempty"`
+	Digest Digest `json:"digest,omitzero" yaml:"digest,omitzero"`
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id" yaml:"id"`
 	// Name is unique, mutable, user-controlled identifier for each resource
@@ -3702,7 +3702,7 @@ type Image struct {
 	// Os is the family of the operating system like Debian, Ubuntu, etc.
 	Os string `json:"os" yaml:"os"`
 	// ProjectId is iD of the parent project if the image is a project image
-	ProjectId string `json:"project_id,omitempty" yaml:"project_id,omitempty"`
+	ProjectId string `json:"project_id,omitzero" yaml:"project_id,omitzero"`
 	// Size is total size in bytes
 	Size ByteCount `json:"size" yaml:"size"`
 	// TimeCreated is timestamp when this resource was created
@@ -3743,7 +3743,7 @@ type ImageResultsPage struct {
 	// Items is list of items on this page of results
 	Items []Image `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // ImageSourceType is the type definition for a ImageSourceType.
@@ -3828,7 +3828,7 @@ type Instance struct {
 	//
 	// If this is not present, then either the instance has never been automatically restarted, or the cooldown period
 	// has already expired, allowing the instance to be restarted immediately if it fails.
-	AutoRestartCooldownExpiration *time.Time `json:"auto_restart_cooldown_expiration,omitempty" yaml:"auto_restart_cooldown_expiration,omitempty"`
+	AutoRestartCooldownExpiration *time.Time `json:"auto_restart_cooldown_expiration,omitzero" yaml:"auto_restart_cooldown_expiration,omitzero"`
 	// AutoRestartEnabled is `true` if this instance's auto-restart policy will permit the control plane to
 	// automatically restart it if it enters the `Failed` state.
 	AutoRestartEnabled *bool `json:"auto_restart_enabled" yaml:"auto_restart_enabled"`
@@ -3840,12 +3840,12 @@ type Instance struct {
 	// this instance, which may or may not allow it to be restarted. The value of the `auto_restart_enabled` field
 	// indicates whether the instance will be auto-restarted, based on its current policy or the default if it
 	// has no configured policy.
-	AutoRestartPolicy InstanceAutoRestartPolicy `json:"auto_restart_policy,omitempty" yaml:"auto_restart_policy,omitempty"`
+	AutoRestartPolicy InstanceAutoRestartPolicy `json:"auto_restart_policy,omitzero" yaml:"auto_restart_policy,omitzero"`
 	// BootDiskId is the ID of the disk used to boot this Instance, if a specific one is assigned.
-	BootDiskId string `json:"boot_disk_id,omitempty" yaml:"boot_disk_id,omitempty"`
+	BootDiskId string `json:"boot_disk_id,omitzero" yaml:"boot_disk_id,omitzero"`
 	// CpuPlatform is the CPU platform for this instance. If this is `null`, the instance requires no particular CPU
 	// platform.
-	CpuPlatform InstanceCpuPlatform `json:"cpu_platform,omitempty" yaml:"cpu_platform,omitempty"`
+	CpuPlatform InstanceCpuPlatform `json:"cpu_platform,omitzero" yaml:"cpu_platform,omitzero"`
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description" yaml:"description"`
 	// Hostname is rFC1035-compliant hostname for the Instance.
@@ -3871,7 +3871,7 @@ type Instance struct {
 	// the control plane.
 	//
 	// If this is not present, then this instance has not been automatically restarted.
-	TimeLastAutoRestarted *time.Time `json:"time_last_auto_restarted,omitempty" yaml:"time_last_auto_restarted,omitempty"`
+	TimeLastAutoRestarted *time.Time `json:"time_last_auto_restarted,omitzero" yaml:"time_last_auto_restarted,omitzero"`
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified        *time.Time `json:"time_modified" yaml:"time_modified"`
 	TimeRunStateUpdated *time.Time `json:"time_run_state_updated" yaml:"time_run_state_updated"`
@@ -3908,7 +3908,7 @@ type InstanceCreate struct {
 	// will be automatically restarted. However, in the future, the default policy may be configurable through other
 	// mechanisms, such as on a per-project basis. In that case, any configured default policy will be used if
 	// this is `null`.
-	AutoRestartPolicy InstanceAutoRestartPolicy `json:"auto_restart_policy,omitempty" yaml:"auto_restart_policy,omitempty"`
+	AutoRestartPolicy InstanceAutoRestartPolicy `json:"auto_restart_policy,omitzero" yaml:"auto_restart_policy,omitzero"`
 	// BootDisk is the disk the instance is configured to boot from.
 	//
 	// This disk can either be attached if it already exists or created along with the instance.
@@ -3921,11 +3921,11 @@ type InstanceCreate struct {
 	// are controlled by both the instance's UEFI firmware and the guest operating system. Boot options can change
 	// as disks are attached and detached, which may result in an instance that only boots to the EFI shell until
 	// a boot disk is set.
-	BootDisk *InstanceDiskAttachment `json:"boot_disk,omitempty" yaml:"boot_disk,omitempty"`
+	BootDisk *InstanceDiskAttachment `json:"boot_disk,omitzero" yaml:"boot_disk,omitzero"`
 	// CpuPlatform is the CPU platform to be used for this instance. If this is `null`, the instance requires no
 	// particular CPU platform; when it is started the instance will have the most general CPU platform supported by
 	// the sled it is initially placed on.
-	CpuPlatform InstanceCpuPlatform `json:"cpu_platform,omitempty" yaml:"cpu_platform,omitempty"`
+	CpuPlatform InstanceCpuPlatform `json:"cpu_platform,omitzero" yaml:"cpu_platform,omitzero"`
 	Description string              `json:"description" yaml:"description"`
 	// Disks is a list of disks to be attached to the instance.
 	//
@@ -3933,12 +3933,12 @@ type InstanceCreate struct {
 	//
 	// The order of this list does not guarantee a boot order for the instance. Use the boot_disk attribute to
 	// specify a boot disk. When boot_disk is specified it will count against the disk attachment limit.
-	Disks []InstanceDiskAttachment `json:"disks,omitempty" yaml:"disks,omitempty"`
+	Disks []InstanceDiskAttachment `json:"disks,omitzero" yaml:"disks,omitzero"`
 	// ExternalIps is the external IP addresses provided to this instance.
 	//
 	// By default, all instances have outbound connectivity, but no inbound connectivity. These external addresses can
 	// be used to provide a fixed, known IP address for making inbound connections to the instance.
-	ExternalIps []ExternalIpCreate `json:"external_ips,omitempty" yaml:"external_ips,omitempty"`
+	ExternalIps []ExternalIpCreate `json:"external_ips,omitzero" yaml:"external_ips,omitzero"`
 	// Hostname is the hostname to be assigned to the instance
 	Hostname Hostname `json:"hostname" yaml:"hostname"`
 	// Memory is the amount of RAM (in bytes) to be allocated to the instance
@@ -3950,7 +3950,7 @@ type InstanceCreate struct {
 	// Ncpus is the number of vCPUs to be allocated to the instance
 	Ncpus InstanceCpuCount `json:"ncpus" yaml:"ncpus"`
 	// NetworkInterfaces is the network interfaces to be created for this instance.
-	NetworkInterfaces InstanceNetworkInterfaceAttachment `json:"network_interfaces,omitempty" yaml:"network_interfaces,omitempty"`
+	NetworkInterfaces InstanceNetworkInterfaceAttachment `json:"network_interfaces,omitzero" yaml:"network_interfaces,omitzero"`
 	// SshPublicKeys is an allowlist of SSH public keys to be transferred to the instance via cloud-init during
 	// instance creation.
 	//
@@ -3958,10 +3958,10 @@ type InstanceCreate struct {
 	// public keys will be transmitted to the instance.
 	SshPublicKeys []NameOrId `json:"ssh_public_keys" yaml:"ssh_public_keys"`
 	// Start is should this instance be started upon creation; true by default.
-	Start *bool `json:"start,omitempty" yaml:"start,omitempty"`
+	Start *bool `json:"start,omitzero" yaml:"start,omitzero"`
 	// UserData is user data for instance initialization systems (such as cloud-init). Must be a Base64-encoded string,
 	// as specified in RFC 4648 § 4 (+ and / characters with padding). Maximum 32 KiB unencoded data.
-	UserData string `json:"user_data,omitempty" yaml:"user_data,omitempty"`
+	UserData string `json:"user_data,omitzero" yaml:"user_data,omitzero"`
 }
 
 // InstanceDiskAttachmentType is the type definition for a InstanceDiskAttachmentType.
@@ -4052,7 +4052,7 @@ type InstanceNetworkInterface struct {
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 	// TransitIps is a set of additional networks that this interface may send and receive traffic on.
-	TransitIps []IpNet `json:"transit_ips,omitempty" yaml:"transit_ips,omitempty"`
+	TransitIps []IpNet `json:"transit_ips,omitzero" yaml:"transit_ips,omitzero"`
 	// VpcId is the VPC to which the interface belongs.
 	VpcId string `json:"vpc_id" yaml:"vpc_id"`
 }
@@ -4109,7 +4109,7 @@ type InstanceNetworkInterfaceAttachment struct {
 type InstanceNetworkInterfaceCreate struct {
 	Description string `json:"description" yaml:"description"`
 	// Ip is the IP address for the interface. One will be auto-assigned if not provided.
-	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
+	Ip string `json:"ip,omitzero" yaml:"ip,omitzero"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
 	// can be at most 63 characters long.
@@ -4117,7 +4117,7 @@ type InstanceNetworkInterfaceCreate struct {
 	// SubnetName is the VPC Subnet in which to create the interface.
 	SubnetName Name `json:"subnet_name" yaml:"subnet_name"`
 	// TransitIps is a set of additional networks that this interface may send and receive traffic on.
-	TransitIps []IpNet `json:"transit_ips,omitempty" yaml:"transit_ips,omitempty"`
+	TransitIps []IpNet `json:"transit_ips,omitzero" yaml:"transit_ips,omitzero"`
 	// VpcName is the VPC in which to create the interface.
 	VpcName Name `json:"vpc_name" yaml:"vpc_name"`
 }
@@ -4130,15 +4130,15 @@ type InstanceNetworkInterfaceResultsPage struct {
 	// Items is list of items on this page of results
 	Items []InstanceNetworkInterface `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // InstanceNetworkInterfaceUpdate is parameters for updating an `InstanceNetworkInterface`
 //
 // Note that modifying IP addresses for an interface is not yet supported, a new interface must be created instead.
 type InstanceNetworkInterfaceUpdate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	Description string `json:"description,omitzero" yaml:"description,omitzero"`
+	Name        Name   `json:"name,omitzero" yaml:"name,omitzero"`
 	// Primary is make a secondary interface the instance's primary interface.
 	//
 	// If applied to a secondary interface, that interface will become the primary on the next reboot of the instance.
@@ -4147,9 +4147,9 @@ type InstanceNetworkInterfaceUpdate struct {
 	//
 	// Note that this can only be used to select a new primary interface for an instance. Requests to change the
 	// primary interface into a secondary will return an error.
-	Primary *bool `json:"primary,omitempty" yaml:"primary,omitempty"`
+	Primary *bool `json:"primary,omitzero" yaml:"primary,omitzero"`
 	// TransitIps is a set of additional networks that this interface may send and receive traffic on.
-	TransitIps []IpNet `json:"transit_ips,omitempty" yaml:"transit_ips,omitempty"`
+	TransitIps []IpNet `json:"transit_ips,omitzero" yaml:"transit_ips,omitzero"`
 }
 
 // InstanceResultsPage is a single page of results
@@ -4160,7 +4160,7 @@ type InstanceResultsPage struct {
 	// Items is list of items on this page of results
 	Items []Instance `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // InstanceSerialConsoleData is contents of an Instance's serial console buffer.
@@ -4342,7 +4342,7 @@ type InternetGatewayIpAddressResultsPage struct {
 	// Items is list of items on this page of results
 	Items []InternetGatewayIpAddress `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // InternetGatewayIpPool is an IP pool that is attached to an internet gateway
@@ -4395,7 +4395,7 @@ type InternetGatewayIpPoolResultsPage struct {
 	// Items is list of items on this page of results
 	Items []InternetGatewayIpPool `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // InternetGatewayResultsPage is a single page of results
@@ -4406,7 +4406,7 @@ type InternetGatewayResultsPage struct {
 	// Items is list of items on this page of results
 	Items []InternetGateway `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // IpNet is the type definition for a IpNet.
@@ -4456,13 +4456,13 @@ type IpPoolCreate struct {
 	// IpVersion is the IP version of the pool.
 	//
 	// The default is IPv4.
-	IpVersion IpVersion `json:"ip_version,omitempty" yaml:"ip_version,omitempty"`
+	IpVersion IpVersion `json:"ip_version,omitzero" yaml:"ip_version,omitzero"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
 	// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 	// PoolType is type of IP pool (defaults to Unicast)
-	PoolType IpPoolType `json:"pool_type,omitempty" yaml:"pool_type,omitempty"`
+	PoolType IpPoolType `json:"pool_type,omitzero" yaml:"pool_type,omitzero"`
 }
 
 // IpPoolLinkSilo is the type definition for a IpPoolLinkSilo.
@@ -4499,7 +4499,7 @@ type IpPoolRangeResultsPage struct {
 	// Items is list of items on this page of results
 	Items []IpPoolRange `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // IpPoolResultsPage is a single page of results
@@ -4510,7 +4510,7 @@ type IpPoolResultsPage struct {
 	// Items is list of items on this page of results
 	Items []IpPool `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // IpPoolSiloLink is a link between an IP pool and a silo that allows one to allocate IPs from the pool within
@@ -4536,7 +4536,7 @@ type IpPoolSiloLinkResultsPage struct {
 	// Items is list of items on this page of results
 	Items []IpPoolSiloLink `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // IpPoolSiloUpdate is the type definition for a IpPoolSiloUpdate.
@@ -4555,8 +4555,8 @@ type IpPoolType string
 
 // IpPoolUpdate is parameters for updating an IP Pool
 type IpPoolUpdate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	Description string `json:"description,omitzero" yaml:"description,omitzero"`
+	Name        Name   `json:"name,omitzero" yaml:"name,omitzero"`
 }
 
 // IpPoolUtilization is the utilization of IP addresses in a pool.
@@ -4629,7 +4629,7 @@ type LinkConfigCreate struct {
 	Autoneg *bool `json:"autoneg" yaml:"autoneg"`
 	// Fec is the requested forward-error correction method.  If this is not specified, the standard FEC for
 	// the underlying media will be applied if it can be determined.
-	Fec LinkFec `json:"fec,omitempty" yaml:"fec,omitempty"`
+	Fec LinkFec `json:"fec,omitzero" yaml:"fec,omitzero"`
 	// LinkName is link name. On ports that are not broken out, this is always phy0. On a 2x breakout the options
 	// are phy0 and phy1, on 4x phy0-phy3, etc.
 	LinkName Name `json:"link_name" yaml:"link_name"`
@@ -4640,7 +4640,7 @@ type LinkConfigCreate struct {
 	// Speed is the speed of the link.
 	Speed LinkSpeed `json:"speed" yaml:"speed"`
 	// TxEq is optional tx_eq settings.
-	TxEq *TxEqConfig `json:"tx_eq,omitempty" yaml:"tx_eq,omitempty"`
+	TxEq *TxEqConfig `json:"tx_eq,omitzero" yaml:"tx_eq,omitzero"`
 }
 
 // LinkFec is firecode forward error correction.
@@ -4656,21 +4656,21 @@ type LinkSpeed string
 // - Id
 type LldpLinkConfig struct {
 	// ChassisId is the LLDP chassis identifier TLV.
-	ChassisId string `json:"chassis_id,omitempty" yaml:"chassis_id,omitempty"`
+	ChassisId string `json:"chassis_id,omitzero" yaml:"chassis_id,omitzero"`
 	// Enabled is whether or not the LLDP service is enabled.
 	Enabled *bool `json:"enabled" yaml:"enabled"`
 	// Id is the id of this LLDP service instance.
 	Id string `json:"id" yaml:"id"`
 	// LinkDescription is the LLDP link description TLV.
-	LinkDescription string `json:"link_description,omitempty" yaml:"link_description,omitempty"`
+	LinkDescription string `json:"link_description,omitzero" yaml:"link_description,omitzero"`
 	// LinkName is the LLDP link name TLV.
-	LinkName string `json:"link_name,omitempty" yaml:"link_name,omitempty"`
+	LinkName string `json:"link_name,omitzero" yaml:"link_name,omitzero"`
 	// ManagementIp is the LLDP management IP TLV.
-	ManagementIp string `json:"management_ip,omitempty" yaml:"management_ip,omitempty"`
+	ManagementIp string `json:"management_ip,omitzero" yaml:"management_ip,omitzero"`
 	// SystemDescription is the LLDP system description TLV.
-	SystemDescription string `json:"system_description,omitempty" yaml:"system_description,omitempty"`
+	SystemDescription string `json:"system_description,omitzero" yaml:"system_description,omitzero"`
 	// SystemName is the LLDP system name TLV.
-	SystemName string `json:"system_name,omitempty" yaml:"system_name,omitempty"`
+	SystemName string `json:"system_name,omitzero" yaml:"system_name,omitzero"`
 }
 
 // LldpLinkConfigCreate is the LLDP configuration associated with a port.
@@ -4679,19 +4679,19 @@ type LldpLinkConfig struct {
 // - Enabled
 type LldpLinkConfigCreate struct {
 	// ChassisId is the LLDP chassis identifier TLV.
-	ChassisId string `json:"chassis_id,omitempty" yaml:"chassis_id,omitempty"`
+	ChassisId string `json:"chassis_id,omitzero" yaml:"chassis_id,omitzero"`
 	// Enabled is whether or not LLDP is enabled.
 	Enabled *bool `json:"enabled" yaml:"enabled"`
 	// LinkDescription is the LLDP link description TLV.
-	LinkDescription string `json:"link_description,omitempty" yaml:"link_description,omitempty"`
+	LinkDescription string `json:"link_description,omitzero" yaml:"link_description,omitzero"`
 	// LinkName is the LLDP link name TLV.
-	LinkName string `json:"link_name,omitempty" yaml:"link_name,omitempty"`
+	LinkName string `json:"link_name,omitzero" yaml:"link_name,omitzero"`
 	// ManagementIp is the LLDP management IP TLV.
-	ManagementIp string `json:"management_ip,omitempty" yaml:"management_ip,omitempty"`
+	ManagementIp string `json:"management_ip,omitzero" yaml:"management_ip,omitzero"`
 	// SystemDescription is the LLDP system description TLV.
-	SystemDescription string `json:"system_description,omitempty" yaml:"system_description,omitempty"`
+	SystemDescription string `json:"system_description,omitzero" yaml:"system_description,omitzero"`
 	// SystemName is the LLDP system name TLV.
-	SystemName string `json:"system_name,omitempty" yaml:"system_name,omitempty"`
+	SystemName string `json:"system_name,omitzero" yaml:"system_name,omitzero"`
 }
 
 // LldpNeighbor is information about LLDP advertisements from other network entities directly connected to
@@ -4713,7 +4713,7 @@ type LldpNeighbor struct {
 	// LastSeen is most recent sighting of this LldpNeighbor
 	LastSeen *time.Time `json:"last_seen" yaml:"last_seen"`
 	// LinkDescription is the LLDP link description advertised by the neighbor
-	LinkDescription string `json:"link_description,omitempty" yaml:"link_description,omitempty"`
+	LinkDescription string `json:"link_description,omitzero" yaml:"link_description,omitzero"`
 	// LinkName is the LLDP link name advertised by the neighbor
 	LinkName string `json:"link_name" yaml:"link_name"`
 	// LocalPort is the port on which the neighbor was seen
@@ -4721,9 +4721,9 @@ type LldpNeighbor struct {
 	// ManagementIp is the LLDP management IP(s) advertised by the neighbor
 	ManagementIp []ManagementAddress `json:"management_ip" yaml:"management_ip"`
 	// SystemDescription is the LLDP system description advertised by the neighbor
-	SystemDescription string `json:"system_description,omitempty" yaml:"system_description,omitempty"`
+	SystemDescription string `json:"system_description,omitzero" yaml:"system_description,omitzero"`
 	// SystemName is the LLDP system name advertised by the neighbor
-	SystemName string `json:"system_name,omitempty" yaml:"system_name,omitempty"`
+	SystemName string `json:"system_name,omitzero" yaml:"system_name,omitzero"`
 }
 
 // LldpNeighborResultsPage is a single page of results
@@ -4734,7 +4734,7 @@ type LldpNeighborResultsPage struct {
 	// Items is list of items on this page of results
 	Items []LldpNeighbor `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // LoopbackAddress is a loopback address is an address that is assigned to a rack switch but is not associated with
@@ -4793,7 +4793,7 @@ type LoopbackAddressResultsPage struct {
 	// Items is list of items on this page of results
 	Items []LoopbackAddress `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // MacAddr is a Media Access Control address, in EUI-48 format
@@ -4829,7 +4829,7 @@ type MeasurementResultsPage struct {
 	// Items is list of items on this page of results
 	Items []Measurement `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // MetricType is the value represents an instantaneous measurement in time.
@@ -4842,7 +4842,7 @@ type MetricType string
 type MissingDatum struct {
 	// DatumType is the type of an individual datum of a metric.
 	DatumType DatumType  `json:"datum_type" yaml:"datum_type"`
-	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+	StartTime *time.Time `json:"start_time,omitzero" yaml:"start_time,omitzero"`
 }
 
 // Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
@@ -4909,7 +4909,7 @@ type NetworkInterface struct {
 	Primary    *bool   `json:"primary" yaml:"primary"`
 	Slot       *int    `json:"slot" yaml:"slot"`
 	Subnet     IpNet   `json:"subnet" yaml:"subnet"`
-	TransitIps []IpNet `json:"transit_ips,omitempty" yaml:"transit_ips,omitempty"`
+	TransitIps []IpNet `json:"transit_ips,omitzero" yaml:"transit_ips,omitzero"`
 	// Vni is a Geneve Virtual Network Identifier
 	Vni Vni `json:"vni" yaml:"vni"`
 }
@@ -5009,7 +5009,7 @@ type PhysicalDisk struct {
 	Policy PhysicalDiskPolicy `json:"policy" yaml:"policy"`
 	Serial string             `json:"serial" yaml:"serial"`
 	// SledId is the sled to which this disk is attached, if any.
-	SledId string `json:"sled_id,omitempty" yaml:"sled_id,omitempty"`
+	SledId string `json:"sled_id,omitzero" yaml:"sled_id,omitzero"`
 	// State is the current state Nexus believes the disk to be in.
 	State PhysicalDiskState `json:"state" yaml:"state"`
 	// TimeCreated is timestamp when this resource was created
@@ -5061,7 +5061,7 @@ type PhysicalDiskResultsPage struct {
 	// Items is list of items on this page of results
 	Items []PhysicalDisk `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // PhysicalDiskState is the disk is currently active, and has resources allocated on it.
@@ -5122,7 +5122,7 @@ type Probe struct {
 // - Sled
 type ProbeCreate struct {
 	Description string   `json:"description" yaml:"description"`
-	IpPool      NameOrId `json:"ip_pool,omitempty" yaml:"ip_pool,omitempty"`
+	IpPool      NameOrId `json:"ip_pool,omitzero" yaml:"ip_pool,omitzero"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
 	// can be at most 63 characters long.
@@ -5175,7 +5175,7 @@ type ProbeInfoResultsPage struct {
 	// Items is list of items on this page of results
 	Items []ProbeInfo `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // Project is view of a Project
@@ -5220,7 +5220,7 @@ type ProjectResultsPage struct {
 	// Items is list of items on this page of results
 	Items []Project `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // ProjectRole is the type definition for a ProjectRole.
@@ -5257,8 +5257,8 @@ type ProjectRoleRoleAssignment struct {
 
 // ProjectUpdate is updateable properties of a `Project`
 type ProjectUpdate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	Description string `json:"description,omitzero" yaml:"description,omitzero"`
+	Name        Name   `json:"name,omitzero" yaml:"name,omitzero"`
 }
 
 // Quantile is structure for estimating the p-quantile of a population.
@@ -5311,7 +5311,7 @@ type RackResultsPage struct {
 	// Items is list of items on this page of results
 	Items []Rack `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // Route is a route to a destination network through a gateway address.
@@ -5325,9 +5325,9 @@ type Route struct {
 	// Gw is the route gateway.
 	Gw string `json:"gw" yaml:"gw"`
 	// RibPriority is route RIB priority. Higher priority indicates precedence within and across protocols.
-	RibPriority *int `json:"rib_priority,omitempty" yaml:"rib_priority,omitempty"`
+	RibPriority *int `json:"rib_priority,omitzero" yaml:"rib_priority,omitzero"`
 	// Vid is vLAN id the gateway is reachable over.
-	Vid *int `json:"vid,omitempty" yaml:"vid,omitempty"`
+	Vid *int `json:"vid,omitzero" yaml:"vid,omitzero"`
 }
 
 // RouteConfig is route configuration data associated with a switch port configuration.
@@ -5552,7 +5552,7 @@ type RouterRouteResultsPage struct {
 	// Items is list of items on this page of results
 	Items []RouterRoute `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // RouterRouteUpdate is updateable properties of a `RouterRoute`
@@ -5561,10 +5561,10 @@ type RouterRouteResultsPage struct {
 // - Destination
 // - Target
 type RouterRouteUpdate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Description string `json:"description,omitzero" yaml:"description,omitzero"`
 	// Destination is selects which traffic this routing rule will apply to.
 	Destination RouteDestination `json:"destination" yaml:"destination"`
-	Name        Name             `json:"name,omitempty" yaml:"name,omitempty"`
+	Name        Name             `json:"name,omitzero" yaml:"name,omitzero"`
 	// Target is the location that matched packets should be forwarded to.
 	Target RouteTarget `json:"target" yaml:"target"`
 }
@@ -5589,7 +5589,7 @@ type SamlIdentityProvider struct {
 	Description string `json:"description" yaml:"description"`
 	// GroupAttributeName is if set, attributes with this name will be considered to denote a user's group membership,
 	// where the values will be the group names.
-	GroupAttributeName string `json:"group_attribute_name,omitempty" yaml:"group_attribute_name,omitempty"`
+	GroupAttributeName string `json:"group_attribute_name,omitzero" yaml:"group_attribute_name,omitzero"`
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id" yaml:"id"`
 	// IdpEntityId is idP's entity id
@@ -5597,7 +5597,7 @@ type SamlIdentityProvider struct {
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name" yaml:"name"`
 	// PublicCert is optional request signing public certificate (base64 encoded der file)
-	PublicCert string `json:"public_cert,omitempty" yaml:"public_cert,omitempty"`
+	PublicCert string `json:"public_cert,omitzero" yaml:"public_cert,omitzero"`
 	// SloUrl is service provider endpoint where the idp should send log out requests
 	SloUrl string `json:"slo_url" yaml:"slo_url"`
 	// SpClientId is sP's client id
@@ -5627,7 +5627,7 @@ type SamlIdentityProviderCreate struct {
 	Description string `json:"description" yaml:"description"`
 	// GroupAttributeName is if set, SAML attributes with this name will be considered to denote a user's group
 	// membership, where the attribute value(s) should be a comma-separated list of group names.
-	GroupAttributeName string `json:"group_attribute_name,omitempty" yaml:"group_attribute_name,omitempty"`
+	GroupAttributeName string `json:"group_attribute_name,omitzero" yaml:"group_attribute_name,omitzero"`
 	// IdpEntityId is idp's entity id
 	IdpEntityId string `json:"idp_entity_id" yaml:"idp_entity_id"`
 	// IdpMetadataSource is the source of an identity provider metadata descriptor
@@ -5654,7 +5654,7 @@ type SamlIdentityProviderCreate struct {
 type ScimClientBearerToken struct {
 	Id          string     `json:"id" yaml:"id"`
 	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
-	TimeExpires *time.Time `json:"time_expires,omitempty" yaml:"time_expires,omitempty"`
+	TimeExpires *time.Time `json:"time_expires,omitzero" yaml:"time_expires,omitzero"`
 }
 
 // ScimClientBearerTokenValue is the POST response is the only time the generated bearer token is returned to
@@ -5668,7 +5668,7 @@ type ScimClientBearerTokenValue struct {
 	BearerToken string     `json:"bearer_token" yaml:"bearer_token"`
 	Id          string     `json:"id" yaml:"id"`
 	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
-	TimeExpires *time.Time `json:"time_expires,omitempty" yaml:"time_expires,omitempty"`
+	TimeExpires *time.Time `json:"time_expires,omitzero" yaml:"time_expires,omitzero"`
 }
 
 // ServiceIcmpConfig is configuration of inbound ICMP allowed by API services.
@@ -5710,7 +5710,7 @@ type SetTargetReleaseParams struct {
 type Silo struct {
 	// AdminGroupName is optionally, silos can have a group name that is automatically granted the silo admin role.
 	//
-	AdminGroupName string `json:"admin_group_name,omitempty" yaml:"admin_group_name,omitempty"`
+	AdminGroupName string `json:"admin_group_name,omitzero" yaml:"admin_group_name,omitzero"`
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description" yaml:"description"`
 	// Discoverable is a silo where discoverable is false can be retrieved only by its id - it will not be part
@@ -5740,7 +5740,7 @@ type Silo struct {
 type SiloAuthSettings struct {
 	// DeviceTokenMaxTtlSeconds is maximum lifetime of a device token in seconds. If set to null, users will be
 	// able to create tokens that do not expire.
-	DeviceTokenMaxTtlSeconds *int   `json:"device_token_max_ttl_seconds,omitempty" yaml:"device_token_max_ttl_seconds,omitempty"`
+	DeviceTokenMaxTtlSeconds *int   `json:"device_token_max_ttl_seconds,omitzero" yaml:"device_token_max_ttl_seconds,omitzero"`
 	SiloId                   string `json:"silo_id" yaml:"silo_id"`
 }
 
@@ -5770,7 +5770,7 @@ type SiloCreate struct {
 	//
 	// Note that if configuring a SAML based identity provider, group_attribute_name must be set for users to be
 	// considered part of a group. See `SamlIdentityProviderCreate` for more information.
-	AdminGroupName string `json:"admin_group_name,omitempty" yaml:"admin_group_name,omitempty"`
+	AdminGroupName string `json:"admin_group_name,omitzero" yaml:"admin_group_name,omitzero"`
 	Description    string `json:"description" yaml:"description"`
 	Discoverable   *bool  `json:"discoverable" yaml:"discoverable"`
 	// IdentityMode is describes how identities are managed and users are authenticated in this Silo
@@ -5779,7 +5779,7 @@ type SiloCreate struct {
 	//
 	// The default is that no Fleet roles are conferred by any Silo roles unless there's a corresponding entry in
 	// this map.
-	MappedFleetRoles map[string][]FleetRole `json:"mapped_fleet_roles,omitempty" yaml:"mapped_fleet_roles,omitempty"`
+	MappedFleetRoles map[string][]FleetRole `json:"mapped_fleet_roles,omitzero" yaml:"mapped_fleet_roles,omitzero"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
 	// can be at most 63 characters long.
@@ -5831,7 +5831,7 @@ type SiloIpPoolResultsPage struct {
 	// Items is list of items on this page of results
 	Items []SiloIpPool `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // SiloQuotas is a collection of resource counts used to set the virtual capacity of a silo
@@ -5874,18 +5874,18 @@ type SiloQuotasResultsPage struct {
 	// Items is list of items on this page of results
 	Items []SiloQuotas `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // SiloQuotasUpdate is updateable properties of a Silo's resource limits. If a value is omitted it will not
 // be updated.
 type SiloQuotasUpdate struct {
 	// Cpus is the amount of virtual CPUs available for running instances in the Silo
-	Cpus *int `json:"cpus,omitempty" yaml:"cpus,omitempty"`
+	Cpus *int `json:"cpus,omitzero" yaml:"cpus,omitzero"`
 	// Memory is the amount of RAM (in bytes) available for running instances in the Silo
-	Memory ByteCount `json:"memory,omitempty" yaml:"memory,omitempty"`
+	Memory ByteCount `json:"memory,omitzero" yaml:"memory,omitzero"`
 	// Storage is the amount of storage (in bytes) available for disks or snapshots
-	Storage ByteCount `json:"storage,omitempty" yaml:"storage,omitempty"`
+	Storage ByteCount `json:"storage,omitzero" yaml:"storage,omitzero"`
 }
 
 // SiloResultsPage is a single page of results
@@ -5896,7 +5896,7 @@ type SiloResultsPage struct {
 	// Items is list of items on this page of results
 	Items []Silo `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // SiloRole is the type definition for a SiloRole.
@@ -5960,7 +5960,7 @@ type SiloUtilizationResultsPage struct {
 	// Items is list of items on this page of results
 	Items []SiloUtilization `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // Sled is an operator's view of a Sled.
@@ -6022,7 +6022,7 @@ type SledInstance struct {
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id          string `json:"id" yaml:"id"`
 	Memory      *int   `json:"memory" yaml:"memory"`
-	MigrationId string `json:"migration_id,omitempty" yaml:"migration_id,omitempty"`
+	MigrationId string `json:"migration_id,omitzero" yaml:"migration_id,omitzero"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
 	// can be at most 63 characters long.
@@ -6055,7 +6055,7 @@ type SledInstanceResultsPage struct {
 	// Items is list of items on this page of results
 	Items []SledInstance `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // SledPolicyKind is the type definition for a SledPolicyKind.
@@ -6125,7 +6125,7 @@ type SledResultsPage struct {
 	// Items is list of items on this page of results
 	Items []Sled `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // SledState is the sled is currently active, and has resources allocated on it.
@@ -6185,7 +6185,7 @@ type SnapshotResultsPage struct {
 	// Items is list of items on this page of results
 	Items []Snapshot `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // SnapshotState is the type definition for a SnapshotState.
@@ -6242,13 +6242,13 @@ type SshKeyResultsPage struct {
 	// Items is list of items on this page of results
 	Items []SshKey `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // SupportBundleCreate is the type definition for a SupportBundleCreate.
 type SupportBundleCreate struct {
 	// UserComment is user comment for the support bundle
-	UserComment string `json:"user_comment,omitempty" yaml:"user_comment,omitempty"`
+	UserComment string `json:"user_comment,omitzero" yaml:"user_comment,omitzero"`
 }
 
 // SupportBundleInfo is the type definition for a SupportBundleInfo.
@@ -6261,10 +6261,10 @@ type SupportBundleCreate struct {
 type SupportBundleInfo struct {
 	Id                string             `json:"id" yaml:"id"`
 	ReasonForCreation string             `json:"reason_for_creation" yaml:"reason_for_creation"`
-	ReasonForFailure  string             `json:"reason_for_failure,omitempty" yaml:"reason_for_failure,omitempty"`
+	ReasonForFailure  string             `json:"reason_for_failure,omitzero" yaml:"reason_for_failure,omitzero"`
 	State             SupportBundleState `json:"state" yaml:"state"`
 	TimeCreated       *time.Time         `json:"time_created" yaml:"time_created"`
-	UserComment       string             `json:"user_comment,omitempty" yaml:"user_comment,omitempty"`
+	UserComment       string             `json:"user_comment,omitzero" yaml:"user_comment,omitzero"`
 }
 
 // SupportBundleInfoResultsPage is a single page of results
@@ -6275,7 +6275,7 @@ type SupportBundleInfoResultsPage struct {
 	// Items is list of items on this page of results
 	Items []SupportBundleInfo `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // SupportBundleState is support Bundle still actively being collected.
@@ -6290,7 +6290,7 @@ type SupportBundleState string
 // SupportBundleUpdate is the type definition for a SupportBundleUpdate.
 type SupportBundleUpdate struct {
 	// UserComment is user comment for the support bundle
-	UserComment string `json:"user_comment,omitempty" yaml:"user_comment,omitempty"`
+	UserComment string `json:"user_comment,omitzero" yaml:"user_comment,omitzero"`
 }
 
 // Switch is an operator's view of a Switch.
@@ -6431,7 +6431,7 @@ type SwitchPort struct {
 	PortName Name `json:"port_name" yaml:"port_name"`
 	// PortSettingsId is the primary settings group of this switch port. Will be `None` until this switch port
 	// is configured.
-	PortSettingsId string `json:"port_settings_id,omitempty" yaml:"port_settings_id,omitempty"`
+	PortSettingsId string `json:"port_settings_id,omitzero" yaml:"port_settings_id,omitzero"`
 	// RackId is the rack this switch port belongs to.
 	RackId string `json:"rack_id" yaml:"rack_id"`
 	// SwitchLocation is the switch location of this switch port.
@@ -6461,7 +6461,7 @@ type SwitchPortAddressView struct {
 	// PortSettingsId is the port settings object this address configuration belongs to.
 	PortSettingsId string `json:"port_settings_id" yaml:"port_settings_id"`
 	// VlanId is an optional VLAN ID
-	VlanId *int `json:"vlan_id,omitempty" yaml:"vlan_id,omitempty"`
+	VlanId *int `json:"vlan_id,omitzero" yaml:"vlan_id,omitzero"`
 }
 
 // SwitchPortApplySettings is parameters for applying settings to switch ports.
@@ -6513,11 +6513,11 @@ type SwitchPortLinkConfig struct {
 	Autoneg *bool `json:"autoneg" yaml:"autoneg"`
 	// Fec is the requested forward-error correction method.  If this is not specified, the standard FEC for
 	// the underlying media will be applied if it can be determined.
-	Fec LinkFec `json:"fec,omitempty" yaml:"fec,omitempty"`
+	Fec LinkFec `json:"fec,omitzero" yaml:"fec,omitzero"`
 	// LinkName is the name of this link.
 	LinkName Name `json:"link_name" yaml:"link_name"`
 	// LldpLinkConfig is the link-layer discovery protocol service configuration for this link.
-	LldpLinkConfig *LldpLinkConfig `json:"lldp_link_config,omitempty" yaml:"lldp_link_config,omitempty"`
+	LldpLinkConfig *LldpLinkConfig `json:"lldp_link_config,omitzero" yaml:"lldp_link_config,omitzero"`
 	// Mtu is the maximum transmission unit for this link.
 	Mtu *int `json:"mtu" yaml:"mtu"`
 	// PortSettingsId is the port settings this link configuration belongs to.
@@ -6525,7 +6525,7 @@ type SwitchPortLinkConfig struct {
 	// Speed is the configured speed of the link.
 	Speed LinkSpeed `json:"speed" yaml:"speed"`
 	// TxEqConfig is the tx_eq configuration for this link.
-	TxEqConfig *TxEqConfig2 `json:"tx_eq_config,omitempty" yaml:"tx_eq_config,omitempty"`
+	TxEqConfig *TxEqConfig2 `json:"tx_eq_config,omitzero" yaml:"tx_eq_config,omitzero"`
 }
 
 // SwitchPortResultsPage is a single page of results
@@ -6536,7 +6536,7 @@ type SwitchPortResultsPage struct {
 	// Items is list of items on this page of results
 	Items []SwitchPort `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // SwitchPortRouteConfig is a route configuration for a port settings object.
@@ -6556,10 +6556,10 @@ type SwitchPortRouteConfig struct {
 	// PortSettingsId is the port settings object this route configuration belongs to.
 	PortSettingsId string `json:"port_settings_id" yaml:"port_settings_id"`
 	// RibPriority is route RIB priority. Higher priority indicates precedence within and across protocols.
-	RibPriority *int `json:"rib_priority,omitempty" yaml:"rib_priority,omitempty"`
+	RibPriority *int `json:"rib_priority,omitzero" yaml:"rib_priority,omitzero"`
 	// VlanId is the VLAN identifier for the route. Use this if the gateway is reachable over an 802.1Q tagged L2
 	// segment.
-	VlanId *int `json:"vlan_id,omitempty" yaml:"vlan_id,omitempty"`
+	VlanId *int `json:"vlan_id,omitzero" yaml:"vlan_id,omitzero"`
 }
 
 // SwitchPortSettings is this structure contains all port settings information in one place. It's a convenience data
@@ -6622,11 +6622,11 @@ type SwitchPortSettingsCreate struct {
 	// Addresses is address configurations.
 	Addresses []AddressConfig `json:"addresses" yaml:"addresses"`
 	// BgpPeers is bGP peer configurations.
-	BgpPeers    []BgpPeerConfig `json:"bgp_peers,omitempty" yaml:"bgp_peers,omitempty"`
+	BgpPeers    []BgpPeerConfig `json:"bgp_peers,omitzero" yaml:"bgp_peers,omitzero"`
 	Description string          `json:"description" yaml:"description"`
 	Groups      []NameOrId      `json:"groups,omitzero" yaml:"groups,omitzero"`
 	// Interfaces is interface configurations.
-	Interfaces []SwitchInterfaceConfigCreate `json:"interfaces,omitempty" yaml:"interfaces,omitempty"`
+	Interfaces []SwitchInterfaceConfigCreate `json:"interfaces,omitzero" yaml:"interfaces,omitzero"`
 	// Links is link configurations.
 	Links []LinkConfigCreate `json:"links" yaml:"links"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
@@ -6636,7 +6636,7 @@ type SwitchPortSettingsCreate struct {
 	// PortConfig is physical switch port configuration.
 	PortConfig SwitchPortConfigCreate `json:"port_config" yaml:"port_config"`
 	// Routes is route configurations.
-	Routes []RouteConfig `json:"routes,omitempty" yaml:"routes,omitempty"`
+	Routes []RouteConfig `json:"routes,omitzero" yaml:"routes,omitzero"`
 }
 
 // SwitchPortSettingsGroups is this structure maps a port settings object to a port settings groups. Port
@@ -6682,7 +6682,7 @@ type SwitchPortSettingsIdentityResultsPage struct {
 	// Items is list of items on this page of results
 	Items []SwitchPortSettingsIdentity `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // SwitchResultsPage is a single page of results
@@ -6693,7 +6693,7 @@ type SwitchResultsPage struct {
 	// Items is list of items on this page of results
 	Items []Switch `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // SwitchVlanInterfaceConfig is a switch port VLAN interface configuration for a port settings object.
@@ -6808,7 +6808,7 @@ type TimeseriesSchemaResultsPage struct {
 	// Items is list of items on this page of results
 	Items []TimeseriesSchema `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // TufRepo is metadata about a TUF repository
@@ -6842,7 +6842,7 @@ type TufRepoResultsPage struct {
 	// Items is list of items on this page of results
 	Items []TufRepo `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // TufRepoUpload is the type definition for a TufRepoUpload.
@@ -6865,30 +6865,30 @@ type TufRepoUploadStatus string
 // to improve signal integrity.
 type TxEqConfig struct {
 	// Main is main tap
-	Main *int `json:"main,omitempty" yaml:"main,omitempty"`
+	Main *int `json:"main,omitzero" yaml:"main,omitzero"`
 	// Post1 is post-cursor tap1
-	Post1 *int `json:"post1,omitempty" yaml:"post1,omitempty"`
+	Post1 *int `json:"post1,omitzero" yaml:"post1,omitzero"`
 	// Post2 is post-cursor tap2
-	Post2 *int `json:"post2,omitempty" yaml:"post2,omitempty"`
+	Post2 *int `json:"post2,omitzero" yaml:"post2,omitzero"`
 	// Pre1 is pre-cursor tap1
-	Pre1 *int `json:"pre1,omitempty" yaml:"pre1,omitempty"`
+	Pre1 *int `json:"pre1,omitzero" yaml:"pre1,omitzero"`
 	// Pre2 is pre-cursor tap2
-	Pre2 *int `json:"pre2,omitempty" yaml:"pre2,omitempty"`
+	Pre2 *int `json:"pre2,omitzero" yaml:"pre2,omitzero"`
 }
 
 // TxEqConfig2 is per-port tx-eq overrides.  This can be used to fine-tune the transceiver equalization settings
 // to improve signal integrity.
 type TxEqConfig2 struct {
 	// Main is main tap
-	Main *int `json:"main,omitempty" yaml:"main,omitempty"`
+	Main *int `json:"main,omitzero" yaml:"main,omitzero"`
 	// Post1 is post-cursor tap1
-	Post1 *int `json:"post1,omitempty" yaml:"post1,omitempty"`
+	Post1 *int `json:"post1,omitzero" yaml:"post1,omitzero"`
 	// Post2 is post-cursor tap2
-	Post2 *int `json:"post2,omitempty" yaml:"post2,omitempty"`
+	Post2 *int `json:"post2,omitzero" yaml:"post2,omitzero"`
 	// Pre1 is pre-cursor tap1
-	Pre1 *int `json:"pre1,omitempty" yaml:"pre1,omitempty"`
+	Pre1 *int `json:"pre1,omitzero" yaml:"pre1,omitzero"`
 	// Pre2 is pre-cursor tap2
-	Pre2 *int `json:"pre2,omitempty" yaml:"pre2,omitempty"`
+	Pre2 *int `json:"pre2,omitzero" yaml:"pre2,omitzero"`
 }
 
 // UninitializedSled is a sled that has not been added to an initialized rack yet
@@ -6922,7 +6922,7 @@ type UninitializedSledResultsPage struct {
 	// Items is list of items on this page of results
 	Items []UninitializedSled `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // Units is the type definition for a Units.
@@ -6988,7 +6988,7 @@ type UpdatesTrustRootResultsPage struct {
 	// Items is list of items on this page of results
 	Items []UpdatesTrustRoot `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // User is view of a User
@@ -7036,7 +7036,7 @@ type UserBuiltinResultsPage struct {
 	// Items is list of items on this page of results
 	Items []UserBuiltin `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // UserCreate is create-time parameters for a `User`
@@ -7094,7 +7094,7 @@ type UserResultsPage struct {
 	// Items is list of items on this page of results
 	Items []User `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // UsernamePasswordCredentials is credentials for local user login
@@ -7281,7 +7281,7 @@ type VpcCreate struct {
 	//
 	// All IPv6 subnets created from this VPC must be taken from this range, which should be a Unique Local Address
 	// in the range `fd00::/48`. The default VPC Subnet will have the first `/64` range from this prefix.
-	Ipv6Prefix Ipv6Net `json:"ipv6_prefix,omitempty" yaml:"ipv6_prefix,omitempty"`
+	Ipv6Prefix Ipv6Net `json:"ipv6_prefix,omitzero" yaml:"ipv6_prefix,omitzero"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
 	// can be at most 63 characters long.
@@ -7293,7 +7293,7 @@ type VpcCreate struct {
 // Required fields:
 // - IcmpType
 type VpcFirewallIcmpFilter struct {
-	Code     IcmpParamRange `json:"code,omitempty" yaml:"code,omitempty"`
+	Code     IcmpParamRange `json:"code,omitzero" yaml:"code,omitzero"`
 	IcmpType *int           `json:"icmp_type" yaml:"icmp_type"`
 }
 
@@ -7597,7 +7597,7 @@ type VpcResultsPage struct {
 	// Items is list of items on this page of results
 	Items []Vpc `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // VpcRouter is a VPC router defines a series of rules that indicate where traffic should be sent depending on
@@ -7651,13 +7651,13 @@ type VpcRouterResultsPage struct {
 	// Items is list of items on this page of results
 	Items []VpcRouter `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // VpcRouterUpdate is updateable properties of a `VpcRouter`
 type VpcRouterUpdate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	Description string `json:"description,omitzero" yaml:"description,omitzero"`
+	Name        Name   `json:"name,omitzero" yaml:"name,omitzero"`
 }
 
 // VpcSubnet is a VPC subnet represents a logical grouping for instances that allows network traffic between
@@ -7674,7 +7674,7 @@ type VpcRouterUpdate struct {
 // - VpcId
 type VpcSubnet struct {
 	// CustomRouterId is iD for an attached custom router.
-	CustomRouterId string `json:"custom_router_id,omitempty" yaml:"custom_router_id,omitempty"`
+	CustomRouterId string `json:"custom_router_id,omitzero" yaml:"custom_router_id,omitzero"`
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description" yaml:"description"`
 	// Id is unique, immutable, system-controlled identifier for each resource
@@ -7705,7 +7705,7 @@ type VpcSubnetCreate struct {
 	//
 	// Custom routers apply in addition to the VPC-wide *system* router, and have higher priority than the system router
 	// for an otherwise equal-prefix-length match.
-	CustomRouter NameOrId `json:"custom_router,omitempty" yaml:"custom_router,omitempty"`
+	CustomRouter NameOrId `json:"custom_router,omitzero" yaml:"custom_router,omitzero"`
 	Description  string   `json:"description" yaml:"description"`
 	// Ipv4Block is the IPv4 address range for this subnet.
 	//
@@ -7717,7 +7717,7 @@ type VpcSubnetCreate struct {
 	// It must be allocated from the RFC 4193 Unique Local Address range, with the prefix equal to the parent VPC's
 	// prefix. A random `/64` block will be assigned if one is not provided. It must not overlap with any existing subnet
 	// in the VPC.
-	Ipv6Block Ipv6Net `json:"ipv6_block,omitempty" yaml:"ipv6_block,omitempty"`
+	Ipv6Block Ipv6Net `json:"ipv6_block,omitzero" yaml:"ipv6_block,omitzero"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
 	// can be at most 63 characters long.
@@ -7732,23 +7732,23 @@ type VpcSubnetResultsPage struct {
 	// Items is list of items on this page of results
 	Items []VpcSubnet `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
-	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+	NextPage string `json:"next_page,omitzero" yaml:"next_page,omitzero"`
 }
 
 // VpcSubnetUpdate is updateable properties of a `VpcSubnet`
 type VpcSubnetUpdate struct {
 	// CustomRouter is an optional router, used to direct packets sent from hosts in this subnet to any destination address.
 	//
-	CustomRouter NameOrId `json:"custom_router,omitempty" yaml:"custom_router,omitempty"`
-	Description  string   `json:"description,omitempty" yaml:"description,omitempty"`
-	Name         Name     `json:"name,omitempty" yaml:"name,omitempty"`
+	CustomRouter NameOrId `json:"custom_router,omitzero" yaml:"custom_router,omitzero"`
+	Description  string   `json:"description,omitzero" yaml:"description,omitzero"`
+	Name         Name     `json:"name,omitzero" yaml:"name,omitzero"`
 }
 
 // VpcUpdate is updateable properties of a `Vpc`
 type VpcUpdate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	DnsName     Name   `json:"dns_name,omitempty" yaml:"dns_name,omitempty"`
-	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	Description string `json:"description,omitzero" yaml:"description,omitzero"`
+	DnsName     Name   `json:"dns_name,omitzero" yaml:"dns_name,omitzero"`
+	Name        Name   `json:"name,omitzero" yaml:"name,omitzero"`
 }
 
 // WebhookCreate is create-time identity-related parameters
@@ -7772,7 +7772,7 @@ type WebhookCreate struct {
 	//
 	// If this list is empty or is not included in the request body, the webhook will not be subscribed to any events.
 	//
-	Subscriptions []AlertSubscription `json:"subscriptions,omitempty" yaml:"subscriptions,omitempty"`
+	Subscriptions []AlertSubscription `json:"subscriptions,omitzero" yaml:"subscriptions,omitzero"`
 }
 
 // WebhookDeliveryAttempt is an individual delivery attempt for a webhook event.
@@ -7786,7 +7786,7 @@ type WebhookCreate struct {
 type WebhookDeliveryAttempt struct {
 	// Attempt is the attempt number.
 	Attempt  *int                    `json:"attempt" yaml:"attempt"`
-	Response WebhookDeliveryResponse `json:"response,omitempty" yaml:"response,omitempty"`
+	Response WebhookDeliveryResponse `json:"response,omitzero" yaml:"response,omitzero"`
 	// Result is the outcome of this delivery attempt: either the event was delivered successfully, or the request
 	// failed for one of several reasons.
 	Result WebhookDeliveryAttemptResult `json:"result" yaml:"result"`
@@ -7840,10 +7840,10 @@ type WebhookReceiver struct {
 
 // WebhookReceiverUpdate is parameters to update a webhook configuration.
 type WebhookReceiverUpdate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Description string `json:"description,omitzero" yaml:"description,omitzero"`
 	// Endpoint is the URL that webhook notification requests should be sent to
-	Endpoint string `json:"endpoint,omitempty" yaml:"endpoint,omitempty"`
-	Name     Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	Endpoint string `json:"endpoint,omitzero" yaml:"endpoint,omitzero"`
+	Name     Name   `json:"name,omitzero" yaml:"name,omitzero"`
 }
 
 // WebhookSecret is a view of a shared secret key assigned to a webhook receiver.

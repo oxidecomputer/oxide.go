@@ -538,16 +538,11 @@ func createTypeObject(schema *openapi3.Schema, name, typeName, description strin
 		field.Name = strcase.ToCamel(k)
 		field.Type = typeName
 
-		// Configure json/yaml struct tags. By default, omit empty/zero
+		// Configure json/yaml struct tags. By default, omit zero
 		// values, but retain them for required fields.
-		//
-		// TODO: Use `omitzero` rather than `omitempty` on all relevant
-		// fields: https://github.com/oxidecomputer/oxide.go/issues/290
-		serInfo := fmt.Sprintf("`json:\"%s,omitempty\" yaml:\"%s,omitempty\"`", k, k)
+		serInfo := fmt.Sprintf("`json:\"%s,omitzero\" yaml:\"%s,omitzero\"`", k, k)
 		if isNullableArray(v) || isRequired {
 			serInfo = fmt.Sprintf("`json:\"%s\" yaml:\"%s\"`", k, k)
-		} else if slices.Contains(omitzeroTypes(), typeName) {
-			serInfo = fmt.Sprintf("`json:\"%s,omitzero\" yaml:\"%s,omitzero\"`", k, k)
 		}
 
 		field.SerializationInfo = serInfo

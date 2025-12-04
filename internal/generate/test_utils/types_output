@@ -8,27 +8,27 @@ package oxide
 
 // DiskCreate is the type definition for a DiskCreate.
 type DiskCreate struct {
-	DiskSource DiskSource `json:"disk_source,omitempty" yaml:"disk_source,omitempty"`
+	DiskSource DiskSource `json:"disk_source,omitzero" yaml:"disk_source,omitzero"`
 }
 
 // DiskIdentifier is parameters for the [`Disk`](omicron_common::api::external::Disk) to be attached or
 // detached to an instance
 type DiskIdentifier struct {
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
+	Name Name `json:"name,omitzero" yaml:"name,omitzero"`
 }
 
 // DiskSourceType is the type definition for a DiskSourceType.
 type DiskSourceType string
 // DiskSourceSnapshot is create a disk from a disk snapshot
 type DiskSourceSnapshot struct {
-	SnapshotId string `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
-	Type DiskSourceType `json:"type,omitempty" yaml:"type,omitempty"`
+	SnapshotId string `json:"snapshot_id,omitzero" yaml:"snapshot_id,omitzero"`
+	Type DiskSourceType `json:"type,omitzero" yaml:"type,omitzero"`
 }
 
 // DiskSourceImage is create a disk from a project image
 type DiskSourceImage struct {
-	ImageId string `json:"image_id,omitempty" yaml:"image_id,omitempty"`
-	Type DiskSourceType `json:"type,omitempty" yaml:"type,omitempty"`
+	ImageId string `json:"image_id,omitzero" yaml:"image_id,omitzero"`
+	Type DiskSourceType `json:"type,omitzero" yaml:"type,omitzero"`
 }
 
 // DiskSource is the type definition for a DiskSource.
