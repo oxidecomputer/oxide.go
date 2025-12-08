@@ -6,6 +6,8 @@ package main
 
 import (
 	"fmt"
+	"io"
+	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -87,7 +89,7 @@ func loadSDKVersionFromFile(file string) (string, error) {
 
 	sdkVersion := strings.TrimSpace(string(version))
 	if sdkVersion == "" {
-		return "", fmt.Errorf("sdk version cannot be empty: %s", file)
+		return "", fmt.Errorf("sdk version cannot be empty: %s", f)
 	}
 
 	return sdkVersion, nil
@@ -96,28 +98,53 @@ func loadSDKVersionFromFile(file string) (string, error) {
 func loadAPIFromFile(file string) (*openapi3.T, error) {
 	wd, err := os.Getwd()
 	if err != nil {
-		return nil, fmt.Errorf("error getting current working directory: %v", err)
-
+		return nil, fmt.Errorf("error getting current working directory: %w", err)
 	}
+
 	p := filepath.Join(filepath.Dir(wd), file)
 	omicronVersion, err := os.ReadFile(p)
 	if err != nil {
-		return nil, fmt.Errorf("error retrieving Omicron version: %v", err)
+		return nil, fmt.Errorf("error retrieving omicron version from %s: %w", p, err)
 	}
+
 	ov := strings.TrimSpace(string(omicronVersion))
-
-	// TODO: actually host the spec here.
-	// uri := "https://api.oxide.computer"
-	uri := fmt.Sprintf("https://raw.githubusercontent.com/oxidecomputer/omicron/%s/openapi/nexus.json", ov)
-	u, err := url.Parse(uri)
-	if err != nil {
-		return nil, fmt.Errorf("error parsing url %q: %v", uri, err)
+	if ov == "" {
+		return nil, fmt.Errorf("omicron version cannot be empty: %s", p)
 	}
 
-	// Load the open API spec from the URI.
-	doc, err := openapi3.NewLoader().LoadFromURI(u)
+	rawURL := fmt.Sprintf("https://raw.githubusercontent.com/oxidecomputer/omicron/%s", ov)
+	baseURL, err := url.Parse(rawURL)
 	if err != nil {
-		return nil, fmt.Errorf("error loading openAPI spec from %q: %v", uri, err)
+		return nil, fmt.Errorf("error parsing base url %q: %w", rawURL, err)
+	}
+
+	latestURL := baseURL.JoinPath("openapi", "nexus", "nexus-latest.json")
+	resp, err := http.DefaultClient.Get(latestURL.String())
+	if err != nil {
+		return nil, fmt.Errorf("error fetching latest openapi file from %q: %w", latestURL, err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(io.LimitReader(resp.Body, 1024))
+		return nil, fmt.Errorf("unexpected status code %d fetching %q: %s",
+			resp.StatusCode, latestURL, strings.TrimSpace(string(body)))
+	}
+
+	var versionedFile strings.Builder
+	if _, err := io.Copy(&versionedFile, resp.Body); err != nil {
+		return nil, fmt.Errorf("error reading versioned openapi filename from %q: %w", latestURL, err)
+	}
+
+	versioned := strings.TrimSpace(versionedFile.String())
+	if versioned == "" {
+		return nil, fmt.Errorf("versioned filename is empty in %q", latestURL)
+	}
+
+	versionedURL := baseURL.JoinPath("openapi", "nexus", versioned)
+	doc, err := openapi3.NewLoader().LoadFromURI(versionedURL)
+	if err != nil {
+		return nil, fmt.Errorf("error loading versioned openapi specification from %q: %w", versionedURL, err)
 	}
 
 	return doc, nil
