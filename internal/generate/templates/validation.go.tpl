@@ -11,6 +11,7 @@ func (p *{{.AssociatedType}}) Validate() error {
 	v.HasRequiredNum(p.{{.}}, "{{.}}")
 {{- end}}
 	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())}
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
 	return nil
 }

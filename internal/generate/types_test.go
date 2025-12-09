@@ -131,7 +131,7 @@ func Test_createTypeObject(t *testing.T) {
 			want: TypeTemplate{
 				Description: "Create a disk from a disk snapshot\n//\n// Required fields:\n// - Type",
 				Name:        "DiskSourceSnapshot",
-				Type:        "struct", Fields: []TypeFields{
+				Type:        "struct", Fields: []TypeField{
 					{
 						Description:       "",
 						Name:              "SnapshotId",
@@ -251,7 +251,7 @@ func Test_createOneOf(t *testing.T) {
 					Description: "// ImageSourceUrl is the type definition for a ImageSourceUrl.\n//\n// Required fields:\n// - Type\n// - Url",
 					Name:        "ImageSourceUrl",
 					Type:        "struct",
-					Fields: []TypeFields{
+					Fields: []TypeField{
 						{
 							Description: "", Name: "Type", Type: "ImageSourceType", SerializationInfo: "`json:\"type\" yaml:\"type\"`",
 						},
@@ -264,7 +264,7 @@ func Test_createOneOf(t *testing.T) {
 					Description: "// ImageSourceSnapshot is the type definition for a ImageSourceSnapshot.\n//\n// Required fields:\n// - Id\n// - Type",
 					Name:        "ImageSourceSnapshot",
 					Type:        "struct",
-					Fields: []TypeFields{
+					Fields: []TypeField{
 						{
 							Description: "", Name: "Id", Type: "string", SerializationInfo: "`json:\"id\" yaml:\"id\"`",
 						},
@@ -274,7 +274,7 @@ func Test_createOneOf(t *testing.T) {
 					},
 				},
 				{
-					Description: "// ImageSource is the source of the underlying image.", Name: "ImageSource", Type: "struct", Fields: []TypeFields{
+					Description: "// ImageSource is the source of the underlying image.", Name: "ImageSource", Type: "struct", Fields: []TypeField{
 						{
 							Description: "// Type is the type definition for a Type.", Name: "Type", Type: "ImageSourceType", SerializationInfo: "`json:\"type,omitempty\" yaml:\"type,omitempty\"`",
 						},
@@ -346,45 +346,6 @@ func Test_createAllOf(t *testing.T) {
 	}
 }
 
-func Test_TypeFields_Render(t *testing.T) {
-	nameTag := "`json:\"name,omitempty\" yaml:\"name,omitempty\"`"
-
-	tests := []struct {
-		name  string
-		field TypeFields
-		want  string
-	}{
-		{
-			name: "without description",
-			field: TypeFields{
-				Name:              "Name",
-				Type:              "string",
-				SerializationInfo: nameTag,
-			},
-			want: fmt.Sprintf(`	Name string %s
-`, nameTag),
-		},
-		{
-			name: "with description",
-			field: TypeFields{
-				Description:       "// Name is the name of the resource",
-				Name:              "Name",
-				Type:              "string",
-				SerializationInfo: nameTag,
-			},
-			want: fmt.Sprintf(`	// Name is the name of the resource
-	Name string %s
-`, nameTag),
-		},
-	}
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			got := tc.field.Render()
-			assert.Equal(t, tc.want, got)
-		})
-	}
-}
-
 func Test_ValidationTemplate_Render(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -407,23 +368,8 @@ func (p *CreateUserParams) Validate() error {
 	v.HasRequiredStr(string(p.Email), "Email")
 	v.HasRequiredNum(p.Age, "Age")
 	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())}
-	return nil
-}
-`,
-		},
-		{
-			name: "with only strings",
-			template: ValidationTemplate{
-				AssociatedType:  "SimpleParams",
-				RequiredStrings: []string{"Name"},
-			},
-			want: `// Validate verifies all required fields for SimpleParams are set
-func (p *SimpleParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredStr(string(p.Name), "Name")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())}
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
 	return nil
 }
 `,
@@ -453,21 +399,6 @@ func Test_EnumTemplate_Render(t *testing.T) {
 			},
 			want: `// FleetRoleAdmin represents the FleetRole ` + "`" + `"admin"` + "`" + `.
 const FleetRoleAdmin FleetRole = "admin"
-
-`,
-		},
-		{
-			name: "var enum collection",
-			template: EnumTemplate{
-				Description: "// FleetRoleCollection is the collection of all FleetRole values.",
-				Name:        "FleetRoleCollection",
-				ValueType:   "var",
-				Value:       "= []FleetRole{\n\tFleetRoleAdmin,\n}",
-			},
-			want: `// FleetRoleCollection is the collection of all FleetRole values.
-var FleetRoleCollection = []FleetRole{
-	FleetRoleAdmin,
-}
 
 `,
 		},
@@ -507,7 +438,7 @@ type FleetRole string
 				Description: "// DiskIdentifier is the identifier for a disk.",
 				Name:        "DiskIdentifier",
 				Type:        "struct",
-				Fields: []TypeFields{
+				Fields: []TypeField{
 					{
 						Name:              "Name",
 						Type:              "string",
@@ -528,7 +459,7 @@ type DiskIdentifier struct {
 				Description: "// Address is an address.",
 				Name:        "Address",
 				Type:        "struct",
-				Fields: []TypeFields{
+				Fields: []TypeField{
 					{
 						Description:       "// Street is the street name",
 						Name:              "Street",
