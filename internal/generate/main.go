@@ -112,7 +112,30 @@ func loadAPIFromFile(file string) (*openapi3.T, error) {
 		return nil, fmt.Errorf("omicron version cannot be empty: %s", p)
 	}
 
-	rawURL := fmt.Sprintf("https://raw.githubusercontent.com/oxidecomputer/omicron/%s", ov)
+	specURL, err := getOpenAPISpecURL(ov)
+	if err != nil {
+		return nil, fmt.Errorf("error getting openapi specification url: %w", err)
+	}
+
+	doc, err := openapi3.NewLoader().LoadFromURI(specURL)
+	if err != nil {
+		return nil, fmt.Errorf("error loading openapi specification from %q: %w", specURL, err)
+	}
+
+	return doc, nil
+}
+
+// getOpenAPISpecURL returns the URL of the versioned OpenAPI specification for
+// the given Omicron version.
+//
+// The upstream Omicron repository contains versioned OpenAPI specifications
+// (e.g., nexus-2025120300.0.0-dfe193.json). The nexus-latest.json file is a
+// symbolic link to the current versioned specification file. Since
+// raw.githubusercontent.com doesn't follow symbolic links, we first fetch the
+// symbolic link target to get the versioned filename, then construct the URL
+// to the actual versioned specification.
+func getOpenAPISpecURL(omicronVersion string) (*url.URL, error) {
+	rawURL := fmt.Sprintf("https://raw.githubusercontent.com/oxidecomputer/omicron/%s", omicronVersion)
 	baseURL, err := url.Parse(rawURL)
 	if err != nil {
 		return nil, fmt.Errorf("error parsing base url %q: %w", rawURL, err)
@@ -125,27 +148,20 @@ func loadAPIFromFile(file string) (*openapi3.T, error) {
 	}
 	defer resp.Body.Close()
 
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("error reading response body from %q: %w", latestURL, err)
+	}
+
 	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(io.LimitReader(resp.Body, 1024))
 		return nil, fmt.Errorf("unexpected status code %d fetching %q: %s",
 			resp.StatusCode, latestURL, strings.TrimSpace(string(body)))
 	}
 
-	var versionedFile strings.Builder
-	if _, err := io.Copy(&versionedFile, resp.Body); err != nil {
-		return nil, fmt.Errorf("error reading versioned openapi filename from %q: %w", latestURL, err)
-	}
-
-	versioned := strings.TrimSpace(versionedFile.String())
+	versioned := strings.TrimSpace(string(body))
 	if versioned == "" {
 		return nil, fmt.Errorf("versioned filename is empty in %q", latestURL)
 	}
 
-	versionedURL := baseURL.JoinPath("openapi", "nexus", versioned)
-	doc, err := openapi3.NewLoader().LoadFromURI(versionedURL)
-	if err != nil {
-		return nil, fmt.Errorf("error loading versioned openapi specification from %q: %w", versionedURL, err)
-	}
-
-	return doc, nil
+	return baseURL.JoinPath("openapi", "nexus", versioned), nil
 }
