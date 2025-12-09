@@ -6,6 +6,8 @@ package main
 
 import (
 	"fmt"
+	"io"
+	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -87,7 +89,7 @@ func loadSDKVersionFromFile(file string) (string, error) {
 
 	sdkVersion := strings.TrimSpace(string(version))
 	if sdkVersion == "" {
-		return "", fmt.Errorf("sdk version cannot be empty: %s", file)
+		return "", fmt.Errorf("sdk version cannot be empty: %s", f)
 	}
 
 	return sdkVersion, nil
@@ -96,29 +98,70 @@ func loadSDKVersionFromFile(file string) (string, error) {
 func loadAPIFromFile(file string) (*openapi3.T, error) {
 	wd, err := os.Getwd()
 	if err != nil {
-		return nil, fmt.Errorf("error getting current working directory: %v", err)
-
+		return nil, fmt.Errorf("error getting current working directory: %w", err)
 	}
+
 	p := filepath.Join(filepath.Dir(wd), file)
 	omicronVersion, err := os.ReadFile(p)
 	if err != nil {
-		return nil, fmt.Errorf("error retrieving Omicron version: %v", err)
+		return nil, fmt.Errorf("error retrieving omicron version from %s: %w", p, err)
 	}
+
 	ov := strings.TrimSpace(string(omicronVersion))
-
-	// TODO: actually host the spec here.
-	// uri := "https://api.oxide.computer"
-	uri := fmt.Sprintf("https://raw.githubusercontent.com/oxidecomputer/omicron/%s/openapi/nexus.json", ov)
-	u, err := url.Parse(uri)
-	if err != nil {
-		return nil, fmt.Errorf("error parsing url %q: %v", uri, err)
+	if ov == "" {
+		return nil, fmt.Errorf("omicron version cannot be empty: %s", p)
 	}
 
-	// Load the open API spec from the URI.
-	doc, err := openapi3.NewLoader().LoadFromURI(u)
+	specURL, err := getOpenAPISpecURL(ov)
 	if err != nil {
-		return nil, fmt.Errorf("error loading openAPI spec from %q: %v", uri, err)
+		return nil, fmt.Errorf("error getting openapi specification url: %w", err)
+	}
+
+	doc, err := openapi3.NewLoader().LoadFromURI(specURL)
+	if err != nil {
+		return nil, fmt.Errorf("error loading openapi specification from %q: %w", specURL, err)
 	}
 
 	return doc, nil
+}
+
+// getOpenAPISpecURL returns the URL of the versioned OpenAPI specification for
+// the given Omicron version.
+//
+// The upstream Omicron repository contains versioned OpenAPI specifications
+// (e.g., nexus-2025120300.0.0-dfe193.json). The nexus-latest.json file is a
+// symbolic link to the current versioned specification file. Since
+// raw.githubusercontent.com doesn't follow symbolic links, we first fetch the
+// symbolic link target to get the versioned filename, then construct the URL
+// to the actual versioned specification.
+func getOpenAPISpecURL(omicronVersion string) (*url.URL, error) {
+	rawURL := fmt.Sprintf("https://raw.githubusercontent.com/oxidecomputer/omicron/%s", omicronVersion)
+	baseURL, err := url.Parse(rawURL)
+	if err != nil {
+		return nil, fmt.Errorf("error parsing base url %q: %w", rawURL, err)
+	}
+
+	latestURL := baseURL.JoinPath("openapi", "nexus", "nexus-latest.json")
+	resp, err := http.DefaultClient.Get(latestURL.String())
+	if err != nil {
+		return nil, fmt.Errorf("error fetching latest openapi file from %q: %w", latestURL, err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("error reading response body from %q: %w", latestURL, err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("unexpected status code %d fetching %q: %s",
+			resp.StatusCode, latestURL, strings.TrimSpace(string(body)))
+	}
+
+	versioned := strings.TrimSpace(string(body))
+	if versioned == "" {
+		return nil, fmt.Errorf("versioned filename is empty in %q", latestURL)
+	}
+
+	return baseURL.JoinPath("openapi", "nexus", versioned), nil
 }

@@ -17,4 +17,4 @@ const sdkVersion = "v0.8.0"
 // for [Client]. It is purposefully unexported to prevent external users from
 // reading it. The value of this comes from the OpenAPI specification associated
 // with the OMICRON_VERSION file in the root of this repository.
-const openAPIVersion = "20251008.0.0"
+const openAPIVersion = "2025120300.0.0"

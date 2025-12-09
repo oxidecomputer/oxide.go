@@ -2343,8 +2343,15 @@ type DeviceAccessTokenResultsPage struct {
 // - ClientId
 type DeviceAuthRequest struct {
 	ClientId string `json:"client_id" yaml:"client_id"`
-	// TtlSeconds is optional lifetime for the access token in seconds. If not specified, the silo's max TTL
-	// will be used (if set).
+	// TtlSeconds is optional lifetime for the access token in seconds.
+	//
+	// This value will be validated during the confirmation step. If not specified, it defaults to the silo's max
+	// TTL, which can be seen at `/v1/auth-settings`.  If specified, must not exceed the silo's max TTL.
+	//
+	// Some special logic applies when authenticating the confirmation request with an existing device token: the
+	// requested TTL must not produce an expiration time later than the authenticating token's expiration. If no
+	// TTL is specified, the expiration will be the lesser of the silo max and the authenticating token's expiration time.
+	// To get the longest allowed lifetime, omit the TTL and authenticate with a web console session.
 	TtlSeconds *int `json:"ttl_seconds,omitempty" yaml:"ttl_seconds,omitempty"`
 }
 
@@ -2383,6 +2390,7 @@ type Digest struct {
 // - BlockSize
 // - Description
 // - DevicePath
+// - DiskType
 // - Id
 // - Name
 // - ProjectId
@@ -2394,8 +2402,9 @@ type Disk struct {
 	// BlockSize is byte count to express memory or storage capacity.
 	BlockSize ByteCount `json:"block_size" yaml:"block_size"`
 	// Description is human-readable free-form text about a resource
-	Description string `json:"description" yaml:"description"`
-	DevicePath  string `json:"device_path" yaml:"device_path"`
+	Description string   `json:"description" yaml:"description"`
+	DevicePath  string   `json:"device_path" yaml:"device_path"`
+	DiskType    DiskType `json:"disk_type" yaml:"disk_type"`
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id" yaml:"id"`
 	// ImageId is iD of image from which disk was created, if any
@@ -2415,17 +2424,47 @@ type Disk struct {
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
 
+// DiskBackendType is the type definition for a DiskBackendType.
+type DiskBackendType string
+
+// DiskBackendLocal is the type definition for a DiskBackendLocal.
+//
+// Required fields:
+// - Type
+type DiskBackendLocal struct {
+	Type DiskBackendType `json:"type" yaml:"type"`
+}
+
+// DiskBackendDistributed is the type definition for a DiskBackendDistributed.
+//
+// Required fields:
+// - DiskSource
+// - Type
+type DiskBackendDistributed struct {
+	// DiskSource is the initial source for this disk
+	DiskSource DiskSource      `json:"disk_source" yaml:"disk_source"`
+	Type       DiskBackendType `json:"type" yaml:"type"`
+}
+
+// DiskBackend is the source of a `Disk`'s blocks
+type DiskBackend struct {
+	// Type is the type definition for a Type.
+	Type DiskBackendType `json:"type,omitempty" yaml:"type,omitempty"`
+	// DiskSource is the initial source for this disk
+	DiskSource DiskSource `json:"disk_source,omitempty" yaml:"disk_source,omitempty"`
+}
+
 // DiskCreate is create-time parameters for a `Disk`
 //
 // Required fields:
 // - Description
-// - DiskSource
+// - DiskBackend
 // - Name
 // - Size
 type DiskCreate struct {
 	Description string `json:"description" yaml:"description"`
-	// DiskSource is the initial source for this disk
-	DiskSource DiskSource `json:"disk_source" yaml:"disk_source"`
+	// DiskBackend is the source for this `Disk`'s blocks
+	DiskBackend DiskBackend `json:"disk_backend" yaml:"disk_backend"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
 	// can be at most 63 characters long.
@@ -2499,7 +2538,7 @@ type DiskSourceImportingBlocks struct {
 	Type      DiskSourceType `json:"type" yaml:"type"`
 }
 
-// DiskSource is different sources for a disk
+// DiskSource is different sources for a Distributed Disk
 type DiskSource struct {
 	// BlockSize is size of blocks for this Disk. valid values are: 512, 2048, or 4096
 	BlockSize BlockSize `json:"block_size,omitempty" yaml:"block_size,omitempty"`
@@ -2624,6 +2663,9 @@ type DiskState struct {
 	Instance string `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
 
+// DiskType is the type definition for a DiskType.
+type DiskType string
+
 // Distributiondouble is a distribution is a sequence of bins and counts in those bins, and some statistical information
 // tracked to compute the mean, standard deviation, and quantile estimates.
 //
@@ -2640,9 +2682,9 @@ type Distributiondouble struct {
 	Counts       []int     `json:"counts" yaml:"counts"`
 	Max          float64   `json:"max,omitempty" yaml:"max,omitempty"`
 	Min          float64   `json:"min,omitempty" yaml:"min,omitempty"`
-	P50          Quantile  `json:"p50,omitempty" yaml:"p50,omitempty"`
-	P90          Quantile  `json:"p90,omitempty" yaml:"p90,omitempty"`
-	P99          Quantile  `json:"p99,omitempty" yaml:"p99,omitempty"`
+	P50          float64   `json:"p50,omitempty" yaml:"p50,omitempty"`
+	P90          float64   `json:"p90,omitempty" yaml:"p90,omitempty"`
+	P99          float64   `json:"p99,omitempty" yaml:"p99,omitempty"`
 	SquaredMean  float64   `json:"squared_mean" yaml:"squared_mean"`
 	SumOfSamples float64   `json:"sum_of_samples" yaml:"sum_of_samples"`
 }
@@ -2659,15 +2701,15 @@ type Distributiondouble struct {
 // - SquaredMean
 // - SumOfSamples
 type Distributionint64 struct {
-	Bins         []int    `json:"bins" yaml:"bins"`
-	Counts       []int    `json:"counts" yaml:"counts"`
-	Max          *int     `json:"max,omitempty" yaml:"max,omitempty"`
-	Min          *int     `json:"min,omitempty" yaml:"min,omitempty"`
-	P50          Quantile `json:"p50,omitempty" yaml:"p50,omitempty"`
-	P90          Quantile `json:"p90,omitempty" yaml:"p90,omitempty"`
-	P99          Quantile `json:"p99,omitempty" yaml:"p99,omitempty"`
-	SquaredMean  float64  `json:"squared_mean" yaml:"squared_mean"`
-	SumOfSamples *int     `json:"sum_of_samples" yaml:"sum_of_samples"`
+	Bins         []int   `json:"bins" yaml:"bins"`
+	Counts       []int   `json:"counts" yaml:"counts"`
+	Max          *int    `json:"max,omitempty" yaml:"max,omitempty"`
+	Min          *int    `json:"min,omitempty" yaml:"min,omitempty"`
+	P50          float64 `json:"p50,omitempty" yaml:"p50,omitempty"`
+	P90          float64 `json:"p90,omitempty" yaml:"p90,omitempty"`
+	P99          float64 `json:"p99,omitempty" yaml:"p99,omitempty"`
+	SquaredMean  float64 `json:"squared_mean" yaml:"squared_mean"`
+	SumOfSamples *int    `json:"sum_of_samples" yaml:"sum_of_samples"`
 }
 
 // EphemeralIpCreate is parameters for creating an ephemeral IP address for an instance.
@@ -3943,6 +3985,11 @@ type InstanceCreate struct {
 	Hostname Hostname `json:"hostname" yaml:"hostname"`
 	// Memory is the amount of RAM (in bytes) to be allocated to the instance
 	Memory ByteCount `json:"memory" yaml:"memory"`
+	// MulticastGroups is the multicast groups this instance should join.
+	//
+	// The instance will be automatically added as a member of the specified multicast groups during creation, enabling
+	// it to send and receive multicast traffic for those groups.
+	MulticastGroups []NameOrId `json:"multicast_groups,omitzero" yaml:"multicast_groups,omitzero"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
 	// can be at most 63 characters long.
@@ -3971,14 +4018,14 @@ type InstanceDiskAttachmentType string
 //
 // Required fields:
 // - Description
-// - DiskSource
+// - DiskBackend
 // - Name
 // - Size
 // - Type
 type InstanceDiskAttachmentCreate struct {
 	Description string `json:"description" yaml:"description"`
-	// DiskSource is the initial source for this disk
-	DiskSource DiskSource `json:"disk_source" yaml:"disk_source"`
+	// DiskBackend is the source for this `Disk`'s blocks
+	DiskBackend DiskBackend `json:"disk_backend" yaml:"disk_backend"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
 	// can be at most 63 characters long.
@@ -4003,8 +4050,8 @@ type InstanceDiskAttachmentAttach struct {
 type InstanceDiskAttachment struct {
 	// Description is the type definition for a Description.
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// DiskSource is the initial source for this disk
-	DiskSource DiskSource `json:"disk_source,omitempty" yaml:"disk_source,omitempty"`
+	// DiskBackend is the source for this `Disk`'s blocks
+	DiskBackend DiskBackend `json:"disk_backend,omitempty" yaml:"disk_backend,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
 	// can be at most 63 characters long.
@@ -4217,6 +4264,13 @@ type InstanceUpdate struct {
 	CpuPlatform *InstanceCpuPlatform `json:"cpu_platform" yaml:"cpu_platform"`
 	// Memory is the amount of RAM (in bytes) to be allocated to the instance
 	Memory ByteCount `json:"memory" yaml:"memory"`
+	// MulticastGroups is multicast groups this instance should join.
+	//
+	// When specified, this replaces the instance's current multicast group membership with the new set of groups. The
+	// instance will leave any groups not listed here and join any new groups that are specified.
+	//
+	// If not provided (None), the instance's multicast group membership will not be changed.
+	MulticastGroups []NameOrId `json:"multicast_groups" yaml:"multicast_groups"`
 	// Ncpus is the number of vCPUs to be allocated to the instance
 	Ncpus InstanceCpuCount `json:"ncpus" yaml:"ncpus"`
 }
@@ -4778,7 +4832,7 @@ type LoopbackAddressCreate struct {
 	Anycast *bool `json:"anycast" yaml:"anycast"`
 	// Mask is the subnet mask to use for the address.
 	Mask *int `json:"mask" yaml:"mask"`
-	// RackId is the containing the switch this loopback address will be configured on.
+	// RackId is the rack containing the switch this loopback address will be configured on.
 	RackId string `json:"rack_id" yaml:"rack_id"`
 	// SwitchLocation is the location of the switch within the rack this loopback address will be configured on.
 	//
@@ -4843,6 +4897,142 @@ type MissingDatum struct {
 	// DatumType is the type of an individual datum of a metric.
 	DatumType DatumType  `json:"datum_type" yaml:"datum_type"`
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+}
+
+// MulticastGroup is view of a Multicast Group
+//
+// Required fields:
+// - Description
+// - Id
+// - IpPoolId
+// - MulticastIp
+// - Name
+// - SourceIps
+// - State
+// - TimeCreated
+// - TimeModified
+type MulticastGroup struct {
+	// Description is human-readable free-form text about a resource
+	Description string `json:"description" yaml:"description"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id" yaml:"id"`
+	// IpPoolId is the ID of the IP pool this resource belongs to.
+	IpPoolId string `json:"ip_pool_id" yaml:"ip_pool_id"`
+	// MulticastIp is the multicast IP address held by this resource.
+	MulticastIp string `json:"multicast_ip" yaml:"multicast_ip"`
+	// Mvlan is multicast VLAN (MVLAN) for egress multicast traffic to upstream networks. None means no VLAN tagging
+	// on egress.
+	Mvlan *int `json:"mvlan,omitempty" yaml:"mvlan,omitempty"`
+	// Name is unique, mutable, user-controlled identifier for each resource
+	Name Name `json:"name" yaml:"name"`
+	// SourceIps is source IP addresses for Source-Specific Multicast (SSM). Empty array means any source is
+	// allowed.
+	SourceIps []string `json:"source_ips" yaml:"source_ips"`
+	// State is current state of the multicast group.
+	State string `json:"state" yaml:"state"`
+	// TimeCreated is timestamp when this resource was created
+	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
+	// TimeModified is timestamp when this resource was last modified
+	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
+}
+
+// MulticastGroupCreate is create-time parameters for a multicast group.
+//
+// Required fields:
+// - Description
+// - Name
+type MulticastGroupCreate struct {
+	Description string `json:"description" yaml:"description"`
+	// MulticastIp is the multicast IP address to allocate. If None, one will be allocated from the default pool.
+	//
+	MulticastIp string `json:"multicast_ip,omitempty" yaml:"multicast_ip,omitempty"`
+	// Mvlan is multicast VLAN (MVLAN) for egress multicast traffic to upstream networks. Tags packets leaving the
+	// rack to traverse VLAN-segmented upstream networks.
+	//
+	// Valid range: 2-4094 (VLAN IDs 0-1 are reserved by IEEE 802.1Q standard).
+	Mvlan *int `json:"mvlan,omitempty" yaml:"mvlan,omitempty"`
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
+	Name Name `json:"name" yaml:"name"`
+	// Pool is name or ID of the IP pool to allocate from. If None, uses the default multicast pool.
+	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
+	// SourceIps is source IP addresses for Source-Specific Multicast (SSM).
+	//
+	// None uses default behavior (Any-Source Multicast). Empty list explicitly allows any source (Any-Source Multicast).
+	// Non-empty list restricts to specific sources (SSM).
+	SourceIps []string `json:"source_ips" yaml:"source_ips"`
+}
+
+// MulticastGroupMember is view of a Multicast Group Member (instance belonging to a multicast group)
+//
+// Required fields:
+// - Description
+// - Id
+// - InstanceId
+// - MulticastGroupId
+// - Name
+// - State
+// - TimeCreated
+// - TimeModified
+type MulticastGroupMember struct {
+	// Description is human-readable free-form text about a resource
+	Description string `json:"description" yaml:"description"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id" yaml:"id"`
+	// InstanceId is the ID of the instance that is a member of this group.
+	InstanceId string `json:"instance_id" yaml:"instance_id"`
+	// MulticastGroupId is the ID of the multicast group this member belongs to.
+	MulticastGroupId string `json:"multicast_group_id" yaml:"multicast_group_id"`
+	// Name is unique, mutable, user-controlled identifier for each resource
+	Name Name `json:"name" yaml:"name"`
+	// State is current state of the multicast group membership.
+	State string `json:"state" yaml:"state"`
+	// TimeCreated is timestamp when this resource was created
+	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
+	// TimeModified is timestamp when this resource was last modified
+	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
+}
+
+// MulticastGroupMemberAdd is parameters for adding an instance to a multicast group.
+//
+// Required fields:
+// - Instance
+type MulticastGroupMemberAdd struct {
+	// Instance is name or ID of the instance to add to the multicast group
+	Instance NameOrId `json:"instance" yaml:"instance"`
+}
+
+// MulticastGroupMemberResultsPage is a single page of results
+//
+// Required fields:
+// - Items
+type MulticastGroupMemberResultsPage struct {
+	// Items is list of items on this page of results
+	Items []MulticastGroupMember `json:"items" yaml:"items"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// MulticastGroupResultsPage is a single page of results
+//
+// Required fields:
+// - Items
+type MulticastGroupResultsPage struct {
+	// Items is list of items on this page of results
+	Items []MulticastGroup `json:"items" yaml:"items"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// MulticastGroupUpdate is update-time parameters for a multicast group.
+type MulticastGroupUpdate struct {
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	// Mvlan is multicast VLAN (MVLAN) for egress multicast traffic to upstream networks. Set to null to clear
+	// the MVLAN. Valid range: 2-4094 when provided. Omit the field to leave mvlan unchanged.
+	Mvlan     *int     `json:"mvlan,omitempty" yaml:"mvlan,omitempty"`
+	Name      Name     `json:"name,omitempty" yaml:"name,omitempty"`
+	SourceIps []string `json:"source_ips" yaml:"source_ips"`
 }
 
 // Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
@@ -8712,6 +8902,37 @@ type InstanceEphemeralIpAttachParams struct {
 	Body     *EphemeralIpCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+// InstanceMulticastGroupListParams is the request parameters for InstanceMulticastGroupList
+//
+// Required fields:
+// - Instance
+type InstanceMulticastGroupListParams struct {
+	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+}
+
+// InstanceMulticastGroupLeaveParams is the request parameters for InstanceMulticastGroupLeave
+//
+// Required fields:
+// - Instance
+// - MulticastGroup
+type InstanceMulticastGroupLeaveParams struct {
+	Instance       NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+	MulticastGroup NameOrId `json:"multicast_group,omitempty" yaml:"multicast_group,omitempty"`
+	Project        NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// InstanceMulticastGroupJoinParams is the request parameters for InstanceMulticastGroupJoin
+//
+// Required fields:
+// - Instance
+// - MulticastGroup
+type InstanceMulticastGroupJoinParams struct {
+	Instance       NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+	MulticastGroup NameOrId `json:"multicast_group,omitempty" yaml:"multicast_group,omitempty"`
+	Project        NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
 // InstanceRebootParams is the request parameters for InstanceReboot
 //
 // Required fields:
@@ -8983,6 +9204,80 @@ type SiloMetricParams struct {
 	PageToken  string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	StartTime  *time.Time       `json:"start_time,omitempty" yaml:"start_time,omitempty"`
 	Project    NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// MulticastGroupListParams is the request parameters for MulticastGroupList
+type MulticastGroupListParams struct {
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// MulticastGroupCreateParams is the request parameters for MulticastGroupCreate
+//
+// Required fields:
+// - Body
+type MulticastGroupCreateParams struct {
+	Body *MulticastGroupCreate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// MulticastGroupDeleteParams is the request parameters for MulticastGroupDelete
+//
+// Required fields:
+// - MulticastGroup
+type MulticastGroupDeleteParams struct {
+	MulticastGroup NameOrId `json:"multicast_group,omitempty" yaml:"multicast_group,omitempty"`
+}
+
+// MulticastGroupViewParams is the request parameters for MulticastGroupView
+//
+// Required fields:
+// - MulticastGroup
+type MulticastGroupViewParams struct {
+	MulticastGroup NameOrId `json:"multicast_group,omitempty" yaml:"multicast_group,omitempty"`
+}
+
+// MulticastGroupUpdateParams is the request parameters for MulticastGroupUpdate
+//
+// Required fields:
+// - MulticastGroup
+// - Body
+type MulticastGroupUpdateParams struct {
+	MulticastGroup NameOrId              `json:"multicast_group,omitempty" yaml:"multicast_group,omitempty"`
+	Body           *MulticastGroupUpdate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// MulticastGroupMemberListParams is the request parameters for MulticastGroupMemberList
+//
+// Required fields:
+// - MulticastGroup
+type MulticastGroupMemberListParams struct {
+	MulticastGroup NameOrId   `json:"multicast_group,omitempty" yaml:"multicast_group,omitempty"`
+	Limit          *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken      string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy         IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// MulticastGroupMemberAddParams is the request parameters for MulticastGroupMemberAdd
+//
+// Required fields:
+// - MulticastGroup
+// - Body
+type MulticastGroupMemberAddParams struct {
+	MulticastGroup NameOrId                 `json:"multicast_group,omitempty" yaml:"multicast_group,omitempty"`
+	Project        NameOrId                 `json:"project,omitempty" yaml:"project,omitempty"`
+	Body           *MulticastGroupMemberAdd `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// MulticastGroupMemberRemoveParams is the request parameters for MulticastGroupMemberRemove
+//
+// Required fields:
+// - Instance
+// - MulticastGroup
+type MulticastGroupMemberRemoveParams struct {
+	Instance       NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+	MulticastGroup NameOrId `json:"multicast_group,omitempty" yaml:"multicast_group,omitempty"`
+	Project        NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
 // InstanceNetworkInterfaceListParams is the request parameters for InstanceNetworkInterfaceList
@@ -9571,6 +9866,14 @@ type SystemMetricParams struct {
 	PageToken  string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	StartTime  *time.Time       `json:"start_time,omitempty" yaml:"start_time,omitempty"`
 	Silo       NameOrId         `json:"silo,omitempty" yaml:"silo,omitempty"`
+}
+
+// LookupMulticastGroupByIpParams is the request parameters for LookupMulticastGroupByIp
+//
+// Required fields:
+// - Address
+type LookupMulticastGroupByIpParams struct {
+	Address string `json:"address,omitempty" yaml:"address,omitempty"`
 }
 
 // NetworkingAddressLotListParams is the request parameters for NetworkingAddressLotList
@@ -11267,6 +11570,38 @@ func (p *InstanceEphemeralIpAttachParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for InstanceMulticastGroupListParams are set
+func (p *InstanceMulticastGroupListParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Instance), "Instance")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceMulticastGroupLeaveParams are set
+func (p *InstanceMulticastGroupLeaveParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Instance), "Instance")
+	v.HasRequiredStr(string(p.MulticastGroup), "MulticastGroup")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceMulticastGroupJoinParams are set
+func (p *InstanceMulticastGroupJoinParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Instance), "Instance")
+	v.HasRequiredStr(string(p.MulticastGroup), "MulticastGroup")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for InstanceRebootParams are set
 func (p *InstanceRebootParams) Validate() error {
 	v := new(Validator)
@@ -11528,6 +11863,88 @@ func (p *CurrentUserSshKeyViewParams) Validate() error {
 func (p *SiloMetricParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.MetricName), "MetricName")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for MulticastGroupListParams are set
+func (p *MulticastGroupListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for MulticastGroupCreateParams are set
+func (p *MulticastGroupCreateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for MulticastGroupDeleteParams are set
+func (p *MulticastGroupDeleteParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.MulticastGroup), "MulticastGroup")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for MulticastGroupViewParams are set
+func (p *MulticastGroupViewParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.MulticastGroup), "MulticastGroup")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for MulticastGroupUpdateParams are set
+func (p *MulticastGroupUpdateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.MulticastGroup), "MulticastGroup")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for MulticastGroupMemberListParams are set
+func (p *MulticastGroupMemberListParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.MulticastGroup), "MulticastGroup")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for MulticastGroupMemberAddParams are set
+func (p *MulticastGroupMemberAddParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.MulticastGroup), "MulticastGroup")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for MulticastGroupMemberRemoveParams are set
+func (p *MulticastGroupMemberRemoveParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Instance), "Instance")
+	v.HasRequiredStr(string(p.MulticastGroup), "MulticastGroup")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -12157,6 +12574,16 @@ func (p *IpPoolUtilizationViewParams) Validate() error {
 func (p *SystemMetricParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.MetricName), "MetricName")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for LookupMulticastGroupByIpParams are set
+func (p *LookupMulticastGroupByIpParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Address), "Address")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -13359,6 +13786,12 @@ const DatumTypeMissing DatumType = "missing"
 // DigestTypeSha256 represents the DigestType `"sha256"`.
 const DigestTypeSha256 DigestType = "sha256"
 
+// DiskBackendTypeLocal represents the DiskBackendType `"local"`.
+const DiskBackendTypeLocal DiskBackendType = "local"
+
+// DiskBackendTypeDistributed represents the DiskBackendType `"distributed"`.
+const DiskBackendTypeDistributed DiskBackendType = "distributed"
+
 // DiskSourceTypeBlank represents the DiskSourceType `"blank"`.
 const DiskSourceTypeBlank DiskSourceType = "blank"
 
@@ -13406,6 +13839,12 @@ const DiskStateStateDestroyed DiskStateState = "destroyed"
 
 // DiskStateStateFaulted represents the DiskStateState `"faulted"`.
 const DiskStateStateFaulted DiskStateState = "faulted"
+
+// DiskTypeDistributed represents the DiskType `"distributed"`.
+const DiskTypeDistributed DiskType = "distributed"
+
+// DiskTypeLocal represents the DiskType `"local"`.
+const DiskTypeLocal DiskType = "local"
 
 // ExternalIpKindSnat represents the ExternalIpKind `"snat"`.
 const ExternalIpKindSnat ExternalIpKind = "snat"
@@ -14233,6 +14672,12 @@ var DigestTypeCollection = []DigestType{
 	DigestTypeSha256,
 }
 
+// DiskBackendTypeCollection is the collection of all DiskBackendType values.
+var DiskBackendTypeCollection = []DiskBackendType{
+	DiskBackendTypeDistributed,
+	DiskBackendTypeLocal,
+}
+
 // DiskSourceTypeCollection is the collection of all DiskSourceType values.
 var DiskSourceTypeCollection = []DiskSourceType{
 	DiskSourceTypeBlank,
@@ -14255,6 +14700,12 @@ var DiskStateStateCollection = []DiskStateState{
 	DiskStateStateImportingFromBulkWrites,
 	DiskStateStateImportingFromUrl,
 	DiskStateStateMaintenance,
+}
+
+// DiskTypeCollection is the collection of all DiskType values.
+var DiskTypeCollection = []DiskType{
+	DiskTypeDistributed,
+	DiskTypeLocal,
 }
 
 // ExternalIpCreateTypeCollection is the collection of all ExternalIpCreateType values.
