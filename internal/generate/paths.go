@@ -315,27 +315,27 @@ func writeTpl(f *os.File, config methodTemplate) error {
 	var err error
 
 	if config.IsListAll {
-		t, err = template.ParseFiles("./templates/listall_method.tpl", "./templates/description.tpl")
+		t, err = template.ParseFiles("./templates/listall_method.go.tpl", "./templates/description.go.tpl")
 		if err != nil {
 			return err
 		}
 	} else if config.ResponseType == "" && config.HasBody {
-		t, err = template.ParseFiles("./templates/no_resptype_body_method.tpl", "./templates/description.tpl")
+		t, err = template.ParseFiles("./templates/no_resptype_body_method.go.tpl", "./templates/description.go.tpl")
 		if err != nil {
 			return err
 		}
 	} else if config.ResponseType == "" {
-		t, err = template.ParseFiles("./templates/no_resptype_method.tpl", "./templates/description.tpl")
+		t, err = template.ParseFiles("./templates/no_resptype_method.go.tpl", "./templates/description.go.tpl")
 		if err != nil {
 			return err
 		}
 	} else if config.HasBody {
-		t, err = template.ParseFiles("./templates/resptype_body_method.tpl", "./templates/description.tpl")
+		t, err = template.ParseFiles("./templates/resptype_body_method.go.tpl", "./templates/description.go.tpl")
 		if err != nil {
 			return err
 		}
 	} else {
-		t, err = template.ParseFiles("./templates/resptype_method.tpl", "./templates/description.tpl")
+		t, err = template.ParseFiles("./templates/resptype_method.go.tpl", "./templates/description.go.tpl")
 		if err != nil {
 			return err
 		}

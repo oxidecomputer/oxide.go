@@ -5,6 +5,7 @@
 package main
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/getkin/kin-openapi/openapi3"
@@ -130,7 +131,7 @@ func Test_createTypeObject(t *testing.T) {
 			want: TypeTemplate{
 				Description: "Create a disk from a disk snapshot\n//\n// Required fields:\n// - Type",
 				Name:        "DiskSourceSnapshot",
-				Type:        "struct", Fields: []TypeFields{
+				Type:        "struct", Fields: []TypeField{
 					{
 						Description:       "",
 						Name:              "SnapshotId",
@@ -183,12 +184,12 @@ func Test_createStringEnum(t *testing.T) {
 			},
 		},
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, got1, got2 := createStringEnum(tt.args.s, tt.args.stringEnums, tt.args.name, tt.args.typeName)
-			assert.Equal(t, tt.want, got)
-			assert.Equal(t, tt.want1, got1)
-			assert.Equal(t, tt.want2, got2)
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			got, got1, got2 := createStringEnum(tc.args.s, tc.args.stringEnums, tc.args.name, tc.args.typeName)
+			assert.Equal(t, tc.want, got)
+			assert.Equal(t, tc.want1, got1)
+			assert.Equal(t, tc.want2, got2)
 		})
 	}
 }
@@ -250,7 +251,7 @@ func Test_createOneOf(t *testing.T) {
 					Description: "// ImageSourceUrl is the type definition for a ImageSourceUrl.\n//\n// Required fields:\n// - Type\n// - Url",
 					Name:        "ImageSourceUrl",
 					Type:        "struct",
-					Fields: []TypeFields{
+					Fields: []TypeField{
 						{
 							Description: "", Name: "Type", Type: "ImageSourceType", SerializationInfo: "`json:\"type\" yaml:\"type\"`",
 						},
@@ -263,7 +264,7 @@ func Test_createOneOf(t *testing.T) {
 					Description: "// ImageSourceSnapshot is the type definition for a ImageSourceSnapshot.\n//\n// Required fields:\n// - Id\n// - Type",
 					Name:        "ImageSourceSnapshot",
 					Type:        "struct",
-					Fields: []TypeFields{
+					Fields: []TypeField{
 						{
 							Description: "", Name: "Id", Type: "string", SerializationInfo: "`json:\"id\" yaml:\"id\"`",
 						},
@@ -273,7 +274,7 @@ func Test_createOneOf(t *testing.T) {
 					},
 				},
 				{
-					Description: "// ImageSource is the source of the underlying image.", Name: "ImageSource", Type: "struct", Fields: []TypeFields{
+					Description: "// ImageSource is the source of the underlying image.", Name: "ImageSource", Type: "struct", Fields: []TypeField{
 						{
 							Description: "// Type is the type definition for a Type.", Name: "Type", Type: "ImageSourceType", SerializationInfo: "`json:\"type,omitempty\" yaml:\"type,omitempty\"`",
 						},
@@ -292,11 +293,11 @@ func Test_createOneOf(t *testing.T) {
 			},
 		},
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, got1 := createOneOf(tt.args.s, tt.args.name, tt.args.typeName)
-			assert.Equal(t, tt.want, got)
-			assert.Equal(t, tt.want1, got1)
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			got, got1 := createOneOf(tc.args.s, tc.args.name, tc.args.typeName)
+			assert.Equal(t, tc.want, got)
+			assert.Equal(t, tc.want1, got1)
 		})
 	}
 }
@@ -335,12 +336,159 @@ func Test_createAllOf(t *testing.T) {
 			},
 		},
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Run(tt.name, func(t *testing.T) {
-				got := createAllOf(tt.args.s, tt.args.stringEnums, tt.args.name, tt.args.typeName)
-				assert.Equal(t, tt.want, got)
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Run(tc.name, func(t *testing.T) {
+				got := createAllOf(tc.args.s, tc.args.stringEnums, tc.args.name, tc.args.typeName)
+				assert.Equal(t, tc.want, got)
 			})
+		})
+	}
+}
+
+func Test_ValidationTemplate_Render(t *testing.T) {
+	tests := []struct {
+		name     string
+		template ValidationTemplate
+		want     string
+	}{
+		{
+			name: "with all field types",
+			template: ValidationTemplate{
+				AssociatedType:  "CreateUserParams",
+				RequiredObjects: []string{"Body"},
+				RequiredStrings: []string{"Name", "Email"},
+				RequiredNums:    []string{"Age"},
+			},
+			want: `// Validate verifies all required fields for CreateUserParams are set
+func (p *CreateUserParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Name), "Name")
+	v.HasRequiredStr(string(p.Email), "Email")
+	v.HasRequiredNum(p.Age, "Age")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+`,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			got := tc.template.Render()
+			assert.Equal(t, tc.want, got)
+		})
+	}
+}
+
+func Test_EnumTemplate_Render(t *testing.T) {
+	tests := []struct {
+		name     string
+		template EnumTemplate
+		want     string
+	}{
+		{
+			name: "const enum",
+			template: EnumTemplate{
+				Description: "// FleetRoleAdmin represents the FleetRole `\"admin\"`.",
+				Name:        "FleetRoleAdmin",
+				ValueType:   "const",
+				Value:       "FleetRole = \"admin\"",
+			},
+			want: `// FleetRoleAdmin represents the FleetRole ` + "`" + `"admin"` + "`" + `.
+const FleetRoleAdmin FleetRole = "admin"
+
+`,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			got := tc.template.Render()
+			assert.Equal(t, tc.want, got)
+		})
+	}
+}
+
+func Test_TypeTemplate_Render(t *testing.T) {
+	nameTag := "`json:\"name,omitempty\" yaml:\"name,omitempty\"`"
+	streetTag := "`json:\"street\" yaml:\"street\"`"
+	cityTag := "`json:\"city\" yaml:\"city\"`"
+
+	tests := []struct {
+		name     string
+		template TypeTemplate
+		want     string
+	}{
+		{
+			name: "primitive type without fields",
+			template: TypeTemplate{
+				Description: "// FleetRole is the type definition for a FleetRole.",
+				Name:        "FleetRole",
+				Type:        "string",
+			},
+			want: `// FleetRole is the type definition for a FleetRole.
+type FleetRole string
+`,
+		},
+		{
+			name: "struct type with fields",
+			template: TypeTemplate{
+				Description: "// DiskIdentifier is the identifier for a disk.",
+				Name:        "DiskIdentifier",
+				Type:        "struct",
+				Fields: []TypeField{
+					{
+						Name:              "Name",
+						Type:              "string",
+						SerializationInfo: nameTag,
+					},
+				},
+			},
+			want: fmt.Sprintf(`// DiskIdentifier is the identifier for a disk.
+type DiskIdentifier struct {
+	Name string %s
+}
+
+`, nameTag),
+		},
+		{
+			name: "struct type with field descriptions",
+			template: TypeTemplate{
+				Description: "// Address is an address.",
+				Name:        "Address",
+				Type:        "struct",
+				Fields: []TypeField{
+					{
+						Description:       "// Street is the street name",
+						Name:              "Street",
+						Type:              "string",
+						SerializationInfo: streetTag,
+					},
+					{
+						Description:       "// City is the city name",
+						Name:              "City",
+						Type:              "string",
+						SerializationInfo: cityTag,
+					},
+				},
+			},
+			want: fmt.Sprintf(`// Address is an address.
+type Address struct {
+	// Street is the street name
+	Street string %s
+	// City is the city name
+	City string %s
+}
+
+`, streetTag, cityTag),
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			got := tc.template.Render()
+			assert.Equal(t, tc.want, got)
 		})
 	}
 }

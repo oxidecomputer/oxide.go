@@ -27,7 +27,7 @@ func generateVersion(file string, spec *openapi3.T, sdkVersion string) error {
 		return fmt.Errorf("failed generating %s: api version cannnot be empty", file)
 	}
 
-	t, err := template.ParseFiles("./templates/version.tpl")
+	t, err := template.ParseFiles("./templates/version.go.tpl")
 	if err != nil {
 		return fmt.Errorf("failed generating %s: %w", file, err)
 	}

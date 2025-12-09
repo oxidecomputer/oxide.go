@@ -5,11 +5,13 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"slices"
 	"sort"
 	"strings"
+	"text/template"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/iancoleman/strcase"
@@ -20,8 +22,33 @@ import (
 // are not duplicated in createStringEnum()
 var collectEnumStringTypes = enumStringTypes()
 
+var (
+	typeTemplate = template.Must(
+		template.New("type.go.tpl").
+			Funcs(template.FuncMap{"splitDocString": splitDocString}).
+			ParseFiles("./templates/type.go.tpl"),
+	)
+	enumTemplate = template.Must(
+		template.New("enum.go.tpl").
+			Funcs(template.FuncMap{"splitDocString": splitDocString}).
+			ParseFiles("./templates/enum.go.tpl"),
+	)
+	validationTemplate = template.Must(
+		template.ParseFiles("./templates/validation.go.tpl"),
+	)
+)
+
 func enumStringTypes() map[string][]string {
 	return map[string][]string{}
+}
+
+// renderTemplate executes a template with the given data and returns the result.
+func renderTemplate(tmpl *template.Template, data any) string {
+	var buf bytes.Buffer
+	if err := tmpl.Execute(&buf, data); err != nil {
+		panic(err)
+	}
+	return buf.String()
 }
 
 // TypeTemplate holds the information of a type struct
@@ -33,18 +60,23 @@ type TypeTemplate struct {
 	// Type describes the type of the type (e.g. struct, int64, string)
 	Type string
 	// Fields holds the information for the field
-	Fields []TypeFields
+	Fields []TypeField
 }
 
-// TypeFields holds the information for each type field
-type TypeFields struct {
+// Render renders the TypeTemplate to a Go type.
+func (t TypeTemplate) Render() string {
+	return renderTemplate(typeTemplate, t)
+}
+
+// TypeField holds the information for each type field.
+type TypeField struct {
 	Description       string
 	Name              string
 	Type              string
 	SerializationInfo string
 }
 
-// EnumTemplate holds the information for enum types
+// EnumTemplate holds the information for enum types.
 type EnumTemplate struct {
 	Description string
 	Name        string
@@ -52,13 +84,23 @@ type EnumTemplate struct {
 	Value       string
 }
 
+// Render renders the EnumTemplate as var/const enum item.
+func (e EnumTemplate) Render() string {
+	return renderTemplate(enumTemplate, e)
+}
+
 // ValidationTemplate holds information about the fields that
-// need to be validated
+// need to be validated.
 type ValidationTemplate struct {
 	RequiredObjects []string
 	RequiredStrings []string
 	RequiredNums    []string
 	AssociatedType  string
+}
+
+// Render renders the ValidationTemplate as a Go method.
+func (v ValidationTemplate) Render() string {
+	return renderTemplate(validationTemplate, v)
 }
 
 // Generate the types file.
@@ -121,7 +163,7 @@ func constructParamTypes(paths map[string]*openapi3.PathItem) []TypeTemplate {
 					Name: paramsTypeName,
 				}
 
-				fields := make([]TypeFields, 0)
+				fields := make([]TypeField, 0)
 				for _, p := range o.Parameters {
 					if p.Ref != "" {
 						fmt.Printf("[WARN] TODO: skipping parameter for %q, since it is a reference\n", p.Value.Name)
@@ -129,7 +171,7 @@ func constructParamTypes(paths map[string]*openapi3.PathItem) []TypeTemplate {
 					}
 
 					paramName := strcase.ToCamel(p.Value.Name)
-					field := TypeFields{
+					field := TypeField{
 						Name: paramName,
 						Type: convertToValidGoType("", "", p.Value.Schema),
 					}
@@ -144,13 +186,13 @@ func constructParamTypes(paths map[string]*openapi3.PathItem) []TypeTemplate {
 					fields = append(fields, field)
 				}
 				if o.RequestBody != nil {
-					var field TypeFields
+					var field TypeField
 					// The Nexus API spec only has a single value for content, so we can safely
 					// break when a condition is met
 					for mt, r := range o.RequestBody.Value.Content {
 						// TODO: Handle other mime types in a more idiomatic way
 						if mt != "application/json" {
-							field = TypeFields{
+							field = TypeField{
 								Name:              "Body",
 								Type:              "io.Reader",
 								SerializationInfo: "`json:\"body,omitempty\" yaml:\"body,omitempty\"`",
@@ -158,7 +200,7 @@ func constructParamTypes(paths map[string]*openapi3.PathItem) []TypeTemplate {
 							break
 						}
 
-						field = TypeFields{
+						field = TypeField{
 							Name:              "Body",
 							Type:              "*" + convertToValidGoType("", "", r.Schema),
 							SerializationInfo: "`json:\"body,omitempty\" yaml:\"body,omitempty\"`",
@@ -315,66 +357,16 @@ func constructEnums(enumStrCollection map[string][]string) []EnumTemplate {
 
 // writeTypes iterates over the templates, constructs the different types and writes to file
 func writeTypes(f *os.File, typeCollection []TypeTemplate, typeValidationCollection []ValidationTemplate, enumCollection []EnumTemplate) {
-	// Write all collected types to file
 	for _, tt := range typeCollection {
-		// If an empty template manages to get through, ignore it.
-		// if there is a weirdly constructed template, then let it get through
-		// so it's evident to us.
-		if tt.Name == "" && tt.Type == "" && tt.Description == "" {
-			continue
-		}
-
-		fmt.Fprintf(f, "%s\n", splitDocString(tt.Description))
-		fmt.Fprintf(f, "type %s %s", tt.Name, tt.Type)
-		if tt.Fields != nil {
-			fmt.Fprint(f, " {\n")
-			for _, ft := range tt.Fields {
-				if ft.Description != "" {
-					fmt.Fprintf(f, "\t%s\n", splitDocString(ft.Description))
-				}
-				fmt.Fprintf(f, "\t%s %s %s\n", ft.Name, ft.Type, ft.SerializationInfo)
-			}
-			fmt.Fprint(f, "}\n")
-		}
-		fmt.Fprint(f, "\n")
+		fmt.Fprint(f, tt.Render())
 	}
 
-	// Write all collected validation methods to file
 	for _, vm := range typeValidationCollection {
-		if vm.AssociatedType == "" {
-			continue
-		}
-
-		fmt.Fprintf(f, "// Validate verifies all required fields for %s are set\n", vm.AssociatedType)
-		fmt.Fprintf(f, "func (p *%s) Validate() error {\n", vm.AssociatedType)
-		fmt.Fprintln(f, "v := new(Validator)")
-		for _, o := range vm.RequiredObjects {
-			fmt.Fprintf(f, "v.HasRequiredObj(p.%s, \"%s\")\n", o, o)
-		}
-		for _, s := range vm.RequiredStrings {
-			fmt.Fprintf(f, "v.HasRequiredStr(string(p.%s), \"%s\")\n", s, s)
-		}
-		for _, i := range vm.RequiredNums {
-			fmt.Fprintf(f, "v.HasRequiredNum(p.%s, \"%s\")\n", i, i)
-		}
-		fmt.Fprintln(f, "if !v.IsValid() {")
-		// Unfortunately I have to craft the following line this way as I get
-		// unwanted newlines otherwise :(
-		n := `\n`
-		fmt.Fprintf(f, "return fmt.Errorf(\"validation error:%v%v\", v.Error())", n, `%v`)
-		fmt.Fprintln(f, "}")
-		fmt.Fprintln(f, "return nil")
-		fmt.Fprintln(f, "}")
+		fmt.Fprint(f, vm.Render())
 	}
 
-	// Write all collected enums to file
 	for _, et := range enumCollection {
-		if et.Name == "" {
-			continue
-		}
-
-		fmt.Fprintf(f, "%s\n", splitDocString(et.Description))
-		fmt.Fprintf(f, "%s %s %s\n\n", et.ValueType, et.Name, et.Value)
+		fmt.Fprint(f, et.Render())
 	}
 }
 
@@ -476,7 +468,7 @@ func createTypeObject(schema *openapi3.Schema, name, typeName, description strin
 
 	schemas := schema.Properties
 	required := schema.Required
-	fields := []TypeFields{}
+	fields := []TypeField{}
 	keys := sortedKeys(schemas)
 	for _, k := range keys {
 		v := schemas[k]
@@ -529,7 +521,7 @@ func createTypeObject(schema *openapi3.Schema, name, typeName, description strin
 			}
 		}
 
-		field := TypeFields{}
+		field := TypeField{}
 		if v.Value.Description != "" {
 			desc := fmt.Sprintf("// %s is %s", strcase.ToCamel(k), toLowerFirstLetter(strings.ReplaceAll(v.Value.Description, "\n", "\n// ")))
 			field.Description = desc
@@ -654,7 +646,7 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 	var genericTypes []string
 	enumTpls := make([]EnumTemplate, 0)
 	typeTpls := make([]TypeTemplate, 0)
-	fields := make([]TypeFields, 0)
+	fields := make([]TypeField, 0)
 	for _, v := range s.OneOf {
 		// Iterate over all the schema components in the spec and write the types.
 		keys := sortedKeys(v.Value.Properties)
@@ -720,7 +712,7 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 
 			// Avoids duplication for every enum
 			if !containsMatchFirstWord(parsedProperties, propertyName) {
-				field := TypeFields{
+				field := TypeField{
 					Description:       formatTypeDescription(propertyName, p.Value),
 					Name:              propertyName,
 					Type:              propertyType,
