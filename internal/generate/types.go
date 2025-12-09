@@ -263,10 +263,10 @@ func constructParamTypes(paths map[string]*openapi3.PathItem) []TypeTemplate {
 					paramName := strcase.ToCamel(p.Value.Name)
 					paramType := convertToValidGoType("", "", p.Value.Schema)
 					field := TypeField{
-						Name:       paramName,
-						Type:       paramType,
-						MarshalKey: p.Value.Name,
-						Schema:     nil, // nil so StructTag always uses omitempty
+						Name:          paramName,
+						Type:          paramType,
+						MarshalKey:    p.Value.Name,
+						OmitDirective: "omitempty",
 					}
 
 					if p.Value.Required {

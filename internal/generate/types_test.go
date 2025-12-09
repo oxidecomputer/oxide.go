@@ -128,6 +128,15 @@ func TestTypeField_Description(t *testing.T) {
 		}
 		assert.Equal(t, "// Foo is a foo field", f.Description())
 	})
+
+	t.Run("fallback", func(t *testing.T) {
+		f := TypeField{
+			Name:                "Foo",
+			Schema:              &openapi3.SchemaRef{Value: &openapi3.Schema{Description: ""}},
+			FallbackDescription: true,
+		}
+		assert.Equal(t, "// Foo is the type definition for a Foo.", f.Description())
+	})
 }
 
 func TestTypeField_StructTag(t *testing.T) {
@@ -252,26 +261,19 @@ func Test_createTypeObject(t *testing.T) {
 
 	got := createTypeObject(&typesSpec, "DiskSource", "DiskSourceSnapshot", "Create a disk from a disk snapshot")
 
-	assert.Equal(t, "DiskSourceSnapshot", got.Name)
-	assert.Equal(t, "struct", got.Type)
-	assert.Equal(t, "Create a disk from a disk snapshot\n//\n// Required fields:\n// - Type", got.Description)
-	assert.Len(t, got.Fields, 2)
+	want := TypeTemplate{
+		Name:        "DiskSourceSnapshot",
+		Type:        "struct",
+		Description: "Create a disk from a disk snapshot\n//\n// Required fields:\n// - Type",
+		Fields: []TypeField{
+			{Name: "SnapshotId", Type: "string", MarshalKey: "snapshot_id", Required: false},
+			{Name: "Type", Type: "DiskSourceType", MarshalKey: "type", Required: true},
+		},
+	}
 
-	// Check first field (snapshot_id)
-	assert.Equal(t, "SnapshotId", got.Fields[0].Name)
-	assert.Equal(t, "string", got.Fields[0].Type)
-	assert.Equal(t, "snapshot_id", got.Fields[0].MarshalKey)
-	assert.False(t, got.Fields[0].Required)
-	assert.Equal(t, "", got.Fields[0].Description())
-	assert.Equal(t, "`json:\"snapshot_id,omitempty\" yaml:\"snapshot_id,omitempty\"`", got.Fields[0].StructTag())
-
-	// Check second field (type)
-	assert.Equal(t, "Type", got.Fields[1].Name)
-	assert.Equal(t, "DiskSourceType", got.Fields[1].Type)
-	assert.Equal(t, "type", got.Fields[1].MarshalKey)
-	assert.True(t, got.Fields[1].Required)
-	assert.Equal(t, "", got.Fields[1].Description())
-	assert.Equal(t, "`json:\"type\" yaml:\"type\"`", got.Fields[1].StructTag())
+	if diff := cmp.Diff(want, got, cmpIgnoreSchema); diff != "" {
+		t.Errorf("createTypeObject() mismatch (-want +got):\n%s", diff)
+	}
 }
 
 func Test_createStringEnum(t *testing.T) {
