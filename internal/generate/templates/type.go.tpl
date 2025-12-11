@@ -1,7 +1,7 @@
 {{splitDocString .Description}}
 {{- if eq .Type "interface"}}
 type {{.Name}} interface {
-	{{.MarkerMethod}}()
+	{{.OneOfMarker}}()
 }
 {{else if .Fields}}
 type {{.Name}} {{.Type}} {
@@ -12,28 +12,29 @@ type {{.Name}} {{.Type}} {
 	{{.Name}} {{.GoType}} {{.StructTag}}
 {{- end}}
 }
-{{- if .ImplementsMarker}}
-func ({{.Name}}) {{.ImplementsMarker}}() {}
+{{- if .OneOfMarker}}
+func ({{.Name}}) {{.OneOfMarker}}() {}
 {{end -}}
-{{if .UnmarshalInfo}}
-// UnmarshalJSON implements json.Unmarshaler for {{.Name}}.
+{{if .OneOfInfo}}
+// UnmarshalJSON implements json.Unmarshaler for {{.Name}}, selecting the correct
+// variant of the {{.OneOfInfo.ValueField}} field based on the {{.OneOfInfo.DiscriminatorField}} discriminator.
 func (v *{{.Name}}) UnmarshalJSON(data []byte) error {
 	var raw struct {
-		{{.UnmarshalInfo.DiscriminatorField}}  {{.UnmarshalInfo.DiscriminatorType}}  `json:"{{.UnmarshalInfo.DiscriminatorField | toLower}}"`
-		{{.UnmarshalInfo.ValueField}} json.RawMessage `json:"{{.UnmarshalInfo.ValueField | toLower}}"`
+		{{.OneOfInfo.DiscriminatorField}}  {{.OneOfInfo.DiscriminatorType}}  `json:"{{.OneOfInfo.DiscriminatorKey}}"`
+		{{.OneOfInfo.ValueField}} json.RawMessage `json:"{{.OneOfInfo.ValueKey}}"`
 	}
 	if err := json.Unmarshal(data, &raw); err != nil {
 		return err
 	}
-	v.{{.UnmarshalInfo.DiscriminatorField}} = raw.{{.UnmarshalInfo.DiscriminatorField}}
-	switch raw.{{.UnmarshalInfo.DiscriminatorField}} {
-{{- range .UnmarshalInfo.Variants}}
+	v.{{.OneOfInfo.DiscriminatorField}} = raw.{{.OneOfInfo.DiscriminatorField}}
+	switch raw.{{.OneOfInfo.DiscriminatorField}} {
+{{- range .OneOfInfo.Variants}}
 	case {{.EnumValue}}:
 		var val {{.ImplType}}
-		if err := json.Unmarshal(raw.{{$.UnmarshalInfo.ValueField}}, &val); err != nil {
+		if err := json.Unmarshal(raw.{{$.OneOfInfo.ValueField}}, &val); err != nil {
 			return err
 		}
-		v.{{$.UnmarshalInfo.ValueField}} = val
+		v.{{$.OneOfInfo.ValueField}} = val
 {{- end}}
 	}
 	return nil
@@ -41,7 +42,7 @@ func (v *{{.Name}}) UnmarshalJSON(data []byte) error {
 {{end}}
 {{else}}
 type {{.Name}} {{.Type}}
-{{- if .ImplementsMarker}}
-func ({{.Name}}) {{.ImplementsMarker}}() {}
+{{- if .OneOfMarker}}
+func ({{.Name}}) {{.OneOfMarker}}() {}
 {{end}}
 {{end -}}

@@ -42,19 +42,19 @@ type FieldValueType string
 type fieldValueValue interface {
 	isFieldValueValue()
 }
-// FieldValueString is a string variant of FieldValue value.
+// FieldValueString is the string variant of FieldValue value.
 type FieldValueString struct {
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 func (FieldValueString) isFieldValueValue() {}
 
-// FieldValueInt is an int variant of FieldValue value.
+// FieldValueInt is the int variant of FieldValue value.
 type FieldValueInt struct {
 	Value int `json:"value,omitempty" yaml:"value,omitempty"`
 }
 func (FieldValueInt) isFieldValueValue() {}
 
-// FieldValueBool is a bool variant of FieldValue value.
+// FieldValueBool is the bool variant of FieldValue value.
 type FieldValueBool struct {
 	Value bool `json:"value,omitempty" yaml:"value,omitempty"`
 }
@@ -67,7 +67,8 @@ type FieldValue struct {
 	// Value is the type definition for a Value.
 	Value fieldValueValue `json:"value,omitempty" yaml:"value,omitempty"`
 }
-// UnmarshalJSON implements json.Unmarshaler for FieldValue.
+// UnmarshalJSON implements json.Unmarshaler for FieldValue, selecting the correct
+// variant of the Value field based on the Type discriminator.
 func (v *FieldValue) UnmarshalJSON(data []byte) error {
 	var raw struct {
 		Type  FieldValueType  `json:"type"`

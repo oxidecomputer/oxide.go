@@ -31,7 +31,6 @@ var (
 		template.New("type.go.tpl").
 			Funcs(template.FuncMap{
 				"splitDocString": splitDocString,
-				"toLower":        strings.ToLower,
 			}).
 			ParseFiles("./templates/type.go.tpl"),
 	)
@@ -65,30 +64,32 @@ type TypeTemplate struct {
 	// Fields holds the information for the field
 	Fields []TypeField
 
-	// MarkerMethod is the marker method name for interface types (e.g., "isFieldValueValue")
-	MarkerMethod string
-	// ImplementsMarker is the marker method this type implements (for type aliases)
-	ImplementsMarker string
+	// OneOfMarker is the marker method for oneOf interface types and their implementations (e.g., "isFieldValueValue")
+	OneOfMarker string
 
-	// UnmarshalInfo holds information for generating custom UnmarshalJSON methods
-	UnmarshalInfo *UnmarshalInfo
+	// OneOfInfo holds information for generating oneOf code including custom UnmarshalJSON methods
+	OneOfInfo *OneOfInfo
 }
 
-// UnmarshalInfo holds information needed to generate a custom UnmarshalJSON method
-// for structs containing interface fields that need discriminator-based unmarshaling.
-type UnmarshalInfo struct {
+// OneOfInfo holds information needed to generate code for oneOf types,
+// including custom UnmarshalJSON methods for discriminator-based unmarshaling.
+type OneOfInfo struct {
 	// DiscriminatorField is the struct field name used to determine the variant (e.g., "Type")
 	DiscriminatorField string
+	// DiscriminatorKey is the JSON key for the discriminator field (e.g., "type")
+	DiscriminatorKey string
 	// DiscriminatorType is the Go type of the discriminator field (e.g., "FieldValueType")
 	DiscriminatorType string
 	// ValueField is the struct field name that holds the interface value (e.g., "Value")
 	ValueField string
+	// ValueKey is the JSON key for the value field (e.g., "value")
+	ValueKey string
 	// Variants maps discriminator enum values to their implementation types
-	Variants []UnmarshalVariant
+	Variants []OneOfVariant
 }
 
-// UnmarshalVariant represents a single variant in a discriminated union for JSON unmarshaling.
-type UnmarshalVariant struct {
+// OneOfVariant represents a single variant in a oneOf discriminated union.
+type OneOfVariant struct {
 	// EnumValue is the discriminator enum constant (e.g., "FieldValueTypeString")
 	EnumValue string
 	// ImplType is the concrete type to unmarshal into (e.g., "FieldValueString")
@@ -731,7 +732,8 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 	enumTpls := make([]EnumTemplate, 0)
 	typeTpls := make([]TypeTemplate, 0)
 
-	// First pass: gather metadata about the oneOf to determine if we need interface types.
+	// First pass: loop over variants and store metadata about the discriminator and variant types.
+
 	// Set of candidate discriminator keys. There must be exactly zero or one discriminator key.
 	discriminatorKeys := map[string]struct{}{}
 	// Map of properties to sets of variant types. We use this to identify fields with multiple types across variants.
@@ -759,17 +761,16 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 		panic(fmt.Sprintf("[ERROR] Found multiple discriminator properties for type %s: %+v", name, discriminatorKeys))
 	}
 
-	// Determine if we have multi-type properties (which need interface types)
-	hasMultiTypeProps := false
-	for _, variantTypes := range propToVariantTypes {
+	// Find properties that have different types across variants.
+	multiTypeProps := map[string]struct{}{}
+	for propName, variantTypes := range propToVariantTypes {
 		if len(variantTypes) > 1 {
-			hasMultiTypeProps = true
-			break
+			multiTypeProps[propName] = struct{}{}
 		}
 	}
 
 	// Second pass: create types for variants (only if NOT using interface approach)
-	if !hasMultiTypeProps {
+	if len(multiTypeProps) == 0 {
 		for _, variantRef := range s.OneOf {
 			// Skip variants that are refs - they're already defined elsewhere
 			if variantRef.Ref != "" {
@@ -801,23 +802,13 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 			for _, propName := range sortedKeys(variantRef.Value.Properties) {
 				propRef := variantRef.Value.Properties[propName]
 				if len(propRef.Value.Enum) == 1 {
-					enumField := strcase.ToCamel(propRef.Value.Enum[0].(string))
 					// Only create the enum type, not full variant structs
 					enums, tt, et := createStringEnum(propRef.Value, collectEnumStringTypes, typeName+strcase.ToCamel(propName), typeName+strcase.ToCamel(propName))
 					collectEnumStringTypes = enums
 					typeTpls = append(typeTpls, tt...)
 					enumTpls = append(enumTpls, et...)
-					_ = enumField // enumField used for naming but not for struct creation
 				}
 			}
-		}
-	}
-
-	// Find properties that have different types across variants.
-	multiTypeProps := map[string]struct{}{}
-	for propName, variantTypes := range propToVariantTypes {
-		if len(variantTypes) > 1 {
-			multiTypeProps[propName] = struct{}{}
 		}
 	}
 
@@ -831,8 +822,8 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 	// For multi-type properties, create interface and implementation types
 	// Map from property name to interface name
 	interfaceNames := map[string]string{}
-	// Map from property name to list of variants (for UnmarshalInfo)
-	variantsByProp := map[string][]UnmarshalVariant{}
+	// Map from property name to list of variants (for OneOfInfo)
+	variantsByProp := map[string][]OneOfVariant{}
 
 	for propName := range multiTypeProps {
 		propField := strcase.ToCamel(propName)
@@ -843,15 +834,15 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 
 		// Create the interface type
 		interfaceTpl := TypeTemplate{
-			Description:  fmt.Sprintf("// %s is an interface for %s %s variants.", interfaceName, typeName, toLowerFirstLetter(propField)),
-			Name:         interfaceName,
-			Type:         "interface",
-			MarkerMethod: markerMethod,
+			Description: fmt.Sprintf("// %s is an interface for %s %s variants.", interfaceName, typeName, toLowerFirstLetter(propField)),
+			Name:        interfaceName,
+			Type:        "interface",
+			OneOfMarker: markerMethod,
 		}
 		typeTpls = append(typeTpls, interfaceTpl)
 
 		// Create implementation types for each variant
-		variantsByProp[propName] = []UnmarshalVariant{}
+		variantsByProp[propName] = []OneOfVariant{}
 		for _, variantRef := range s.OneOf {
 			propRef, ok := variantRef.Value.Properties[propName]
 			if !ok {
@@ -873,21 +864,11 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 			// Strip pointer prefix for interface implementation types
 			baseType := strings.TrimPrefix(goType, "*")
 			// Implementation type name, e.g., "FieldValueString"
-			// Use enumValue if available (discriminator), otherwise use propField+baseType
-			var implTypeName string
-			if enumValue != "" {
-				implTypeName = typeName + strcase.ToCamel(enumValue)
-			} else {
-				implTypeName = typeName + propField + strcase.ToCamel(baseType)
-			}
+			implTypeName := typeName + strcase.ToCamel(enumValue)
 
 			// Create the implementation type (struct wrapper with a field matching the original property name)
-			article := "a"
-			if strings.HasPrefix(baseType, "i") || strings.HasPrefix(baseType, "u") {
-				article = "an"
-			}
 			implTpl := TypeTemplate{
-				Description: fmt.Sprintf("// %s is %s %s variant of %s %s.", implTypeName, article, baseType, typeName, toLowerFirstLetter(propField)),
+				Description: fmt.Sprintf("// %s is the %s variant of %s %s.", implTypeName, baseType, typeName, toLowerFirstLetter(propField)),
 				Name:        implTypeName,
 				Type:        "struct",
 				Fields: []TypeField{
@@ -897,14 +878,14 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 						MarshalKey: propName,
 					},
 				},
-				ImplementsMarker: markerMethod,
+				OneOfMarker: markerMethod,
 			}
 			typeTpls = append(typeTpls, implTpl)
 
-			// Track variant for UnmarshalInfo
+			// Track variant for OneOfInfo
 			if discriminatorField != "" {
 				discriminatorType := typeName + strcase.ToCamel(discriminatorField)
-				variantsByProp[propName] = append(variantsByProp[propName], UnmarshalVariant{
+				variantsByProp[propName] = append(variantsByProp[propName], OneOfVariant{
 					EnumValue: discriminatorType + strcase.ToCamel(enumValue),
 					ImplType:  implTypeName,
 				})
@@ -963,14 +944,16 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 			Fields:      oneOfFields,
 		}
 
-		// Add UnmarshalInfo if we have multi-type properties with a discriminator
+		// Add OneOfInfo if we have multi-type properties with a discriminator
 		if len(multiTypeProps) > 0 && discriminatorField != "" {
 			// For now, we only support a single multi-type property
 			for propName, variants := range variantsByProp {
-				typeTpl.UnmarshalInfo = &UnmarshalInfo{
+				typeTpl.OneOfInfo = &OneOfInfo{
 					DiscriminatorField: strcase.ToCamel(discriminatorField),
+					DiscriminatorKey:   discriminatorField,
 					DiscriminatorType:  typeName + strcase.ToCamel(discriminatorField),
 					ValueField:         strcase.ToCamel(propName),
+					ValueKey:           propName,
 					Variants:           variants,
 				}
 				break

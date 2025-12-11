@@ -455,21 +455,21 @@ func Test_createOneOf(t *testing.T) {
 					Description:  "// intOrStringValue is an interface for IntOrString value variants.",
 					Name:         "intOrStringValue",
 					Type:         "interface",
-					MarkerMethod: "isIntOrStringValue",
+					OneOfMarker: "isIntOrStringValue",
 				},
 				{
-					Description:      "// IntOrStringInt is an int variant of IntOrString value.",
+					Description:      "// IntOrStringInt is the int variant of IntOrString value.",
 					Name:             "IntOrStringInt",
 					Type:             "struct",
 					Fields:           []TypeField{{Name: "Value", Type: "int", MarshalKey: "value"}},
-					ImplementsMarker: "isIntOrStringValue",
+					OneOfMarker: "isIntOrStringValue",
 				},
 				{
-					Description:      "// IntOrStringString is a string variant of IntOrString value.",
+					Description:      "// IntOrStringString is the string variant of IntOrString value.",
 					Name:             "IntOrStringString",
 					Type:             "struct",
 					Fields:           []TypeField{{Name: "Value", Type: "string", MarshalKey: "value"}},
-					ImplementsMarker: "isIntOrStringValue",
+					OneOfMarker: "isIntOrStringValue",
 				},
 				{
 					Description: "// IntOrString is a value that can be an int or a string.",
@@ -479,11 +479,13 @@ func Test_createOneOf(t *testing.T) {
 						{Name: "Type", Type: "IntOrStringType", MarshalKey: "type", FallbackDescription: true},
 						{Name: "Value", Type: "intOrStringValue", MarshalKey: "value", FallbackDescription: true},
 					},
-					UnmarshalInfo: &UnmarshalInfo{
+					OneOfInfo: &OneOfInfo{
 						DiscriminatorField: "Type",
+						DiscriminatorKey:   "type",
 						DiscriminatorType:  "IntOrStringType",
 						ValueField:         "Value",
-						Variants: []UnmarshalVariant{
+						ValueKey:           "value",
+						Variants: []OneOfVariant{
 							{EnumValue: "IntOrStringTypeInt", ImplType: "IntOrStringInt"},
 							{EnumValue: "IntOrStringTypeString", ImplType: "IntOrStringString"},
 						},
