@@ -12,6 +12,9 @@ type {{.Name}} {{.Type}} {
 	{{.Name}} {{.GoType}} {{.StructTag}}
 {{- end}}
 }
+{{- if .ImplementsMarker}}
+func ({{.Name}}) {{.ImplementsMarker}}() {}
+{{end -}}
 {{if .UnmarshalInfo}}
 // UnmarshalJSON implements json.Unmarshaler for {{.Name}}.
 func (v *{{.Name}}) UnmarshalJSON(data []byte) error {

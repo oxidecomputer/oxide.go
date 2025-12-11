@@ -771,6 +771,15 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 	// Second pass: create types for variants (only if NOT using interface approach)
 	if !hasMultiTypeProps {
 		for _, variantRef := range s.OneOf {
+			// Skip variants that are refs - they're already defined elsewhere
+			if variantRef.Ref != "" {
+				continue
+			}
+			// Skip variants that are allOf wrappers (single-item allOf with $ref)
+			// These are just metadata wrappers around existing types
+			if len(variantRef.Value.AllOf) == 1 && variantRef.Value.AllOf[0].Ref != "" {
+				continue
+			}
 			enumField := ""
 			for _, propName := range sortedKeys(variantRef.Value.Properties) {
 				propRef := variantRef.Value.Properties[propName]
@@ -864,17 +873,30 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 			// Strip pointer prefix for interface implementation types
 			baseType := strings.TrimPrefix(goType, "*")
 			// Implementation type name, e.g., "FieldValueString"
-			implTypeName := typeName + strcase.ToCamel(enumValue)
+			// Use enumValue if available (discriminator), otherwise use propField+baseType
+			var implTypeName string
+			if enumValue != "" {
+				implTypeName = typeName + strcase.ToCamel(enumValue)
+			} else {
+				implTypeName = typeName + propField + strcase.ToCamel(baseType)
+			}
 
-			// Create the implementation type (type alias with marker method)
+			// Create the implementation type (struct wrapper with a field matching the original property name)
 			article := "a"
 			if strings.HasPrefix(baseType, "i") || strings.HasPrefix(baseType, "u") {
 				article = "an"
 			}
 			implTpl := TypeTemplate{
-				Description:      fmt.Sprintf("// %s is %s %s variant of %s %s.", implTypeName, article, baseType, typeName, toLowerFirstLetter(propField)),
-				Name:             implTypeName,
-				Type:             baseType,
+				Description: fmt.Sprintf("// %s is %s %s variant of %s %s.", implTypeName, article, baseType, typeName, toLowerFirstLetter(propField)),
+				Name:        implTypeName,
+				Type:        "struct",
+				Fields: []TypeField{
+					{
+						Name:       propField,
+						Type:       baseType,
+						MarshalKey: propName,
+					},
+				},
 				ImplementsMarker: markerMethod,
 			}
 			typeTpls = append(typeTpls, implTpl)
@@ -955,6 +977,17 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 			}
 		}
 
+		typeTpls = append(typeTpls, typeTpl)
+	}
+
+	// Fallback: if no types were created (e.g., all variants are allOf wrappers),
+	// create a type alias to `any` so the type is at least defined.
+	if len(typeTpls) == 0 {
+		typeTpl := TypeTemplate{
+			Description: formatTypeDescription(typeName, s),
+			Name:        typeName,
+			Type:        "any",
+		}
 		typeTpls = append(typeTpls, typeTpl)
 	}
 

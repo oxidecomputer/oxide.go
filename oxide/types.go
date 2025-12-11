@@ -1933,142 +1933,198 @@ type datumDatum interface {
 }
 
 // DatumBool is a bool variant of Datum datum.
-type DatumBool bool
+type DatumBool struct {
+	Datum bool `json:"datum,omitempty" yaml:"datum,omitempty"`
+}
 
 func (DatumBool) isDatumDatum() {}
 
 // DatumI8 is an int variant of Datum datum.
-type DatumI8 int
+type DatumI8 struct {
+	Datum int `json:"datum,omitempty" yaml:"datum,omitempty"`
+}
 
 func (DatumI8) isDatumDatum() {}
 
 // DatumU8 is an int variant of Datum datum.
-type DatumU8 int
+type DatumU8 struct {
+	Datum int `json:"datum,omitempty" yaml:"datum,omitempty"`
+}
 
 func (DatumU8) isDatumDatum() {}
 
 // DatumI16 is an int variant of Datum datum.
-type DatumI16 int
+type DatumI16 struct {
+	Datum int `json:"datum,omitempty" yaml:"datum,omitempty"`
+}
 
 func (DatumI16) isDatumDatum() {}
 
 // DatumU16 is an int variant of Datum datum.
-type DatumU16 int
+type DatumU16 struct {
+	Datum int `json:"datum,omitempty" yaml:"datum,omitempty"`
+}
 
 func (DatumU16) isDatumDatum() {}
 
 // DatumI32 is an int variant of Datum datum.
-type DatumI32 int
+type DatumI32 struct {
+	Datum int `json:"datum,omitempty" yaml:"datum,omitempty"`
+}
 
 func (DatumI32) isDatumDatum() {}
 
 // DatumU32 is an int variant of Datum datum.
-type DatumU32 int
+type DatumU32 struct {
+	Datum int `json:"datum,omitempty" yaml:"datum,omitempty"`
+}
 
 func (DatumU32) isDatumDatum() {}
 
 // DatumI64 is an int variant of Datum datum.
-type DatumI64 int
+type DatumI64 struct {
+	Datum int `json:"datum,omitempty" yaml:"datum,omitempty"`
+}
 
 func (DatumI64) isDatumDatum() {}
 
 // DatumU64 is an int variant of Datum datum.
-type DatumU64 int
+type DatumU64 struct {
+	Datum int `json:"datum,omitempty" yaml:"datum,omitempty"`
+}
 
 func (DatumU64) isDatumDatum() {}
 
 // DatumF32 is a float64 variant of Datum datum.
-type DatumF32 float64
+type DatumF32 struct {
+	Datum float64 `json:"datum,omitempty" yaml:"datum,omitempty"`
+}
 
 func (DatumF32) isDatumDatum() {}
 
 // DatumF64 is a float64 variant of Datum datum.
-type DatumF64 float64
+type DatumF64 struct {
+	Datum float64 `json:"datum,omitempty" yaml:"datum,omitempty"`
+}
 
 func (DatumF64) isDatumDatum() {}
 
 // DatumString is a string variant of Datum datum.
-type DatumString string
+type DatumString struct {
+	Datum string `json:"datum,omitempty" yaml:"datum,omitempty"`
+}
 
 func (DatumString) isDatumDatum() {}
 
 // DatumBytes is a []int variant of Datum datum.
-type DatumBytes []int
+type DatumBytes struct {
+	Datum []int `json:"datum,omitempty" yaml:"datum,omitempty"`
+}
 
 func (DatumBytes) isDatumDatum() {}
 
 // DatumCumulativeI64 is a Cumulativeint64 variant of Datum datum.
-type DatumCumulativeI64 Cumulativeint64
+type DatumCumulativeI64 struct {
+	Datum Cumulativeint64 `json:"datum,omitempty" yaml:"datum,omitempty"`
+}
 
 func (DatumCumulativeI64) isDatumDatum() {}
 
 // DatumCumulativeU64 is a Cumulativeuint64 variant of Datum datum.
-type DatumCumulativeU64 Cumulativeuint64
+type DatumCumulativeU64 struct {
+	Datum Cumulativeuint64 `json:"datum,omitempty" yaml:"datum,omitempty"`
+}
 
 func (DatumCumulativeU64) isDatumDatum() {}
 
 // DatumCumulativeF32 is a Cumulativefloat variant of Datum datum.
-type DatumCumulativeF32 Cumulativefloat
+type DatumCumulativeF32 struct {
+	Datum Cumulativefloat `json:"datum,omitempty" yaml:"datum,omitempty"`
+}
 
 func (DatumCumulativeF32) isDatumDatum() {}
 
 // DatumCumulativeF64 is a Cumulativedouble variant of Datum datum.
-type DatumCumulativeF64 Cumulativedouble
+type DatumCumulativeF64 struct {
+	Datum Cumulativedouble `json:"datum,omitempty" yaml:"datum,omitempty"`
+}
 
 func (DatumCumulativeF64) isDatumDatum() {}
 
 // DatumHistogramI8 is a Histogramint8 variant of Datum datum.
-type DatumHistogramI8 Histogramint8
+type DatumHistogramI8 struct {
+	Datum Histogramint8 `json:"datum,omitempty" yaml:"datum,omitempty"`
+}
 
 func (DatumHistogramI8) isDatumDatum() {}
 
 // DatumHistogramU8 is a Histogramuint8 variant of Datum datum.
-type DatumHistogramU8 Histogramuint8
+type DatumHistogramU8 struct {
+	Datum Histogramuint8 `json:"datum,omitempty" yaml:"datum,omitempty"`
+}
 
 func (DatumHistogramU8) isDatumDatum() {}
 
 // DatumHistogramI16 is a Histogramint16 variant of Datum datum.
-type DatumHistogramI16 Histogramint16
+type DatumHistogramI16 struct {
+	Datum Histogramint16 `json:"datum,omitempty" yaml:"datum,omitempty"`
+}
 
 func (DatumHistogramI16) isDatumDatum() {}
 
 // DatumHistogramU16 is a Histogramuint16 variant of Datum datum.
-type DatumHistogramU16 Histogramuint16
+type DatumHistogramU16 struct {
+	Datum Histogramuint16 `json:"datum,omitempty" yaml:"datum,omitempty"`
+}
 
 func (DatumHistogramU16) isDatumDatum() {}
 
 // DatumHistogramI32 is a Histogramint32 variant of Datum datum.
-type DatumHistogramI32 Histogramint32
+type DatumHistogramI32 struct {
+	Datum Histogramint32 `json:"datum,omitempty" yaml:"datum,omitempty"`
+}
 
 func (DatumHistogramI32) isDatumDatum() {}
 
 // DatumHistogramU32 is a Histogramuint32 variant of Datum datum.
-type DatumHistogramU32 Histogramuint32
+type DatumHistogramU32 struct {
+	Datum Histogramuint32 `json:"datum,omitempty" yaml:"datum,omitempty"`
+}
 
 func (DatumHistogramU32) isDatumDatum() {}
 
 // DatumHistogramI64 is a Histogramint64 variant of Datum datum.
-type DatumHistogramI64 Histogramint64
+type DatumHistogramI64 struct {
+	Datum Histogramint64 `json:"datum,omitempty" yaml:"datum,omitempty"`
+}
 
 func (DatumHistogramI64) isDatumDatum() {}
 
 // DatumHistogramU64 is a Histogramuint64 variant of Datum datum.
-type DatumHistogramU64 Histogramuint64
+type DatumHistogramU64 struct {
+	Datum Histogramuint64 `json:"datum,omitempty" yaml:"datum,omitempty"`
+}
 
 func (DatumHistogramU64) isDatumDatum() {}
 
 // DatumHistogramF32 is a Histogramfloat variant of Datum datum.
-type DatumHistogramF32 Histogramfloat
+type DatumHistogramF32 struct {
+	Datum Histogramfloat `json:"datum,omitempty" yaml:"datum,omitempty"`
+}
 
 func (DatumHistogramF32) isDatumDatum() {}
 
 // DatumHistogramF64 is a Histogramdouble variant of Datum datum.
-type DatumHistogramF64 Histogramdouble
+type DatumHistogramF64 struct {
+	Datum Histogramdouble `json:"datum,omitempty" yaml:"datum,omitempty"`
+}
 
 func (DatumHistogramF64) isDatumDatum() {}
 
 // DatumMissing is a MissingDatum variant of Datum datum.
-type DatumMissing MissingDatum
+type DatumMissing struct {
+	Datum MissingDatum `json:"datum,omitempty" yaml:"datum,omitempty"`
+}
 
 func (DatumMissing) isDatumDatum() {}
 
@@ -2886,62 +2942,86 @@ type fieldValueValue interface {
 }
 
 // FieldValueString is a string variant of FieldValue value.
-type FieldValueString string
+type FieldValueString struct {
+	Value string `json:"value,omitempty" yaml:"value,omitempty"`
+}
 
 func (FieldValueString) isFieldValueValue() {}
 
 // FieldValueI8 is an int variant of FieldValue value.
-type FieldValueI8 int
+type FieldValueI8 struct {
+	Value int `json:"value,omitempty" yaml:"value,omitempty"`
+}
 
 func (FieldValueI8) isFieldValueValue() {}
 
 // FieldValueU8 is an int variant of FieldValue value.
-type FieldValueU8 int
+type FieldValueU8 struct {
+	Value int `json:"value,omitempty" yaml:"value,omitempty"`
+}
 
 func (FieldValueU8) isFieldValueValue() {}
 
 // FieldValueI16 is an int variant of FieldValue value.
-type FieldValueI16 int
+type FieldValueI16 struct {
+	Value int `json:"value,omitempty" yaml:"value,omitempty"`
+}
 
 func (FieldValueI16) isFieldValueValue() {}
 
 // FieldValueU16 is an int variant of FieldValue value.
-type FieldValueU16 int
+type FieldValueU16 struct {
+	Value int `json:"value,omitempty" yaml:"value,omitempty"`
+}
 
 func (FieldValueU16) isFieldValueValue() {}
 
 // FieldValueI32 is an int variant of FieldValue value.
-type FieldValueI32 int
+type FieldValueI32 struct {
+	Value int `json:"value,omitempty" yaml:"value,omitempty"`
+}
 
 func (FieldValueI32) isFieldValueValue() {}
 
 // FieldValueU32 is an int variant of FieldValue value.
-type FieldValueU32 int
+type FieldValueU32 struct {
+	Value int `json:"value,omitempty" yaml:"value,omitempty"`
+}
 
 func (FieldValueU32) isFieldValueValue() {}
 
 // FieldValueI64 is an int variant of FieldValue value.
-type FieldValueI64 int
+type FieldValueI64 struct {
+	Value int `json:"value,omitempty" yaml:"value,omitempty"`
+}
 
 func (FieldValueI64) isFieldValueValue() {}
 
 // FieldValueU64 is an int variant of FieldValue value.
-type FieldValueU64 int
+type FieldValueU64 struct {
+	Value int `json:"value,omitempty" yaml:"value,omitempty"`
+}
 
 func (FieldValueU64) isFieldValueValue() {}
 
 // FieldValueIpAddr is a string variant of FieldValue value.
-type FieldValueIpAddr string
+type FieldValueIpAddr struct {
+	Value string `json:"value,omitempty" yaml:"value,omitempty"`
+}
 
 func (FieldValueIpAddr) isFieldValueValue() {}
 
 // FieldValueUuid is a string variant of FieldValue value.
-type FieldValueUuid string
+type FieldValueUuid struct {
+	Value string `json:"value,omitempty" yaml:"value,omitempty"`
+}
 
 func (FieldValueUuid) isFieldValueValue() {}
 
 // FieldValueBool is a bool variant of FieldValue value.
-type FieldValueBool bool
+type FieldValueBool struct {
+	Value bool `json:"value,omitempty" yaml:"value,omitempty"`
+}
 
 func (FieldValueBool) isFieldValueValue() {}
 
@@ -4471,7 +4551,7 @@ type InternetGatewayResultsPage struct {
 }
 
 // IpNet is the type definition for a IpNet.
-type IpNet Ipv4Net
+type IpNet any
 
 // IpPool is a collection of IP ranges. If a pool is linked to a silo, IP addresses from the pool can be
 // allocated within that silo
@@ -4638,7 +4718,7 @@ type IpPoolUtilization struct {
 }
 
 // IpRange is the type definition for a IpRange.
-type IpRange Ipv4Range
+type IpRange any
 
 // IpVersion is the IP address version.
 type IpVersion string
@@ -5549,22 +5629,30 @@ type routeDestinationValue interface {
 }
 
 // RouteDestinationIp is a string variant of RouteDestination value.
-type RouteDestinationIp string
+type RouteDestinationIp struct {
+	Value string `json:"value,omitempty" yaml:"value,omitempty"`
+}
 
 func (RouteDestinationIp) isRouteDestinationValue() {}
 
 // RouteDestinationIpNet is a IpNet variant of RouteDestination value.
-type RouteDestinationIpNet IpNet
+type RouteDestinationIpNet struct {
+	Value IpNet `json:"value,omitempty" yaml:"value,omitempty"`
+}
 
 func (RouteDestinationIpNet) isRouteDestinationValue() {}
 
 // RouteDestinationVpc is a Name variant of RouteDestination value.
-type RouteDestinationVpc Name
+type RouteDestinationVpc struct {
+	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+}
 
 func (RouteDestinationVpc) isRouteDestinationValue() {}
 
 // RouteDestinationSubnet is a Name variant of RouteDestination value.
-type RouteDestinationSubnet Name
+type RouteDestinationSubnet struct {
+	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+}
 
 func (RouteDestinationSubnet) isRouteDestinationValue() {}
 
@@ -5628,27 +5716,37 @@ type routeTargetValue interface {
 }
 
 // RouteTargetIp is a string variant of RouteTarget value.
-type RouteTargetIp string
+type RouteTargetIp struct {
+	Value string `json:"value,omitempty" yaml:"value,omitempty"`
+}
 
 func (RouteTargetIp) isRouteTargetValue() {}
 
 // RouteTargetVpc is a Name variant of RouteTarget value.
-type RouteTargetVpc Name
+type RouteTargetVpc struct {
+	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+}
 
 func (RouteTargetVpc) isRouteTargetValue() {}
 
 // RouteTargetSubnet is a Name variant of RouteTarget value.
-type RouteTargetSubnet Name
+type RouteTargetSubnet struct {
+	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+}
 
 func (RouteTargetSubnet) isRouteTargetValue() {}
 
 // RouteTargetInstance is a Name variant of RouteTarget value.
-type RouteTargetInstance Name
+type RouteTargetInstance struct {
+	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+}
 
 func (RouteTargetInstance) isRouteTargetValue() {}
 
 // RouteTargetInternetGateway is a Name variant of RouteTarget value.
-type RouteTargetInternetGateway Name
+type RouteTargetInternetGateway struct {
+	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+}
 
 func (RouteTargetInternetGateway) isRouteTargetValue() {}
 
@@ -7355,32 +7453,44 @@ type valueArrayValues interface {
 }
 
 // ValueArrayInteger is a []int variant of ValueArray values.
-type ValueArrayInteger []int
+type ValueArrayInteger struct {
+	Values []int `json:"values,omitempty" yaml:"values,omitempty"`
+}
 
 func (ValueArrayInteger) isValueArrayValues() {}
 
 // ValueArrayDouble is a []float64 variant of ValueArray values.
-type ValueArrayDouble []float64
+type ValueArrayDouble struct {
+	Values []float64 `json:"values,omitempty" yaml:"values,omitempty"`
+}
 
 func (ValueArrayDouble) isValueArrayValues() {}
 
 // ValueArrayBoolean is a []bool variant of ValueArray values.
-type ValueArrayBoolean []bool
+type ValueArrayBoolean struct {
+	Values []bool `json:"values,omitempty" yaml:"values,omitempty"`
+}
 
 func (ValueArrayBoolean) isValueArrayValues() {}
 
 // ValueArrayString is a []string variant of ValueArray values.
-type ValueArrayString []string
+type ValueArrayString struct {
+	Values []string `json:"values,omitempty" yaml:"values,omitempty"`
+}
 
 func (ValueArrayString) isValueArrayValues() {}
 
 // ValueArrayIntegerDistribution is a []Distributionint64 variant of ValueArray values.
-type ValueArrayIntegerDistribution []Distributionint64
+type ValueArrayIntegerDistribution struct {
+	Values []Distributionint64 `json:"values,omitempty" yaml:"values,omitempty"`
+}
 
 func (ValueArrayIntegerDistribution) isValueArrayValues() {}
 
 // ValueArrayDoubleDistribution is a []Distributiondouble variant of ValueArray values.
-type ValueArrayDoubleDistribution []Distributiondouble
+type ValueArrayDoubleDistribution struct {
+	Values []Distributiondouble `json:"values,omitempty" yaml:"values,omitempty"`
+}
 
 func (ValueArrayDoubleDistribution) isValueArrayValues() {}
 
@@ -7613,27 +7723,37 @@ type vpcFirewallRuleHostFilterValue interface {
 }
 
 // VpcFirewallRuleHostFilterVpc is a Name variant of VpcFirewallRuleHostFilter value.
-type VpcFirewallRuleHostFilterVpc Name
+type VpcFirewallRuleHostFilterVpc struct {
+	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+}
 
 func (VpcFirewallRuleHostFilterVpc) isVpcFirewallRuleHostFilterValue() {}
 
 // VpcFirewallRuleHostFilterSubnet is a Name variant of VpcFirewallRuleHostFilter value.
-type VpcFirewallRuleHostFilterSubnet Name
+type VpcFirewallRuleHostFilterSubnet struct {
+	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+}
 
 func (VpcFirewallRuleHostFilterSubnet) isVpcFirewallRuleHostFilterValue() {}
 
 // VpcFirewallRuleHostFilterInstance is a Name variant of VpcFirewallRuleHostFilter value.
-type VpcFirewallRuleHostFilterInstance Name
+type VpcFirewallRuleHostFilterInstance struct {
+	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+}
 
 func (VpcFirewallRuleHostFilterInstance) isVpcFirewallRuleHostFilterValue() {}
 
 // VpcFirewallRuleHostFilterIp is a string variant of VpcFirewallRuleHostFilter value.
-type VpcFirewallRuleHostFilterIp string
+type VpcFirewallRuleHostFilterIp struct {
+	Value string `json:"value,omitempty" yaml:"value,omitempty"`
+}
 
 func (VpcFirewallRuleHostFilterIp) isVpcFirewallRuleHostFilterValue() {}
 
 // VpcFirewallRuleHostFilterIpNet is a IpNet variant of VpcFirewallRuleHostFilter value.
-type VpcFirewallRuleHostFilterIpNet IpNet
+type VpcFirewallRuleHostFilterIpNet struct {
+	Value IpNet `json:"value,omitempty" yaml:"value,omitempty"`
+}
 
 func (VpcFirewallRuleHostFilterIpNet) isVpcFirewallRuleHostFilterValue() {}
 
@@ -7742,27 +7862,37 @@ type vpcFirewallRuleTargetValue interface {
 }
 
 // VpcFirewallRuleTargetVpc is a Name variant of VpcFirewallRuleTarget value.
-type VpcFirewallRuleTargetVpc Name
+type VpcFirewallRuleTargetVpc struct {
+	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+}
 
 func (VpcFirewallRuleTargetVpc) isVpcFirewallRuleTargetValue() {}
 
 // VpcFirewallRuleTargetSubnet is a Name variant of VpcFirewallRuleTarget value.
-type VpcFirewallRuleTargetSubnet Name
+type VpcFirewallRuleTargetSubnet struct {
+	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+}
 
 func (VpcFirewallRuleTargetSubnet) isVpcFirewallRuleTargetValue() {}
 
 // VpcFirewallRuleTargetInstance is a Name variant of VpcFirewallRuleTarget value.
-type VpcFirewallRuleTargetInstance Name
+type VpcFirewallRuleTargetInstance struct {
+	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
+}
 
 func (VpcFirewallRuleTargetInstance) isVpcFirewallRuleTargetValue() {}
 
 // VpcFirewallRuleTargetIp is a string variant of VpcFirewallRuleTarget value.
-type VpcFirewallRuleTargetIp string
+type VpcFirewallRuleTargetIp struct {
+	Value string `json:"value,omitempty" yaml:"value,omitempty"`
+}
 
 func (VpcFirewallRuleTargetIp) isVpcFirewallRuleTargetValue() {}
 
 // VpcFirewallRuleTargetIpNet is a IpNet variant of VpcFirewallRuleTarget value.
-type VpcFirewallRuleTargetIpNet IpNet
+type VpcFirewallRuleTargetIpNet struct {
+	Value IpNet `json:"value,omitempty" yaml:"value,omitempty"`
+}
 
 func (VpcFirewallRuleTargetIpNet) isVpcFirewallRuleTargetValue() {}
 

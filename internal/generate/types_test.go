@@ -460,13 +460,15 @@ func Test_createOneOf(t *testing.T) {
 				{
 					Description:      "// IntOrStringInt is an int variant of IntOrString value.",
 					Name:             "IntOrStringInt",
-					Type:             "int",
+					Type:             "struct",
+					Fields:           []TypeField{{Name: "Value", Type: "int", MarshalKey: "value"}},
 					ImplementsMarker: "isIntOrStringValue",
 				},
 				{
 					Description:      "// IntOrStringString is a string variant of IntOrString value.",
 					Name:             "IntOrStringString",
-					Type:             "string",
+					Type:             "struct",
+					Fields:           []TypeField{{Name: "Value", Type: "string", MarshalKey: "value"}},
 					ImplementsMarker: "isIntOrStringValue",
 				},
 				{
