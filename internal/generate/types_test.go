@@ -70,6 +70,41 @@ func Test_generateTypes(t *testing.T) {
 						},
 					},
 				}},
+				"FieldValue": &openapi3.SchemaRef{Value: &openapi3.Schema{
+					Description: "The `FieldValue` contains the value of a target or metric field.",
+					OneOf: openapi3.SchemaRefs{
+						&openapi3.SchemaRef{
+							Value: &openapi3.Schema{
+								Type: &openapi3.Types{"object"},
+								Properties: openapi3.Schemas{
+									"type":  &openapi3.SchemaRef{Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []interface{}{"string"}}},
+									"value": &openapi3.SchemaRef{Value: &openapi3.Schema{Type: &openapi3.Types{"string"}}},
+								},
+								Required: []string{"type", "value"},
+							},
+						},
+						&openapi3.SchemaRef{
+							Value: &openapi3.Schema{
+								Type: &openapi3.Types{"object"},
+								Properties: openapi3.Schemas{
+									"type":  &openapi3.SchemaRef{Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []interface{}{"int"}}},
+									"value": &openapi3.SchemaRef{Value: &openapi3.Schema{Type: &openapi3.Types{"integer"}}},
+								},
+								Required: []string{"type", "value"},
+							},
+						},
+						&openapi3.SchemaRef{
+							Value: &openapi3.Schema{
+								Type: &openapi3.Types{"object"},
+								Properties: openapi3.Schemas{
+									"type":  &openapi3.SchemaRef{Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []interface{}{"bool"}}},
+									"value": &openapi3.SchemaRef{Value: &openapi3.Schema{Type: &openapi3.Types{"boolean"}}},
+								},
+								Required: []string{"type", "value"},
+							},
+						},
+					},
+				}},
 			},
 		},
 	}
