@@ -43,20 +43,10 @@ type DiskSource struct {
 
 // FieldValueType is the type definition for a FieldValueType.
 type FieldValueType string
-
-// FieldValue is the `FieldValue` contains the value of a target or metric field.
-type FieldValue struct {
-	// Type is the type definition for a Type.
-	Type FieldValueType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is the type definition for a Value.
-	Value fieldValueValue `json:"value,omitempty" yaml:"value,omitempty"`
-}
-
 // fieldValueValue is an interface for FieldValue value variants.
 type fieldValueValue interface {
 	isFieldValueValue()
 }
-
 // FieldValueString is a string variant of FieldValue value.
 type FieldValueString string
 func (FieldValueString) isFieldValueValue() {}
@@ -68,6 +58,14 @@ func (FieldValueInt) isFieldValueValue() {}
 // FieldValueBool is a bool variant of FieldValue value.
 type FieldValueBool bool
 func (FieldValueBool) isFieldValueValue() {}
+
+// FieldValue is the `FieldValue` contains the value of a target or metric field.
+type FieldValue struct {
+	// Type is the type definition for a Type.
+	Type FieldValueType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is the type definition for a Value.
+	Value fieldValueValue `json:"value,omitempty" yaml:"value,omitempty"`
+}
 
 // UnmarshalJSON implements json.Unmarshaler for FieldValue.
 func (v *FieldValue) UnmarshalJSON(data []byte) error {
@@ -102,6 +100,12 @@ func (v *FieldValue) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// DiskSourceTypeSnapshot represents the DiskSourceType `"snapshot"`.
+const DiskSourceTypeSnapshot DiskSourceType = "snapshot"
+
+// DiskSourceTypeImage represents the DiskSourceType `"image"`.
+const DiskSourceTypeImage DiskSourceType = "image"
+
 // FieldValueTypeString represents the FieldValueType `"string"`.
 const FieldValueTypeString FieldValueType = "string"
 
@@ -111,22 +115,16 @@ const FieldValueTypeInt FieldValueType = "int"
 // FieldValueTypeBool represents the FieldValueType `"bool"`.
 const FieldValueTypeBool FieldValueType = "bool"
 
+// DiskSourceTypeCollection is the collection of all DiskSourceType values.
+var DiskSourceTypeCollection = []DiskSourceType{
+	DiskSourceTypeImage,
+	DiskSourceTypeSnapshot,
+}
+
 // FieldValueTypeCollection is the collection of all FieldValueType values.
 var FieldValueTypeCollection = []FieldValueType{
 	FieldValueTypeBool,
 	FieldValueTypeInt,
 	FieldValueTypeString,
-}
-
-// DiskSourceTypeSnapshot represents the DiskSourceType `"snapshot"`.
-const DiskSourceTypeSnapshot DiskSourceType = "snapshot"
-
-// DiskSourceTypeImage represents the DiskSourceType `"image"`.
-const DiskSourceTypeImage DiskSourceType = "image"
-
-// DiskSourceTypeCollection is the collection of all DiskSourceType values.
-var DiskSourceTypeCollection = []DiskSourceType{
-	DiskSourceTypeImage,
-	DiskSourceTypeSnapshot,
 }
 

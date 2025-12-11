@@ -29,7 +29,10 @@ func enumStringTypes() map[string][]string {
 var (
 	typeTemplate = template.Must(
 		template.New("type.go.tpl").
-			Funcs(template.FuncMap{"splitDocString": splitDocString}).
+			Funcs(template.FuncMap{
+				"splitDocString": splitDocString,
+				"toLower":        strings.ToLower,
+			}).
 			ParseFiles("./templates/type.go.tpl"),
 	)
 	enumTemplate = template.Must(
@@ -57,10 +60,39 @@ type TypeTemplate struct {
 	Description string
 	// Name of the type
 	Name string
-	// Type describes the type of the type (e.g. struct, int64, string)
+	// Type describes the type of the type (e.g. struct, int64, string, interface)
 	Type string
 	// Fields holds the information for the field
 	Fields []TypeField
+
+	// MarkerMethod is the marker method name for interface types (e.g., "isFieldValueValue")
+	MarkerMethod string
+	// ImplementsMarker is the marker method this type implements (for type aliases)
+	ImplementsMarker string
+
+	// UnmarshalInfo holds information for generating custom UnmarshalJSON methods
+	UnmarshalInfo *UnmarshalInfo
+}
+
+// UnmarshalInfo holds information needed to generate a custom UnmarshalJSON method
+// for structs containing interface fields that need discriminator-based unmarshaling.
+type UnmarshalInfo struct {
+	// DiscriminatorField is the struct field name used to determine the variant (e.g., "Type")
+	DiscriminatorField string
+	// DiscriminatorType is the Go type of the discriminator field (e.g., "FieldValueType")
+	DiscriminatorType string
+	// ValueField is the struct field name that holds the interface value (e.g., "Value")
+	ValueField string
+	// Variants maps discriminator enum values to their implementation types
+	Variants []UnmarshalVariant
+}
+
+// UnmarshalVariant represents a single variant in a discriminated union for JSON unmarshaling.
+type UnmarshalVariant struct {
+	// EnumValue is the discriminator enum constant (e.g., "FieldValueTypeString")
+	EnumValue string
+	// ImplType is the concrete type to unmarshal into (e.g., "FieldValueString")
+	ImplType string
 }
 
 // Render renders the TypeTemplate to a Go type.
@@ -665,38 +697,30 @@ func createStringEnum(s *openapi3.Schema, stringEnums map[string][]string, name,
 	return stringEnums, typeTpls, enumTpls
 }
 
-// TODO: For now AllOf values are treated as interfaces. This way you can pass whichever
-// of the struct types you need like this:
-//
-//	ipRange := oxide.Ipv4Range{
-//		 First: "172.20.15.240",
-//		 Last:  "172.20.15.250",
-//	}
-//
-// body := oxide.IpRange(ipRange)
-// resp, err := client.IpPoolRangeAdd("mypool", &body)
-//
-// Probably not the best approach, but will leave them this way until I come up with
-// a more idiomatic solution. Keep an eye out on this one to refine.
 func createAllOf(s *openapi3.Schema, stringEnums map[string][]string, name, typeName string) []TypeTemplate {
 	typeTpls := make([]TypeTemplate, 0)
 
-	// Make sure we don't redeclare the enum type.
+	// Make sure we don't redeclare the type.
 	if _, ok := stringEnums[typeName]; !ok {
 		typeTpl := TypeTemplate{
 			Description: formatTypeDescription(name, s),
 			Name:        typeName,
-			Type:        "interface{}",
 		}
 
-		// TODO: See above about making a more idiomatic approach, this is a small workaround
-		// until https://github.com/oxidecomputer/oxide.go/issues/67 is done
+		// Special case: NameOrId is used as a string in path parameters
+		// TODO: This is a workaround - see https://github.com/oxidecomputer/oxide.go/issues/67
 		if typeName == "NameOrId" {
 			typeTpl.Type = "string"
+		} else if len(s.AllOf) == 1 && s.AllOf[0].Ref != "" {
+			// For single-item allOf with a $ref, use the referenced type directly
+			refType := getReferenceSchema(s.AllOf[0])
+			typeTpl.Type = refType
+		} else {
+			// Fall back to interface{} for complex allOf cases
+			typeTpl.Type = "interface{}"
 		}
 
 		typeTpls = append(typeTpls, typeTpl)
-
 		stringEnums[typeName] = []string{}
 	}
 
@@ -707,26 +731,20 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 	enumTpls := make([]EnumTemplate, 0)
 	typeTpls := make([]TypeTemplate, 0)
 
-	// Loop over variants, creating types and enums for nested types, and gathering metadata about the oneOf overall.
-
+	// First pass: gather metadata about the oneOf to determine if we need interface types.
 	// Set of candidate discriminator keys. There must be exactly zero or one discriminator key.
 	discriminatorKeys := map[string]struct{}{}
 	// Map of properties to sets of variant types. We use this to identify fields with multiple types across variants.
 	propToVariantTypes := map[string]map[string]struct{}{}
 
 	for _, variantRef := range s.OneOf {
-		enumField := ""
 		for _, propName := range sortedKeys(variantRef.Value.Properties) {
 			propRef := variantRef.Value.Properties[propName]
-			propField := strcase.ToCamel(propName)
 
 			if len(propRef.Value.Enum) == 1 {
 				discriminatorKeys[propName] = struct{}{}
-				enumField = strcase.ToCamel(propRef.Value.Enum[0].(string))
 			} else if len(propRef.Value.Enum) > 1 {
 				fmt.Printf("[WARN] TODO: oneOf for %q -> %q enum %#v\n", name, propName, propRef.Value.Enum)
-			} else if propRef.Value.Enum == nil && len(variantRef.Value.Properties) == 1 {
-				enumField = propField
 			}
 			if _, ok := propToVariantTypes[propName]; !ok {
 				propToVariantTypes[propName] = map[string]struct{}{}
@@ -734,9 +752,6 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 			goType := convertToValidGoType(propName, typeName, propRef)
 			propToVariantTypes[propName][goType] = struct{}{}
 		}
-		tt, et := populateTypeTemplates(name, variantRef.Value, enumField)
-		typeTpls = append(typeTpls, tt...)
-		enumTpls = append(enumTpls, et...)
 	}
 
 	// Check invariant: there must be exactly zero or one discriminator field.
@@ -744,11 +759,134 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 		panic(fmt.Sprintf("[ERROR] Found multiple discriminator properties for type %s: %+v", name, discriminatorKeys))
 	}
 
+	// Determine if we have multi-type properties (which need interface types)
+	hasMultiTypeProps := false
+	for _, variantTypes := range propToVariantTypes {
+		if len(variantTypes) > 1 {
+			hasMultiTypeProps = true
+			break
+		}
+	}
+
+	// Second pass: create types for variants (only if NOT using interface approach)
+	if !hasMultiTypeProps {
+		for _, variantRef := range s.OneOf {
+			enumField := ""
+			for _, propName := range sortedKeys(variantRef.Value.Properties) {
+				propRef := variantRef.Value.Properties[propName]
+				propField := strcase.ToCamel(propName)
+
+				if len(propRef.Value.Enum) == 1 {
+					enumField = strcase.ToCamel(propRef.Value.Enum[0].(string))
+				} else if propRef.Value.Enum == nil && len(variantRef.Value.Properties) == 1 {
+					enumField = propField
+				}
+			}
+			tt, et := populateTypeTemplates(name, variantRef.Value, enumField)
+			typeTpls = append(typeTpls, tt...)
+			enumTpls = append(enumTpls, et...)
+		}
+	} else {
+		// When using interface approach, we still need to create the discriminator enum type and values
+		for _, variantRef := range s.OneOf {
+			for _, propName := range sortedKeys(variantRef.Value.Properties) {
+				propRef := variantRef.Value.Properties[propName]
+				if len(propRef.Value.Enum) == 1 {
+					enumField := strcase.ToCamel(propRef.Value.Enum[0].(string))
+					// Only create the enum type, not full variant structs
+					enums, tt, et := createStringEnum(propRef.Value, collectEnumStringTypes, typeName+strcase.ToCamel(propName), typeName+strcase.ToCamel(propName))
+					collectEnumStringTypes = enums
+					typeTpls = append(typeTpls, tt...)
+					enumTpls = append(enumTpls, et...)
+					_ = enumField // enumField used for naming but not for struct creation
+				}
+			}
+		}
+	}
+
 	// Find properties that have different types across variants.
 	multiTypeProps := map[string]struct{}{}
 	for propName, variantTypes := range propToVariantTypes {
 		if len(variantTypes) > 1 {
 			multiTypeProps[propName] = struct{}{}
+		}
+	}
+
+	// Get the discriminator field name (if any)
+	var discriminatorField string
+	for k := range discriminatorKeys {
+		discriminatorField = k
+		break
+	}
+
+	// For multi-type properties, create interface and implementation types
+	// Map from property name to interface name
+	interfaceNames := map[string]string{}
+	// Map from property name to list of variants (for UnmarshalInfo)
+	variantsByProp := map[string][]UnmarshalVariant{}
+
+	for propName := range multiTypeProps {
+		propField := strcase.ToCamel(propName)
+		// Interface name is lowercase (private), e.g., "fieldValueValue"
+		interfaceName := toLowerFirstLetter(typeName) + propField
+		markerMethod := "is" + typeName + propField
+		interfaceNames[propName] = interfaceName
+
+		// Create the interface type
+		interfaceTpl := TypeTemplate{
+			Description:  fmt.Sprintf("// %s is an interface for %s %s variants.", interfaceName, typeName, toLowerFirstLetter(propField)),
+			Name:         interfaceName,
+			Type:         "interface",
+			MarkerMethod: markerMethod,
+		}
+		typeTpls = append(typeTpls, interfaceTpl)
+
+		// Create implementation types for each variant
+		variantsByProp[propName] = []UnmarshalVariant{}
+		for _, variantRef := range s.OneOf {
+			propRef, ok := variantRef.Value.Properties[propName]
+			if !ok {
+				continue
+			}
+
+			// Get the discriminator enum value for this variant
+			var enumValue string
+			if discriminatorField != "" {
+				if discRef, ok := variantRef.Value.Properties[discriminatorField]; ok {
+					if len(discRef.Value.Enum) == 1 {
+						enumValue = strcase.ToCamel(discRef.Value.Enum[0].(string))
+					}
+				}
+			}
+
+			// Get the Go type for this variant's value
+			goType := convertToValidGoType(propName, typeName, propRef)
+			// Strip pointer prefix for interface implementation types
+			baseType := strings.TrimPrefix(goType, "*")
+			// Implementation type name, e.g., "FieldValueString"
+			implTypeName := typeName + strcase.ToCamel(enumValue)
+
+			// Create the implementation type (type alias with marker method)
+			article := "a"
+			if strings.HasPrefix(baseType, "i") || strings.HasPrefix(baseType, "u") {
+				article = "an"
+			}
+			implTpl := TypeTemplate{
+				Description:      fmt.Sprintf("// %s is %s %s variant of %s %s.", implTypeName, article, baseType, typeName, toLowerFirstLetter(propField)),
+				Name:             implTypeName,
+				Type:             baseType,
+				ImplementsMarker: markerMethod,
+			}
+			typeTpls = append(typeTpls, implTpl)
+
+			// Track variant for UnmarshalInfo
+			if discriminatorField != "" {
+				discriminatorType := typeName + strcase.ToCamel(discriminatorField)
+				variantsByProp[propName] = append(variantsByProp[propName], UnmarshalVariant{
+					EnumValue: discriminatorType + strcase.ToCamel(enumValue),
+					ImplType:  implTypeName,
+				})
+			}
 		}
 	}
 
@@ -771,9 +909,9 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 				propType = typeName + strcase.ToCamel(propName)
 			}
 
-			// Use "any" if this property has different types across variants.
-			if _, ok := multiTypeProps[propName]; ok {
-				propType = "any"
+			// Use the interface type if this property has different types across variants.
+			if interfaceName, ok := interfaceNames[propName]; ok {
+				propType = interfaceName
 			}
 
 			// Determine omit directive: nullable fields in oneOf use omitzero.
@@ -802,6 +940,21 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 			Type:        "struct",
 			Fields:      oneOfFields,
 		}
+
+		// Add UnmarshalInfo if we have multi-type properties with a discriminator
+		if len(multiTypeProps) > 0 && discriminatorField != "" {
+			// For now, we only support a single multi-type property
+			for propName, variants := range variantsByProp {
+				typeTpl.UnmarshalInfo = &UnmarshalInfo{
+					DiscriminatorField: strcase.ToCamel(discriminatorField),
+					DiscriminatorType:  typeName + strcase.ToCamel(discriminatorField),
+					ValueField:         strcase.ToCamel(propName),
+					Variants:           variants,
+				}
+				break
+			}
+		}
+
 		typeTpls = append(typeTpls, typeTpl)
 	}
 
