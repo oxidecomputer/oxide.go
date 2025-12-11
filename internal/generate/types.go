@@ -665,38 +665,38 @@ func createStringEnum(s *openapi3.Schema, stringEnums map[string][]string, name,
 	return stringEnums, typeTpls, enumTpls
 }
 
-// TODO: For now AllOf values are treated as interfaces. This way you can pass whichever
-// of the struct types you need like this:
+// createAllOf handles OpenAPI allOf schemas. For single-item allOf with a
+// $ref, we create a type alias to the referenced type. For complex allOf cases
+// (multiple items or no $ref), we fall back to `any`.
 //
-//	ipRange := oxide.Ipv4Range{
-//		 First: "172.20.15.240",
-//		 Last:  "172.20.15.250",
-//	}
-//
-// body := oxide.IpRange(ipRange)
-// resp, err := client.IpPoolRangeAdd("mypool", &body)
-//
-// Probably not the best approach, but will leave them this way until I come up with
-// a more idiomatic solution. Keep an eye out on this one to refine.
+// As of this writing, all allOf types have length 1; they're used by nexus to
+// work around limitations in openapi, not to represent a union of multiple
+// schemas. If nexus uses allOf for its intended purpose in the future, we can
+// generate the combined types in the sdk.
 func createAllOf(s *openapi3.Schema, stringEnums map[string][]string, name, typeName string) []TypeTemplate {
 	typeTpls := make([]TypeTemplate, 0)
 
-	// Make sure we don't redeclare the enum type.
+	// Make sure we don't redeclare the type.
 	if _, ok := stringEnums[typeName]; !ok {
 		typeTpl := TypeTemplate{
 			Description: formatTypeDescription(name, s),
 			Name:        typeName,
-			Type:        "interface{}",
 		}
 
-		// TODO: See above about making a more idiomatic approach, this is a small workaround
-		// until https://github.com/oxidecomputer/oxide.go/issues/67 is done
+		// Special case: NameOrId is used as a string in path parameters.
+		// TODO: This is a workaround - see https://github.com/oxidecomputer/oxide.go/issues/67
 		if typeName == "NameOrId" {
 			typeTpl.Type = "string"
+		} else if len(s.AllOf) == 1 && s.AllOf[0].Ref != "" {
+			// For single-item allOf with a $ref, use the referenced type directly.
+			refType := getReferenceSchema(s.AllOf[0])
+			typeTpl.Type = refType
+		} else {
+			// Fall back to any for complex allOf cases
+			typeTpl.Type = "any"
 		}
 
 		typeTpls = append(typeTpls, typeTpl)
-
 		stringEnums[typeName] = []string{}
 	}
 

@@ -427,11 +427,11 @@ func Test_createAllOf(t *testing.T) {
 		want []TypeTemplate
 	}{
 		{
-			name: "success allOf",
+			name: "success allOf with single ref",
 			args: args{typeSpecAllOf, enums, "IpRange", "IpRange"},
 			want: []TypeTemplate{
 				{
-					Description: "// IpRange is the type definition for a IpRange.", Name: "IpRange", Type: "interface{}",
+					Description: "// IpRange is the type definition for a IpRange.", Name: "IpRange", Type: "Ipv4Range",
 				},
 			},
 		},
