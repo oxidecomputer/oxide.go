@@ -452,23 +452,23 @@ func Test_createOneOf(t *testing.T) {
 			wantTypes: []TypeTemplate{
 				{Description: "// IntOrStringType is the type definition for a IntOrStringType.", Name: "IntOrStringType", Type: "string"},
 				{
-					Description:  "// intOrStringValue is an interface for IntOrString value variants.",
-					Name:         "intOrStringValue",
-					Type:         "interface",
+					Description: "// intOrStringValue is an interface for IntOrString value variants.",
+					Name:        "intOrStringValue",
+					Type:        "interface",
 					OneOfMarker: "isIntOrStringValue",
 				},
 				{
-					Description:      "// IntOrStringInt is the int variant of IntOrString value.",
-					Name:             "IntOrStringInt",
-					Type:             "struct",
-					Fields:           []TypeField{{Name: "Value", Type: "int", MarshalKey: "value"}},
+					Description: "// IntOrStringInt is the int variant of IntOrString value.",
+					Name:        "IntOrStringInt",
+					Type:        "struct",
+					Fields:      []TypeField{{Name: "Value", Type: "int", MarshalKey: "value"}},
 					OneOfMarker: "isIntOrStringValue",
 				},
 				{
-					Description:      "// IntOrStringString is the string variant of IntOrString value.",
-					Name:             "IntOrStringString",
-					Type:             "struct",
-					Fields:           []TypeField{{Name: "Value", Type: "string", MarshalKey: "value"}},
+					Description: "// IntOrStringString is the string variant of IntOrString value.",
+					Name:        "IntOrStringString",
+					Type:        "struct",
+					Fields:      []TypeField{{Name: "Value", Type: "string", MarshalKey: "value"}},
 					OneOfMarker: "isIntOrStringValue",
 				},
 				{
@@ -480,11 +480,13 @@ func Test_createOneOf(t *testing.T) {
 						{Name: "Value", Type: "intOrStringValue", MarshalKey: "value", FallbackDescription: true},
 					},
 					OneOfInfo: &OneOfInfo{
-						DiscriminatorField: "Type",
-						DiscriminatorKey:   "type",
-						DiscriminatorType:  "IntOrStringType",
-						ValueField:         "Value",
-						ValueKey:           "value",
+						Discriminator: Discriminator{
+							Field: "Type",
+							Key:   "type",
+							Type:  "IntOrStringType",
+						},
+						ValueField: "Value",
+						ValueKey:   "value",
 						Variants: []OneOfVariant{
 							{EnumValue: "IntOrStringTypeInt", ImplType: "IntOrStringInt"},
 							{EnumValue: "IntOrStringTypeString", ImplType: "IntOrStringString"},
@@ -573,7 +575,7 @@ func Test_createAllOf(t *testing.T) {
 			args: args{typeSpecAllOf, enums, "IpRange", "IpRange"},
 			want: []TypeTemplate{
 				{
-					Description: "// IpRange is the type definition for a IpRange.", Name: "IpRange", Type: "Ipv4Range",
+					Description: "// IpRange is the type definition for a IpRange.", Name: "IpRange", Type: "interface{}",
 				},
 			},
 		},
