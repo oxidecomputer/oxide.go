@@ -76,23 +76,6 @@ func toLowerFirstLetter(str string) string {
 	return ""
 }
 
-func trimStringFromSpace(s string) string {
-	if idx := strings.Index(s, " "); idx != -1 {
-		return s[:idx]
-	}
-	return s
-}
-
-func containsMatchFirstWord(s []string, str string) bool {
-	for _, v := range s {
-		if trimStringFromSpace(v) == trimStringFromSpace(str) {
-			return true
-		}
-	}
-
-	return false
-}
-
 func isPageParam(s string) bool {
 	return s == "nextPage" || s == "pageToken" || s == "limit"
 }
@@ -243,15 +226,6 @@ func isNumericType(str string) bool {
 	numTypes := []string{"int", "int8", "int16", "int32", "int64", "uint", "uint8",
 		"uint16", "uint32", "uint64", "uintptr", "float32", "float64"}
 	return slices.Contains(numTypes, str)
-}
-
-func allItemsAreSame[T comparable](a []T) bool {
-	for _, v := range a {
-		if v != a[0] {
-			return false
-		}
-	}
-	return true
 }
 
 // sortedKeys returns a []string of sorted keys from a map. Used to ensure
