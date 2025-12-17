@@ -10689,37 +10689,42 @@ type WebhookSecretsDeleteParams struct {
 	SecretId string `json:"secret_id,omitempty" yaml:"secret_id,omitempty"`
 }
 
-// Validate verifies all required fields for DeviceAuthRequestParams are set
+// Validate verifies all required fields for DeviceAuthRequestParams are set and validates field constraints.
 func (p *DeviceAuthRequestParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredObj(p.Body, "body")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for DeviceAuthConfirmParams are set
+// Validate verifies all required fields for DeviceAuthConfirmParams are set and validates field constraints.
 func (p *DeviceAuthConfirmParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for DeviceAccessTokenParams are set
+// Validate verifies all required fields for DeviceAccessTokenParams are set and validates field constraints.
 func (p *DeviceAccessTokenParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredObj(p.Body, "body")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for ProbeListParams are set
+// Validate verifies all required fields for ProbeListParams are set and validates field constraints.
 func (p *ProbeListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -10728,40 +10733,45 @@ func (p *ProbeListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for ProbeCreateParams are set
+// Validate verifies all required fields for ProbeCreateParams are set and validates field constraints.
 func (p *ProbeCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Project), "Project")
+	v.HasRequiredObj(p.Project, "project")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for ProbeDeleteParams are set
+// Validate verifies all required fields for ProbeDeleteParams are set and validates field constraints.
 func (p *ProbeDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Project), "Project")
-	v.HasRequiredStr(string(p.Probe), "Probe")
+	v.HasRequiredObj(p.Project, "project")
+	v.HasRequiredObj(p.Probe, "probe")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for ProbeViewParams are set
+// Validate verifies all required fields for ProbeViewParams are set and validates field constraints.
 func (p *ProbeViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Probe), "Probe")
-	v.HasRequiredStr(string(p.Project), "Project")
+	v.HasRequiredObj(p.Probe, "probe")
+	v.HasRequiredObj(p.Project, "project")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SupportBundleListParams are set
+// Validate verifies all required fields for SupportBundleListParams are set and validates field constraints.
 func (p *SupportBundleListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -10770,112 +10780,132 @@ func (p *SupportBundleListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for SupportBundleCreateParams are set
+// Validate verifies all required fields for SupportBundleCreateParams are set and validates field constraints.
 func (p *SupportBundleCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SupportBundleDeleteParams are set
+// Validate verifies all required fields for SupportBundleDeleteParams are set and validates field constraints.
 func (p *SupportBundleDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.BundleId), "BundleId")
+	v.HasRequiredStr(string(p.BundleId), "bundle_id")
+	v.ValidFormat(string(p.BundleId), "uuid", "bundle_id")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SupportBundleViewParams are set
+// Validate verifies all required fields for SupportBundleViewParams are set and validates field constraints.
 func (p *SupportBundleViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.BundleId), "BundleId")
+	v.HasRequiredStr(string(p.BundleId), "bundle_id")
+	v.ValidFormat(string(p.BundleId), "uuid", "bundle_id")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SupportBundleUpdateParams are set
+// Validate verifies all required fields for SupportBundleUpdateParams are set and validates field constraints.
 func (p *SupportBundleUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.BundleId), "BundleId")
+	v.HasRequiredStr(string(p.BundleId), "bundle_id")
+	v.ValidFormat(string(p.BundleId), "uuid", "bundle_id")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SupportBundleDownloadParams are set
+// Validate verifies all required fields for SupportBundleDownloadParams are set and validates field constraints.
 func (p *SupportBundleDownloadParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.BundleId), "BundleId")
+	v.HasRequiredStr(string(p.BundleId), "bundle_id")
+	v.ValidFormat(string(p.BundleId), "uuid", "bundle_id")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SupportBundleHeadParams are set
+// Validate verifies all required fields for SupportBundleHeadParams are set and validates field constraints.
 func (p *SupportBundleHeadParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.BundleId), "BundleId")
+	v.HasRequiredStr(string(p.BundleId), "bundle_id")
+	v.ValidFormat(string(p.BundleId), "uuid", "bundle_id")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SupportBundleDownloadFileParams are set
+// Validate verifies all required fields for SupportBundleDownloadFileParams are set and validates field constraints.
 func (p *SupportBundleDownloadFileParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.BundleId), "BundleId")
-	v.HasRequiredStr(string(p.File), "File")
+	v.HasRequiredStr(string(p.BundleId), "bundle_id")
+	v.ValidFormat(string(p.BundleId), "uuid", "bundle_id")
+	v.HasRequiredStr(string(p.File), "file")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SupportBundleHeadFileParams are set
+// Validate verifies all required fields for SupportBundleHeadFileParams are set and validates field constraints.
 func (p *SupportBundleHeadFileParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.BundleId), "BundleId")
-	v.HasRequiredStr(string(p.File), "File")
+	v.HasRequiredStr(string(p.BundleId), "bundle_id")
+	v.ValidFormat(string(p.BundleId), "uuid", "bundle_id")
+	v.HasRequiredStr(string(p.File), "file")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SupportBundleIndexParams are set
+// Validate verifies all required fields for SupportBundleIndexParams are set and validates field constraints.
 func (p *SupportBundleIndexParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.BundleId), "BundleId")
+	v.HasRequiredStr(string(p.BundleId), "bundle_id")
+	v.ValidFormat(string(p.BundleId), "uuid", "bundle_id")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for LoginSamlParams are set
+// Validate verifies all required fields for LoginSamlParams are set and validates field constraints.
 func (p *LoginSamlParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.ProviderName), "ProviderName")
-	v.HasRequiredStr(string(p.SiloName), "SiloName")
+	v.HasRequiredStr(string(p.ProviderName), "provider_name")
+	v.MatchesPattern(string(p.ProviderName), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "provider_name")
+	v.HasRequiredStr(string(p.SiloName), "silo_name")
+	v.MatchesPattern(string(p.SiloName), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "silo_name")
+	v.HasRequiredObj(p.Body, "body")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for AffinityGroupListParams are set
+// Validate verifies all required fields for AffinityGroupListParams are set and validates field constraints.
 func (p *AffinityGroupListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -10884,101 +10914,112 @@ func (p *AffinityGroupListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for AffinityGroupCreateParams are set
+// Validate verifies all required fields for AffinityGroupCreateParams are set and validates field constraints.
 func (p *AffinityGroupCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Project), "Project")
+	v.HasRequiredObj(p.Project, "project")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for AffinityGroupDeleteParams are set
+// Validate verifies all required fields for AffinityGroupDeleteParams are set and validates field constraints.
 func (p *AffinityGroupDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.AffinityGroup), "AffinityGroup")
+	v.HasRequiredObj(p.AffinityGroup, "affinity_group")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for AffinityGroupViewParams are set
+// Validate verifies all required fields for AffinityGroupViewParams are set and validates field constraints.
 func (p *AffinityGroupViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.AffinityGroup), "AffinityGroup")
+	v.HasRequiredObj(p.AffinityGroup, "affinity_group")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for AffinityGroupUpdateParams are set
+// Validate verifies all required fields for AffinityGroupUpdateParams are set and validates field constraints.
 func (p *AffinityGroupUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.AffinityGroup), "AffinityGroup")
+	v.HasRequiredObj(p.AffinityGroup, "affinity_group")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for AffinityGroupMemberListParams are set
+// Validate verifies all required fields for AffinityGroupMemberListParams are set and validates field constraints.
 func (p *AffinityGroupMemberListParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.AffinityGroup), "AffinityGroup")
+	v.HasRequiredObj(p.AffinityGroup, "affinity_group")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for AffinityGroupMemberInstanceDeleteParams are set
+// Validate verifies all required fields for AffinityGroupMemberInstanceDeleteParams are set and validates field constraints.
 func (p *AffinityGroupMemberInstanceDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.AffinityGroup), "AffinityGroup")
-	v.HasRequiredStr(string(p.Instance), "Instance")
+	v.HasRequiredObj(p.AffinityGroup, "affinity_group")
+	v.HasRequiredObj(p.Instance, "instance")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for AffinityGroupMemberInstanceViewParams are set
+// Validate verifies all required fields for AffinityGroupMemberInstanceViewParams are set and validates field constraints.
 func (p *AffinityGroupMemberInstanceViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.AffinityGroup), "AffinityGroup")
-	v.HasRequiredStr(string(p.Instance), "Instance")
+	v.HasRequiredObj(p.AffinityGroup, "affinity_group")
+	v.HasRequiredObj(p.Instance, "instance")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for AffinityGroupMemberInstanceAddParams are set
+// Validate verifies all required fields for AffinityGroupMemberInstanceAddParams are set and validates field constraints.
 func (p *AffinityGroupMemberInstanceAddParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.AffinityGroup), "AffinityGroup")
-	v.HasRequiredStr(string(p.Instance), "Instance")
+	v.HasRequiredObj(p.AffinityGroup, "affinity_group")
+	v.HasRequiredObj(p.Instance, "instance")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for AlertClassListParams are set
+// Validate verifies all required fields for AlertClassListParams are set and validates field constraints.
 func (p *AlertClassListParams) Validate() error {
 	v := new(Validator)
+	v.MatchesPattern(string(p.Filter), `^([a-zA-Z0-9_]+|\*|\*\*)(\.([a-zA-Z0-9_]+|\*|\*\*))*$`, "filter")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for AlertReceiverListParams are set
+// Validate verifies all required fields for AlertReceiverListParams are set and validates field constraints.
 func (p *AlertReceiverListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -10987,80 +11028,87 @@ func (p *AlertReceiverListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for AlertReceiverDeleteParams are set
+// Validate verifies all required fields for AlertReceiverDeleteParams are set and validates field constraints.
 func (p *AlertReceiverDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Receiver), "Receiver")
+	v.HasRequiredObj(p.Receiver, "receiver")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for AlertReceiverViewParams are set
+// Validate verifies all required fields for AlertReceiverViewParams are set and validates field constraints.
 func (p *AlertReceiverViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Receiver), "Receiver")
+	v.HasRequiredObj(p.Receiver, "receiver")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for AlertDeliveryListParams are set
+// Validate verifies all required fields for AlertDeliveryListParams are set and validates field constraints.
 func (p *AlertDeliveryListParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Receiver), "Receiver")
+	v.HasRequiredObj(p.Receiver, "receiver")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for AlertReceiverProbeParams are set
+// Validate verifies all required fields for AlertReceiverProbeParams are set and validates field constraints.
 func (p *AlertReceiverProbeParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Receiver), "Receiver")
+	v.HasRequiredObj(p.Receiver, "receiver")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for AlertReceiverSubscriptionAddParams are set
+// Validate verifies all required fields for AlertReceiverSubscriptionAddParams are set and validates field constraints.
 func (p *AlertReceiverSubscriptionAddParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Receiver), "Receiver")
+	v.HasRequiredObj(p.Receiver, "receiver")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for AlertReceiverSubscriptionRemoveParams are set
+// Validate verifies all required fields for AlertReceiverSubscriptionRemoveParams are set and validates field constraints.
 func (p *AlertReceiverSubscriptionRemoveParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Receiver), "Receiver")
-	v.HasRequiredStr(string(p.Subscription), "Subscription")
+	v.HasRequiredObj(p.Receiver, "receiver")
+	v.HasRequiredStr(string(p.Subscription), "subscription")
+	v.MatchesPattern(string(p.Subscription), `^([a-zA-Z0-9_]+|\*|\*\*)(\.([a-zA-Z0-9_]+|\*|\*\*))*$`, "subscription")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for AlertDeliveryResendParams are set
+// Validate verifies all required fields for AlertDeliveryResendParams are set and validates field constraints.
 func (p *AlertDeliveryResendParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.AlertId), "AlertId")
-	v.HasRequiredStr(string(p.Receiver), "Receiver")
+	v.HasRequiredStr(string(p.AlertId), "alert_id")
+	v.ValidFormat(string(p.AlertId), "uuid", "alert_id")
+	v.HasRequiredObj(p.Receiver, "receiver")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for AntiAffinityGroupListParams are set
+// Validate verifies all required fields for AntiAffinityGroupListParams are set and validates field constraints.
 func (p *AntiAffinityGroupListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -11069,102 +11117,117 @@ func (p *AntiAffinityGroupListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for AntiAffinityGroupCreateParams are set
+// Validate verifies all required fields for AntiAffinityGroupCreateParams are set and validates field constraints.
 func (p *AntiAffinityGroupCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Project), "Project")
+	v.HasRequiredObj(p.Project, "project")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for AntiAffinityGroupDeleteParams are set
+// Validate verifies all required fields for AntiAffinityGroupDeleteParams are set and validates field constraints.
 func (p *AntiAffinityGroupDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.AntiAffinityGroup), "AntiAffinityGroup")
+	v.HasRequiredObj(p.AntiAffinityGroup, "anti_affinity_group")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for AntiAffinityGroupViewParams are set
+// Validate verifies all required fields for AntiAffinityGroupViewParams are set and validates field constraints.
 func (p *AntiAffinityGroupViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.AntiAffinityGroup), "AntiAffinityGroup")
+	v.HasRequiredObj(p.AntiAffinityGroup, "anti_affinity_group")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for AntiAffinityGroupUpdateParams are set
+// Validate verifies all required fields for AntiAffinityGroupUpdateParams are set and validates field constraints.
 func (p *AntiAffinityGroupUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.AntiAffinityGroup), "AntiAffinityGroup")
+	v.HasRequiredObj(p.AntiAffinityGroup, "anti_affinity_group")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for AntiAffinityGroupMemberListParams are set
+// Validate verifies all required fields for AntiAffinityGroupMemberListParams are set and validates field constraints.
 func (p *AntiAffinityGroupMemberListParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.AntiAffinityGroup), "AntiAffinityGroup")
+	v.HasRequiredObj(p.AntiAffinityGroup, "anti_affinity_group")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for AntiAffinityGroupMemberInstanceDeleteParams are set
+// Validate verifies all required fields for AntiAffinityGroupMemberInstanceDeleteParams are set and validates field constraints.
 func (p *AntiAffinityGroupMemberInstanceDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.AntiAffinityGroup), "AntiAffinityGroup")
-	v.HasRequiredStr(string(p.Instance), "Instance")
+	v.HasRequiredObj(p.AntiAffinityGroup, "anti_affinity_group")
+	v.HasRequiredObj(p.Instance, "instance")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for AntiAffinityGroupMemberInstanceViewParams are set
+// Validate verifies all required fields for AntiAffinityGroupMemberInstanceViewParams are set and validates field constraints.
 func (p *AntiAffinityGroupMemberInstanceViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.AntiAffinityGroup), "AntiAffinityGroup")
-	v.HasRequiredStr(string(p.Instance), "Instance")
+	v.HasRequiredObj(p.AntiAffinityGroup, "anti_affinity_group")
+	v.HasRequiredObj(p.Instance, "instance")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for AntiAffinityGroupMemberInstanceAddParams are set
+// Validate verifies all required fields for AntiAffinityGroupMemberInstanceAddParams are set and validates field constraints.
 func (p *AntiAffinityGroupMemberInstanceAddParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.AntiAffinityGroup), "AntiAffinityGroup")
-	v.HasRequiredStr(string(p.Instance), "Instance")
+	v.HasRequiredObj(p.AntiAffinityGroup, "anti_affinity_group")
+	v.HasRequiredObj(p.Instance, "instance")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for AuthSettingsUpdateParams are set
+// Validate verifies all required fields for AuthSettingsUpdateParams are set and validates field constraints.
 func (p *AuthSettingsUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for CertificateListParams are set
+// Validate verifies all required fields for CertificateListParams are set and validates field constraints.
 func (p *CertificateListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -11173,37 +11236,42 @@ func (p *CertificateListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for CertificateCreateParams are set
+// Validate verifies all required fields for CertificateCreateParams are set and validates field constraints.
 func (p *CertificateCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for CertificateDeleteParams are set
+// Validate verifies all required fields for CertificateDeleteParams are set and validates field constraints.
 func (p *CertificateDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Certificate), "Certificate")
+	v.HasRequiredObj(p.Certificate, "certificate")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for CertificateViewParams are set
+// Validate verifies all required fields for CertificateViewParams are set and validates field constraints.
 func (p *CertificateViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Certificate), "Certificate")
+	v.HasRequiredObj(p.Certificate, "certificate")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for DiskListParams are set
+// Validate verifies all required fields for DiskListParams are set and validates field constraints.
 func (p *DiskListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -11212,80 +11280,95 @@ func (p *DiskListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for DiskCreateParams are set
+// Validate verifies all required fields for DiskCreateParams are set and validates field constraints.
 func (p *DiskCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Project), "Project")
+	v.HasRequiredObj(p.Project, "project")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for DiskDeleteParams are set
+// Validate verifies all required fields for DiskDeleteParams are set and validates field constraints.
 func (p *DiskDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Disk), "Disk")
+	v.HasRequiredObj(p.Disk, "disk")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for DiskViewParams are set
+// Validate verifies all required fields for DiskViewParams are set and validates field constraints.
 func (p *DiskViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Disk), "Disk")
+	v.HasRequiredObj(p.Disk, "disk")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for DiskBulkWriteImportParams are set
+// Validate verifies all required fields for DiskBulkWriteImportParams are set and validates field constraints.
 func (p *DiskBulkWriteImportParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Disk), "Disk")
+	v.HasRequiredObj(p.Disk, "disk")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for DiskBulkWriteImportStartParams are set
+// Validate verifies all required fields for DiskBulkWriteImportStartParams are set and validates field constraints.
 func (p *DiskBulkWriteImportStartParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Disk), "Disk")
+	v.HasRequiredObj(p.Disk, "disk")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for DiskBulkWriteImportStopParams are set
+// Validate verifies all required fields for DiskBulkWriteImportStopParams are set and validates field constraints.
 func (p *DiskBulkWriteImportStopParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Disk), "Disk")
+	v.HasRequiredObj(p.Disk, "disk")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for DiskFinalizeImportParams are set
+// Validate verifies all required fields for DiskFinalizeImportParams are set and validates field constraints.
 func (p *DiskFinalizeImportParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Disk), "Disk")
+	v.HasRequiredObj(p.Disk, "disk")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for FloatingIpListParams are set
+// Validate verifies all required fields for FloatingIpListParams are set and validates field constraints.
 func (p *FloatingIpListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -11294,70 +11377,85 @@ func (p *FloatingIpListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for FloatingIpCreateParams are set
+// Validate verifies all required fields for FloatingIpCreateParams are set and validates field constraints.
 func (p *FloatingIpCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Project), "Project")
+	v.HasRequiredObj(p.Project, "project")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for FloatingIpDeleteParams are set
+// Validate verifies all required fields for FloatingIpDeleteParams are set and validates field constraints.
 func (p *FloatingIpDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.FloatingIp), "FloatingIp")
+	v.HasRequiredObj(p.FloatingIp, "floating_ip")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for FloatingIpViewParams are set
+// Validate verifies all required fields for FloatingIpViewParams are set and validates field constraints.
 func (p *FloatingIpViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.FloatingIp), "FloatingIp")
+	v.HasRequiredObj(p.FloatingIp, "floating_ip")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for FloatingIpUpdateParams are set
+// Validate verifies all required fields for FloatingIpUpdateParams are set and validates field constraints.
 func (p *FloatingIpUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.FloatingIp), "FloatingIp")
+	v.HasRequiredObj(p.FloatingIp, "floating_ip")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for FloatingIpAttachParams are set
+// Validate verifies all required fields for FloatingIpAttachParams are set and validates field constraints.
 func (p *FloatingIpAttachParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.FloatingIp), "FloatingIp")
+	v.HasRequiredObj(p.FloatingIp, "floating_ip")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for FloatingIpDetachParams are set
+// Validate verifies all required fields for FloatingIpDetachParams are set and validates field constraints.
 func (p *FloatingIpDetachParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.FloatingIp), "FloatingIp")
+	v.HasRequiredObj(p.FloatingIp, "floating_ip")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for GroupListParams are set
+// Validate verifies all required fields for GroupListParams are set and validates field constraints.
 func (p *GroupListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -11366,17 +11464,18 @@ func (p *GroupListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for GroupViewParams are set
+// Validate verifies all required fields for GroupViewParams are set and validates field constraints.
 func (p *GroupViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.GroupId), "GroupId")
+	v.HasRequiredStr(string(p.GroupId), "group_id")
+	v.ValidFormat(string(p.GroupId), "uuid", "group_id")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for ImageListParams are set
+// Validate verifies all required fields for ImageListParams are set and validates field constraints.
 func (p *ImageListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -11385,58 +11484,63 @@ func (p *ImageListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for ImageCreateParams are set
+// Validate verifies all required fields for ImageCreateParams are set and validates field constraints.
 func (p *ImageCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for ImageDeleteParams are set
+// Validate verifies all required fields for ImageDeleteParams are set and validates field constraints.
 func (p *ImageDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Image), "Image")
+	v.HasRequiredObj(p.Image, "image")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for ImageViewParams are set
+// Validate verifies all required fields for ImageViewParams are set and validates field constraints.
 func (p *ImageViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Image), "Image")
+	v.HasRequiredObj(p.Image, "image")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for ImageDemoteParams are set
+// Validate verifies all required fields for ImageDemoteParams are set and validates field constraints.
 func (p *ImageDemoteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Image), "Image")
-	v.HasRequiredStr(string(p.Project), "Project")
+	v.HasRequiredObj(p.Image, "image")
+	v.HasRequiredObj(p.Project, "project")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for ImagePromoteParams are set
+// Validate verifies all required fields for ImagePromoteParams are set and validates field constraints.
 func (p *ImagePromoteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Image), "Image")
+	v.HasRequiredObj(p.Image, "image")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for InstanceListParams are set
+// Validate verifies all required fields for InstanceListParams are set and validates field constraints.
 func (p *InstanceListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -11445,224 +11549,249 @@ func (p *InstanceListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for InstanceCreateParams are set
+// Validate verifies all required fields for InstanceCreateParams are set and validates field constraints.
 func (p *InstanceCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Project), "Project")
+	v.HasRequiredObj(p.Project, "project")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for InstanceDeleteParams are set
+// Validate verifies all required fields for InstanceDeleteParams are set and validates field constraints.
 func (p *InstanceDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Instance), "Instance")
+	v.HasRequiredObj(p.Instance, "instance")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for InstanceViewParams are set
+// Validate verifies all required fields for InstanceViewParams are set and validates field constraints.
 func (p *InstanceViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Instance), "Instance")
+	v.HasRequiredObj(p.Instance, "instance")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for InstanceUpdateParams are set
+// Validate verifies all required fields for InstanceUpdateParams are set and validates field constraints.
 func (p *InstanceUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Instance), "Instance")
+	v.HasRequiredObj(p.Instance, "instance")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for InstanceAffinityGroupListParams are set
+// Validate verifies all required fields for InstanceAffinityGroupListParams are set and validates field constraints.
 func (p *InstanceAffinityGroupListParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Instance), "Instance")
+	v.HasRequiredObj(p.Instance, "instance")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for InstanceAntiAffinityGroupListParams are set
+// Validate verifies all required fields for InstanceAntiAffinityGroupListParams are set and validates field constraints.
 func (p *InstanceAntiAffinityGroupListParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Instance), "Instance")
+	v.HasRequiredObj(p.Instance, "instance")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for InstanceDiskListParams are set
+// Validate verifies all required fields for InstanceDiskListParams are set and validates field constraints.
 func (p *InstanceDiskListParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Instance), "Instance")
+	v.HasRequiredObj(p.Instance, "instance")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for InstanceDiskAttachParams are set
+// Validate verifies all required fields for InstanceDiskAttachParams are set and validates field constraints.
 func (p *InstanceDiskAttachParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Instance), "Instance")
+	v.HasRequiredObj(p.Instance, "instance")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for InstanceDiskDetachParams are set
+// Validate verifies all required fields for InstanceDiskDetachParams are set and validates field constraints.
 func (p *InstanceDiskDetachParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Instance), "Instance")
+	v.HasRequiredObj(p.Instance, "instance")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for InstanceExternalIpListParams are set
+// Validate verifies all required fields for InstanceExternalIpListParams are set and validates field constraints.
 func (p *InstanceExternalIpListParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Instance), "Instance")
+	v.HasRequiredObj(p.Instance, "instance")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for InstanceEphemeralIpDetachParams are set
+// Validate verifies all required fields for InstanceEphemeralIpDetachParams are set and validates field constraints.
 func (p *InstanceEphemeralIpDetachParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Instance), "Instance")
+	v.HasRequiredObj(p.Instance, "instance")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for InstanceEphemeralIpAttachParams are set
+// Validate verifies all required fields for InstanceEphemeralIpAttachParams are set and validates field constraints.
 func (p *InstanceEphemeralIpAttachParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Instance), "Instance")
+	v.HasRequiredObj(p.Instance, "instance")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for InstanceMulticastGroupListParams are set
+// Validate verifies all required fields for InstanceMulticastGroupListParams are set and validates field constraints.
 func (p *InstanceMulticastGroupListParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Instance), "Instance")
+	v.HasRequiredObj(p.Instance, "instance")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for InstanceMulticastGroupLeaveParams are set
+// Validate verifies all required fields for InstanceMulticastGroupLeaveParams are set and validates field constraints.
 func (p *InstanceMulticastGroupLeaveParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Instance), "Instance")
-	v.HasRequiredStr(string(p.MulticastGroup), "MulticastGroup")
+	v.HasRequiredObj(p.Instance, "instance")
+	v.HasRequiredObj(p.MulticastGroup, "multicast_group")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for InstanceMulticastGroupJoinParams are set
+// Validate verifies all required fields for InstanceMulticastGroupJoinParams are set and validates field constraints.
 func (p *InstanceMulticastGroupJoinParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Instance), "Instance")
-	v.HasRequiredStr(string(p.MulticastGroup), "MulticastGroup")
+	v.HasRequiredObj(p.Instance, "instance")
+	v.HasRequiredObj(p.MulticastGroup, "multicast_group")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for InstanceRebootParams are set
+// Validate verifies all required fields for InstanceRebootParams are set and validates field constraints.
 func (p *InstanceRebootParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Instance), "Instance")
+	v.HasRequiredObj(p.Instance, "instance")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for InstanceSerialConsoleParams are set
+// Validate verifies all required fields for InstanceSerialConsoleParams are set and validates field constraints.
 func (p *InstanceSerialConsoleParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Instance), "Instance")
+	v.HasRequiredObj(p.Instance, "instance")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for InstanceSerialConsoleStreamParams are set
+// Validate verifies all required fields for InstanceSerialConsoleStreamParams are set and validates field constraints.
 func (p *InstanceSerialConsoleStreamParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Instance), "Instance")
+	v.HasRequiredObj(p.Instance, "instance")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for InstanceSshPublicKeyListParams are set
+// Validate verifies all required fields for InstanceSshPublicKeyListParams are set and validates field constraints.
 func (p *InstanceSshPublicKeyListParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Instance), "Instance")
+	v.HasRequiredObj(p.Instance, "instance")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for InstanceStartParams are set
+// Validate verifies all required fields for InstanceStartParams are set and validates field constraints.
 func (p *InstanceStartParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Instance), "Instance")
+	v.HasRequiredObj(p.Instance, "instance")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for InstanceStopParams are set
+// Validate verifies all required fields for InstanceStopParams are set and validates field constraints.
 func (p *InstanceStopParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Instance), "Instance")
+	v.HasRequiredObj(p.Instance, "instance")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for InternetGatewayIpAddressListParams are set
+// Validate verifies all required fields for InternetGatewayIpAddressListParams are set and validates field constraints.
 func (p *InternetGatewayIpAddressListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -11671,28 +11800,33 @@ func (p *InternetGatewayIpAddressListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for InternetGatewayIpAddressCreateParams are set
+// Validate verifies all required fields for InternetGatewayIpAddressCreateParams are set and validates field constraints.
 func (p *InternetGatewayIpAddressCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Gateway), "Gateway")
+	v.HasRequiredObj(p.Gateway, "gateway")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for InternetGatewayIpAddressDeleteParams are set
+// Validate verifies all required fields for InternetGatewayIpAddressDeleteParams are set and validates field constraints.
 func (p *InternetGatewayIpAddressDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Address), "Address")
+	v.HasRequiredObj(p.Address, "address")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for InternetGatewayIpPoolListParams are set
+// Validate verifies all required fields for InternetGatewayIpPoolListParams are set and validates field constraints.
 func (p *InternetGatewayIpPoolListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -11701,28 +11835,33 @@ func (p *InternetGatewayIpPoolListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for InternetGatewayIpPoolCreateParams are set
+// Validate verifies all required fields for InternetGatewayIpPoolCreateParams are set and validates field constraints.
 func (p *InternetGatewayIpPoolCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Gateway), "Gateway")
+	v.HasRequiredObj(p.Gateway, "gateway")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for InternetGatewayIpPoolDeleteParams are set
+// Validate verifies all required fields for InternetGatewayIpPoolDeleteParams are set and validates field constraints.
 func (p *InternetGatewayIpPoolDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Pool), "Pool")
+	v.HasRequiredObj(p.Pool, "pool")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for InternetGatewayListParams are set
+// Validate verifies all required fields for InternetGatewayListParams are set and validates field constraints.
 func (p *InternetGatewayListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -11731,38 +11870,43 @@ func (p *InternetGatewayListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for InternetGatewayCreateParams are set
+// Validate verifies all required fields for InternetGatewayCreateParams are set and validates field constraints.
 func (p *InternetGatewayCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Vpc), "Vpc")
+	v.HasRequiredObj(p.Vpc, "vpc")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for InternetGatewayDeleteParams are set
+// Validate verifies all required fields for InternetGatewayDeleteParams are set and validates field constraints.
 func (p *InternetGatewayDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Gateway), "Gateway")
+	v.HasRequiredObj(p.Gateway, "gateway")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for InternetGatewayViewParams are set
+// Validate verifies all required fields for InternetGatewayViewParams are set and validates field constraints.
 func (p *InternetGatewayViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Gateway), "Gateway")
+	v.HasRequiredObj(p.Gateway, "gateway")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for ProjectIpPoolListParams are set
+// Validate verifies all required fields for ProjectIpPoolListParams are set and validates field constraints.
 func (p *ProjectIpPoolListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -11771,28 +11915,34 @@ func (p *ProjectIpPoolListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for ProjectIpPoolViewParams are set
+// Validate verifies all required fields for ProjectIpPoolViewParams are set and validates field constraints.
 func (p *ProjectIpPoolViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Pool), "Pool")
+	v.HasRequiredObj(p.Pool, "pool")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for LoginLocalParams are set
+// Validate verifies all required fields for LoginLocalParams are set and validates field constraints.
 func (p *LoginLocalParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.SiloName), "SiloName")
+	v.HasRequiredStr(string(p.SiloName), "silo_name")
+	v.MatchesPattern(string(p.SiloName), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "silo_name")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for CurrentUserAccessTokenListParams are set
+// Validate verifies all required fields for CurrentUserAccessTokenListParams are set and validates field constraints.
 func (p *CurrentUserAccessTokenListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -11801,17 +11951,18 @@ func (p *CurrentUserAccessTokenListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for CurrentUserAccessTokenDeleteParams are set
+// Validate verifies all required fields for CurrentUserAccessTokenDeleteParams are set and validates field constraints.
 func (p *CurrentUserAccessTokenDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.TokenId), "TokenId")
+	v.HasRequiredStr(string(p.TokenId), "token_id")
+	v.ValidFormat(string(p.TokenId), "uuid", "token_id")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for CurrentUserGroupsParams are set
+// Validate verifies all required fields for CurrentUserGroupsParams are set and validates field constraints.
 func (p *CurrentUserGroupsParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -11820,7 +11971,7 @@ func (p *CurrentUserGroupsParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for CurrentUserSshKeyListParams are set
+// Validate verifies all required fields for CurrentUserSshKeyListParams are set and validates field constraints.
 func (p *CurrentUserSshKeyListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -11829,47 +11980,54 @@ func (p *CurrentUserSshKeyListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for CurrentUserSshKeyCreateParams are set
+// Validate verifies all required fields for CurrentUserSshKeyCreateParams are set and validates field constraints.
 func (p *CurrentUserSshKeyCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for CurrentUserSshKeyDeleteParams are set
+// Validate verifies all required fields for CurrentUserSshKeyDeleteParams are set and validates field constraints.
 func (p *CurrentUserSshKeyDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.SshKey), "SshKey")
+	v.HasRequiredObj(p.SshKey, "ssh_key")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for CurrentUserSshKeyViewParams are set
+// Validate verifies all required fields for CurrentUserSshKeyViewParams are set and validates field constraints.
 func (p *CurrentUserSshKeyViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.SshKey), "SshKey")
+	v.HasRequiredObj(p.SshKey, "ssh_key")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SiloMetricParams are set
+// Validate verifies all required fields for SiloMetricParams are set and validates field constraints.
 func (p *SiloMetricParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.MetricName), "MetricName")
+	v.HasRequiredStr(string(p.MetricName), "metric_name")
+	ValidEnum(v, p.MetricName, SystemMetricNameCollection, "metric_name")
+	ValidEnum(v, p.Order, PaginationOrderCollection, "order")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for MulticastGroupListParams are set
+// Validate verifies all required fields for MulticastGroupListParams are set and validates field constraints.
 func (p *MulticastGroupListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -11878,80 +12036,95 @@ func (p *MulticastGroupListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for MulticastGroupCreateParams are set
+// Validate verifies all required fields for MulticastGroupCreateParams are set and validates field constraints.
 func (p *MulticastGroupCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for MulticastGroupDeleteParams are set
+// Validate verifies all required fields for MulticastGroupDeleteParams are set and validates field constraints.
 func (p *MulticastGroupDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.MulticastGroup), "MulticastGroup")
+	v.HasRequiredObj(p.MulticastGroup, "multicast_group")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for MulticastGroupViewParams are set
+// Validate verifies all required fields for MulticastGroupViewParams are set and validates field constraints.
 func (p *MulticastGroupViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.MulticastGroup), "MulticastGroup")
+	v.HasRequiredObj(p.MulticastGroup, "multicast_group")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for MulticastGroupUpdateParams are set
+// Validate verifies all required fields for MulticastGroupUpdateParams are set and validates field constraints.
 func (p *MulticastGroupUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.MulticastGroup), "MulticastGroup")
+	v.HasRequiredObj(p.MulticastGroup, "multicast_group")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for MulticastGroupMemberListParams are set
+// Validate verifies all required fields for MulticastGroupMemberListParams are set and validates field constraints.
 func (p *MulticastGroupMemberListParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.MulticastGroup), "MulticastGroup")
+	v.HasRequiredObj(p.MulticastGroup, "multicast_group")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for MulticastGroupMemberAddParams are set
+// Validate verifies all required fields for MulticastGroupMemberAddParams are set and validates field constraints.
 func (p *MulticastGroupMemberAddParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.MulticastGroup), "MulticastGroup")
+	v.HasRequiredObj(p.MulticastGroup, "multicast_group")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for MulticastGroupMemberRemoveParams are set
+// Validate verifies all required fields for MulticastGroupMemberRemoveParams are set and validates field constraints.
 func (p *MulticastGroupMemberRemoveParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Instance), "Instance")
-	v.HasRequiredStr(string(p.MulticastGroup), "MulticastGroup")
+	v.HasRequiredObj(p.Instance, "instance")
+	v.HasRequiredObj(p.MulticastGroup, "multicast_group")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for InstanceNetworkInterfaceListParams are set
+// Validate verifies all required fields for InstanceNetworkInterfaceListParams are set and validates field constraints.
 func (p *InstanceNetworkInterfaceListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -11960,59 +12133,74 @@ func (p *InstanceNetworkInterfaceListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for InstanceNetworkInterfaceCreateParams are set
+// Validate verifies all required fields for InstanceNetworkInterfaceCreateParams are set and validates field constraints.
 func (p *InstanceNetworkInterfaceCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Instance), "Instance")
+	v.HasRequiredObj(p.Instance, "instance")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for InstanceNetworkInterfaceDeleteParams are set
+// Validate verifies all required fields for InstanceNetworkInterfaceDeleteParams are set and validates field constraints.
 func (p *InstanceNetworkInterfaceDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Interface), "Interface")
+	v.HasRequiredObj(p.Interface, "interface")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for InstanceNetworkInterfaceViewParams are set
+// Validate verifies all required fields for InstanceNetworkInterfaceViewParams are set and validates field constraints.
 func (p *InstanceNetworkInterfaceViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Interface), "Interface")
+	v.HasRequiredObj(p.Interface, "interface")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for InstanceNetworkInterfaceUpdateParams are set
+// Validate verifies all required fields for InstanceNetworkInterfaceUpdateParams are set and validates field constraints.
 func (p *InstanceNetworkInterfaceUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Interface), "Interface")
+	v.HasRequiredObj(p.Interface, "interface")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for PolicyUpdateParams are set
+// Validate verifies all required fields for PolicyUpdateParams are set and validates field constraints.
 func (p *PolicyUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for ProjectListParams are set
+// Validate verifies all required fields for ProjectListParams are set and validates field constraints.
 func (p *ProjectListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -12021,69 +12209,84 @@ func (p *ProjectListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for ProjectCreateParams are set
+// Validate verifies all required fields for ProjectCreateParams are set and validates field constraints.
 func (p *ProjectCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for ProjectDeleteParams are set
+// Validate verifies all required fields for ProjectDeleteParams are set and validates field constraints.
 func (p *ProjectDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Project), "Project")
+	v.HasRequiredObj(p.Project, "project")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for ProjectViewParams are set
+// Validate verifies all required fields for ProjectViewParams are set and validates field constraints.
 func (p *ProjectViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Project), "Project")
+	v.HasRequiredObj(p.Project, "project")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for ProjectUpdateParams are set
+// Validate verifies all required fields for ProjectUpdateParams are set and validates field constraints.
 func (p *ProjectUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Project), "Project")
+	v.HasRequiredObj(p.Project, "project")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for ProjectPolicyViewParams are set
+// Validate verifies all required fields for ProjectPolicyViewParams are set and validates field constraints.
 func (p *ProjectPolicyViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Project), "Project")
+	v.HasRequiredObj(p.Project, "project")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for ProjectPolicyUpdateParams are set
+// Validate verifies all required fields for ProjectPolicyUpdateParams are set and validates field constraints.
 func (p *ProjectPolicyUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Project), "Project")
+	v.HasRequiredObj(p.Project, "project")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SnapshotListParams are set
+// Validate verifies all required fields for SnapshotListParams are set and validates field constraints.
 func (p *SnapshotListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -12092,38 +12295,43 @@ func (p *SnapshotListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for SnapshotCreateParams are set
+// Validate verifies all required fields for SnapshotCreateParams are set and validates field constraints.
 func (p *SnapshotCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Project), "Project")
+	v.HasRequiredObj(p.Project, "project")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SnapshotDeleteParams are set
+// Validate verifies all required fields for SnapshotDeleteParams are set and validates field constraints.
 func (p *SnapshotDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Snapshot), "Snapshot")
+	v.HasRequiredObj(p.Snapshot, "snapshot")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SnapshotViewParams are set
+// Validate verifies all required fields for SnapshotViewParams are set and validates field constraints.
 func (p *SnapshotViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Snapshot), "Snapshot")
+	v.HasRequiredObj(p.Snapshot, "snapshot")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for AuditLogListParams are set
+// Validate verifies all required fields for AuditLogListParams are set and validates field constraints.
 func (p *AuditLogListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -12132,7 +12340,7 @@ func (p *AuditLogListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for PhysicalDiskListParams are set
+// Validate verifies all required fields for PhysicalDiskListParams are set and validates field constraints.
 func (p *PhysicalDiskListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -12141,29 +12349,33 @@ func (p *PhysicalDiskListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for PhysicalDiskViewParams are set
+// Validate verifies all required fields for PhysicalDiskViewParams are set and validates field constraints.
 func (p *PhysicalDiskViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.DiskId), "DiskId")
+	v.HasRequiredStr(string(p.DiskId), "disk_id")
+	v.ValidFormat(string(p.DiskId), "uuid", "disk_id")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for NetworkingSwitchPortLldpNeighborsParams are set
+// Validate verifies all required fields for NetworkingSwitchPortLldpNeighborsParams are set and validates field constraints.
 func (p *NetworkingSwitchPortLldpNeighborsParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Port), "Port")
-	v.HasRequiredStr(string(p.RackId), "RackId")
-	v.HasRequiredStr(string(p.SwitchLocation), "SwitchLocation")
+	v.HasRequiredStr(string(p.Port), "port")
+	v.MatchesPattern(string(p.Port), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "port")
+	v.HasRequiredStr(string(p.RackId), "rack_id")
+	v.ValidFormat(string(p.RackId), "uuid", "rack_id")
+	v.HasRequiredStr(string(p.SwitchLocation), "switch_location")
+	v.MatchesPattern(string(p.SwitchLocation), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "switch_location")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for RackListParams are set
+// Validate verifies all required fields for RackListParams are set and validates field constraints.
 func (p *RackListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -12172,17 +12384,18 @@ func (p *RackListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for RackViewParams are set
+// Validate verifies all required fields for RackViewParams are set and validates field constraints.
 func (p *RackViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.RackId), "RackId")
+	v.HasRequiredStr(string(p.RackId), "rack_id")
+	v.ValidFormat(string(p.RackId), "uuid", "rack_id")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SledListParams are set
+// Validate verifies all required fields for SledListParams are set and validates field constraints.
 func (p *SledListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -12191,17 +12404,22 @@ func (p *SledListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for SledAddParams are set
+// Validate verifies all required fields for SledAddParams are set and validates field constraints.
 func (p *SledAddParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SledListUninitializedParams are set
+// Validate verifies all required fields for SledListUninitializedParams are set and validates field constraints.
 func (p *SledListUninitializedParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -12210,119 +12428,154 @@ func (p *SledListUninitializedParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for SledViewParams are set
+// Validate verifies all required fields for SledViewParams are set and validates field constraints.
 func (p *SledViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.SledId), "SledId")
+	v.HasRequiredStr(string(p.SledId), "sled_id")
+	v.ValidFormat(string(p.SledId), "uuid", "sled_id")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SledPhysicalDiskListParams are set
+// Validate verifies all required fields for SledPhysicalDiskListParams are set and validates field constraints.
 func (p *SledPhysicalDiskListParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.SledId), "SledId")
+	v.HasRequiredStr(string(p.SledId), "sled_id")
+	v.ValidFormat(string(p.SledId), "uuid", "sled_id")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SledInstanceListParams are set
+// Validate verifies all required fields for SledInstanceListParams are set and validates field constraints.
 func (p *SledInstanceListParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.SledId), "SledId")
+	v.HasRequiredStr(string(p.SledId), "sled_id")
+	v.ValidFormat(string(p.SledId), "uuid", "sled_id")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SledSetProvisionPolicyParams are set
+// Validate verifies all required fields for SledSetProvisionPolicyParams are set and validates field constraints.
 func (p *SledSetProvisionPolicyParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.SledId), "SledId")
+	v.HasRequiredStr(string(p.SledId), "sled_id")
+	v.ValidFormat(string(p.SledId), "uuid", "sled_id")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for NetworkingSwitchPortListParams are set
+// Validate verifies all required fields for NetworkingSwitchPortListParams are set and validates field constraints.
 func (p *NetworkingSwitchPortListParams) Validate() error {
 	v := new(Validator)
+	v.ValidFormat(string(p.SwitchPortId), "uuid", "switch_port_id")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for NetworkingSwitchPortLldpConfigViewParams are set
+// Validate verifies all required fields for NetworkingSwitchPortLldpConfigViewParams are set and validates field constraints.
 func (p *NetworkingSwitchPortLldpConfigViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Port), "Port")
-	v.HasRequiredStr(string(p.RackId), "RackId")
-	v.HasRequiredStr(string(p.SwitchLocation), "SwitchLocation")
+	v.HasRequiredStr(string(p.Port), "port")
+	v.MatchesPattern(string(p.Port), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "port")
+	v.HasRequiredStr(string(p.RackId), "rack_id")
+	v.ValidFormat(string(p.RackId), "uuid", "rack_id")
+	v.HasRequiredStr(string(p.SwitchLocation), "switch_location")
+	v.MatchesPattern(string(p.SwitchLocation), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "switch_location")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for NetworkingSwitchPortLldpConfigUpdateParams are set
+// Validate verifies all required fields for NetworkingSwitchPortLldpConfigUpdateParams are set and validates field constraints.
 func (p *NetworkingSwitchPortLldpConfigUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Port), "Port")
-	v.HasRequiredStr(string(p.RackId), "RackId")
-	v.HasRequiredStr(string(p.SwitchLocation), "SwitchLocation")
+	v.HasRequiredStr(string(p.Port), "port")
+	v.MatchesPattern(string(p.Port), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "port")
+	v.HasRequiredStr(string(p.RackId), "rack_id")
+	v.ValidFormat(string(p.RackId), "uuid", "rack_id")
+	v.HasRequiredStr(string(p.SwitchLocation), "switch_location")
+	v.MatchesPattern(string(p.SwitchLocation), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "switch_location")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for NetworkingSwitchPortClearSettingsParams are set
+// Validate verifies all required fields for NetworkingSwitchPortClearSettingsParams are set and validates field constraints.
 func (p *NetworkingSwitchPortClearSettingsParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Port), "Port")
-	v.HasRequiredStr(string(p.RackId), "RackId")
-	v.HasRequiredStr(string(p.SwitchLocation), "SwitchLocation")
+	v.HasRequiredStr(string(p.Port), "port")
+	v.MatchesPattern(string(p.Port), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "port")
+	v.HasRequiredStr(string(p.RackId), "rack_id")
+	v.ValidFormat(string(p.RackId), "uuid", "rack_id")
+	v.HasRequiredStr(string(p.SwitchLocation), "switch_location")
+	v.MatchesPattern(string(p.SwitchLocation), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "switch_location")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for NetworkingSwitchPortApplySettingsParams are set
+// Validate verifies all required fields for NetworkingSwitchPortApplySettingsParams are set and validates field constraints.
 func (p *NetworkingSwitchPortApplySettingsParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Port), "Port")
-	v.HasRequiredStr(string(p.RackId), "RackId")
-	v.HasRequiredStr(string(p.SwitchLocation), "SwitchLocation")
+	v.HasRequiredStr(string(p.Port), "port")
+	v.MatchesPattern(string(p.Port), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "port")
+	v.HasRequiredStr(string(p.RackId), "rack_id")
+	v.ValidFormat(string(p.RackId), "uuid", "rack_id")
+	v.HasRequiredStr(string(p.SwitchLocation), "switch_location")
+	v.MatchesPattern(string(p.SwitchLocation), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "switch_location")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for NetworkingSwitchPortStatusParams are set
+// Validate verifies all required fields for NetworkingSwitchPortStatusParams are set and validates field constraints.
 func (p *NetworkingSwitchPortStatusParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Port), "Port")
-	v.HasRequiredStr(string(p.RackId), "RackId")
-	v.HasRequiredStr(string(p.SwitchLocation), "SwitchLocation")
+	v.HasRequiredStr(string(p.Port), "port")
+	v.MatchesPattern(string(p.Port), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "port")
+	v.HasRequiredStr(string(p.RackId), "rack_id")
+	v.ValidFormat(string(p.RackId), "uuid", "rack_id")
+	v.HasRequiredStr(string(p.SwitchLocation), "switch_location")
+	v.MatchesPattern(string(p.SwitchLocation), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "switch_location")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SwitchListParams are set
+// Validate verifies all required fields for SwitchListParams are set and validates field constraints.
 func (p *SwitchListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -12331,17 +12584,18 @@ func (p *SwitchListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for SwitchViewParams are set
+// Validate verifies all required fields for SwitchViewParams are set and validates field constraints.
 func (p *SwitchViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.SwitchId), "SwitchId")
+	v.HasRequiredStr(string(p.SwitchId), "switch_id")
+	v.ValidFormat(string(p.SwitchId), "uuid", "switch_id")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SiloIdentityProviderListParams are set
+// Validate verifies all required fields for SiloIdentityProviderListParams are set and validates field constraints.
 func (p *SiloIdentityProviderListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -12350,62 +12604,74 @@ func (p *SiloIdentityProviderListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for LocalIdpUserCreateParams are set
+// Validate verifies all required fields for LocalIdpUserCreateParams are set and validates field constraints.
 func (p *LocalIdpUserCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Silo), "Silo")
+	v.HasRequiredObj(p.Silo, "silo")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for LocalIdpUserDeleteParams are set
+// Validate verifies all required fields for LocalIdpUserDeleteParams are set and validates field constraints.
 func (p *LocalIdpUserDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.UserId), "UserId")
-	v.HasRequiredStr(string(p.Silo), "Silo")
+	v.HasRequiredStr(string(p.UserId), "user_id")
+	v.ValidFormat(string(p.UserId), "uuid", "user_id")
+	v.HasRequiredObj(p.Silo, "silo")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for LocalIdpUserSetPasswordParams are set
+// Validate verifies all required fields for LocalIdpUserSetPasswordParams are set and validates field constraints.
 func (p *LocalIdpUserSetPasswordParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.UserId), "UserId")
-	v.HasRequiredStr(string(p.Silo), "Silo")
+	v.HasRequiredStr(string(p.UserId), "user_id")
+	v.ValidFormat(string(p.UserId), "uuid", "user_id")
+	v.HasRequiredObj(p.Silo, "silo")
+	v.HasRequiredObj(p.Body, "body")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SamlIdentityProviderCreateParams are set
+// Validate verifies all required fields for SamlIdentityProviderCreateParams are set and validates field constraints.
 func (p *SamlIdentityProviderCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Silo), "Silo")
+	v.HasRequiredObj(p.Silo, "silo")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SamlIdentityProviderViewParams are set
+// Validate verifies all required fields for SamlIdentityProviderViewParams are set and validates field constraints.
 func (p *SamlIdentityProviderViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Provider), "Provider")
+	v.HasRequiredObj(p.Provider, "provider")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for IpPoolListParams are set
+// Validate verifies all required fields for IpPoolListParams are set and validates field constraints.
 func (p *IpPoolListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -12414,17 +12680,22 @@ func (p *IpPoolListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for IpPoolCreateParams are set
+// Validate verifies all required fields for IpPoolCreateParams are set and validates field constraints.
 func (p *IpPoolCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for IpPoolServiceRangeListParams are set
+// Validate verifies all required fields for IpPoolServiceRangeListParams are set and validates field constraints.
 func (p *IpPoolServiceRangeListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -12433,164 +12704,182 @@ func (p *IpPoolServiceRangeListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for IpPoolServiceRangeAddParams are set
+// Validate verifies all required fields for IpPoolServiceRangeAddParams are set and validates field constraints.
 func (p *IpPoolServiceRangeAddParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredObj(p.Body, "body")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for IpPoolServiceRangeRemoveParams are set
+// Validate verifies all required fields for IpPoolServiceRangeRemoveParams are set and validates field constraints.
 func (p *IpPoolServiceRangeRemoveParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredObj(p.Body, "body")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for IpPoolDeleteParams are set
+// Validate verifies all required fields for IpPoolDeleteParams are set and validates field constraints.
 func (p *IpPoolDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Pool), "Pool")
+	v.HasRequiredObj(p.Pool, "pool")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for IpPoolViewParams are set
+// Validate verifies all required fields for IpPoolViewParams are set and validates field constraints.
 func (p *IpPoolViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Pool), "Pool")
+	v.HasRequiredObj(p.Pool, "pool")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for IpPoolUpdateParams are set
+// Validate verifies all required fields for IpPoolUpdateParams are set and validates field constraints.
 func (p *IpPoolUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Pool), "Pool")
+	v.HasRequiredObj(p.Pool, "pool")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for IpPoolRangeListParams are set
+// Validate verifies all required fields for IpPoolRangeListParams are set and validates field constraints.
 func (p *IpPoolRangeListParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Pool), "Pool")
+	v.HasRequiredObj(p.Pool, "pool")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for IpPoolRangeAddParams are set
+// Validate verifies all required fields for IpPoolRangeAddParams are set and validates field constraints.
 func (p *IpPoolRangeAddParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Pool), "Pool")
+	v.HasRequiredObj(p.Pool, "pool")
+	v.HasRequiredObj(p.Body, "body")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for IpPoolRangeRemoveParams are set
+// Validate verifies all required fields for IpPoolRangeRemoveParams are set and validates field constraints.
 func (p *IpPoolRangeRemoveParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Pool), "Pool")
+	v.HasRequiredObj(p.Pool, "pool")
+	v.HasRequiredObj(p.Body, "body")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for IpPoolSiloListParams are set
+// Validate verifies all required fields for IpPoolSiloListParams are set and validates field constraints.
 func (p *IpPoolSiloListParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Pool), "Pool")
+	v.HasRequiredObj(p.Pool, "pool")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for IpPoolSiloLinkParams are set
+// Validate verifies all required fields for IpPoolSiloLinkParams are set and validates field constraints.
 func (p *IpPoolSiloLinkParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Pool), "Pool")
+	v.HasRequiredObj(p.Pool, "pool")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for IpPoolSiloUnlinkParams are set
+// Validate verifies all required fields for IpPoolSiloUnlinkParams are set and validates field constraints.
 func (p *IpPoolSiloUnlinkParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Pool), "Pool")
-	v.HasRequiredStr(string(p.Silo), "Silo")
+	v.HasRequiredObj(p.Pool, "pool")
+	v.HasRequiredObj(p.Silo, "silo")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for IpPoolSiloUpdateParams are set
+// Validate verifies all required fields for IpPoolSiloUpdateParams are set and validates field constraints.
 func (p *IpPoolSiloUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Pool), "Pool")
-	v.HasRequiredStr(string(p.Silo), "Silo")
+	v.HasRequiredObj(p.Pool, "pool")
+	v.HasRequiredObj(p.Silo, "silo")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for IpPoolUtilizationViewParams are set
+// Validate verifies all required fields for IpPoolUtilizationViewParams are set and validates field constraints.
 func (p *IpPoolUtilizationViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Pool), "Pool")
+	v.HasRequiredObj(p.Pool, "pool")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SystemMetricParams are set
+// Validate verifies all required fields for SystemMetricParams are set and validates field constraints.
 func (p *SystemMetricParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.MetricName), "MetricName")
+	v.HasRequiredStr(string(p.MetricName), "metric_name")
+	ValidEnum(v, p.MetricName, SystemMetricNameCollection, "metric_name")
+	ValidEnum(v, p.Order, PaginationOrderCollection, "order")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for LookupMulticastGroupByIpParams are set
+// Validate verifies all required fields for LookupMulticastGroupByIpParams are set and validates field constraints.
 func (p *LookupMulticastGroupByIpParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Address), "Address")
+	v.HasRequiredStr(string(p.Address), "address")
+	v.ValidFormat(string(p.Address), "ip", "address")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for NetworkingAddressLotListParams are set
+// Validate verifies all required fields for NetworkingAddressLotListParams are set and validates field constraints.
 func (p *NetworkingAddressLotListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -12599,87 +12888,107 @@ func (p *NetworkingAddressLotListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for NetworkingAddressLotCreateParams are set
+// Validate verifies all required fields for NetworkingAddressLotCreateParams are set and validates field constraints.
 func (p *NetworkingAddressLotCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for NetworkingAddressLotDeleteParams are set
+// Validate verifies all required fields for NetworkingAddressLotDeleteParams are set and validates field constraints.
 func (p *NetworkingAddressLotDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.AddressLot), "AddressLot")
+	v.HasRequiredObj(p.AddressLot, "address_lot")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for NetworkingAddressLotViewParams are set
+// Validate verifies all required fields for NetworkingAddressLotViewParams are set and validates field constraints.
 func (p *NetworkingAddressLotViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.AddressLot), "AddressLot")
+	v.HasRequiredObj(p.AddressLot, "address_lot")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for NetworkingAddressLotBlockListParams are set
+// Validate verifies all required fields for NetworkingAddressLotBlockListParams are set and validates field constraints.
 func (p *NetworkingAddressLotBlockListParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.AddressLot), "AddressLot")
+	v.HasRequiredObj(p.AddressLot, "address_lot")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for NetworkingAllowListUpdateParams are set
+// Validate verifies all required fields for NetworkingAllowListUpdateParams are set and validates field constraints.
 func (p *NetworkingAllowListUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for NetworkingBfdDisableParams are set
+// Validate verifies all required fields for NetworkingBfdDisableParams are set and validates field constraints.
 func (p *NetworkingBfdDisableParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for NetworkingBfdEnableParams are set
+// Validate verifies all required fields for NetworkingBfdEnableParams are set and validates field constraints.
 func (p *NetworkingBfdEnableParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for NetworkingBgpConfigDeleteParams are set
+// Validate verifies all required fields for NetworkingBgpConfigDeleteParams are set and validates field constraints.
 func (p *NetworkingBgpConfigDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.NameOrId), "NameOrId")
+	v.HasRequiredObj(p.NameOrId, "name_or_id")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for NetworkingBgpConfigListParams are set
+// Validate verifies all required fields for NetworkingBgpConfigListParams are set and validates field constraints.
 func (p *NetworkingBgpConfigListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -12688,17 +12997,22 @@ func (p *NetworkingBgpConfigListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for NetworkingBgpConfigCreateParams are set
+// Validate verifies all required fields for NetworkingBgpConfigCreateParams are set and validates field constraints.
 func (p *NetworkingBgpConfigCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for NetworkingBgpAnnounceSetListParams are set
+// Validate verifies all required fields for NetworkingBgpAnnounceSetListParams are set and validates field constraints.
 func (p *NetworkingBgpAnnounceSetListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -12707,67 +13021,77 @@ func (p *NetworkingBgpAnnounceSetListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for NetworkingBgpAnnounceSetUpdateParams are set
+// Validate verifies all required fields for NetworkingBgpAnnounceSetUpdateParams are set and validates field constraints.
 func (p *NetworkingBgpAnnounceSetUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for NetworkingBgpAnnounceSetDeleteParams are set
+// Validate verifies all required fields for NetworkingBgpAnnounceSetDeleteParams are set and validates field constraints.
 func (p *NetworkingBgpAnnounceSetDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.AnnounceSet), "AnnounceSet")
+	v.HasRequiredObj(p.AnnounceSet, "announce_set")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for NetworkingBgpAnnouncementListParams are set
+// Validate verifies all required fields for NetworkingBgpAnnouncementListParams are set and validates field constraints.
 func (p *NetworkingBgpAnnouncementListParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.AnnounceSet), "AnnounceSet")
+	v.HasRequiredObj(p.AnnounceSet, "announce_set")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for NetworkingBgpMessageHistoryParams are set
+// Validate verifies all required fields for NetworkingBgpMessageHistoryParams are set and validates field constraints.
 func (p *NetworkingBgpMessageHistoryParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredNum(p.Asn, "Asn")
+	v.HasRequiredObj(p.Asn, "asn")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for NetworkingBgpImportedRoutesIpv4Params are set
+// Validate verifies all required fields for NetworkingBgpImportedRoutesIpv4Params are set and validates field constraints.
 func (p *NetworkingBgpImportedRoutesIpv4Params) Validate() error {
 	v := new(Validator)
-	v.HasRequiredNum(p.Asn, "Asn")
+	v.HasRequiredObj(p.Asn, "asn")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for NetworkingInboundIcmpUpdateParams are set
+// Validate verifies all required fields for NetworkingInboundIcmpUpdateParams are set and validates field constraints.
 func (p *NetworkingInboundIcmpUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for NetworkingLoopbackAddressListParams are set
+// Validate verifies all required fields for NetworkingLoopbackAddressListParams are set and validates field constraints.
 func (p *NetworkingLoopbackAddressListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -12776,30 +13100,38 @@ func (p *NetworkingLoopbackAddressListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for NetworkingLoopbackAddressCreateParams are set
+// Validate verifies all required fields for NetworkingLoopbackAddressCreateParams are set and validates field constraints.
 func (p *NetworkingLoopbackAddressCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for NetworkingLoopbackAddressDeleteParams are set
+// Validate verifies all required fields for NetworkingLoopbackAddressDeleteParams are set and validates field constraints.
 func (p *NetworkingLoopbackAddressDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Address), "Address")
-	v.HasRequiredStr(string(p.RackId), "RackId")
-	v.HasRequiredStr(string(p.SwitchLocation), "SwitchLocation")
-	v.HasRequiredNum(p.SubnetMask, "SubnetMask")
+	v.HasRequiredStr(string(p.Address), "address")
+	v.ValidFormat(string(p.Address), "ip", "address")
+	v.HasRequiredStr(string(p.RackId), "rack_id")
+	v.ValidFormat(string(p.RackId), "uuid", "rack_id")
+	v.HasRequiredObj(p.SubnetMask, "subnet_mask")
+	v.HasRequiredStr(string(p.SwitchLocation), "switch_location")
+	v.MatchesPattern(string(p.SwitchLocation), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "switch_location")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for NetworkingSwitchPortSettingsDeleteParams are set
+// Validate verifies all required fields for NetworkingSwitchPortSettingsDeleteParams are set and validates field constraints.
 func (p *NetworkingSwitchPortSettingsDeleteParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -12808,7 +13140,7 @@ func (p *NetworkingSwitchPortSettingsDeleteParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for NetworkingSwitchPortSettingsListParams are set
+// Validate verifies all required fields for NetworkingSwitchPortSettingsListParams are set and validates field constraints.
 func (p *NetworkingSwitchPortSettingsListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -12817,79 +13149,91 @@ func (p *NetworkingSwitchPortSettingsListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for NetworkingSwitchPortSettingsCreateParams are set
+// Validate verifies all required fields for NetworkingSwitchPortSettingsCreateParams are set and validates field constraints.
 func (p *NetworkingSwitchPortSettingsCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for NetworkingSwitchPortSettingsViewParams are set
+// Validate verifies all required fields for NetworkingSwitchPortSettingsViewParams are set and validates field constraints.
 func (p *NetworkingSwitchPortSettingsViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Port), "Port")
+	v.HasRequiredObj(p.Port, "port")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SystemPolicyUpdateParams are set
+// Validate verifies all required fields for SystemPolicyUpdateParams are set and validates field constraints.
 func (p *SystemPolicyUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for ScimTokenListParams are set
+// Validate verifies all required fields for ScimTokenListParams are set and validates field constraints.
 func (p *ScimTokenListParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Silo), "Silo")
+	v.HasRequiredObj(p.Silo, "silo")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for ScimTokenCreateParams are set
+// Validate verifies all required fields for ScimTokenCreateParams are set and validates field constraints.
 func (p *ScimTokenCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Silo), "Silo")
+	v.HasRequiredObj(p.Silo, "silo")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for ScimTokenDeleteParams are set
+// Validate verifies all required fields for ScimTokenDeleteParams are set and validates field constraints.
 func (p *ScimTokenDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.TokenId), "TokenId")
-	v.HasRequiredStr(string(p.Silo), "Silo")
+	v.HasRequiredStr(string(p.TokenId), "token_id")
+	v.ValidFormat(string(p.TokenId), "uuid", "token_id")
+	v.HasRequiredObj(p.Silo, "silo")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for ScimTokenViewParams are set
+// Validate verifies all required fields for ScimTokenViewParams are set and validates field constraints.
 func (p *ScimTokenViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.TokenId), "TokenId")
-	v.HasRequiredStr(string(p.Silo), "Silo")
+	v.HasRequiredStr(string(p.TokenId), "token_id")
+	v.ValidFormat(string(p.TokenId), "uuid", "token_id")
+	v.HasRequiredObj(p.Silo, "silo")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SystemQuotasListParams are set
+// Validate verifies all required fields for SystemQuotasListParams are set and validates field constraints.
 func (p *SystemQuotasListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -12898,7 +13242,7 @@ func (p *SystemQuotasListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for SiloListParams are set
+// Validate verifies all required fields for SiloListParams are set and validates field constraints.
 func (p *SiloListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -12907,99 +13251,119 @@ func (p *SiloListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for SiloCreateParams are set
+// Validate verifies all required fields for SiloCreateParams are set and validates field constraints.
 func (p *SiloCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SiloDeleteParams are set
+// Validate verifies all required fields for SiloDeleteParams are set and validates field constraints.
 func (p *SiloDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Silo), "Silo")
+	v.HasRequiredObj(p.Silo, "silo")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SiloViewParams are set
+// Validate verifies all required fields for SiloViewParams are set and validates field constraints.
 func (p *SiloViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Silo), "Silo")
+	v.HasRequiredObj(p.Silo, "silo")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SiloIpPoolListParams are set
+// Validate verifies all required fields for SiloIpPoolListParams are set and validates field constraints.
 func (p *SiloIpPoolListParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Silo), "Silo")
+	v.HasRequiredObj(p.Silo, "silo")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SiloPolicyViewParams are set
+// Validate verifies all required fields for SiloPolicyViewParams are set and validates field constraints.
 func (p *SiloPolicyViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Silo), "Silo")
+	v.HasRequiredObj(p.Silo, "silo")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SiloPolicyUpdateParams are set
+// Validate verifies all required fields for SiloPolicyUpdateParams are set and validates field constraints.
 func (p *SiloPolicyUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Silo), "Silo")
+	v.HasRequiredObj(p.Silo, "silo")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SiloQuotasViewParams are set
+// Validate verifies all required fields for SiloQuotasViewParams are set and validates field constraints.
 func (p *SiloQuotasViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Silo), "Silo")
+	v.HasRequiredObj(p.Silo, "silo")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SiloQuotasUpdateParams are set
+// Validate verifies all required fields for SiloQuotasUpdateParams are set and validates field constraints.
 func (p *SiloQuotasUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Silo), "Silo")
+	v.HasRequiredObj(p.Silo, "silo")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SystemTimeseriesQueryParams are set
+// Validate verifies all required fields for SystemTimeseriesQueryParams are set and validates field constraints.
 func (p *SystemTimeseriesQueryParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SystemTimeseriesSchemaListParams are set
+// Validate verifies all required fields for SystemTimeseriesSchemaListParams are set and validates field constraints.
 func (p *SystemTimeseriesSchemaListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -13008,7 +13372,7 @@ func (p *SystemTimeseriesSchemaListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for SystemUpdateRepositoryListParams are set
+// Validate verifies all required fields for SystemUpdateRepositoryListParams are set and validates field constraints.
 func (p *SystemUpdateRepositoryListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -13017,38 +13381,44 @@ func (p *SystemUpdateRepositoryListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for SystemUpdateRepositoryUploadParams are set
+// Validate verifies all required fields for SystemUpdateRepositoryUploadParams are set and validates field constraints.
 func (p *SystemUpdateRepositoryUploadParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.FileName), "FileName")
+	v.HasRequiredStr(string(p.FileName), "file_name")
+	v.HasRequiredObj(p.Body, "body")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SystemUpdateRepositoryViewParams are set
+// Validate verifies all required fields for SystemUpdateRepositoryViewParams are set and validates field constraints.
 func (p *SystemUpdateRepositoryViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.SystemVersion), "SystemVersion")
+	v.HasRequiredStr(string(p.SystemVersion), "system_version")
+	v.MatchesPattern(string(p.SystemVersion), `^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$`, "system_version")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for TargetReleaseUpdateParams are set
+// Validate verifies all required fields for TargetReleaseUpdateParams are set and validates field constraints.
 func (p *TargetReleaseUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SystemUpdateTrustRootListParams are set
+// Validate verifies all required fields for SystemUpdateTrustRootListParams are set and validates field constraints.
 func (p *SystemUpdateTrustRootListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -13057,37 +13427,39 @@ func (p *SystemUpdateTrustRootListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for SystemUpdateTrustRootCreateParams are set
+// Validate verifies all required fields for SystemUpdateTrustRootCreateParams are set and validates field constraints.
 func (p *SystemUpdateTrustRootCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredObj(p.Body, "body")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SystemUpdateTrustRootDeleteParams are set
+// Validate verifies all required fields for SystemUpdateTrustRootDeleteParams are set and validates field constraints.
 func (p *SystemUpdateTrustRootDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.TrustRootId), "TrustRootId")
+	v.HasRequiredStr(string(p.TrustRootId), "trust_root_id")
+	v.ValidFormat(string(p.TrustRootId), "uuid", "trust_root_id")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SystemUpdateTrustRootViewParams are set
+// Validate verifies all required fields for SystemUpdateTrustRootViewParams are set and validates field constraints.
 func (p *SystemUpdateTrustRootViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.TrustRootId), "TrustRootId")
+	v.HasRequiredStr(string(p.TrustRootId), "trust_root_id")
+	v.ValidFormat(string(p.TrustRootId), "uuid", "trust_root_id")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SiloUserListParams are set
+// Validate verifies all required fields for SiloUserListParams are set and validates field constraints.
 func (p *SiloUserListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -13096,7 +13468,7 @@ func (p *SiloUserListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for UserBuiltinListParams are set
+// Validate verifies all required fields for UserBuiltinListParams are set and validates field constraints.
 func (p *UserBuiltinListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -13105,28 +13477,29 @@ func (p *UserBuiltinListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for UserBuiltinViewParams are set
+// Validate verifies all required fields for UserBuiltinViewParams are set and validates field constraints.
 func (p *UserBuiltinViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.User), "User")
+	v.HasRequiredObj(p.User, "user")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SiloUserViewParams are set
+// Validate verifies all required fields for SiloUserViewParams are set and validates field constraints.
 func (p *SiloUserViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.UserId), "UserId")
-	v.HasRequiredStr(string(p.Silo), "Silo")
+	v.HasRequiredStr(string(p.UserId), "user_id")
+	v.ValidFormat(string(p.UserId), "uuid", "user_id")
+	v.HasRequiredObj(p.Silo, "silo")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SiloUtilizationListParams are set
+// Validate verifies all required fields for SiloUtilizationListParams are set and validates field constraints.
 func (p *SiloUtilizationListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -13135,98 +13508,113 @@ func (p *SiloUtilizationListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for SiloUtilizationViewParams are set
+// Validate verifies all required fields for SiloUtilizationViewParams are set and validates field constraints.
 func (p *SiloUtilizationViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Silo), "Silo")
+	v.HasRequiredObj(p.Silo, "silo")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for TimeseriesQueryParams are set
+// Validate verifies all required fields for TimeseriesQueryParams are set and validates field constraints.
 func (p *TimeseriesQueryParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Project), "Project")
+	v.HasRequiredObj(p.Project, "project")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for UserListParams are set
+// Validate verifies all required fields for UserListParams are set and validates field constraints.
 func (p *UserListParams) Validate() error {
 	v := new(Validator)
+	v.ValidFormat(string(p.Group), "uuid", "group")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for UserViewParams are set
+// Validate verifies all required fields for UserViewParams are set and validates field constraints.
 func (p *UserViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.UserId), "UserId")
+	v.HasRequiredStr(string(p.UserId), "user_id")
+	v.ValidFormat(string(p.UserId), "uuid", "user_id")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for UserTokenListParams are set
+// Validate verifies all required fields for UserTokenListParams are set and validates field constraints.
 func (p *UserTokenListParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.UserId), "UserId")
+	v.HasRequiredStr(string(p.UserId), "user_id")
+	v.ValidFormat(string(p.UserId), "uuid", "user_id")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for UserLogoutParams are set
+// Validate verifies all required fields for UserLogoutParams are set and validates field constraints.
 func (p *UserLogoutParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.UserId), "UserId")
+	v.HasRequiredStr(string(p.UserId), "user_id")
+	v.ValidFormat(string(p.UserId), "uuid", "user_id")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for UserSessionListParams are set
+// Validate verifies all required fields for UserSessionListParams are set and validates field constraints.
 func (p *UserSessionListParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.UserId), "UserId")
+	v.HasRequiredStr(string(p.UserId), "user_id")
+	v.ValidFormat(string(p.UserId), "uuid", "user_id")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for VpcFirewallRulesViewParams are set
+// Validate verifies all required fields for VpcFirewallRulesViewParams are set and validates field constraints.
 func (p *VpcFirewallRulesViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Vpc), "Vpc")
+	v.HasRequiredObj(p.Vpc, "vpc")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for VpcFirewallRulesUpdateParams are set
+// Validate verifies all required fields for VpcFirewallRulesUpdateParams are set and validates field constraints.
 func (p *VpcFirewallRulesUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Vpc), "Vpc")
+	v.HasRequiredObj(p.Vpc, "vpc")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for VpcRouterRouteListParams are set
+// Validate verifies all required fields for VpcRouterRouteListParams are set and validates field constraints.
 func (p *VpcRouterRouteListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -13235,49 +13623,59 @@ func (p *VpcRouterRouteListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for VpcRouterRouteCreateParams are set
+// Validate verifies all required fields for VpcRouterRouteCreateParams are set and validates field constraints.
 func (p *VpcRouterRouteCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Router), "Router")
+	v.HasRequiredObj(p.Router, "router")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for VpcRouterRouteDeleteParams are set
+// Validate verifies all required fields for VpcRouterRouteDeleteParams are set and validates field constraints.
 func (p *VpcRouterRouteDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Route), "Route")
+	v.HasRequiredObj(p.Route, "route")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for VpcRouterRouteViewParams are set
+// Validate verifies all required fields for VpcRouterRouteViewParams are set and validates field constraints.
 func (p *VpcRouterRouteViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Route), "Route")
+	v.HasRequiredObj(p.Route, "route")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for VpcRouterRouteUpdateParams are set
+// Validate verifies all required fields for VpcRouterRouteUpdateParams are set and validates field constraints.
 func (p *VpcRouterRouteUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Route), "Route")
+	v.HasRequiredObj(p.Route, "route")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for VpcRouterListParams are set
+// Validate verifies all required fields for VpcRouterListParams are set and validates field constraints.
 func (p *VpcRouterListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -13286,49 +13684,59 @@ func (p *VpcRouterListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for VpcRouterCreateParams are set
+// Validate verifies all required fields for VpcRouterCreateParams are set and validates field constraints.
 func (p *VpcRouterCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Vpc), "Vpc")
+	v.HasRequiredObj(p.Vpc, "vpc")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for VpcRouterDeleteParams are set
+// Validate verifies all required fields for VpcRouterDeleteParams are set and validates field constraints.
 func (p *VpcRouterDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Router), "Router")
+	v.HasRequiredObj(p.Router, "router")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for VpcRouterViewParams are set
+// Validate verifies all required fields for VpcRouterViewParams are set and validates field constraints.
 func (p *VpcRouterViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Router), "Router")
+	v.HasRequiredObj(p.Router, "router")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for VpcRouterUpdateParams are set
+// Validate verifies all required fields for VpcRouterUpdateParams are set and validates field constraints.
 func (p *VpcRouterUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Router), "Router")
+	v.HasRequiredObj(p.Router, "router")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for VpcSubnetListParams are set
+// Validate verifies all required fields for VpcSubnetListParams are set and validates field constraints.
 func (p *VpcSubnetListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -13337,59 +13745,69 @@ func (p *VpcSubnetListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for VpcSubnetCreateParams are set
+// Validate verifies all required fields for VpcSubnetCreateParams are set and validates field constraints.
 func (p *VpcSubnetCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Vpc), "Vpc")
+	v.HasRequiredObj(p.Vpc, "vpc")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for VpcSubnetDeleteParams are set
+// Validate verifies all required fields for VpcSubnetDeleteParams are set and validates field constraints.
 func (p *VpcSubnetDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Subnet), "Subnet")
+	v.HasRequiredObj(p.Subnet, "subnet")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for VpcSubnetViewParams are set
+// Validate verifies all required fields for VpcSubnetViewParams are set and validates field constraints.
 func (p *VpcSubnetViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Subnet), "Subnet")
+	v.HasRequiredObj(p.Subnet, "subnet")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for VpcSubnetUpdateParams are set
+// Validate verifies all required fields for VpcSubnetUpdateParams are set and validates field constraints.
 func (p *VpcSubnetUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Subnet), "Subnet")
+	v.HasRequiredObj(p.Subnet, "subnet")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for VpcSubnetListNetworkInterfacesParams are set
+// Validate verifies all required fields for VpcSubnetListNetworkInterfacesParams are set and validates field constraints.
 func (p *VpcSubnetListNetworkInterfacesParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Subnet), "Subnet")
+	v.HasRequiredObj(p.Subnet, "subnet")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for VpcListParams are set
+// Validate verifies all required fields for VpcListParams are set and validates field constraints.
 func (p *VpcListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
@@ -13398,94 +13816,9356 @@ func (p *VpcListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for VpcCreateParams are set
+// Validate verifies all required fields for VpcCreateParams are set and validates field constraints.
 func (p *VpcCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Project), "Project")
+	v.HasRequiredObj(p.Project, "project")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for VpcDeleteParams are set
+// Validate verifies all required fields for VpcDeleteParams are set and validates field constraints.
 func (p *VpcDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Vpc), "Vpc")
+	v.HasRequiredObj(p.Vpc, "vpc")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for VpcViewParams are set
+// Validate verifies all required fields for VpcViewParams are set and validates field constraints.
 func (p *VpcViewParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Vpc), "Vpc")
+	v.HasRequiredObj(p.Vpc, "vpc")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for VpcUpdateParams are set
+// Validate verifies all required fields for VpcUpdateParams are set and validates field constraints.
 func (p *VpcUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Vpc), "Vpc")
+	v.HasRequiredObj(p.Vpc, "vpc")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for WebhookReceiverCreateParams are set
+// Validate verifies all required fields for WebhookReceiverCreateParams are set and validates field constraints.
 func (p *WebhookReceiverCreateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for WebhookReceiverUpdateParams are set
+// Validate verifies all required fields for WebhookReceiverUpdateParams are set and validates field constraints.
 func (p *WebhookReceiverUpdateParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Receiver), "Receiver")
+	v.HasRequiredObj(p.Receiver, "receiver")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for WebhookSecretsListParams are set
+// Validate verifies all required fields for WebhookSecretsListParams are set and validates field constraints.
 func (p *WebhookSecretsListParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.Receiver), "Receiver")
+	v.HasRequiredObj(p.Receiver, "receiver")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for WebhookSecretsAddParams are set
+// Validate verifies all required fields for WebhookSecretsAddParams are set and validates field constraints.
 func (p *WebhookSecretsAddParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Receiver), "Receiver")
+	v.HasRequiredObj(p.Receiver, "receiver")
+	v.HasRequiredObj(p.Body, "body")
+	if p.Body != nil {
+		if err := p.Body.Validate(); err != nil {
+			v.AddError(fmt.Errorf("body: %w", err))
+		}
+	}
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for WebhookSecretsDeleteParams are set
+// Validate verifies all required fields for WebhookSecretsDeleteParams are set and validates field constraints.
 func (p *WebhookSecretsDeleteParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.SecretId), "SecretId")
+	v.HasRequiredStr(string(p.SecretId), "secret_id")
+	v.ValidFormat(string(p.SecretId), "uuid", "secret_id")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Address are set and validates field constraints.
+func (p *Address) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Address, "address")
+	v.HasRequiredObj(p.AddressLot, "address_lot")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AddressConfig are set and validates field constraints.
+func (p *AddressConfig) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Addresses, "addresses")
+	for i, item := range p.Addresses {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("addresses[%d]: %w", i, err))
+		}
+	}
+	v.HasRequiredObj(p.LinkName, "link_name")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AddressLot are set and validates field constraints.
+func (p *AddressLot) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.Kind, "kind")
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AddressLotBlock are set and validates field constraints.
+func (p *AddressLotBlock) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.FirstAddress), "first_address")
+	v.ValidFormat(string(p.FirstAddress), "ip", "first_address")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredStr(string(p.LastAddress), "last_address")
+	v.ValidFormat(string(p.LastAddress), "ip", "last_address")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AddressLotBlockCreate are set and validates field constraints.
+func (p *AddressLotBlockCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.FirstAddress), "first_address")
+	v.ValidFormat(string(p.FirstAddress), "ip", "first_address")
+	v.HasRequiredStr(string(p.LastAddress), "last_address")
+	v.ValidFormat(string(p.LastAddress), "ip", "last_address")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AddressLotBlockResultsPage are set and validates field constraints.
+func (p *AddressLotBlockResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AddressLotCreate are set and validates field constraints.
+func (p *AddressLotCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Blocks, "blocks")
+	for i, item := range p.Blocks {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("blocks[%d]: %w", i, err))
+		}
+	}
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredObj(p.Kind, "kind")
+	v.HasRequiredStr(string(p.Name), "name")
+	v.MatchesPattern(string(p.Name), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "name")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AddressLotCreateResponse are set and validates field constraints.
+func (p *AddressLotCreateResponse) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Blocks, "blocks")
+	for i, item := range p.Blocks {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("blocks[%d]: %w", i, err))
+		}
+	}
+	v.HasRequiredObj(p.Lot, "lot")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AddressLotResultsPage are set and validates field constraints.
+func (p *AddressLotResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AddressLotViewResponse are set and validates field constraints.
+func (p *AddressLotViewResponse) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Blocks, "blocks")
+	for i, item := range p.Blocks {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("blocks[%d]: %w", i, err))
+		}
+	}
+	v.HasRequiredObj(p.Lot, "lot")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AffinityGroup are set and validates field constraints.
+func (p *AffinityGroup) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredObj(p.FailureDomain, "failure_domain")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredObj(p.Policy, "policy")
+	v.HasRequiredStr(string(p.ProjectId), "project_id")
+	v.ValidFormat(string(p.ProjectId), "uuid", "project_id")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AffinityGroupCreate are set and validates field constraints.
+func (p *AffinityGroupCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredObj(p.FailureDomain, "failure_domain")
+	v.HasRequiredStr(string(p.Name), "name")
+	v.MatchesPattern(string(p.Name), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "name")
+	v.HasRequiredObj(p.Policy, "policy")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AffinityGroupMemberValue are set and validates field constraints.
+func (p *AffinityGroupMemberValue) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredStr(string(p.Name), "name")
+	v.MatchesPattern(string(p.Name), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "name")
+	v.HasRequiredObj(p.RunState, "run_state")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AffinityGroupMemberInstance are set and validates field constraints.
+func (p *AffinityGroupMemberInstance) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredObj(p.Value, "value")
+	if err := p.Value.Validate(); err != nil {
+		v.AddError(fmt.Errorf("value: %w", err))
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AffinityGroupMember are set and validates field constraints.
+func (p *AffinityGroupMember) Validate() error {
+	v := new(Validator)
+	if err := p.Value.Validate(); err != nil {
+		v.AddError(fmt.Errorf("value: %w", err))
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AffinityGroupMemberResultsPage are set and validates field constraints.
+func (p *AffinityGroupMemberResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AffinityGroupResultsPage are set and validates field constraints.
+func (p *AffinityGroupResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AffinityGroupUpdate are set and validates field constraints.
+func (p *AffinityGroupUpdate) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AggregateBgpMessageHistory are set and validates field constraints.
+func (p *AggregateBgpMessageHistory) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.SwitchHistories, "switch_histories")
+	for i, item := range p.SwitchHistories {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("switch_histories[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AlertClass are set and validates field constraints.
+func (p *AlertClass) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Name), "name")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AlertClassResultsPage are set and validates field constraints.
+func (p *AlertClassResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AlertDelivery are set and validates field constraints.
+func (p *AlertDelivery) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.AlertClass), "alert_class")
+	v.HasRequiredStr(string(p.AlertId), "alert_id")
+	v.ValidFormat(string(p.AlertId), "uuid", "alert_id")
+	v.HasRequiredObj(p.Attempts, "attempts")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredStr(string(p.ReceiverId), "receiver_id")
+	v.ValidFormat(string(p.ReceiverId), "uuid", "receiver_id")
+	v.HasRequiredObj(p.State, "state")
+	v.HasRequiredObj(p.TimeStarted, "time_started")
+	v.HasRequiredObj(p.Trigger, "trigger")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AlertDeliveryAttemptsWebhook are set and validates field constraints.
+func (p *AlertDeliveryAttemptsWebhook) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Webhook, "webhook")
+	for i, item := range p.Webhook {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("webhook[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AlertDeliveryAttempts are set and validates field constraints.
+func (p *AlertDeliveryAttempts) Validate() error {
+	v := new(Validator)
+	for i, item := range p.Webhook {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("webhook[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AlertDeliveryId are set and validates field constraints.
+func (p *AlertDeliveryId) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.DeliveryId), "delivery_id")
+	v.ValidFormat(string(p.DeliveryId), "uuid", "delivery_id")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AlertDeliveryResultsPage are set and validates field constraints.
+func (p *AlertDeliveryResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AlertProbeResult are set and validates field constraints.
+func (p *AlertProbeResult) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Probe, "probe")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AlertReceiver are set and validates field constraints.
+func (p *AlertReceiver) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.Kind, "kind")
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredObj(p.Subscriptions, "subscriptions")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AlertReceiverKindWebhook are set and validates field constraints.
+func (p *AlertReceiverKindWebhook) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Endpoint), "endpoint")
+	v.ValidFormat(string(p.Endpoint), "uri", "endpoint")
+	v.HasRequiredStr(string(p.Kind), "kind")
+	v.HasRequiredObj(p.Secrets, "secrets")
+	for i, item := range p.Secrets {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("secrets[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AlertReceiverKind are set and validates field constraints.
+func (p *AlertReceiverKind) Validate() error {
+	v := new(Validator)
+	v.ValidFormat(string(p.Endpoint), "uri", "endpoint")
+	for i, item := range p.Secrets {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("secrets[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AlertReceiverResultsPage are set and validates field constraints.
+func (p *AlertReceiverResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AlertSubscriptionCreate are set and validates field constraints.
+func (p *AlertSubscriptionCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Subscription, "subscription")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AlertSubscriptionCreated are set and validates field constraints.
+func (p *AlertSubscriptionCreated) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Subscription, "subscription")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AllowList are set and validates field constraints.
+func (p *AllowList) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.AllowedIps, "allowed_ips")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AllowListUpdate are set and validates field constraints.
+func (p *AllowListUpdate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.AllowedIps, "allowed_ips")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AllowedSourceIpsAny are set and validates field constraints.
+func (p *AllowedSourceIpsAny) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Allow), "allow")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AllowedSourceIpsList are set and validates field constraints.
+func (p *AllowedSourceIpsList) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Allow), "allow")
+	v.HasRequiredObj(p.Ips, "ips")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AllowedSourceIps are set and validates field constraints.
+func (p *AllowedSourceIps) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AntiAffinityGroup are set and validates field constraints.
+func (p *AntiAffinityGroup) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredObj(p.FailureDomain, "failure_domain")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredObj(p.Policy, "policy")
+	v.HasRequiredStr(string(p.ProjectId), "project_id")
+	v.ValidFormat(string(p.ProjectId), "uuid", "project_id")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AntiAffinityGroupCreate are set and validates field constraints.
+func (p *AntiAffinityGroupCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredObj(p.FailureDomain, "failure_domain")
+	v.HasRequiredStr(string(p.Name), "name")
+	v.MatchesPattern(string(p.Name), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "name")
+	v.HasRequiredObj(p.Policy, "policy")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AntiAffinityGroupMemberValue are set and validates field constraints.
+func (p *AntiAffinityGroupMemberValue) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredStr(string(p.Name), "name")
+	v.MatchesPattern(string(p.Name), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "name")
+	v.HasRequiredObj(p.RunState, "run_state")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AntiAffinityGroupMemberInstance are set and validates field constraints.
+func (p *AntiAffinityGroupMemberInstance) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredObj(p.Value, "value")
+	if err := p.Value.Validate(); err != nil {
+		v.AddError(fmt.Errorf("value: %w", err))
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AntiAffinityGroupMember are set and validates field constraints.
+func (p *AntiAffinityGroupMember) Validate() error {
+	v := new(Validator)
+	if err := p.Value.Validate(); err != nil {
+		v.AddError(fmt.Errorf("value: %w", err))
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AntiAffinityGroupMemberResultsPage are set and validates field constraints.
+func (p *AntiAffinityGroupMemberResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AntiAffinityGroupResultsPage are set and validates field constraints.
+func (p *AntiAffinityGroupResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AntiAffinityGroupUpdate are set and validates field constraints.
+func (p *AntiAffinityGroupUpdate) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AuditLogEntry are set and validates field constraints.
+func (p *AuditLogEntry) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Actor, "actor")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredStr(string(p.OperationId), "operation_id")
+	v.HasRequiredStr(string(p.RequestId), "request_id")
+	v.HasRequiredStr(string(p.RequestUri), "request_uri")
+	v.HasRequiredObj(p.Result, "result")
+	v.HasRequiredStr(string(p.SourceIp), "source_ip")
+	v.ValidFormat(string(p.SourceIp), "ip", "source_ip")
+	v.HasRequiredObj(p.TimeCompleted, "time_completed")
+	v.HasRequiredObj(p.TimeStarted, "time_started")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AuditLogEntryActorUserBuiltin are set and validates field constraints.
+func (p *AuditLogEntryActorUserBuiltin) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Kind), "kind")
+	v.HasRequiredStr(string(p.UserBuiltinId), "user_builtin_id")
+	v.ValidFormat(string(p.UserBuiltinId), "uuid", "user_builtin_id")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AuditLogEntryActorSiloUser are set and validates field constraints.
+func (p *AuditLogEntryActorSiloUser) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Kind), "kind")
+	v.HasRequiredStr(string(p.SiloId), "silo_id")
+	v.ValidFormat(string(p.SiloId), "uuid", "silo_id")
+	v.HasRequiredStr(string(p.SiloUserId), "silo_user_id")
+	v.ValidFormat(string(p.SiloUserId), "uuid", "silo_user_id")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AuditLogEntryActorScim are set and validates field constraints.
+func (p *AuditLogEntryActorScim) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Kind), "kind")
+	v.HasRequiredStr(string(p.SiloId), "silo_id")
+	v.ValidFormat(string(p.SiloId), "uuid", "silo_id")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AuditLogEntryActorUnauthenticated are set and validates field constraints.
+func (p *AuditLogEntryActorUnauthenticated) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Kind), "kind")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AuditLogEntryActor are set and validates field constraints.
+func (p *AuditLogEntryActor) Validate() error {
+	v := new(Validator)
+	v.ValidFormat(string(p.UserBuiltinId), "uuid", "user_builtin_id")
+	v.ValidFormat(string(p.SiloId), "uuid", "silo_id")
+	v.ValidFormat(string(p.SiloUserId), "uuid", "silo_user_id")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AuditLogEntryResultSuccess are set and validates field constraints.
+func (p *AuditLogEntryResultSuccess) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.HttpStatusCode, "http_status_code")
+	v.HasRequiredStr(string(p.Kind), "kind")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AuditLogEntryResultError are set and validates field constraints.
+func (p *AuditLogEntryResultError) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.ErrorMessage), "error_message")
+	v.HasRequiredObj(p.HttpStatusCode, "http_status_code")
+	v.HasRequiredStr(string(p.Kind), "kind")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AuditLogEntryResultUnknown are set and validates field constraints.
+func (p *AuditLogEntryResultUnknown) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Kind), "kind")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AuditLogEntryResult are set and validates field constraints.
+func (p *AuditLogEntryResult) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AuditLogEntryResultsPage are set and validates field constraints.
+func (p *AuditLogEntryResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Baseboard are set and validates field constraints.
+func (p *Baseboard) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Part), "part")
+	v.HasRequiredObj(p.Revision, "revision")
+	v.HasRequiredStr(string(p.Serial), "serial")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BfdSessionDisable are set and validates field constraints.
+func (p *BfdSessionDisable) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Remote), "remote")
+	v.ValidFormat(string(p.Remote), "ip", "remote")
+	v.HasRequiredObj(p.Switch, "switch")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BfdSessionEnable are set and validates field constraints.
+func (p *BfdSessionEnable) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.DetectionThreshold, "detection_threshold")
+	v.ValidFormat(string(p.Local), "ip", "local")
+	v.HasRequiredObj(p.Mode, "mode")
+	v.HasRequiredStr(string(p.Remote), "remote")
+	v.ValidFormat(string(p.Remote), "ip", "remote")
+	v.HasRequiredObj(p.RequiredRx, "required_rx")
+	v.HasRequiredObj(p.Switch, "switch")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BfdStatus are set and validates field constraints.
+func (p *BfdStatus) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.DetectionThreshold, "detection_threshold")
+	v.ValidFormat(string(p.Local), "ip", "local")
+	v.HasRequiredStr(string(p.Mode), "mode")
+	ValidEnum(v, p.Mode, BfdModeCollection, "mode")
+	v.HasRequiredStr(string(p.Peer), "peer")
+	v.ValidFormat(string(p.Peer), "ip", "peer")
+	v.HasRequiredObj(p.RequiredRx, "required_rx")
+	v.HasRequiredObj(p.State, "state")
+	v.HasRequiredStr(string(p.Switch), "switch")
+	v.MatchesPattern(string(p.Switch), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "switch")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BgpAnnounceSet are set and validates field constraints.
+func (p *BgpAnnounceSet) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BgpAnnounceSetCreate are set and validates field constraints.
+func (p *BgpAnnounceSetCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Announcement, "announcement")
+	for i, item := range p.Announcement {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("announcement[%d]: %w", i, err))
+		}
+	}
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Name), "name")
+	v.MatchesPattern(string(p.Name), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "name")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BgpAnnouncement are set and validates field constraints.
+func (p *BgpAnnouncement) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.AddressLotBlockId), "address_lot_block_id")
+	v.ValidFormat(string(p.AddressLotBlockId), "uuid", "address_lot_block_id")
+	v.HasRequiredStr(string(p.AnnounceSetId), "announce_set_id")
+	v.ValidFormat(string(p.AnnounceSetId), "uuid", "announce_set_id")
+	v.HasRequiredObj(p.Network, "network")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BgpAnnouncementCreate are set and validates field constraints.
+func (p *BgpAnnouncementCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.AddressLotBlock, "address_lot_block")
+	v.HasRequiredObj(p.Network, "network")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BgpConfig are set and validates field constraints.
+func (p *BgpConfig) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Asn, "asn")
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BgpConfigCreate are set and validates field constraints.
+func (p *BgpConfigCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Asn, "asn")
+	v.HasRequiredObj(p.BgpAnnounceSetId, "bgp_announce_set_id")
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Name), "name")
+	v.MatchesPattern(string(p.Name), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "name")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BgpConfigResultsPage are set and validates field constraints.
+func (p *BgpConfigResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BgpExported are set and validates field constraints.
+func (p *BgpExported) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Exports, "exports")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BgpImportedRouteIpv4 are set and validates field constraints.
+func (p *BgpImportedRouteIpv4) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Id, "id")
+	v.HasRequiredStr(string(p.Nexthop), "nexthop")
+	v.ValidFormat(string(p.Nexthop), "ipv4", "nexthop")
+	v.HasRequiredObj(p.Prefix, "prefix")
+	v.HasRequiredObj(p.Switch, "switch")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BgpPeer are set and validates field constraints.
+func (p *BgpPeer) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Addr), "addr")
+	v.ValidFormat(string(p.Addr), "ip", "addr")
+	v.HasRequiredObj(p.AllowedExport, "allowed_export")
+	v.HasRequiredObj(p.AllowedImport, "allowed_import")
+	v.HasRequiredObj(p.BgpConfig, "bgp_config")
+	v.HasRequiredObj(p.Communities, "communities")
+	v.HasRequiredObj(p.ConnectRetry, "connect_retry")
+	v.HasRequiredObj(p.DelayOpen, "delay_open")
+	v.HasRequiredObj(p.EnforceFirstAs, "enforce_first_as")
+	v.HasRequiredObj(p.HoldTime, "hold_time")
+	v.HasRequiredObj(p.IdleHoldTime, "idle_hold_time")
+	v.HasRequiredObj(p.InterfaceName, "interface_name")
+	v.HasRequiredObj(p.Keepalive, "keepalive")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BgpPeerConfig are set and validates field constraints.
+func (p *BgpPeerConfig) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.LinkName, "link_name")
+	v.HasRequiredObj(p.Peers, "peers")
+	for i, item := range p.Peers {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("peers[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BgpPeerStatus are set and validates field constraints.
+func (p *BgpPeerStatus) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Addr), "addr")
+	v.ValidFormat(string(p.Addr), "ip", "addr")
+	v.HasRequiredObj(p.LocalAsn, "local_asn")
+	v.HasRequiredObj(p.RemoteAsn, "remote_asn")
+	v.HasRequiredObj(p.State, "state")
+	v.HasRequiredObj(p.StateDurationMillis, "state_duration_millis")
+	v.HasRequiredObj(p.Switch, "switch")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangedoubleRangeTo are set and validates field constraints.
+func (p *BinRangedoubleRangeTo) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.End, "end")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangedoubleRange are set and validates field constraints.
+func (p *BinRangedoubleRange) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.End, "end")
+	v.HasRequiredObj(p.Start, "start")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangedoubleRangeFrom are set and validates field constraints.
+func (p *BinRangedoubleRangeFrom) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Start, "start")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangedouble are set and validates field constraints.
+func (p *BinRangedouble) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangefloatRangeTo are set and validates field constraints.
+func (p *BinRangefloatRangeTo) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.End, "end")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangefloatRange are set and validates field constraints.
+func (p *BinRangefloatRange) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.End, "end")
+	v.HasRequiredObj(p.Start, "start")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangefloatRangeFrom are set and validates field constraints.
+func (p *BinRangefloatRangeFrom) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Start, "start")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangefloat are set and validates field constraints.
+func (p *BinRangefloat) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangeint16RangeTo are set and validates field constraints.
+func (p *BinRangeint16RangeTo) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.End, "end")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangeint16Range are set and validates field constraints.
+func (p *BinRangeint16Range) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.End, "end")
+	v.HasRequiredObj(p.Start, "start")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangeint16RangeFrom are set and validates field constraints.
+func (p *BinRangeint16RangeFrom) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Start, "start")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangeint16 are set and validates field constraints.
+func (p *BinRangeint16) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangeint32RangeTo are set and validates field constraints.
+func (p *BinRangeint32RangeTo) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.End, "end")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangeint32Range are set and validates field constraints.
+func (p *BinRangeint32Range) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.End, "end")
+	v.HasRequiredObj(p.Start, "start")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangeint32RangeFrom are set and validates field constraints.
+func (p *BinRangeint32RangeFrom) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Start, "start")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangeint32 are set and validates field constraints.
+func (p *BinRangeint32) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangeint64RangeTo are set and validates field constraints.
+func (p *BinRangeint64RangeTo) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.End, "end")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangeint64Range are set and validates field constraints.
+func (p *BinRangeint64Range) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.End, "end")
+	v.HasRequiredObj(p.Start, "start")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangeint64RangeFrom are set and validates field constraints.
+func (p *BinRangeint64RangeFrom) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Start, "start")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangeint64 are set and validates field constraints.
+func (p *BinRangeint64) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangeint8RangeTo are set and validates field constraints.
+func (p *BinRangeint8RangeTo) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.End, "end")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangeint8Range are set and validates field constraints.
+func (p *BinRangeint8Range) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.End, "end")
+	v.HasRequiredObj(p.Start, "start")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangeint8RangeFrom are set and validates field constraints.
+func (p *BinRangeint8RangeFrom) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Start, "start")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangeint8 are set and validates field constraints.
+func (p *BinRangeint8) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangeuint16RangeTo are set and validates field constraints.
+func (p *BinRangeuint16RangeTo) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.End, "end")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangeuint16Range are set and validates field constraints.
+func (p *BinRangeuint16Range) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.End, "end")
+	v.HasRequiredObj(p.Start, "start")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangeuint16RangeFrom are set and validates field constraints.
+func (p *BinRangeuint16RangeFrom) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Start, "start")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangeuint16 are set and validates field constraints.
+func (p *BinRangeuint16) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangeuint32RangeTo are set and validates field constraints.
+func (p *BinRangeuint32RangeTo) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.End, "end")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangeuint32Range are set and validates field constraints.
+func (p *BinRangeuint32Range) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.End, "end")
+	v.HasRequiredObj(p.Start, "start")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangeuint32RangeFrom are set and validates field constraints.
+func (p *BinRangeuint32RangeFrom) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Start, "start")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangeuint32 are set and validates field constraints.
+func (p *BinRangeuint32) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangeuint64RangeTo are set and validates field constraints.
+func (p *BinRangeuint64RangeTo) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.End, "end")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangeuint64Range are set and validates field constraints.
+func (p *BinRangeuint64Range) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.End, "end")
+	v.HasRequiredObj(p.Start, "start")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangeuint64RangeFrom are set and validates field constraints.
+func (p *BinRangeuint64RangeFrom) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Start, "start")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangeuint64 are set and validates field constraints.
+func (p *BinRangeuint64) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangeuint8RangeTo are set and validates field constraints.
+func (p *BinRangeuint8RangeTo) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.End, "end")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangeuint8Range are set and validates field constraints.
+func (p *BinRangeuint8Range) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.End, "end")
+	v.HasRequiredObj(p.Start, "start")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangeuint8RangeFrom are set and validates field constraints.
+func (p *BinRangeuint8RangeFrom) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Start, "start")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for BinRangeuint8 are set and validates field constraints.
+func (p *BinRangeuint8) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Bindouble are set and validates field constraints.
+func (p *Bindouble) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Count, "count")
+	v.HasRequiredObj(p.Range, "range")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Binfloat are set and validates field constraints.
+func (p *Binfloat) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Count, "count")
+	v.HasRequiredObj(p.Range, "range")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Binint16 are set and validates field constraints.
+func (p *Binint16) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Count, "count")
+	v.HasRequiredObj(p.Range, "range")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Binint32 are set and validates field constraints.
+func (p *Binint32) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Count, "count")
+	v.HasRequiredObj(p.Range, "range")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Binint64 are set and validates field constraints.
+func (p *Binint64) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Count, "count")
+	v.HasRequiredObj(p.Range, "range")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Binint8 are set and validates field constraints.
+func (p *Binint8) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Count, "count")
+	v.HasRequiredObj(p.Range, "range")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Binuint16 are set and validates field constraints.
+func (p *Binuint16) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Count, "count")
+	v.HasRequiredObj(p.Range, "range")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Binuint32 are set and validates field constraints.
+func (p *Binuint32) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Count, "count")
+	v.HasRequiredObj(p.Range, "range")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Binuint64 are set and validates field constraints.
+func (p *Binuint64) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Count, "count")
+	v.HasRequiredObj(p.Range, "range")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Binuint8 are set and validates field constraints.
+func (p *Binuint8) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Count, "count")
+	v.HasRequiredObj(p.Range, "range")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Certificate are set and validates field constraints.
+func (p *Certificate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Cert), "cert")
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredObj(p.Service, "service")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for CertificateCreate are set and validates field constraints.
+func (p *CertificateCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Cert), "cert")
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Key), "key")
+	v.HasRequiredStr(string(p.Name), "name")
+	v.MatchesPattern(string(p.Name), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "name")
+	v.HasRequiredObj(p.Service, "service")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for CertificateResultsPage are set and validates field constraints.
+func (p *CertificateResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ConsoleSession are set and validates field constraints.
+func (p *ConsoleSession) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeLastUsed, "time_last_used")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ConsoleSessionResultsPage are set and validates field constraints.
+func (p *ConsoleSessionResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Cumulativedouble are set and validates field constraints.
+func (p *Cumulativedouble) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.StartTime, "start_time")
+	v.HasRequiredObj(p.Value, "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Cumulativefloat are set and validates field constraints.
+func (p *Cumulativefloat) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.StartTime, "start_time")
+	v.HasRequiredObj(p.Value, "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Cumulativeint64 are set and validates field constraints.
+func (p *Cumulativeint64) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.StartTime, "start_time")
+	v.HasRequiredObj(p.Value, "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Cumulativeuint64 are set and validates field constraints.
+func (p *Cumulativeuint64) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.StartTime, "start_time")
+	v.HasRequiredObj(p.Value, "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for CurrentUser are set and validates field constraints.
+func (p *CurrentUser) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.DisplayName), "display_name")
+	v.HasRequiredObj(p.FleetViewer, "fleet_viewer")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.SiloAdmin, "silo_admin")
+	v.HasRequiredStr(string(p.SiloId), "silo_id")
+	v.ValidFormat(string(p.SiloId), "uuid", "silo_id")
+	v.HasRequiredObj(p.SiloName, "silo_name")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DatumBool are set and validates field constraints.
+func (p *DatumBool) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Datum, "datum")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DatumI8 are set and validates field constraints.
+func (p *DatumI8) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Datum, "datum")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DatumU8 are set and validates field constraints.
+func (p *DatumU8) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Datum, "datum")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DatumI16 are set and validates field constraints.
+func (p *DatumI16) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Datum, "datum")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DatumU16 are set and validates field constraints.
+func (p *DatumU16) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Datum, "datum")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DatumI32 are set and validates field constraints.
+func (p *DatumI32) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Datum, "datum")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DatumU32 are set and validates field constraints.
+func (p *DatumU32) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Datum, "datum")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DatumI64 are set and validates field constraints.
+func (p *DatumI64) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Datum, "datum")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DatumU64 are set and validates field constraints.
+func (p *DatumU64) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Datum, "datum")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DatumF32 are set and validates field constraints.
+func (p *DatumF32) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Datum, "datum")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DatumF64 are set and validates field constraints.
+func (p *DatumF64) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Datum, "datum")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DatumString are set and validates field constraints.
+func (p *DatumString) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Datum), "datum")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DatumBytes are set and validates field constraints.
+func (p *DatumBytes) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Datum, "datum")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DatumCumulativeI64 are set and validates field constraints.
+func (p *DatumCumulativeI64) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Datum, "datum")
+	if err := p.Datum.Validate(); err != nil {
+		v.AddError(fmt.Errorf("datum: %w", err))
+	}
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DatumCumulativeU64 are set and validates field constraints.
+func (p *DatumCumulativeU64) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Datum, "datum")
+	if err := p.Datum.Validate(); err != nil {
+		v.AddError(fmt.Errorf("datum: %w", err))
+	}
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DatumCumulativeF32 are set and validates field constraints.
+func (p *DatumCumulativeF32) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Datum, "datum")
+	if err := p.Datum.Validate(); err != nil {
+		v.AddError(fmt.Errorf("datum: %w", err))
+	}
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DatumCumulativeF64 are set and validates field constraints.
+func (p *DatumCumulativeF64) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Datum, "datum")
+	if err := p.Datum.Validate(); err != nil {
+		v.AddError(fmt.Errorf("datum: %w", err))
+	}
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DatumHistogramI8 are set and validates field constraints.
+func (p *DatumHistogramI8) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Datum, "datum")
+	if err := p.Datum.Validate(); err != nil {
+		v.AddError(fmt.Errorf("datum: %w", err))
+	}
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DatumHistogramU8 are set and validates field constraints.
+func (p *DatumHistogramU8) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Datum, "datum")
+	if err := p.Datum.Validate(); err != nil {
+		v.AddError(fmt.Errorf("datum: %w", err))
+	}
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DatumHistogramI16 are set and validates field constraints.
+func (p *DatumHistogramI16) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Datum, "datum")
+	if err := p.Datum.Validate(); err != nil {
+		v.AddError(fmt.Errorf("datum: %w", err))
+	}
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DatumHistogramU16 are set and validates field constraints.
+func (p *DatumHistogramU16) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Datum, "datum")
+	if err := p.Datum.Validate(); err != nil {
+		v.AddError(fmt.Errorf("datum: %w", err))
+	}
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DatumHistogramI32 are set and validates field constraints.
+func (p *DatumHistogramI32) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Datum, "datum")
+	if err := p.Datum.Validate(); err != nil {
+		v.AddError(fmt.Errorf("datum: %w", err))
+	}
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DatumHistogramU32 are set and validates field constraints.
+func (p *DatumHistogramU32) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Datum, "datum")
+	if err := p.Datum.Validate(); err != nil {
+		v.AddError(fmt.Errorf("datum: %w", err))
+	}
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DatumHistogramI64 are set and validates field constraints.
+func (p *DatumHistogramI64) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Datum, "datum")
+	if err := p.Datum.Validate(); err != nil {
+		v.AddError(fmt.Errorf("datum: %w", err))
+	}
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DatumHistogramU64 are set and validates field constraints.
+func (p *DatumHistogramU64) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Datum, "datum")
+	if err := p.Datum.Validate(); err != nil {
+		v.AddError(fmt.Errorf("datum: %w", err))
+	}
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DatumHistogramF32 are set and validates field constraints.
+func (p *DatumHistogramF32) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Datum, "datum")
+	if err := p.Datum.Validate(); err != nil {
+		v.AddError(fmt.Errorf("datum: %w", err))
+	}
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DatumHistogramF64 are set and validates field constraints.
+func (p *DatumHistogramF64) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Datum, "datum")
+	if err := p.Datum.Validate(); err != nil {
+		v.AddError(fmt.Errorf("datum: %w", err))
+	}
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DatumMissing are set and validates field constraints.
+func (p *DatumMissing) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Datum, "datum")
+	if err := p.Datum.Validate(); err != nil {
+		v.AddError(fmt.Errorf("datum: %w", err))
+	}
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Datum are set and validates field constraints.
+func (p *Datum) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DerEncodedKeyPair are set and validates field constraints.
+func (p *DerEncodedKeyPair) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.PrivateKey), "private_key")
+	v.HasRequiredStr(string(p.PublicCert), "public_cert")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DeviceAccessToken are set and validates field constraints.
+func (p *DeviceAccessToken) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DeviceAccessTokenRequest are set and validates field constraints.
+func (p *DeviceAccessTokenRequest) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.ClientId), "client_id")
+	v.ValidFormat(string(p.ClientId), "uuid", "client_id")
+	v.HasRequiredStr(string(p.DeviceCode), "device_code")
+	v.HasRequiredStr(string(p.GrantType), "grant_type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DeviceAccessTokenResultsPage are set and validates field constraints.
+func (p *DeviceAccessTokenResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DeviceAuthRequest are set and validates field constraints.
+func (p *DeviceAuthRequest) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.ClientId), "client_id")
+	v.ValidFormat(string(p.ClientId), "uuid", "client_id")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DeviceAuthVerify are set and validates field constraints.
+func (p *DeviceAuthVerify) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.UserCode), "user_code")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DigestSha256 are set and validates field constraints.
+func (p *DigestSha256) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredStr(string(p.Value), "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Digest are set and validates field constraints.
+func (p *Digest) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Disk are set and validates field constraints.
+func (p *Disk) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.BlockSize, "block_size")
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.DevicePath), "device_path")
+	v.HasRequiredStr(string(p.DiskType), "disk_type")
+	ValidEnum(v, p.DiskType, DiskTypeCollection, "disk_type")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.ValidFormat(string(p.ImageId), "uuid", "image_id")
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredStr(string(p.ProjectId), "project_id")
+	v.ValidFormat(string(p.ProjectId), "uuid", "project_id")
+	v.HasRequiredObj(p.Size, "size")
+	v.ValidFormat(string(p.SnapshotId), "uuid", "snapshot_id")
+	v.HasRequiredObj(p.State, "state")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DiskBackendLocal are set and validates field constraints.
+func (p *DiskBackendLocal) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DiskBackendDistributed are set and validates field constraints.
+func (p *DiskBackendDistributed) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.DiskSource, "disk_source")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DiskBackend are set and validates field constraints.
+func (p *DiskBackend) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DiskCreate are set and validates field constraints.
+func (p *DiskCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredObj(p.DiskBackend, "disk_backend")
+	v.HasRequiredStr(string(p.Name), "name")
+	v.MatchesPattern(string(p.Name), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "name")
+	v.HasRequiredObj(p.Size, "size")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DiskPath are set and validates field constraints.
+func (p *DiskPath) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Disk, "disk")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DiskResultsPage are set and validates field constraints.
+func (p *DiskResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DiskSourceBlank are set and validates field constraints.
+func (p *DiskSourceBlank) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.BlockSize, "block_size")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DiskSourceSnapshot are set and validates field constraints.
+func (p *DiskSourceSnapshot) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.SnapshotId), "snapshot_id")
+	v.ValidFormat(string(p.SnapshotId), "uuid", "snapshot_id")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DiskSourceImage are set and validates field constraints.
+func (p *DiskSourceImage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.ImageId), "image_id")
+	v.ValidFormat(string(p.ImageId), "uuid", "image_id")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DiskSourceImportingBlocks are set and validates field constraints.
+func (p *DiskSourceImportingBlocks) Validate() error {
+	v := new(Validator)
+	v.HasRequiredNum(p.BlockSize, "block_size")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DiskSource are set and validates field constraints.
+func (p *DiskSource) Validate() error {
+	v := new(Validator)
+	v.ValidFormat(string(p.SnapshotId), "uuid", "snapshot_id")
+	v.ValidFormat(string(p.ImageId), "uuid", "image_id")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DiskStateCreating are set and validates field constraints.
+func (p *DiskStateCreating) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.State), "state")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DiskStateDetached are set and validates field constraints.
+func (p *DiskStateDetached) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.State), "state")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DiskStateImportReady are set and validates field constraints.
+func (p *DiskStateImportReady) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.State), "state")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DiskStateImportingFromUrl are set and validates field constraints.
+func (p *DiskStateImportingFromUrl) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.State), "state")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DiskStateImportingFromBulkWrites are set and validates field constraints.
+func (p *DiskStateImportingFromBulkWrites) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.State), "state")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DiskStateFinalizing are set and validates field constraints.
+func (p *DiskStateFinalizing) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.State), "state")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DiskStateMaintenance are set and validates field constraints.
+func (p *DiskStateMaintenance) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.State), "state")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DiskStateAttaching are set and validates field constraints.
+func (p *DiskStateAttaching) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Instance), "instance")
+	v.ValidFormat(string(p.Instance), "uuid", "instance")
+	v.HasRequiredStr(string(p.State), "state")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DiskStateAttached are set and validates field constraints.
+func (p *DiskStateAttached) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Instance), "instance")
+	v.ValidFormat(string(p.Instance), "uuid", "instance")
+	v.HasRequiredStr(string(p.State), "state")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DiskStateDetaching are set and validates field constraints.
+func (p *DiskStateDetaching) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Instance), "instance")
+	v.ValidFormat(string(p.Instance), "uuid", "instance")
+	v.HasRequiredStr(string(p.State), "state")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DiskStateDestroyed are set and validates field constraints.
+func (p *DiskStateDestroyed) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.State), "state")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DiskStateFaulted are set and validates field constraints.
+func (p *DiskStateFaulted) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.State), "state")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DiskState are set and validates field constraints.
+func (p *DiskState) Validate() error {
+	v := new(Validator)
+	v.ValidFormat(string(p.Instance), "uuid", "instance")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Distributiondouble are set and validates field constraints.
+func (p *Distributiondouble) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Bins, "bins")
+	v.HasRequiredObj(p.Counts, "counts")
+	v.HasRequiredObj(p.SquaredMean, "squared_mean")
+	v.HasRequiredObj(p.SumOfSamples, "sum_of_samples")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Distributionint64 are set and validates field constraints.
+func (p *Distributionint64) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Bins, "bins")
+	v.HasRequiredObj(p.Counts, "counts")
+	v.HasRequiredObj(p.SquaredMean, "squared_mean")
+	v.HasRequiredObj(p.SumOfSamples, "sum_of_samples")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for EphemeralIpCreate are set and validates field constraints.
+func (p *EphemeralIpCreate) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Error are set and validates field constraints.
+func (p *Error) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Message), "message")
+	v.HasRequiredStr(string(p.RequestId), "request_id")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ExternalIpSnat are set and validates field constraints.
+func (p *ExternalIpSnat) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.FirstPort, "first_port")
+	v.HasRequiredStr(string(p.Ip), "ip")
+	v.ValidFormat(string(p.Ip), "ip", "ip")
+	v.HasRequiredStr(string(p.IpPoolId), "ip_pool_id")
+	v.ValidFormat(string(p.IpPoolId), "uuid", "ip_pool_id")
+	v.HasRequiredStr(string(p.Kind), "kind")
+	v.HasRequiredObj(p.LastPort, "last_port")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ExternalIpEphemeral are set and validates field constraints.
+func (p *ExternalIpEphemeral) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Ip), "ip")
+	v.ValidFormat(string(p.Ip), "ip", "ip")
+	v.HasRequiredStr(string(p.IpPoolId), "ip_pool_id")
+	v.ValidFormat(string(p.IpPoolId), "uuid", "ip_pool_id")
+	v.HasRequiredStr(string(p.Kind), "kind")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ExternalIpFloating are set and validates field constraints.
+func (p *ExternalIpFloating) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.ValidFormat(string(p.InstanceId), "uuid", "instance_id")
+	v.HasRequiredStr(string(p.Ip), "ip")
+	v.ValidFormat(string(p.Ip), "ip", "ip")
+	v.HasRequiredStr(string(p.IpPoolId), "ip_pool_id")
+	v.ValidFormat(string(p.IpPoolId), "uuid", "ip_pool_id")
+	v.HasRequiredStr(string(p.Kind), "kind")
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredStr(string(p.ProjectId), "project_id")
+	v.ValidFormat(string(p.ProjectId), "uuid", "project_id")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ExternalIp are set and validates field constraints.
+func (p *ExternalIp) Validate() error {
+	v := new(Validator)
+	v.ValidFormat(string(p.Ip), "ip", "ip")
+	v.ValidFormat(string(p.IpPoolId), "uuid", "ip_pool_id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.ValidFormat(string(p.InstanceId), "uuid", "instance_id")
+	v.ValidFormat(string(p.ProjectId), "uuid", "project_id")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ExternalIpCreateEphemeral are set and validates field constraints.
+func (p *ExternalIpCreateEphemeral) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ExternalIpCreateFloating are set and validates field constraints.
+func (p *ExternalIpCreateFloating) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.FloatingIp, "floating_ip")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ExternalIpCreate are set and validates field constraints.
+func (p *ExternalIpCreate) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ExternalIpResultsPage are set and validates field constraints.
+func (p *ExternalIpResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for FieldSchema are set and validates field constraints.
+func (p *FieldSchema) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.FieldType), "field_type")
+	ValidEnum(v, p.FieldType, FieldTypeCollection, "field_type")
+	v.HasRequiredStr(string(p.Name), "name")
+	v.HasRequiredStr(string(p.Source), "source")
+	ValidEnum(v, p.Source, FieldSourceCollection, "source")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for FieldValueString are set and validates field constraints.
+func (p *FieldValueString) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredStr(string(p.Value), "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for FieldValueI8 are set and validates field constraints.
+func (p *FieldValueI8) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredObj(p.Value, "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for FieldValueU8 are set and validates field constraints.
+func (p *FieldValueU8) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredObj(p.Value, "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for FieldValueI16 are set and validates field constraints.
+func (p *FieldValueI16) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredObj(p.Value, "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for FieldValueU16 are set and validates field constraints.
+func (p *FieldValueU16) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredObj(p.Value, "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for FieldValueI32 are set and validates field constraints.
+func (p *FieldValueI32) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredObj(p.Value, "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for FieldValueU32 are set and validates field constraints.
+func (p *FieldValueU32) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredObj(p.Value, "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for FieldValueI64 are set and validates field constraints.
+func (p *FieldValueI64) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredObj(p.Value, "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for FieldValueU64 are set and validates field constraints.
+func (p *FieldValueU64) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredObj(p.Value, "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for FieldValueIpAddr are set and validates field constraints.
+func (p *FieldValueIpAddr) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredStr(string(p.Value), "value")
+	v.ValidFormat(string(p.Value), "ip", "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for FieldValueUuid are set and validates field constraints.
+func (p *FieldValueUuid) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredStr(string(p.Value), "value")
+	v.ValidFormat(string(p.Value), "uuid", "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for FieldValueBool are set and validates field constraints.
+func (p *FieldValueBool) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredObj(p.Value, "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for FieldValue are set and validates field constraints.
+func (p *FieldValue) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for FinalizeDisk are set and validates field constraints.
+func (p *FinalizeDisk) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for FleetRolePolicy are set and validates field constraints.
+func (p *FleetRolePolicy) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.RoleAssignments, "role_assignments")
+	for i, item := range p.RoleAssignments {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("role_assignments[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for FleetRoleRoleAssignment are set and validates field constraints.
+func (p *FleetRoleRoleAssignment) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.IdentityId), "identity_id")
+	v.ValidFormat(string(p.IdentityId), "uuid", "identity_id")
+	v.HasRequiredStr(string(p.IdentityType), "identity_type")
+	ValidEnum(v, p.IdentityType, IdentityTypeCollection, "identity_type")
+	v.HasRequiredStr(string(p.RoleName), "role_name")
+	ValidEnum(v, p.RoleName, FleetRoleCollection, "role_name")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for FloatingIp are set and validates field constraints.
+func (p *FloatingIp) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.ValidFormat(string(p.InstanceId), "uuid", "instance_id")
+	v.HasRequiredStr(string(p.Ip), "ip")
+	v.ValidFormat(string(p.Ip), "ip", "ip")
+	v.HasRequiredStr(string(p.IpPoolId), "ip_pool_id")
+	v.ValidFormat(string(p.IpPoolId), "uuid", "ip_pool_id")
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredStr(string(p.ProjectId), "project_id")
+	v.ValidFormat(string(p.ProjectId), "uuid", "project_id")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for FloatingIpAttach are set and validates field constraints.
+func (p *FloatingIpAttach) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Kind, "kind")
+	v.HasRequiredObj(p.Parent, "parent")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for FloatingIpCreate are set and validates field constraints.
+func (p *FloatingIpCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.ValidFormat(string(p.Ip), "ip", "ip")
+	v.HasRequiredStr(string(p.Name), "name")
+	v.MatchesPattern(string(p.Name), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "name")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for FloatingIpResultsPage are set and validates field constraints.
+func (p *FloatingIpResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for FloatingIpUpdate are set and validates field constraints.
+func (p *FloatingIpUpdate) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Group are set and validates field constraints.
+func (p *Group) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.DisplayName), "display_name")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredStr(string(p.SiloId), "silo_id")
+	v.ValidFormat(string(p.SiloId), "uuid", "silo_id")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for GroupResultsPage are set and validates field constraints.
+func (p *GroupResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Histogramdouble are set and validates field constraints.
+func (p *Histogramdouble) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Bins, "bins")
+	for i, item := range p.Bins {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("bins[%d]: %w", i, err))
+		}
+	}
+	v.HasRequiredObj(p.Max, "max")
+	v.HasRequiredObj(p.Min, "min")
+	v.HasRequiredObj(p.NSamples, "n_samples")
+	v.HasRequiredObj(p.P50, "p50")
+	v.HasRequiredObj(p.P90, "p90")
+	v.HasRequiredObj(p.P99, "p99")
+	v.HasRequiredObj(p.SquaredMean, "squared_mean")
+	v.HasRequiredObj(p.StartTime, "start_time")
+	v.HasRequiredObj(p.SumOfSamples, "sum_of_samples")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Histogramfloat are set and validates field constraints.
+func (p *Histogramfloat) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Bins, "bins")
+	for i, item := range p.Bins {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("bins[%d]: %w", i, err))
+		}
+	}
+	v.HasRequiredObj(p.Max, "max")
+	v.HasRequiredObj(p.Min, "min")
+	v.HasRequiredObj(p.NSamples, "n_samples")
+	v.HasRequiredObj(p.P50, "p50")
+	v.HasRequiredObj(p.P90, "p90")
+	v.HasRequiredObj(p.P99, "p99")
+	v.HasRequiredObj(p.SquaredMean, "squared_mean")
+	v.HasRequiredObj(p.StartTime, "start_time")
+	v.HasRequiredObj(p.SumOfSamples, "sum_of_samples")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Histogramint16 are set and validates field constraints.
+func (p *Histogramint16) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Bins, "bins")
+	for i, item := range p.Bins {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("bins[%d]: %w", i, err))
+		}
+	}
+	v.HasRequiredObj(p.Max, "max")
+	v.HasRequiredObj(p.Min, "min")
+	v.HasRequiredObj(p.NSamples, "n_samples")
+	v.HasRequiredObj(p.P50, "p50")
+	v.HasRequiredObj(p.P90, "p90")
+	v.HasRequiredObj(p.P99, "p99")
+	v.HasRequiredObj(p.SquaredMean, "squared_mean")
+	v.HasRequiredObj(p.StartTime, "start_time")
+	v.HasRequiredObj(p.SumOfSamples, "sum_of_samples")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Histogramint32 are set and validates field constraints.
+func (p *Histogramint32) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Bins, "bins")
+	for i, item := range p.Bins {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("bins[%d]: %w", i, err))
+		}
+	}
+	v.HasRequiredObj(p.Max, "max")
+	v.HasRequiredObj(p.Min, "min")
+	v.HasRequiredObj(p.NSamples, "n_samples")
+	v.HasRequiredObj(p.P50, "p50")
+	v.HasRequiredObj(p.P90, "p90")
+	v.HasRequiredObj(p.P99, "p99")
+	v.HasRequiredObj(p.SquaredMean, "squared_mean")
+	v.HasRequiredObj(p.StartTime, "start_time")
+	v.HasRequiredObj(p.SumOfSamples, "sum_of_samples")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Histogramint64 are set and validates field constraints.
+func (p *Histogramint64) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Bins, "bins")
+	for i, item := range p.Bins {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("bins[%d]: %w", i, err))
+		}
+	}
+	v.HasRequiredObj(p.Max, "max")
+	v.HasRequiredObj(p.Min, "min")
+	v.HasRequiredObj(p.NSamples, "n_samples")
+	v.HasRequiredObj(p.P50, "p50")
+	v.HasRequiredObj(p.P90, "p90")
+	v.HasRequiredObj(p.P99, "p99")
+	v.HasRequiredObj(p.SquaredMean, "squared_mean")
+	v.HasRequiredObj(p.StartTime, "start_time")
+	v.HasRequiredObj(p.SumOfSamples, "sum_of_samples")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Histogramint8 are set and validates field constraints.
+func (p *Histogramint8) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Bins, "bins")
+	for i, item := range p.Bins {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("bins[%d]: %w", i, err))
+		}
+	}
+	v.HasRequiredObj(p.Max, "max")
+	v.HasRequiredObj(p.Min, "min")
+	v.HasRequiredObj(p.NSamples, "n_samples")
+	v.HasRequiredObj(p.P50, "p50")
+	v.HasRequiredObj(p.P90, "p90")
+	v.HasRequiredObj(p.P99, "p99")
+	v.HasRequiredObj(p.SquaredMean, "squared_mean")
+	v.HasRequiredObj(p.StartTime, "start_time")
+	v.HasRequiredObj(p.SumOfSamples, "sum_of_samples")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Histogramuint16 are set and validates field constraints.
+func (p *Histogramuint16) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Bins, "bins")
+	for i, item := range p.Bins {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("bins[%d]: %w", i, err))
+		}
+	}
+	v.HasRequiredObj(p.Max, "max")
+	v.HasRequiredObj(p.Min, "min")
+	v.HasRequiredObj(p.NSamples, "n_samples")
+	v.HasRequiredObj(p.P50, "p50")
+	v.HasRequiredObj(p.P90, "p90")
+	v.HasRequiredObj(p.P99, "p99")
+	v.HasRequiredObj(p.SquaredMean, "squared_mean")
+	v.HasRequiredObj(p.StartTime, "start_time")
+	v.HasRequiredObj(p.SumOfSamples, "sum_of_samples")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Histogramuint32 are set and validates field constraints.
+func (p *Histogramuint32) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Bins, "bins")
+	for i, item := range p.Bins {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("bins[%d]: %w", i, err))
+		}
+	}
+	v.HasRequiredObj(p.Max, "max")
+	v.HasRequiredObj(p.Min, "min")
+	v.HasRequiredObj(p.NSamples, "n_samples")
+	v.HasRequiredObj(p.P50, "p50")
+	v.HasRequiredObj(p.P90, "p90")
+	v.HasRequiredObj(p.P99, "p99")
+	v.HasRequiredObj(p.SquaredMean, "squared_mean")
+	v.HasRequiredObj(p.StartTime, "start_time")
+	v.HasRequiredObj(p.SumOfSamples, "sum_of_samples")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Histogramuint64 are set and validates field constraints.
+func (p *Histogramuint64) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Bins, "bins")
+	for i, item := range p.Bins {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("bins[%d]: %w", i, err))
+		}
+	}
+	v.HasRequiredObj(p.Max, "max")
+	v.HasRequiredObj(p.Min, "min")
+	v.HasRequiredObj(p.NSamples, "n_samples")
+	v.HasRequiredObj(p.P50, "p50")
+	v.HasRequiredObj(p.P90, "p90")
+	v.HasRequiredObj(p.P99, "p99")
+	v.HasRequiredObj(p.SquaredMean, "squared_mean")
+	v.HasRequiredObj(p.StartTime, "start_time")
+	v.HasRequiredObj(p.SumOfSamples, "sum_of_samples")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Histogramuint8 are set and validates field constraints.
+func (p *Histogramuint8) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Bins, "bins")
+	for i, item := range p.Bins {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("bins[%d]: %w", i, err))
+		}
+	}
+	v.HasRequiredObj(p.Max, "max")
+	v.HasRequiredObj(p.Min, "min")
+	v.HasRequiredObj(p.NSamples, "n_samples")
+	v.HasRequiredObj(p.P50, "p50")
+	v.HasRequiredObj(p.P90, "p90")
+	v.HasRequiredObj(p.P99, "p99")
+	v.HasRequiredObj(p.SquaredMean, "squared_mean")
+	v.HasRequiredObj(p.StartTime, "start_time")
+	v.HasRequiredObj(p.SumOfSamples, "sum_of_samples")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for IdentityProvider are set and validates field constraints.
+func (p *IdentityProvider) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredObj(p.ProviderType, "provider_type")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for IdentityProviderResultsPage are set and validates field constraints.
+func (p *IdentityProviderResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for IdpMetadataSourceUrl are set and validates field constraints.
+func (p *IdpMetadataSourceUrl) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredStr(string(p.Url), "url")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for IdpMetadataSourceBase64EncodedXml are set and validates field constraints.
+func (p *IdpMetadataSourceBase64EncodedXml) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Data), "data")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for IdpMetadataSource are set and validates field constraints.
+func (p *IdpMetadataSource) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Image are set and validates field constraints.
+func (p *Image) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.BlockSize, "block_size")
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredStr(string(p.Os), "os")
+	v.ValidFormat(string(p.ProjectId), "uuid", "project_id")
+	v.HasRequiredObj(p.Size, "size")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	v.HasRequiredStr(string(p.Version), "version")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ImageCreate are set and validates field constraints.
+func (p *ImageCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Name), "name")
+	v.MatchesPattern(string(p.Name), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "name")
+	v.HasRequiredStr(string(p.Os), "os")
+	v.HasRequiredObj(p.Source, "source")
+	v.HasRequiredStr(string(p.Version), "version")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ImageResultsPage are set and validates field constraints.
+func (p *ImageResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ImageSourceSnapshot are set and validates field constraints.
+func (p *ImageSourceSnapshot) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ImageSource are set and validates field constraints.
+func (p *ImageSource) Validate() error {
+	v := new(Validator)
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ImportBlocksBulkWrite are set and validates field constraints.
+func (p *ImportBlocksBulkWrite) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Base64EncodedData), "base64_encoded_data")
+	v.HasRequiredObj(p.Offset, "offset")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ImportExportPolicyNoFiltering are set and validates field constraints.
+func (p *ImportExportPolicyNoFiltering) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ImportExportPolicyAllow are set and validates field constraints.
+func (p *ImportExportPolicyAllow) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredObj(p.Value, "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ImportExportPolicy are set and validates field constraints.
+func (p *ImportExportPolicy) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Instance are set and validates field constraints.
+func (p *Instance) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.AutoRestartEnabled, "auto_restart_enabled")
+	v.ValidFormat(string(p.BootDiskId), "uuid", "boot_disk_id")
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Hostname), "hostname")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.Memory, "memory")
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredObj(p.Ncpus, "ncpus")
+	v.HasRequiredStr(string(p.ProjectId), "project_id")
+	v.ValidFormat(string(p.ProjectId), "uuid", "project_id")
+	v.HasRequiredObj(p.RunState, "run_state")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	v.HasRequiredObj(p.TimeRunStateUpdated, "time_run_state_updated")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceCreate are set and validates field constraints.
+func (p *InstanceCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredObj(p.Hostname, "hostname")
+	v.HasRequiredObj(p.Memory, "memory")
+	v.HasRequiredStr(string(p.Name), "name")
+	v.MatchesPattern(string(p.Name), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "name")
+	v.HasRequiredObj(p.Ncpus, "ncpus")
+	v.ValidFormat(string(p.UserData), "byte", "user_data")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceDiskAttachmentCreate are set and validates field constraints.
+func (p *InstanceDiskAttachmentCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredObj(p.DiskBackend, "disk_backend")
+	v.HasRequiredStr(string(p.Name), "name")
+	v.MatchesPattern(string(p.Name), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "name")
+	v.HasRequiredObj(p.Size, "size")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceDiskAttachmentAttach are set and validates field constraints.
+func (p *InstanceDiskAttachmentAttach) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceDiskAttachment are set and validates field constraints.
+func (p *InstanceDiskAttachment) Validate() error {
+	v := new(Validator)
+	v.MatchesPattern(string(p.Name), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "name")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceNetworkInterface are set and validates field constraints.
+func (p *InstanceNetworkInterface) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredStr(string(p.InstanceId), "instance_id")
+	v.ValidFormat(string(p.InstanceId), "uuid", "instance_id")
+	v.HasRequiredStr(string(p.Ip), "ip")
+	v.ValidFormat(string(p.Ip), "ip", "ip")
+	v.HasRequiredObj(p.Mac, "mac")
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredObj(p.Primary, "primary")
+	v.HasRequiredStr(string(p.SubnetId), "subnet_id")
+	v.ValidFormat(string(p.SubnetId), "uuid", "subnet_id")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	v.HasRequiredStr(string(p.VpcId), "vpc_id")
+	v.ValidFormat(string(p.VpcId), "uuid", "vpc_id")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceNetworkInterfaceAttachmentCreate are set and validates field constraints.
+func (p *InstanceNetworkInterfaceAttachmentCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Params, "params")
+	for i, item := range p.Params {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("params[%d]: %w", i, err))
+		}
+	}
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceNetworkInterfaceAttachmentDefault are set and validates field constraints.
+func (p *InstanceNetworkInterfaceAttachmentDefault) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceNetworkInterfaceAttachmentNone are set and validates field constraints.
+func (p *InstanceNetworkInterfaceAttachmentNone) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceNetworkInterfaceAttachment are set and validates field constraints.
+func (p *InstanceNetworkInterfaceAttachment) Validate() error {
+	v := new(Validator)
+	for i, item := range p.Params {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("params[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceNetworkInterfaceCreate are set and validates field constraints.
+func (p *InstanceNetworkInterfaceCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.ValidFormat(string(p.Ip), "ip", "ip")
+	v.HasRequiredStr(string(p.Name), "name")
+	v.MatchesPattern(string(p.Name), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "name")
+	v.HasRequiredObj(p.SubnetName, "subnet_name")
+	v.HasRequiredObj(p.VpcName, "vpc_name")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceNetworkInterfaceResultsPage are set and validates field constraints.
+func (p *InstanceNetworkInterfaceResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceNetworkInterfaceUpdate are set and validates field constraints.
+func (p *InstanceNetworkInterfaceUpdate) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceResultsPage are set and validates field constraints.
+func (p *InstanceResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceSerialConsoleData are set and validates field constraints.
+func (p *InstanceSerialConsoleData) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Data, "data")
+	v.HasRequiredObj(p.LastByteOffset, "last_byte_offset")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceUpdate are set and validates field constraints.
+func (p *InstanceUpdate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.AutoRestartPolicy, "auto_restart_policy")
+	v.HasRequiredObj(p.BootDisk, "boot_disk")
+	v.HasRequiredObj(p.CpuPlatform, "cpu_platform")
+	v.HasRequiredObj(p.Memory, "memory")
+	v.HasRequiredObj(p.Ncpus, "ncpus")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InterfaceNumUnknown are set and validates field constraints.
+func (p *InterfaceNumUnknown) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Unknown, "unknown")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InterfaceNumIfIndex are set and validates field constraints.
+func (p *InterfaceNumIfIndex) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.IfIndex, "if_index")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InterfaceNumPortNumber are set and validates field constraints.
+func (p *InterfaceNumPortNumber) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.PortNumber, "port_number")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InterfaceNum are set and validates field constraints.
+func (p *InterfaceNum) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InternetGateway are set and validates field constraints.
+func (p *InternetGateway) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	v.HasRequiredStr(string(p.VpcId), "vpc_id")
+	v.ValidFormat(string(p.VpcId), "uuid", "vpc_id")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InternetGatewayCreate are set and validates field constraints.
+func (p *InternetGatewayCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Name), "name")
+	v.MatchesPattern(string(p.Name), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "name")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InternetGatewayIpAddress are set and validates field constraints.
+func (p *InternetGatewayIpAddress) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Address), "address")
+	v.ValidFormat(string(p.Address), "ip", "address")
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredStr(string(p.InternetGatewayId), "internet_gateway_id")
+	v.ValidFormat(string(p.InternetGatewayId), "uuid", "internet_gateway_id")
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InternetGatewayIpAddressCreate are set and validates field constraints.
+func (p *InternetGatewayIpAddressCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Address), "address")
+	v.ValidFormat(string(p.Address), "ip", "address")
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Name), "name")
+	v.MatchesPattern(string(p.Name), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "name")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InternetGatewayIpAddressResultsPage are set and validates field constraints.
+func (p *InternetGatewayIpAddressResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InternetGatewayIpPool are set and validates field constraints.
+func (p *InternetGatewayIpPool) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredStr(string(p.InternetGatewayId), "internet_gateway_id")
+	v.ValidFormat(string(p.InternetGatewayId), "uuid", "internet_gateway_id")
+	v.HasRequiredStr(string(p.IpPoolId), "ip_pool_id")
+	v.ValidFormat(string(p.IpPoolId), "uuid", "ip_pool_id")
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InternetGatewayIpPoolCreate are set and validates field constraints.
+func (p *InternetGatewayIpPoolCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredObj(p.IpPool, "ip_pool")
+	v.HasRequiredStr(string(p.Name), "name")
+	v.MatchesPattern(string(p.Name), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "name")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InternetGatewayIpPoolResultsPage are set and validates field constraints.
+func (p *InternetGatewayIpPoolResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InternetGatewayResultsPage are set and validates field constraints.
+func (p *InternetGatewayResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for IpPool are set and validates field constraints.
+func (p *IpPool) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.IpVersion, "ip_version")
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredObj(p.PoolType, "pool_type")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for IpPoolCreate are set and validates field constraints.
+func (p *IpPoolCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Name), "name")
+	v.MatchesPattern(string(p.Name), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "name")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for IpPoolLinkSilo are set and validates field constraints.
+func (p *IpPoolLinkSilo) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.IsDefault, "is_default")
+	v.HasRequiredObj(p.Silo, "silo")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for IpPoolRange are set and validates field constraints.
+func (p *IpPoolRange) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredStr(string(p.IpPoolId), "ip_pool_id")
+	v.ValidFormat(string(p.IpPoolId), "uuid", "ip_pool_id")
+	v.HasRequiredObj(p.Range, "range")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for IpPoolRangeResultsPage are set and validates field constraints.
+func (p *IpPoolRangeResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for IpPoolResultsPage are set and validates field constraints.
+func (p *IpPoolResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for IpPoolSiloLink are set and validates field constraints.
+func (p *IpPoolSiloLink) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.IpPoolId), "ip_pool_id")
+	v.ValidFormat(string(p.IpPoolId), "uuid", "ip_pool_id")
+	v.HasRequiredObj(p.IsDefault, "is_default")
+	v.HasRequiredStr(string(p.SiloId), "silo_id")
+	v.ValidFormat(string(p.SiloId), "uuid", "silo_id")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for IpPoolSiloLinkResultsPage are set and validates field constraints.
+func (p *IpPoolSiloLinkResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for IpPoolSiloUpdate are set and validates field constraints.
+func (p *IpPoolSiloUpdate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.IsDefault, "is_default")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for IpPoolUpdate are set and validates field constraints.
+func (p *IpPoolUpdate) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for IpPoolUtilization are set and validates field constraints.
+func (p *IpPoolUtilization) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Capacity, "capacity")
+	v.HasRequiredObj(p.Remaining, "remaining")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Ipv4Range are set and validates field constraints.
+func (p *Ipv4Range) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.First), "first")
+	v.ValidFormat(string(p.First), "ipv4", "first")
+	v.HasRequiredStr(string(p.Last), "last")
+	v.ValidFormat(string(p.Last), "ipv4", "last")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Ipv6Range are set and validates field constraints.
+func (p *Ipv6Range) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.First), "first")
+	v.ValidFormat(string(p.First), "ipv6", "first")
+	v.HasRequiredStr(string(p.Last), "last")
+	v.ValidFormat(string(p.Last), "ipv6", "last")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for LinkConfigCreate are set and validates field constraints.
+func (p *LinkConfigCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Autoneg, "autoneg")
+	v.HasRequiredObj(p.LinkName, "link_name")
+	v.HasRequiredObj(p.Lldp, "lldp")
+	v.HasRequiredObj(p.Mtu, "mtu")
+	v.HasRequiredObj(p.Speed, "speed")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for LldpLinkConfig are set and validates field constraints.
+func (p *LldpLinkConfig) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Enabled, "enabled")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.ValidFormat(string(p.ManagementIp), "ip", "management_ip")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for LldpLinkConfigCreate are set and validates field constraints.
+func (p *LldpLinkConfigCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Enabled, "enabled")
+	v.ValidFormat(string(p.ManagementIp), "ip", "management_ip")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for LldpNeighbor are set and validates field constraints.
+func (p *LldpNeighbor) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.ChassisId), "chassis_id")
+	v.HasRequiredObj(p.FirstSeen, "first_seen")
+	v.HasRequiredObj(p.LastSeen, "last_seen")
+	v.HasRequiredStr(string(p.LinkName), "link_name")
+	v.HasRequiredStr(string(p.LocalPort), "local_port")
+	v.HasRequiredObj(p.ManagementIp, "management_ip")
+	for i, item := range p.ManagementIp {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("management_ip[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for LldpNeighborResultsPage are set and validates field constraints.
+func (p *LldpNeighborResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for LoopbackAddress are set and validates field constraints.
+func (p *LoopbackAddress) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Address, "address")
+	v.HasRequiredStr(string(p.AddressLotBlockId), "address_lot_block_id")
+	v.ValidFormat(string(p.AddressLotBlockId), "uuid", "address_lot_block_id")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredStr(string(p.RackId), "rack_id")
+	v.ValidFormat(string(p.RackId), "uuid", "rack_id")
+	v.HasRequiredStr(string(p.SwitchLocation), "switch_location")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for LoopbackAddressCreate are set and validates field constraints.
+func (p *LoopbackAddressCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Address), "address")
+	v.ValidFormat(string(p.Address), "ip", "address")
+	v.HasRequiredObj(p.AddressLot, "address_lot")
+	v.HasRequiredObj(p.Anycast, "anycast")
+	v.HasRequiredObj(p.Mask, "mask")
+	v.HasRequiredStr(string(p.RackId), "rack_id")
+	v.ValidFormat(string(p.RackId), "uuid", "rack_id")
+	v.HasRequiredObj(p.SwitchLocation, "switch_location")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for LoopbackAddressResultsPage are set and validates field constraints.
+func (p *LoopbackAddressResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ManagementAddress are set and validates field constraints.
+func (p *ManagementAddress) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Addr, "addr")
+	v.HasRequiredObj(p.InterfaceNum, "interface_num")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Measurement are set and validates field constraints.
+func (p *Measurement) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Datum, "datum")
+	v.HasRequiredObj(p.Timestamp, "timestamp")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for MeasurementResultsPage are set and validates field constraints.
+func (p *MeasurementResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for MissingDatum are set and validates field constraints.
+func (p *MissingDatum) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.DatumType), "datum_type")
+	ValidEnum(v, p.DatumType, DatumTypeCollection, "datum_type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for MulticastGroup are set and validates field constraints.
+func (p *MulticastGroup) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredStr(string(p.IpPoolId), "ip_pool_id")
+	v.ValidFormat(string(p.IpPoolId), "uuid", "ip_pool_id")
+	v.HasRequiredStr(string(p.MulticastIp), "multicast_ip")
+	v.ValidFormat(string(p.MulticastIp), "ip", "multicast_ip")
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredObj(p.SourceIps, "source_ips")
+	v.HasRequiredStr(string(p.State), "state")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for MulticastGroupCreate are set and validates field constraints.
+func (p *MulticastGroupCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.ValidFormat(string(p.MulticastIp), "ip", "multicast_ip")
+	v.HasRequiredStr(string(p.Name), "name")
+	v.MatchesPattern(string(p.Name), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "name")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for MulticastGroupMember are set and validates field constraints.
+func (p *MulticastGroupMember) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredStr(string(p.InstanceId), "instance_id")
+	v.ValidFormat(string(p.InstanceId), "uuid", "instance_id")
+	v.HasRequiredStr(string(p.MulticastGroupId), "multicast_group_id")
+	v.ValidFormat(string(p.MulticastGroupId), "uuid", "multicast_group_id")
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredStr(string(p.State), "state")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for MulticastGroupMemberAdd are set and validates field constraints.
+func (p *MulticastGroupMemberAdd) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Instance, "instance")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for MulticastGroupMemberResultsPage are set and validates field constraints.
+func (p *MulticastGroupMemberResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for MulticastGroupResultsPage are set and validates field constraints.
+func (p *MulticastGroupResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for MulticastGroupUpdate are set and validates field constraints.
+func (p *MulticastGroupUpdate) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkAddressIpAddr are set and validates field constraints.
+func (p *NetworkAddressIpAddr) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.IpAddr), "ip_addr")
+	v.ValidFormat(string(p.IpAddr), "ip", "ip_addr")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkAddressIeee802 are set and validates field constraints.
+func (p *NetworkAddressIeee802) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.IEEE802, "i_e_e_e802")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkAddress are set and validates field constraints.
+func (p *NetworkAddress) Validate() error {
+	v := new(Validator)
+	v.ValidFormat(string(p.IpAddr), "ip", "ip_addr")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkInterface are set and validates field constraints.
+func (p *NetworkInterface) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredStr(string(p.Ip), "ip")
+	v.ValidFormat(string(p.Ip), "ip", "ip")
+	v.HasRequiredObj(p.Kind, "kind")
+	v.HasRequiredStr(string(p.Mac), "mac")
+	v.MatchesPattern(string(p.Mac), `^([0-9a-fA-F]{0,2}:){5}[0-9a-fA-F]{0,2}$`, "mac")
+	v.HasRequiredStr(string(p.Name), "name")
+	v.MatchesPattern(string(p.Name), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "name")
+	v.HasRequiredObj(p.Primary, "primary")
+	v.HasRequiredObj(p.Slot, "slot")
+	v.HasRequiredObj(p.Subnet, "subnet")
+	v.HasRequiredObj(p.Vni, "vni")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkInterfaceKindInstance are set and validates field constraints.
+func (p *NetworkInterfaceKindInstance) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkInterfaceKindService are set and validates field constraints.
+func (p *NetworkInterfaceKindService) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkInterfaceKindProbe are set and validates field constraints.
+func (p *NetworkInterfaceKindProbe) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkInterfaceKind are set and validates field constraints.
+func (p *NetworkInterfaceKind) Validate() error {
+	v := new(Validator)
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for OxqlQueryResult are set and validates field constraints.
+func (p *OxqlQueryResult) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Tables, "tables")
+	for i, item := range p.Tables {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("tables[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for OxqlTable are set and validates field constraints.
+func (p *OxqlTable) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Name), "name")
+	v.HasRequiredObj(p.Timeseries, "timeseries")
+	for i, item := range p.Timeseries {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("timeseries[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for PhysicalDisk are set and validates field constraints.
+func (p *PhysicalDisk) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.FormFactor), "form_factor")
+	ValidEnum(v, p.FormFactor, PhysicalDiskKindCollection, "form_factor")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredStr(string(p.Model), "model")
+	v.HasRequiredObj(p.Policy, "policy")
+	v.HasRequiredStr(string(p.Serial), "serial")
+	v.ValidFormat(string(p.SledId), "uuid", "sled_id")
+	v.HasRequiredObj(p.State, "state")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	v.HasRequiredStr(string(p.Vendor), "vendor")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for PhysicalDiskPolicyInService are set and validates field constraints.
+func (p *PhysicalDiskPolicyInService) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Kind), "kind")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for PhysicalDiskPolicyExpunged are set and validates field constraints.
+func (p *PhysicalDiskPolicyExpunged) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Kind), "kind")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for PhysicalDiskPolicy are set and validates field constraints.
+func (p *PhysicalDiskPolicy) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for PhysicalDiskResultsPage are set and validates field constraints.
+func (p *PhysicalDiskResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Ping are set and validates field constraints.
+func (p *Ping) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Status, "status")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Points are set and validates field constraints.
+func (p *Points) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Timestamps, "timestamps")
+	v.HasRequiredObj(p.Values, "values")
+	for i, item := range p.Values {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("values[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Probe are set and validates field constraints.
+func (p *Probe) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredStr(string(p.Sled), "sled")
+	v.ValidFormat(string(p.Sled), "uuid", "sled")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ProbeCreate are set and validates field constraints.
+func (p *ProbeCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Name), "name")
+	v.MatchesPattern(string(p.Name), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "name")
+	v.HasRequiredStr(string(p.Sled), "sled")
+	v.ValidFormat(string(p.Sled), "uuid", "sled")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ProbeExternalIp are set and validates field constraints.
+func (p *ProbeExternalIp) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.FirstPort, "first_port")
+	v.HasRequiredStr(string(p.Ip), "ip")
+	v.ValidFormat(string(p.Ip), "ip", "ip")
+	v.HasRequiredStr(string(p.Kind), "kind")
+	ValidEnum(v, p.Kind, ProbeExternalIpKindCollection, "kind")
+	v.HasRequiredObj(p.LastPort, "last_port")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ProbeInfo are set and validates field constraints.
+func (p *ProbeInfo) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.ExternalIps, "external_ips")
+	for i, item := range p.ExternalIps {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("external_ips[%d]: %w", i, err))
+		}
+	}
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.Interface, "interface")
+	if err := p.Interface.Validate(); err != nil {
+		v.AddError(fmt.Errorf("interface: %w", err))
+	}
+	v.HasRequiredStr(string(p.Name), "name")
+	v.MatchesPattern(string(p.Name), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "name")
+	v.HasRequiredStr(string(p.Sled), "sled")
+	v.ValidFormat(string(p.Sled), "uuid", "sled")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ProbeInfoResultsPage are set and validates field constraints.
+func (p *ProbeInfoResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Project are set and validates field constraints.
+func (p *Project) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ProjectCreate are set and validates field constraints.
+func (p *ProjectCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Name), "name")
+	v.MatchesPattern(string(p.Name), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "name")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ProjectResultsPage are set and validates field constraints.
+func (p *ProjectResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ProjectRolePolicy are set and validates field constraints.
+func (p *ProjectRolePolicy) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.RoleAssignments, "role_assignments")
+	for i, item := range p.RoleAssignments {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("role_assignments[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ProjectRoleRoleAssignment are set and validates field constraints.
+func (p *ProjectRoleRoleAssignment) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.IdentityId), "identity_id")
+	v.ValidFormat(string(p.IdentityId), "uuid", "identity_id")
+	v.HasRequiredStr(string(p.IdentityType), "identity_type")
+	ValidEnum(v, p.IdentityType, IdentityTypeCollection, "identity_type")
+	v.HasRequiredStr(string(p.RoleName), "role_name")
+	ValidEnum(v, p.RoleName, ProjectRoleCollection, "role_name")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ProjectUpdate are set and validates field constraints.
+func (p *ProjectUpdate) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Quantile are set and validates field constraints.
+func (p *Quantile) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.DesiredMarkerPositions, "desired_marker_positions")
+	v.HasRequiredObj(p.MarkerHeights, "marker_heights")
+	v.HasRequiredObj(p.MarkerPositions, "marker_positions")
+	v.HasRequiredObj(p.P, "p")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Rack are set and validates field constraints.
+func (p *Rack) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for RackResultsPage are set and validates field constraints.
+func (p *RackResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Route are set and validates field constraints.
+func (p *Route) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Dst, "dst")
+	v.HasRequiredStr(string(p.Gw), "gw")
+	v.ValidFormat(string(p.Gw), "ip", "gw")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for RouteConfig are set and validates field constraints.
+func (p *RouteConfig) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.LinkName, "link_name")
+	v.HasRequiredObj(p.Routes, "routes")
+	for i, item := range p.Routes {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("routes[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for RouteDestinationIp are set and validates field constraints.
+func (p *RouteDestinationIp) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredStr(string(p.Value), "value")
+	v.ValidFormat(string(p.Value), "ip", "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for RouteDestinationIpNet are set and validates field constraints.
+func (p *RouteDestinationIpNet) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredObj(p.Value, "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for RouteDestinationVpc are set and validates field constraints.
+func (p *RouteDestinationVpc) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredStr(string(p.Value), "value")
+	v.MatchesPattern(string(p.Value), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for RouteDestinationSubnet are set and validates field constraints.
+func (p *RouteDestinationSubnet) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredStr(string(p.Value), "value")
+	v.MatchesPattern(string(p.Value), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for RouteDestination are set and validates field constraints.
+func (p *RouteDestination) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for RouteTargetIp are set and validates field constraints.
+func (p *RouteTargetIp) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredStr(string(p.Value), "value")
+	v.ValidFormat(string(p.Value), "ip", "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for RouteTargetVpc are set and validates field constraints.
+func (p *RouteTargetVpc) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredStr(string(p.Value), "value")
+	v.MatchesPattern(string(p.Value), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for RouteTargetSubnet are set and validates field constraints.
+func (p *RouteTargetSubnet) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredStr(string(p.Value), "value")
+	v.MatchesPattern(string(p.Value), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for RouteTargetInstance are set and validates field constraints.
+func (p *RouteTargetInstance) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredStr(string(p.Value), "value")
+	v.MatchesPattern(string(p.Value), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for RouteTargetInternetGateway are set and validates field constraints.
+func (p *RouteTargetInternetGateway) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredStr(string(p.Value), "value")
+	v.MatchesPattern(string(p.Value), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for RouteTargetDrop are set and validates field constraints.
+func (p *RouteTargetDrop) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for RouteTarget are set and validates field constraints.
+func (p *RouteTarget) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for RouterRoute are set and validates field constraints.
+func (p *RouterRoute) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredObj(p.Destination, "destination")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.Kind, "kind")
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredObj(p.Target, "target")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	v.HasRequiredStr(string(p.VpcRouterId), "vpc_router_id")
+	v.ValidFormat(string(p.VpcRouterId), "uuid", "vpc_router_id")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for RouterRouteCreate are set and validates field constraints.
+func (p *RouterRouteCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredObj(p.Destination, "destination")
+	v.HasRequiredStr(string(p.Name), "name")
+	v.MatchesPattern(string(p.Name), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "name")
+	v.HasRequiredObj(p.Target, "target")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for RouterRouteResultsPage are set and validates field constraints.
+func (p *RouterRouteResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for RouterRouteUpdate are set and validates field constraints.
+func (p *RouterRouteUpdate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Destination, "destination")
+	v.HasRequiredObj(p.Target, "target")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SamlIdentityProvider are set and validates field constraints.
+func (p *SamlIdentityProvider) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.AcsUrl), "acs_url")
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredStr(string(p.IdpEntityId), "idp_entity_id")
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredStr(string(p.SloUrl), "slo_url")
+	v.HasRequiredStr(string(p.SpClientId), "sp_client_id")
+	v.HasRequiredStr(string(p.TechnicalContactEmail), "technical_contact_email")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SamlIdentityProviderCreate are set and validates field constraints.
+func (p *SamlIdentityProviderCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.AcsUrl), "acs_url")
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.IdpEntityId), "idp_entity_id")
+	v.HasRequiredObj(p.IdpMetadataSource, "idp_metadata_source")
+	v.HasRequiredStr(string(p.Name), "name")
+	v.MatchesPattern(string(p.Name), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "name")
+	v.HasRequiredStr(string(p.SloUrl), "slo_url")
+	v.HasRequiredStr(string(p.SpClientId), "sp_client_id")
+	v.HasRequiredStr(string(p.TechnicalContactEmail), "technical_contact_email")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ScimClientBearerToken are set and validates field constraints.
+func (p *ScimClientBearerToken) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ScimClientBearerTokenValue are set and validates field constraints.
+func (p *ScimClientBearerTokenValue) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.BearerToken), "bearer_token")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ServiceIcmpConfig are set and validates field constraints.
+func (p *ServiceIcmpConfig) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Enabled, "enabled")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SetTargetReleaseParams are set and validates field constraints.
+func (p *SetTargetReleaseParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.SystemVersion), "system_version")
+	v.MatchesPattern(string(p.SystemVersion), `^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$`, "system_version")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Silo are set and validates field constraints.
+func (p *Silo) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredObj(p.Discoverable, "discoverable")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.IdentityMode, "identity_mode")
+	v.HasRequiredObj(p.MappedFleetRoles, "mapped_fleet_roles")
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloAuthSettings are set and validates field constraints.
+func (p *SiloAuthSettings) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.SiloId), "silo_id")
+	v.ValidFormat(string(p.SiloId), "uuid", "silo_id")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloAuthSettingsUpdate are set and validates field constraints.
+func (p *SiloAuthSettingsUpdate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.DeviceTokenMaxTtlSeconds, "device_token_max_ttl_seconds")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloCreate are set and validates field constraints.
+func (p *SiloCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredObj(p.Discoverable, "discoverable")
+	v.HasRequiredObj(p.IdentityMode, "identity_mode")
+	v.HasRequiredStr(string(p.Name), "name")
+	v.MatchesPattern(string(p.Name), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "name")
+	v.HasRequiredObj(p.Quotas, "quotas")
+	v.HasRequiredObj(p.TlsCertificates, "tls_certificates")
+	for i, item := range p.TlsCertificates {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("tls_certificates[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloIpPool are set and validates field constraints.
+func (p *SiloIpPool) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.IsDefault, "is_default")
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloIpPoolResultsPage are set and validates field constraints.
+func (p *SiloIpPoolResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloQuotas are set and validates field constraints.
+func (p *SiloQuotas) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Cpus, "cpus")
+	v.HasRequiredObj(p.Memory, "memory")
+	v.HasRequiredStr(string(p.SiloId), "silo_id")
+	v.ValidFormat(string(p.SiloId), "uuid", "silo_id")
+	v.HasRequiredObj(p.Storage, "storage")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloQuotasCreate are set and validates field constraints.
+func (p *SiloQuotasCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Cpus, "cpus")
+	v.HasRequiredObj(p.Memory, "memory")
+	v.HasRequiredObj(p.Storage, "storage")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloQuotasResultsPage are set and validates field constraints.
+func (p *SiloQuotasResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloQuotasUpdate are set and validates field constraints.
+func (p *SiloQuotasUpdate) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloResultsPage are set and validates field constraints.
+func (p *SiloResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloRolePolicy are set and validates field constraints.
+func (p *SiloRolePolicy) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.RoleAssignments, "role_assignments")
+	for i, item := range p.RoleAssignments {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("role_assignments[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloRoleRoleAssignment are set and validates field constraints.
+func (p *SiloRoleRoleAssignment) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.IdentityId), "identity_id")
+	v.ValidFormat(string(p.IdentityId), "uuid", "identity_id")
+	v.HasRequiredStr(string(p.IdentityType), "identity_type")
+	ValidEnum(v, p.IdentityType, IdentityTypeCollection, "identity_type")
+	v.HasRequiredStr(string(p.RoleName), "role_name")
+	ValidEnum(v, p.RoleName, SiloRoleCollection, "role_name")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloUtilization are set and validates field constraints.
+func (p *SiloUtilization) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Allocated, "allocated")
+	v.HasRequiredObj(p.Provisioned, "provisioned")
+	v.HasRequiredStr(string(p.SiloId), "silo_id")
+	v.ValidFormat(string(p.SiloId), "uuid", "silo_id")
+	v.HasRequiredStr(string(p.SiloName), "silo_name")
+	v.MatchesPattern(string(p.SiloName), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "silo_name")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloUtilizationResultsPage are set and validates field constraints.
+func (p *SiloUtilizationResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Sled are set and validates field constraints.
+func (p *Sled) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Baseboard, "baseboard")
+	if err := p.Baseboard.Validate(); err != nil {
+		v.AddError(fmt.Errorf("baseboard: %w", err))
+	}
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.Policy, "policy")
+	v.HasRequiredStr(string(p.RackId), "rack_id")
+	v.ValidFormat(string(p.RackId), "uuid", "rack_id")
+	v.HasRequiredObj(p.State, "state")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	v.HasRequiredObj(p.UsableHardwareThreads, "usable_hardware_threads")
+	v.HasRequiredObj(p.UsablePhysicalRam, "usable_physical_ram")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SledId are set and validates field constraints.
+func (p *SledId) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SledInstance are set and validates field constraints.
+func (p *SledInstance) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.ActiveSledId), "active_sled_id")
+	v.ValidFormat(string(p.ActiveSledId), "uuid", "active_sled_id")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.Memory, "memory")
+	v.ValidFormat(string(p.MigrationId), "uuid", "migration_id")
+	v.HasRequiredStr(string(p.Name), "name")
+	v.MatchesPattern(string(p.Name), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "name")
+	v.HasRequiredObj(p.Ncpus, "ncpus")
+	v.HasRequiredStr(string(p.ProjectName), "project_name")
+	v.MatchesPattern(string(p.ProjectName), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "project_name")
+	v.HasRequiredStr(string(p.SiloName), "silo_name")
+	v.MatchesPattern(string(p.SiloName), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "silo_name")
+	v.HasRequiredObj(p.State, "state")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SledInstanceResultsPage are set and validates field constraints.
+func (p *SledInstanceResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SledPolicyInService are set and validates field constraints.
+func (p *SledPolicyInService) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Kind), "kind")
+	v.HasRequiredObj(p.ProvisionPolicy, "provision_policy")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SledPolicyExpunged are set and validates field constraints.
+func (p *SledPolicyExpunged) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Kind), "kind")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SledPolicy are set and validates field constraints.
+func (p *SledPolicy) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SledProvisionPolicyParams are set and validates field constraints.
+func (p *SledProvisionPolicyParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.State, "state")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SledProvisionPolicyResponse are set and validates field constraints.
+func (p *SledProvisionPolicyResponse) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.NewState, "new_state")
+	v.HasRequiredObj(p.OldState, "old_state")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SledResultsPage are set and validates field constraints.
+func (p *SledResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Snapshot are set and validates field constraints.
+func (p *Snapshot) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.DiskId), "disk_id")
+	v.ValidFormat(string(p.DiskId), "uuid", "disk_id")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredStr(string(p.ProjectId), "project_id")
+	v.ValidFormat(string(p.ProjectId), "uuid", "project_id")
+	v.HasRequiredObj(p.Size, "size")
+	v.HasRequiredStr(string(p.State), "state")
+	ValidEnum(v, p.State, SnapshotStateCollection, "state")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SnapshotCreate are set and validates field constraints.
+func (p *SnapshotCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredObj(p.Disk, "disk")
+	v.HasRequiredStr(string(p.Name), "name")
+	v.MatchesPattern(string(p.Name), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "name")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SnapshotResultsPage are set and validates field constraints.
+func (p *SnapshotResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SshKey are set and validates field constraints.
+func (p *SshKey) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredStr(string(p.PublicKey), "public_key")
+	v.HasRequiredStr(string(p.SiloUserId), "silo_user_id")
+	v.ValidFormat(string(p.SiloUserId), "uuid", "silo_user_id")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SshKeyCreate are set and validates field constraints.
+func (p *SshKeyCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Name), "name")
+	v.MatchesPattern(string(p.Name), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "name")
+	v.HasRequiredStr(string(p.PublicKey), "public_key")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SshKeyResultsPage are set and validates field constraints.
+func (p *SshKeyResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SupportBundleCreate are set and validates field constraints.
+func (p *SupportBundleCreate) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SupportBundleInfo are set and validates field constraints.
+func (p *SupportBundleInfo) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredStr(string(p.ReasonForCreation), "reason_for_creation")
+	v.HasRequiredObj(p.State, "state")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SupportBundleInfoResultsPage are set and validates field constraints.
+func (p *SupportBundleInfoResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SupportBundleUpdate are set and validates field constraints.
+func (p *SupportBundleUpdate) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Switch are set and validates field constraints.
+func (p *Switch) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Baseboard, "baseboard")
+	if err := p.Baseboard.Validate(); err != nil {
+		v.AddError(fmt.Errorf("baseboard: %w", err))
+	}
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredStr(string(p.RackId), "rack_id")
+	v.ValidFormat(string(p.RackId), "uuid", "rack_id")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SwitchBgpHistory are set and validates field constraints.
+func (p *SwitchBgpHistory) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.History, "history")
+	v.HasRequiredObj(p.Switch, "switch")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SwitchInterfaceConfig are set and validates field constraints.
+func (p *SwitchInterfaceConfig) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.InterfaceName, "interface_name")
+	v.HasRequiredObj(p.Kind, "kind")
+	v.HasRequiredStr(string(p.PortSettingsId), "port_settings_id")
+	v.ValidFormat(string(p.PortSettingsId), "uuid", "port_settings_id")
+	v.HasRequiredObj(p.V6Enabled, "v6_enabled")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SwitchInterfaceConfigCreate are set and validates field constraints.
+func (p *SwitchInterfaceConfigCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Kind, "kind")
+	v.HasRequiredObj(p.LinkName, "link_name")
+	v.HasRequiredObj(p.V6Enabled, "v6_enabled")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SwitchInterfaceKindPrimary are set and validates field constraints.
+func (p *SwitchInterfaceKindPrimary) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SwitchInterfaceKindVlan are set and validates field constraints.
+func (p *SwitchInterfaceKindVlan) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredObj(p.Vid, "vid")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SwitchInterfaceKindLoopback are set and validates field constraints.
+func (p *SwitchInterfaceKindLoopback) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SwitchInterfaceKind are set and validates field constraints.
+func (p *SwitchInterfaceKind) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SwitchPort are set and validates field constraints.
+func (p *SwitchPort) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.PortName, "port_name")
+	v.ValidFormat(string(p.PortSettingsId), "uuid", "port_settings_id")
+	v.HasRequiredStr(string(p.RackId), "rack_id")
+	v.ValidFormat(string(p.RackId), "uuid", "rack_id")
+	v.HasRequiredStr(string(p.SwitchLocation), "switch_location")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SwitchPortAddressView are set and validates field constraints.
+func (p *SwitchPortAddressView) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Address, "address")
+	v.HasRequiredStr(string(p.AddressLotBlockId), "address_lot_block_id")
+	v.ValidFormat(string(p.AddressLotBlockId), "uuid", "address_lot_block_id")
+	v.HasRequiredStr(string(p.AddressLotId), "address_lot_id")
+	v.ValidFormat(string(p.AddressLotId), "uuid", "address_lot_id")
+	v.HasRequiredObj(p.AddressLotName, "address_lot_name")
+	v.HasRequiredObj(p.InterfaceName, "interface_name")
+	v.HasRequiredStr(string(p.PortSettingsId), "port_settings_id")
+	v.ValidFormat(string(p.PortSettingsId), "uuid", "port_settings_id")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SwitchPortApplySettings are set and validates field constraints.
+func (p *SwitchPortApplySettings) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.PortSettings, "port_settings")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SwitchPortConfig are set and validates field constraints.
+func (p *SwitchPortConfig) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Geometry, "geometry")
+	v.HasRequiredStr(string(p.PortSettingsId), "port_settings_id")
+	v.ValidFormat(string(p.PortSettingsId), "uuid", "port_settings_id")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SwitchPortConfigCreate are set and validates field constraints.
+func (p *SwitchPortConfigCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Geometry, "geometry")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SwitchPortLinkConfig are set and validates field constraints.
+func (p *SwitchPortLinkConfig) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Autoneg, "autoneg")
+	v.HasRequiredObj(p.LinkName, "link_name")
+	v.HasRequiredObj(p.Mtu, "mtu")
+	v.HasRequiredStr(string(p.PortSettingsId), "port_settings_id")
+	v.ValidFormat(string(p.PortSettingsId), "uuid", "port_settings_id")
+	v.HasRequiredObj(p.Speed, "speed")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SwitchPortResultsPage are set and validates field constraints.
+func (p *SwitchPortResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SwitchPortRouteConfig are set and validates field constraints.
+func (p *SwitchPortRouteConfig) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Dst, "dst")
+	v.HasRequiredStr(string(p.Gw), "gw")
+	v.ValidFormat(string(p.Gw), "ip", "gw")
+	v.HasRequiredObj(p.InterfaceName, "interface_name")
+	v.HasRequiredStr(string(p.PortSettingsId), "port_settings_id")
+	v.ValidFormat(string(p.PortSettingsId), "uuid", "port_settings_id")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SwitchPortSettings are set and validates field constraints.
+func (p *SwitchPortSettings) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Addresses, "addresses")
+	for i, item := range p.Addresses {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("addresses[%d]: %w", i, err))
+		}
+	}
+	v.HasRequiredObj(p.BgpPeers, "bgp_peers")
+	for i, item := range p.BgpPeers {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("bgp_peers[%d]: %w", i, err))
+		}
+	}
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredObj(p.Groups, "groups")
+	for i, item := range p.Groups {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("groups[%d]: %w", i, err))
+		}
+	}
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.Interfaces, "interfaces")
+	for i, item := range p.Interfaces {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("interfaces[%d]: %w", i, err))
+		}
+	}
+	v.HasRequiredObj(p.Links, "links")
+	for i, item := range p.Links {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("links[%d]: %w", i, err))
+		}
+	}
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredObj(p.Port, "port")
+	v.HasRequiredObj(p.Routes, "routes")
+	for i, item := range p.Routes {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("routes[%d]: %w", i, err))
+		}
+	}
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	v.HasRequiredObj(p.VlanInterfaces, "vlan_interfaces")
+	for i, item := range p.VlanInterfaces {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("vlan_interfaces[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SwitchPortSettingsCreate are set and validates field constraints.
+func (p *SwitchPortSettingsCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Addresses, "addresses")
+	for i, item := range p.Addresses {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("addresses[%d]: %w", i, err))
+		}
+	}
+	for i, item := range p.BgpPeers {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("bgp_peers[%d]: %w", i, err))
+		}
+	}
+	v.HasRequiredStr(string(p.Description), "description")
+	for i, item := range p.Interfaces {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("interfaces[%d]: %w", i, err))
+		}
+	}
+	v.HasRequiredObj(p.Links, "links")
+	for i, item := range p.Links {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("links[%d]: %w", i, err))
+		}
+	}
+	v.HasRequiredStr(string(p.Name), "name")
+	v.MatchesPattern(string(p.Name), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "name")
+	v.HasRequiredObj(p.PortConfig, "port_config")
+	if err := p.PortConfig.Validate(); err != nil {
+		v.AddError(fmt.Errorf("port_config: %w", err))
+	}
+	for i, item := range p.Routes {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("routes[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SwitchPortSettingsGroups are set and validates field constraints.
+func (p *SwitchPortSettingsGroups) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.PortSettingsGroupId), "port_settings_group_id")
+	v.ValidFormat(string(p.PortSettingsGroupId), "uuid", "port_settings_group_id")
+	v.HasRequiredStr(string(p.PortSettingsId), "port_settings_id")
+	v.ValidFormat(string(p.PortSettingsId), "uuid", "port_settings_id")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SwitchPortSettingsIdentity are set and validates field constraints.
+func (p *SwitchPortSettingsIdentity) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SwitchPortSettingsIdentityResultsPage are set and validates field constraints.
+func (p *SwitchPortSettingsIdentityResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SwitchResultsPage are set and validates field constraints.
+func (p *SwitchResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SwitchVlanInterfaceConfig are set and validates field constraints.
+func (p *SwitchVlanInterfaceConfig) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.InterfaceConfigId), "interface_config_id")
+	v.ValidFormat(string(p.InterfaceConfigId), "uuid", "interface_config_id")
+	v.HasRequiredObj(p.VlanId, "vlan_id")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for TargetRelease are set and validates field constraints.
+func (p *TargetRelease) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.TimeRequested, "time_requested")
+	v.HasRequiredStr(string(p.Version), "version")
+	v.MatchesPattern(string(p.Version), `^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$`, "version")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Timeseries are set and validates field constraints.
+func (p *Timeseries) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Fields, "fields")
+	v.HasRequiredObj(p.Points, "points")
+	if err := p.Points.Validate(); err != nil {
+		v.AddError(fmt.Errorf("points: %w", err))
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for TimeseriesDescription are set and validates field constraints.
+func (p *TimeseriesDescription) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Metric), "metric")
+	v.HasRequiredStr(string(p.Target), "target")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for TimeseriesQuery are set and validates field constraints.
+func (p *TimeseriesQuery) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Query), "query")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for TimeseriesSchema are set and validates field constraints.
+func (p *TimeseriesSchema) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.AuthzScope, "authz_scope")
+	v.HasRequiredObj(p.Created, "created")
+	v.HasRequiredStr(string(p.DatumType), "datum_type")
+	ValidEnum(v, p.DatumType, DatumTypeCollection, "datum_type")
+	v.HasRequiredObj(p.Description, "description")
+	if err := p.Description.Validate(); err != nil {
+		v.AddError(fmt.Errorf("description: %w", err))
+	}
+	v.HasRequiredObj(p.FieldSchema, "field_schema")
+	for i, item := range p.FieldSchema {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("field_schema[%d]: %w", i, err))
+		}
+	}
+	v.HasRequiredStr(string(p.TimeseriesName), "timeseries_name")
+	v.MatchesPattern(string(p.TimeseriesName), `^(([a-z]+[a-z0-9]*)(_([a-z0-9]+))*):(([a-z]+[a-z0-9]*)(_([a-z0-9]+))*)$`, "timeseries_name")
+	v.HasRequiredObj(p.Units, "units")
+	v.HasRequiredObj(p.Version, "version")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for TimeseriesSchemaResultsPage are set and validates field constraints.
+func (p *TimeseriesSchemaResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for TufRepo are set and validates field constraints.
+func (p *TufRepo) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.FileName), "file_name")
+	v.HasRequiredStr(string(p.Hash), "hash")
+	v.ValidFormat(string(p.Hash), "hex string (32 bytes)", "hash")
+	v.HasRequiredStr(string(p.SystemVersion), "system_version")
+	v.MatchesPattern(string(p.SystemVersion), `^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$`, "system_version")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for TufRepoResultsPage are set and validates field constraints.
+func (p *TufRepoResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for TufRepoUpload are set and validates field constraints.
+func (p *TufRepoUpload) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Repo, "repo")
+	if err := p.Repo.Validate(); err != nil {
+		v.AddError(fmt.Errorf("repo: %w", err))
+	}
+	v.HasRequiredObj(p.Status, "status")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for TxEqConfig are set and validates field constraints.
+func (p *TxEqConfig) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for TxEqConfig2 are set and validates field constraints.
+func (p *TxEqConfig2) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for UninitializedSled are set and validates field constraints.
+func (p *UninitializedSled) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Baseboard, "baseboard")
+	if err := p.Baseboard.Validate(); err != nil {
+		v.AddError(fmt.Errorf("baseboard: %w", err))
+	}
+	v.HasRequiredObj(p.Cubby, "cubby")
+	v.HasRequiredStr(string(p.RackId), "rack_id")
+	v.ValidFormat(string(p.RackId), "uuid", "rack_id")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for UninitializedSledId are set and validates field constraints.
+func (p *UninitializedSledId) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Part), "part")
+	v.HasRequiredStr(string(p.Serial), "serial")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for UninitializedSledResultsPage are set and validates field constraints.
+func (p *UninitializedSledResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for UpdateStatus are set and validates field constraints.
+func (p *UpdateStatus) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.ComponentsByReleaseVersion, "components_by_release_version")
+	v.HasRequiredObj(p.Suspended, "suspended")
+	v.HasRequiredObj(p.TargetRelease, "target_release")
+	v.HasRequiredObj(p.TimeLastStepPlanned, "time_last_step_planned")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for UpdatesTrustRoot are set and validates field constraints.
+func (p *UpdatesTrustRoot) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.RootRole, "root_role")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for UpdatesTrustRootResultsPage are set and validates field constraints.
+func (p *UpdatesTrustRootResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for User are set and validates field constraints.
+func (p *User) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.DisplayName), "display_name")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredStr(string(p.SiloId), "silo_id")
+	v.ValidFormat(string(p.SiloId), "uuid", "silo_id")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for UserBuiltin are set and validates field constraints.
+func (p *UserBuiltin) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for UserBuiltinResultsPage are set and validates field constraints.
+func (p *UserBuiltinResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for UserCreate are set and validates field constraints.
+func (p *UserCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.ExternalId, "external_id")
+	v.HasRequiredObj(p.Password, "password")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for UserPasswordPassword are set and validates field constraints.
+func (p *UserPasswordPassword) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Mode), "mode")
+	v.HasRequiredStr(string(p.Value), "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for UserPasswordLoginDisallowed are set and validates field constraints.
+func (p *UserPasswordLoginDisallowed) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Mode), "mode")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for UserPassword are set and validates field constraints.
+func (p *UserPassword) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for UserResultsPage are set and validates field constraints.
+func (p *UserResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for UsernamePasswordCredentials are set and validates field constraints.
+func (p *UsernamePasswordCredentials) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Password), "password")
+	v.HasRequiredStr(string(p.Username), "username")
+	v.MatchesPattern(string(p.Username), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "username")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Utilization are set and validates field constraints.
+func (p *Utilization) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Capacity, "capacity")
+	v.HasRequiredObj(p.Provisioned, "provisioned")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ValueArrayInteger are set and validates field constraints.
+func (p *ValueArrayInteger) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredObj(p.Values, "values")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ValueArrayDouble are set and validates field constraints.
+func (p *ValueArrayDouble) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredObj(p.Values, "values")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ValueArrayBoolean are set and validates field constraints.
+func (p *ValueArrayBoolean) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredObj(p.Values, "values")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ValueArrayString are set and validates field constraints.
+func (p *ValueArrayString) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredObj(p.Values, "values")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ValueArrayIntegerDistribution are set and validates field constraints.
+func (p *ValueArrayIntegerDistribution) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredObj(p.Values, "values")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ValueArrayDoubleDistribution are set and validates field constraints.
+func (p *ValueArrayDoubleDistribution) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredObj(p.Values, "values")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ValueArray are set and validates field constraints.
+func (p *ValueArray) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Values are set and validates field constraints.
+func (p *Values) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.MetricType, "metric_type")
+	v.HasRequiredObj(p.Values, "values")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VirtualResourceCounts are set and validates field constraints.
+func (p *VirtualResourceCounts) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Cpus, "cpus")
+	v.HasRequiredObj(p.Memory, "memory")
+	v.HasRequiredObj(p.Storage, "storage")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for Vpc are set and validates field constraints.
+func (p *Vpc) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredObj(p.DnsName, "dns_name")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.Ipv6Prefix, "ipv6_prefix")
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredStr(string(p.ProjectId), "project_id")
+	v.ValidFormat(string(p.ProjectId), "uuid", "project_id")
+	v.HasRequiredStr(string(p.SystemRouterId), "system_router_id")
+	v.ValidFormat(string(p.SystemRouterId), "uuid", "system_router_id")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcCreate are set and validates field constraints.
+func (p *VpcCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.DnsName), "dns_name")
+	v.MatchesPattern(string(p.DnsName), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "dns_name")
+	v.HasRequiredStr(string(p.Name), "name")
+	v.MatchesPattern(string(p.Name), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "name")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcFirewallIcmpFilter are set and validates field constraints.
+func (p *VpcFirewallIcmpFilter) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.IcmpType, "icmp_type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcFirewallRule are set and validates field constraints.
+func (p *VpcFirewallRule) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Action, "action")
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredObj(p.Direction, "direction")
+	v.HasRequiredObj(p.Filters, "filters")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredObj(p.Priority, "priority")
+	v.HasRequiredObj(p.Status, "status")
+	v.HasRequiredObj(p.Targets, "targets")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	v.HasRequiredStr(string(p.VpcId), "vpc_id")
+	v.ValidFormat(string(p.VpcId), "uuid", "vpc_id")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcFirewallRuleFilter are set and validates field constraints.
+func (p *VpcFirewallRuleFilter) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcFirewallRuleHostFilterVpc are set and validates field constraints.
+func (p *VpcFirewallRuleHostFilterVpc) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredStr(string(p.Value), "value")
+	v.MatchesPattern(string(p.Value), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcFirewallRuleHostFilterSubnet are set and validates field constraints.
+func (p *VpcFirewallRuleHostFilterSubnet) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredStr(string(p.Value), "value")
+	v.MatchesPattern(string(p.Value), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcFirewallRuleHostFilterInstance are set and validates field constraints.
+func (p *VpcFirewallRuleHostFilterInstance) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredStr(string(p.Value), "value")
+	v.MatchesPattern(string(p.Value), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcFirewallRuleHostFilterIp are set and validates field constraints.
+func (p *VpcFirewallRuleHostFilterIp) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredStr(string(p.Value), "value")
+	v.ValidFormat(string(p.Value), "ip", "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcFirewallRuleHostFilterIpNet are set and validates field constraints.
+func (p *VpcFirewallRuleHostFilterIpNet) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredObj(p.Value, "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcFirewallRuleHostFilter are set and validates field constraints.
+func (p *VpcFirewallRuleHostFilter) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcFirewallRuleProtocolTcp are set and validates field constraints.
+func (p *VpcFirewallRuleProtocolTcp) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcFirewallRuleProtocolUdp are set and validates field constraints.
+func (p *VpcFirewallRuleProtocolUdp) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcFirewallRuleProtocolIcmp are set and validates field constraints.
+func (p *VpcFirewallRuleProtocolIcmp) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredObj(p.Value, "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcFirewallRuleProtocol are set and validates field constraints.
+func (p *VpcFirewallRuleProtocol) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcFirewallRuleTargetVpc are set and validates field constraints.
+func (p *VpcFirewallRuleTargetVpc) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredStr(string(p.Value), "value")
+	v.MatchesPattern(string(p.Value), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcFirewallRuleTargetSubnet are set and validates field constraints.
+func (p *VpcFirewallRuleTargetSubnet) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredStr(string(p.Value), "value")
+	v.MatchesPattern(string(p.Value), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcFirewallRuleTargetInstance are set and validates field constraints.
+func (p *VpcFirewallRuleTargetInstance) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredStr(string(p.Value), "value")
+	v.MatchesPattern(string(p.Value), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcFirewallRuleTargetIp are set and validates field constraints.
+func (p *VpcFirewallRuleTargetIp) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredStr(string(p.Value), "value")
+	v.ValidFormat(string(p.Value), "ip", "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcFirewallRuleTargetIpNet are set and validates field constraints.
+func (p *VpcFirewallRuleTargetIpNet) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Type), "type")
+	v.HasRequiredObj(p.Value, "value")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcFirewallRuleTarget are set and validates field constraints.
+func (p *VpcFirewallRuleTarget) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcFirewallRuleUpdate are set and validates field constraints.
+func (p *VpcFirewallRuleUpdate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Action, "action")
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredObj(p.Direction, "direction")
+	v.HasRequiredObj(p.Filters, "filters")
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredObj(p.Priority, "priority")
+	v.HasRequiredObj(p.Status, "status")
+	v.HasRequiredObj(p.Targets, "targets")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcFirewallRuleUpdateParams are set and validates field constraints.
+func (p *VpcFirewallRuleUpdateParams) Validate() error {
+	v := new(Validator)
+	for i, item := range p.Rules {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("rules[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcFirewallRules are set and validates field constraints.
+func (p *VpcFirewallRules) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Rules, "rules")
+	for i, item := range p.Rules {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("rules[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcResultsPage are set and validates field constraints.
+func (p *VpcResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcRouter are set and validates field constraints.
+func (p *VpcRouter) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredStr(string(p.Kind), "kind")
+	ValidEnum(v, p.Kind, VpcRouterKindCollection, "kind")
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	v.HasRequiredStr(string(p.VpcId), "vpc_id")
+	v.ValidFormat(string(p.VpcId), "uuid", "vpc_id")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcRouterCreate are set and validates field constraints.
+func (p *VpcRouterCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Name), "name")
+	v.MatchesPattern(string(p.Name), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "name")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcRouterResultsPage are set and validates field constraints.
+func (p *VpcRouterResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcRouterUpdate are set and validates field constraints.
+func (p *VpcRouterUpdate) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcSubnet are set and validates field constraints.
+func (p *VpcSubnet) Validate() error {
+	v := new(Validator)
+	v.ValidFormat(string(p.CustomRouterId), "uuid", "custom_router_id")
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.Ipv4Block, "ipv4_block")
+	v.HasRequiredObj(p.Ipv6Block, "ipv6_block")
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	v.HasRequiredStr(string(p.VpcId), "vpc_id")
+	v.ValidFormat(string(p.VpcId), "uuid", "vpc_id")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcSubnetCreate are set and validates field constraints.
+func (p *VpcSubnetCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredObj(p.Ipv4Block, "ipv4_block")
+	v.HasRequiredStr(string(p.Name), "name")
+	v.MatchesPattern(string(p.Name), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "name")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcSubnetResultsPage are set and validates field constraints.
+func (p *VpcSubnetResultsPage) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Items, "items")
+	for i, item := range p.Items {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("items[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcSubnetUpdate are set and validates field constraints.
+func (p *VpcSubnetUpdate) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcUpdate are set and validates field constraints.
+func (p *VpcUpdate) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for WebhookCreate are set and validates field constraints.
+func (p *WebhookCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Endpoint), "endpoint")
+	v.ValidFormat(string(p.Endpoint), "uri", "endpoint")
+	v.HasRequiredStr(string(p.Name), "name")
+	v.MatchesPattern(string(p.Name), `^(?![0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$)^[a-z]([a-zA-Z0-9-]*[a-zA-Z0-9]+)?$`, "name")
+	v.HasRequiredObj(p.Secrets, "secrets")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for WebhookDeliveryAttempt are set and validates field constraints.
+func (p *WebhookDeliveryAttempt) Validate() error {
+	v := new(Validator)
+	v.HasRequiredNum(p.Attempt, "attempt")
+	v.HasRequiredObj(p.Result, "result")
+	v.HasRequiredObj(p.TimeSent, "time_sent")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for WebhookDeliveryResponse are set and validates field constraints.
+func (p *WebhookDeliveryResponse) Validate() error {
+	v := new(Validator)
+	v.HasRequiredNum(p.DurationMs, "duration_ms")
+	v.HasRequiredObj(p.Status, "status")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for WebhookReceiver are set and validates field constraints.
+func (p *WebhookReceiver) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Description), "description")
+	v.HasRequiredStr(string(p.Endpoint), "endpoint")
+	v.ValidFormat(string(p.Endpoint), "uri", "endpoint")
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.Name, "name")
+	v.HasRequiredObj(p.Secrets, "secrets")
+	for i, item := range p.Secrets {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("secrets[%d]: %w", i, err))
+		}
+	}
+	v.HasRequiredObj(p.Subscriptions, "subscriptions")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	v.HasRequiredObj(p.TimeModified, "time_modified")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for WebhookReceiverUpdate are set and validates field constraints.
+func (p *WebhookReceiverUpdate) Validate() error {
+	v := new(Validator)
+	v.ValidFormat(string(p.Endpoint), "uri", "endpoint")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for WebhookSecret are set and validates field constraints.
+func (p *WebhookSecret) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Id), "id")
+	v.ValidFormat(string(p.Id), "uuid", "id")
+	v.HasRequiredObj(p.TimeCreated, "time_created")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for WebhookSecretCreate are set and validates field constraints.
+func (p *WebhookSecretCreate) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Secret), "secret")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for WebhookSecrets are set and validates field constraints.
+func (p *WebhookSecrets) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Secrets, "secrets")
+	for i, item := range p.Secrets {
+		if err := item.Validate(); err != nil {
+			v.AddError(fmt.Errorf("secrets[%d]: %w", i, err))
+		}
+	}
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DeviceAuthRequestParams are set and validates field constraints.
+func (p *DeviceAuthRequestParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DeviceAuthConfirmParams are set and validates field constraints.
+func (p *DeviceAuthConfirmParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DeviceAccessTokenParams are set and validates field constraints.
+func (p *DeviceAccessTokenParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ProbeListParams are set and validates field constraints.
+func (p *ProbeListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ProbeCreateParams are set and validates field constraints.
+func (p *ProbeCreateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ProbeDeleteParams are set and validates field constraints.
+func (p *ProbeDeleteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ProbeViewParams are set and validates field constraints.
+func (p *ProbeViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SupportBundleListParams are set and validates field constraints.
+func (p *SupportBundleListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SupportBundleCreateParams are set and validates field constraints.
+func (p *SupportBundleCreateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SupportBundleDeleteParams are set and validates field constraints.
+func (p *SupportBundleDeleteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SupportBundleViewParams are set and validates field constraints.
+func (p *SupportBundleViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SupportBundleUpdateParams are set and validates field constraints.
+func (p *SupportBundleUpdateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SupportBundleDownloadParams are set and validates field constraints.
+func (p *SupportBundleDownloadParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SupportBundleHeadParams are set and validates field constraints.
+func (p *SupportBundleHeadParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SupportBundleDownloadFileParams are set and validates field constraints.
+func (p *SupportBundleDownloadFileParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SupportBundleHeadFileParams are set and validates field constraints.
+func (p *SupportBundleHeadFileParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SupportBundleIndexParams are set and validates field constraints.
+func (p *SupportBundleIndexParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for LoginSamlParams are set and validates field constraints.
+func (p *LoginSamlParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AffinityGroupListParams are set and validates field constraints.
+func (p *AffinityGroupListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AffinityGroupCreateParams are set and validates field constraints.
+func (p *AffinityGroupCreateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AffinityGroupDeleteParams are set and validates field constraints.
+func (p *AffinityGroupDeleteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AffinityGroupViewParams are set and validates field constraints.
+func (p *AffinityGroupViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AffinityGroupUpdateParams are set and validates field constraints.
+func (p *AffinityGroupUpdateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AffinityGroupMemberListParams are set and validates field constraints.
+func (p *AffinityGroupMemberListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AffinityGroupMemberInstanceDeleteParams are set and validates field constraints.
+func (p *AffinityGroupMemberInstanceDeleteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AffinityGroupMemberInstanceViewParams are set and validates field constraints.
+func (p *AffinityGroupMemberInstanceViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AffinityGroupMemberInstanceAddParams are set and validates field constraints.
+func (p *AffinityGroupMemberInstanceAddParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AlertClassListParams are set and validates field constraints.
+func (p *AlertClassListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AlertReceiverListParams are set and validates field constraints.
+func (p *AlertReceiverListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AlertReceiverDeleteParams are set and validates field constraints.
+func (p *AlertReceiverDeleteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AlertReceiverViewParams are set and validates field constraints.
+func (p *AlertReceiverViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AlertDeliveryListParams are set and validates field constraints.
+func (p *AlertDeliveryListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AlertReceiverProbeParams are set and validates field constraints.
+func (p *AlertReceiverProbeParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AlertReceiverSubscriptionAddParams are set and validates field constraints.
+func (p *AlertReceiverSubscriptionAddParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AlertReceiverSubscriptionRemoveParams are set and validates field constraints.
+func (p *AlertReceiverSubscriptionRemoveParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AlertDeliveryResendParams are set and validates field constraints.
+func (p *AlertDeliveryResendParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AntiAffinityGroupListParams are set and validates field constraints.
+func (p *AntiAffinityGroupListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AntiAffinityGroupCreateParams are set and validates field constraints.
+func (p *AntiAffinityGroupCreateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AntiAffinityGroupDeleteParams are set and validates field constraints.
+func (p *AntiAffinityGroupDeleteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AntiAffinityGroupViewParams are set and validates field constraints.
+func (p *AntiAffinityGroupViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AntiAffinityGroupUpdateParams are set and validates field constraints.
+func (p *AntiAffinityGroupUpdateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AntiAffinityGroupMemberListParams are set and validates field constraints.
+func (p *AntiAffinityGroupMemberListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AntiAffinityGroupMemberInstanceDeleteParams are set and validates field constraints.
+func (p *AntiAffinityGroupMemberInstanceDeleteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AntiAffinityGroupMemberInstanceViewParams are set and validates field constraints.
+func (p *AntiAffinityGroupMemberInstanceViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AntiAffinityGroupMemberInstanceAddParams are set and validates field constraints.
+func (p *AntiAffinityGroupMemberInstanceAddParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AuthSettingsUpdateParams are set and validates field constraints.
+func (p *AuthSettingsUpdateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for CertificateListParams are set and validates field constraints.
+func (p *CertificateListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for CertificateCreateParams are set and validates field constraints.
+func (p *CertificateCreateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for CertificateDeleteParams are set and validates field constraints.
+func (p *CertificateDeleteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for CertificateViewParams are set and validates field constraints.
+func (p *CertificateViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DiskListParams are set and validates field constraints.
+func (p *DiskListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DiskCreateParams are set and validates field constraints.
+func (p *DiskCreateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DiskDeleteParams are set and validates field constraints.
+func (p *DiskDeleteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DiskViewParams are set and validates field constraints.
+func (p *DiskViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DiskBulkWriteImportParams are set and validates field constraints.
+func (p *DiskBulkWriteImportParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DiskBulkWriteImportStartParams are set and validates field constraints.
+func (p *DiskBulkWriteImportStartParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DiskBulkWriteImportStopParams are set and validates field constraints.
+func (p *DiskBulkWriteImportStopParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for DiskFinalizeImportParams are set and validates field constraints.
+func (p *DiskFinalizeImportParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for FloatingIpListParams are set and validates field constraints.
+func (p *FloatingIpListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for FloatingIpCreateParams are set and validates field constraints.
+func (p *FloatingIpCreateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for FloatingIpDeleteParams are set and validates field constraints.
+func (p *FloatingIpDeleteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for FloatingIpViewParams are set and validates field constraints.
+func (p *FloatingIpViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for FloatingIpUpdateParams are set and validates field constraints.
+func (p *FloatingIpUpdateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for FloatingIpAttachParams are set and validates field constraints.
+func (p *FloatingIpAttachParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for FloatingIpDetachParams are set and validates field constraints.
+func (p *FloatingIpDetachParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for GroupListParams are set and validates field constraints.
+func (p *GroupListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for GroupViewParams are set and validates field constraints.
+func (p *GroupViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ImageListParams are set and validates field constraints.
+func (p *ImageListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ImageCreateParams are set and validates field constraints.
+func (p *ImageCreateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ImageDeleteParams are set and validates field constraints.
+func (p *ImageDeleteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ImageViewParams are set and validates field constraints.
+func (p *ImageViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ImageDemoteParams are set and validates field constraints.
+func (p *ImageDemoteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ImagePromoteParams are set and validates field constraints.
+func (p *ImagePromoteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceListParams are set and validates field constraints.
+func (p *InstanceListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceCreateParams are set and validates field constraints.
+func (p *InstanceCreateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceDeleteParams are set and validates field constraints.
+func (p *InstanceDeleteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceViewParams are set and validates field constraints.
+func (p *InstanceViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceUpdateParams are set and validates field constraints.
+func (p *InstanceUpdateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceAffinityGroupListParams are set and validates field constraints.
+func (p *InstanceAffinityGroupListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceAntiAffinityGroupListParams are set and validates field constraints.
+func (p *InstanceAntiAffinityGroupListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceDiskListParams are set and validates field constraints.
+func (p *InstanceDiskListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceDiskAttachParams are set and validates field constraints.
+func (p *InstanceDiskAttachParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceDiskDetachParams are set and validates field constraints.
+func (p *InstanceDiskDetachParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceExternalIpListParams are set and validates field constraints.
+func (p *InstanceExternalIpListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceEphemeralIpDetachParams are set and validates field constraints.
+func (p *InstanceEphemeralIpDetachParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceEphemeralIpAttachParams are set and validates field constraints.
+func (p *InstanceEphemeralIpAttachParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceMulticastGroupListParams are set and validates field constraints.
+func (p *InstanceMulticastGroupListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceMulticastGroupLeaveParams are set and validates field constraints.
+func (p *InstanceMulticastGroupLeaveParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceMulticastGroupJoinParams are set and validates field constraints.
+func (p *InstanceMulticastGroupJoinParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceRebootParams are set and validates field constraints.
+func (p *InstanceRebootParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceSerialConsoleParams are set and validates field constraints.
+func (p *InstanceSerialConsoleParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceSerialConsoleStreamParams are set and validates field constraints.
+func (p *InstanceSerialConsoleStreamParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceSshPublicKeyListParams are set and validates field constraints.
+func (p *InstanceSshPublicKeyListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceStartParams are set and validates field constraints.
+func (p *InstanceStartParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceStopParams are set and validates field constraints.
+func (p *InstanceStopParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InternetGatewayIpAddressListParams are set and validates field constraints.
+func (p *InternetGatewayIpAddressListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InternetGatewayIpAddressCreateParams are set and validates field constraints.
+func (p *InternetGatewayIpAddressCreateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InternetGatewayIpAddressDeleteParams are set and validates field constraints.
+func (p *InternetGatewayIpAddressDeleteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InternetGatewayIpPoolListParams are set and validates field constraints.
+func (p *InternetGatewayIpPoolListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InternetGatewayIpPoolCreateParams are set and validates field constraints.
+func (p *InternetGatewayIpPoolCreateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InternetGatewayIpPoolDeleteParams are set and validates field constraints.
+func (p *InternetGatewayIpPoolDeleteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InternetGatewayListParams are set and validates field constraints.
+func (p *InternetGatewayListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InternetGatewayCreateParams are set and validates field constraints.
+func (p *InternetGatewayCreateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InternetGatewayDeleteParams are set and validates field constraints.
+func (p *InternetGatewayDeleteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InternetGatewayViewParams are set and validates field constraints.
+func (p *InternetGatewayViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ProjectIpPoolListParams are set and validates field constraints.
+func (p *ProjectIpPoolListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ProjectIpPoolViewParams are set and validates field constraints.
+func (p *ProjectIpPoolViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for LoginLocalParams are set and validates field constraints.
+func (p *LoginLocalParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for CurrentUserAccessTokenListParams are set and validates field constraints.
+func (p *CurrentUserAccessTokenListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for CurrentUserAccessTokenDeleteParams are set and validates field constraints.
+func (p *CurrentUserAccessTokenDeleteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for CurrentUserGroupsParams are set and validates field constraints.
+func (p *CurrentUserGroupsParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for CurrentUserSshKeyListParams are set and validates field constraints.
+func (p *CurrentUserSshKeyListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for CurrentUserSshKeyCreateParams are set and validates field constraints.
+func (p *CurrentUserSshKeyCreateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for CurrentUserSshKeyDeleteParams are set and validates field constraints.
+func (p *CurrentUserSshKeyDeleteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for CurrentUserSshKeyViewParams are set and validates field constraints.
+func (p *CurrentUserSshKeyViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloMetricParams are set and validates field constraints.
+func (p *SiloMetricParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for MulticastGroupListParams are set and validates field constraints.
+func (p *MulticastGroupListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for MulticastGroupCreateParams are set and validates field constraints.
+func (p *MulticastGroupCreateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for MulticastGroupDeleteParams are set and validates field constraints.
+func (p *MulticastGroupDeleteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for MulticastGroupViewParams are set and validates field constraints.
+func (p *MulticastGroupViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for MulticastGroupUpdateParams are set and validates field constraints.
+func (p *MulticastGroupUpdateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for MulticastGroupMemberListParams are set and validates field constraints.
+func (p *MulticastGroupMemberListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for MulticastGroupMemberAddParams are set and validates field constraints.
+func (p *MulticastGroupMemberAddParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for MulticastGroupMemberRemoveParams are set and validates field constraints.
+func (p *MulticastGroupMemberRemoveParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceNetworkInterfaceListParams are set and validates field constraints.
+func (p *InstanceNetworkInterfaceListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceNetworkInterfaceCreateParams are set and validates field constraints.
+func (p *InstanceNetworkInterfaceCreateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceNetworkInterfaceDeleteParams are set and validates field constraints.
+func (p *InstanceNetworkInterfaceDeleteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceNetworkInterfaceViewParams are set and validates field constraints.
+func (p *InstanceNetworkInterfaceViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for InstanceNetworkInterfaceUpdateParams are set and validates field constraints.
+func (p *InstanceNetworkInterfaceUpdateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for PolicyUpdateParams are set and validates field constraints.
+func (p *PolicyUpdateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ProjectListParams are set and validates field constraints.
+func (p *ProjectListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ProjectCreateParams are set and validates field constraints.
+func (p *ProjectCreateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ProjectDeleteParams are set and validates field constraints.
+func (p *ProjectDeleteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ProjectViewParams are set and validates field constraints.
+func (p *ProjectViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ProjectUpdateParams are set and validates field constraints.
+func (p *ProjectUpdateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ProjectPolicyViewParams are set and validates field constraints.
+func (p *ProjectPolicyViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ProjectPolicyUpdateParams are set and validates field constraints.
+func (p *ProjectPolicyUpdateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SnapshotListParams are set and validates field constraints.
+func (p *SnapshotListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SnapshotCreateParams are set and validates field constraints.
+func (p *SnapshotCreateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SnapshotDeleteParams are set and validates field constraints.
+func (p *SnapshotDeleteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SnapshotViewParams are set and validates field constraints.
+func (p *SnapshotViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AuditLogListParams are set and validates field constraints.
+func (p *AuditLogListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for PhysicalDiskListParams are set and validates field constraints.
+func (p *PhysicalDiskListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for PhysicalDiskViewParams are set and validates field constraints.
+func (p *PhysicalDiskViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingSwitchPortLldpNeighborsParams are set and validates field constraints.
+func (p *NetworkingSwitchPortLldpNeighborsParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for RackListParams are set and validates field constraints.
+func (p *RackListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for RackViewParams are set and validates field constraints.
+func (p *RackViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SledListParams are set and validates field constraints.
+func (p *SledListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SledAddParams are set and validates field constraints.
+func (p *SledAddParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SledListUninitializedParams are set and validates field constraints.
+func (p *SledListUninitializedParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SledViewParams are set and validates field constraints.
+func (p *SledViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SledPhysicalDiskListParams are set and validates field constraints.
+func (p *SledPhysicalDiskListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SledInstanceListParams are set and validates field constraints.
+func (p *SledInstanceListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SledSetProvisionPolicyParams are set and validates field constraints.
+func (p *SledSetProvisionPolicyParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingSwitchPortListParams are set and validates field constraints.
+func (p *NetworkingSwitchPortListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingSwitchPortLldpConfigViewParams are set and validates field constraints.
+func (p *NetworkingSwitchPortLldpConfigViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingSwitchPortLldpConfigUpdateParams are set and validates field constraints.
+func (p *NetworkingSwitchPortLldpConfigUpdateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingSwitchPortClearSettingsParams are set and validates field constraints.
+func (p *NetworkingSwitchPortClearSettingsParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingSwitchPortApplySettingsParams are set and validates field constraints.
+func (p *NetworkingSwitchPortApplySettingsParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingSwitchPortStatusParams are set and validates field constraints.
+func (p *NetworkingSwitchPortStatusParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SwitchListParams are set and validates field constraints.
+func (p *SwitchListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SwitchViewParams are set and validates field constraints.
+func (p *SwitchViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloIdentityProviderListParams are set and validates field constraints.
+func (p *SiloIdentityProviderListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for LocalIdpUserCreateParams are set and validates field constraints.
+func (p *LocalIdpUserCreateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for LocalIdpUserDeleteParams are set and validates field constraints.
+func (p *LocalIdpUserDeleteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for LocalIdpUserSetPasswordParams are set and validates field constraints.
+func (p *LocalIdpUserSetPasswordParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SamlIdentityProviderCreateParams are set and validates field constraints.
+func (p *SamlIdentityProviderCreateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SamlIdentityProviderViewParams are set and validates field constraints.
+func (p *SamlIdentityProviderViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for IpPoolListParams are set and validates field constraints.
+func (p *IpPoolListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for IpPoolCreateParams are set and validates field constraints.
+func (p *IpPoolCreateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for IpPoolServiceRangeListParams are set and validates field constraints.
+func (p *IpPoolServiceRangeListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for IpPoolServiceRangeAddParams are set and validates field constraints.
+func (p *IpPoolServiceRangeAddParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for IpPoolServiceRangeRemoveParams are set and validates field constraints.
+func (p *IpPoolServiceRangeRemoveParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for IpPoolDeleteParams are set and validates field constraints.
+func (p *IpPoolDeleteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for IpPoolViewParams are set and validates field constraints.
+func (p *IpPoolViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for IpPoolUpdateParams are set and validates field constraints.
+func (p *IpPoolUpdateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for IpPoolRangeListParams are set and validates field constraints.
+func (p *IpPoolRangeListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for IpPoolRangeAddParams are set and validates field constraints.
+func (p *IpPoolRangeAddParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for IpPoolRangeRemoveParams are set and validates field constraints.
+func (p *IpPoolRangeRemoveParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for IpPoolSiloListParams are set and validates field constraints.
+func (p *IpPoolSiloListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for IpPoolSiloLinkParams are set and validates field constraints.
+func (p *IpPoolSiloLinkParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for IpPoolSiloUnlinkParams are set and validates field constraints.
+func (p *IpPoolSiloUnlinkParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for IpPoolSiloUpdateParams are set and validates field constraints.
+func (p *IpPoolSiloUpdateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for IpPoolUtilizationViewParams are set and validates field constraints.
+func (p *IpPoolUtilizationViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SystemMetricParams are set and validates field constraints.
+func (p *SystemMetricParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for LookupMulticastGroupByIpParams are set and validates field constraints.
+func (p *LookupMulticastGroupByIpParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingAddressLotListParams are set and validates field constraints.
+func (p *NetworkingAddressLotListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingAddressLotCreateParams are set and validates field constraints.
+func (p *NetworkingAddressLotCreateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingAddressLotDeleteParams are set and validates field constraints.
+func (p *NetworkingAddressLotDeleteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingAddressLotViewParams are set and validates field constraints.
+func (p *NetworkingAddressLotViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingAddressLotBlockListParams are set and validates field constraints.
+func (p *NetworkingAddressLotBlockListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingAllowListUpdateParams are set and validates field constraints.
+func (p *NetworkingAllowListUpdateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingBfdDisableParams are set and validates field constraints.
+func (p *NetworkingBfdDisableParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingBfdEnableParams are set and validates field constraints.
+func (p *NetworkingBfdEnableParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingBgpConfigDeleteParams are set and validates field constraints.
+func (p *NetworkingBgpConfigDeleteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingBgpConfigListParams are set and validates field constraints.
+func (p *NetworkingBgpConfigListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingBgpConfigCreateParams are set and validates field constraints.
+func (p *NetworkingBgpConfigCreateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingBgpAnnounceSetListParams are set and validates field constraints.
+func (p *NetworkingBgpAnnounceSetListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingBgpAnnounceSetUpdateParams are set and validates field constraints.
+func (p *NetworkingBgpAnnounceSetUpdateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingBgpAnnounceSetDeleteParams are set and validates field constraints.
+func (p *NetworkingBgpAnnounceSetDeleteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingBgpAnnouncementListParams are set and validates field constraints.
+func (p *NetworkingBgpAnnouncementListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingBgpMessageHistoryParams are set and validates field constraints.
+func (p *NetworkingBgpMessageHistoryParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingBgpImportedRoutesIpv4Params are set and validates field constraints.
+func (p *NetworkingBgpImportedRoutesIpv4Params) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingInboundIcmpUpdateParams are set and validates field constraints.
+func (p *NetworkingInboundIcmpUpdateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingLoopbackAddressListParams are set and validates field constraints.
+func (p *NetworkingLoopbackAddressListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingLoopbackAddressCreateParams are set and validates field constraints.
+func (p *NetworkingLoopbackAddressCreateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingLoopbackAddressDeleteParams are set and validates field constraints.
+func (p *NetworkingLoopbackAddressDeleteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingSwitchPortSettingsDeleteParams are set and validates field constraints.
+func (p *NetworkingSwitchPortSettingsDeleteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingSwitchPortSettingsListParams are set and validates field constraints.
+func (p *NetworkingSwitchPortSettingsListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingSwitchPortSettingsCreateParams are set and validates field constraints.
+func (p *NetworkingSwitchPortSettingsCreateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingSwitchPortSettingsViewParams are set and validates field constraints.
+func (p *NetworkingSwitchPortSettingsViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SystemPolicyUpdateParams are set and validates field constraints.
+func (p *SystemPolicyUpdateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ScimTokenListParams are set and validates field constraints.
+func (p *ScimTokenListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ScimTokenCreateParams are set and validates field constraints.
+func (p *ScimTokenCreateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ScimTokenDeleteParams are set and validates field constraints.
+func (p *ScimTokenDeleteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ScimTokenViewParams are set and validates field constraints.
+func (p *ScimTokenViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SystemQuotasListParams are set and validates field constraints.
+func (p *SystemQuotasListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloListParams are set and validates field constraints.
+func (p *SiloListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloCreateParams are set and validates field constraints.
+func (p *SiloCreateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloDeleteParams are set and validates field constraints.
+func (p *SiloDeleteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloViewParams are set and validates field constraints.
+func (p *SiloViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloIpPoolListParams are set and validates field constraints.
+func (p *SiloIpPoolListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloPolicyViewParams are set and validates field constraints.
+func (p *SiloPolicyViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloPolicyUpdateParams are set and validates field constraints.
+func (p *SiloPolicyUpdateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloQuotasViewParams are set and validates field constraints.
+func (p *SiloQuotasViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloQuotasUpdateParams are set and validates field constraints.
+func (p *SiloQuotasUpdateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SystemTimeseriesQueryParams are set and validates field constraints.
+func (p *SystemTimeseriesQueryParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SystemTimeseriesSchemaListParams are set and validates field constraints.
+func (p *SystemTimeseriesSchemaListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SystemUpdateRepositoryListParams are set and validates field constraints.
+func (p *SystemUpdateRepositoryListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SystemUpdateRepositoryUploadParams are set and validates field constraints.
+func (p *SystemUpdateRepositoryUploadParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SystemUpdateRepositoryViewParams are set and validates field constraints.
+func (p *SystemUpdateRepositoryViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for TargetReleaseUpdateParams are set and validates field constraints.
+func (p *TargetReleaseUpdateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SystemUpdateTrustRootListParams are set and validates field constraints.
+func (p *SystemUpdateTrustRootListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SystemUpdateTrustRootCreateParams are set and validates field constraints.
+func (p *SystemUpdateTrustRootCreateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SystemUpdateTrustRootDeleteParams are set and validates field constraints.
+func (p *SystemUpdateTrustRootDeleteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SystemUpdateTrustRootViewParams are set and validates field constraints.
+func (p *SystemUpdateTrustRootViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloUserListParams are set and validates field constraints.
+func (p *SiloUserListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for UserBuiltinListParams are set and validates field constraints.
+func (p *UserBuiltinListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for UserBuiltinViewParams are set and validates field constraints.
+func (p *UserBuiltinViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloUserViewParams are set and validates field constraints.
+func (p *SiloUserViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloUtilizationListParams are set and validates field constraints.
+func (p *SiloUtilizationListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloUtilizationViewParams are set and validates field constraints.
+func (p *SiloUtilizationViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for TimeseriesQueryParams are set and validates field constraints.
+func (p *TimeseriesQueryParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for UserListParams are set and validates field constraints.
+func (p *UserListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for UserViewParams are set and validates field constraints.
+func (p *UserViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for UserTokenListParams are set and validates field constraints.
+func (p *UserTokenListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for UserLogoutParams are set and validates field constraints.
+func (p *UserLogoutParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for UserSessionListParams are set and validates field constraints.
+func (p *UserSessionListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcFirewallRulesViewParams are set and validates field constraints.
+func (p *VpcFirewallRulesViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcFirewallRulesUpdateParams are set and validates field constraints.
+func (p *VpcFirewallRulesUpdateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcRouterRouteListParams are set and validates field constraints.
+func (p *VpcRouterRouteListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcRouterRouteCreateParams are set and validates field constraints.
+func (p *VpcRouterRouteCreateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcRouterRouteDeleteParams are set and validates field constraints.
+func (p *VpcRouterRouteDeleteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcRouterRouteViewParams are set and validates field constraints.
+func (p *VpcRouterRouteViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcRouterRouteUpdateParams are set and validates field constraints.
+func (p *VpcRouterRouteUpdateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcRouterListParams are set and validates field constraints.
+func (p *VpcRouterListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcRouterCreateParams are set and validates field constraints.
+func (p *VpcRouterCreateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcRouterDeleteParams are set and validates field constraints.
+func (p *VpcRouterDeleteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcRouterViewParams are set and validates field constraints.
+func (p *VpcRouterViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcRouterUpdateParams are set and validates field constraints.
+func (p *VpcRouterUpdateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcSubnetListParams are set and validates field constraints.
+func (p *VpcSubnetListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcSubnetCreateParams are set and validates field constraints.
+func (p *VpcSubnetCreateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcSubnetDeleteParams are set and validates field constraints.
+func (p *VpcSubnetDeleteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcSubnetViewParams are set and validates field constraints.
+func (p *VpcSubnetViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcSubnetUpdateParams are set and validates field constraints.
+func (p *VpcSubnetUpdateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcSubnetListNetworkInterfacesParams are set and validates field constraints.
+func (p *VpcSubnetListNetworkInterfacesParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcListParams are set and validates field constraints.
+func (p *VpcListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcCreateParams are set and validates field constraints.
+func (p *VpcCreateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcDeleteParams are set and validates field constraints.
+func (p *VpcDeleteParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcViewParams are set and validates field constraints.
+func (p *VpcViewParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for VpcUpdateParams are set and validates field constraints.
+func (p *VpcUpdateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for WebhookReceiverCreateParams are set and validates field constraints.
+func (p *WebhookReceiverCreateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for WebhookReceiverUpdateParams are set and validates field constraints.
+func (p *WebhookReceiverUpdateParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for WebhookSecretsListParams are set and validates field constraints.
+func (p *WebhookSecretsListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for WebhookSecretsAddParams are set and validates field constraints.
+func (p *WebhookSecretsAddParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for WebhookSecretsDeleteParams are set and validates field constraints.
+func (p *WebhookSecretsDeleteParams) Validate() error {
+	v := new(Validator)
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}

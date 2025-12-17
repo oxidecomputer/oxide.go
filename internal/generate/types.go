@@ -68,6 +68,51 @@ func (t TypeTemplate) Render() string {
 	return renderTemplate(typeTemplate, t)
 }
 
+// ToValidation converts a TypeTemplate to a ValidationTemplate.
+// Returns nil if the type is not a struct.
+// Always generates a Validate method for struct types (even if empty) so that
+// nested types can consistently call Validate().
+func (t TypeTemplate) ToValidation() *ValidationTemplate {
+	if t.Type != "struct" || t.Name == "" {
+		return nil
+	}
+
+	fields := []FieldValidation{}
+	for _, f := range t.Fields {
+		if fv := fieldValidationFromTypeField(f); fv != nil {
+			fields = append(fields, *fv)
+		}
+	}
+
+	// Always return a ValidationTemplate for struct types, even with no fields
+	return &ValidationTemplate{
+		AssociatedType: t.Name,
+		Fields:         fields,
+	}
+}
+
+// fieldValidationFromTypeField creates a FieldValidation from a TypeField.
+func fieldValidationFromTypeField(f TypeField) *FieldValidation {
+	if f.Schema == nil {
+		return nil
+	}
+
+	// Skip validation for 'any' type fields - can't validate interface{}
+	if f.Type == "any" {
+		if f.Required {
+			return &FieldValidation{
+				Name:     f.Name,
+				JSONName: f.MarshalKey,
+				Required: true,
+				Type:     "object",
+			}
+		}
+		return nil
+	}
+
+	return buildFieldValidation(f.Name, f.MarshalKey, f.Schema, f.Required)
+}
+
 // TypeField holds the information for each type field.
 type TypeField struct {
 	Schema     *openapi3.SchemaRef
@@ -182,10 +227,23 @@ func (e EnumTemplate) Render() string {
 // ValidationTemplate holds information about the fields that
 // need to be validated.
 type ValidationTemplate struct {
-	RequiredObjects []string
-	RequiredStrings []string
-	RequiredNums    []string
-	AssociatedType  string
+	AssociatedType string
+	Fields         []FieldValidation // slice for deterministic code generation
+}
+
+// FieldValidation holds all validation rules for a single field.
+type FieldValidation struct {
+	Name           string // Go field name
+	JSONName       string // JSON field name for error messages
+	Required       bool
+	Type           string // "string", "int", "object" - determines required check variant
+	Pattern        string // regex pattern
+	Format         string // uuid, email, ipv4, ipv6, uri, hostname, date-time
+	EnumType       string // enum type name (e.g., "AddressLotKind")
+	CollectionName string // enum collection var name (e.g., "AddressLotKindCollection")
+	IsNested       bool   // field type has a Validate() method
+	IsSlice        bool   // field is a slice - iterate and validate each element
+	IsPointer      bool   // field is a pointer - nil check before validation
 }
 
 // Render renders the ValidationTemplate as a Go method.
@@ -338,27 +396,51 @@ func constructParamValidation(paths map[string]*openapi3.PathItem) []ValidationT
 
 				validationTpl := ValidationTemplate{
 					AssociatedType: paramsTypeName,
+					Fields:         []FieldValidation{},
 				}
 
 				for _, p := range o.Parameters {
-					if !p.Value.Required {
-						continue
+					fieldVal := buildFieldValidation(
+						strcase.ToCamel(p.Value.Name),
+						p.Value.Name,
+						p.Value.Schema,
+						p.Value.Required,
+					)
+					if fieldVal != nil {
+						validationTpl.Fields = append(validationTpl.Fields, *fieldVal)
 					}
-
-					paramName := strcase.ToCamel(p.Value.Name)
-
-					if p.Value.Schema.Value.Type.Is("integer") {
-						validationTpl.RequiredNums = append(validationTpl.RequiredNums, paramName)
-						continue
-					}
-
-					validationTpl.RequiredStrings = append(validationTpl.RequiredStrings, paramName)
 				}
 
 				if o.RequestBody != nil {
 					// If an endpoint has a body, our API requires it, so we can safely add it.
-					validationTpl.RequiredObjects = append(validationTpl.RequiredObjects, "Body")
+					bodyField := FieldValidation{
+						Name:     "Body",
+						JSONName: "body",
+						Required: true,
+						Type:     "object",
+					}
 
+					// Check if the body is JSON and is a struct type (not interface)
+					// Only struct types have Validate methods
+					for mt, mediaType := range o.RequestBody.Value.Content {
+						if mt == "application/json" && mediaType.Schema != nil {
+							schema := mediaType.Schema.Value
+							// Don't mark as nested if it's an interface type (oneOf/anyOf)
+							// or if it has no properties (not a struct)
+							isInterface := len(schema.OneOf) > 0 || len(schema.AnyOf) > 0
+							isStruct := schema.Type.Is("object") && len(schema.Properties) > 0
+							// Also check referenced types
+							isRefToStruct := mediaType.Schema.Ref != "" && len(schema.Properties) > 0
+
+							if !isInterface && (isStruct || isRefToStruct) {
+								bodyField.IsNested = true
+								bodyField.IsPointer = true // Body is always a pointer type for JSON
+							}
+						}
+						break // Only one content type per endpoint
+					}
+
+					validationTpl.Fields = append(validationTpl.Fields, bodyField)
 				}
 				validationMethods = append(validationMethods, validationTpl)
 			}
@@ -367,6 +449,120 @@ func constructParamValidation(paths map[string]*openapi3.PathItem) []ValidationT
 	}
 
 	return validationMethods
+}
+
+// buildFieldValidation constructs a FieldValidation from an OpenAPI schema.
+func buildFieldValidation(goName, jsonName string, schemaRef *openapi3.SchemaRef, required bool) *FieldValidation {
+	if schemaRef == nil || schemaRef.Value == nil {
+		return nil
+	}
+
+	schema := schemaRef.Value
+
+	// Skip fields with no defined type (becomes 'any' in Go) - can't validate interface{}
+	if schema.Type == nil || len(schema.Type.Slice()) == 0 {
+		// Only return a basic required check for 'any' fields
+		if required {
+			return &FieldValidation{
+				Name:     goName,
+				JSONName: jsonName,
+				Required: true,
+				Type:     "object", // Use object for nil check
+			}
+		}
+		return nil
+	}
+
+	fieldVal := &FieldValidation{
+		Name:     goName,
+		JSONName: jsonName,
+		Required: required,
+	}
+
+	// Check for interface types (oneOf/anyOf) - these don't have Validate methods
+	isInterfaceType := len(schema.OneOf) > 0 || len(schema.AnyOf) > 0
+
+	// Check for map types (additionalProperties) - these don't have Validate methods
+	isMapType := schema.AdditionalProperties.Schema != nil
+
+	// Determine field type for required checks
+	// Note: date-time/date/time formats become *time.Time in Go, so treat as object
+	isTimeFormat := schema.Format == "date-time" || schema.Format == "date" || schema.Format == "time"
+
+	// Integer formats that don't become *int in Go (uint64, uint32, etc.)
+	// These become type aliases and should be treated as object for required checks
+	isSpecialIntFormat := schema.Format == "uint64" || schema.Format == "uint32" ||
+		schema.Format == "uint16" || schema.Format == "uint8" ||
+		schema.Format == "int64" || schema.Format == "int32" ||
+		schema.Format == "int16" || schema.Format == "int8"
+
+	if schema.Type.Is("string") && !isTimeFormat {
+		fieldVal.Type = "string"
+	} else if schema.Type.Is("integer") && !isSpecialIntFormat {
+		fieldVal.Type = "int"
+	} else if schema.Type.Is("number") {
+		// float64 in Go - treat as object for required checks (no HasRequiredNum for float64)
+		fieldVal.Type = "object"
+	} else {
+		fieldVal.Type = "object"
+	}
+
+	// Only apply pattern/format validation to actual string types (not time types)
+	if schema.Type.Is("string") && !isTimeFormat {
+		// Extract pattern
+		if schema.Pattern != "" {
+			fieldVal.Pattern = schema.Pattern
+		}
+
+		// Extract format
+		if schema.Format != "" {
+			fieldVal.Format = schema.Format
+		}
+	}
+
+	// Check for enum - only string enums have collections generated
+	// Integer enums (like BlockSize) don't have collections, so skip them
+	if schemaRef.Ref != "" && len(schema.Enum) > 0 && schema.Type.Is("string") {
+		enumTypeName := getReferenceSchema(schemaRef)
+		fieldVal.EnumType = enumTypeName
+		fieldVal.CollectionName = enumTypeName + "Collection"
+	}
+
+	// Check if this field needs nested validation (only actual struct types)
+	// Don't mark as nested if:
+	// - It's an interface type (oneOf/anyOf)
+	// - It's a map type (additionalProperties)
+	// - It's a string/enum type
+	// - It has no properties (not a struct)
+	if !isInterfaceType && !isMapType {
+		isStructType := schema.Type.Is("object") && len(schema.Properties) > 0
+		isRefToStruct := schemaRef.Ref != "" && !schema.Type.Is("string") && len(schema.Enum) == 0 && len(schema.Properties) > 0
+		if isStructType || isRefToStruct {
+			fieldVal.IsNested = true
+		}
+	}
+
+	// Check for array types
+	if schema.Type.Is("array") {
+		fieldVal.IsSlice = true
+		// Only mark as nested if array items are struct types (not interfaces, not strings)
+		if schema.Items != nil && schema.Items.Value != nil {
+			itemSchema := schema.Items.Value
+			isItemInterface := len(itemSchema.OneOf) > 0 || len(itemSchema.AnyOf) > 0
+			isItemStruct := itemSchema.Type.Is("object") && len(itemSchema.Properties) > 0
+			isItemRefToStruct := schema.Items.Ref != "" && !itemSchema.Type.Is("string") && len(itemSchema.Enum) == 0 && len(itemSchema.Properties) > 0
+			if !isItemInterface && (isItemStruct || isItemRefToStruct) {
+				fieldVal.IsNested = true
+			}
+		}
+	}
+
+	// Check if pointer type
+	if schema.Nullable {
+		fieldVal.IsPointer = true
+	}
+
+	return fieldVal
 }
 
 // constructTypes takes the types collected from several parts of the spec and constructs
@@ -453,8 +649,25 @@ func writeTypes(f *os.File, typeCollection []TypeTemplate, typeValidationCollect
 		fmt.Fprint(f, tt.Render())
 	}
 
+	// Build a set of types that already have validation from Params
+	hasValidation := make(map[string]bool)
+	for _, vm := range typeValidationCollection {
+		hasValidation[vm.AssociatedType] = true
+	}
+
+	// Generate validation for Params types
 	for _, vm := range typeValidationCollection {
 		fmt.Fprint(f, vm.Render())
+	}
+
+	// Generate validation for schema types (structs) that don't already have validation
+	for _, tt := range typeCollection {
+		if hasValidation[tt.Name] {
+			continue // Skip types that already have Params validation
+		}
+		if v := tt.ToValidation(); v != nil {
+			fmt.Fprint(f, v.Render())
+		}
 	}
 
 	for _, et := range enumCollection {
