@@ -13603,6 +13603,9 @@ const BgpPeerStateOpenSent BgpPeerState = "open_sent"
 // BgpPeerStateOpenConfirm represents the BgpPeerState `"open_confirm"`.
 const BgpPeerStateOpenConfirm BgpPeerState = "open_confirm"
 
+// BgpPeerStateConnectionCollision represents the BgpPeerState `"connection_collision"`.
+const BgpPeerStateConnectionCollision BgpPeerState = "connection_collision"
+
 // BgpPeerStateSessionSetup represents the BgpPeerState `"session_setup"`.
 const BgpPeerStateSessionSetup BgpPeerState = "session_setup"
 
@@ -14558,6 +14561,7 @@ var BfdStateCollection = []BfdState{
 var BgpPeerStateCollection = []BgpPeerState{
 	BgpPeerStateActive,
 	BgpPeerStateConnect,
+	BgpPeerStateConnectionCollision,
 	BgpPeerStateEstablished,
 	BgpPeerStateIdle,
 	BgpPeerStateOpenConfirm,
