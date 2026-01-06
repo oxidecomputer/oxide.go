@@ -161,6 +161,52 @@ type AddressLotViewResponse struct {
 	Lot AddressLot `json:"lot" yaml:"lot"`
 }
 
+// AddressSelectorType is the type definition for a AddressSelectorType.
+type AddressSelectorType string
+
+// AddressSelectorExplicit is reserve a specific IP address.
+//
+// Required fields:
+// - Ip
+// - Type
+type AddressSelectorExplicit struct {
+	// Ip is the IP address to reserve. Must be available in the pool.
+	Ip string `json:"ip" yaml:"ip"`
+	// Pool is the pool containing this address. If not specified, the default pool for the address's IP version
+	// is used.
+	Pool NameOrId            `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Type AddressSelectorType `json:"type" yaml:"type"`
+}
+
+// AddressSelectorAuto is automatically allocate an IP address from a specified pool.
+//
+// Required fields:
+// - Type
+type AddressSelectorAuto struct {
+	// PoolSelector is pool selection.
+	//
+	// If omitted, this field uses the silo's default pool. If the silo has default pools for both IPv4 and IPv6,
+	// the request will fail unless `ip_version` is specified in the pool selector.
+	PoolSelector PoolSelector        `json:"pool_selector,omitempty" yaml:"pool_selector,omitempty"`
+	Type         AddressSelectorType `json:"type" yaml:"type"`
+}
+
+// AddressSelector is specify how to allocate a floating IP address.
+type AddressSelector struct {
+	// Ip is the IP address to reserve. Must be available in the pool.
+	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
+	// Pool is the pool containing this address. If not specified, the default pool for the address's IP version
+	// is used.
+	Pool NameOrId `json:"pool,omitzero" yaml:"pool,omitzero"`
+	// Type is the type definition for a Type.
+	Type AddressSelectorType `json:"type,omitempty" yaml:"type,omitempty"`
+	// PoolSelector is pool selection.
+	//
+	// If omitted, this field uses the silo's default pool. If the silo has default pools for both IPv4 and IPv6,
+	// the request will fail unless `ip_version` is specified in the pool selector.
+	PoolSelector PoolSelector `json:"pool_selector,omitempty" yaml:"pool_selector,omitempty"`
+}
+
 // AffinityGroup is view of an Affinity Group
 //
 // Required fields:
@@ -2714,9 +2760,8 @@ type Distributionint64 struct {
 
 // EphemeralIpCreate is parameters for creating an ephemeral IP address for an instance.
 type EphemeralIpCreate struct {
-	// Pool is name or ID of the IP pool used to allocate an address. If unspecified, the default IP pool will
-	// be used.
-	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
+	// PoolSelector is pool to allocate from.
+	PoolSelector PoolSelector `json:"pool_selector,omitempty" yaml:"pool_selector,omitempty"`
 }
 
 // Error is error information from a response.
@@ -2834,13 +2879,14 @@ type ExternalIp struct {
 type ExternalIpCreateType string
 
 // ExternalIpCreateEphemeral is an IP address providing both inbound and outbound access. The address is
-// automatically assigned from the provided IP pool or the default IP pool if not specified.
+// automatically assigned from a pool.
 //
 // Required fields:
 // - Type
 type ExternalIpCreateEphemeral struct {
-	Pool NameOrId             `json:"pool,omitempty" yaml:"pool,omitempty"`
-	Type ExternalIpCreateType `json:"type" yaml:"type"`
+	// PoolSelector is pool to allocate from.
+	PoolSelector PoolSelector         `json:"pool_selector,omitempty" yaml:"pool_selector,omitempty"`
+	Type         ExternalIpCreateType `json:"type" yaml:"type"`
 }
 
 // ExternalIpCreateFloating is an IP address providing both inbound and outbound access. The address is
@@ -2858,8 +2904,8 @@ type ExternalIpCreateFloating struct {
 
 // ExternalIpCreate is parameters for creating an external IP address for instances.
 type ExternalIpCreate struct {
-	// Pool is the type definition for a Pool.
-	Pool NameOrId `json:"pool,omitzero" yaml:"pool,omitzero"`
+	// PoolSelector is pool to allocate from.
+	PoolSelector PoolSelector `json:"pool_selector,omitempty" yaml:"pool_selector,omitempty"`
 	// Type is the type definition for a Type.
 	Type ExternalIpCreateType `json:"type,omitempty" yaml:"type,omitempty"`
 	// FloatingIp is the type definition for a FloatingIp.
@@ -3123,16 +3169,13 @@ type FloatingIpAttach struct {
 // - Description
 // - Name
 type FloatingIpCreate struct {
-	Description string `json:"description" yaml:"description"`
-	// Ip is an IP address to reserve for use as a floating IP. This field is optional: when not set, an address
-	// will be automatically chosen from `pool`. If set, then the IP must be available in the resolved `pool`.
-	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
+	// AddressSelector is iP address allocation method.
+	AddressSelector AddressSelector `json:"address_selector,omitempty" yaml:"address_selector,omitempty"`
+	Description     string          `json:"description" yaml:"description"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
 	// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
-	// Pool is the parent IP pool that a floating IP is pulled from. If unset, the default pool is selected.
-	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 }
 
 // FloatingIpParentKind is the type of resource that a floating IP is attached to
@@ -3985,11 +4028,10 @@ type InstanceCreate struct {
 	Hostname Hostname `json:"hostname" yaml:"hostname"`
 	// Memory is the amount of RAM (in bytes) to be allocated to the instance
 	Memory ByteCount `json:"memory" yaml:"memory"`
-	// MulticastGroups is the multicast groups this instance should join.
+	// MulticastGroups is multicast groups this instance should join at creation.
 	//
-	// The instance will be automatically added as a member of the specified multicast groups during creation, enabling
-	// it to send and receive multicast traffic for those groups.
-	MulticastGroups []NameOrId `json:"multicast_groups,omitzero" yaml:"multicast_groups,omitzero"`
+	// Groups can be specified by name, UUID, or IP address. Non-existent groups are created automatically.
+	MulticastGroups []MulticastGroupJoinSpec `json:"multicast_groups,omitempty" yaml:"multicast_groups,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
 	// can be at most 63 characters long.
@@ -4062,6 +4104,18 @@ type InstanceDiskAttachment struct {
 	Type InstanceDiskAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
+// InstanceMulticastGroupJoin is parameters for joining an instance to a multicast group.
+//
+// When joining by IP address, the pool containing the multicast IP is auto-discovered from all linked multicast pools.
+type InstanceMulticastGroupJoin struct {
+	// IpVersion is iP version for pool selection when creating a group by name. Required if both IPv4 and IPv6
+	// default multicast pools are linked.
+	IpVersion IpVersion `json:"ip_version,omitempty" yaml:"ip_version,omitempty"`
+	// SourceIps is source IPs for source-filtered multicast (SSM). Optional for ASM groups, required for SSM
+	// groups (232.0.0.0/8, ff3x::/32).
+	SourceIps []string `json:"source_ips" yaml:"source_ips"`
+}
+
 // InstanceNetworkInterface is an `InstanceNetworkInterface` represents a virtual network interface device attached
 // to an instance.
 //
@@ -4069,7 +4123,7 @@ type InstanceDiskAttachment struct {
 // - Description
 // - Id
 // - InstanceId
-// - Ip
+// - IpStack
 // - Mac
 // - Name
 // - Primary
@@ -4084,8 +4138,8 @@ type InstanceNetworkInterface struct {
 	Id string `json:"id" yaml:"id"`
 	// InstanceId is the Instance to which the interface belongs.
 	InstanceId string `json:"instance_id" yaml:"instance_id"`
-	// Ip is the IP address assigned to this interface.
-	Ip string `json:"ip" yaml:"ip"`
+	// IpStack is the VPC-private IP stack for this interface.
+	IpStack PrivateIpStack `json:"ip_stack" yaml:"ip_stack"`
 	// Mac is the MAC address assigned to this interface.
 	Mac MacAddr `json:"mac" yaml:"mac"`
 	// Name is unique, mutable, user-controlled identifier for each resource
@@ -4098,8 +4152,6 @@ type InstanceNetworkInterface struct {
 	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
-	// TransitIps is a set of additional networks that this interface may send and receive traffic on.
-	TransitIps []IpNet `json:"transit_ips,omitempty" yaml:"transit_ips,omitempty"`
 	// VpcId is the VPC to which the interface belongs.
 	VpcId string `json:"vpc_id" yaml:"vpc_id"`
 }
@@ -4119,13 +4171,36 @@ type InstanceNetworkInterfaceAttachmentCreate struct {
 	Type   InstanceNetworkInterfaceAttachmentType `json:"type" yaml:"type"`
 }
 
-// InstanceNetworkInterfaceAttachmentDefault is the default networking configuration for an instance is
-// to create a single primary interface with an automatically-assigned IP address. The IP will be pulled from
-// the Project's default VPC / VPC Subnet.
+// InstanceNetworkInterfaceAttachmentDefaultIpv4 is create a single primary interface with an automatically-assigned IPv4
+// address.
+//
+// The IP will be pulled from the Project's default VPC / VPC Subnet.
 //
 // Required fields:
 // - Type
-type InstanceNetworkInterfaceAttachmentDefault struct {
+type InstanceNetworkInterfaceAttachmentDefaultIpv4 struct {
+	Type InstanceNetworkInterfaceAttachmentType `json:"type" yaml:"type"`
+}
+
+// InstanceNetworkInterfaceAttachmentDefaultIpv6 is create a single primary interface with an automatically-assigned IPv6
+// address.
+//
+// The IP will be pulled from the Project's default VPC / VPC Subnet.
+//
+// Required fields:
+// - Type
+type InstanceNetworkInterfaceAttachmentDefaultIpv6 struct {
+	Type InstanceNetworkInterfaceAttachmentType `json:"type" yaml:"type"`
+}
+
+// InstanceNetworkInterfaceAttachmentDefaultDualStack is create a single primary interface with automatically-assigned IPv4
+// and IPv6 addresses.
+//
+// The IPs will be pulled from the Project's default VPC / VPC Subnet.
+//
+// Required fields:
+// - Type
+type InstanceNetworkInterfaceAttachmentDefaultDualStack struct {
 	Type InstanceNetworkInterfaceAttachmentType `json:"type" yaml:"type"`
 }
 
@@ -4155,16 +4230,16 @@ type InstanceNetworkInterfaceAttachment struct {
 // - VpcName
 type InstanceNetworkInterfaceCreate struct {
 	Description string `json:"description" yaml:"description"`
-	// Ip is the IP address for the interface. One will be auto-assigned if not provided.
-	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
+	// IpConfig is the IP stack configuration for this interface.
+	//
+	// If not provided, a default configuration will be used, which creates a dual-stack IPv4 / IPv6 interface.
+	IpConfig PrivateIpStackCreate `json:"ip_config,omitempty" yaml:"ip_config,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
 	// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 	// SubnetName is the VPC Subnet in which to create the interface.
 	SubnetName Name `json:"subnet_name" yaml:"subnet_name"`
-	// TransitIps is a set of additional networks that this interface may send and receive traffic on.
-	TransitIps []IpNet `json:"transit_ips,omitempty" yaml:"transit_ips,omitempty"`
 	// VpcName is the VPC in which to create the interface.
 	VpcName Name `json:"vpc_name" yaml:"vpc_name"`
 }
@@ -4195,7 +4270,7 @@ type InstanceNetworkInterfaceUpdate struct {
 	// Note that this can only be used to select a new primary interface for an instance. Requests to change the
 	// primary interface into a secondary will return an error.
 	Primary *bool `json:"primary,omitempty" yaml:"primary,omitempty"`
-	// TransitIps is a set of additional networks that this interface may send and receive traffic on.
+	// TransitIps is a set of additional networks that this interface may send and receive traffic on
 	TransitIps []IpNet `json:"transit_ips,omitempty" yaml:"transit_ips,omitempty"`
 }
 
@@ -4269,8 +4344,12 @@ type InstanceUpdate struct {
 	// When specified, this replaces the instance's current multicast group membership with the new set of groups. The
 	// instance will leave any groups not listed here and join any new groups that are specified.
 	//
-	// If not provided (None), the instance's multicast group membership will not be changed.
-	MulticastGroups []NameOrId `json:"multicast_groups" yaml:"multicast_groups"`
+	// Each entry can specify the group by name, UUID, or IP address, along with optional source IP filtering for
+	// SSM (Source-Specific Multicast). When a group doesn't exist, it will be implicitly created using the default
+	// multicast pool (or you can specify `ip_version` to disambiguate if needed).
+	//
+	// If not provided, the instance's multicast group membership will not be changed.
+	MulticastGroups []MulticastGroupJoinSpec `json:"multicast_groups" yaml:"multicast_groups"`
 	// Ncpus is the number of vCPUs to be allocated to the instance
 	Ncpus InstanceCpuCount `json:"ncpus" yaml:"ncpus"`
 }
@@ -4486,7 +4565,7 @@ type IpPool struct {
 	IpVersion IpVersion `json:"ip_version" yaml:"ip_version"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name" yaml:"name"`
-	// PoolType is type of IP pool (unicast or multicast)
+	// PoolType is type of IP pool (unicast or multicast).
 	PoolType IpPoolType `json:"pool_type" yaml:"pool_type"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
@@ -4526,7 +4605,10 @@ type IpPoolCreate struct {
 // - Silo
 type IpPoolLinkSilo struct {
 	// IsDefault is when a pool is the default for a silo, floating IPs and instance ephemeral IPs will come from
-	// that pool when no other pool is specified. There can be at most one default for a given silo.
+	// that pool when no other pool is specified.
+	//
+	// A silo can have at most one default pool per combination of pool type (unicast or multicast) and IP version (IPv4
+	// or IPv6), allowing up to 4 default pools total.
 	IsDefault *bool    `json:"is_default" yaml:"is_default"`
 	Silo      NameOrId `json:"silo" yaml:"silo"`
 }
@@ -4577,7 +4659,10 @@ type IpPoolResultsPage struct {
 type IpPoolSiloLink struct {
 	IpPoolId string `json:"ip_pool_id" yaml:"ip_pool_id"`
 	// IsDefault is when a pool is the default for a silo, floating IPs and instance ephemeral IPs will come from
-	// that pool when no other pool is specified. There can be at most one default for a given silo.
+	// that pool when no other pool is specified.
+	//
+	// A silo can have at most one default pool per combination of pool type (unicast or multicast) and IP version (IPv4
+	// or IPv6), allowing up to 4 default pools total.
 	IsDefault *bool  `json:"is_default" yaml:"is_default"`
 	SiloId    string `json:"silo_id" yaml:"silo_id"`
 }
@@ -4599,8 +4684,11 @@ type IpPoolSiloLinkResultsPage struct {
 // - IsDefault
 type IpPoolSiloUpdate struct {
 	// IsDefault is when a pool is the default for a silo, floating IPs and instance ephemeral IPs will come from
-	// that pool when no other pool is specified. There can be at most one default for a given silo, so when a
-	// pool is made default, an existing default will remain linked but will no longer be the default.
+	// that pool when no other pool is specified.
+	//
+	// A silo can have at most one default pool per combination of pool type (unicast or multicast) and IP version (IPv4
+	// or IPv6), allowing up to 4 default pools total. When a pool is made default, an existing default of the same
+	// type and version will remain linked but will no longer be the default.
 	IsDefault *bool `json:"is_default" yaml:"is_default"`
 }
 
@@ -4636,6 +4724,35 @@ type IpRange interface{}
 // IpVersion is the IP address version.
 type IpVersion string
 
+// Ipv4AssignmentType is the type definition for a Ipv4AssignmentType.
+type Ipv4AssignmentType string
+
+// Ipv4AssignmentAuto is automatically assign an IP address from the VPC Subnet.
+//
+// Required fields:
+// - Type
+type Ipv4AssignmentAuto struct {
+	Type Ipv4AssignmentType `json:"type" yaml:"type"`
+}
+
+// Ipv4AssignmentExplicit is explicitly assign a specific address, if available.
+//
+// Required fields:
+// - Type
+// - Value
+type Ipv4AssignmentExplicit struct {
+	Type  Ipv4AssignmentType `json:"type" yaml:"type"`
+	Value string             `json:"value" yaml:"value"`
+}
+
+// Ipv4Assignment is how a VPC-private IP address is assigned to a network interface.
+type Ipv4Assignment struct {
+	// Type is the type definition for a Type.
+	Type Ipv4AssignmentType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is the type definition for a Value.
+	Value string `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
 // Ipv4Net is an IPv4 subnet, including prefix and prefix length
 type Ipv4Net string
 
@@ -4649,6 +4766,35 @@ type Ipv4Net string
 type Ipv4Range struct {
 	First string `json:"first" yaml:"first"`
 	Last  string `json:"last" yaml:"last"`
+}
+
+// Ipv6AssignmentType is the type definition for a Ipv6AssignmentType.
+type Ipv6AssignmentType string
+
+// Ipv6AssignmentAuto is automatically assign an IP address from the VPC Subnet.
+//
+// Required fields:
+// - Type
+type Ipv6AssignmentAuto struct {
+	Type Ipv6AssignmentType `json:"type" yaml:"type"`
+}
+
+// Ipv6AssignmentExplicit is explicitly assign a specific address, if available.
+//
+// Required fields:
+// - Type
+// - Value
+type Ipv6AssignmentExplicit struct {
+	Type  Ipv6AssignmentType `json:"type" yaml:"type"`
+	Value string             `json:"value" yaml:"value"`
+}
+
+// Ipv6Assignment is how a VPC-private IP address is assigned to a network interface.
+type Ipv6Assignment struct {
+	// Type is the type definition for a Type.
+	Type Ipv6AssignmentType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is the type definition for a Value.
+	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // Ipv6Net is an IPv6 subnet, including prefix and subnet mask
@@ -4925,8 +5071,11 @@ type MulticastGroup struct {
 	Mvlan *int `json:"mvlan,omitempty" yaml:"mvlan,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name" yaml:"name"`
-	// SourceIps is source IP addresses for Source-Specific Multicast (SSM). Empty array means any source is
-	// allowed.
+	// SourceIps is union of all member source IP addresses (computed, read-only).
+	//
+	// This field shows the combined source IPs across all group members. Individual members may subscribe to different
+	// sources; this union reflects all sources that any member is subscribed to. Empty array means no members have
+	// source filtering enabled.
 	SourceIps []string `json:"source_ips" yaml:"source_ips"`
 	// State is current state of the multicast group.
 	State string `json:"state" yaml:"state"`
@@ -4936,31 +5085,24 @@ type MulticastGroup struct {
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
 
-// MulticastGroupCreate is create-time parameters for a multicast group.
+// MulticastGroupIdentifier is can be a UUID, a name, or an IP address
+type MulticastGroupIdentifier string
+
+// MulticastGroupJoinSpec is specification for joining a multicast group with optional source filtering.
+//
+// Used in `InstanceCreate` and `InstanceUpdate` to specify multicast group membership along with per-member source
+// IP configuration.
 //
 // Required fields:
-// - Description
-// - Name
-type MulticastGroupCreate struct {
-	Description string `json:"description" yaml:"description"`
-	// MulticastIp is the multicast IP address to allocate. If None, one will be allocated from the default pool.
-	//
-	MulticastIp string `json:"multicast_ip,omitempty" yaml:"multicast_ip,omitempty"`
-	// Mvlan is multicast VLAN (MVLAN) for egress multicast traffic to upstream networks. Tags packets leaving the
-	// rack to traverse VLAN-segmented upstream networks.
-	//
-	// Valid range: 2-4094 (VLAN IDs 0-1 are reserved by IEEE 802.1Q standard).
-	Mvlan *int `json:"mvlan,omitempty" yaml:"mvlan,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
-	Name Name `json:"name" yaml:"name"`
-	// Pool is name or ID of the IP pool to allocate from. If None, uses the default multicast pool.
-	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
-	// SourceIps is source IP addresses for Source-Specific Multicast (SSM).
-	//
-	// None uses default behavior (Any-Source Multicast). Empty list explicitly allows any source (Any-Source Multicast).
-	// Non-empty list restricts to specific sources (SSM).
+// - Group
+type MulticastGroupJoinSpec struct {
+	// Group is the multicast group to join, specified by name, UUID, or IP address.
+	Group MulticastGroupIdentifier `json:"group" yaml:"group"`
+	// IpVersion is iP version for pool selection when creating a group by name. Required if both IPv4 and IPv6
+	// default multicast pools are linked.
+	IpVersion IpVersion `json:"ip_version,omitempty" yaml:"ip_version,omitempty"`
+	// SourceIps is source IPs for source-filtered multicast (SSM). Optional for ASM groups, required for SSM
+	// groups (232.0.0.0/8, ff3x::/32).
 	SourceIps []string `json:"source_ips" yaml:"source_ips"`
 }
 
@@ -4971,7 +5113,9 @@ type MulticastGroupCreate struct {
 // - Id
 // - InstanceId
 // - MulticastGroupId
+// - MulticastIp
 // - Name
+// - SourceIps
 // - State
 // - TimeCreated
 // - TimeModified
@@ -4984,23 +5128,21 @@ type MulticastGroupMember struct {
 	InstanceId string `json:"instance_id" yaml:"instance_id"`
 	// MulticastGroupId is the ID of the multicast group this member belongs to.
 	MulticastGroupId string `json:"multicast_group_id" yaml:"multicast_group_id"`
+	// MulticastIp is the multicast IP address of the group this member belongs to.
+	MulticastIp string `json:"multicast_ip" yaml:"multicast_ip"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name" yaml:"name"`
+	// SourceIps is source IP addresses for this member's multicast subscription.
+	//
+	// - **ASM**: Sources are optional. Empty array means any source is allowed. Non-empty array enables source filtering
+	// (IGMPv3/MLDv2). - **SSM**: Sources are required for SSM addresses (232/8, ff3x::/32).
+	SourceIps []string `json:"source_ips" yaml:"source_ips"`
 	// State is current state of the multicast group membership.
 	State string `json:"state" yaml:"state"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
-}
-
-// MulticastGroupMemberAdd is parameters for adding an instance to a multicast group.
-//
-// Required fields:
-// - Instance
-type MulticastGroupMemberAdd struct {
-	// Instance is name or ID of the instance to add to the multicast group
-	Instance NameOrId `json:"instance" yaml:"instance"`
 }
 
 // MulticastGroupMemberResultsPage is a single page of results
@@ -5023,16 +5165,6 @@ type MulticastGroupResultsPage struct {
 	Items []MulticastGroup `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
-}
-
-// MulticastGroupUpdate is update-time parameters for a multicast group.
-type MulticastGroupUpdate struct {
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// Mvlan is multicast VLAN (MVLAN) for egress multicast traffic to upstream networks. Set to null to clear
-	// the MVLAN. Valid range: 2-4094 when provided. Omit the field to leave mvlan unchanged.
-	Mvlan     *int     `json:"mvlan,omitempty" yaml:"mvlan,omitempty"`
-	Name      Name     `json:"name,omitempty" yaml:"name,omitempty"`
-	SourceIps []string `json:"source_ips" yaml:"source_ips"`
 }
 
 // Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
@@ -5077,17 +5209,17 @@ type NetworkAddress struct {
 //
 // Required fields:
 // - Id
-// - Ip
+// - IpConfig
 // - Kind
 // - Mac
 // - Name
 // - Primary
 // - Slot
-// - Subnet
 // - Vni
 type NetworkInterface struct {
 	Id string `json:"id" yaml:"id"`
-	Ip string `json:"ip" yaml:"ip"`
+	// IpConfig is vPC-private IP address configuration for a network interface.
+	IpConfig PrivateIpConfig `json:"ip_config" yaml:"ip_config"`
 	// Kind is the type of network interface
 	Kind NetworkInterfaceKind `json:"kind" yaml:"kind"`
 	// Mac is a Media Access Control address, in EUI-48 format
@@ -5095,11 +5227,9 @@ type NetworkInterface struct {
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
 	// can be at most 63 characters long.
-	Name       Name    `json:"name" yaml:"name"`
-	Primary    *bool   `json:"primary" yaml:"primary"`
-	Slot       *int    `json:"slot" yaml:"slot"`
-	Subnet     IpNet   `json:"subnet" yaml:"subnet"`
-	TransitIps []IpNet `json:"transit_ips,omitempty" yaml:"transit_ips,omitempty"`
+	Name    Name  `json:"name" yaml:"name"`
+	Primary *bool `json:"primary" yaml:"primary"`
+	Slot    *int  `json:"slot" yaml:"slot"`
 	// Vni is a Geneve Virtual Network Identifier
 	Vni Vni `json:"vni" yaml:"vni"`
 }
@@ -5281,6 +5411,282 @@ type Points struct {
 	Values     []Values    `json:"values" yaml:"values"`
 }
 
+// PoolSelectorType is the type definition for a PoolSelectorType.
+type PoolSelectorType string
+
+// PoolSelectorExplicit is use the specified pool by name or ID.
+//
+// Required fields:
+// - Pool
+// - Type
+type PoolSelectorExplicit struct {
+	// Pool is the pool to allocate from.
+	Pool NameOrId         `json:"pool" yaml:"pool"`
+	Type PoolSelectorType `json:"type" yaml:"type"`
+}
+
+// PoolSelectorAuto is use the default pool for the silo.
+//
+// Required fields:
+// - Type
+type PoolSelectorAuto struct {
+	// IpVersion is iP version to use when multiple default pools exist. Required if both IPv4 and IPv6 default pools
+	// are configured.
+	IpVersion IpVersion        `json:"ip_version,omitempty" yaml:"ip_version,omitempty"`
+	Type      PoolSelectorType `json:"type" yaml:"type"`
+}
+
+// PoolSelector is specify which IP pool to allocate from.
+type PoolSelector struct {
+	// Pool is the pool to allocate from.
+	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
+	// Type is the type definition for a Type.
+	Type PoolSelectorType `json:"type,omitempty" yaml:"type,omitempty"`
+	// IpVersion is iP version to use when multiple default pools exist. Required if both IPv4 and IPv6 default pools
+	// are configured.
+	IpVersion IpVersion `json:"ip_version,omitzero" yaml:"ip_version,omitzero"`
+}
+
+// PrivateIpConfigType is the type definition for a PrivateIpConfigType.
+type PrivateIpConfigType string
+
+// PrivateIpConfigV4 is the interface has only an IPv4 configuration.
+//
+// Required fields:
+// - Type
+// - Value
+type PrivateIpConfigV4 struct {
+	Type PrivateIpConfigType `json:"type" yaml:"type"`
+	// Value is vPC-private IPv4 configuration for a network interface.
+	Value PrivateIpv4Config `json:"value" yaml:"value"`
+}
+
+// PrivateIpConfigV6 is the interface has only an IPv6 configuration.
+//
+// Required fields:
+// - Type
+// - Value
+type PrivateIpConfigV6 struct {
+	Type PrivateIpConfigType `json:"type" yaml:"type"`
+	// Value is vPC-private IPv6 configuration for a network interface.
+	Value PrivateIpv6Config `json:"value" yaml:"value"`
+}
+
+// PrivateIpConfigValue is the type definition for a PrivateIpConfigValue.
+//
+// Required fields:
+// - V4
+// - V6
+type PrivateIpConfigValue struct {
+	// V4 is the interface's IPv4 configuration.
+	V4 PrivateIpv4Config `json:"v4" yaml:"v4"`
+	// V6 is the interface's IPv6 configuration.
+	V6 PrivateIpv6Config `json:"v6" yaml:"v6"`
+}
+
+// PrivateIpConfigDualStack is the interface is dual-stack.
+//
+// Required fields:
+// - Type
+// - Value
+type PrivateIpConfigDualStack struct {
+	Type  PrivateIpConfigType  `json:"type" yaml:"type"`
+	Value PrivateIpConfigValue `json:"value" yaml:"value"`
+}
+
+// PrivateIpConfig is vPC-private IP address configuration for a network interface.
+type PrivateIpConfig struct {
+	// Type is the type definition for a Type.
+	Type PrivateIpConfigType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is vPC-private IPv4 configuration for a network interface.
+	Value any `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// PrivateIpStackType is the type definition for a PrivateIpStackType.
+type PrivateIpStackType string
+
+// PrivateIpStackV4 is the interface has only an IPv4 stack.
+//
+// Required fields:
+// - Type
+// - Value
+type PrivateIpStackV4 struct {
+	Type PrivateIpStackType `json:"type" yaml:"type"`
+	// Value is the VPC-private IPv4 stack for a network interface
+	Value PrivateIpv4Stack `json:"value" yaml:"value"`
+}
+
+// PrivateIpStackV6 is the interface has only an IPv6 stack.
+//
+// Required fields:
+// - Type
+// - Value
+type PrivateIpStackV6 struct {
+	Type PrivateIpStackType `json:"type" yaml:"type"`
+	// Value is the VPC-private IPv6 stack for a network interface
+	Value PrivateIpv6Stack `json:"value" yaml:"value"`
+}
+
+// PrivateIpStackValue is the type definition for a PrivateIpStackValue.
+//
+// Required fields:
+// - V4
+// - V6
+type PrivateIpStackValue struct {
+	// V4 is the VPC-private IPv4 stack for a network interface
+	V4 PrivateIpv4Stack `json:"v4" yaml:"v4"`
+	// V6 is the VPC-private IPv6 stack for a network interface
+	V6 PrivateIpv6Stack `json:"v6" yaml:"v6"`
+}
+
+// PrivateIpStackDualStack is the interface is dual-stack IPv4 and IPv6.
+//
+// Required fields:
+// - Type
+// - Value
+type PrivateIpStackDualStack struct {
+	Type  PrivateIpStackType  `json:"type" yaml:"type"`
+	Value PrivateIpStackValue `json:"value" yaml:"value"`
+}
+
+// PrivateIpStack is the VPC-private IP stack for a network interface.
+type PrivateIpStack struct {
+	// Type is the type definition for a Type.
+	Type PrivateIpStackType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is the VPC-private IPv4 stack for a network interface
+	Value any `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// PrivateIpStackCreateType is the type definition for a PrivateIpStackCreateType.
+type PrivateIpStackCreateType string
+
+// PrivateIpStackCreateV4 is the interface has only an IPv4 stack.
+//
+// Required fields:
+// - Type
+// - Value
+type PrivateIpStackCreateV4 struct {
+	Type PrivateIpStackCreateType `json:"type" yaml:"type"`
+	// Value is configuration for a network interface's IPv4 addressing.
+	Value PrivateIpv4StackCreate `json:"value" yaml:"value"`
+}
+
+// PrivateIpStackCreateV6 is the interface has only an IPv6 stack.
+//
+// Required fields:
+// - Type
+// - Value
+type PrivateIpStackCreateV6 struct {
+	Type PrivateIpStackCreateType `json:"type" yaml:"type"`
+	// Value is configuration for a network interface's IPv6 addressing.
+	Value PrivateIpv6StackCreate `json:"value" yaml:"value"`
+}
+
+// PrivateIpStackCreateValue is the type definition for a PrivateIpStackCreateValue.
+//
+// Required fields:
+// - V4
+// - V6
+type PrivateIpStackCreateValue struct {
+	// V4 is configuration for a network interface's IPv4 addressing.
+	V4 PrivateIpv4StackCreate `json:"v4" yaml:"v4"`
+	// V6 is configuration for a network interface's IPv6 addressing.
+	V6 PrivateIpv6StackCreate `json:"v6" yaml:"v6"`
+}
+
+// PrivateIpStackCreateDualStack is the interface has both an IPv4 and IPv6 stack.
+//
+// Required fields:
+// - Type
+// - Value
+type PrivateIpStackCreateDualStack struct {
+	Type  PrivateIpStackCreateType  `json:"type" yaml:"type"`
+	Value PrivateIpStackCreateValue `json:"value" yaml:"value"`
+}
+
+// PrivateIpStackCreate is create parameters for a network interface's IP stack.
+type PrivateIpStackCreate struct {
+	// Type is the type definition for a Type.
+	Type PrivateIpStackCreateType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Value is configuration for a network interface's IPv4 addressing.
+	Value any `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+// PrivateIpv4Config is vPC-private IPv4 configuration for a network interface.
+//
+// Required fields:
+// - Ip
+// - Subnet
+type PrivateIpv4Config struct {
+	// Ip is vPC-private IP address.
+	Ip string `json:"ip" yaml:"ip"`
+	// Subnet is the IP subnet.
+	Subnet Ipv4Net `json:"subnet" yaml:"subnet"`
+	// TransitIps is additional networks on which the interface can send / receive traffic.
+	TransitIps []Ipv4Net `json:"transit_ips,omitempty" yaml:"transit_ips,omitempty"`
+}
+
+// PrivateIpv4Stack is the VPC-private IPv4 stack for a network interface
+//
+// Required fields:
+// - Ip
+// - TransitIps
+type PrivateIpv4Stack struct {
+	// Ip is the VPC-private IPv4 address for the interface.
+	Ip string `json:"ip" yaml:"ip"`
+	// TransitIps is a set of additional IPv4 networks that this interface may send and receive traffic on.
+	TransitIps []Ipv4Net `json:"transit_ips" yaml:"transit_ips"`
+}
+
+// PrivateIpv4StackCreate is configuration for a network interface's IPv4 addressing.
+//
+// Required fields:
+// - Ip
+type PrivateIpv4StackCreate struct {
+	// Ip is the VPC-private address to assign to the interface.
+	Ip Ipv4Assignment `json:"ip" yaml:"ip"`
+	// TransitIps is additional IP networks the interface can send / receive on.
+	TransitIps []Ipv4Net `json:"transit_ips,omitempty" yaml:"transit_ips,omitempty"`
+}
+
+// PrivateIpv6Config is vPC-private IPv6 configuration for a network interface.
+//
+// Required fields:
+// - Ip
+// - Subnet
+// - TransitIps
+type PrivateIpv6Config struct {
+	// Ip is vPC-private IP address.
+	Ip string `json:"ip" yaml:"ip"`
+	// Subnet is the IP subnet.
+	Subnet Ipv6Net `json:"subnet" yaml:"subnet"`
+	// TransitIps is additional networks on which the interface can send / receive traffic.
+	TransitIps []Ipv6Net `json:"transit_ips" yaml:"transit_ips"`
+}
+
+// PrivateIpv6Stack is the VPC-private IPv6 stack for a network interface
+//
+// Required fields:
+// - Ip
+// - TransitIps
+type PrivateIpv6Stack struct {
+	// Ip is the VPC-private IPv6 address for the interface.
+	Ip string `json:"ip" yaml:"ip"`
+	// TransitIps is a set of additional IPv6 networks that this interface may send and receive traffic on.
+	TransitIps []Ipv6Net `json:"transit_ips" yaml:"transit_ips"`
+}
+
+// PrivateIpv6StackCreate is configuration for a network interface's IPv6 addressing.
+//
+// Required fields:
+// - Ip
+type PrivateIpv6StackCreate struct {
+	// Ip is the VPC-private address to assign to the interface.
+	Ip Ipv6Assignment `json:"ip" yaml:"ip"`
+	// TransitIps is additional IP networks the interface can send / receive on.
+	TransitIps []Ipv6Net `json:"transit_ips,omitempty" yaml:"transit_ips,omitempty"`
+}
+
 // Probe is identity-related metadata that's included in nearly all public API objects
 //
 // Required fields:
@@ -5311,13 +5717,14 @@ type Probe struct {
 // - Name
 // - Sled
 type ProbeCreate struct {
-	Description string   `json:"description" yaml:"description"`
-	IpPool      NameOrId `json:"ip_pool,omitempty" yaml:"ip_pool,omitempty"`
+	Description string `json:"description" yaml:"description"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
 	// can be at most 63 characters long.
-	Name Name   `json:"name" yaml:"name"`
-	Sled string `json:"sled" yaml:"sled"`
+	Name Name `json:"name" yaml:"name"`
+	// PoolSelector is pool to allocate from.
+	PoolSelector PoolSelector `json:"pool_selector,omitempty" yaml:"pool_selector,omitempty"`
+	Sled         string       `json:"sled" yaml:"sled"`
 }
 
 // ProbeExternalIp is the type definition for a ProbeExternalIp.
@@ -5993,8 +6400,10 @@ type SiloIdentityMode string
 // Required fields:
 // - Description
 // - Id
+// - IpVersion
 // - IsDefault
 // - Name
+// - PoolType
 // - TimeCreated
 // - TimeModified
 type SiloIpPool struct {
@@ -6002,11 +6411,18 @@ type SiloIpPool struct {
 	Description string `json:"description" yaml:"description"`
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id" yaml:"id"`
+	// IpVersion is the IP version for the pool.
+	IpVersion IpVersion `json:"ip_version" yaml:"ip_version"`
 	// IsDefault is when a pool is the default for a silo, floating IPs and instance ephemeral IPs will come from
-	// that pool when no other pool is specified. There can be at most one default for a given silo.
+	// that pool when no other pool is specified.
+	//
+	// A silo can have at most one default pool per combination of pool type (unicast or multicast) and IP version (IPv4
+	// or IPv6), allowing up to 4 default pools total.
 	IsDefault *bool `json:"is_default" yaml:"is_default"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name" yaml:"name"`
+	// PoolType is type of IP pool (unicast or multicast).
+	PoolType IpPoolType `json:"pool_type" yaml:"pool_type"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
 	// TimeModified is timestamp when this resource was last modified
@@ -8907,8 +9323,11 @@ type InstanceEphemeralIpAttachParams struct {
 // Required fields:
 // - Instance
 type InstanceMulticastGroupListParams struct {
-	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
-	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project   NameOrId   `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Instance  NameOrId   `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
 
 // InstanceMulticastGroupLeaveParams is the request parameters for InstanceMulticastGroupLeave
@@ -8917,9 +9336,9 @@ type InstanceMulticastGroupListParams struct {
 // - Instance
 // - MulticastGroup
 type InstanceMulticastGroupLeaveParams struct {
-	Instance       NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
-	MulticastGroup NameOrId `json:"multicast_group,omitempty" yaml:"multicast_group,omitempty"`
-	Project        NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Instance       NameOrId                 `json:"instance,omitempty" yaml:"instance,omitempty"`
+	MulticastGroup MulticastGroupIdentifier `json:"multicast_group,omitempty" yaml:"multicast_group,omitempty"`
+	Project        NameOrId                 `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
 // InstanceMulticastGroupJoinParams is the request parameters for InstanceMulticastGroupJoin
@@ -8927,10 +9346,12 @@ type InstanceMulticastGroupLeaveParams struct {
 // Required fields:
 // - Instance
 // - MulticastGroup
+// - Body
 type InstanceMulticastGroupJoinParams struct {
-	Instance       NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
-	MulticastGroup NameOrId `json:"multicast_group,omitempty" yaml:"multicast_group,omitempty"`
-	Project        NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Instance       NameOrId                    `json:"instance,omitempty" yaml:"instance,omitempty"`
+	MulticastGroup MulticastGroupIdentifier    `json:"multicast_group,omitempty" yaml:"multicast_group,omitempty"`
+	Project        NameOrId                    `json:"project,omitempty" yaml:"project,omitempty"`
+	Body           *InstanceMulticastGroupJoin `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // InstanceRebootParams is the request parameters for InstanceReboot
@@ -9213,38 +9634,12 @@ type MulticastGroupListParams struct {
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
 
-// MulticastGroupCreateParams is the request parameters for MulticastGroupCreate
-//
-// Required fields:
-// - Body
-type MulticastGroupCreateParams struct {
-	Body *MulticastGroupCreate `json:"body,omitempty" yaml:"body,omitempty"`
-}
-
-// MulticastGroupDeleteParams is the request parameters for MulticastGroupDelete
-//
-// Required fields:
-// - MulticastGroup
-type MulticastGroupDeleteParams struct {
-	MulticastGroup NameOrId `json:"multicast_group,omitempty" yaml:"multicast_group,omitempty"`
-}
-
 // MulticastGroupViewParams is the request parameters for MulticastGroupView
 //
 // Required fields:
 // - MulticastGroup
 type MulticastGroupViewParams struct {
-	MulticastGroup NameOrId `json:"multicast_group,omitempty" yaml:"multicast_group,omitempty"`
-}
-
-// MulticastGroupUpdateParams is the request parameters for MulticastGroupUpdate
-//
-// Required fields:
-// - MulticastGroup
-// - Body
-type MulticastGroupUpdateParams struct {
-	MulticastGroup NameOrId              `json:"multicast_group,omitempty" yaml:"multicast_group,omitempty"`
-	Body           *MulticastGroupUpdate `json:"body,omitempty" yaml:"body,omitempty"`
+	MulticastGroup MulticastGroupIdentifier `json:"multicast_group,omitempty" yaml:"multicast_group,omitempty"`
 }
 
 // MulticastGroupMemberListParams is the request parameters for MulticastGroupMemberList
@@ -9252,32 +9647,10 @@ type MulticastGroupUpdateParams struct {
 // Required fields:
 // - MulticastGroup
 type MulticastGroupMemberListParams struct {
-	MulticastGroup NameOrId   `json:"multicast_group,omitempty" yaml:"multicast_group,omitempty"`
-	Limit          *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken      string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy         IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
-}
-
-// MulticastGroupMemberAddParams is the request parameters for MulticastGroupMemberAdd
-//
-// Required fields:
-// - MulticastGroup
-// - Body
-type MulticastGroupMemberAddParams struct {
-	MulticastGroup NameOrId                 `json:"multicast_group,omitempty" yaml:"multicast_group,omitempty"`
-	Project        NameOrId                 `json:"project,omitempty" yaml:"project,omitempty"`
-	Body           *MulticastGroupMemberAdd `json:"body,omitempty" yaml:"body,omitempty"`
-}
-
-// MulticastGroupMemberRemoveParams is the request parameters for MulticastGroupMemberRemove
-//
-// Required fields:
-// - Instance
-// - MulticastGroup
-type MulticastGroupMemberRemoveParams struct {
-	Instance       NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
-	MulticastGroup NameOrId `json:"multicast_group,omitempty" yaml:"multicast_group,omitempty"`
-	Project        NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	MulticastGroup MulticastGroupIdentifier `json:"multicast_group,omitempty" yaml:"multicast_group,omitempty"`
+	Limit          *int                     `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken      string                   `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy         IdSortMode               `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
 
 // InstanceNetworkInterfaceListParams is the request parameters for InstanceNetworkInterfaceList
@@ -9866,14 +10239,6 @@ type SystemMetricParams struct {
 	PageToken  string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	StartTime  *time.Time       `json:"start_time,omitempty" yaml:"start_time,omitempty"`
 	Silo       NameOrId         `json:"silo,omitempty" yaml:"silo,omitempty"`
-}
-
-// LookupMulticastGroupByIpParams is the request parameters for LookupMulticastGroupByIp
-//
-// Required fields:
-// - Address
-type LookupMulticastGroupByIpParams struct {
-	Address string `json:"address,omitempty" yaml:"address,omitempty"`
 }
 
 // NetworkingAddressLotListParams is the request parameters for NetworkingAddressLotList
@@ -11594,6 +11959,7 @@ func (p *InstanceMulticastGroupLeaveParams) Validate() error {
 // Validate verifies all required fields for InstanceMulticastGroupJoinParams are set
 func (p *InstanceMulticastGroupJoinParams) Validate() error {
 	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
 	v.HasRequiredStr(string(p.Instance), "Instance")
 	v.HasRequiredStr(string(p.MulticastGroup), "MulticastGroup")
 	if !v.IsValid() {
@@ -11878,26 +12244,6 @@ func (p *MulticastGroupListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for MulticastGroupCreateParams are set
-func (p *MulticastGroupCreateParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for MulticastGroupDeleteParams are set
-func (p *MulticastGroupDeleteParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredStr(string(p.MulticastGroup), "MulticastGroup")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
 // Validate verifies all required fields for MulticastGroupViewParams are set
 func (p *MulticastGroupViewParams) Validate() error {
 	v := new(Validator)
@@ -11908,42 +12254,9 @@ func (p *MulticastGroupViewParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for MulticastGroupUpdateParams are set
-func (p *MulticastGroupUpdateParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.MulticastGroup), "MulticastGroup")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
 // Validate verifies all required fields for MulticastGroupMemberListParams are set
 func (p *MulticastGroupMemberListParams) Validate() error {
 	v := new(Validator)
-	v.HasRequiredStr(string(p.MulticastGroup), "MulticastGroup")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for MulticastGroupMemberAddParams are set
-func (p *MulticastGroupMemberAddParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.MulticastGroup), "MulticastGroup")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for MulticastGroupMemberRemoveParams are set
-func (p *MulticastGroupMemberRemoveParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredStr(string(p.Instance), "Instance")
 	v.HasRequiredStr(string(p.MulticastGroup), "MulticastGroup")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
@@ -12574,16 +12887,6 @@ func (p *IpPoolUtilizationViewParams) Validate() error {
 func (p *SystemMetricParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.MetricName), "MetricName")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for LookupMulticastGroupByIpParams are set
-func (p *LookupMulticastGroupByIpParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredStr(string(p.Address), "Address")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -13498,6 +13801,12 @@ const AddressLotKindInfra AddressLotKind = "infra"
 // AddressLotKindPool represents the AddressLotKind `"pool"`.
 const AddressLotKindPool AddressLotKind = "pool"
 
+// AddressSelectorTypeExplicit represents the AddressSelectorType `"explicit"`.
+const AddressSelectorTypeExplicit AddressSelectorType = "explicit"
+
+// AddressSelectorTypeAuto represents the AddressSelectorType `"auto"`.
+const AddressSelectorTypeAuto AddressSelectorType = "auto"
+
 // AffinityGroupMemberTypeInstance represents the AffinityGroupMemberType `"instance"`.
 const AffinityGroupMemberTypeInstance AffinityGroupMemberType = "instance"
 
@@ -14005,8 +14314,14 @@ const InstanceDiskAttachmentTypeAttach InstanceDiskAttachmentType = "attach"
 // InstanceNetworkInterfaceAttachmentTypeCreate represents the InstanceNetworkInterfaceAttachmentType `"create"`.
 const InstanceNetworkInterfaceAttachmentTypeCreate InstanceNetworkInterfaceAttachmentType = "create"
 
-// InstanceNetworkInterfaceAttachmentTypeDefault represents the InstanceNetworkInterfaceAttachmentType `"default"`.
-const InstanceNetworkInterfaceAttachmentTypeDefault InstanceNetworkInterfaceAttachmentType = "default"
+// InstanceNetworkInterfaceAttachmentTypeDefaultIpv4 represents the InstanceNetworkInterfaceAttachmentType `"default_ipv4"`.
+const InstanceNetworkInterfaceAttachmentTypeDefaultIpv4 InstanceNetworkInterfaceAttachmentType = "default_ipv4"
+
+// InstanceNetworkInterfaceAttachmentTypeDefaultIpv6 represents the InstanceNetworkInterfaceAttachmentType `"default_ipv6"`.
+const InstanceNetworkInterfaceAttachmentTypeDefaultIpv6 InstanceNetworkInterfaceAttachmentType = "default_ipv6"
+
+// InstanceNetworkInterfaceAttachmentTypeDefaultDualStack represents the InstanceNetworkInterfaceAttachmentType `"default_dual_stack"`.
+const InstanceNetworkInterfaceAttachmentTypeDefaultDualStack InstanceNetworkInterfaceAttachmentType = "default_dual_stack"
 
 // InstanceNetworkInterfaceAttachmentTypeNone represents the InstanceNetworkInterfaceAttachmentType `"none"`.
 const InstanceNetworkInterfaceAttachmentTypeNone InstanceNetworkInterfaceAttachmentType = "none"
@@ -14052,6 +14367,18 @@ const IpVersionV4 IpVersion = "v4"
 
 // IpVersionV6 represents the IpVersion `"v6"`.
 const IpVersionV6 IpVersion = "v6"
+
+// Ipv4AssignmentTypeAuto represents the Ipv4AssignmentType `"auto"`.
+const Ipv4AssignmentTypeAuto Ipv4AssignmentType = "auto"
+
+// Ipv4AssignmentTypeExplicit represents the Ipv4AssignmentType `"explicit"`.
+const Ipv4AssignmentTypeExplicit Ipv4AssignmentType = "explicit"
+
+// Ipv6AssignmentTypeAuto represents the Ipv6AssignmentType `"auto"`.
+const Ipv6AssignmentTypeAuto Ipv6AssignmentType = "auto"
+
+// Ipv6AssignmentTypeExplicit represents the Ipv6AssignmentType `"explicit"`.
+const Ipv6AssignmentTypeExplicit Ipv6AssignmentType = "explicit"
 
 // LinkFecFirecode represents the LinkFec `"firecode"`.
 const LinkFecFirecode LinkFec = "firecode"
@@ -14145,6 +14472,39 @@ const PhysicalDiskStateDecommissioned PhysicalDiskState = "decommissioned"
 
 // PingStatusOk represents the PingStatus `"ok"`.
 const PingStatusOk PingStatus = "ok"
+
+// PoolSelectorTypeExplicit represents the PoolSelectorType `"explicit"`.
+const PoolSelectorTypeExplicit PoolSelectorType = "explicit"
+
+// PoolSelectorTypeAuto represents the PoolSelectorType `"auto"`.
+const PoolSelectorTypeAuto PoolSelectorType = "auto"
+
+// PrivateIpConfigTypeV4 represents the PrivateIpConfigType `"v4"`.
+const PrivateIpConfigTypeV4 PrivateIpConfigType = "v4"
+
+// PrivateIpConfigTypeV6 represents the PrivateIpConfigType `"v6"`.
+const PrivateIpConfigTypeV6 PrivateIpConfigType = "v6"
+
+// PrivateIpConfigTypeDualStack represents the PrivateIpConfigType `"dual_stack"`.
+const PrivateIpConfigTypeDualStack PrivateIpConfigType = "dual_stack"
+
+// PrivateIpStackTypeV4 represents the PrivateIpStackType `"v4"`.
+const PrivateIpStackTypeV4 PrivateIpStackType = "v4"
+
+// PrivateIpStackTypeV6 represents the PrivateIpStackType `"v6"`.
+const PrivateIpStackTypeV6 PrivateIpStackType = "v6"
+
+// PrivateIpStackTypeDualStack represents the PrivateIpStackType `"dual_stack"`.
+const PrivateIpStackTypeDualStack PrivateIpStackType = "dual_stack"
+
+// PrivateIpStackCreateTypeV4 represents the PrivateIpStackCreateType `"v4"`.
+const PrivateIpStackCreateTypeV4 PrivateIpStackCreateType = "v4"
+
+// PrivateIpStackCreateTypeV6 represents the PrivateIpStackCreateType `"v6"`.
+const PrivateIpStackCreateTypeV6 PrivateIpStackCreateType = "v6"
+
+// PrivateIpStackCreateTypeDualStack represents the PrivateIpStackCreateType `"dual_stack"`.
+const PrivateIpStackCreateTypeDualStack PrivateIpStackCreateType = "dual_stack"
 
 // ProbeExternalIpKindSnat represents the ProbeExternalIpKind `"snat"`.
 const ProbeExternalIpKindSnat ProbeExternalIpKind = "snat"
@@ -14477,6 +14837,12 @@ const WebhookDeliveryAttemptResultFailedTimeout WebhookDeliveryAttemptResult = "
 var AddressLotKindCollection = []AddressLotKind{
 	AddressLotKindInfra,
 	AddressLotKindPool,
+}
+
+// AddressSelectorTypeCollection is the collection of all AddressSelectorType values.
+var AddressSelectorTypeCollection = []AddressSelectorType{
+	AddressSelectorTypeAuto,
+	AddressSelectorTypeExplicit,
 }
 
 // AffinityGroupMemberTypeCollection is the collection of all AffinityGroupMemberType values.
@@ -14834,7 +15200,9 @@ var InstanceDiskAttachmentTypeCollection = []InstanceDiskAttachmentType{
 // InstanceNetworkInterfaceAttachmentTypeCollection is the collection of all InstanceNetworkInterfaceAttachmentType values.
 var InstanceNetworkInterfaceAttachmentTypeCollection = []InstanceNetworkInterfaceAttachmentType{
 	InstanceNetworkInterfaceAttachmentTypeCreate,
-	InstanceNetworkInterfaceAttachmentTypeDefault,
+	InstanceNetworkInterfaceAttachmentTypeDefaultDualStack,
+	InstanceNetworkInterfaceAttachmentTypeDefaultIpv4,
+	InstanceNetworkInterfaceAttachmentTypeDefaultIpv6,
 	InstanceNetworkInterfaceAttachmentTypeNone,
 }
 
@@ -14862,6 +15230,18 @@ var IpPoolTypeCollection = []IpPoolType{
 var IpVersionCollection = []IpVersion{
 	IpVersionV4,
 	IpVersionV6,
+}
+
+// Ipv4AssignmentTypeCollection is the collection of all Ipv4AssignmentType values.
+var Ipv4AssignmentTypeCollection = []Ipv4AssignmentType{
+	Ipv4AssignmentTypeAuto,
+	Ipv4AssignmentTypeExplicit,
+}
+
+// Ipv6AssignmentTypeCollection is the collection of all Ipv6AssignmentType values.
+var Ipv6AssignmentTypeCollection = []Ipv6AssignmentType{
+	Ipv6AssignmentTypeAuto,
+	Ipv6AssignmentTypeExplicit,
 }
 
 // LinkFecCollection is the collection of all LinkFec values.
@@ -14937,6 +15317,33 @@ var PhysicalDiskStateCollection = []PhysicalDiskState{
 // PingStatusCollection is the collection of all PingStatus values.
 var PingStatusCollection = []PingStatus{
 	PingStatusOk,
+}
+
+// PoolSelectorTypeCollection is the collection of all PoolSelectorType values.
+var PoolSelectorTypeCollection = []PoolSelectorType{
+	PoolSelectorTypeAuto,
+	PoolSelectorTypeExplicit,
+}
+
+// PrivateIpConfigTypeCollection is the collection of all PrivateIpConfigType values.
+var PrivateIpConfigTypeCollection = []PrivateIpConfigType{
+	PrivateIpConfigTypeDualStack,
+	PrivateIpConfigTypeV4,
+	PrivateIpConfigTypeV6,
+}
+
+// PrivateIpStackCreateTypeCollection is the collection of all PrivateIpStackCreateType values.
+var PrivateIpStackCreateTypeCollection = []PrivateIpStackCreateType{
+	PrivateIpStackCreateTypeDualStack,
+	PrivateIpStackCreateTypeV4,
+	PrivateIpStackCreateTypeV6,
+}
+
+// PrivateIpStackTypeCollection is the collection of all PrivateIpStackType values.
+var PrivateIpStackTypeCollection = []PrivateIpStackType{
+	PrivateIpStackTypeDualStack,
+	PrivateIpStackTypeV4,
+	PrivateIpStackTypeV6,
 }
 
 // ProbeExternalIpKindCollection is the collection of all ProbeExternalIpKind values.
