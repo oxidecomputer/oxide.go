@@ -7,6 +7,7 @@ package oxide
 import (
 	"bytes"
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -138,10 +139,10 @@ func Test_buildRequest(t *testing.T) {
 	}
 
 	// Just to get a client to call buildRequest on.
-	c, err := NewClient(&Config{
-		Host:  "http://localhost:3000",
-		Token: "foo",
-	})
+	c, err := NewClient(
+		WithHost("http://localhost:3000"),
+		WithToken("foo"),
+	)
 	if err != nil {
 		t.Fatalf("failed creating api client: %v", err)
 	}
@@ -169,17 +170,17 @@ func Test_buildRequest(t *testing.T) {
 
 func Test_NewClient(t *testing.T) {
 	tt := map[string]struct {
-		config         func(string) *Config
+		options        func(string) []ClientOption
 		setHome        bool
 		env            map[string]string
 		expectedClient *Client
 		expectedError  string
 	}{
-		"succeeds with valid client from config": {
-			config: func(string) *Config {
-				return &Config{
-					Host:  "http://localhost",
-					Token: "foo",
+		"succeeds with valid client from options": {
+			options: func(string) []ClientOption {
+				return []ClientOption{
+					WithHost("http://localhost"),
+					WithToken("foo"),
 				}
 			},
 			expectedClient: &Client{
@@ -205,17 +206,17 @@ func Test_NewClient(t *testing.T) {
 				userAgent: defaultUserAgent(),
 			},
 		},
-		"succeeds with valid client from env and config": {
+		"succeeds with valid client from env and options": {
 			env: map[string]string{
 				"OXIDE_HOST":  "http://localhost",
 				"OXIDE_TOKEN": "foo",
 			},
-			config: func(string) *Config {
-				return &Config{
-					UserAgent: "bob",
-					HTTPClient: &http.Client{
+			options: func(string) []ClientOption {
+				return []ClientOption{
+					WithUserAgent("bob"),
+					WithHTTPClient(&http.Client{
 						Timeout: 500 * time.Second,
-					},
+					}),
 				}
 			},
 			expectedClient: &Client{
@@ -231,10 +232,10 @@ func Test_NewClient(t *testing.T) {
 			env: map[string]string{
 				"OXIDE_PROFILE": "file",
 			},
-			config: func(string) *Config {
-				return &Config{
-					Host:  "http://localhost",
-					Token: "foo",
+			options: func(string) []ClientOption {
+				return []ClientOption{
+					WithHost("http://localhost"),
+					WithToken("foo"),
 				}
 			},
 			setHome: true,
@@ -248,9 +249,13 @@ func Test_NewClient(t *testing.T) {
 			},
 		},
 		"succeeds with profile": {
-			config: func(string) *Config {
-				return &Config{
-					Profile: "file",
+			env: map[string]string{
+				"OXIDE_HOST":  "",
+				"OXIDE_TOKEN": "",
+			},
+			options: func(string) []ClientOption {
+				return []ClientOption{
+					WithProfile("file"),
 				}
 			},
 			setHome: true,
@@ -267,9 +272,6 @@ func Test_NewClient(t *testing.T) {
 			env: map[string]string{
 				"OXIDE_PROFILE": "file",
 			},
-			config: func(string) *Config {
-				return &Config{}
-			},
 			setHome: true,
 			expectedClient: &Client{
 				host:  "http://file-host/",
@@ -281,9 +283,9 @@ func Test_NewClient(t *testing.T) {
 			},
 		},
 		"succeeds with default profile": {
-			config: func(string) *Config {
-				return &Config{
-					UseDefaultProfile: true,
+			options: func(string) []ClientOption {
+				return []ClientOption{
+					WithDefaultProfile(),
 				}
 			},
 			setHome: true,
@@ -297,10 +299,10 @@ func Test_NewClient(t *testing.T) {
 			},
 		},
 		"succeeds with config dir and default profile": {
-			config: func(oxideDir string) *Config {
-				return &Config{
-					UseDefaultProfile: true,
-					ConfigDir:         oxideDir,
+			options: func(oxideDir string) []ClientOption {
+				return []ClientOption{
+					WithDefaultProfile(),
+					WithConfigDir(oxideDir),
 				}
 			},
 			expectedClient: &Client{
@@ -313,10 +315,10 @@ func Test_NewClient(t *testing.T) {
 			},
 		},
 		"succeeds with config dir and profile": {
-			config: func(oxideDir string) *Config {
-				return &Config{
-					Profile:   "other",
-					ConfigDir: oxideDir,
+			options: func(oxideDir string) []ClientOption {
+				return []ClientOption{
+					WithProfile("other"),
+					WithConfigDir(oxideDir),
 				}
 			},
 			expectedClient: &Client{
@@ -333,9 +335,9 @@ func Test_NewClient(t *testing.T) {
 				"OXIDE_HOST":  "http://localhost",
 				"OXIDE_TOKEN": "foo",
 			},
-			config: func(string) *Config {
-				return &Config{
-					Profile: "other",
+			options: func(string) []ClientOption {
+				return []ClientOption{
+					WithProfile("other"),
 				}
 			},
 			setHome: true,
@@ -352,9 +354,9 @@ func Test_NewClient(t *testing.T) {
 			env: map[string]string{
 				"OXIDE_TOKEN": "foo",
 			},
-			config: func(string) *Config {
-				return &Config{
-					Host: "http://localhost",
+			options: func(string) []ClientOption {
+				return []ClientOption{
+					WithHost("http://localhost"),
 				}
 			},
 			expectedClient: &Client{
@@ -366,26 +368,26 @@ func Test_NewClient(t *testing.T) {
 				userAgent: defaultUserAgent(),
 			},
 		},
-		"fails with missing address using config": {
+		"fails with missing address using options": {
 			env: map[string]string{
 				"OXIDE_HOST":  "",
 				"OXIDE_TOKEN": "",
 			},
-			config: func(string) *Config {
-				return &Config{
-					Token: "foo",
+			options: func(string) []ClientOption {
+				return []ClientOption{
+					WithToken("foo"),
 				}
 			},
 			expectedError: "invalid client configuration:\nfailed parsing host address: host address is empty",
 		},
-		"fails with missing token using config": {
+		"fails with missing token using options": {
 			env: map[string]string{
 				"OXIDE_HOST":  "",
 				"OXIDE_TOKEN": "",
 			},
-			config: func(string) *Config {
-				return &Config{
-					Host: "http://localhost",
+			options: func(string) []ClientOption {
+				return []ClientOption{
+					WithHost("http://localhost"),
 				}
 			},
 			expectedError: "invalid client configuration:\ntoken is required",
@@ -395,7 +397,6 @@ func Test_NewClient(t *testing.T) {
 				"OXIDE_HOST":  "",
 				"OXIDE_TOKEN": "foo",
 			},
-			config:        nil,
 			expectedError: "invalid client configuration:\nfailed parsing host address: host address is empty",
 		},
 		"fails with missing token using env variables": {
@@ -403,7 +404,6 @@ func Test_NewClient(t *testing.T) {
 				"OXIDE_HOST":  "http://localhost",
 				"OXIDE_TOKEN": "",
 			},
-			config:        nil,
 			expectedError: "invalid client configuration:\ntoken is required",
 		},
 		"fails with missing address and token": {
@@ -414,48 +414,48 @@ func Test_NewClient(t *testing.T) {
 			expectedError: "invalid client configuration:\nfailed parsing host address: host address is empty\ntoken is required",
 		},
 		"fails with invalid config dir": {
-			config: func(string) *Config {
-				return &Config{
-					ConfigDir:         "/not/a/valid/directory",
-					UseDefaultProfile: true,
+			options: func(string) []ClientOption {
+				return []ClientOption{
+					WithConfigDir("/not/a/valid/directory"),
+					WithDefaultProfile(),
 				}
 			},
 			expectedError: "unable to retrieve profile: failed to get default profile from \"/not/a/valid/directory/config.toml\": failed to open config: open /not/a/valid/directory/config.toml: no such file or directory",
 		},
 		"fails with invalid profile": {
-			config: func(string) *Config {
-				return &Config{
-					Profile: "not-a-profile",
+			options: func(string) []ClientOption {
+				return []ClientOption{
+					WithProfile("not-a-profile"),
 				}
 			},
 			setHome:       true,
 			expectedError: "unable to retrieve profile: failed to get credentials for profile \"not-a-profile\" from \"<OXIDE_DIR>/credentials.toml\": profile not found",
 		},
 		"fails with profile and host": {
-			config: func(oxideDir string) *Config {
-				return &Config{
-					Host:    "http://localhost",
-					Profile: "file",
+			options: func(string) []ClientOption {
+				return []ClientOption{
+					WithHost("http://localhost"),
+					WithProfile("file"),
 				}
 			},
 			setHome:       true,
 			expectedError: "cannot authenticate with both a profile and host/token",
 		},
 		"fails with profile and token": {
-			config: func(oxideDir string) *Config {
-				return &Config{
-					Token:   "foo",
-					Profile: "file",
+			options: func(string) []ClientOption {
+				return []ClientOption{
+					WithToken("foo"),
+					WithProfile("file"),
 				}
 			},
 			setHome:       true,
 			expectedError: "cannot authenticate with both a profile and host/token",
 		},
 		"fails with profile and default profile": {
-			config: func(oxideDir string) *Config {
-				return &Config{
-					Profile:           "file",
-					UseDefaultProfile: true,
+			options: func(string) []ClientOption {
+				return []ClientOption{
+					WithProfile("file"),
+					WithDefaultProfile(),
 				}
 			},
 			setHome:       true,
@@ -466,7 +466,7 @@ func Test_NewClient(t *testing.T) {
 	for testName, testCase := range tt {
 		t.Run(testName, func(t *testing.T) {
 			for key, val := range testCase.env {
-				os.Setenv(key, val)
+				t.Setenv(key, val)
 			}
 
 			tmpDir := setupConfig(t)
@@ -474,25 +474,22 @@ func Test_NewClient(t *testing.T) {
 
 			originalHome := os.Getenv("HOME")
 			if testCase.setHome {
-				os.Setenv("HOME", tmpDir)
+				t.Setenv("HOME", tmpDir)
 			} else {
 				// Ensure we don't read from your actual credentials.toml.
 				os.Unsetenv("HOME")
 			}
 
 			t.Cleanup(func() {
-				for key := range testCase.env {
-					os.Unsetenv(key)
-				}
 				os.Setenv("HOME", originalHome)
 				require.NoError(t, os.RemoveAll(tmpDir))
 			})
 
-			var config *Config
-			if testCase.config != nil {
-				config = testCase.config(oxideDir)
+			var opts []ClientOption
+			if testCase.options != nil {
+				opts = testCase.options(oxideDir)
 			}
-			c, err := NewClient(config)
+			c, err := NewClient(opts...)
 
 			if testCase.expectedError != "" {
 				assert.EqualError(t, err, strings.ReplaceAll(testCase.expectedError, "<OXIDE_DIR>", oxideDir))
@@ -571,10 +568,10 @@ func Test_MakeRequest(t *testing.T) {
 			}))
 			defer server.Close()
 
-			client, err := NewClient(&Config{
-				Host:  server.URL,
-				Token: "test-token",
-			})
+			client, err := NewClient(
+				WithHost(server.URL),
+				WithToken("test-token"),
+			)
 			require.NoError(t, err)
 
 			resp, err := client.MakeRequest(context.Background(), tc.request)
@@ -588,6 +585,73 @@ func Test_MakeRequest(t *testing.T) {
 			assert.Equal(t, tc.expectedQuery, capturedRequest.URL.RawQuery)
 
 			assert.Equal(t, http.StatusOK, resp.StatusCode)
+		})
+	}
+}
+
+func Test_NewClient_HTTPOptions(t *testing.T) {
+	customClient := &http.Client{
+		Timeout: 99 * time.Second,
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: false,
+			},
+		},
+	}
+
+	tests := []struct {
+		name                   string
+		options                []ClientOption
+		expectedTimeout        time.Duration
+		expectedInsecureVerify bool
+	}{
+		{
+			name: "timeout then insecure skip verify",
+			options: []ClientOption{
+				WithHost("https://localhost"),
+				WithToken("test-token"),
+				WithTimeout(30 * time.Second),
+				WithInsecureSkipVerify(),
+			},
+			expectedTimeout:        30 * time.Second,
+			expectedInsecureVerify: true,
+		},
+		{
+			name: "insecure skip verify then timeout",
+			options: []ClientOption{
+				WithHost("https://localhost"),
+				WithToken("test-token"),
+				WithInsecureSkipVerify(),
+				WithTimeout(30 * time.Second),
+			},
+			expectedTimeout:        30 * time.Second,
+			expectedInsecureVerify: true,
+		},
+		{
+			name: "WithHTTPClient overrides other options",
+			options: []ClientOption{
+				WithHost("https://localhost"),
+				WithToken("test-token"),
+				WithTimeout(30 * time.Second),
+				WithInsecureSkipVerify(),
+				WithHTTPClient(customClient),
+			},
+			expectedTimeout:        99 * time.Second,
+			expectedInsecureVerify: false,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			client, err := NewClient(tc.options...)
+			require.NoError(t, err)
+
+			assert.Equal(t, tc.expectedTimeout, client.client.Timeout)
+
+			transport, ok := client.client.Transport.(*http.Transport)
+			require.True(t, ok, "expected *http.Transport")
+			require.NotNil(t, transport.TLSClientConfig)
+			assert.Equal(t, tc.expectedInsecureVerify, transport.TLSClientConfig.InsecureSkipVerify)
 		})
 	}
 }

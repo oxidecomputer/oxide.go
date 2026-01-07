@@ -6,6 +6,7 @@ package oxide
 
 import (
 	"context"
+	"crypto/tls"
 	"errors"
 	"fmt"
 	"io"
@@ -40,35 +41,142 @@ const (
 	defaultConfigDir = ".config" + string(filepath.Separator) + "oxide"
 )
 
-// Config is the configuration that can be set on a Client.
-type Config struct {
-	// Base URL of the Oxide API including the scheme. For example,
-	// https://api.oxide.computer.
-	Host string
+// ClientOption configures [Client] during calls to [NewClient].
+type ClientOption interface {
+	apply(cfg *clientConfig) error
+}
 
-	// Oxide API authentication token.
-	Token string
+// clientOptionFunc provides a simpler type to implement the [ClientOption]
+// interface using closure functions. It allows the [clientConfig] to remain
+// unexported and out of the documentation for external users.
+type clientOptionFunc func(cfg *clientConfig) error
 
-	// A custom HTTP client to use for the Client instead of the default.
-	HTTPClient *http.Client
+// apply modifies cfg using the given clientOptionFunc, implementing
+// [ClientOption].
+func (c clientOptionFunc) apply(cfg *clientConfig) error {
+	return c(cfg)
+}
 
-	// A custom user agent string to add to every request instead of the
-	// default.
-	UserAgent string
+// clientConfig holds the configuration for a [Client] while it's being
+// constructed via [NewClient].
+type clientConfig struct {
+	host              string
+	token             string
+	profile           string
+	useDefaultProfile bool
+	configDir         string
+	httpClient        *http.Client
+	userAgent         string
 
-	// The directory to look for Oxide CLI configuration files. Defaults
-	// to $HOME/.config/oxide if unset.
-	ConfigDir string
+	// These fields track whether the options were set from [ClientOption]. This
+	// is used to determine whether values set via environment variables should
+	// be overriden.
+	hostSetFromOption           bool
+	tokenSetFromOption          bool
+	profileSetFromOption        bool
+	defaultProfileSetFromOption bool
+}
 
-	// The name of the Oxide CLI profile to use for authentication.
-	// The Host and Token fields will override their respective values
-	// provided by the profile.
-	Profile string
+// WithHost sets the Oxide host for [Client] (e.g.,
+// https://oxide.sys.example.com).
+func WithHost(host string) ClientOption {
+	return clientOptionFunc(func(cfg *clientConfig) error {
+		cfg.host = host
+		cfg.hostSetFromOption = true
+		return nil
+	})
+}
 
-	// Whether to use the default profile listed in the Oxide CLI
-	// config.toml file for authentication. Will be overridden by
-	// the Profile field.
-	UseDefaultProfile bool
+// WithToken sets the API token for [Client].
+func WithToken(token string) ClientOption {
+	return clientOptionFunc(func(cfg *clientConfig) error {
+		cfg.token = token
+		cfg.tokenSetFromOption = true
+		return nil
+	})
+}
+
+// WithProfile sets the profile name within the credentials file to use for
+// authentication. This is mutually exclusive with [WithHost], [WithToken], and
+// [WithDefaultProfile].
+func WithProfile(profile string) ClientOption {
+	return clientOptionFunc(func(cfg *clientConfig) error {
+		cfg.profile = profile
+		cfg.profileSetFromOption = true
+		return nil
+	})
+}
+
+// WithDefaultProfile uses the default profile within the credentials file
+// to use for authentication. This is mutually exclusive with [WithHost],
+// [WithToken], and [WithProfile].
+func WithDefaultProfile() ClientOption {
+	return clientOptionFunc(func(cfg *clientConfig) error {
+		cfg.useDefaultProfile = true
+		cfg.defaultProfileSetFromOption = true
+		return nil
+	})
+}
+
+// WithConfigDir sets the directory to search for the Oxide credentials file.
+func WithConfigDir(dir string) ClientOption {
+	return clientOptionFunc(func(cfg *clientConfig) error {
+		cfg.configDir = dir
+		return nil
+	})
+}
+
+// WithTimeout sets the timeout for the HTTP client. This option is overriden if
+// [WithHTTPClient] is set.
+func WithTimeout(timeout time.Duration) ClientOption {
+	return clientOptionFunc(func(cfg *clientConfig) error {
+		if cfg.httpClient == nil {
+			cfg.httpClient = defaultHTTPClient()
+		}
+		cfg.httpClient.Timeout = timeout
+		return nil
+	})
+}
+
+// WithHTTPClient sets a custom HTTP client, replacing the default HTTP client
+// entirely. This overrides [WithTimeout], [WithInsecureSkipVerify], and
+// [WithUserAgent] and should only be used in advanced use cases such as
+// configuring a proxy or changing TLS configuration.
+func WithHTTPClient(client *http.Client) ClientOption {
+	return clientOptionFunc(func(cfg *clientConfig) error {
+		cfg.httpClient = client
+		return nil
+	})
+}
+
+// WithInsecureSkipVerify disables TLS certificate verification. This is
+// insecure and should only be used for testing or in controlled environments.
+// This option is overridden if [WithHTTPClient] is set.
+func WithInsecureSkipVerify() ClientOption {
+	return clientOptionFunc(func(cfg *clientConfig) error {
+		if cfg.httpClient == nil {
+			cfg.httpClient = defaultHTTPClient()
+		}
+		transport, ok := cfg.httpClient.Transport.(*http.Transport)
+		if !ok || transport == nil {
+			transport = http.DefaultTransport.(*http.Transport).Clone()
+		}
+		if transport.TLSClientConfig == nil {
+			transport.TLSClientConfig = &tls.Config{}
+		}
+		transport.TLSClientConfig.InsecureSkipVerify = true
+		cfg.httpClient.Transport = transport
+		return nil
+	})
+}
+
+// WithUserAgent sets the user agent string for the client. This option is
+// overriden if [WithHTTPClient] is set.
+func WithUserAgent(userAgent string) ClientOption {
+	return clientOptionFunc(func(cfg *clientConfig) error {
+		cfg.userAgent = userAgent
+		return nil
+	})
 }
 
 // Client which conforms to the OpenAPI3 specification for this service.
@@ -92,65 +200,62 @@ type authCredentials struct {
 	token string
 }
 
-// NewClient creates a new client for the Oxide API. To authenticate with
-// environment variables, set either OXIDE_HOST and OXIDE_TOKEN, or
-// OXIDE_PROFILE accordingly. Pass in a non-nil *Config to set the various
-// configuration options on a Client. When setting the host, token, or profile
-// through the *Config, these will override any set environment variables. The
-// Profile and UseDefaultProfile fields will pull authentication information
-// from the credentials.toml file generated by the Oxide CLI. These are
-// mutually exclusive with each other and the Host and Token fields.
-func NewClient(cfg *Config) (*Client, error) {
-	token := os.Getenv(TokenEnvVar)
-	host := os.Getenv(HostEnvVar)
-	profile := os.Getenv(ProfileEnvVar)
-	useDefaultProfile := false
-	userAgent := defaultUserAgent()
-	httpClient := &http.Client{
-		Timeout: 600 * time.Second,
+// NewClient creates an Oxide API client. When called with no options, it reads
+// configuration from environment variables `OXIDE_HOST` and `OXIDE_TOKEN`, or
+// `OXIDE_PROFILE`. When called with one or more [ClientOption], it configure
+// the client accordingly, overriding values from environment variables. When
+// the same [ClientOption] is passed multiple times, the last argument wins.
+//
+// The [WithHost] and [WithToken] options are mutually exclusive with
+// [WithProfile] and [WithDefaultProfile].
+func NewClient(opts ...ClientOption) (*Client, error) {
+	cfg := &clientConfig{
+		host:       os.Getenv(HostEnvVar),
+		token:      os.Getenv(TokenEnvVar),
+		profile:    os.Getenv(ProfileEnvVar),
+		userAgent:  defaultUserAgent(),
+		httpClient: defaultHTTPClient(),
 	}
 
-	// Layer in the user-provided configuration if provided and override
-	// environment variables when needed.
-	if cfg != nil {
-		useDefaultProfile = cfg.UseDefaultProfile
-
-		if cfg.Host != "" {
-			host = cfg.Host
-			profile = cfg.Profile // Ignore OXIDE_PROFILE.
-		}
-
-		if cfg.Token != "" {
-			token = cfg.Token
-			profile = cfg.Profile // Ignore OXIDE_PROFILE.
-		}
-
-		if cfg.Profile != "" {
-			profile = cfg.Profile
-			host = cfg.Host   // Ignore OXIDE_HOST.
-			token = cfg.Token // Ignore OXIDE_TOKEN.
-		}
-
-		if cfg.UserAgent != "" {
-			userAgent = cfg.UserAgent
-		}
-
-		if cfg.HTTPClient != nil {
-			httpClient = cfg.HTTPClient
+	var optErrs []error
+	for _, opt := range opts {
+		if err := opt.apply(cfg); err != nil {
+			optErrs = append(optErrs, err)
 		}
 	}
+	if err := errors.Join(optErrs...); err != nil {
+		return nil, fmt.Errorf("failed to apply options:\n%w", err)
+	}
 
-	if (profile != "" || useDefaultProfile) && (host != "" || token != "") {
+	// Validate conflicting options.
+	if (cfg.profileSetFromOption || cfg.defaultProfileSetFromOption) && (cfg.hostSetFromOption || cfg.tokenSetFromOption) {
 		return nil, errors.New("cannot authenticate with both a profile and host/token")
 	}
-	if profile != "" && useDefaultProfile {
+	if cfg.profileSetFromOption && cfg.defaultProfileSetFromOption {
 		return nil, errors.New("cannot authenticate with both default profile and a defined profile")
 	}
-	if profile != "" || useDefaultProfile {
-		var configDir string
-		if cfg != nil && cfg.ConfigDir != "" {
-			configDir = cfg.ConfigDir
-		} else {
+
+	// Options override environment variables.
+	if cfg.hostSetFromOption || cfg.tokenSetFromOption {
+		if !cfg.profileSetFromOption {
+			cfg.profile = ""
+		}
+		if !cfg.defaultProfileSetFromOption {
+			cfg.useDefaultProfile = false
+		}
+	}
+	if cfg.profileSetFromOption || cfg.defaultProfileSetFromOption {
+		if !cfg.hostSetFromOption {
+			cfg.host = ""
+		}
+		if !cfg.tokenSetFromOption {
+			cfg.token = ""
+		}
+	}
+
+	if cfg.profile != "" || cfg.useDefaultProfile {
+		configDir := cfg.configDir
+		if configDir == "" {
 			homeDir, err := os.UserHomeDir()
 			if err != nil {
 				return nil, fmt.Errorf("unable to find user's home directory: %w", err)
@@ -158,22 +263,22 @@ func NewClient(cfg *Config) (*Client, error) {
 			configDir = filepath.Join(homeDir, defaultConfigDir)
 		}
 
-		authCredentials, err := getProfile(configDir, profile, useDefaultProfile)
+		authCredentials, err := getProfile(configDir, cfg.profile, cfg.useDefaultProfile)
 		if err != nil {
 			return nil, fmt.Errorf("unable to retrieve profile: %w", err)
 		}
 
-		host = authCredentials.host
-		token = authCredentials.token
+		cfg.host = authCredentials.host
+		cfg.token = authCredentials.token
 	}
 
 	errs := make([]error, 0)
-	host, err := parseBaseURL(host)
+	host, err := parseBaseURL(cfg.host)
 	if err != nil {
 		errs = append(errs, fmt.Errorf("failed parsing host address: %w", err))
 	}
 
-	if token == "" {
+	if cfg.token == "" {
 		errs = append(errs, errors.New("token is required"))
 	}
 
@@ -183,13 +288,20 @@ func NewClient(cfg *Config) (*Client, error) {
 	}
 
 	client := &Client{
-		token:     token,
+		token:     cfg.token,
 		host:      host,
-		userAgent: userAgent,
-		client:    httpClient,
+		userAgent: cfg.userAgent,
+		client:    cfg.httpClient,
 	}
 
 	return client, nil
+}
+
+// defaultHTTPClient builds and returns the default HTTP client.
+func defaultHTTPClient() *http.Client {
+	return &http.Client{
+		Timeout: 600 * time.Second,
+	}
 }
 
 // defaultUserAgent builds and returns the default user agent string.
