@@ -32,11 +32,10 @@ import (
 )
 
 func main() {
-	cfg := oxide.Config{
-		Host:  "https://api.oxide.computer",
-		Token: "oxide-abc123",
-	}
-	client, err := oxide.NewClient(&cfg)
+	client, err := oxide.NewClient(
+		oxide.WithHost("https://api.oxide.computer"),
+		oxide.WithToken("oxide-abc123"),
+	)
 	if err != nil {
 		panic(err)
 	}
@@ -62,13 +61,13 @@ func main() {
 
 The client supports several authentication methods.
 
-1. Explicit configuration: Set `Host` and `Token` in the `Config`:
+1. Explicit options: Use `WithHost` and `WithToken`:
 
    ```go
-   cfg := oxide.Config{
-       Host:  "https://api.oxide.computer",
-       Token: "oxide-abc123",
-   }
+   client, err := oxide.NewClient(
+       oxide.WithHost("https://api.oxide.computer"),
+       oxide.WithToken("oxide-abc123"),
+   )
    ```
 
 1. Environment variables: Set `OXIDE_HOST` and `OXIDE_TOKEN`:
@@ -78,24 +77,34 @@ The client supports several authentication methods.
    export OXIDE_TOKEN="oxide-abc123"
    ```
 
-1. Oxide profile: Use a profile from the Oxide config file:
-   - Set `Profile` in the `Config`:
-     ```go
-     cfg := oxide.Config{
-         Profile: "my-profile",
-     }
-     ```
-   - Or set the `OXIDE_PROFILE` environment variable:
-     ```bash
-     export OXIDE_PROFILE="my-profile"
-     ```
+   Then create the client with no options:
 
-1. Default profile: Use the default profile from the Oxide config file:
    ```go
-   cfg := oxide.Config{
-       UseDefaultProfile: true,
-   }
+   client, err := oxide.NewClient()
    ```
 
-When using profiles, the client reads from the Oxide CLI configuration files located at `$HOME/.config/oxide/credentials.toml` (or a custom directory via `Config.ConfigDir`).
-Values defined in `Config` have higher precedence and override environment variables. Configuring both profile and host/token authentication is disallowed and will return an error from oxide.NewClient, as well configuring both a profile and the default profile.
+1. Oxide profile: Use a profile from the Oxide config file:
+
+   ```go
+   client, err := oxide.NewClient(oxide.WithProfile("my-profile"))
+   ```
+
+   Or set the `OXIDE_PROFILE` environment variable:
+
+   ```bash
+   export OXIDE_PROFILE="my-profile"
+   ```
+
+1. Default profile: Use the default profile from the Oxide config file:
+
+   ```go
+   client, err := oxide.NewClient(oxide.WithDefaultProfile())
+   ```
+
+When using profiles, the client reads from the Oxide credentials file
+located at `$HOME/.config/oxide/credentials.toml`, or a custom directory via
+`WithConfigDir`.
+
+Options override environment variables. Configuring both profile and host/token
+options is disallowed and will return an error, as will configuring both
+`WithProfile` and `WithDefaultProfile`.
