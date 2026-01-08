@@ -57,6 +57,29 @@ func isNullableArray(v *openapi3.SchemaRef) bool {
 	return v.Value.Type.Is("array") && v.Value.Nullable
 }
 
+// isObjectType returns true if the schema is an object type (either a reference
+// to another schema or an inline object definition). These become struct types
+// in Go, which need omitzero instead of omitempty.
+func isObjectType(v *openapi3.SchemaRef) bool {
+	// A $ref to another schema indicates an object/struct type
+	if v.Ref != "" {
+		return true
+	}
+	// Handle allOf wrappers (common pattern for nullable refs)
+	if len(v.Value.AllOf) == 1 {
+		return isObjectType(v.Value.AllOf[0])
+	}
+	// Inline object definitions
+	if v.Value.Type.Is("object") {
+		return true
+	}
+	// oneOf schemas that become struct types
+	if len(v.Value.OneOf) > 0 {
+		return true
+	}
+	return false
+}
+
 // formatStringType converts a string schema to a valid Go type.
 func formatStringType(t *openapi3.Schema) string {
 	switch t.Format {

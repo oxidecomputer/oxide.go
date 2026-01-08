@@ -163,11 +163,17 @@ func (f TypeField) StructTag() string {
 	switch {
 	case f.OmitDirective != "":
 		omitDirective = f.OmitDirective
+	case f.Required:
+		omitDirective = ""
 	case f.Schema == nil:
 		omitDirective = "omitempty"
-	case f.Required || isNullableArray(f.Schema):
+	case isNullableArray(f.Schema):
 		omitDirective = ""
 	case slices.Contains(omitzeroTypes(), f.Type):
+		omitDirective = "omitzero"
+	case isObjectType(f.Schema):
+		// Use omitzero for object/struct types since omitempty doesn't work for structs in Go.
+		// A zero-value struct is not considered "empty" by omitempty.
 		omitDirective = "omitzero"
 	default:
 		omitDirective = "omitempty"
@@ -1017,11 +1023,14 @@ func createFlatOneOf(s *openapi3.Schema, name, typeName string, discriminator *D
 	}
 
 	// Collect all fields from all variants (discriminator + all value props)
+	// The discriminator field is required (no omitempty) since the API needs it to
+	// identify which variant is being used.
 	fields := []TypeField{
 		{
 			Name:       discriminator.Field,
 			Type:       discriminator.Type,
 			MarshalKey: discriminator.Key,
+			Required:   true,
 		},
 	}
 
