@@ -366,18 +366,8 @@ func Test_createOneOf(t *testing.T) {
 						Value: &openapi3.Schema{
 							Type: &openapi3.Types{"object"},
 							Properties: map[string]*openapi3.SchemaRef{
-								"type": {Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []any{"url"}}},
-								"url":  {Value: &openapi3.Schema{Type: &openapi3.Types{"string"}}},
-							},
-							Required: []string{"type", "url"},
-						},
-					},
-					&openapi3.SchemaRef{
-						Value: &openapi3.Schema{
-							Type: &openapi3.Types{"object"},
-							Properties: map[string]*openapi3.SchemaRef{
-								"id":   {Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Format: "uuid"}},
 								"type": {Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []any{"snapshot"}}},
+								"id":   {Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Format: "uuid"}},
 							},
 							Required: []string{"id", "type"},
 						},
@@ -386,38 +376,37 @@ func Test_createOneOf(t *testing.T) {
 			},
 			typeName: "ImageSource",
 			wantTypes: []TypeTemplate{
+				{
+					Description: "// imageSourceVariant is an interface for ImageSource variants.",
+					Name:        "imageSourceVariant",
+					Type:        "interface",
+					OneOfMarker: "isImageSourceVariant",
+				},
 				{Description: "// ImageSourceType is the type definition for a ImageSourceType.", Name: "ImageSourceType", Type: "string"},
 				{
-					Description: "// ImageSourceUrl is the type definition for a ImageSourceUrl.\n//\n// Required fields:\n// - Type\n// - Url",
-					Name:        "ImageSourceUrl",
-					Type:        "struct",
-					Fields: []TypeField{
-						{Name: "Type", Type: "ImageSourceType", MarshalKey: "type", Required: true},
-						{Name: "Url", Type: "string", MarshalKey: "url", Required: true},
-					},
-				},
-				{
-					Description: "// ImageSourceSnapshot is the type definition for a ImageSourceSnapshot.\n//\n// Required fields:\n// - Id\n// - Type",
+					Description: "// ImageSourceSnapshot is the type definition for a ImageSourceSnapshot.",
 					Name:        "ImageSourceSnapshot",
 					Type:        "struct",
-					Fields: []TypeField{
-						{Name: "Id", Type: "string", MarshalKey: "id", Required: true},
-						{Name: "Type", Type: "ImageSourceType", MarshalKey: "type", Required: true},
-					},
+					Fields:      []TypeField{{Name: "Id", Type: "string", MarshalKey: "id"}},
+					OneOfMarker: "isImageSourceVariant",
 				},
 				{
 					Description: "// ImageSource is the source of the underlying image.",
 					Name:        "ImageSource",
 					Type:        "struct",
 					Fields: []TypeField{
-						{Name: "Type", Type: "ImageSourceType", MarshalKey: "type", FallbackDescription: true},
-						{Name: "Url", Type: "string", MarshalKey: "url", FallbackDescription: true},
-						{Name: "Id", Type: "string", MarshalKey: "id", FallbackDescription: true},
+						{Name: "Id", Type: "imageSourceVariant", MarshalKey: "id", OmitDirective: "omitzero"},
+					},
+					OneOfInfo: &OneOfInfo{
+						Discriminator: Discriminator{Field: "Type", Key: "type", Type: "ImageSourceType"},
+						ValueField:    "Id",
+						ValueKey:      "id",
+						ValueType:     "imageSourceVariant",
+						Variants:      []OneOfVariant{{EnumValue: "ImageSourceTypeSnapshot", ImplType: "ImageSourceSnapshot"}},
 					},
 				},
 			},
 			wantEnums: []EnumTemplate{
-				{Description: "// ImageSourceTypeUrl represents the ImageSourceType `\"url\"`.", Name: "ImageSourceTypeUrl", ValueType: "const", Value: "ImageSourceType = \"url\""},
 				{Description: "// ImageSourceTypeSnapshot represents the ImageSourceType `\"snapshot\"`.", Name: "ImageSourceTypeSnapshot", ValueType: "const", Value: "ImageSourceType = \"snapshot\""},
 			},
 		},
@@ -450,34 +439,33 @@ func Test_createOneOf(t *testing.T) {
 			},
 			typeName: "IntOrString",
 			wantTypes: []TypeTemplate{
+				{
+					Description: "// intOrStringVariant is an interface for IntOrString variants.",
+					Name:        "intOrStringVariant",
+					Type:        "interface",
+					OneOfMarker: "isIntOrStringVariant",
+				},
 				{Description: "// IntOrStringType is the type definition for a IntOrStringType.", Name: "IntOrStringType", Type: "string"},
 				{
-					Description: "// intOrStringValue is an interface for IntOrString value variants.",
-					Name:        "intOrStringValue",
-					Type:        "interface",
-					OneOfMarker: "isIntOrStringValue",
-				},
-				{
-					Description: "// IntOrStringInt is the int variant of IntOrString value.",
+					Description: "// IntOrStringInt is the type definition for a IntOrStringInt.",
 					Name:        "IntOrStringInt",
 					Type:        "struct",
-					Fields:      []TypeField{{Name: "Value", Type: "int", MarshalKey: "value"}},
-					OneOfMarker: "isIntOrStringValue",
+					Fields:      []TypeField{{Name: "Value", Type: "*int", MarshalKey: "value"}},
+					OneOfMarker: "isIntOrStringVariant",
 				},
 				{
-					Description: "// IntOrStringString is the string variant of IntOrString value.",
+					Description: "// IntOrStringString is the type definition for a IntOrStringString.",
 					Name:        "IntOrStringString",
 					Type:        "struct",
 					Fields:      []TypeField{{Name: "Value", Type: "string", MarshalKey: "value"}},
-					OneOfMarker: "isIntOrStringValue",
+					OneOfMarker: "isIntOrStringVariant",
 				},
 				{
 					Description: "// IntOrString is a value that can be an int or a string.",
 					Name:        "IntOrString",
 					Type:        "struct",
 					Fields: []TypeField{
-						{Name: "Type", Type: "IntOrStringType", MarshalKey: "type", FallbackDescription: true},
-						{Name: "Value", Type: "intOrStringValue", MarshalKey: "value", FallbackDescription: true},
+						{Name: "Value", Type: "intOrStringVariant", MarshalKey: "value", OmitDirective: "omitzero"},
 					},
 					OneOfInfo: &OneOfInfo{
 						Discriminator: Discriminator{
@@ -487,6 +475,7 @@ func Test_createOneOf(t *testing.T) {
 						},
 						ValueField: "Value",
 						ValueKey:   "value",
+						ValueType:  "intOrStringVariant",
 						Variants: []OneOfVariant{
 							{EnumValue: "IntOrStringTypeInt", ImplType: "IntOrStringInt"},
 							{EnumValue: "IntOrStringTypeString", ImplType: "IntOrStringString"},

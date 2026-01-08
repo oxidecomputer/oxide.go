@@ -135,8 +135,7 @@ type AddressLotCreateResponse struct {
 	Lot AddressLot `json:"lot" yaml:"lot"`
 }
 
-// AddressLotKind is infrastructure address lots are used for network infrastructure like addresses assigned to
-// rack switches.
+// AddressLotKind is the kind associated with an address lot.
 type AddressLotKind string
 
 // AddressLotResultsPage is a single page of results
@@ -160,6 +159,24 @@ type AddressLotViewResponse struct {
 	Blocks []AddressLotBlock `json:"blocks" yaml:"blocks"`
 	// Lot is the address lot.
 	Lot AddressLot `json:"lot" yaml:"lot"`
+}
+
+// AddressSelectorType is the type definition for a AddressSelectorType.
+type AddressSelectorType string
+
+// AddressSelector is specify how to allocate a floating IP address.
+type AddressSelector struct {
+	Type AddressSelectorType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Ip is the IP address to reserve. Must be available in the pool.
+	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
+	// Pool is the pool containing this address. If not specified, the default pool for the address's IP version
+	// is used.
+	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
+	// PoolSelector is pool selection.
+	//
+	// If omitted, this field uses the silo's default pool. If the silo has default pools for both IPv4 and IPv6,
+	// the request will fail unless `ip_version` is specified in the pool selector.
+	PoolSelector PoolSelector `json:"pool_selector,omitempty" yaml:"pool_selector,omitempty"`
 }
 
 // AffinityGroup is view of an Affinity Group
@@ -214,16 +231,21 @@ type AffinityGroupCreate struct {
 	Policy AffinityPolicy `json:"policy" yaml:"policy"`
 }
 
+// affinityGroupMemberVariant is an interface for AffinityGroupMember variants.
+type affinityGroupMemberVariant interface {
+	isAffinityGroupMemberVariant()
+}
+
 // AffinityGroupMemberType is the type definition for a AffinityGroupMemberType.
 type AffinityGroupMemberType string
 
-// AffinityGroupMemberValue is the type definition for a AffinityGroupMemberValue.
+// AffinityGroupMemberInstanceValue is the type definition for a AffinityGroupMemberInstanceValue.
 //
 // Required fields:
 // - Id
 // - Name
 // - RunState
-type AffinityGroupMemberValue struct {
+type AffinityGroupMemberInstanceValue struct {
 	Id string `json:"id" yaml:"id"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
@@ -239,14 +261,11 @@ type AffinityGroupMemberValue struct {
 // AffinityGroupMemberInstance is an instance belonging to this group
 //
 // Instances can belong to up to 16 affinity groups.
-//
-// Required fields:
-// - Type
-// - Value
 type AffinityGroupMemberInstance struct {
-	Type  AffinityGroupMemberType  `json:"type" yaml:"type"`
-	Value AffinityGroupMemberValue `json:"value" yaml:"value"`
+	Value AffinityGroupMemberInstanceValue `json:"value,omitempty" yaml:"value,omitempty"`
 }
+
+func (AffinityGroupMemberInstance) isAffinityGroupMemberVariant() {}
 
 // AffinityGroupMember is a member of an Affinity Group
 //
@@ -254,10 +273,47 @@ type AffinityGroupMemberInstance struct {
 //
 // Affinity Groups can contain up to 32 members.
 type AffinityGroupMember struct {
-	// Type is the type definition for a Type.
-	Type AffinityGroupMemberType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is the type definition for a Value.
-	Value AffinityGroupMemberValue `json:"value,omitempty" yaml:"value,omitempty"`
+	Value affinityGroupMemberVariant `json:"value,omitzero" yaml:"value,omitzero"`
+}
+
+// UnmarshalJSON implements json.Unmarshaler for AffinityGroupMember, selecting the correct
+// variant of the Value field based on the type discriminator.
+func (v *AffinityGroupMember) UnmarshalJSON(data []byte) error {
+	var raw struct {
+		Type  AffinityGroupMemberType `json:"type"`
+		Value json.RawMessage         `json:"value"`
+	}
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return fmt.Errorf("unmarshaling AffinityGroupMember: %w\nJSON: %s", err, string(data))
+	}
+	switch raw.Type {
+	case AffinityGroupMemberTypeInstance:
+		var val AffinityGroupMemberInstance
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling AffinityGroupMember variant AffinityGroupMemberInstance: %w\nJSON: %s", err, string(data))
+		}
+		v.Value = val
+	}
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler for AffinityGroupMember, setting the type
+// discriminator based on the Value variant type.
+func (v AffinityGroupMember) MarshalJSON() ([]byte, error) {
+	var discriminator AffinityGroupMemberType
+	var innerValue any
+	switch val := v.Value.(type) {
+	case AffinityGroupMemberInstance:
+		discriminator = AffinityGroupMemberTypeInstance
+		innerValue = val.Value
+	}
+	return json.Marshal(struct {
+		Type  AffinityGroupMemberType `json:"type"`
+		Value any                     `json:"value,omitzero"`
+	}{
+		Type:  discriminator,
+		Value: innerValue,
+	})
 }
 
 // AffinityGroupMemberResultsPage is a single page of results
@@ -288,9 +344,9 @@ type AffinityGroupUpdate struct {
 	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
-// AffinityPolicy is if the affinity request cannot be satisfied, allow it anyway.
+// AffinityPolicy is affinity policy used to describe "what to do when a request cannot be satisfied"
 //
-// This enables a "best-effort" attempt to satisfy the affinity policy.
+// Used for both Affinity and Anti-Affinity Groups
 type AffinityPolicy string
 
 // AggregateBgpMessageHistory is bGP message history for rack switches.
@@ -355,21 +411,24 @@ type AlertDelivery struct {
 	Trigger AlertDeliveryTrigger `json:"trigger" yaml:"trigger"`
 }
 
-// AlertDeliveryAttemptsWebhook is a list of attempts to deliver an alert to a webhook receiver.
-//
-// Required fields:
-// - Webhook
-type AlertDeliveryAttemptsWebhook struct {
-	Webhook []WebhookDeliveryAttempt `json:"webhook" yaml:"webhook"`
+// alertDeliveryAttemptsVariant is an interface for AlertDeliveryAttempts variants.
+type alertDeliveryAttemptsVariant interface {
+	isAlertDeliveryAttemptsVariant()
 }
+
+// AlertDeliveryAttemptsWebhook is a list of attempts to deliver an alert to a webhook receiver.
+type AlertDeliveryAttemptsWebhook struct {
+	Webhook []WebhookDeliveryAttempt `json:"webhook,omitempty" yaml:"webhook,omitempty"`
+}
+
+func (AlertDeliveryAttemptsWebhook) isAlertDeliveryAttemptsVariant() {}
 
 // AlertDeliveryAttempts is a list of attempts to deliver an alert to a receiver.
 //
 // The type of the delivery attempt model depends on the receiver type, as it may contain information specific to
 // that delivery mechanism. For example, webhook delivery attempts contain the HTTP status code of the webhook request.
 type AlertDeliveryAttempts struct {
-	// Webhook is the type definition for a Webhook.
-	Webhook []WebhookDeliveryAttempt `json:"webhook,omitempty" yaml:"webhook,omitempty"`
+	Webhook alertDeliveryAttemptsVariant `json:"webhook,omitzero" yaml:"webhook,omitzero"`
 }
 
 // AlertDeliveryId is the type definition for a AlertDeliveryId.
@@ -391,13 +450,10 @@ type AlertDeliveryResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// AlertDeliveryState is the webhook event has not yet been delivered successfully.
-//
-// Either no delivery attempts have yet been performed, or the delivery has failed at least once but has retries
-// remaining.
+// AlertDeliveryState is the state of a webhook delivery attempt.
 type AlertDeliveryState string
 
-// AlertDeliveryTrigger is delivery was triggered by the alert itself.
+// AlertDeliveryTrigger is the reason an alert was delivered
 type AlertDeliveryTrigger string
 
 // AlertProbeResult is data describing the result of an alert receiver liveness probe attempt.
@@ -446,27 +502,12 @@ type AlertReceiver struct {
 // AlertReceiverKindKind is the type definition for a AlertReceiverKindKind.
 type AlertReceiverKindKind string
 
-// AlertReceiverKindWebhook is webhook-specific alert receiver configuration.
-//
-// Required fields:
-// - Endpoint
-// - Kind
-// - Secrets
-type AlertReceiverKindWebhook struct {
-	// Endpoint is the URL that webhook notification requests are sent to.
-	Endpoint string                `json:"endpoint" yaml:"endpoint"`
-	Kind     AlertReceiverKindKind `json:"kind" yaml:"kind"`
-	Secrets  []WebhookSecret       `json:"secrets" yaml:"secrets"`
-}
-
 // AlertReceiverKind is the possible alert delivery mechanisms for an alert receiver.
 type AlertReceiverKind struct {
-	// Endpoint is the URL that webhook notification requests are sent to.
-	Endpoint string `json:"endpoint,omitempty" yaml:"endpoint,omitempty"`
-	// Kind is the type definition for a Kind.
 	Kind AlertReceiverKindKind `json:"kind,omitempty" yaml:"kind,omitempty"`
-	// Secrets is the type definition for a Secrets.
-	Secrets []WebhookSecret `json:"secrets,omitempty" yaml:"secrets,omitempty"`
+	// Endpoint is the URL that webhook notification requests are sent to.
+	Endpoint string          `json:"endpoint,omitempty" yaml:"endpoint,omitempty"`
+	Secrets  []WebhookSecret `json:"secrets,omitempty" yaml:"secrets,omitempty"`
 }
 
 // AlertReceiverResultsPage is a single page of results
@@ -529,32 +570,10 @@ type AllowListUpdate struct {
 // AllowedSourceIpsAllow is the type definition for a AllowedSourceIpsAllow.
 type AllowedSourceIpsAllow string
 
-// AllowedSourceIpsAny is allow traffic from any external IP address.
-//
-// Required fields:
-// - Allow
-type AllowedSourceIpsAny struct {
-	Allow AllowedSourceIpsAllow `json:"allow" yaml:"allow"`
-}
-
-// AllowedSourceIpsList is restrict access to a specific set of source IP addresses or subnets.
-//
-// All others are prevented from reaching rack services.
-//
-// Required fields:
-// - Allow
-// - Ips
-type AllowedSourceIpsList struct {
-	Allow AllowedSourceIpsAllow `json:"allow" yaml:"allow"`
-	Ips   []IpNet               `json:"ips" yaml:"ips"`
-}
-
 // AllowedSourceIps is description of source IPs allowed to reach rack services.
 type AllowedSourceIps struct {
-	// Allow is the type definition for a Allow.
 	Allow AllowedSourceIpsAllow `json:"allow,omitempty" yaml:"allow,omitempty"`
-	// Ips is the type definition for a Ips.
-	Ips []IpNet `json:"ips,omitempty" yaml:"ips,omitempty"`
+	Ips   []IpNet               `json:"ips,omitempty" yaml:"ips,omitempty"`
 }
 
 // AntiAffinityGroup is view of an Anti-Affinity Group
@@ -609,16 +628,21 @@ type AntiAffinityGroupCreate struct {
 	Policy AffinityPolicy `json:"policy" yaml:"policy"`
 }
 
+// antiAffinityGroupMemberVariant is an interface for AntiAffinityGroupMember variants.
+type antiAffinityGroupMemberVariant interface {
+	isAntiAffinityGroupMemberVariant()
+}
+
 // AntiAffinityGroupMemberType is the type definition for a AntiAffinityGroupMemberType.
 type AntiAffinityGroupMemberType string
 
-// AntiAffinityGroupMemberValue is the type definition for a AntiAffinityGroupMemberValue.
+// AntiAffinityGroupMemberInstanceValue is the type definition for a AntiAffinityGroupMemberInstanceValue.
 //
 // Required fields:
 // - Id
 // - Name
 // - RunState
-type AntiAffinityGroupMemberValue struct {
+type AntiAffinityGroupMemberInstanceValue struct {
 	Id string `json:"id" yaml:"id"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
@@ -634,14 +658,11 @@ type AntiAffinityGroupMemberValue struct {
 // AntiAffinityGroupMemberInstance is an instance belonging to this group
 //
 // Instances can belong to up to 16 anti-affinity groups.
-//
-// Required fields:
-// - Type
-// - Value
 type AntiAffinityGroupMemberInstance struct {
-	Type  AntiAffinityGroupMemberType  `json:"type" yaml:"type"`
-	Value AntiAffinityGroupMemberValue `json:"value" yaml:"value"`
+	Value AntiAffinityGroupMemberInstanceValue `json:"value,omitempty" yaml:"value,omitempty"`
 }
+
+func (AntiAffinityGroupMemberInstance) isAntiAffinityGroupMemberVariant() {}
 
 // AntiAffinityGroupMember is a member of an Anti-Affinity Group
 //
@@ -649,10 +670,47 @@ type AntiAffinityGroupMemberInstance struct {
 //
 // Anti-Affinity Groups can contain up to 32 members.
 type AntiAffinityGroupMember struct {
-	// Type is the type definition for a Type.
-	Type AntiAffinityGroupMemberType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is the type definition for a Value.
-	Value AntiAffinityGroupMemberValue `json:"value,omitempty" yaml:"value,omitempty"`
+	Value antiAffinityGroupMemberVariant `json:"value,omitzero" yaml:"value,omitzero"`
+}
+
+// UnmarshalJSON implements json.Unmarshaler for AntiAffinityGroupMember, selecting the correct
+// variant of the Value field based on the type discriminator.
+func (v *AntiAffinityGroupMember) UnmarshalJSON(data []byte) error {
+	var raw struct {
+		Type  AntiAffinityGroupMemberType `json:"type"`
+		Value json.RawMessage             `json:"value"`
+	}
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return fmt.Errorf("unmarshaling AntiAffinityGroupMember: %w\nJSON: %s", err, string(data))
+	}
+	switch raw.Type {
+	case AntiAffinityGroupMemberTypeInstance:
+		var val AntiAffinityGroupMemberInstance
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling AntiAffinityGroupMember variant AntiAffinityGroupMemberInstance: %w\nJSON: %s", err, string(data))
+		}
+		v.Value = val
+	}
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler for AntiAffinityGroupMember, setting the type
+// discriminator based on the Value variant type.
+func (v AntiAffinityGroupMember) MarshalJSON() ([]byte, error) {
+	var discriminator AntiAffinityGroupMemberType
+	var innerValue any
+	switch val := v.Value.(type) {
+	case AntiAffinityGroupMemberInstance:
+		discriminator = AntiAffinityGroupMemberTypeInstance
+		innerValue = val.Value
+	}
+	return json.Marshal(struct {
+		Type  AntiAffinityGroupMemberType `json:"type"`
+		Value any                         `json:"value,omitzero"`
+	}{
+		Type:  discriminator,
+		Value: innerValue,
+	})
 }
 
 // AntiAffinityGroupMemberResultsPage is a single page of results
@@ -724,106 +782,24 @@ type AuditLogEntry struct {
 // AuditLogEntryActorKind is the type definition for a AuditLogEntryActorKind.
 type AuditLogEntryActorKind string
 
-// AuditLogEntryActorUserBuiltin is the type definition for a AuditLogEntryActorUserBuiltin.
-//
-// Required fields:
-// - Kind
-// - UserBuiltinId
-type AuditLogEntryActorUserBuiltin struct {
-	Kind          AuditLogEntryActorKind `json:"kind" yaml:"kind"`
-	UserBuiltinId string                 `json:"user_builtin_id" yaml:"user_builtin_id"`
-}
-
-// AuditLogEntryActorSiloUser is the type definition for a AuditLogEntryActorSiloUser.
-//
-// Required fields:
-// - Kind
-// - SiloId
-// - SiloUserId
-type AuditLogEntryActorSiloUser struct {
-	Kind       AuditLogEntryActorKind `json:"kind" yaml:"kind"`
-	SiloId     string                 `json:"silo_id" yaml:"silo_id"`
-	SiloUserId string                 `json:"silo_user_id" yaml:"silo_user_id"`
-}
-
-// AuditLogEntryActorScim is the type definition for a AuditLogEntryActorScim.
-//
-// Required fields:
-// - Kind
-// - SiloId
-type AuditLogEntryActorScim struct {
-	Kind   AuditLogEntryActorKind `json:"kind" yaml:"kind"`
-	SiloId string                 `json:"silo_id" yaml:"silo_id"`
-}
-
-// AuditLogEntryActorUnauthenticated is the type definition for a AuditLogEntryActorUnauthenticated.
-//
-// Required fields:
-// - Kind
-type AuditLogEntryActorUnauthenticated struct {
-	Kind AuditLogEntryActorKind `json:"kind" yaml:"kind"`
-}
-
 // AuditLogEntryActor is the type definition for a AuditLogEntryActor.
 type AuditLogEntryActor struct {
-	// Kind is the type definition for a Kind.
-	Kind AuditLogEntryActorKind `json:"kind,omitempty" yaml:"kind,omitempty"`
-	// UserBuiltinId is the type definition for a UserBuiltinId.
-	UserBuiltinId string `json:"user_builtin_id,omitempty" yaml:"user_builtin_id,omitempty"`
-	// SiloId is the type definition for a SiloId.
-	SiloId string `json:"silo_id,omitempty" yaml:"silo_id,omitempty"`
-	// SiloUserId is the type definition for a SiloUserId.
-	SiloUserId string `json:"silo_user_id,omitempty" yaml:"silo_user_id,omitempty"`
+	Kind          AuditLogEntryActorKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+	UserBuiltinId string                 `json:"user_builtin_id,omitempty" yaml:"user_builtin_id,omitempty"`
+	SiloId        string                 `json:"silo_id,omitempty" yaml:"silo_id,omitempty"`
+	SiloUserId    string                 `json:"silo_user_id,omitempty" yaml:"silo_user_id,omitempty"`
 }
 
 // AuditLogEntryResultKind is the type definition for a AuditLogEntryResultKind.
 type AuditLogEntryResultKind string
 
-// AuditLogEntryResultSuccess is the operation completed successfully
-//
-// Required fields:
-// - HttpStatusCode
-// - Kind
-type AuditLogEntryResultSuccess struct {
-	// HttpStatusCode is hTTP status code
-	HttpStatusCode *int                    `json:"http_status_code" yaml:"http_status_code"`
-	Kind           AuditLogEntryResultKind `json:"kind" yaml:"kind"`
-}
-
-// AuditLogEntryResultError is the operation failed
-//
-// Required fields:
-// - ErrorMessage
-// - HttpStatusCode
-// - Kind
-type AuditLogEntryResultError struct {
-	ErrorCode    string `json:"error_code,omitempty" yaml:"error_code,omitempty"`
-	ErrorMessage string `json:"error_message" yaml:"error_message"`
-	// HttpStatusCode is hTTP status code
-	HttpStatusCode *int                    `json:"http_status_code" yaml:"http_status_code"`
-	Kind           AuditLogEntryResultKind `json:"kind" yaml:"kind"`
-}
-
-// AuditLogEntryResultUnknown is after the logged operation completed, our attempt to write the result to
-// the audit log failed, so it was automatically marked completed later by a background job. This does not imply
-// that the operation itself timed out or failed, only our attempts to log its result.
-//
-// Required fields:
-// - Kind
-type AuditLogEntryResultUnknown struct {
-	Kind AuditLogEntryResultKind `json:"kind" yaml:"kind"`
-}
-
 // AuditLogEntryResult is result of an audit log entry
 type AuditLogEntryResult struct {
-	// HttpStatusCode is hTTP status code
-	HttpStatusCode *int `json:"http_status_code,omitempty" yaml:"http_status_code,omitempty"`
-	// Kind is the type definition for a Kind.
 	Kind AuditLogEntryResultKind `json:"kind,omitempty" yaml:"kind,omitempty"`
-	// ErrorCode is the type definition for a ErrorCode.
-	ErrorCode string `json:"error_code,omitzero" yaml:"error_code,omitzero"`
-	// ErrorMessage is the type definition for a ErrorMessage.
-	ErrorMessage string `json:"error_message,omitempty" yaml:"error_message,omitempty"`
+	// HttpStatusCode is hTTP status code
+	HttpStatusCode *int   `json:"http_status_code,omitempty" yaml:"http_status_code,omitempty"`
+	ErrorCode      string `json:"error_code,omitempty" yaml:"error_code,omitempty"`
+	ErrorMessage   string `json:"error_message,omitempty" yaml:"error_message,omitempty"`
 }
 
 // AuditLogEntryResultsPage is a single page of results
@@ -837,7 +813,11 @@ type AuditLogEntryResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// AuthzScope is timeseries data is limited to fleet readers.
+// AuthzScope is authorization scope for a timeseries.
+//
+// This describes the level at which a user must be authorized to read data from a timeseries. For example, fleet-scoping
+// means the data is only visible to an operator or fleet reader. Project-scoped, on the other hand, indicates that
+// a user will see data limited to the projects on which they have read permissions.
 type AuthzScope string
 
 // Baseboard is properties that uniquely identify an Oxide hardware component
@@ -893,7 +873,7 @@ type BfdSessionEnable struct {
 	Switch Name `json:"switch" yaml:"switch"`
 }
 
-// BfdState is a stable down state. Non-responsive to incoming messages.
+// BfdState is the type definition for a BfdState.
 type BfdState string
 
 // BfdStatus is the type definition for a BfdStatus.
@@ -1142,7 +1122,7 @@ type BgpPeerConfig struct {
 	Peers    []BgpPeer `json:"peers" yaml:"peers"`
 }
 
-// BgpPeerState is initial state. Refuse all incoming BGP connections. No resources allocated to peer.
+// BgpPeerState is the current state of a BGP peer.
 type BgpPeerState string
 
 // BgpPeerStatus is the current status of a BGP peer.
@@ -1172,481 +1152,131 @@ type BgpPeerStatus struct {
 // BinRangedoubleType is the type definition for a BinRangedoubleType.
 type BinRangedoubleType string
 
-// BinRangedoubleRangeTo is a range unbounded below and exclusively above, `..end`.
-//
-// Required fields:
-// - End
-// - Type
-type BinRangedoubleRangeTo struct {
-	End  float64            `json:"end" yaml:"end"`
-	Type BinRangedoubleType `json:"type" yaml:"type"`
-}
-
-// BinRangedoubleRange is a range bounded inclusively below and exclusively above, `start..end`.
-//
-// Required fields:
-// - End
-// - Start
-// - Type
-type BinRangedoubleRange struct {
-	End   float64            `json:"end" yaml:"end"`
-	Start float64            `json:"start" yaml:"start"`
-	Type  BinRangedoubleType `json:"type" yaml:"type"`
-}
-
-// BinRangedoubleRangeFrom is a range bounded inclusively below and unbounded above, `start..`.
-//
-// Required fields:
-// - Start
-// - Type
-type BinRangedoubleRangeFrom struct {
-	Start float64            `json:"start" yaml:"start"`
-	Type  BinRangedoubleType `json:"type" yaml:"type"`
-}
-
 // BinRangedouble is a type storing a range over `T`.
 //
 // This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangedouble struct {
-	// End is the type definition for a End.
-	End float64 `json:"end,omitempty" yaml:"end,omitempty"`
-	// Type is the type definition for a Type.
-	Type BinRangedoubleType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Start is the type definition for a Start.
-	Start float64 `json:"start,omitempty" yaml:"start,omitempty"`
+	Type  BinRangedoubleType `json:"type,omitempty" yaml:"type,omitempty"`
+	End   float64            `json:"end,omitempty" yaml:"end,omitempty"`
+	Start float64            `json:"start,omitempty" yaml:"start,omitempty"`
 }
 
 // BinRangefloatType is the type definition for a BinRangefloatType.
 type BinRangefloatType string
-
-// BinRangefloatRangeTo is a range unbounded below and exclusively above, `..end`.
-//
-// Required fields:
-// - End
-// - Type
-type BinRangefloatRangeTo struct {
-	End  float64           `json:"end" yaml:"end"`
-	Type BinRangefloatType `json:"type" yaml:"type"`
-}
-
-// BinRangefloatRange is a range bounded inclusively below and exclusively above, `start..end`.
-//
-// Required fields:
-// - End
-// - Start
-// - Type
-type BinRangefloatRange struct {
-	End   float64           `json:"end" yaml:"end"`
-	Start float64           `json:"start" yaml:"start"`
-	Type  BinRangefloatType `json:"type" yaml:"type"`
-}
-
-// BinRangefloatRangeFrom is a range bounded inclusively below and unbounded above, `start..`.
-//
-// Required fields:
-// - Start
-// - Type
-type BinRangefloatRangeFrom struct {
-	Start float64           `json:"start" yaml:"start"`
-	Type  BinRangefloatType `json:"type" yaml:"type"`
-}
 
 // BinRangefloat is a type storing a range over `T`.
 //
 // This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangefloat struct {
-	// End is the type definition for a End.
-	End float64 `json:"end,omitempty" yaml:"end,omitempty"`
-	// Type is the type definition for a Type.
-	Type BinRangefloatType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Start is the type definition for a Start.
-	Start float64 `json:"start,omitempty" yaml:"start,omitempty"`
+	Type  BinRangefloatType `json:"type,omitempty" yaml:"type,omitempty"`
+	End   float64           `json:"end,omitempty" yaml:"end,omitempty"`
+	Start float64           `json:"start,omitempty" yaml:"start,omitempty"`
 }
 
 // BinRangeint16Type is the type definition for a BinRangeint16Type.
 type BinRangeint16Type string
-
-// BinRangeint16RangeTo is a range unbounded below and exclusively above, `..end`.
-//
-// Required fields:
-// - End
-// - Type
-type BinRangeint16RangeTo struct {
-	End  *int              `json:"end" yaml:"end"`
-	Type BinRangeint16Type `json:"type" yaml:"type"`
-}
-
-// BinRangeint16Range is a range bounded inclusively below and exclusively above, `start..end`.
-//
-// Required fields:
-// - End
-// - Start
-// - Type
-type BinRangeint16Range struct {
-	End   *int              `json:"end" yaml:"end"`
-	Start *int              `json:"start" yaml:"start"`
-	Type  BinRangeint16Type `json:"type" yaml:"type"`
-}
-
-// BinRangeint16RangeFrom is a range bounded inclusively below and unbounded above, `start..`.
-//
-// Required fields:
-// - Start
-// - Type
-type BinRangeint16RangeFrom struct {
-	Start *int              `json:"start" yaml:"start"`
-	Type  BinRangeint16Type `json:"type" yaml:"type"`
-}
 
 // BinRangeint16 is a type storing a range over `T`.
 //
 // This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeint16 struct {
-	// End is the type definition for a End.
-	End *int `json:"end,omitempty" yaml:"end,omitempty"`
-	// Type is the type definition for a Type.
-	Type BinRangeint16Type `json:"type,omitempty" yaml:"type,omitempty"`
-	// Start is the type definition for a Start.
-	Start *int `json:"start,omitempty" yaml:"start,omitempty"`
+	Type  BinRangeint16Type `json:"type,omitempty" yaml:"type,omitempty"`
+	End   *int              `json:"end,omitempty" yaml:"end,omitempty"`
+	Start *int              `json:"start,omitempty" yaml:"start,omitempty"`
 }
 
 // BinRangeint32Type is the type definition for a BinRangeint32Type.
 type BinRangeint32Type string
-
-// BinRangeint32RangeTo is a range unbounded below and exclusively above, `..end`.
-//
-// Required fields:
-// - End
-// - Type
-type BinRangeint32RangeTo struct {
-	End  *int              `json:"end" yaml:"end"`
-	Type BinRangeint32Type `json:"type" yaml:"type"`
-}
-
-// BinRangeint32Range is a range bounded inclusively below and exclusively above, `start..end`.
-//
-// Required fields:
-// - End
-// - Start
-// - Type
-type BinRangeint32Range struct {
-	End   *int              `json:"end" yaml:"end"`
-	Start *int              `json:"start" yaml:"start"`
-	Type  BinRangeint32Type `json:"type" yaml:"type"`
-}
-
-// BinRangeint32RangeFrom is a range bounded inclusively below and unbounded above, `start..`.
-//
-// Required fields:
-// - Start
-// - Type
-type BinRangeint32RangeFrom struct {
-	Start *int              `json:"start" yaml:"start"`
-	Type  BinRangeint32Type `json:"type" yaml:"type"`
-}
 
 // BinRangeint32 is a type storing a range over `T`.
 //
 // This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeint32 struct {
-	// End is the type definition for a End.
-	End *int `json:"end,omitempty" yaml:"end,omitempty"`
-	// Type is the type definition for a Type.
-	Type BinRangeint32Type `json:"type,omitempty" yaml:"type,omitempty"`
-	// Start is the type definition for a Start.
-	Start *int `json:"start,omitempty" yaml:"start,omitempty"`
+	Type  BinRangeint32Type `json:"type,omitempty" yaml:"type,omitempty"`
+	End   *int              `json:"end,omitempty" yaml:"end,omitempty"`
+	Start *int              `json:"start,omitempty" yaml:"start,omitempty"`
 }
 
 // BinRangeint64Type is the type definition for a BinRangeint64Type.
 type BinRangeint64Type string
-
-// BinRangeint64RangeTo is a range unbounded below and exclusively above, `..end`.
-//
-// Required fields:
-// - End
-// - Type
-type BinRangeint64RangeTo struct {
-	End  *int              `json:"end" yaml:"end"`
-	Type BinRangeint64Type `json:"type" yaml:"type"`
-}
-
-// BinRangeint64Range is a range bounded inclusively below and exclusively above, `start..end`.
-//
-// Required fields:
-// - End
-// - Start
-// - Type
-type BinRangeint64Range struct {
-	End   *int              `json:"end" yaml:"end"`
-	Start *int              `json:"start" yaml:"start"`
-	Type  BinRangeint64Type `json:"type" yaml:"type"`
-}
-
-// BinRangeint64RangeFrom is a range bounded inclusively below and unbounded above, `start..`.
-//
-// Required fields:
-// - Start
-// - Type
-type BinRangeint64RangeFrom struct {
-	Start *int              `json:"start" yaml:"start"`
-	Type  BinRangeint64Type `json:"type" yaml:"type"`
-}
 
 // BinRangeint64 is a type storing a range over `T`.
 //
 // This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeint64 struct {
-	// End is the type definition for a End.
-	End *int `json:"end,omitempty" yaml:"end,omitempty"`
-	// Type is the type definition for a Type.
-	Type BinRangeint64Type `json:"type,omitempty" yaml:"type,omitempty"`
-	// Start is the type definition for a Start.
-	Start *int `json:"start,omitempty" yaml:"start,omitempty"`
+	Type  BinRangeint64Type `json:"type,omitempty" yaml:"type,omitempty"`
+	End   *int              `json:"end,omitempty" yaml:"end,omitempty"`
+	Start *int              `json:"start,omitempty" yaml:"start,omitempty"`
 }
 
 // BinRangeint8Type is the type definition for a BinRangeint8Type.
 type BinRangeint8Type string
-
-// BinRangeint8RangeTo is a range unbounded below and exclusively above, `..end`.
-//
-// Required fields:
-// - End
-// - Type
-type BinRangeint8RangeTo struct {
-	End  *int             `json:"end" yaml:"end"`
-	Type BinRangeint8Type `json:"type" yaml:"type"`
-}
-
-// BinRangeint8Range is a range bounded inclusively below and exclusively above, `start..end`.
-//
-// Required fields:
-// - End
-// - Start
-// - Type
-type BinRangeint8Range struct {
-	End   *int             `json:"end" yaml:"end"`
-	Start *int             `json:"start" yaml:"start"`
-	Type  BinRangeint8Type `json:"type" yaml:"type"`
-}
-
-// BinRangeint8RangeFrom is a range bounded inclusively below and unbounded above, `start..`.
-//
-// Required fields:
-// - Start
-// - Type
-type BinRangeint8RangeFrom struct {
-	Start *int             `json:"start" yaml:"start"`
-	Type  BinRangeint8Type `json:"type" yaml:"type"`
-}
 
 // BinRangeint8 is a type storing a range over `T`.
 //
 // This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeint8 struct {
-	// End is the type definition for a End.
-	End *int `json:"end,omitempty" yaml:"end,omitempty"`
-	// Type is the type definition for a Type.
-	Type BinRangeint8Type `json:"type,omitempty" yaml:"type,omitempty"`
-	// Start is the type definition for a Start.
-	Start *int `json:"start,omitempty" yaml:"start,omitempty"`
+	Type  BinRangeint8Type `json:"type,omitempty" yaml:"type,omitempty"`
+	End   *int             `json:"end,omitempty" yaml:"end,omitempty"`
+	Start *int             `json:"start,omitempty" yaml:"start,omitempty"`
 }
 
 // BinRangeuint16Type is the type definition for a BinRangeuint16Type.
 type BinRangeuint16Type string
-
-// BinRangeuint16RangeTo is a range unbounded below and exclusively above, `..end`.
-//
-// Required fields:
-// - End
-// - Type
-type BinRangeuint16RangeTo struct {
-	End  *int               `json:"end" yaml:"end"`
-	Type BinRangeuint16Type `json:"type" yaml:"type"`
-}
-
-// BinRangeuint16Range is a range bounded inclusively below and exclusively above, `start..end`.
-//
-// Required fields:
-// - End
-// - Start
-// - Type
-type BinRangeuint16Range struct {
-	End   *int               `json:"end" yaml:"end"`
-	Start *int               `json:"start" yaml:"start"`
-	Type  BinRangeuint16Type `json:"type" yaml:"type"`
-}
-
-// BinRangeuint16RangeFrom is a range bounded inclusively below and unbounded above, `start..`.
-//
-// Required fields:
-// - Start
-// - Type
-type BinRangeuint16RangeFrom struct {
-	Start *int               `json:"start" yaml:"start"`
-	Type  BinRangeuint16Type `json:"type" yaml:"type"`
-}
 
 // BinRangeuint16 is a type storing a range over `T`.
 //
 // This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeuint16 struct {
-	// End is the type definition for a End.
-	End *int `json:"end,omitempty" yaml:"end,omitempty"`
-	// Type is the type definition for a Type.
-	Type BinRangeuint16Type `json:"type,omitempty" yaml:"type,omitempty"`
-	// Start is the type definition for a Start.
-	Start *int `json:"start,omitempty" yaml:"start,omitempty"`
+	Type  BinRangeuint16Type `json:"type,omitempty" yaml:"type,omitempty"`
+	End   *int               `json:"end,omitempty" yaml:"end,omitempty"`
+	Start *int               `json:"start,omitempty" yaml:"start,omitempty"`
 }
 
 // BinRangeuint32Type is the type definition for a BinRangeuint32Type.
 type BinRangeuint32Type string
-
-// BinRangeuint32RangeTo is a range unbounded below and exclusively above, `..end`.
-//
-// Required fields:
-// - End
-// - Type
-type BinRangeuint32RangeTo struct {
-	End  *int               `json:"end" yaml:"end"`
-	Type BinRangeuint32Type `json:"type" yaml:"type"`
-}
-
-// BinRangeuint32Range is a range bounded inclusively below and exclusively above, `start..end`.
-//
-// Required fields:
-// - End
-// - Start
-// - Type
-type BinRangeuint32Range struct {
-	End   *int               `json:"end" yaml:"end"`
-	Start *int               `json:"start" yaml:"start"`
-	Type  BinRangeuint32Type `json:"type" yaml:"type"`
-}
-
-// BinRangeuint32RangeFrom is a range bounded inclusively below and unbounded above, `start..`.
-//
-// Required fields:
-// - Start
-// - Type
-type BinRangeuint32RangeFrom struct {
-	Start *int               `json:"start" yaml:"start"`
-	Type  BinRangeuint32Type `json:"type" yaml:"type"`
-}
 
 // BinRangeuint32 is a type storing a range over `T`.
 //
 // This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeuint32 struct {
-	// End is the type definition for a End.
-	End *int `json:"end,omitempty" yaml:"end,omitempty"`
-	// Type is the type definition for a Type.
-	Type BinRangeuint32Type `json:"type,omitempty" yaml:"type,omitempty"`
-	// Start is the type definition for a Start.
-	Start *int `json:"start,omitempty" yaml:"start,omitempty"`
+	Type  BinRangeuint32Type `json:"type,omitempty" yaml:"type,omitempty"`
+	End   *int               `json:"end,omitempty" yaml:"end,omitempty"`
+	Start *int               `json:"start,omitempty" yaml:"start,omitempty"`
 }
 
 // BinRangeuint64Type is the type definition for a BinRangeuint64Type.
 type BinRangeuint64Type string
-
-// BinRangeuint64RangeTo is a range unbounded below and exclusively above, `..end`.
-//
-// Required fields:
-// - End
-// - Type
-type BinRangeuint64RangeTo struct {
-	End  *int               `json:"end" yaml:"end"`
-	Type BinRangeuint64Type `json:"type" yaml:"type"`
-}
-
-// BinRangeuint64Range is a range bounded inclusively below and exclusively above, `start..end`.
-//
-// Required fields:
-// - End
-// - Start
-// - Type
-type BinRangeuint64Range struct {
-	End   *int               `json:"end" yaml:"end"`
-	Start *int               `json:"start" yaml:"start"`
-	Type  BinRangeuint64Type `json:"type" yaml:"type"`
-}
-
-// BinRangeuint64RangeFrom is a range bounded inclusively below and unbounded above, `start..`.
-//
-// Required fields:
-// - Start
-// - Type
-type BinRangeuint64RangeFrom struct {
-	Start *int               `json:"start" yaml:"start"`
-	Type  BinRangeuint64Type `json:"type" yaml:"type"`
-}
 
 // BinRangeuint64 is a type storing a range over `T`.
 //
 // This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeuint64 struct {
-	// End is the type definition for a End.
-	End *int `json:"end,omitempty" yaml:"end,omitempty"`
-	// Type is the type definition for a Type.
-	Type BinRangeuint64Type `json:"type,omitempty" yaml:"type,omitempty"`
-	// Start is the type definition for a Start.
-	Start *int `json:"start,omitempty" yaml:"start,omitempty"`
+	Type  BinRangeuint64Type `json:"type,omitempty" yaml:"type,omitempty"`
+	End   *int               `json:"end,omitempty" yaml:"end,omitempty"`
+	Start *int               `json:"start,omitempty" yaml:"start,omitempty"`
 }
 
 // BinRangeuint8Type is the type definition for a BinRangeuint8Type.
 type BinRangeuint8Type string
-
-// BinRangeuint8RangeTo is a range unbounded below and exclusively above, `..end`.
-//
-// Required fields:
-// - End
-// - Type
-type BinRangeuint8RangeTo struct {
-	End  *int              `json:"end" yaml:"end"`
-	Type BinRangeuint8Type `json:"type" yaml:"type"`
-}
-
-// BinRangeuint8Range is a range bounded inclusively below and exclusively above, `start..end`.
-//
-// Required fields:
-// - End
-// - Start
-// - Type
-type BinRangeuint8Range struct {
-	End   *int              `json:"end" yaml:"end"`
-	Start *int              `json:"start" yaml:"start"`
-	Type  BinRangeuint8Type `json:"type" yaml:"type"`
-}
-
-// BinRangeuint8RangeFrom is a range bounded inclusively below and unbounded above, `start..`.
-//
-// Required fields:
-// - Start
-// - Type
-type BinRangeuint8RangeFrom struct {
-	Start *int              `json:"start" yaml:"start"`
-	Type  BinRangeuint8Type `json:"type" yaml:"type"`
-}
 
 // BinRangeuint8 is a type storing a range over `T`.
 //
 // This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeuint8 struct {
-	// End is the type definition for a End.
-	End *int `json:"end,omitempty" yaml:"end,omitempty"`
-	// Type is the type definition for a Type.
-	Type BinRangeuint8Type `json:"type,omitempty" yaml:"type,omitempty"`
-	// Start is the type definition for a Start.
-	Start *int `json:"start,omitempty" yaml:"start,omitempty"`
+	Type  BinRangeuint8Type `json:"type,omitempty" yaml:"type,omitempty"`
+	End   *int              `json:"end,omitempty" yaml:"end,omitempty"`
+	Start *int              `json:"start,omitempty" yaml:"start,omitempty"`
 }
 
 // Bindouble is type storing bin edges and a count of samples within it.
@@ -1924,400 +1554,570 @@ type CurrentUser struct {
 	SiloName Name `json:"silo_name" yaml:"silo_name"`
 }
 
+// datumVariant is an interface for Datum variants.
+type datumVariant interface {
+	isDatumVariant()
+}
+
 // DatumType is the type definition for a DatumType.
 type DatumType string
 
-// datumDatum is an interface for Datum datum variants.
-type datumDatum interface {
-	isDatumDatum()
-}
-
-// DatumBool is the bool variant of Datum datum.
+// DatumBool is the type definition for a DatumBool.
 type DatumBool struct {
-	Datum bool `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Datum *bool `json:"datum,omitempty" yaml:"datum,omitempty"`
 }
 
-func (DatumBool) isDatumDatum() {}
+func (DatumBool) isDatumVariant() {}
 
-// DatumI8 is the int variant of Datum datum.
+// DatumI8 is the type definition for a DatumI8.
 type DatumI8 struct {
-	Datum int `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Datum *int `json:"datum,omitempty" yaml:"datum,omitempty"`
 }
 
-func (DatumI8) isDatumDatum() {}
+func (DatumI8) isDatumVariant() {}
 
-// DatumU8 is the int variant of Datum datum.
+// DatumU8 is the type definition for a DatumU8.
 type DatumU8 struct {
-	Datum int `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Datum *int `json:"datum,omitempty" yaml:"datum,omitempty"`
 }
 
-func (DatumU8) isDatumDatum() {}
+func (DatumU8) isDatumVariant() {}
 
-// DatumI16 is the int variant of Datum datum.
+// DatumI16 is the type definition for a DatumI16.
 type DatumI16 struct {
-	Datum int `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Datum *int `json:"datum,omitempty" yaml:"datum,omitempty"`
 }
 
-func (DatumI16) isDatumDatum() {}
+func (DatumI16) isDatumVariant() {}
 
-// DatumU16 is the int variant of Datum datum.
+// DatumU16 is the type definition for a DatumU16.
 type DatumU16 struct {
-	Datum int `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Datum *int `json:"datum,omitempty" yaml:"datum,omitempty"`
 }
 
-func (DatumU16) isDatumDatum() {}
+func (DatumU16) isDatumVariant() {}
 
-// DatumI32 is the int variant of Datum datum.
+// DatumI32 is the type definition for a DatumI32.
 type DatumI32 struct {
-	Datum int `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Datum *int `json:"datum,omitempty" yaml:"datum,omitempty"`
 }
 
-func (DatumI32) isDatumDatum() {}
+func (DatumI32) isDatumVariant() {}
 
-// DatumU32 is the int variant of Datum datum.
+// DatumU32 is the type definition for a DatumU32.
 type DatumU32 struct {
-	Datum int `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Datum *int `json:"datum,omitempty" yaml:"datum,omitempty"`
 }
 
-func (DatumU32) isDatumDatum() {}
+func (DatumU32) isDatumVariant() {}
 
-// DatumI64 is the int variant of Datum datum.
+// DatumI64 is the type definition for a DatumI64.
 type DatumI64 struct {
-	Datum int `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Datum *int `json:"datum,omitempty" yaml:"datum,omitempty"`
 }
 
-func (DatumI64) isDatumDatum() {}
+func (DatumI64) isDatumVariant() {}
 
-// DatumU64 is the int variant of Datum datum.
+// DatumU64 is the type definition for a DatumU64.
 type DatumU64 struct {
-	Datum int `json:"datum,omitempty" yaml:"datum,omitempty"`
+	Datum *int `json:"datum,omitempty" yaml:"datum,omitempty"`
 }
 
-func (DatumU64) isDatumDatum() {}
+func (DatumU64) isDatumVariant() {}
 
-// DatumF32 is the float64 variant of Datum datum.
+// DatumF32 is the type definition for a DatumF32.
 type DatumF32 struct {
 	Datum float64 `json:"datum,omitempty" yaml:"datum,omitempty"`
 }
 
-func (DatumF32) isDatumDatum() {}
+func (DatumF32) isDatumVariant() {}
 
-// DatumF64 is the float64 variant of Datum datum.
+// DatumF64 is the type definition for a DatumF64.
 type DatumF64 struct {
 	Datum float64 `json:"datum,omitempty" yaml:"datum,omitempty"`
 }
 
-func (DatumF64) isDatumDatum() {}
+func (DatumF64) isDatumVariant() {}
 
-// DatumString is the string variant of Datum datum.
+// DatumString is the type definition for a DatumString.
 type DatumString struct {
 	Datum string `json:"datum,omitempty" yaml:"datum,omitempty"`
 }
 
-func (DatumString) isDatumDatum() {}
+func (DatumString) isDatumVariant() {}
 
-// DatumBytes is the []int variant of Datum datum.
+// DatumBytes is the type definition for a DatumBytes.
 type DatumBytes struct {
 	Datum []int `json:"datum,omitempty" yaml:"datum,omitempty"`
 }
 
-func (DatumBytes) isDatumDatum() {}
+func (DatumBytes) isDatumVariant() {}
 
-// DatumCumulativeI64 is the Cumulativeint64 variant of Datum datum.
+// DatumCumulativeI64 is the type definition for a DatumCumulativeI64.
 type DatumCumulativeI64 struct {
+	// Datum is a cumulative or counter data type.
 	Datum Cumulativeint64 `json:"datum,omitempty" yaml:"datum,omitempty"`
 }
 
-func (DatumCumulativeI64) isDatumDatum() {}
+func (DatumCumulativeI64) isDatumVariant() {}
 
-// DatumCumulativeU64 is the Cumulativeuint64 variant of Datum datum.
+// DatumCumulativeU64 is the type definition for a DatumCumulativeU64.
 type DatumCumulativeU64 struct {
+	// Datum is a cumulative or counter data type.
 	Datum Cumulativeuint64 `json:"datum,omitempty" yaml:"datum,omitempty"`
 }
 
-func (DatumCumulativeU64) isDatumDatum() {}
+func (DatumCumulativeU64) isDatumVariant() {}
 
-// DatumCumulativeF32 is the Cumulativefloat variant of Datum datum.
+// DatumCumulativeF32 is the type definition for a DatumCumulativeF32.
 type DatumCumulativeF32 struct {
+	// Datum is a cumulative or counter data type.
 	Datum Cumulativefloat `json:"datum,omitempty" yaml:"datum,omitempty"`
 }
 
-func (DatumCumulativeF32) isDatumDatum() {}
+func (DatumCumulativeF32) isDatumVariant() {}
 
-// DatumCumulativeF64 is the Cumulativedouble variant of Datum datum.
+// DatumCumulativeF64 is the type definition for a DatumCumulativeF64.
 type DatumCumulativeF64 struct {
+	// Datum is a cumulative or counter data type.
 	Datum Cumulativedouble `json:"datum,omitempty" yaml:"datum,omitempty"`
 }
 
-func (DatumCumulativeF64) isDatumDatum() {}
+func (DatumCumulativeF64) isDatumVariant() {}
 
-// DatumHistogramI8 is the Histogramint8 variant of Datum datum.
+// DatumHistogramI8 is the type definition for a DatumHistogramI8.
 type DatumHistogramI8 struct {
+	// Datum is histogram metric
+	//
+	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+	// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+	// the left, right, or both so that the bins extend to the entire range of the support.
+	//
+	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
 	Datum Histogramint8 `json:"datum,omitempty" yaml:"datum,omitempty"`
 }
 
-func (DatumHistogramI8) isDatumDatum() {}
+func (DatumHistogramI8) isDatumVariant() {}
 
-// DatumHistogramU8 is the Histogramuint8 variant of Datum datum.
+// DatumHistogramU8 is the type definition for a DatumHistogramU8.
 type DatumHistogramU8 struct {
+	// Datum is histogram metric
+	//
+	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+	// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+	// the left, right, or both so that the bins extend to the entire range of the support.
+	//
+	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
 	Datum Histogramuint8 `json:"datum,omitempty" yaml:"datum,omitempty"`
 }
 
-func (DatumHistogramU8) isDatumDatum() {}
+func (DatumHistogramU8) isDatumVariant() {}
 
-// DatumHistogramI16 is the Histogramint16 variant of Datum datum.
+// DatumHistogramI16 is the type definition for a DatumHistogramI16.
 type DatumHistogramI16 struct {
+	// Datum is histogram metric
+	//
+	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+	// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+	// the left, right, or both so that the bins extend to the entire range of the support.
+	//
+	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
 	Datum Histogramint16 `json:"datum,omitempty" yaml:"datum,omitempty"`
 }
 
-func (DatumHistogramI16) isDatumDatum() {}
+func (DatumHistogramI16) isDatumVariant() {}
 
-// DatumHistogramU16 is the Histogramuint16 variant of Datum datum.
+// DatumHistogramU16 is the type definition for a DatumHistogramU16.
 type DatumHistogramU16 struct {
+	// Datum is histogram metric
+	//
+	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+	// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+	// the left, right, or both so that the bins extend to the entire range of the support.
+	//
+	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
 	Datum Histogramuint16 `json:"datum,omitempty" yaml:"datum,omitempty"`
 }
 
-func (DatumHistogramU16) isDatumDatum() {}
+func (DatumHistogramU16) isDatumVariant() {}
 
-// DatumHistogramI32 is the Histogramint32 variant of Datum datum.
+// DatumHistogramI32 is the type definition for a DatumHistogramI32.
 type DatumHistogramI32 struct {
+	// Datum is histogram metric
+	//
+	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+	// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+	// the left, right, or both so that the bins extend to the entire range of the support.
+	//
+	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
 	Datum Histogramint32 `json:"datum,omitempty" yaml:"datum,omitempty"`
 }
 
-func (DatumHistogramI32) isDatumDatum() {}
+func (DatumHistogramI32) isDatumVariant() {}
 
-// DatumHistogramU32 is the Histogramuint32 variant of Datum datum.
+// DatumHistogramU32 is the type definition for a DatumHistogramU32.
 type DatumHistogramU32 struct {
+	// Datum is histogram metric
+	//
+	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+	// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+	// the left, right, or both so that the bins extend to the entire range of the support.
+	//
+	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
 	Datum Histogramuint32 `json:"datum,omitempty" yaml:"datum,omitempty"`
 }
 
-func (DatumHistogramU32) isDatumDatum() {}
+func (DatumHistogramU32) isDatumVariant() {}
 
-// DatumHistogramI64 is the Histogramint64 variant of Datum datum.
+// DatumHistogramI64 is the type definition for a DatumHistogramI64.
 type DatumHistogramI64 struct {
+	// Datum is histogram metric
+	//
+	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+	// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+	// the left, right, or both so that the bins extend to the entire range of the support.
+	//
+	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
 	Datum Histogramint64 `json:"datum,omitempty" yaml:"datum,omitempty"`
 }
 
-func (DatumHistogramI64) isDatumDatum() {}
+func (DatumHistogramI64) isDatumVariant() {}
 
-// DatumHistogramU64 is the Histogramuint64 variant of Datum datum.
+// DatumHistogramU64 is the type definition for a DatumHistogramU64.
 type DatumHistogramU64 struct {
+	// Datum is histogram metric
+	//
+	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+	// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+	// the left, right, or both so that the bins extend to the entire range of the support.
+	//
+	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
 	Datum Histogramuint64 `json:"datum,omitempty" yaml:"datum,omitempty"`
 }
 
-func (DatumHistogramU64) isDatumDatum() {}
+func (DatumHistogramU64) isDatumVariant() {}
 
-// DatumHistogramF32 is the Histogramfloat variant of Datum datum.
+// DatumHistogramF32 is the type definition for a DatumHistogramF32.
 type DatumHistogramF32 struct {
+	// Datum is histogram metric
+	//
+	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+	// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+	// the left, right, or both so that the bins extend to the entire range of the support.
+	//
+	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
 	Datum Histogramfloat `json:"datum,omitempty" yaml:"datum,omitempty"`
 }
 
-func (DatumHistogramF32) isDatumDatum() {}
+func (DatumHistogramF32) isDatumVariant() {}
 
-// DatumHistogramF64 is the Histogramdouble variant of Datum datum.
+// DatumHistogramF64 is the type definition for a DatumHistogramF64.
 type DatumHistogramF64 struct {
+	// Datum is histogram metric
+	//
+	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+	// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+	// the left, right, or both so that the bins extend to the entire range of the support.
+	//
+	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
 	Datum Histogramdouble `json:"datum,omitempty" yaml:"datum,omitempty"`
 }
 
-func (DatumHistogramF64) isDatumDatum() {}
+func (DatumHistogramF64) isDatumVariant() {}
 
-// DatumMissing is the MissingDatum variant of Datum datum.
+// DatumMissing is the type definition for a DatumMissing.
 type DatumMissing struct {
 	Datum MissingDatum `json:"datum,omitempty" yaml:"datum,omitempty"`
 }
 
-func (DatumMissing) isDatumDatum() {}
+func (DatumMissing) isDatumVariant() {}
 
 // Datum is a `Datum` is a single sampled data point from a metric.
 type Datum struct {
-	// Datum is the type definition for a Datum.
-	Datum datumDatum `json:"datum,omitempty" yaml:"datum,omitempty"`
-	// Type is the type definition for a Type.
-	Type DatumType `json:"type,omitempty" yaml:"type,omitempty"`
+	Datum datumVariant `json:"datum,omitzero" yaml:"datum,omitzero"`
 }
 
 // UnmarshalJSON implements json.Unmarshaler for Datum, selecting the correct
-// variant of the Datum field based on the Type discriminator.
+// variant of the Datum field based on the type discriminator.
 func (v *Datum) UnmarshalJSON(data []byte) error {
 	var raw struct {
 		Type  DatumType       `json:"type"`
 		Datum json.RawMessage `json:"datum"`
 	}
 	if err := json.Unmarshal(data, &raw); err != nil {
-		return err
+		return fmt.Errorf("unmarshaling Datum: %w\nJSON: %s", err, string(data))
 	}
-	v.Type = raw.Type
 	switch raw.Type {
 	case DatumTypeBool:
 		var val DatumBool
-		if err := json.Unmarshal(raw.Datum, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling Datum variant DatumBool: %w\nJSON: %s", err, string(data))
 		}
 		v.Datum = val
 	case DatumTypeI8:
 		var val DatumI8
-		if err := json.Unmarshal(raw.Datum, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling Datum variant DatumI8: %w\nJSON: %s", err, string(data))
 		}
 		v.Datum = val
 	case DatumTypeU8:
 		var val DatumU8
-		if err := json.Unmarshal(raw.Datum, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling Datum variant DatumU8: %w\nJSON: %s", err, string(data))
 		}
 		v.Datum = val
 	case DatumTypeI16:
 		var val DatumI16
-		if err := json.Unmarshal(raw.Datum, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling Datum variant DatumI16: %w\nJSON: %s", err, string(data))
 		}
 		v.Datum = val
 	case DatumTypeU16:
 		var val DatumU16
-		if err := json.Unmarshal(raw.Datum, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling Datum variant DatumU16: %w\nJSON: %s", err, string(data))
 		}
 		v.Datum = val
 	case DatumTypeI32:
 		var val DatumI32
-		if err := json.Unmarshal(raw.Datum, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling Datum variant DatumI32: %w\nJSON: %s", err, string(data))
 		}
 		v.Datum = val
 	case DatumTypeU32:
 		var val DatumU32
-		if err := json.Unmarshal(raw.Datum, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling Datum variant DatumU32: %w\nJSON: %s", err, string(data))
 		}
 		v.Datum = val
 	case DatumTypeI64:
 		var val DatumI64
-		if err := json.Unmarshal(raw.Datum, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling Datum variant DatumI64: %w\nJSON: %s", err, string(data))
 		}
 		v.Datum = val
 	case DatumTypeU64:
 		var val DatumU64
-		if err := json.Unmarshal(raw.Datum, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling Datum variant DatumU64: %w\nJSON: %s", err, string(data))
 		}
 		v.Datum = val
 	case DatumTypeF32:
 		var val DatumF32
-		if err := json.Unmarshal(raw.Datum, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling Datum variant DatumF32: %w\nJSON: %s", err, string(data))
 		}
 		v.Datum = val
 	case DatumTypeF64:
 		var val DatumF64
-		if err := json.Unmarshal(raw.Datum, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling Datum variant DatumF64: %w\nJSON: %s", err, string(data))
 		}
 		v.Datum = val
 	case DatumTypeString:
 		var val DatumString
-		if err := json.Unmarshal(raw.Datum, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling Datum variant DatumString: %w\nJSON: %s", err, string(data))
 		}
 		v.Datum = val
 	case DatumTypeBytes:
 		var val DatumBytes
-		if err := json.Unmarshal(raw.Datum, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling Datum variant DatumBytes: %w\nJSON: %s", err, string(data))
 		}
 		v.Datum = val
 	case DatumTypeCumulativeI64:
 		var val DatumCumulativeI64
-		if err := json.Unmarshal(raw.Datum, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling Datum variant DatumCumulativeI64: %w\nJSON: %s", err, string(data))
 		}
 		v.Datum = val
 	case DatumTypeCumulativeU64:
 		var val DatumCumulativeU64
-		if err := json.Unmarshal(raw.Datum, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling Datum variant DatumCumulativeU64: %w\nJSON: %s", err, string(data))
 		}
 		v.Datum = val
 	case DatumTypeCumulativeF32:
 		var val DatumCumulativeF32
-		if err := json.Unmarshal(raw.Datum, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling Datum variant DatumCumulativeF32: %w\nJSON: %s", err, string(data))
 		}
 		v.Datum = val
 	case DatumTypeCumulativeF64:
 		var val DatumCumulativeF64
-		if err := json.Unmarshal(raw.Datum, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling Datum variant DatumCumulativeF64: %w\nJSON: %s", err, string(data))
 		}
 		v.Datum = val
 	case DatumTypeHistogramI8:
 		var val DatumHistogramI8
-		if err := json.Unmarshal(raw.Datum, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling Datum variant DatumHistogramI8: %w\nJSON: %s", err, string(data))
 		}
 		v.Datum = val
 	case DatumTypeHistogramU8:
 		var val DatumHistogramU8
-		if err := json.Unmarshal(raw.Datum, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling Datum variant DatumHistogramU8: %w\nJSON: %s", err, string(data))
 		}
 		v.Datum = val
 	case DatumTypeHistogramI16:
 		var val DatumHistogramI16
-		if err := json.Unmarshal(raw.Datum, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling Datum variant DatumHistogramI16: %w\nJSON: %s", err, string(data))
 		}
 		v.Datum = val
 	case DatumTypeHistogramU16:
 		var val DatumHistogramU16
-		if err := json.Unmarshal(raw.Datum, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling Datum variant DatumHistogramU16: %w\nJSON: %s", err, string(data))
 		}
 		v.Datum = val
 	case DatumTypeHistogramI32:
 		var val DatumHistogramI32
-		if err := json.Unmarshal(raw.Datum, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling Datum variant DatumHistogramI32: %w\nJSON: %s", err, string(data))
 		}
 		v.Datum = val
 	case DatumTypeHistogramU32:
 		var val DatumHistogramU32
-		if err := json.Unmarshal(raw.Datum, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling Datum variant DatumHistogramU32: %w\nJSON: %s", err, string(data))
 		}
 		v.Datum = val
 	case DatumTypeHistogramI64:
 		var val DatumHistogramI64
-		if err := json.Unmarshal(raw.Datum, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling Datum variant DatumHistogramI64: %w\nJSON: %s", err, string(data))
 		}
 		v.Datum = val
 	case DatumTypeHistogramU64:
 		var val DatumHistogramU64
-		if err := json.Unmarshal(raw.Datum, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling Datum variant DatumHistogramU64: %w\nJSON: %s", err, string(data))
 		}
 		v.Datum = val
 	case DatumTypeHistogramF32:
 		var val DatumHistogramF32
-		if err := json.Unmarshal(raw.Datum, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling Datum variant DatumHistogramF32: %w\nJSON: %s", err, string(data))
 		}
 		v.Datum = val
 	case DatumTypeHistogramF64:
 		var val DatumHistogramF64
-		if err := json.Unmarshal(raw.Datum, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling Datum variant DatumHistogramF64: %w\nJSON: %s", err, string(data))
 		}
 		v.Datum = val
 	case DatumTypeMissing:
 		var val DatumMissing
-		if err := json.Unmarshal(raw.Datum, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling Datum variant DatumMissing: %w\nJSON: %s", err, string(data))
 		}
 		v.Datum = val
 	}
 	return nil
+}
+
+// MarshalJSON implements json.Marshaler for Datum, setting the type
+// discriminator based on the Datum variant type.
+func (v Datum) MarshalJSON() ([]byte, error) {
+	var discriminator DatumType
+	var innerValue any
+	switch val := v.Datum.(type) {
+	case DatumBool:
+		discriminator = DatumTypeBool
+		innerValue = val.Datum
+	case DatumI8:
+		discriminator = DatumTypeI8
+		innerValue = val.Datum
+	case DatumU8:
+		discriminator = DatumTypeU8
+		innerValue = val.Datum
+	case DatumI16:
+		discriminator = DatumTypeI16
+		innerValue = val.Datum
+	case DatumU16:
+		discriminator = DatumTypeU16
+		innerValue = val.Datum
+	case DatumI32:
+		discriminator = DatumTypeI32
+		innerValue = val.Datum
+	case DatumU32:
+		discriminator = DatumTypeU32
+		innerValue = val.Datum
+	case DatumI64:
+		discriminator = DatumTypeI64
+		innerValue = val.Datum
+	case DatumU64:
+		discriminator = DatumTypeU64
+		innerValue = val.Datum
+	case DatumF32:
+		discriminator = DatumTypeF32
+		innerValue = val.Datum
+	case DatumF64:
+		discriminator = DatumTypeF64
+		innerValue = val.Datum
+	case DatumString:
+		discriminator = DatumTypeString
+		innerValue = val.Datum
+	case DatumBytes:
+		discriminator = DatumTypeBytes
+		innerValue = val.Datum
+	case DatumCumulativeI64:
+		discriminator = DatumTypeCumulativeI64
+		innerValue = val.Datum
+	case DatumCumulativeU64:
+		discriminator = DatumTypeCumulativeU64
+		innerValue = val.Datum
+	case DatumCumulativeF32:
+		discriminator = DatumTypeCumulativeF32
+		innerValue = val.Datum
+	case DatumCumulativeF64:
+		discriminator = DatumTypeCumulativeF64
+		innerValue = val.Datum
+	case DatumHistogramI8:
+		discriminator = DatumTypeHistogramI8
+		innerValue = val.Datum
+	case DatumHistogramU8:
+		discriminator = DatumTypeHistogramU8
+		innerValue = val.Datum
+	case DatumHistogramI16:
+		discriminator = DatumTypeHistogramI16
+		innerValue = val.Datum
+	case DatumHistogramU16:
+		discriminator = DatumTypeHistogramU16
+		innerValue = val.Datum
+	case DatumHistogramI32:
+		discriminator = DatumTypeHistogramI32
+		innerValue = val.Datum
+	case DatumHistogramU32:
+		discriminator = DatumTypeHistogramU32
+		innerValue = val.Datum
+	case DatumHistogramI64:
+		discriminator = DatumTypeHistogramI64
+		innerValue = val.Datum
+	case DatumHistogramU64:
+		discriminator = DatumTypeHistogramU64
+		innerValue = val.Datum
+	case DatumHistogramF32:
+		discriminator = DatumTypeHistogramF32
+		innerValue = val.Datum
+	case DatumHistogramF64:
+		discriminator = DatumTypeHistogramF64
+		innerValue = val.Datum
+	case DatumMissing:
+		discriminator = DatumTypeMissing
+		innerValue = val.Datum
+	}
+	return json.Marshal(struct {
+		Type  DatumType `json:"type"`
+		Datum any       `json:"datum,omitzero"`
+	}{
+		Type:  discriminator,
+		Datum: innerValue,
+	})
 }
 
 // DerEncodedKeyPair is the type definition for a DerEncodedKeyPair.
@@ -2395,25 +2195,64 @@ type DeviceAuthVerify struct {
 	UserCode string `json:"user_code" yaml:"user_code"`
 }
 
+// digestVariant is an interface for Digest variants.
+type digestVariant interface {
+	isDigestVariant()
+}
+
 // DigestType is the type definition for a DigestType.
 type DigestType string
 
 // DigestSha256 is the type definition for a DigestSha256.
-//
-// Required fields:
-// - Type
-// - Value
 type DigestSha256 struct {
-	Type  DigestType `json:"type" yaml:"type"`
-	Value string     `json:"value" yaml:"value"`
+	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
+
+func (DigestSha256) isDigestVariant() {}
 
 // Digest is the type definition for a Digest.
 type Digest struct {
-	// Type is the type definition for a Type.
-	Type DigestType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is the type definition for a Value.
-	Value string `json:"value,omitempty" yaml:"value,omitempty"`
+	Value digestVariant `json:"value,omitzero" yaml:"value,omitzero"`
+}
+
+// UnmarshalJSON implements json.Unmarshaler for Digest, selecting the correct
+// variant of the Value field based on the type discriminator.
+func (v *Digest) UnmarshalJSON(data []byte) error {
+	var raw struct {
+		Type  DigestType      `json:"type"`
+		Value json.RawMessage `json:"value"`
+	}
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return fmt.Errorf("unmarshaling Digest: %w\nJSON: %s", err, string(data))
+	}
+	switch raw.Type {
+	case DigestTypeSha256:
+		var val DigestSha256
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling Digest variant DigestSha256: %w\nJSON: %s", err, string(data))
+		}
+		v.Value = val
+	}
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler for Digest, setting the type
+// discriminator based on the Value variant type.
+func (v Digest) MarshalJSON() ([]byte, error) {
+	var discriminator DigestType
+	var innerValue any
+	switch val := v.Value.(type) {
+	case DigestSha256:
+		discriminator = DigestTypeSha256
+		innerValue = val.Value
+	}
+	return json.Marshal(struct {
+		Type  DigestType `json:"type"`
+		Value any        `json:"value,omitzero"`
+	}{
+		Type:  discriminator,
+		Value: innerValue,
+	})
 }
 
 // Disk is view of a Disk
@@ -2459,28 +2298,8 @@ type Disk struct {
 // DiskBackendType is the type definition for a DiskBackendType.
 type DiskBackendType string
 
-// DiskBackendLocal is the type definition for a DiskBackendLocal.
-//
-// Required fields:
-// - Type
-type DiskBackendLocal struct {
-	Type DiskBackendType `json:"type" yaml:"type"`
-}
-
-// DiskBackendDistributed is the type definition for a DiskBackendDistributed.
-//
-// Required fields:
-// - DiskSource
-// - Type
-type DiskBackendDistributed struct {
-	// DiskSource is the initial source for this disk
-	DiskSource DiskSource      `json:"disk_source" yaml:"disk_source"`
-	Type       DiskBackendType `json:"type" yaml:"type"`
-}
-
 // DiskBackend is the source of a `Disk`'s blocks
 type DiskBackend struct {
-	// Type is the type definition for a Type.
 	Type DiskBackendType `json:"type,omitempty" yaml:"type,omitempty"`
 	// DiskSource is the initial source for this disk
 	DiskSource DiskSource `json:"disk_source,omitempty" yaml:"disk_source,omitempty"`
@@ -2528,171 +2347,22 @@ type DiskResultsPage struct {
 // DiskSourceType is the type definition for a DiskSourceType.
 type DiskSourceType string
 
-// DiskSourceBlank is create a blank disk
-//
-// Required fields:
-// - BlockSize
-// - Type
-type DiskSourceBlank struct {
-	// BlockSize is size of blocks for this Disk. valid values are: 512, 2048, or 4096
-	BlockSize BlockSize      `json:"block_size" yaml:"block_size"`
-	Type      DiskSourceType `json:"type" yaml:"type"`
-}
-
-// DiskSourceSnapshot is create a disk from a disk snapshot
-//
-// Required fields:
-// - SnapshotId
-// - Type
-type DiskSourceSnapshot struct {
-	SnapshotId string         `json:"snapshot_id" yaml:"snapshot_id"`
-	Type       DiskSourceType `json:"type" yaml:"type"`
-}
-
-// DiskSourceImage is create a disk from an image
-//
-// Required fields:
-// - ImageId
-// - Type
-type DiskSourceImage struct {
-	ImageId string         `json:"image_id" yaml:"image_id"`
-	Type    DiskSourceType `json:"type" yaml:"type"`
-}
-
-// DiskSourceImportingBlocks is create a blank disk that will accept bulk writes or pull blocks from an
-// external source.
-//
-// Required fields:
-// - BlockSize
-// - Type
-type DiskSourceImportingBlocks struct {
-	BlockSize BlockSize      `json:"block_size" yaml:"block_size"`
-	Type      DiskSourceType `json:"type" yaml:"type"`
-}
-
 // DiskSource is different sources for a Distributed Disk
 type DiskSource struct {
-	// BlockSize is size of blocks for this Disk. valid values are: 512, 2048, or 4096
-	BlockSize BlockSize `json:"block_size,omitempty" yaml:"block_size,omitempty"`
-	// Type is the type definition for a Type.
 	Type DiskSourceType `json:"type,omitempty" yaml:"type,omitempty"`
-	// SnapshotId is the type definition for a SnapshotId.
-	SnapshotId string `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
-	// ImageId is the type definition for a ImageId.
-	ImageId string `json:"image_id,omitempty" yaml:"image_id,omitempty"`
+	// BlockSize is size of blocks for this Disk. valid values are: 512, 2048, or 4096
+	BlockSize  BlockSize `json:"block_size,omitempty" yaml:"block_size,omitempty"`
+	SnapshotId string    `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
+	ImageId    string    `json:"image_id,omitempty" yaml:"image_id,omitempty"`
 }
 
 // DiskStateState is the type definition for a DiskStateState.
 type DiskStateState string
 
-// DiskStateCreating is disk is being initialized
-//
-// Required fields:
-// - State
-type DiskStateCreating struct {
-	State DiskStateState `json:"state" yaml:"state"`
-}
-
-// DiskStateDetached is disk is ready but detached from any Instance
-//
-// Required fields:
-// - State
-type DiskStateDetached struct {
-	State DiskStateState `json:"state" yaml:"state"`
-}
-
-// DiskStateImportReady is disk is ready to receive blocks from an external source
-//
-// Required fields:
-// - State
-type DiskStateImportReady struct {
-	State DiskStateState `json:"state" yaml:"state"`
-}
-
-// DiskStateImportingFromUrl is disk is importing blocks from a URL
-//
-// Required fields:
-// - State
-type DiskStateImportingFromUrl struct {
-	State DiskStateState `json:"state" yaml:"state"`
-}
-
-// DiskStateImportingFromBulkWrites is disk is importing blocks from bulk writes
-//
-// Required fields:
-// - State
-type DiskStateImportingFromBulkWrites struct {
-	State DiskStateState `json:"state" yaml:"state"`
-}
-
-// DiskStateFinalizing is disk is being finalized to state Detached
-//
-// Required fields:
-// - State
-type DiskStateFinalizing struct {
-	State DiskStateState `json:"state" yaml:"state"`
-}
-
-// DiskStateMaintenance is disk is undergoing maintenance
-//
-// Required fields:
-// - State
-type DiskStateMaintenance struct {
-	State DiskStateState `json:"state" yaml:"state"`
-}
-
-// DiskStateAttaching is disk is being attached to the given Instance
-//
-// Required fields:
-// - Instance
-// - State
-type DiskStateAttaching struct {
-	Instance string         `json:"instance" yaml:"instance"`
-	State    DiskStateState `json:"state" yaml:"state"`
-}
-
-// DiskStateAttached is disk is attached to the given Instance
-//
-// Required fields:
-// - Instance
-// - State
-type DiskStateAttached struct {
-	Instance string         `json:"instance" yaml:"instance"`
-	State    DiskStateState `json:"state" yaml:"state"`
-}
-
-// DiskStateDetaching is disk is being detached from the given Instance
-//
-// Required fields:
-// - Instance
-// - State
-type DiskStateDetaching struct {
-	Instance string         `json:"instance" yaml:"instance"`
-	State    DiskStateState `json:"state" yaml:"state"`
-}
-
-// DiskStateDestroyed is disk has been destroyed
-//
-// Required fields:
-// - State
-type DiskStateDestroyed struct {
-	State DiskStateState `json:"state" yaml:"state"`
-}
-
-// DiskStateFaulted is disk is unavailable
-//
-// Required fields:
-// - State
-type DiskStateFaulted struct {
-	State DiskStateState `json:"state" yaml:"state"`
-}
-
 // DiskState is state of a Disk
 type DiskState struct {
-	// State is the type definition for a State.
-	State DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
-	// Instance is the type definition for a Instance.
-	Instance string `json:"instance,omitempty" yaml:"instance,omitempty"`
+	State    DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
+	Instance string         `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
 
 // DiskType is the type definition for a DiskType.
@@ -2746,9 +2416,8 @@ type Distributionint64 struct {
 
 // EphemeralIpCreate is parameters for creating an ephemeral IP address for an instance.
 type EphemeralIpCreate struct {
-	// Pool is name or ID of the IP pool used to allocate an address. If unspecified, the default IP pool will
-	// be used.
-	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
+	// PoolSelector is pool to allocate from.
+	PoolSelector PoolSelector `json:"pool_selector,omitempty" yaml:"pool_selector,omitempty"`
 }
 
 // Error is error information from a response.
@@ -2765,85 +2434,15 @@ type Error struct {
 // ExternalIpKind is the type definition for a ExternalIpKind.
 type ExternalIpKind string
 
-// ExternalIpSnat is a source NAT IP address.
-//
-// SNAT addresses are ephemeral addresses used only for outbound connectivity.
-//
-// Required fields:
-// - FirstPort
-// - Ip
-// - IpPoolId
-// - Kind
-// - LastPort
-type ExternalIpSnat struct {
-	// FirstPort is the first usable port within the IP address.
-	FirstPort *int `json:"first_port" yaml:"first_port"`
-	// Ip is the IP address.
-	Ip string `json:"ip" yaml:"ip"`
-	// IpPoolId is iD of the IP Pool from which the address is taken.
-	IpPoolId string         `json:"ip_pool_id" yaml:"ip_pool_id"`
-	Kind     ExternalIpKind `json:"kind" yaml:"kind"`
-	// LastPort is the last usable port within the IP address.
-	LastPort *int `json:"last_port" yaml:"last_port"`
-}
-
-// ExternalIpEphemeral is the type definition for a ExternalIpEphemeral.
-//
-// Required fields:
-// - Ip
-// - IpPoolId
-// - Kind
-type ExternalIpEphemeral struct {
-	Ip       string         `json:"ip" yaml:"ip"`
-	IpPoolId string         `json:"ip_pool_id" yaml:"ip_pool_id"`
-	Kind     ExternalIpKind `json:"kind" yaml:"kind"`
-}
-
-// ExternalIpFloating is a Floating IP is a well-known IP address which can be attached and detached from
-// instances.
-//
-// Required fields:
-// - Description
-// - Id
-// - Ip
-// - IpPoolId
-// - Kind
-// - Name
-// - ProjectId
-// - TimeCreated
-// - TimeModified
-type ExternalIpFloating struct {
-	// Description is human-readable free-form text about a resource
-	Description string `json:"description" yaml:"description"`
-	// Id is unique, immutable, system-controlled identifier for each resource
-	Id string `json:"id" yaml:"id"`
-	// InstanceId is the ID of the instance that this Floating IP is attached to, if it is presently in use.
-	InstanceId string `json:"instance_id,omitempty" yaml:"instance_id,omitempty"`
-	// Ip is the IP address held by this resource.
-	Ip string `json:"ip" yaml:"ip"`
-	// IpPoolId is the ID of the IP pool this resource belongs to.
-	IpPoolId string         `json:"ip_pool_id" yaml:"ip_pool_id"`
-	Kind     ExternalIpKind `json:"kind" yaml:"kind"`
-	// Name is unique, mutable, user-controlled identifier for each resource
-	Name Name `json:"name" yaml:"name"`
-	// ProjectId is the project this resource exists within.
-	ProjectId string `json:"project_id" yaml:"project_id"`
-	// TimeCreated is timestamp when this resource was created
-	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
-	// TimeModified is timestamp when this resource was last modified
-	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
-}
-
 // ExternalIp is the type definition for a ExternalIp.
 type ExternalIp struct {
+	Kind ExternalIpKind `json:"kind,omitempty" yaml:"kind,omitempty"`
 	// FirstPort is the first usable port within the IP address.
 	FirstPort *int `json:"first_port,omitempty" yaml:"first_port,omitempty"`
 	// Ip is the IP address.
 	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
 	// IpPoolId is iD of the IP Pool from which the address is taken.
 	IpPoolId string `json:"ip_pool_id,omitempty" yaml:"ip_pool_id,omitempty"`
-	// Kind is the type definition for a Kind.
-	Kind ExternalIpKind `json:"kind,omitempty" yaml:"kind,omitempty"`
 	// LastPort is the last usable port within the IP address.
 	LastPort *int `json:"last_port,omitempty" yaml:"last_port,omitempty"`
 	// Description is human-readable free-form text about a resource
@@ -2851,7 +2450,7 @@ type ExternalIp struct {
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 	// InstanceId is the ID of the instance that this Floating IP is attached to, if it is presently in use.
-	InstanceId string `json:"instance_id,omitzero" yaml:"instance_id,omitzero"`
+	InstanceId string `json:"instance_id,omitempty" yaml:"instance_id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// ProjectId is the project this resource exists within.
@@ -2865,37 +2464,12 @@ type ExternalIp struct {
 // ExternalIpCreateType is the type definition for a ExternalIpCreateType.
 type ExternalIpCreateType string
 
-// ExternalIpCreateEphemeral is an IP address providing both inbound and outbound access. The address is
-// automatically assigned from the provided IP pool or the default IP pool if not specified.
-//
-// Required fields:
-// - Type
-type ExternalIpCreateEphemeral struct {
-	Pool NameOrId             `json:"pool,omitempty" yaml:"pool,omitempty"`
-	Type ExternalIpCreateType `json:"type" yaml:"type"`
-}
-
-// ExternalIpCreateFloating is an IP address providing both inbound and outbound access. The address is
-// an existing floating IP object assigned to the current project.
-//
-// The floating IP must not be in use by another instance or service.
-//
-// Required fields:
-// - FloatingIp
-// - Type
-type ExternalIpCreateFloating struct {
-	FloatingIp NameOrId             `json:"floating_ip" yaml:"floating_ip"`
-	Type       ExternalIpCreateType `json:"type" yaml:"type"`
-}
-
 // ExternalIpCreate is parameters for creating an external IP address for instances.
 type ExternalIpCreate struct {
-	// Pool is the type definition for a Pool.
-	Pool NameOrId `json:"pool,omitzero" yaml:"pool,omitzero"`
-	// Type is the type definition for a Type.
 	Type ExternalIpCreateType `json:"type,omitempty" yaml:"type,omitempty"`
-	// FloatingIp is the type definition for a FloatingIp.
-	FloatingIp NameOrId `json:"floating_ip,omitempty" yaml:"floating_ip,omitempty"`
+	// PoolSelector is pool to allocate from.
+	PoolSelector PoolSelector `json:"pool_selector,omitempty" yaml:"pool_selector,omitempty"`
+	FloatingIp   NameOrId     `json:"floating_ip,omitempty" yaml:"floating_ip,omitempty"`
 }
 
 // ExternalIpResultsPage is a single page of results
@@ -2909,7 +2483,7 @@ type ExternalIpResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// FailureDomain is instances are considered co-located if they are on the same sled
+// FailureDomain is describes the scope of affinity for the purposes of co-location.
 type FailureDomain string
 
 // FieldSchema is the name and type information for a field of a timeseries schema.
@@ -2934,192 +2508,240 @@ type FieldSource string
 // FieldType is the `FieldType` identifies the data type of a target or metric field.
 type FieldType string
 
+// fieldValueVariant is an interface for FieldValue variants.
+type fieldValueVariant interface {
+	isFieldValueVariant()
+}
+
 // FieldValueType is the type definition for a FieldValueType.
 type FieldValueType string
 
-// fieldValueValue is an interface for FieldValue value variants.
-type fieldValueValue interface {
-	isFieldValueValue()
-}
-
-// FieldValueString is the string variant of FieldValue value.
+// FieldValueString is the type definition for a FieldValueString.
 type FieldValueString struct {
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-func (FieldValueString) isFieldValueValue() {}
+func (FieldValueString) isFieldValueVariant() {}
 
-// FieldValueI8 is the int variant of FieldValue value.
+// FieldValueI8 is the type definition for a FieldValueI8.
 type FieldValueI8 struct {
-	Value int `json:"value,omitempty" yaml:"value,omitempty"`
+	Value *int `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-func (FieldValueI8) isFieldValueValue() {}
+func (FieldValueI8) isFieldValueVariant() {}
 
-// FieldValueU8 is the int variant of FieldValue value.
+// FieldValueU8 is the type definition for a FieldValueU8.
 type FieldValueU8 struct {
-	Value int `json:"value,omitempty" yaml:"value,omitempty"`
+	Value *int `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-func (FieldValueU8) isFieldValueValue() {}
+func (FieldValueU8) isFieldValueVariant() {}
 
-// FieldValueI16 is the int variant of FieldValue value.
+// FieldValueI16 is the type definition for a FieldValueI16.
 type FieldValueI16 struct {
-	Value int `json:"value,omitempty" yaml:"value,omitempty"`
+	Value *int `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-func (FieldValueI16) isFieldValueValue() {}
+func (FieldValueI16) isFieldValueVariant() {}
 
-// FieldValueU16 is the int variant of FieldValue value.
+// FieldValueU16 is the type definition for a FieldValueU16.
 type FieldValueU16 struct {
-	Value int `json:"value,omitempty" yaml:"value,omitempty"`
+	Value *int `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-func (FieldValueU16) isFieldValueValue() {}
+func (FieldValueU16) isFieldValueVariant() {}
 
-// FieldValueI32 is the int variant of FieldValue value.
+// FieldValueI32 is the type definition for a FieldValueI32.
 type FieldValueI32 struct {
-	Value int `json:"value,omitempty" yaml:"value,omitempty"`
+	Value *int `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-func (FieldValueI32) isFieldValueValue() {}
+func (FieldValueI32) isFieldValueVariant() {}
 
-// FieldValueU32 is the int variant of FieldValue value.
+// FieldValueU32 is the type definition for a FieldValueU32.
 type FieldValueU32 struct {
-	Value int `json:"value,omitempty" yaml:"value,omitempty"`
+	Value *int `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-func (FieldValueU32) isFieldValueValue() {}
+func (FieldValueU32) isFieldValueVariant() {}
 
-// FieldValueI64 is the int variant of FieldValue value.
+// FieldValueI64 is the type definition for a FieldValueI64.
 type FieldValueI64 struct {
-	Value int `json:"value,omitempty" yaml:"value,omitempty"`
+	Value *int `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-func (FieldValueI64) isFieldValueValue() {}
+func (FieldValueI64) isFieldValueVariant() {}
 
-// FieldValueU64 is the int variant of FieldValue value.
+// FieldValueU64 is the type definition for a FieldValueU64.
 type FieldValueU64 struct {
-	Value int `json:"value,omitempty" yaml:"value,omitempty"`
+	Value *int `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-func (FieldValueU64) isFieldValueValue() {}
+func (FieldValueU64) isFieldValueVariant() {}
 
-// FieldValueIpAddr is the string variant of FieldValue value.
+// FieldValueIpAddr is the type definition for a FieldValueIpAddr.
 type FieldValueIpAddr struct {
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-func (FieldValueIpAddr) isFieldValueValue() {}
+func (FieldValueIpAddr) isFieldValueVariant() {}
 
-// FieldValueUuid is the string variant of FieldValue value.
+// FieldValueUuid is the type definition for a FieldValueUuid.
 type FieldValueUuid struct {
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-func (FieldValueUuid) isFieldValueValue() {}
+func (FieldValueUuid) isFieldValueVariant() {}
 
-// FieldValueBool is the bool variant of FieldValue value.
+// FieldValueBool is the type definition for a FieldValueBool.
 type FieldValueBool struct {
-	Value bool `json:"value,omitempty" yaml:"value,omitempty"`
+	Value *bool `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-func (FieldValueBool) isFieldValueValue() {}
+func (FieldValueBool) isFieldValueVariant() {}
 
 // FieldValue is the `FieldValue` contains the value of a target or metric field.
 type FieldValue struct {
-	// Type is the type definition for a Type.
-	Type FieldValueType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is the type definition for a Value.
-	Value fieldValueValue `json:"value,omitempty" yaml:"value,omitempty"`
+	Value fieldValueVariant `json:"value,omitzero" yaml:"value,omitzero"`
 }
 
 // UnmarshalJSON implements json.Unmarshaler for FieldValue, selecting the correct
-// variant of the Value field based on the Type discriminator.
+// variant of the Value field based on the type discriminator.
 func (v *FieldValue) UnmarshalJSON(data []byte) error {
 	var raw struct {
 		Type  FieldValueType  `json:"type"`
 		Value json.RawMessage `json:"value"`
 	}
 	if err := json.Unmarshal(data, &raw); err != nil {
-		return err
+		return fmt.Errorf("unmarshaling FieldValue: %w\nJSON: %s", err, string(data))
 	}
-	v.Type = raw.Type
 	switch raw.Type {
 	case FieldValueTypeString:
 		var val FieldValueString
-		if err := json.Unmarshal(raw.Value, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling FieldValue variant FieldValueString: %w\nJSON: %s", err, string(data))
 		}
 		v.Value = val
 	case FieldValueTypeI8:
 		var val FieldValueI8
-		if err := json.Unmarshal(raw.Value, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling FieldValue variant FieldValueI8: %w\nJSON: %s", err, string(data))
 		}
 		v.Value = val
 	case FieldValueTypeU8:
 		var val FieldValueU8
-		if err := json.Unmarshal(raw.Value, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling FieldValue variant FieldValueU8: %w\nJSON: %s", err, string(data))
 		}
 		v.Value = val
 	case FieldValueTypeI16:
 		var val FieldValueI16
-		if err := json.Unmarshal(raw.Value, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling FieldValue variant FieldValueI16: %w\nJSON: %s", err, string(data))
 		}
 		v.Value = val
 	case FieldValueTypeU16:
 		var val FieldValueU16
-		if err := json.Unmarshal(raw.Value, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling FieldValue variant FieldValueU16: %w\nJSON: %s", err, string(data))
 		}
 		v.Value = val
 	case FieldValueTypeI32:
 		var val FieldValueI32
-		if err := json.Unmarshal(raw.Value, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling FieldValue variant FieldValueI32: %w\nJSON: %s", err, string(data))
 		}
 		v.Value = val
 	case FieldValueTypeU32:
 		var val FieldValueU32
-		if err := json.Unmarshal(raw.Value, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling FieldValue variant FieldValueU32: %w\nJSON: %s", err, string(data))
 		}
 		v.Value = val
 	case FieldValueTypeI64:
 		var val FieldValueI64
-		if err := json.Unmarshal(raw.Value, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling FieldValue variant FieldValueI64: %w\nJSON: %s", err, string(data))
 		}
 		v.Value = val
 	case FieldValueTypeU64:
 		var val FieldValueU64
-		if err := json.Unmarshal(raw.Value, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling FieldValue variant FieldValueU64: %w\nJSON: %s", err, string(data))
 		}
 		v.Value = val
 	case FieldValueTypeIpAddr:
 		var val FieldValueIpAddr
-		if err := json.Unmarshal(raw.Value, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling FieldValue variant FieldValueIpAddr: %w\nJSON: %s", err, string(data))
 		}
 		v.Value = val
 	case FieldValueTypeUuid:
 		var val FieldValueUuid
-		if err := json.Unmarshal(raw.Value, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling FieldValue variant FieldValueUuid: %w\nJSON: %s", err, string(data))
 		}
 		v.Value = val
 	case FieldValueTypeBool:
 		var val FieldValueBool
-		if err := json.Unmarshal(raw.Value, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling FieldValue variant FieldValueBool: %w\nJSON: %s", err, string(data))
 		}
 		v.Value = val
 	}
 	return nil
+}
+
+// MarshalJSON implements json.Marshaler for FieldValue, setting the type
+// discriminator based on the Value variant type.
+func (v FieldValue) MarshalJSON() ([]byte, error) {
+	var discriminator FieldValueType
+	var innerValue any
+	switch val := v.Value.(type) {
+	case FieldValueString:
+		discriminator = FieldValueTypeString
+		innerValue = val.Value
+	case FieldValueI8:
+		discriminator = FieldValueTypeI8
+		innerValue = val.Value
+	case FieldValueU8:
+		discriminator = FieldValueTypeU8
+		innerValue = val.Value
+	case FieldValueI16:
+		discriminator = FieldValueTypeI16
+		innerValue = val.Value
+	case FieldValueU16:
+		discriminator = FieldValueTypeU16
+		innerValue = val.Value
+	case FieldValueI32:
+		discriminator = FieldValueTypeI32
+		innerValue = val.Value
+	case FieldValueU32:
+		discriminator = FieldValueTypeU32
+		innerValue = val.Value
+	case FieldValueI64:
+		discriminator = FieldValueTypeI64
+		innerValue = val.Value
+	case FieldValueU64:
+		discriminator = FieldValueTypeU64
+		innerValue = val.Value
+	case FieldValueIpAddr:
+		discriminator = FieldValueTypeIpAddr
+		innerValue = val.Value
+	case FieldValueUuid:
+		discriminator = FieldValueTypeUuid
+		innerValue = val.Value
+	case FieldValueBool:
+		discriminator = FieldValueTypeBool
+		innerValue = val.Value
+	}
+	return json.Marshal(struct {
+		Type  FieldValueType `json:"type"`
+		Value any            `json:"value,omitzero"`
+	}{
+		Type:  discriminator,
+		Value: innerValue,
+	})
 }
 
 // FinalizeDisk is parameters for finalizing a disk
@@ -3212,16 +2834,13 @@ type FloatingIpAttach struct {
 // - Description
 // - Name
 type FloatingIpCreate struct {
-	Description string `json:"description" yaml:"description"`
-	// Ip is an IP address to reserve for use as a floating IP. This field is optional: when not set, an address
-	// will be automatically chosen from `pool`. If set, then the IP must be available in the resolved `pool`.
-	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
+	// AddressSelector is iP address allocation method.
+	AddressSelector AddressSelector `json:"address_selector,omitempty" yaml:"address_selector,omitempty"`
+	Description     string          `json:"description" yaml:"description"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
 	// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
-	// Pool is the parent IP pool that a floating IP is pulled from. If unset, the default pool is selected.
-	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 }
 
 // FloatingIpParentKind is the type of resource that a floating IP is attached to
@@ -3727,7 +3346,9 @@ type Hostname string
 // to represent a single parameter.
 type IcmpParamRange string
 
-// IdSortMode is sort in increasing order of "id"
+// IdSortMode is supported set of sort modes for scanning by id only.
+//
+// Currently, we only support scanning in ascending order.
 type IdSortMode string
 
 // IdentityProvider is view of an Identity Provider
@@ -3765,7 +3386,7 @@ type IdentityProviderResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// IdentityProviderType is sAML identity provider
+// IdentityProviderType is the type definition for a IdentityProviderType.
 type IdentityProviderType string
 
 // IdentityType is describes what kind of identity is described by an id
@@ -3774,34 +3395,11 @@ type IdentityType string
 // IdpMetadataSourceType is the type definition for a IdpMetadataSourceType.
 type IdpMetadataSourceType string
 
-// IdpMetadataSourceUrl is the type definition for a IdpMetadataSourceUrl.
-//
-// Required fields:
-// - Type
-// - Url
-type IdpMetadataSourceUrl struct {
-	Type IdpMetadataSourceType `json:"type" yaml:"type"`
-	Url  string                `json:"url" yaml:"url"`
-}
-
-// IdpMetadataSourceBase64EncodedXml is the type definition for a IdpMetadataSourceBase64EncodedXml.
-//
-// Required fields:
-// - Data
-// - Type
-type IdpMetadataSourceBase64EncodedXml struct {
-	Data string                `json:"data" yaml:"data"`
-	Type IdpMetadataSourceType `json:"type" yaml:"type"`
-}
-
 // IdpMetadataSource is the type definition for a IdpMetadataSource.
 type IdpMetadataSource struct {
-	// Type is the type definition for a Type.
 	Type IdpMetadataSourceType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Url is the type definition for a Url.
-	Url string `json:"url,omitempty" yaml:"url,omitempty"`
-	// Data is the type definition for a Data.
-	Data string `json:"data,omitempty" yaml:"data,omitempty"`
+	Url  string                `json:"url,omitempty" yaml:"url,omitempty"`
+	Data string                `json:"data,omitempty" yaml:"data,omitempty"`
 }
 
 // Image is view of an image
@@ -3877,25 +3475,64 @@ type ImageResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+// imageSourceVariant is an interface for ImageSource variants.
+type imageSourceVariant interface {
+	isImageSourceVariant()
+}
+
 // ImageSourceType is the type definition for a ImageSourceType.
 type ImageSourceType string
 
 // ImageSourceSnapshot is the type definition for a ImageSourceSnapshot.
-//
-// Required fields:
-// - Id
-// - Type
 type ImageSourceSnapshot struct {
-	Id   string          `json:"id" yaml:"id"`
-	Type ImageSourceType `json:"type" yaml:"type"`
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 }
+
+func (ImageSourceSnapshot) isImageSourceVariant() {}
 
 // ImageSource is the source of the underlying image.
 type ImageSource struct {
-	// Id is the type definition for a Id.
-	Id string `json:"id,omitempty" yaml:"id,omitempty"`
-	// Type is the type definition for a Type.
-	Type ImageSourceType `json:"type,omitempty" yaml:"type,omitempty"`
+	Id imageSourceVariant `json:"id,omitzero" yaml:"id,omitzero"`
+}
+
+// UnmarshalJSON implements json.Unmarshaler for ImageSource, selecting the correct
+// variant of the Id field based on the type discriminator.
+func (v *ImageSource) UnmarshalJSON(data []byte) error {
+	var raw struct {
+		Type ImageSourceType `json:"type"`
+		Id   json.RawMessage `json:"id"`
+	}
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return fmt.Errorf("unmarshaling ImageSource: %w\nJSON: %s", err, string(data))
+	}
+	switch raw.Type {
+	case ImageSourceTypeSnapshot:
+		var val ImageSourceSnapshot
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling ImageSource variant ImageSourceSnapshot: %w\nJSON: %s", err, string(data))
+		}
+		v.Id = val
+	}
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler for ImageSource, setting the type
+// discriminator based on the Id variant type.
+func (v ImageSource) MarshalJSON() ([]byte, error) {
+	var discriminator ImageSourceType
+	var innerValue any
+	switch val := v.Id.(type) {
+	case ImageSourceSnapshot:
+		discriminator = ImageSourceTypeSnapshot
+		innerValue = val.Id
+	}
+	return json.Marshal(struct {
+		Type ImageSourceType `json:"type"`
+		Id   any             `json:"id,omitzero"`
+	}{
+		Type: discriminator,
+		Id:   innerValue,
+	})
 }
 
 // ImportBlocksBulkWrite is parameters for importing blocks with a bulk write
@@ -3911,30 +3548,10 @@ type ImportBlocksBulkWrite struct {
 // ImportExportPolicyType is the type definition for a ImportExportPolicyType.
 type ImportExportPolicyType string
 
-// ImportExportPolicyNoFiltering is do not perform any filtering.
-//
-// Required fields:
-// - Type
-type ImportExportPolicyNoFiltering struct {
-	Type ImportExportPolicyType `json:"type" yaml:"type"`
-}
-
-// ImportExportPolicyAllow is the type definition for a ImportExportPolicyAllow.
-//
-// Required fields:
-// - Type
-// - Value
-type ImportExportPolicyAllow struct {
-	Type  ImportExportPolicyType `json:"type" yaml:"type"`
-	Value []IpNet                `json:"value" yaml:"value"`
-}
-
 // ImportExportPolicy is define policy relating to the import and export of prefixes from a BGP peer.
 type ImportExportPolicy struct {
-	// Type is the type definition for a Type.
-	Type ImportExportPolicyType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is the type definition for a Value.
-	Value []IpNet `json:"value,omitempty" yaml:"value,omitempty"`
+	Type  ImportExportPolicyType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value []IpNet                `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // Instance is view of an Instance
@@ -4008,14 +3625,33 @@ type Instance struct {
 	TimeRunStateUpdated *time.Time `json:"time_run_state_updated" yaml:"time_run_state_updated"`
 }
 
-// InstanceAutoRestartPolicy is the instance should not be automatically restarted by the control plane if
-// it fails.
+// InstanceAutoRestartPolicy is a policy determining when an instance should be automatically restarted by
+// the control plane.
 type InstanceAutoRestartPolicy string
 
 // InstanceCpuCount is the number of CPUs in an Instance
 type InstanceCpuCount uint16
 
-// InstanceCpuPlatform is an AMD Milan-like CPU platform.
+// InstanceCpuPlatform is a required CPU platform for an instance.
+//
+// When an instance specifies a required CPU platform:
+//
+// - The system may expose (to the VM) new CPU features that are only present on that platform (or on newer platforms
+// of the same lineage that also support those features). - The instance must run on hosts that have CPUs that
+// support all the features of the supplied platform.
+//
+// That is, the instance is restricted to hosts that have the CPUs which support all features of the required platform,
+// but in exchange the CPU features exposed by the platform are available for the guest to use. Note that this
+// may prevent an instance from starting (if the hosts that could run it are full but there is capacity on
+// other incompatible hosts).
+//
+// If an instance does not specify a required CPU platform, then when it starts, the control plane selects a
+// host for the instance and then supplies the guest with the "minimum" CPU platform supported by that host. This
+// maximizes the number of hosts that can run the VM if it later needs to migrate to another host.
+//
+// In all cases, the CPU features presented by a given CPU platform are a subset of what the corresponding hardware
+// may actually support; features which cannot be used from a virtual environment or do not have full hypervisor support
+// may be masked off. See RFD 314 for specific CPU features in a CPU platform.
 type InstanceCpuPlatform string
 
 // InstanceCreate is create-time parameters for an `Instance`
@@ -4103,42 +3739,10 @@ type InstanceCreate struct {
 // InstanceDiskAttachmentType is the type definition for a InstanceDiskAttachmentType.
 type InstanceDiskAttachmentType string
 
-// InstanceDiskAttachmentCreate is during instance creation, create and attach disks
-//
-// Required fields:
-// - Description
-// - DiskBackend
-// - Name
-// - Size
-// - Type
-type InstanceDiskAttachmentCreate struct {
-	Description string `json:"description" yaml:"description"`
-	// DiskBackend is the source for this `Disk`'s blocks
-	DiskBackend DiskBackend `json:"disk_backend" yaml:"disk_backend"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
-	Name Name `json:"name" yaml:"name"`
-	// Size is the total size of the Disk (in bytes)
-	Size ByteCount                  `json:"size" yaml:"size"`
-	Type InstanceDiskAttachmentType `json:"type" yaml:"type"`
-}
-
-// InstanceDiskAttachmentAttach is during instance creation, attach this disk
-//
-// Required fields:
-// - Name
-// - Type
-type InstanceDiskAttachmentAttach struct {
-	// Name is a disk name to attach
-	Name Name                       `json:"name" yaml:"name"`
-	Type InstanceDiskAttachmentType `json:"type" yaml:"type"`
-}
-
 // InstanceDiskAttachment is describe the instance's disks at creation time
 type InstanceDiskAttachment struct {
-	// Description is the type definition for a Description.
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Type        InstanceDiskAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
+	Description string                     `json:"description,omitempty" yaml:"description,omitempty"`
 	// DiskBackend is the source for this `Disk`'s blocks
 	DiskBackend DiskBackend `json:"disk_backend,omitempty" yaml:"disk_backend,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
@@ -4147,8 +3751,6 @@ type InstanceDiskAttachment struct {
 	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// Size is the total size of the Disk (in bytes)
 	Size ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
-	// Type is the type definition for a Type.
-	Type InstanceDiskAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
 // InstanceNetworkInterface is an `InstanceNetworkInterface` represents a virtual network interface device attached
@@ -4158,7 +3760,7 @@ type InstanceDiskAttachment struct {
 // - Description
 // - Id
 // - InstanceId
-// - Ip
+// - IpStack
 // - Mac
 // - Name
 // - Primary
@@ -4173,8 +3775,8 @@ type InstanceNetworkInterface struct {
 	Id string `json:"id" yaml:"id"`
 	// InstanceId is the Instance to which the interface belongs.
 	InstanceId string `json:"instance_id" yaml:"instance_id"`
-	// Ip is the IP address assigned to this interface.
-	Ip string `json:"ip" yaml:"ip"`
+	// IpStack is the VPC-private IP stack for this interface.
+	IpStack PrivateIpStack `json:"ip_stack" yaml:"ip_stack"`
 	// Mac is the MAC address assigned to this interface.
 	Mac MacAddr `json:"mac" yaml:"mac"`
 	// Name is unique, mutable, user-controlled identifier for each resource
@@ -4187,8 +3789,6 @@ type InstanceNetworkInterface struct {
 	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
-	// TransitIps is a set of additional networks that this interface may send and receive traffic on.
-	TransitIps []IpNet `json:"transit_ips,omitempty" yaml:"transit_ips,omitempty"`
 	// VpcId is the VPC to which the interface belongs.
 	VpcId string `json:"vpc_id" yaml:"vpc_id"`
 }
@@ -4196,43 +3796,11 @@ type InstanceNetworkInterface struct {
 // InstanceNetworkInterfaceAttachmentType is the type definition for a InstanceNetworkInterfaceAttachmentType.
 type InstanceNetworkInterfaceAttachmentType string
 
-// InstanceNetworkInterfaceAttachmentCreate is create one or more `InstanceNetworkInterface`s for the `Instance`.
-//
-// If more than one interface is provided, then the first will be designated the primary interface for the instance.
-//
-// Required fields:
-// - Params
-// - Type
-type InstanceNetworkInterfaceAttachmentCreate struct {
-	Params []InstanceNetworkInterfaceCreate       `json:"params" yaml:"params"`
-	Type   InstanceNetworkInterfaceAttachmentType `json:"type" yaml:"type"`
-}
-
-// InstanceNetworkInterfaceAttachmentDefault is the default networking configuration for an instance is
-// to create a single primary interface with an automatically-assigned IP address. The IP will be pulled from
-// the Project's default VPC / VPC Subnet.
-//
-// Required fields:
-// - Type
-type InstanceNetworkInterfaceAttachmentDefault struct {
-	Type InstanceNetworkInterfaceAttachmentType `json:"type" yaml:"type"`
-}
-
-// InstanceNetworkInterfaceAttachmentNone is no network interfaces at all will be created for the instance.
-//
-// Required fields:
-// - Type
-type InstanceNetworkInterfaceAttachmentNone struct {
-	Type InstanceNetworkInterfaceAttachmentType `json:"type" yaml:"type"`
-}
-
 // InstanceNetworkInterfaceAttachment is describes an attachment of an `InstanceNetworkInterface` to an
 // `Instance`, at the time the instance is created.
 type InstanceNetworkInterfaceAttachment struct {
-	// Params is the type definition for a Params.
-	Params []InstanceNetworkInterfaceCreate `json:"params,omitempty" yaml:"params,omitempty"`
-	// Type is the type definition for a Type.
-	Type InstanceNetworkInterfaceAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
+	Type   InstanceNetworkInterfaceAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
+	Params []InstanceNetworkInterfaceCreate       `json:"params,omitempty" yaml:"params,omitempty"`
 }
 
 // InstanceNetworkInterfaceCreate is create-time parameters for an `InstanceNetworkInterface`
@@ -4244,16 +3812,16 @@ type InstanceNetworkInterfaceAttachment struct {
 // - VpcName
 type InstanceNetworkInterfaceCreate struct {
 	Description string `json:"description" yaml:"description"`
-	// Ip is the IP address for the interface. One will be auto-assigned if not provided.
-	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
+	// IpConfig is the IP stack configuration for this interface.
+	//
+	// If not provided, a default configuration will be used, which creates a dual-stack IPv4 / IPv6 interface.
+	IpConfig PrivateIpStackCreate `json:"ip_config,omitempty" yaml:"ip_config,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
 	// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 	// SubnetName is the VPC Subnet in which to create the interface.
 	SubnetName Name `json:"subnet_name" yaml:"subnet_name"`
-	// TransitIps is a set of additional networks that this interface may send and receive traffic on.
-	TransitIps []IpNet `json:"transit_ips,omitempty" yaml:"transit_ips,omitempty"`
 	// VpcName is the VPC in which to create the interface.
 	VpcName Name `json:"vpc_name" yaml:"vpc_name"`
 }
@@ -4284,7 +3852,7 @@ type InstanceNetworkInterfaceUpdate struct {
 	// Note that this can only be used to select a new primary interface for an instance. Requests to change the
 	// primary interface into a secondary will return an error.
 	Primary *bool `json:"primary,omitempty" yaml:"primary,omitempty"`
-	// TransitIps is a set of additional networks that this interface may send and receive traffic on.
+	// TransitIps is a set of additional networks that this interface may send and receive traffic on
 	TransitIps []IpNet `json:"transit_ips,omitempty" yaml:"transit_ips,omitempty"`
 }
 
@@ -4313,7 +3881,10 @@ type InstanceSerialConsoleData struct {
 	LastByteOffset *int `json:"last_byte_offset" yaml:"last_byte_offset"`
 }
 
-// InstanceState is the instance is being created.
+// InstanceState is running state of an Instance (primarily: booted or stopped)
+//
+// This typically reflects whether it's starting, running, stopping, or stopped, but also includes states related
+// to the Instance's lifecycle
 type InstanceState string
 
 // InstanceUpdate is parameters of an `Instance` that can be reconfigured after creation.
@@ -4364,38 +3935,35 @@ type InstanceUpdate struct {
 	Ncpus InstanceCpuCount `json:"ncpus" yaml:"ncpus"`
 }
 
-// InterfaceNumUnknown is the type definition for a InterfaceNumUnknown.
-//
-// Required fields:
-// - Unknown
-type InterfaceNumUnknown struct {
-	Unknown *int `json:"unknown" yaml:"unknown"`
+// interfaceNumVariant is an interface for InterfaceNum variants.
+type interfaceNumVariant interface {
+	isInterfaceNumVariant()
 }
+
+// InterfaceNumUnknown is the type definition for a InterfaceNumUnknown.
+type InterfaceNumUnknown struct {
+	Unknown *int `json:"unknown,omitempty" yaml:"unknown,omitempty"`
+}
+
+func (InterfaceNumUnknown) isInterfaceNumVariant() {}
 
 // InterfaceNumIfIndex is the type definition for a InterfaceNumIfIndex.
-//
-// Required fields:
-// - IfIndex
 type InterfaceNumIfIndex struct {
-	IfIndex *int `json:"if_index" yaml:"if_index"`
+	IfIndex *int `json:"if_index,omitempty" yaml:"if_index,omitempty"`
 }
 
+func (InterfaceNumIfIndex) isInterfaceNumVariant() {}
+
 // InterfaceNumPortNumber is the type definition for a InterfaceNumPortNumber.
-//
-// Required fields:
-// - PortNumber
 type InterfaceNumPortNumber struct {
-	PortNumber *int `json:"port_number" yaml:"port_number"`
+	PortNumber *int `json:"port_number,omitempty" yaml:"port_number,omitempty"`
 }
+
+func (InterfaceNumPortNumber) isInterfaceNumVariant() {}
 
 // InterfaceNum is the type definition for a InterfaceNum.
 type InterfaceNum struct {
-	// Unknown is the type definition for a Unknown.
-	Unknown *int `json:"unknown,omitempty" yaml:"unknown,omitempty"`
-	// IfIndex is the type definition for a IfIndex.
-	IfIndex *int `json:"if_index,omitempty" yaml:"if_index,omitempty"`
-	// PortNumber is the type definition for a PortNumber.
-	PortNumber *int `json:"port_number,omitempty" yaml:"port_number,omitempty"`
+	Unknown interfaceNumVariant `json:"unknown,omitzero" yaml:"unknown,omitzero"`
 }
 
 // InternetGateway is an internet gateway provides a path between VPC networks and external networks.
@@ -4575,7 +4143,7 @@ type IpPool struct {
 	IpVersion IpVersion `json:"ip_version" yaml:"ip_version"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name" yaml:"name"`
-	// PoolType is type of IP pool (unicast or multicast)
+	// PoolType is type of IP pool (unicast or multicast).
 	PoolType IpPoolType `json:"pool_type" yaml:"pool_type"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
@@ -4615,7 +4183,10 @@ type IpPoolCreate struct {
 // - Silo
 type IpPoolLinkSilo struct {
 	// IsDefault is when a pool is the default for a silo, floating IPs and instance ephemeral IPs will come from
-	// that pool when no other pool is specified. There can be at most one default for a given silo.
+	// that pool when no other pool is specified.
+	//
+	// A silo can have at most one default pool per combination of pool type (unicast or multicast) and IP version (IPv4
+	// or IPv6), allowing up to 4 default pools total.
 	IsDefault *bool    `json:"is_default" yaml:"is_default"`
 	Silo      NameOrId `json:"silo" yaml:"silo"`
 }
@@ -4666,7 +4237,10 @@ type IpPoolResultsPage struct {
 type IpPoolSiloLink struct {
 	IpPoolId string `json:"ip_pool_id" yaml:"ip_pool_id"`
 	// IsDefault is when a pool is the default for a silo, floating IPs and instance ephemeral IPs will come from
-	// that pool when no other pool is specified. There can be at most one default for a given silo.
+	// that pool when no other pool is specified.
+	//
+	// A silo can have at most one default pool per combination of pool type (unicast or multicast) and IP version (IPv4
+	// or IPv6), allowing up to 4 default pools total.
 	IsDefault *bool  `json:"is_default" yaml:"is_default"`
 	SiloId    string `json:"silo_id" yaml:"silo_id"`
 }
@@ -4688,12 +4262,15 @@ type IpPoolSiloLinkResultsPage struct {
 // - IsDefault
 type IpPoolSiloUpdate struct {
 	// IsDefault is when a pool is the default for a silo, floating IPs and instance ephemeral IPs will come from
-	// that pool when no other pool is specified. There can be at most one default for a given silo, so when a
-	// pool is made default, an existing default will remain linked but will no longer be the default.
+	// that pool when no other pool is specified.
+	//
+	// A silo can have at most one default pool per combination of pool type (unicast or multicast) and IP version (IPv4
+	// or IPv6), allowing up to 4 default pools total. When a pool is made default, an existing default of the same
+	// type and version will remain linked but will no longer be the default.
 	IsDefault *bool `json:"is_default" yaml:"is_default"`
 }
 
-// IpPoolType is unicast IP pool for standard IP allocations.
+// IpPoolType is type of IP pool.
 type IpPoolType string
 
 // IpPoolUpdate is parameters for updating an IP Pool
@@ -4725,6 +4302,15 @@ type IpRange any
 // IpVersion is the IP address version.
 type IpVersion string
 
+// Ipv4AssignmentType is the type definition for a Ipv4AssignmentType.
+type Ipv4AssignmentType string
+
+// Ipv4Assignment is how a VPC-private IP address is assigned to a network interface.
+type Ipv4Assignment struct {
+	Type  Ipv4AssignmentType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value string             `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
 // Ipv4Net is an IPv4 subnet, including prefix and prefix length
 type Ipv4Net string
 
@@ -4738,6 +4324,15 @@ type Ipv4Net string
 type Ipv4Range struct {
 	First string `json:"first" yaml:"first"`
 	Last  string `json:"last" yaml:"last"`
+}
+
+// Ipv6AssignmentType is the type definition for a Ipv6AssignmentType.
+type Ipv6AssignmentType string
+
+// Ipv6Assignment is how a VPC-private IP address is assigned to a network interface.
+type Ipv6Assignment struct {
+	Type  Ipv6AssignmentType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value string             `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // Ipv6Net is an IPv6 subnet, including prefix and subnet mask
@@ -4786,10 +4381,10 @@ type LinkConfigCreate struct {
 	TxEq *TxEqConfig `json:"tx_eq,omitempty" yaml:"tx_eq,omitempty"`
 }
 
-// LinkFec is firecode forward error correction.
+// LinkFec is the forward error correction mode of a link.
 type LinkFec string
 
-// LinkSpeed is zero gigabits per second.
+// LinkSpeed is the speed of a link.
 type LinkSpeed string
 
 // LldpLinkConfig is a link layer discovery protocol (LLDP) service configuration.
@@ -4975,7 +4570,7 @@ type MeasurementResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// MetricType is the value represents an instantaneous measurement in time.
+// MetricType is the type of the metric itself, indicating what its values represent.
 type MetricType string
 
 // MissingDatum is the type definition for a MissingDatum.
@@ -5132,51 +4727,53 @@ type Name string
 // NameOrId is the type definition for a NameOrId.
 type NameOrId string
 
-// NameOrIdSortMode is sort in increasing order of "name"
+// NameOrIdSortMode is supported set of sort modes for scanning by name or id
 type NameOrIdSortMode string
 
-// NameSortMode is sort in increasing order of "name"
+// NameSortMode is supported set of sort modes for scanning by name only
+//
+// Currently, we only support scanning in ascending order.
 type NameSortMode string
 
-// NetworkAddressIpAddr is the type definition for a NetworkAddressIpAddr.
-//
-// Required fields:
-// - IpAddr
-type NetworkAddressIpAddr struct {
-	IpAddr string `json:"ip_addr" yaml:"ip_addr"`
+// networkAddressVariant is an interface for NetworkAddress variants.
+type networkAddressVariant interface {
+	isNetworkAddressVariant()
 }
 
-// NetworkAddressIeee802 is the type definition for a NetworkAddressIeee802.
-//
-// Required fields:
-// - IEEE802
-type NetworkAddressIeee802 struct {
-	IEEE802 []int `json:"i_e_e_e802" yaml:"i_e_e_e802"`
+// NetworkAddressIpAddr is the type definition for a NetworkAddressIpAddr.
+type NetworkAddressIpAddr struct {
+	IpAddr string `json:"ip_addr,omitempty" yaml:"ip_addr,omitempty"`
 }
+
+func (NetworkAddressIpAddr) isNetworkAddressVariant() {}
+
+// NetworkAddressIEEE802 is the type definition for a NetworkAddressIEEE802.
+type NetworkAddressIEEE802 struct {
+	IEEE802 []int `json:"i_e_e_e802,omitempty" yaml:"i_e_e_e802,omitempty"`
+}
+
+func (NetworkAddressIEEE802) isNetworkAddressVariant() {}
 
 // NetworkAddress is the type definition for a NetworkAddress.
 type NetworkAddress struct {
-	// IpAddr is the type definition for a IpAddr.
-	IpAddr string `json:"ip_addr,omitempty" yaml:"ip_addr,omitempty"`
-	// IEEE802 is the type definition for a IEEE802.
-	IEEE802 []int `json:"i_e_e_e802,omitempty" yaml:"i_e_e_e802,omitempty"`
+	IpAddr networkAddressVariant `json:"ip_addr,omitzero" yaml:"ip_addr,omitzero"`
 }
 
 // NetworkInterface is information required to construct a virtual network interface
 //
 // Required fields:
 // - Id
-// - Ip
+// - IpConfig
 // - Kind
 // - Mac
 // - Name
 // - Primary
 // - Slot
-// - Subnet
 // - Vni
 type NetworkInterface struct {
 	Id string `json:"id" yaml:"id"`
-	Ip string `json:"ip" yaml:"ip"`
+	// IpConfig is vPC-private IP address configuration for a network interface.
+	IpConfig PrivateIpConfig `json:"ip_config" yaml:"ip_config"`
 	// Kind is the type of network interface
 	Kind NetworkInterfaceKind `json:"kind" yaml:"kind"`
 	// Mac is a Media Access Control address, in EUI-48 format
@@ -5184,54 +4781,103 @@ type NetworkInterface struct {
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
 	// can be at most 63 characters long.
-	Name       Name    `json:"name" yaml:"name"`
-	Primary    *bool   `json:"primary" yaml:"primary"`
-	Slot       *int    `json:"slot" yaml:"slot"`
-	Subnet     IpNet   `json:"subnet" yaml:"subnet"`
-	TransitIps []IpNet `json:"transit_ips,omitempty" yaml:"transit_ips,omitempty"`
+	Name    Name  `json:"name" yaml:"name"`
+	Primary *bool `json:"primary" yaml:"primary"`
+	Slot    *int  `json:"slot" yaml:"slot"`
 	// Vni is a Geneve Virtual Network Identifier
 	Vni Vni `json:"vni" yaml:"vni"`
+}
+
+// networkInterfaceKindVariant is an interface for NetworkInterfaceKind variants.
+type networkInterfaceKindVariant interface {
+	isNetworkInterfaceKindVariant()
 }
 
 // NetworkInterfaceKindType is the type definition for a NetworkInterfaceKindType.
 type NetworkInterfaceKindType string
 
 // NetworkInterfaceKindInstance is a vNIC attached to a guest instance
-//
-// Required fields:
-// - Id
-// - Type
 type NetworkInterfaceKindInstance struct {
-	Id   string                   `json:"id" yaml:"id"`
-	Type NetworkInterfaceKindType `json:"type" yaml:"type"`
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 }
+
+func (NetworkInterfaceKindInstance) isNetworkInterfaceKindVariant() {}
 
 // NetworkInterfaceKindService is a vNIC associated with an internal service
-//
-// Required fields:
-// - Id
-// - Type
 type NetworkInterfaceKindService struct {
-	Id   string                   `json:"id" yaml:"id"`
-	Type NetworkInterfaceKindType `json:"type" yaml:"type"`
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 }
 
+func (NetworkInterfaceKindService) isNetworkInterfaceKindVariant() {}
+
 // NetworkInterfaceKindProbe is a vNIC associated with a probe
-//
-// Required fields:
-// - Id
-// - Type
 type NetworkInterfaceKindProbe struct {
-	Id   string                   `json:"id" yaml:"id"`
-	Type NetworkInterfaceKindType `json:"type" yaml:"type"`
+	Id string `json:"id,omitempty" yaml:"id,omitempty"`
 }
+
+func (NetworkInterfaceKindProbe) isNetworkInterfaceKindVariant() {}
 
 // NetworkInterfaceKind is the type of network interface
 type NetworkInterfaceKind struct {
-	// Id is the type definition for a Id.
-	Id string `json:"id,omitempty" yaml:"id,omitempty"`
-	// Type is the type definition for a Type.
-	Type NetworkInterfaceKindType `json:"type,omitempty" yaml:"type,omitempty"`
+	Id networkInterfaceKindVariant `json:"id,omitzero" yaml:"id,omitzero"`
+}
+
+// UnmarshalJSON implements json.Unmarshaler for NetworkInterfaceKind, selecting the correct
+// variant of the Id field based on the type discriminator.
+func (v *NetworkInterfaceKind) UnmarshalJSON(data []byte) error {
+	var raw struct {
+		Type NetworkInterfaceKindType `json:"type"`
+		Id   json.RawMessage          `json:"id"`
+	}
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return fmt.Errorf("unmarshaling NetworkInterfaceKind: %w\nJSON: %s", err, string(data))
+	}
+	switch raw.Type {
+	case NetworkInterfaceKindTypeInstance:
+		var val NetworkInterfaceKindInstance
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling NetworkInterfaceKind variant NetworkInterfaceKindInstance: %w\nJSON: %s", err, string(data))
+		}
+		v.Id = val
+	case NetworkInterfaceKindTypeService:
+		var val NetworkInterfaceKindService
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling NetworkInterfaceKind variant NetworkInterfaceKindService: %w\nJSON: %s", err, string(data))
+		}
+		v.Id = val
+	case NetworkInterfaceKindTypeProbe:
+		var val NetworkInterfaceKindProbe
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling NetworkInterfaceKind variant NetworkInterfaceKindProbe: %w\nJSON: %s", err, string(data))
+		}
+		v.Id = val
+	}
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler for NetworkInterfaceKind, setting the type
+// discriminator based on the Id variant type.
+func (v NetworkInterfaceKind) MarshalJSON() ([]byte, error) {
+	var discriminator NetworkInterfaceKindType
+	var innerValue any
+	switch val := v.Id.(type) {
+	case NetworkInterfaceKindInstance:
+		discriminator = NetworkInterfaceKindTypeInstance
+		innerValue = val.Id
+	case NetworkInterfaceKindService:
+		discriminator = NetworkInterfaceKindTypeService
+		innerValue = val.Id
+	case NetworkInterfaceKindProbe:
+		discriminator = NetworkInterfaceKindTypeProbe
+		innerValue = val.Id
+	}
+	return json.Marshal(struct {
+		Type NetworkInterfaceKindType `json:"type"`
+		Id   any                      `json:"id,omitzero"`
+	}{
+		Type: discriminator,
+		Id:   innerValue,
+	})
 }
 
 // OxqlQueryResult is the result of a successful OxQL query.
@@ -5304,31 +4950,8 @@ type PhysicalDiskKind string
 // PhysicalDiskPolicyKind is the type definition for a PhysicalDiskPolicyKind.
 type PhysicalDiskPolicyKind string
 
-// PhysicalDiskPolicyInService is the operator has indicated that the disk is in-service.
-//
-// Required fields:
-// - Kind
-type PhysicalDiskPolicyInService struct {
-	Kind PhysicalDiskPolicyKind `json:"kind" yaml:"kind"`
-}
-
-// PhysicalDiskPolicyExpunged is the operator has indicated that the disk has been permanently removed from
-// service.
-//
-// This is a terminal state: once a particular disk ID is expunged, it will never return to service. (The actual
-// hardware may be reused, but it will be treated as a brand-new disk.)
-//
-// An expunged disk is always non-provisionable.
-//
-// Required fields:
-// - Kind
-type PhysicalDiskPolicyExpunged struct {
-	Kind PhysicalDiskPolicyKind `json:"kind" yaml:"kind"`
-}
-
 // PhysicalDiskPolicy is the operator-defined policy of a physical disk.
 type PhysicalDiskPolicy struct {
-	// Kind is the type definition for a Kind.
 	Kind PhysicalDiskPolicyKind `json:"kind,omitempty" yaml:"kind,omitempty"`
 }
 
@@ -5343,7 +4966,7 @@ type PhysicalDiskResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// PhysicalDiskState is the disk is currently active, and has resources allocated on it.
+// PhysicalDiskState is the current state of the disk, as determined by Nexus.
 type PhysicalDiskState string
 
 // Ping is the type definition for a Ping.
@@ -5368,6 +4991,412 @@ type Points struct {
 	StartTimes []time.Time `json:"start_times" yaml:"start_times"`
 	Timestamps []time.Time `json:"timestamps" yaml:"timestamps"`
 	Values     []Values    `json:"values" yaml:"values"`
+}
+
+// PoolSelectorType is the type definition for a PoolSelectorType.
+type PoolSelectorType string
+
+// PoolSelector is specify which IP pool to allocate from.
+type PoolSelector struct {
+	Type PoolSelectorType `json:"type,omitempty" yaml:"type,omitempty"`
+	// Pool is the pool to allocate from.
+	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
+	// IpVersion is iP version to use when multiple default pools exist. Required if both IPv4 and IPv6 default pools
+	// are configured.
+	IpVersion IpVersion `json:"ip_version,omitempty" yaml:"ip_version,omitempty"`
+}
+
+// privateIpConfigVariant is an interface for PrivateIpConfig variants.
+type privateIpConfigVariant interface {
+	isPrivateIpConfigVariant()
+}
+
+// PrivateIpConfigType is the type definition for a PrivateIpConfigType.
+type PrivateIpConfigType string
+
+// PrivateIpConfigV4 is the interface has only an IPv4 configuration.
+type PrivateIpConfigV4 struct {
+	// Value is vPC-private IPv4 configuration for a network interface.
+	Value PrivateIpv4Config `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+func (PrivateIpConfigV4) isPrivateIpConfigVariant() {}
+
+// PrivateIpConfigV6 is the interface has only an IPv6 configuration.
+type PrivateIpConfigV6 struct {
+	// Value is vPC-private IPv6 configuration for a network interface.
+	Value PrivateIpv6Config `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+func (PrivateIpConfigV6) isPrivateIpConfigVariant() {}
+
+// PrivateIpConfigDualStackValue is the type definition for a PrivateIpConfigDualStackValue.
+//
+// Required fields:
+// - V4
+// - V6
+type PrivateIpConfigDualStackValue struct {
+	// V4 is the interface's IPv4 configuration.
+	V4 PrivateIpv4Config `json:"v4" yaml:"v4"`
+	// V6 is the interface's IPv6 configuration.
+	V6 PrivateIpv6Config `json:"v6" yaml:"v6"`
+}
+
+// PrivateIpConfigDualStack is the interface is dual-stack.
+type PrivateIpConfigDualStack struct {
+	Value PrivateIpConfigDualStackValue `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+func (PrivateIpConfigDualStack) isPrivateIpConfigVariant() {}
+
+// PrivateIpConfig is vPC-private IP address configuration for a network interface.
+type PrivateIpConfig struct {
+	Value privateIpConfigVariant `json:"value,omitzero" yaml:"value,omitzero"`
+}
+
+// UnmarshalJSON implements json.Unmarshaler for PrivateIpConfig, selecting the correct
+// variant of the Value field based on the type discriminator.
+func (v *PrivateIpConfig) UnmarshalJSON(data []byte) error {
+	var raw struct {
+		Type  PrivateIpConfigType `json:"type"`
+		Value json.RawMessage     `json:"value"`
+	}
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return fmt.Errorf("unmarshaling PrivateIpConfig: %w\nJSON: %s", err, string(data))
+	}
+	switch raw.Type {
+	case PrivateIpConfigTypeV4:
+		var val PrivateIpConfigV4
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling PrivateIpConfig variant PrivateIpConfigV4: %w\nJSON: %s", err, string(data))
+		}
+		v.Value = val
+	case PrivateIpConfigTypeV6:
+		var val PrivateIpConfigV6
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling PrivateIpConfig variant PrivateIpConfigV6: %w\nJSON: %s", err, string(data))
+		}
+		v.Value = val
+	case PrivateIpConfigTypeDualStack:
+		var val PrivateIpConfigDualStack
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling PrivateIpConfig variant PrivateIpConfigDualStack: %w\nJSON: %s", err, string(data))
+		}
+		v.Value = val
+	}
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler for PrivateIpConfig, setting the type
+// discriminator based on the Value variant type.
+func (v PrivateIpConfig) MarshalJSON() ([]byte, error) {
+	var discriminator PrivateIpConfigType
+	var innerValue any
+	switch val := v.Value.(type) {
+	case PrivateIpConfigV4:
+		discriminator = PrivateIpConfigTypeV4
+		innerValue = val.Value
+	case PrivateIpConfigV6:
+		discriminator = PrivateIpConfigTypeV6
+		innerValue = val.Value
+	case PrivateIpConfigDualStack:
+		discriminator = PrivateIpConfigTypeDualStack
+		innerValue = val.Value
+	}
+	return json.Marshal(struct {
+		Type  PrivateIpConfigType `json:"type"`
+		Value any                 `json:"value,omitzero"`
+	}{
+		Type:  discriminator,
+		Value: innerValue,
+	})
+}
+
+// privateIpStackVariant is an interface for PrivateIpStack variants.
+type privateIpStackVariant interface {
+	isPrivateIpStackVariant()
+}
+
+// PrivateIpStackType is the type definition for a PrivateIpStackType.
+type PrivateIpStackType string
+
+// PrivateIpStackV4 is the interface has only an IPv4 stack.
+type PrivateIpStackV4 struct {
+	// Value is the VPC-private IPv4 stack for a network interface
+	Value PrivateIpv4Stack `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+func (PrivateIpStackV4) isPrivateIpStackVariant() {}
+
+// PrivateIpStackV6 is the interface has only an IPv6 stack.
+type PrivateIpStackV6 struct {
+	// Value is the VPC-private IPv6 stack for a network interface
+	Value PrivateIpv6Stack `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+func (PrivateIpStackV6) isPrivateIpStackVariant() {}
+
+// PrivateIpStackDualStackValue is the type definition for a PrivateIpStackDualStackValue.
+//
+// Required fields:
+// - V4
+// - V6
+type PrivateIpStackDualStackValue struct {
+	// V4 is the VPC-private IPv4 stack for a network interface
+	V4 PrivateIpv4Stack `json:"v4" yaml:"v4"`
+	// V6 is the VPC-private IPv6 stack for a network interface
+	V6 PrivateIpv6Stack `json:"v6" yaml:"v6"`
+}
+
+// PrivateIpStackDualStack is the interface is dual-stack IPv4 and IPv6.
+type PrivateIpStackDualStack struct {
+	Value PrivateIpStackDualStackValue `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+func (PrivateIpStackDualStack) isPrivateIpStackVariant() {}
+
+// PrivateIpStack is the VPC-private IP stack for a network interface.
+type PrivateIpStack struct {
+	Value privateIpStackVariant `json:"value,omitzero" yaml:"value,omitzero"`
+}
+
+// UnmarshalJSON implements json.Unmarshaler for PrivateIpStack, selecting the correct
+// variant of the Value field based on the type discriminator.
+func (v *PrivateIpStack) UnmarshalJSON(data []byte) error {
+	var raw struct {
+		Type  PrivateIpStackType `json:"type"`
+		Value json.RawMessage    `json:"value"`
+	}
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return fmt.Errorf("unmarshaling PrivateIpStack: %w\nJSON: %s", err, string(data))
+	}
+	switch raw.Type {
+	case PrivateIpStackTypeV4:
+		var val PrivateIpStackV4
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling PrivateIpStack variant PrivateIpStackV4: %w\nJSON: %s", err, string(data))
+		}
+		v.Value = val
+	case PrivateIpStackTypeV6:
+		var val PrivateIpStackV6
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling PrivateIpStack variant PrivateIpStackV6: %w\nJSON: %s", err, string(data))
+		}
+		v.Value = val
+	case PrivateIpStackTypeDualStack:
+		var val PrivateIpStackDualStack
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling PrivateIpStack variant PrivateIpStackDualStack: %w\nJSON: %s", err, string(data))
+		}
+		v.Value = val
+	}
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler for PrivateIpStack, setting the type
+// discriminator based on the Value variant type.
+func (v PrivateIpStack) MarshalJSON() ([]byte, error) {
+	var discriminator PrivateIpStackType
+	var innerValue any
+	switch val := v.Value.(type) {
+	case PrivateIpStackV4:
+		discriminator = PrivateIpStackTypeV4
+		innerValue = val.Value
+	case PrivateIpStackV6:
+		discriminator = PrivateIpStackTypeV6
+		innerValue = val.Value
+	case PrivateIpStackDualStack:
+		discriminator = PrivateIpStackTypeDualStack
+		innerValue = val.Value
+	}
+	return json.Marshal(struct {
+		Type  PrivateIpStackType `json:"type"`
+		Value any                `json:"value,omitzero"`
+	}{
+		Type:  discriminator,
+		Value: innerValue,
+	})
+}
+
+// privateIpStackCreateVariant is an interface for PrivateIpStackCreate variants.
+type privateIpStackCreateVariant interface {
+	isPrivateIpStackCreateVariant()
+}
+
+// PrivateIpStackCreateType is the type definition for a PrivateIpStackCreateType.
+type PrivateIpStackCreateType string
+
+// PrivateIpStackCreateV4 is the interface has only an IPv4 stack.
+type PrivateIpStackCreateV4 struct {
+	// Value is configuration for a network interface's IPv4 addressing.
+	Value PrivateIpv4StackCreate `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+func (PrivateIpStackCreateV4) isPrivateIpStackCreateVariant() {}
+
+// PrivateIpStackCreateV6 is the interface has only an IPv6 stack.
+type PrivateIpStackCreateV6 struct {
+	// Value is configuration for a network interface's IPv6 addressing.
+	Value PrivateIpv6StackCreate `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+func (PrivateIpStackCreateV6) isPrivateIpStackCreateVariant() {}
+
+// PrivateIpStackCreateDualStackValue is the type definition for a PrivateIpStackCreateDualStackValue.
+//
+// Required fields:
+// - V4
+// - V6
+type PrivateIpStackCreateDualStackValue struct {
+	// V4 is configuration for a network interface's IPv4 addressing.
+	V4 PrivateIpv4StackCreate `json:"v4" yaml:"v4"`
+	// V6 is configuration for a network interface's IPv6 addressing.
+	V6 PrivateIpv6StackCreate `json:"v6" yaml:"v6"`
+}
+
+// PrivateIpStackCreateDualStack is the interface has both an IPv4 and IPv6 stack.
+type PrivateIpStackCreateDualStack struct {
+	Value PrivateIpStackCreateDualStackValue `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+func (PrivateIpStackCreateDualStack) isPrivateIpStackCreateVariant() {}
+
+// PrivateIpStackCreate is create parameters for a network interface's IP stack.
+type PrivateIpStackCreate struct {
+	Value privateIpStackCreateVariant `json:"value,omitzero" yaml:"value,omitzero"`
+}
+
+// UnmarshalJSON implements json.Unmarshaler for PrivateIpStackCreate, selecting the correct
+// variant of the Value field based on the type discriminator.
+func (v *PrivateIpStackCreate) UnmarshalJSON(data []byte) error {
+	var raw struct {
+		Type  PrivateIpStackCreateType `json:"type"`
+		Value json.RawMessage          `json:"value"`
+	}
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return fmt.Errorf("unmarshaling PrivateIpStackCreate: %w\nJSON: %s", err, string(data))
+	}
+	switch raw.Type {
+	case PrivateIpStackCreateTypeV4:
+		var val PrivateIpStackCreateV4
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling PrivateIpStackCreate variant PrivateIpStackCreateV4: %w\nJSON: %s", err, string(data))
+		}
+		v.Value = val
+	case PrivateIpStackCreateTypeV6:
+		var val PrivateIpStackCreateV6
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling PrivateIpStackCreate variant PrivateIpStackCreateV6: %w\nJSON: %s", err, string(data))
+		}
+		v.Value = val
+	case PrivateIpStackCreateTypeDualStack:
+		var val PrivateIpStackCreateDualStack
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling PrivateIpStackCreate variant PrivateIpStackCreateDualStack: %w\nJSON: %s", err, string(data))
+		}
+		v.Value = val
+	}
+	return nil
+}
+
+// MarshalJSON implements json.Marshaler for PrivateIpStackCreate, setting the type
+// discriminator based on the Value variant type.
+func (v PrivateIpStackCreate) MarshalJSON() ([]byte, error) {
+	var discriminator PrivateIpStackCreateType
+	var innerValue any
+	switch val := v.Value.(type) {
+	case PrivateIpStackCreateV4:
+		discriminator = PrivateIpStackCreateTypeV4
+		innerValue = val.Value
+	case PrivateIpStackCreateV6:
+		discriminator = PrivateIpStackCreateTypeV6
+		innerValue = val.Value
+	case PrivateIpStackCreateDualStack:
+		discriminator = PrivateIpStackCreateTypeDualStack
+		innerValue = val.Value
+	}
+	return json.Marshal(struct {
+		Type  PrivateIpStackCreateType `json:"type"`
+		Value any                      `json:"value,omitzero"`
+	}{
+		Type:  discriminator,
+		Value: innerValue,
+	})
+}
+
+// PrivateIpv4Config is vPC-private IPv4 configuration for a network interface.
+//
+// Required fields:
+// - Ip
+// - Subnet
+type PrivateIpv4Config struct {
+	// Ip is vPC-private IP address.
+	Ip string `json:"ip" yaml:"ip"`
+	// Subnet is the IP subnet.
+	Subnet Ipv4Net `json:"subnet" yaml:"subnet"`
+	// TransitIps is additional networks on which the interface can send / receive traffic.
+	TransitIps []Ipv4Net `json:"transit_ips,omitempty" yaml:"transit_ips,omitempty"`
+}
+
+// PrivateIpv4Stack is the VPC-private IPv4 stack for a network interface
+//
+// Required fields:
+// - Ip
+// - TransitIps
+type PrivateIpv4Stack struct {
+	// Ip is the VPC-private IPv4 address for the interface.
+	Ip string `json:"ip" yaml:"ip"`
+	// TransitIps is a set of additional IPv4 networks that this interface may send and receive traffic on.
+	TransitIps []Ipv4Net `json:"transit_ips" yaml:"transit_ips"`
+}
+
+// PrivateIpv4StackCreate is configuration for a network interface's IPv4 addressing.
+//
+// Required fields:
+// - Ip
+type PrivateIpv4StackCreate struct {
+	// Ip is the VPC-private address to assign to the interface.
+	Ip Ipv4Assignment `json:"ip" yaml:"ip"`
+	// TransitIps is additional IP networks the interface can send / receive on.
+	TransitIps []Ipv4Net `json:"transit_ips,omitempty" yaml:"transit_ips,omitempty"`
+}
+
+// PrivateIpv6Config is vPC-private IPv6 configuration for a network interface.
+//
+// Required fields:
+// - Ip
+// - Subnet
+// - TransitIps
+type PrivateIpv6Config struct {
+	// Ip is vPC-private IP address.
+	Ip string `json:"ip" yaml:"ip"`
+	// Subnet is the IP subnet.
+	Subnet Ipv6Net `json:"subnet" yaml:"subnet"`
+	// TransitIps is additional networks on which the interface can send / receive traffic.
+	TransitIps []Ipv6Net `json:"transit_ips" yaml:"transit_ips"`
+}
+
+// PrivateIpv6Stack is the VPC-private IPv6 stack for a network interface
+//
+// Required fields:
+// - Ip
+// - TransitIps
+type PrivateIpv6Stack struct {
+	// Ip is the VPC-private IPv6 address for the interface.
+	Ip string `json:"ip" yaml:"ip"`
+	// TransitIps is a set of additional IPv6 networks that this interface may send and receive traffic on.
+	TransitIps []Ipv6Net `json:"transit_ips" yaml:"transit_ips"`
+}
+
+// PrivateIpv6StackCreate is configuration for a network interface's IPv6 addressing.
+//
+// Required fields:
+// - Ip
+type PrivateIpv6StackCreate struct {
+	// Ip is the VPC-private address to assign to the interface.
+	Ip Ipv6Assignment `json:"ip" yaml:"ip"`
+	// TransitIps is additional IP networks the interface can send / receive on.
+	TransitIps []Ipv6Net `json:"transit_ips,omitempty" yaml:"transit_ips,omitempty"`
 }
 
 // Probe is identity-related metadata that's included in nearly all public API objects
@@ -5400,13 +5429,14 @@ type Probe struct {
 // - Name
 // - Sled
 type ProbeCreate struct {
-	Description string   `json:"description" yaml:"description"`
-	IpPool      NameOrId `json:"ip_pool,omitempty" yaml:"ip_pool,omitempty"`
+	Description string `json:"description" yaml:"description"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
 	// can be at most 63 characters long.
-	Name Name   `json:"name" yaml:"name"`
-	Sled string `json:"sled" yaml:"sled"`
+	Name Name `json:"name" yaml:"name"`
+	// PoolSelector is pool to allocate from.
+	PoolSelector PoolSelector `json:"pool_selector,omitempty" yaml:"pool_selector,omitempty"`
+	Sled         string       `json:"sled" yaml:"sled"`
 }
 
 // ProbeExternalIp is the type definition for a ProbeExternalIp.
@@ -5622,41 +5652,47 @@ type RouteConfig struct {
 	Routes []Route `json:"routes" yaml:"routes"`
 }
 
+// routeDestinationVariant is an interface for RouteDestination variants.
+type routeDestinationVariant interface {
+	isRouteDestinationVariant()
+}
+
 // RouteDestinationType is the type definition for a RouteDestinationType.
 type RouteDestinationType string
 
-// routeDestinationValue is an interface for RouteDestination value variants.
-type routeDestinationValue interface {
-	isRouteDestinationValue()
-}
-
-// RouteDestinationIp is the string variant of RouteDestination value.
+// RouteDestinationIp is route applies to traffic destined for the specified IP address
 type RouteDestinationIp struct {
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-func (RouteDestinationIp) isRouteDestinationValue() {}
+func (RouteDestinationIp) isRouteDestinationVariant() {}
 
-// RouteDestinationIpNet is the IpNet variant of RouteDestination value.
+// RouteDestinationIpNet is route applies to traffic destined for the specified IP subnet
 type RouteDestinationIpNet struct {
 	Value IpNet `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-func (RouteDestinationIpNet) isRouteDestinationValue() {}
+func (RouteDestinationIpNet) isRouteDestinationVariant() {}
 
-// RouteDestinationVpc is the Name variant of RouteDestination value.
+// RouteDestinationVpc is route applies to traffic destined for the specified VPC
 type RouteDestinationVpc struct {
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-func (RouteDestinationVpc) isRouteDestinationValue() {}
+func (RouteDestinationVpc) isRouteDestinationVariant() {}
 
-// RouteDestinationSubnet is the Name variant of RouteDestination value.
+// RouteDestinationSubnet is route applies to traffic destined for the specified VPC subnet
 type RouteDestinationSubnet struct {
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-func (RouteDestinationSubnet) isRouteDestinationValue() {}
+func (RouteDestinationSubnet) isRouteDestinationVariant() {}
 
 // RouteDestination is a `RouteDestination` is used to match traffic with a routing rule based on the destination
 // of that traffic.
@@ -5664,148 +5700,84 @@ func (RouteDestinationSubnet) isRouteDestinationValue() {}
 // When traffic is to be sent to a destination that is within a given `RouteDestination`, the corresponding `RouterRoute`
 // applies, and traffic will be forward to the `RouteTarget` for that rule.
 type RouteDestination struct {
-	// Type is the type definition for a Type.
-	Type RouteDestinationType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is the type definition for a Value.
-	Value routeDestinationValue `json:"value,omitempty" yaml:"value,omitempty"`
+	Value routeDestinationVariant `json:"value,omitzero" yaml:"value,omitzero"`
 }
 
 // UnmarshalJSON implements json.Unmarshaler for RouteDestination, selecting the correct
-// variant of the Value field based on the Type discriminator.
+// variant of the Value field based on the type discriminator.
 func (v *RouteDestination) UnmarshalJSON(data []byte) error {
 	var raw struct {
 		Type  RouteDestinationType `json:"type"`
 		Value json.RawMessage      `json:"value"`
 	}
 	if err := json.Unmarshal(data, &raw); err != nil {
-		return err
+		return fmt.Errorf("unmarshaling RouteDestination: %w\nJSON: %s", err, string(data))
 	}
-	v.Type = raw.Type
 	switch raw.Type {
 	case RouteDestinationTypeIp:
 		var val RouteDestinationIp
-		if err := json.Unmarshal(raw.Value, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling RouteDestination variant RouteDestinationIp: %w\nJSON: %s", err, string(data))
 		}
 		v.Value = val
 	case RouteDestinationTypeIpNet:
 		var val RouteDestinationIpNet
-		if err := json.Unmarshal(raw.Value, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling RouteDestination variant RouteDestinationIpNet: %w\nJSON: %s", err, string(data))
 		}
 		v.Value = val
 	case RouteDestinationTypeVpc:
 		var val RouteDestinationVpc
-		if err := json.Unmarshal(raw.Value, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling RouteDestination variant RouteDestinationVpc: %w\nJSON: %s", err, string(data))
 		}
 		v.Value = val
 	case RouteDestinationTypeSubnet:
 		var val RouteDestinationSubnet
-		if err := json.Unmarshal(raw.Value, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling RouteDestination variant RouteDestinationSubnet: %w\nJSON: %s", err, string(data))
 		}
 		v.Value = val
 	}
 	return nil
+}
+
+// MarshalJSON implements json.Marshaler for RouteDestination, setting the type
+// discriminator based on the Value variant type.
+func (v RouteDestination) MarshalJSON() ([]byte, error) {
+	var discriminator RouteDestinationType
+	var innerValue any
+	switch val := v.Value.(type) {
+	case RouteDestinationIp:
+		discriminator = RouteDestinationTypeIp
+		innerValue = val.Value
+	case RouteDestinationIpNet:
+		discriminator = RouteDestinationTypeIpNet
+		innerValue = val.Value
+	case RouteDestinationVpc:
+		discriminator = RouteDestinationTypeVpc
+		innerValue = val.Value
+	case RouteDestinationSubnet:
+		discriminator = RouteDestinationTypeSubnet
+		innerValue = val.Value
+	}
+	return json.Marshal(struct {
+		Type  RouteDestinationType `json:"type"`
+		Value any                  `json:"value,omitzero"`
+	}{
+		Type:  discriminator,
+		Value: innerValue,
+	})
 }
 
 // RouteTargetType is the type definition for a RouteTargetType.
 type RouteTargetType string
 
-// routeTargetValue is an interface for RouteTarget value variants.
-type routeTargetValue interface {
-	isRouteTargetValue()
-}
-
-// RouteTargetIp is the string variant of RouteTarget value.
-type RouteTargetIp struct {
-	Value string `json:"value,omitempty" yaml:"value,omitempty"`
-}
-
-func (RouteTargetIp) isRouteTargetValue() {}
-
-// RouteTargetVpc is the Name variant of RouteTarget value.
-type RouteTargetVpc struct {
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
-}
-
-func (RouteTargetVpc) isRouteTargetValue() {}
-
-// RouteTargetSubnet is the Name variant of RouteTarget value.
-type RouteTargetSubnet struct {
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
-}
-
-func (RouteTargetSubnet) isRouteTargetValue() {}
-
-// RouteTargetInstance is the Name variant of RouteTarget value.
-type RouteTargetInstance struct {
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
-}
-
-func (RouteTargetInstance) isRouteTargetValue() {}
-
-// RouteTargetInternetGateway is the Name variant of RouteTarget value.
-type RouteTargetInternetGateway struct {
-	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
-}
-
-func (RouteTargetInternetGateway) isRouteTargetValue() {}
-
 // RouteTarget is a `RouteTarget` describes the possible locations that traffic matching a route destination can
 // be sent.
 type RouteTarget struct {
-	// Type is the type definition for a Type.
-	Type RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is the type definition for a Value.
-	Value routeTargetValue `json:"value,omitempty" yaml:"value,omitempty"`
-}
-
-// UnmarshalJSON implements json.Unmarshaler for RouteTarget, selecting the correct
-// variant of the Value field based on the Type discriminator.
-func (v *RouteTarget) UnmarshalJSON(data []byte) error {
-	var raw struct {
-		Type  RouteTargetType `json:"type"`
-		Value json.RawMessage `json:"value"`
-	}
-	if err := json.Unmarshal(data, &raw); err != nil {
-		return err
-	}
-	v.Type = raw.Type
-	switch raw.Type {
-	case RouteTargetTypeIp:
-		var val RouteTargetIp
-		if err := json.Unmarshal(raw.Value, &val); err != nil {
-			return err
-		}
-		v.Value = val
-	case RouteTargetTypeVpc:
-		var val RouteTargetVpc
-		if err := json.Unmarshal(raw.Value, &val); err != nil {
-			return err
-		}
-		v.Value = val
-	case RouteTargetTypeSubnet:
-		var val RouteTargetSubnet
-		if err := json.Unmarshal(raw.Value, &val); err != nil {
-			return err
-		}
-		v.Value = val
-	case RouteTargetTypeInstance:
-		var val RouteTargetInstance
-		if err := json.Unmarshal(raw.Value, &val); err != nil {
-			return err
-		}
-		v.Value = val
-	case RouteTargetTypeInternetGateway:
-		var val RouteTargetInternetGateway
-		if err := json.Unmarshal(raw.Value, &val); err != nil {
-			return err
-		}
-		v.Value = val
-	}
-	return nil
+	Type  RouteTargetType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value string          `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // RouterRoute is a route defines a rule that governs where traffic should be sent based on its destination.
@@ -5860,10 +5832,10 @@ type RouterRouteCreate struct {
 	Target RouteTarget `json:"target" yaml:"target"`
 }
 
-// RouterRouteKind is determines the default destination of traffic, such as whether it goes to the internet or
-// not.
+// RouterRouteKind is the kind of a `RouterRoute`
 //
-// `Destination: An Internet Gateway` `Modifiable: true`
+// The kind determines certain attributes such as if the route is modifiable and describes how or where the
+// route was created.
 type RouterRouteKind string
 
 // RouterRouteResultsPage is a single page of results
@@ -6004,7 +5976,7 @@ type ServiceIcmpConfig struct {
 	Enabled *bool `json:"enabled" yaml:"enabled"`
 }
 
-// ServiceUsingCertificate is this certificate is intended for access to the external API.
+// ServiceUsingCertificate is the service intended to use this certificate.
 type ServiceUsingCertificate string
 
 // SetTargetReleaseParams is parameters for PUT requests to `/v1/system/update/target-release`.
@@ -6115,9 +6087,7 @@ type SiloCreate struct {
 	TlsCertificates []CertificateCreate `json:"tls_certificates" yaml:"tls_certificates"`
 }
 
-// SiloIdentityMode is users are authenticated with SAML using an external authentication provider.  The
-// system updates information about users and groups only during successful authentication (i.e,. "JIT provisioning" of
-// users and groups).
+// SiloIdentityMode is describes how identities are managed and users are authenticated in this Silo
 type SiloIdentityMode string
 
 // SiloIpPool is an IP pool in the context of a silo
@@ -6125,8 +6095,10 @@ type SiloIdentityMode string
 // Required fields:
 // - Description
 // - Id
+// - IpVersion
 // - IsDefault
 // - Name
+// - PoolType
 // - TimeCreated
 // - TimeModified
 type SiloIpPool struct {
@@ -6134,11 +6106,18 @@ type SiloIpPool struct {
 	Description string `json:"description" yaml:"description"`
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id" yaml:"id"`
+	// IpVersion is the IP version for the pool.
+	IpVersion IpVersion `json:"ip_version" yaml:"ip_version"`
 	// IsDefault is when a pool is the default for a silo, floating IPs and instance ephemeral IPs will come from
-	// that pool when no other pool is specified. There can be at most one default for a given silo.
+	// that pool when no other pool is specified.
+	//
+	// A silo can have at most one default pool per combination of pool type (unicast or multicast) and IP version (IPv4
+	// or IPv6), allowing up to 4 default pools total.
 	IsDefault *bool `json:"is_default" yaml:"is_default"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name" yaml:"name"`
+	// PoolType is type of IP pool (unicast or multicast).
+	PoolType IpPoolType `json:"pool_type" yaml:"pool_type"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
 	// TimeModified is timestamp when this resource was last modified
@@ -6383,39 +6362,16 @@ type SledInstanceResultsPage struct {
 // SledPolicyKind is the type definition for a SledPolicyKind.
 type SledPolicyKind string
 
-// SledPolicyInService is the operator has indicated that the sled is in-service.
-//
-// Required fields:
-// - Kind
-// - ProvisionPolicy
-type SledPolicyInService struct {
-	Kind SledPolicyKind `json:"kind" yaml:"kind"`
-	// ProvisionPolicy is determines whether new resources can be provisioned onto the sled.
-	ProvisionPolicy SledProvisionPolicy `json:"provision_policy" yaml:"provision_policy"`
-}
-
-// SledPolicyExpunged is the operator has indicated that the sled has been permanently removed from service.
-//
-// This is a terminal state: once a particular sled ID is expunged, it will never return to service. (The actual
-// hardware may be reused, but it will be treated as a brand-new sled.)
-//
-// An expunged sled is always non-provisionable.
-//
-// Required fields:
-// - Kind
-type SledPolicyExpunged struct {
-	Kind SledPolicyKind `json:"kind" yaml:"kind"`
-}
-
 // SledPolicy is the operator-defined policy of a sled.
 type SledPolicy struct {
-	// Kind is the type definition for a Kind.
 	Kind SledPolicyKind `json:"kind,omitempty" yaml:"kind,omitempty"`
 	// ProvisionPolicy is determines whether new resources can be provisioned onto the sled.
 	ProvisionPolicy SledProvisionPolicy `json:"provision_policy,omitempty" yaml:"provision_policy,omitempty"`
 }
 
-// SledProvisionPolicy is new resources will be provisioned on this sled.
+// SledProvisionPolicy is the operator-defined provision policy of a sled.
+//
+// This controls whether new resources are going to be provisioned on this sled.
 type SledProvisionPolicy string
 
 // SledProvisionPolicyParams is parameters for `sled_set_provision_policy`.
@@ -6450,7 +6406,7 @@ type SledResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// SledState is the sled is currently active, and has resources allocated on it.
+// SledState is the current state of the sled.
 type SledState string
 
 // Snapshot is view of a Snapshot
@@ -6600,13 +6556,7 @@ type SupportBundleInfoResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// SupportBundleState is support Bundle still actively being collected.
-//
-// This is the initial state for a Support Bundle, and it will automatically transition to either "Failing" or
-// "Active".
-//
-// If a user no longer wants to access a Support Bundle, they can request cancellation, which will transition to
-// the "Destroying" state.
+// SupportBundleState is the type definition for a SupportBundleState.
 type SupportBundleState string
 
 // SupportBundleUpdate is the type definition for a SupportBundleUpdate.
@@ -6689,54 +6639,21 @@ type SwitchInterfaceConfigCreate struct {
 // SwitchInterfaceKindType is the type definition for a SwitchInterfaceKindType.
 type SwitchInterfaceKindType string
 
-// SwitchInterfaceKindPrimary is primary interfaces are associated with physical links. There is exactly one
-// primary interface per physical link.
-//
-// Required fields:
-// - Type
-type SwitchInterfaceKindPrimary struct {
-	Type SwitchInterfaceKindType `json:"type" yaml:"type"`
-}
-
-// SwitchInterfaceKindVlan is vLAN interfaces allow physical interfaces to be multiplexed onto multiple logical
-// links, each distinguished by a 12-bit 802.1Q Ethernet tag.
-//
-// Required fields:
-// - Type
-// - Vid
-type SwitchInterfaceKindVlan struct {
-	Type SwitchInterfaceKindType `json:"type" yaml:"type"`
-	// Vid is the virtual network id (VID) that distinguishes this interface and is used for producing and consuming
-	// 802.1Q Ethernet tags. This field has a maximum value of 4095 as 802.1Q tags are twelve bits.
-	Vid *int `json:"vid" yaml:"vid"`
-}
-
-// SwitchInterfaceKindLoopback is loopback interfaces are anchors for IP addresses that are not specific to
-// any particular port.
-//
-// Required fields:
-// - Type
-type SwitchInterfaceKindLoopback struct {
-	Type SwitchInterfaceKindType `json:"type" yaml:"type"`
-}
-
 // SwitchInterfaceKind is indicates the kind for a switch interface.
 type SwitchInterfaceKind struct {
-	// Type is the type definition for a Type.
 	Type SwitchInterfaceKindType `json:"type,omitempty" yaml:"type,omitempty"`
 	// Vid is the virtual network id (VID) that distinguishes this interface and is used for producing and consuming
 	// 802.1Q Ethernet tags. This field has a maximum value of 4095 as 802.1Q tags are twelve bits.
 	Vid *int `json:"vid,omitempty" yaml:"vid,omitempty"`
 }
 
-// SwitchInterfaceKind2 is primary interfaces are associated with physical links. There is exactly one primary
-// interface per physical link.
+// SwitchInterfaceKind2 is describes the kind of an switch interface.
 type SwitchInterfaceKind2 string
 
 // SwitchLinkState is the type definition for a SwitchLinkState.
 type SwitchLinkState string
 
-// SwitchLocation is switch in upper slot
+// SwitchLocation is identifies switch physical location
 type SwitchLocation string
 
 // SwitchPort is a switch port represents a physical external port on a rack switch.
@@ -6816,10 +6733,10 @@ type SwitchPortConfigCreate struct {
 	Geometry SwitchPortGeometry `json:"geometry" yaml:"geometry"`
 }
 
-// SwitchPortGeometry is the port contains a single QSFP28 link with four lanes.
+// SwitchPortGeometry is the link geometry associated with a switch port.
 type SwitchPortGeometry string
 
-// SwitchPortGeometry2 is the port contains a single QSFP28 link with four lanes.
+// SwitchPortGeometry2 is the link geometry associated with a switch port.
 type SwitchPortGeometry2 string
 
 // SwitchPortLinkConfig is a link configuration for a port settings object.
@@ -7047,7 +6964,7 @@ type TargetRelease struct {
 	Version string `json:"version" yaml:"version"`
 }
 
-// TimeAndIdSortMode is sort in increasing order of timestamp and ID, i.e., earliest first
+// TimeAndIdSortMode is supported set of sort modes for scanning by timestamp and ID
 type TimeAndIdSortMode string
 
 // Timeseries is a timeseries contains a timestamped set of values from one source.
@@ -7180,7 +7097,8 @@ type TufRepoUpload struct {
 	Status TufRepoUploadStatus `json:"status" yaml:"status"`
 }
 
-// TufRepoUploadStatus is the repository already existed in the database
+// TufRepoUploadStatus is whether the uploaded TUF repo already existed or was new and had to be inserted. Part
+// of `TufRepoUpload`.
 type TufRepoUploadStatus string
 
 // TxEqConfig is per-port tx-eq overrides.  This can be used to fine-tune the transceiver equalization settings
@@ -7247,7 +7165,7 @@ type UninitializedSledResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// Units is the type definition for a Units.
+// Units is measurement units for timeseries samples.
 type Units string
 
 // UpdateStatus is the type definition for a UpdateStatus.
@@ -7381,28 +7299,8 @@ type UserId string
 // UserPasswordMode is the type definition for a UserPasswordMode.
 type UserPasswordMode string
 
-// UserPasswordPassword is sets the user's password to the provided value
-//
-// Required fields:
-// - Mode
-// - Value
-type UserPasswordPassword struct {
-	Mode UserPasswordMode `json:"mode" yaml:"mode"`
-	// Value is passwords may be subject to additional constraints.
-	Value Password `json:"value" yaml:"value"`
-}
-
-// UserPasswordLoginDisallowed is invalidates any current password (disabling password authentication)
-//
-// Required fields:
-// - Mode
-type UserPasswordLoginDisallowed struct {
-	Mode UserPasswordMode `json:"mode" yaml:"mode"`
-}
-
 // UserPassword is parameters for setting a user's password
 type UserPassword struct {
-	// Mode is the type definition for a Mode.
 	Mode UserPasswordMode `json:"mode,omitempty" yaml:"mode,omitempty"`
 	// Value is passwords may be subject to additional constraints.
 	Value Password `json:"value,omitempty" yaml:"value,omitempty"`
@@ -7448,116 +7346,146 @@ type Utilization struct {
 	Provisioned VirtualResourceCounts `json:"provisioned" yaml:"provisioned"`
 }
 
+// valueArrayVariant is an interface for ValueArray variants.
+type valueArrayVariant interface {
+	isValueArrayVariant()
+}
+
 // ValueArrayType is the type definition for a ValueArrayType.
 type ValueArrayType string
 
-// valueArrayValues is an interface for ValueArray values variants.
-type valueArrayValues interface {
-	isValueArrayValues()
-}
-
-// ValueArrayInteger is the []int variant of ValueArray values.
+// ValueArrayInteger is the type definition for a ValueArrayInteger.
 type ValueArrayInteger struct {
 	Values []int `json:"values,omitempty" yaml:"values,omitempty"`
 }
 
-func (ValueArrayInteger) isValueArrayValues() {}
+func (ValueArrayInteger) isValueArrayVariant() {}
 
-// ValueArrayDouble is the []float64 variant of ValueArray values.
+// ValueArrayDouble is the type definition for a ValueArrayDouble.
 type ValueArrayDouble struct {
 	Values []float64 `json:"values,omitempty" yaml:"values,omitempty"`
 }
 
-func (ValueArrayDouble) isValueArrayValues() {}
+func (ValueArrayDouble) isValueArrayVariant() {}
 
-// ValueArrayBoolean is the []bool variant of ValueArray values.
+// ValueArrayBoolean is the type definition for a ValueArrayBoolean.
 type ValueArrayBoolean struct {
 	Values []bool `json:"values,omitempty" yaml:"values,omitempty"`
 }
 
-func (ValueArrayBoolean) isValueArrayValues() {}
+func (ValueArrayBoolean) isValueArrayVariant() {}
 
-// ValueArrayString is the []string variant of ValueArray values.
+// ValueArrayString is the type definition for a ValueArrayString.
 type ValueArrayString struct {
 	Values []string `json:"values,omitempty" yaml:"values,omitempty"`
 }
 
-func (ValueArrayString) isValueArrayValues() {}
+func (ValueArrayString) isValueArrayVariant() {}
 
-// ValueArrayIntegerDistribution is the []Distributionint64 variant of ValueArray values.
+// ValueArrayIntegerDistribution is the type definition for a ValueArrayIntegerDistribution.
 type ValueArrayIntegerDistribution struct {
 	Values []Distributionint64 `json:"values,omitempty" yaml:"values,omitempty"`
 }
 
-func (ValueArrayIntegerDistribution) isValueArrayValues() {}
+func (ValueArrayIntegerDistribution) isValueArrayVariant() {}
 
-// ValueArrayDoubleDistribution is the []Distributiondouble variant of ValueArray values.
+// ValueArrayDoubleDistribution is the type definition for a ValueArrayDoubleDistribution.
 type ValueArrayDoubleDistribution struct {
 	Values []Distributiondouble `json:"values,omitempty" yaml:"values,omitempty"`
 }
 
-func (ValueArrayDoubleDistribution) isValueArrayValues() {}
+func (ValueArrayDoubleDistribution) isValueArrayVariant() {}
 
 // ValueArray is list of data values for one timeseries.
 //
 // Each element is an option, where `None` represents a missing sample.
 type ValueArray struct {
-	// Type is the type definition for a Type.
-	Type ValueArrayType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Values is the type definition for a Values.
-	Values valueArrayValues `json:"values,omitempty" yaml:"values,omitempty"`
+	Values valueArrayVariant `json:"values,omitzero" yaml:"values,omitzero"`
 }
 
 // UnmarshalJSON implements json.Unmarshaler for ValueArray, selecting the correct
-// variant of the Values field based on the Type discriminator.
+// variant of the Values field based on the type discriminator.
 func (v *ValueArray) UnmarshalJSON(data []byte) error {
 	var raw struct {
 		Type   ValueArrayType  `json:"type"`
 		Values json.RawMessage `json:"values"`
 	}
 	if err := json.Unmarshal(data, &raw); err != nil {
-		return err
+		return fmt.Errorf("unmarshaling ValueArray: %w\nJSON: %s", err, string(data))
 	}
-	v.Type = raw.Type
 	switch raw.Type {
 	case ValueArrayTypeInteger:
 		var val ValueArrayInteger
-		if err := json.Unmarshal(raw.Values, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling ValueArray variant ValueArrayInteger: %w\nJSON: %s", err, string(data))
 		}
 		v.Values = val
 	case ValueArrayTypeDouble:
 		var val ValueArrayDouble
-		if err := json.Unmarshal(raw.Values, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling ValueArray variant ValueArrayDouble: %w\nJSON: %s", err, string(data))
 		}
 		v.Values = val
 	case ValueArrayTypeBoolean:
 		var val ValueArrayBoolean
-		if err := json.Unmarshal(raw.Values, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling ValueArray variant ValueArrayBoolean: %w\nJSON: %s", err, string(data))
 		}
 		v.Values = val
 	case ValueArrayTypeString:
 		var val ValueArrayString
-		if err := json.Unmarshal(raw.Values, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling ValueArray variant ValueArrayString: %w\nJSON: %s", err, string(data))
 		}
 		v.Values = val
 	case ValueArrayTypeIntegerDistribution:
 		var val ValueArrayIntegerDistribution
-		if err := json.Unmarshal(raw.Values, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling ValueArray variant ValueArrayIntegerDistribution: %w\nJSON: %s", err, string(data))
 		}
 		v.Values = val
 	case ValueArrayTypeDoubleDistribution:
 		var val ValueArrayDoubleDistribution
-		if err := json.Unmarshal(raw.Values, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling ValueArray variant ValueArrayDoubleDistribution: %w\nJSON: %s", err, string(data))
 		}
 		v.Values = val
 	}
 	return nil
+}
+
+// MarshalJSON implements json.Marshaler for ValueArray, setting the type
+// discriminator based on the Values variant type.
+func (v ValueArray) MarshalJSON() ([]byte, error) {
+	var discriminator ValueArrayType
+	var innerValue any
+	switch val := v.Values.(type) {
+	case ValueArrayInteger:
+		discriminator = ValueArrayTypeInteger
+		innerValue = val.Values
+	case ValueArrayDouble:
+		discriminator = ValueArrayTypeDouble
+		innerValue = val.Values
+	case ValueArrayBoolean:
+		discriminator = ValueArrayTypeBoolean
+		innerValue = val.Values
+	case ValueArrayString:
+		discriminator = ValueArrayTypeString
+		innerValue = val.Values
+	case ValueArrayIntegerDistribution:
+		discriminator = ValueArrayTypeIntegerDistribution
+		innerValue = val.Values
+	case ValueArrayDoubleDistribution:
+		discriminator = ValueArrayTypeDoubleDistribution
+		innerValue = val.Values
+	}
+	return json.Marshal(struct {
+		Type   ValueArrayType `json:"type"`
+		Values any            `json:"values,omitzero"`
+	}{
+		Type:   discriminator,
+		Values: innerValue,
+	})
 }
 
 // Values is a single list of values, for one dimension of a timeseries.
@@ -7572,7 +7500,7 @@ type Values struct {
 	Values ValueArray `json:"values" yaml:"values"`
 }
 
-// VersionSortMode is sort in increasing semantic version order (oldest first)
+// VersionSortMode is supported sort modes when scanning by semantic version
 type VersionSortMode string
 
 // VirtualResourceCounts is a collection of resource counts used to describe capacity and utilization
@@ -7719,246 +7647,286 @@ type VpcFirewallRuleFilter struct {
 	Protocols []VpcFirewallRuleProtocol `json:"protocols" yaml:"protocols"`
 }
 
+// vpcFirewallRuleHostFilterVariant is an interface for VpcFirewallRuleHostFilter variants.
+type vpcFirewallRuleHostFilterVariant interface {
+	isVpcFirewallRuleHostFilterVariant()
+}
+
 // VpcFirewallRuleHostFilterType is the type definition for a VpcFirewallRuleHostFilterType.
 type VpcFirewallRuleHostFilterType string
 
-// vpcFirewallRuleHostFilterValue is an interface for VpcFirewallRuleHostFilter value variants.
-type vpcFirewallRuleHostFilterValue interface {
-	isVpcFirewallRuleHostFilterValue()
-}
-
-// VpcFirewallRuleHostFilterVpc is the Name variant of VpcFirewallRuleHostFilter value.
+// VpcFirewallRuleHostFilterVpc is the rule applies to traffic from/to all instances in the VPC
 type VpcFirewallRuleHostFilterVpc struct {
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-func (VpcFirewallRuleHostFilterVpc) isVpcFirewallRuleHostFilterValue() {}
+func (VpcFirewallRuleHostFilterVpc) isVpcFirewallRuleHostFilterVariant() {}
 
-// VpcFirewallRuleHostFilterSubnet is the Name variant of VpcFirewallRuleHostFilter value.
+// VpcFirewallRuleHostFilterSubnet is the rule applies to traffic from/to all instances in the VPC Subnet
 type VpcFirewallRuleHostFilterSubnet struct {
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-func (VpcFirewallRuleHostFilterSubnet) isVpcFirewallRuleHostFilterValue() {}
+func (VpcFirewallRuleHostFilterSubnet) isVpcFirewallRuleHostFilterVariant() {}
 
-// VpcFirewallRuleHostFilterInstance is the Name variant of VpcFirewallRuleHostFilter value.
+// VpcFirewallRuleHostFilterInstance is the rule applies to traffic from/to this specific instance
 type VpcFirewallRuleHostFilterInstance struct {
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-func (VpcFirewallRuleHostFilterInstance) isVpcFirewallRuleHostFilterValue() {}
+func (VpcFirewallRuleHostFilterInstance) isVpcFirewallRuleHostFilterVariant() {}
 
-// VpcFirewallRuleHostFilterIp is the string variant of VpcFirewallRuleHostFilter value.
+// VpcFirewallRuleHostFilterIp is the rule applies to traffic from/to a specific IP address
 type VpcFirewallRuleHostFilterIp struct {
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-func (VpcFirewallRuleHostFilterIp) isVpcFirewallRuleHostFilterValue() {}
+func (VpcFirewallRuleHostFilterIp) isVpcFirewallRuleHostFilterVariant() {}
 
-// VpcFirewallRuleHostFilterIpNet is the IpNet variant of VpcFirewallRuleHostFilter value.
+// VpcFirewallRuleHostFilterIpNet is the rule applies to traffic from/to a specific IP subnet
 type VpcFirewallRuleHostFilterIpNet struct {
 	Value IpNet `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-func (VpcFirewallRuleHostFilterIpNet) isVpcFirewallRuleHostFilterValue() {}
+func (VpcFirewallRuleHostFilterIpNet) isVpcFirewallRuleHostFilterVariant() {}
 
 // VpcFirewallRuleHostFilter is the `VpcFirewallRuleHostFilter` is used to filter traffic on the basis of
 // its source or destination host.
 type VpcFirewallRuleHostFilter struct {
-	// Type is the type definition for a Type.
-	Type VpcFirewallRuleHostFilterType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
-	Value vpcFirewallRuleHostFilterValue `json:"value,omitempty" yaml:"value,omitempty"`
+	Value vpcFirewallRuleHostFilterVariant `json:"value,omitzero" yaml:"value,omitzero"`
 }
 
 // UnmarshalJSON implements json.Unmarshaler for VpcFirewallRuleHostFilter, selecting the correct
-// variant of the Value field based on the Type discriminator.
+// variant of the Value field based on the type discriminator.
 func (v *VpcFirewallRuleHostFilter) UnmarshalJSON(data []byte) error {
 	var raw struct {
 		Type  VpcFirewallRuleHostFilterType `json:"type"`
 		Value json.RawMessage               `json:"value"`
 	}
 	if err := json.Unmarshal(data, &raw); err != nil {
-		return err
+		return fmt.Errorf("unmarshaling VpcFirewallRuleHostFilter: %w\nJSON: %s", err, string(data))
 	}
-	v.Type = raw.Type
 	switch raw.Type {
 	case VpcFirewallRuleHostFilterTypeVpc:
 		var val VpcFirewallRuleHostFilterVpc
-		if err := json.Unmarshal(raw.Value, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling VpcFirewallRuleHostFilter variant VpcFirewallRuleHostFilterVpc: %w\nJSON: %s", err, string(data))
 		}
 		v.Value = val
 	case VpcFirewallRuleHostFilterTypeSubnet:
 		var val VpcFirewallRuleHostFilterSubnet
-		if err := json.Unmarshal(raw.Value, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling VpcFirewallRuleHostFilter variant VpcFirewallRuleHostFilterSubnet: %w\nJSON: %s", err, string(data))
 		}
 		v.Value = val
 	case VpcFirewallRuleHostFilterTypeInstance:
 		var val VpcFirewallRuleHostFilterInstance
-		if err := json.Unmarshal(raw.Value, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling VpcFirewallRuleHostFilter variant VpcFirewallRuleHostFilterInstance: %w\nJSON: %s", err, string(data))
 		}
 		v.Value = val
 	case VpcFirewallRuleHostFilterTypeIp:
 		var val VpcFirewallRuleHostFilterIp
-		if err := json.Unmarshal(raw.Value, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling VpcFirewallRuleHostFilter variant VpcFirewallRuleHostFilterIp: %w\nJSON: %s", err, string(data))
 		}
 		v.Value = val
 	case VpcFirewallRuleHostFilterTypeIpNet:
 		var val VpcFirewallRuleHostFilterIpNet
-		if err := json.Unmarshal(raw.Value, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling VpcFirewallRuleHostFilter variant VpcFirewallRuleHostFilterIpNet: %w\nJSON: %s", err, string(data))
 		}
 		v.Value = val
 	}
 	return nil
 }
 
+// MarshalJSON implements json.Marshaler for VpcFirewallRuleHostFilter, setting the type
+// discriminator based on the Value variant type.
+func (v VpcFirewallRuleHostFilter) MarshalJSON() ([]byte, error) {
+	var discriminator VpcFirewallRuleHostFilterType
+	var innerValue any
+	switch val := v.Value.(type) {
+	case VpcFirewallRuleHostFilterVpc:
+		discriminator = VpcFirewallRuleHostFilterTypeVpc
+		innerValue = val.Value
+	case VpcFirewallRuleHostFilterSubnet:
+		discriminator = VpcFirewallRuleHostFilterTypeSubnet
+		innerValue = val.Value
+	case VpcFirewallRuleHostFilterInstance:
+		discriminator = VpcFirewallRuleHostFilterTypeInstance
+		innerValue = val.Value
+	case VpcFirewallRuleHostFilterIp:
+		discriminator = VpcFirewallRuleHostFilterTypeIp
+		innerValue = val.Value
+	case VpcFirewallRuleHostFilterIpNet:
+		discriminator = VpcFirewallRuleHostFilterTypeIpNet
+		innerValue = val.Value
+	}
+	return json.Marshal(struct {
+		Type  VpcFirewallRuleHostFilterType `json:"type"`
+		Value any                           `json:"value,omitzero"`
+	}{
+		Type:  discriminator,
+		Value: innerValue,
+	})
+}
+
 // VpcFirewallRuleProtocolType is the type definition for a VpcFirewallRuleProtocolType.
 type VpcFirewallRuleProtocolType string
 
-// VpcFirewallRuleProtocolTcp is the type definition for a VpcFirewallRuleProtocolTcp.
-//
-// Required fields:
-// - Type
-type VpcFirewallRuleProtocolTcp struct {
-	Type VpcFirewallRuleProtocolType `json:"type" yaml:"type"`
-}
-
-// VpcFirewallRuleProtocolUdp is the type definition for a VpcFirewallRuleProtocolUdp.
-//
-// Required fields:
-// - Type
-type VpcFirewallRuleProtocolUdp struct {
-	Type VpcFirewallRuleProtocolType `json:"type" yaml:"type"`
-}
-
-// VpcFirewallRuleProtocolIcmp is the type definition for a VpcFirewallRuleProtocolIcmp.
-//
-// Required fields:
-// - Type
-// - Value
-type VpcFirewallRuleProtocolIcmp struct {
-	Type  VpcFirewallRuleProtocolType `json:"type" yaml:"type"`
-	Value *VpcFirewallIcmpFilter      `json:"value" yaml:"value"`
-}
-
 // VpcFirewallRuleProtocol is the protocols that may be specified in a firewall rule's filter
 type VpcFirewallRuleProtocol struct {
-	// Type is the type definition for a Type.
-	Type VpcFirewallRuleProtocolType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is the type definition for a Value.
-	Value VpcFirewallIcmpFilter `json:"value,omitzero" yaml:"value,omitzero"`
+	Type  VpcFirewallRuleProtocolType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value VpcFirewallIcmpFilter       `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // VpcFirewallRuleStatus is the type definition for a VpcFirewallRuleStatus.
 type VpcFirewallRuleStatus string
 
+// vpcFirewallRuleTargetVariant is an interface for VpcFirewallRuleTarget variants.
+type vpcFirewallRuleTargetVariant interface {
+	isVpcFirewallRuleTargetVariant()
+}
+
 // VpcFirewallRuleTargetType is the type definition for a VpcFirewallRuleTargetType.
 type VpcFirewallRuleTargetType string
 
-// vpcFirewallRuleTargetValue is an interface for VpcFirewallRuleTarget value variants.
-type vpcFirewallRuleTargetValue interface {
-	isVpcFirewallRuleTargetValue()
-}
-
-// VpcFirewallRuleTargetVpc is the Name variant of VpcFirewallRuleTarget value.
+// VpcFirewallRuleTargetVpc is the rule applies to all instances in the VPC
 type VpcFirewallRuleTargetVpc struct {
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-func (VpcFirewallRuleTargetVpc) isVpcFirewallRuleTargetValue() {}
+func (VpcFirewallRuleTargetVpc) isVpcFirewallRuleTargetVariant() {}
 
-// VpcFirewallRuleTargetSubnet is the Name variant of VpcFirewallRuleTarget value.
+// VpcFirewallRuleTargetSubnet is the rule applies to all instances in the VPC Subnet
 type VpcFirewallRuleTargetSubnet struct {
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-func (VpcFirewallRuleTargetSubnet) isVpcFirewallRuleTargetValue() {}
+func (VpcFirewallRuleTargetSubnet) isVpcFirewallRuleTargetVariant() {}
 
-// VpcFirewallRuleTargetInstance is the Name variant of VpcFirewallRuleTarget value.
+// VpcFirewallRuleTargetInstance is the rule applies to this specific instance
 type VpcFirewallRuleTargetInstance struct {
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
 	Value Name `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-func (VpcFirewallRuleTargetInstance) isVpcFirewallRuleTargetValue() {}
+func (VpcFirewallRuleTargetInstance) isVpcFirewallRuleTargetVariant() {}
 
-// VpcFirewallRuleTargetIp is the string variant of VpcFirewallRuleTarget value.
+// VpcFirewallRuleTargetIp is the rule applies to a specific IP address
 type VpcFirewallRuleTargetIp struct {
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-func (VpcFirewallRuleTargetIp) isVpcFirewallRuleTargetValue() {}
+func (VpcFirewallRuleTargetIp) isVpcFirewallRuleTargetVariant() {}
 
-// VpcFirewallRuleTargetIpNet is the IpNet variant of VpcFirewallRuleTarget value.
+// VpcFirewallRuleTargetIpNet is the rule applies to a specific IP subnet
 type VpcFirewallRuleTargetIpNet struct {
 	Value IpNet `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
-func (VpcFirewallRuleTargetIpNet) isVpcFirewallRuleTargetValue() {}
+func (VpcFirewallRuleTargetIpNet) isVpcFirewallRuleTargetVariant() {}
 
 // VpcFirewallRuleTarget is a `VpcFirewallRuleTarget` is used to specify the set of instances to which a
 // firewall rule applies. You can target instances directly by name, or specify a VPC, VPC subnet, IP, or IP
 // subnet, which will apply the rule to traffic going to all matching instances. Targets are additive: the rule
 // applies to instances matching ANY target.
 type VpcFirewallRuleTarget struct {
-	// Type is the type definition for a Type.
-	Type VpcFirewallRuleTargetType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
-	Value vpcFirewallRuleTargetValue `json:"value,omitempty" yaml:"value,omitempty"`
+	Value vpcFirewallRuleTargetVariant `json:"value,omitzero" yaml:"value,omitzero"`
 }
 
 // UnmarshalJSON implements json.Unmarshaler for VpcFirewallRuleTarget, selecting the correct
-// variant of the Value field based on the Type discriminator.
+// variant of the Value field based on the type discriminator.
 func (v *VpcFirewallRuleTarget) UnmarshalJSON(data []byte) error {
 	var raw struct {
 		Type  VpcFirewallRuleTargetType `json:"type"`
 		Value json.RawMessage           `json:"value"`
 	}
 	if err := json.Unmarshal(data, &raw); err != nil {
-		return err
+		return fmt.Errorf("unmarshaling VpcFirewallRuleTarget: %w\nJSON: %s", err, string(data))
 	}
-	v.Type = raw.Type
 	switch raw.Type {
 	case VpcFirewallRuleTargetTypeVpc:
 		var val VpcFirewallRuleTargetVpc
-		if err := json.Unmarshal(raw.Value, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling VpcFirewallRuleTarget variant VpcFirewallRuleTargetVpc: %w\nJSON: %s", err, string(data))
 		}
 		v.Value = val
 	case VpcFirewallRuleTargetTypeSubnet:
 		var val VpcFirewallRuleTargetSubnet
-		if err := json.Unmarshal(raw.Value, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling VpcFirewallRuleTarget variant VpcFirewallRuleTargetSubnet: %w\nJSON: %s", err, string(data))
 		}
 		v.Value = val
 	case VpcFirewallRuleTargetTypeInstance:
 		var val VpcFirewallRuleTargetInstance
-		if err := json.Unmarshal(raw.Value, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling VpcFirewallRuleTarget variant VpcFirewallRuleTargetInstance: %w\nJSON: %s", err, string(data))
 		}
 		v.Value = val
 	case VpcFirewallRuleTargetTypeIp:
 		var val VpcFirewallRuleTargetIp
-		if err := json.Unmarshal(raw.Value, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling VpcFirewallRuleTarget variant VpcFirewallRuleTargetIp: %w\nJSON: %s", err, string(data))
 		}
 		v.Value = val
 	case VpcFirewallRuleTargetTypeIpNet:
 		var val VpcFirewallRuleTargetIpNet
-		if err := json.Unmarshal(raw.Value, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling VpcFirewallRuleTarget variant VpcFirewallRuleTargetIpNet: %w\nJSON: %s", err, string(data))
 		}
 		v.Value = val
 	}
 	return nil
+}
+
+// MarshalJSON implements json.Marshaler for VpcFirewallRuleTarget, setting the type
+// discriminator based on the Value variant type.
+func (v VpcFirewallRuleTarget) MarshalJSON() ([]byte, error) {
+	var discriminator VpcFirewallRuleTargetType
+	var innerValue any
+	switch val := v.Value.(type) {
+	case VpcFirewallRuleTargetVpc:
+		discriminator = VpcFirewallRuleTargetTypeVpc
+		innerValue = val.Value
+	case VpcFirewallRuleTargetSubnet:
+		discriminator = VpcFirewallRuleTargetTypeSubnet
+		innerValue = val.Value
+	case VpcFirewallRuleTargetInstance:
+		discriminator = VpcFirewallRuleTargetTypeInstance
+		innerValue = val.Value
+	case VpcFirewallRuleTargetIp:
+		discriminator = VpcFirewallRuleTargetTypeIp
+		innerValue = val.Value
+	case VpcFirewallRuleTargetIpNet:
+		discriminator = VpcFirewallRuleTargetTypeIpNet
+		innerValue = val.Value
+	}
+	return json.Marshal(struct {
+		Type  VpcFirewallRuleTargetType `json:"type"`
+		Value any                       `json:"value,omitzero"`
+	}{
+		Type:  discriminator,
+		Value: innerValue,
+	})
 }
 
 // VpcFirewallRuleUpdate is a single rule in a VPC firewall
@@ -8209,7 +8177,7 @@ type WebhookDeliveryAttempt struct {
 	TimeSent *time.Time `json:"time_sent" yaml:"time_sent"`
 }
 
-// WebhookDeliveryAttemptResult is the webhook event has been delivered successfully.
+// WebhookDeliveryAttemptResult is the type definition for a WebhookDeliveryAttemptResult.
 type WebhookDeliveryAttemptResult string
 
 // WebhookDeliveryResponse is the response received from a webhook receiver endpoint.
@@ -13723,6 +13691,12 @@ const AddressLotKindInfra AddressLotKind = "infra"
 // AddressLotKindPool represents the AddressLotKind `"pool"`.
 const AddressLotKindPool AddressLotKind = "pool"
 
+// AddressSelectorTypeExplicit represents the AddressSelectorType `"explicit"`.
+const AddressSelectorTypeExplicit AddressSelectorType = "explicit"
+
+// AddressSelectorTypeAuto represents the AddressSelectorType `"auto"`.
+const AddressSelectorTypeAuto AddressSelectorType = "auto"
+
 // AffinityGroupMemberTypeInstance represents the AffinityGroupMemberType `"instance"`.
 const AffinityGroupMemberTypeInstance AffinityGroupMemberType = "instance"
 
@@ -13827,6 +13801,9 @@ const BgpPeerStateOpenSent BgpPeerState = "open_sent"
 
 // BgpPeerStateOpenConfirm represents the BgpPeerState `"open_confirm"`.
 const BgpPeerStateOpenConfirm BgpPeerState = "open_confirm"
+
+// BgpPeerStateConnectionCollision represents the BgpPeerState `"connection_collision"`.
+const BgpPeerStateConnectionCollision BgpPeerState = "connection_collision"
 
 // BgpPeerStateSessionSetup represents the BgpPeerState `"session_setup"`.
 const BgpPeerStateSessionSetup BgpPeerState = "session_setup"
@@ -14227,8 +14204,14 @@ const InstanceDiskAttachmentTypeAttach InstanceDiskAttachmentType = "attach"
 // InstanceNetworkInterfaceAttachmentTypeCreate represents the InstanceNetworkInterfaceAttachmentType `"create"`.
 const InstanceNetworkInterfaceAttachmentTypeCreate InstanceNetworkInterfaceAttachmentType = "create"
 
-// InstanceNetworkInterfaceAttachmentTypeDefault represents the InstanceNetworkInterfaceAttachmentType `"default"`.
-const InstanceNetworkInterfaceAttachmentTypeDefault InstanceNetworkInterfaceAttachmentType = "default"
+// InstanceNetworkInterfaceAttachmentTypeDefaultIpv4 represents the InstanceNetworkInterfaceAttachmentType `"default_ipv4"`.
+const InstanceNetworkInterfaceAttachmentTypeDefaultIpv4 InstanceNetworkInterfaceAttachmentType = "default_ipv4"
+
+// InstanceNetworkInterfaceAttachmentTypeDefaultIpv6 represents the InstanceNetworkInterfaceAttachmentType `"default_ipv6"`.
+const InstanceNetworkInterfaceAttachmentTypeDefaultIpv6 InstanceNetworkInterfaceAttachmentType = "default_ipv6"
+
+// InstanceNetworkInterfaceAttachmentTypeDefaultDualStack represents the InstanceNetworkInterfaceAttachmentType `"default_dual_stack"`.
+const InstanceNetworkInterfaceAttachmentTypeDefaultDualStack InstanceNetworkInterfaceAttachmentType = "default_dual_stack"
 
 // InstanceNetworkInterfaceAttachmentTypeNone represents the InstanceNetworkInterfaceAttachmentType `"none"`.
 const InstanceNetworkInterfaceAttachmentTypeNone InstanceNetworkInterfaceAttachmentType = "none"
@@ -14274,6 +14257,18 @@ const IpVersionV4 IpVersion = "v4"
 
 // IpVersionV6 represents the IpVersion `"v6"`.
 const IpVersionV6 IpVersion = "v6"
+
+// Ipv4AssignmentTypeAuto represents the Ipv4AssignmentType `"auto"`.
+const Ipv4AssignmentTypeAuto Ipv4AssignmentType = "auto"
+
+// Ipv4AssignmentTypeExplicit represents the Ipv4AssignmentType `"explicit"`.
+const Ipv4AssignmentTypeExplicit Ipv4AssignmentType = "explicit"
+
+// Ipv6AssignmentTypeAuto represents the Ipv6AssignmentType `"auto"`.
+const Ipv6AssignmentTypeAuto Ipv6AssignmentType = "auto"
+
+// Ipv6AssignmentTypeExplicit represents the Ipv6AssignmentType `"explicit"`.
+const Ipv6AssignmentTypeExplicit Ipv6AssignmentType = "explicit"
 
 // LinkFecFirecode represents the LinkFec `"firecode"`.
 const LinkFecFirecode LinkFec = "firecode"
@@ -14367,6 +14362,39 @@ const PhysicalDiskStateDecommissioned PhysicalDiskState = "decommissioned"
 
 // PingStatusOk represents the PingStatus `"ok"`.
 const PingStatusOk PingStatus = "ok"
+
+// PoolSelectorTypeExplicit represents the PoolSelectorType `"explicit"`.
+const PoolSelectorTypeExplicit PoolSelectorType = "explicit"
+
+// PoolSelectorTypeAuto represents the PoolSelectorType `"auto"`.
+const PoolSelectorTypeAuto PoolSelectorType = "auto"
+
+// PrivateIpConfigTypeV4 represents the PrivateIpConfigType `"v4"`.
+const PrivateIpConfigTypeV4 PrivateIpConfigType = "v4"
+
+// PrivateIpConfigTypeV6 represents the PrivateIpConfigType `"v6"`.
+const PrivateIpConfigTypeV6 PrivateIpConfigType = "v6"
+
+// PrivateIpConfigTypeDualStack represents the PrivateIpConfigType `"dual_stack"`.
+const PrivateIpConfigTypeDualStack PrivateIpConfigType = "dual_stack"
+
+// PrivateIpStackTypeV4 represents the PrivateIpStackType `"v4"`.
+const PrivateIpStackTypeV4 PrivateIpStackType = "v4"
+
+// PrivateIpStackTypeV6 represents the PrivateIpStackType `"v6"`.
+const PrivateIpStackTypeV6 PrivateIpStackType = "v6"
+
+// PrivateIpStackTypeDualStack represents the PrivateIpStackType `"dual_stack"`.
+const PrivateIpStackTypeDualStack PrivateIpStackType = "dual_stack"
+
+// PrivateIpStackCreateTypeV4 represents the PrivateIpStackCreateType `"v4"`.
+const PrivateIpStackCreateTypeV4 PrivateIpStackCreateType = "v4"
+
+// PrivateIpStackCreateTypeV6 represents the PrivateIpStackCreateType `"v6"`.
+const PrivateIpStackCreateTypeV6 PrivateIpStackCreateType = "v6"
+
+// PrivateIpStackCreateTypeDualStack represents the PrivateIpStackCreateType `"dual_stack"`.
+const PrivateIpStackCreateTypeDualStack PrivateIpStackCreateType = "dual_stack"
 
 // ProbeExternalIpKindSnat represents the ProbeExternalIpKind `"snat"`.
 const ProbeExternalIpKindSnat ProbeExternalIpKind = "snat"
@@ -14701,6 +14729,12 @@ var AddressLotKindCollection = []AddressLotKind{
 	AddressLotKindPool,
 }
 
+// AddressSelectorTypeCollection is the collection of all AddressSelectorType values.
+var AddressSelectorTypeCollection = []AddressSelectorType{
+	AddressSelectorTypeAuto,
+	AddressSelectorTypeExplicit,
+}
+
 // AffinityGroupMemberTypeCollection is the collection of all AffinityGroupMemberType values.
 var AffinityGroupMemberTypeCollection = []AffinityGroupMemberType{
 	AffinityGroupMemberTypeInstance,
@@ -14783,6 +14817,7 @@ var BfdStateCollection = []BfdState{
 var BgpPeerStateCollection = []BgpPeerState{
 	BgpPeerStateActive,
 	BgpPeerStateConnect,
+	BgpPeerStateConnectionCollision,
 	BgpPeerStateEstablished,
 	BgpPeerStateIdle,
 	BgpPeerStateOpenConfirm,
@@ -15055,7 +15090,9 @@ var InstanceDiskAttachmentTypeCollection = []InstanceDiskAttachmentType{
 // InstanceNetworkInterfaceAttachmentTypeCollection is the collection of all InstanceNetworkInterfaceAttachmentType values.
 var InstanceNetworkInterfaceAttachmentTypeCollection = []InstanceNetworkInterfaceAttachmentType{
 	InstanceNetworkInterfaceAttachmentTypeCreate,
-	InstanceNetworkInterfaceAttachmentTypeDefault,
+	InstanceNetworkInterfaceAttachmentTypeDefaultDualStack,
+	InstanceNetworkInterfaceAttachmentTypeDefaultIpv4,
+	InstanceNetworkInterfaceAttachmentTypeDefaultIpv6,
 	InstanceNetworkInterfaceAttachmentTypeNone,
 }
 
@@ -15083,6 +15120,18 @@ var IpPoolTypeCollection = []IpPoolType{
 var IpVersionCollection = []IpVersion{
 	IpVersionV4,
 	IpVersionV6,
+}
+
+// Ipv4AssignmentTypeCollection is the collection of all Ipv4AssignmentType values.
+var Ipv4AssignmentTypeCollection = []Ipv4AssignmentType{
+	Ipv4AssignmentTypeAuto,
+	Ipv4AssignmentTypeExplicit,
+}
+
+// Ipv6AssignmentTypeCollection is the collection of all Ipv6AssignmentType values.
+var Ipv6AssignmentTypeCollection = []Ipv6AssignmentType{
+	Ipv6AssignmentTypeAuto,
+	Ipv6AssignmentTypeExplicit,
 }
 
 // LinkFecCollection is the collection of all LinkFec values.
@@ -15158,6 +15207,33 @@ var PhysicalDiskStateCollection = []PhysicalDiskState{
 // PingStatusCollection is the collection of all PingStatus values.
 var PingStatusCollection = []PingStatus{
 	PingStatusOk,
+}
+
+// PoolSelectorTypeCollection is the collection of all PoolSelectorType values.
+var PoolSelectorTypeCollection = []PoolSelectorType{
+	PoolSelectorTypeAuto,
+	PoolSelectorTypeExplicit,
+}
+
+// PrivateIpConfigTypeCollection is the collection of all PrivateIpConfigType values.
+var PrivateIpConfigTypeCollection = []PrivateIpConfigType{
+	PrivateIpConfigTypeDualStack,
+	PrivateIpConfigTypeV4,
+	PrivateIpConfigTypeV6,
+}
+
+// PrivateIpStackCreateTypeCollection is the collection of all PrivateIpStackCreateType values.
+var PrivateIpStackCreateTypeCollection = []PrivateIpStackCreateType{
+	PrivateIpStackCreateTypeDualStack,
+	PrivateIpStackCreateTypeV4,
+	PrivateIpStackCreateTypeV6,
+}
+
+// PrivateIpStackTypeCollection is the collection of all PrivateIpStackType values.
+var PrivateIpStackTypeCollection = []PrivateIpStackType{
+	PrivateIpStackTypeDualStack,
+	PrivateIpStackTypeV4,
+	PrivateIpStackTypeV6,
 }
 
 // ProbeExternalIpKindCollection is the collection of all ProbeExternalIpKind values.

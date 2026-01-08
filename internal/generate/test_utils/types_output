@@ -17,88 +17,96 @@ type DiskIdentifier struct {
 }
 // DiskSourceType is the type definition for a DiskSourceType.
 type DiskSourceType string
-// DiskSourceSnapshot is create a disk from a disk snapshot
-type DiskSourceSnapshot struct {
-	SnapshotId string `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
-	Type DiskSourceType `json:"type,omitempty" yaml:"type,omitempty"`
-}
-// DiskSourceImage is create a disk from a project image
-type DiskSourceImage struct {
-	ImageId string `json:"image_id,omitempty" yaml:"image_id,omitempty"`
-	Type DiskSourceType `json:"type,omitempty" yaml:"type,omitempty"`
-}
 // DiskSource is the type definition for a DiskSource.
 type DiskSource struct {
-	// SnapshotId is the type definition for a SnapshotId.
-	SnapshotId string `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
-	// Type is the type definition for a Type.
 	Type DiskSourceType `json:"type,omitempty" yaml:"type,omitempty"`
-	// ImageId is the type definition for a ImageId.
+	SnapshotId string `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
 	ImageId string `json:"image_id,omitempty" yaml:"image_id,omitempty"`
+}
+// fieldValueVariant is an interface for FieldValue variants.
+type fieldValueVariant interface {
+	isFieldValueVariant()
 }
 // FieldValueType is the type definition for a FieldValueType.
 type FieldValueType string
-// fieldValueValue is an interface for FieldValue value variants.
-type fieldValueValue interface {
-	isFieldValueValue()
-}
-// FieldValueString is the string variant of FieldValue value.
+// FieldValueString is the type definition for a FieldValueString.
 type FieldValueString struct {
 	Value string `json:"value,omitempty" yaml:"value,omitempty"`
 }
-func (FieldValueString) isFieldValueValue() {}
+func (FieldValueString) isFieldValueVariant() {}
 
-// FieldValueInt is the int variant of FieldValue value.
+// FieldValueInt is the type definition for a FieldValueInt.
 type FieldValueInt struct {
-	Value int `json:"value,omitempty" yaml:"value,omitempty"`
+	Value *int `json:"value,omitempty" yaml:"value,omitempty"`
 }
-func (FieldValueInt) isFieldValueValue() {}
+func (FieldValueInt) isFieldValueVariant() {}
 
-// FieldValueBool is the bool variant of FieldValue value.
+// FieldValueBool is the type definition for a FieldValueBool.
 type FieldValueBool struct {
-	Value bool `json:"value,omitempty" yaml:"value,omitempty"`
+	Value *bool `json:"value,omitempty" yaml:"value,omitempty"`
 }
-func (FieldValueBool) isFieldValueValue() {}
+func (FieldValueBool) isFieldValueVariant() {}
 
 // FieldValue is the `FieldValue` contains the value of a target or metric field.
 type FieldValue struct {
-	// Type is the type definition for a Type.
-	Type FieldValueType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is the type definition for a Value.
-	Value fieldValueValue `json:"value,omitempty" yaml:"value,omitempty"`
+	Value fieldValueVariant `json:"value,omitzero" yaml:"value,omitzero"`
 }
 // UnmarshalJSON implements json.Unmarshaler for FieldValue, selecting the correct
-// variant of the Value field based on the Type discriminator.
+// variant of the Value field based on the type discriminator.
 func (v *FieldValue) UnmarshalJSON(data []byte) error {
 	var raw struct {
 		Type  FieldValueType  `json:"type"`
 		Value json.RawMessage `json:"value"`
 	}
 	if err := json.Unmarshal(data, &raw); err != nil {
-		return err
+		return fmt.Errorf("unmarshaling FieldValue: %w\nJSON: %s", err, string(data))
 	}
-	v.Type = raw.Type
 	switch raw.Type {
 	case FieldValueTypeString:
 		var val FieldValueString
-		if err := json.Unmarshal(raw.Value, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling FieldValue variant FieldValueString: %w\nJSON: %s", err, string(data))
 		}
 		v.Value = val
 	case FieldValueTypeInt:
 		var val FieldValueInt
-		if err := json.Unmarshal(raw.Value, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling FieldValue variant FieldValueInt: %w\nJSON: %s", err, string(data))
 		}
 		v.Value = val
 	case FieldValueTypeBool:
 		var val FieldValueBool
-		if err := json.Unmarshal(raw.Value, &val); err != nil {
-			return err
+		if err := json.Unmarshal(data, &val); err != nil {
+			return fmt.Errorf("unmarshaling FieldValue variant FieldValueBool: %w\nJSON: %s", err, string(data))
 		}
 		v.Value = val
 	}
 	return nil
+}
+
+// MarshalJSON implements json.Marshaler for FieldValue, setting the type
+// discriminator based on the Value variant type.
+func (v FieldValue) MarshalJSON() ([]byte, error) {
+	var discriminator FieldValueType
+	var innerValue any
+	switch val := v.Value.(type) {
+	case FieldValueString:
+		discriminator = FieldValueTypeString
+		innerValue = val.Value
+	case FieldValueInt:
+		discriminator = FieldValueTypeInt
+		innerValue = val.Value
+	case FieldValueBool:
+		discriminator = FieldValueTypeBool
+		innerValue = val.Value
+	}
+	return json.Marshal(struct {
+		Type FieldValueType `json:"type"`
+		Value any `json:"value,omitzero"`
+	}{
+		Type: discriminator,
+		Value: innerValue,
+	})
 }
 
 // DiskSourceTypeSnapshot represents the DiskSourceType `"snapshot"`.
