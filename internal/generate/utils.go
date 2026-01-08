@@ -91,6 +91,30 @@ func formatStringType(t *openapi3.Schema) string {
 	}
 }
 
+// isStringBasedType returns true if the Go type is string or a string type alias.
+// This is used to detect oneOf types where all variants have string values,
+// which can be simplified to a flat struct instead of an interface pattern.
+func isStringBasedType(goType string) bool {
+	// Known string type aliases in the oxide SDK
+	stringTypes := []string{
+		"string",
+		"Name",
+		"NameOrId",
+		"IpNet",
+		"Ipv4Net",
+		"Ipv6Net",
+		"Hostname",
+		"MacAddr",
+		"ByteCount",
+	}
+	for _, t := range stringTypes {
+		if goType == t {
+			return true
+		}
+	}
+	return false
+}
+
 // toLowerFirstLetter returns the given string with the first letter converted to lower case.
 func toLowerFirstLetter(str string) string {
 	for i, v := range str {

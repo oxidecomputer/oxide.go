@@ -802,6 +802,26 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 		return createFlatOneOf(s, name, typeName, discriminator, valueProps)
 	}
 
+	// If we have a discriminator and all variants have the same single value property with
+	// string-based types, use flat struct pattern for simplicity. This avoids creating
+	// separate wrapper types for each variant when they're all just strings.
+	// Examples: RouteDestination, VpcFirewallRuleHostFilter, VpcFirewallRuleTarget
+	if discriminator != nil && allVariantsHaveSameValueProp && commonValueProp != "" {
+		allStringBased := true
+		for _, variantRef := range s.OneOf {
+			if propRef, ok := variantRef.Value.Properties[commonValueProp]; ok {
+				propType := convertToValidGoType(commonValueProp, typeName, propRef)
+				if !isStringBasedType(propType) {
+					allStringBased = false
+					break
+				}
+			}
+		}
+		if allStringBased {
+			return createFlatOneOf(s, name, typeName, discriminator, valueProps)
+		}
+	}
+
 	// If no value properties and no discriminator, check for other patterns
 	if len(valueProps) == 0 {
 		// Check if variants have enums directly (not in properties) - e.g., NameOrIdSortMode

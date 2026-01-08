@@ -2195,64 +2195,13 @@ type DeviceAuthVerify struct {
 	UserCode string `json:"user_code" yaml:"user_code"`
 }
 
-// digestVariant is an interface for Digest variants.
-type digestVariant interface {
-	isDigestVariant()
-}
-
 // DigestType is the type definition for a DigestType.
 type DigestType string
 
-// DigestSha256 is the type definition for a DigestSha256.
-type DigestSha256 struct {
-	Value string `json:"value,omitempty" yaml:"value,omitempty"`
-}
-
-func (DigestSha256) isDigestVariant() {}
-
 // Digest is the type definition for a Digest.
 type Digest struct {
-	Value digestVariant `json:"value,omitzero" yaml:"value,omitzero"`
-}
-
-// UnmarshalJSON implements json.Unmarshaler for Digest, selecting the correct
-// variant of the Value field based on the type discriminator.
-func (v *Digest) UnmarshalJSON(data []byte) error {
-	var raw struct {
-		Type  DigestType      `json:"type"`
-		Value json.RawMessage `json:"value"`
-	}
-	if err := json.Unmarshal(data, &raw); err != nil {
-		return fmt.Errorf("unmarshaling Digest: %w\nJSON: %s", err, string(data))
-	}
-	switch raw.Type {
-	case DigestTypeSha256:
-		var val DigestSha256
-		if err := json.Unmarshal(data, &val); err != nil {
-			return fmt.Errorf("unmarshaling Digest variant DigestSha256: %w\nJSON: %s", err, string(data))
-		}
-		v.Value = val
-	}
-	return nil
-}
-
-// MarshalJSON implements json.Marshaler for Digest, setting the type
-// discriminator based on the Value variant type.
-func (v Digest) MarshalJSON() ([]byte, error) {
-	var discriminator DigestType
-	var innerValue any
-	switch val := v.Value.(type) {
-	case DigestSha256:
-		discriminator = DigestTypeSha256
-		innerValue = val.Value
-	}
-	return json.Marshal(struct {
-		Type  DigestType `json:"type"`
-		Value any        `json:"value,omitzero"`
-	}{
-		Type:  discriminator,
-		Value: innerValue,
-	})
+	Type  DigestType `json:"type" yaml:"type"`
+	Value string     `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // Disk is view of a Disk
@@ -3475,64 +3424,13 @@ type ImageResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// imageSourceVariant is an interface for ImageSource variants.
-type imageSourceVariant interface {
-	isImageSourceVariant()
-}
-
 // ImageSourceType is the type definition for a ImageSourceType.
 type ImageSourceType string
 
-// ImageSourceSnapshot is the type definition for a ImageSourceSnapshot.
-type ImageSourceSnapshot struct {
-	Id string `json:"id,omitempty" yaml:"id,omitempty"`
-}
-
-func (ImageSourceSnapshot) isImageSourceVariant() {}
-
 // ImageSource is the source of the underlying image.
 type ImageSource struct {
-	Id imageSourceVariant `json:"id,omitzero" yaml:"id,omitzero"`
-}
-
-// UnmarshalJSON implements json.Unmarshaler for ImageSource, selecting the correct
-// variant of the Id field based on the type discriminator.
-func (v *ImageSource) UnmarshalJSON(data []byte) error {
-	var raw struct {
-		Type ImageSourceType `json:"type"`
-		Id   json.RawMessage `json:"id"`
-	}
-	if err := json.Unmarshal(data, &raw); err != nil {
-		return fmt.Errorf("unmarshaling ImageSource: %w\nJSON: %s", err, string(data))
-	}
-	switch raw.Type {
-	case ImageSourceTypeSnapshot:
-		var val ImageSourceSnapshot
-		if err := json.Unmarshal(data, &val); err != nil {
-			return fmt.Errorf("unmarshaling ImageSource variant ImageSourceSnapshot: %w\nJSON: %s", err, string(data))
-		}
-		v.Id = val
-	}
-	return nil
-}
-
-// MarshalJSON implements json.Marshaler for ImageSource, setting the type
-// discriminator based on the Id variant type.
-func (v ImageSource) MarshalJSON() ([]byte, error) {
-	var discriminator ImageSourceType
-	var innerValue any
-	switch val := v.Id.(type) {
-	case ImageSourceSnapshot:
-		discriminator = ImageSourceTypeSnapshot
-		innerValue = val.Id
-	}
-	return json.Marshal(struct {
-		Type ImageSourceType `json:"type"`
-		Id   any             `json:"id,omitzero"`
-	}{
-		Type: discriminator,
-		Id:   innerValue,
-	})
+	Type ImageSourceType `json:"type" yaml:"type"`
+	Id   string          `json:"id,omitempty" yaml:"id,omitempty"`
 }
 
 // ImportBlocksBulkWrite is parameters for importing blocks with a bulk write
@@ -4788,96 +4686,13 @@ type NetworkInterface struct {
 	Vni Vni `json:"vni" yaml:"vni"`
 }
 
-// networkInterfaceKindVariant is an interface for NetworkInterfaceKind variants.
-type networkInterfaceKindVariant interface {
-	isNetworkInterfaceKindVariant()
-}
-
 // NetworkInterfaceKindType is the type definition for a NetworkInterfaceKindType.
 type NetworkInterfaceKindType string
 
-// NetworkInterfaceKindInstance is a vNIC attached to a guest instance
-type NetworkInterfaceKindInstance struct {
-	Id string `json:"id,omitempty" yaml:"id,omitempty"`
-}
-
-func (NetworkInterfaceKindInstance) isNetworkInterfaceKindVariant() {}
-
-// NetworkInterfaceKindService is a vNIC associated with an internal service
-type NetworkInterfaceKindService struct {
-	Id string `json:"id,omitempty" yaml:"id,omitempty"`
-}
-
-func (NetworkInterfaceKindService) isNetworkInterfaceKindVariant() {}
-
-// NetworkInterfaceKindProbe is a vNIC associated with a probe
-type NetworkInterfaceKindProbe struct {
-	Id string `json:"id,omitempty" yaml:"id,omitempty"`
-}
-
-func (NetworkInterfaceKindProbe) isNetworkInterfaceKindVariant() {}
-
 // NetworkInterfaceKind is the type of network interface
 type NetworkInterfaceKind struct {
-	Id networkInterfaceKindVariant `json:"id,omitzero" yaml:"id,omitzero"`
-}
-
-// UnmarshalJSON implements json.Unmarshaler for NetworkInterfaceKind, selecting the correct
-// variant of the Id field based on the type discriminator.
-func (v *NetworkInterfaceKind) UnmarshalJSON(data []byte) error {
-	var raw struct {
-		Type NetworkInterfaceKindType `json:"type"`
-		Id   json.RawMessage          `json:"id"`
-	}
-	if err := json.Unmarshal(data, &raw); err != nil {
-		return fmt.Errorf("unmarshaling NetworkInterfaceKind: %w\nJSON: %s", err, string(data))
-	}
-	switch raw.Type {
-	case NetworkInterfaceKindTypeInstance:
-		var val NetworkInterfaceKindInstance
-		if err := json.Unmarshal(data, &val); err != nil {
-			return fmt.Errorf("unmarshaling NetworkInterfaceKind variant NetworkInterfaceKindInstance: %w\nJSON: %s", err, string(data))
-		}
-		v.Id = val
-	case NetworkInterfaceKindTypeService:
-		var val NetworkInterfaceKindService
-		if err := json.Unmarshal(data, &val); err != nil {
-			return fmt.Errorf("unmarshaling NetworkInterfaceKind variant NetworkInterfaceKindService: %w\nJSON: %s", err, string(data))
-		}
-		v.Id = val
-	case NetworkInterfaceKindTypeProbe:
-		var val NetworkInterfaceKindProbe
-		if err := json.Unmarshal(data, &val); err != nil {
-			return fmt.Errorf("unmarshaling NetworkInterfaceKind variant NetworkInterfaceKindProbe: %w\nJSON: %s", err, string(data))
-		}
-		v.Id = val
-	}
-	return nil
-}
-
-// MarshalJSON implements json.Marshaler for NetworkInterfaceKind, setting the type
-// discriminator based on the Id variant type.
-func (v NetworkInterfaceKind) MarshalJSON() ([]byte, error) {
-	var discriminator NetworkInterfaceKindType
-	var innerValue any
-	switch val := v.Id.(type) {
-	case NetworkInterfaceKindInstance:
-		discriminator = NetworkInterfaceKindTypeInstance
-		innerValue = val.Id
-	case NetworkInterfaceKindService:
-		discriminator = NetworkInterfaceKindTypeService
-		innerValue = val.Id
-	case NetworkInterfaceKindProbe:
-		discriminator = NetworkInterfaceKindTypeProbe
-		innerValue = val.Id
-	}
-	return json.Marshal(struct {
-		Type NetworkInterfaceKindType `json:"type"`
-		Id   any                      `json:"id,omitzero"`
-	}{
-		Type: discriminator,
-		Id:   innerValue,
-	})
+	Type NetworkInterfaceKindType `json:"type" yaml:"type"`
+	Id   string                   `json:"id,omitempty" yaml:"id,omitempty"`
 }
 
 // OxqlQueryResult is the result of a successful OxQL query.
@@ -5652,47 +5467,8 @@ type RouteConfig struct {
 	Routes []Route `json:"routes" yaml:"routes"`
 }
 
-// routeDestinationVariant is an interface for RouteDestination variants.
-type routeDestinationVariant interface {
-	isRouteDestinationVariant()
-}
-
 // RouteDestinationType is the type definition for a RouteDestinationType.
 type RouteDestinationType string
-
-// RouteDestinationIp is route applies to traffic destined for the specified IP address
-type RouteDestinationIp struct {
-	Value string `json:"value,omitempty" yaml:"value,omitempty"`
-}
-
-func (RouteDestinationIp) isRouteDestinationVariant() {}
-
-// RouteDestinationIpNet is route applies to traffic destined for the specified IP subnet
-type RouteDestinationIpNet struct {
-	Value IpNet `json:"value,omitzero" yaml:"value,omitzero"`
-}
-
-func (RouteDestinationIpNet) isRouteDestinationVariant() {}
-
-// RouteDestinationVpc is route applies to traffic destined for the specified VPC
-type RouteDestinationVpc struct {
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
-	Value Name `json:"value,omitzero" yaml:"value,omitzero"`
-}
-
-func (RouteDestinationVpc) isRouteDestinationVariant() {}
-
-// RouteDestinationSubnet is route applies to traffic destined for the specified VPC subnet
-type RouteDestinationSubnet struct {
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
-	Value Name `json:"value,omitzero" yaml:"value,omitzero"`
-}
-
-func (RouteDestinationSubnet) isRouteDestinationVariant() {}
 
 // RouteDestination is a `RouteDestination` is used to match traffic with a routing rule based on the destination
 // of that traffic.
@@ -5700,74 +5476,8 @@ func (RouteDestinationSubnet) isRouteDestinationVariant() {}
 // When traffic is to be sent to a destination that is within a given `RouteDestination`, the corresponding `RouterRoute`
 // applies, and traffic will be forward to the `RouteTarget` for that rule.
 type RouteDestination struct {
-	Value routeDestinationVariant `json:"value,omitzero" yaml:"value,omitzero"`
-}
-
-// UnmarshalJSON implements json.Unmarshaler for RouteDestination, selecting the correct
-// variant of the Value field based on the type discriminator.
-func (v *RouteDestination) UnmarshalJSON(data []byte) error {
-	var raw struct {
-		Type  RouteDestinationType `json:"type"`
-		Value json.RawMessage      `json:"value"`
-	}
-	if err := json.Unmarshal(data, &raw); err != nil {
-		return fmt.Errorf("unmarshaling RouteDestination: %w\nJSON: %s", err, string(data))
-	}
-	switch raw.Type {
-	case RouteDestinationTypeIp:
-		var val RouteDestinationIp
-		if err := json.Unmarshal(data, &val); err != nil {
-			return fmt.Errorf("unmarshaling RouteDestination variant RouteDestinationIp: %w\nJSON: %s", err, string(data))
-		}
-		v.Value = val
-	case RouteDestinationTypeIpNet:
-		var val RouteDestinationIpNet
-		if err := json.Unmarshal(data, &val); err != nil {
-			return fmt.Errorf("unmarshaling RouteDestination variant RouteDestinationIpNet: %w\nJSON: %s", err, string(data))
-		}
-		v.Value = val
-	case RouteDestinationTypeVpc:
-		var val RouteDestinationVpc
-		if err := json.Unmarshal(data, &val); err != nil {
-			return fmt.Errorf("unmarshaling RouteDestination variant RouteDestinationVpc: %w\nJSON: %s", err, string(data))
-		}
-		v.Value = val
-	case RouteDestinationTypeSubnet:
-		var val RouteDestinationSubnet
-		if err := json.Unmarshal(data, &val); err != nil {
-			return fmt.Errorf("unmarshaling RouteDestination variant RouteDestinationSubnet: %w\nJSON: %s", err, string(data))
-		}
-		v.Value = val
-	}
-	return nil
-}
-
-// MarshalJSON implements json.Marshaler for RouteDestination, setting the type
-// discriminator based on the Value variant type.
-func (v RouteDestination) MarshalJSON() ([]byte, error) {
-	var discriminator RouteDestinationType
-	var innerValue any
-	switch val := v.Value.(type) {
-	case RouteDestinationIp:
-		discriminator = RouteDestinationTypeIp
-		innerValue = val.Value
-	case RouteDestinationIpNet:
-		discriminator = RouteDestinationTypeIpNet
-		innerValue = val.Value
-	case RouteDestinationVpc:
-		discriminator = RouteDestinationTypeVpc
-		innerValue = val.Value
-	case RouteDestinationSubnet:
-		discriminator = RouteDestinationTypeSubnet
-		innerValue = val.Value
-	}
-	return json.Marshal(struct {
-		Type  RouteDestinationType `json:"type"`
-		Value any                  `json:"value,omitzero"`
-	}{
-		Type:  discriminator,
-		Value: innerValue,
-	})
+	Type  RouteDestinationType `json:"type" yaml:"type"`
+	Value string               `json:"value,omitempty" yaml:"value,omitempty"`
 }
 
 // RouteTargetType is the type definition for a RouteTargetType.
@@ -7647,138 +7357,17 @@ type VpcFirewallRuleFilter struct {
 	Protocols []VpcFirewallRuleProtocol `json:"protocols" yaml:"protocols"`
 }
 
-// vpcFirewallRuleHostFilterVariant is an interface for VpcFirewallRuleHostFilter variants.
-type vpcFirewallRuleHostFilterVariant interface {
-	isVpcFirewallRuleHostFilterVariant()
-}
-
 // VpcFirewallRuleHostFilterType is the type definition for a VpcFirewallRuleHostFilterType.
 type VpcFirewallRuleHostFilterType string
-
-// VpcFirewallRuleHostFilterVpc is the rule applies to traffic from/to all instances in the VPC
-type VpcFirewallRuleHostFilterVpc struct {
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
-	Value Name `json:"value,omitzero" yaml:"value,omitzero"`
-}
-
-func (VpcFirewallRuleHostFilterVpc) isVpcFirewallRuleHostFilterVariant() {}
-
-// VpcFirewallRuleHostFilterSubnet is the rule applies to traffic from/to all instances in the VPC Subnet
-type VpcFirewallRuleHostFilterSubnet struct {
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
-	Value Name `json:"value,omitzero" yaml:"value,omitzero"`
-}
-
-func (VpcFirewallRuleHostFilterSubnet) isVpcFirewallRuleHostFilterVariant() {}
-
-// VpcFirewallRuleHostFilterInstance is the rule applies to traffic from/to this specific instance
-type VpcFirewallRuleHostFilterInstance struct {
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
-	Value Name `json:"value,omitzero" yaml:"value,omitzero"`
-}
-
-func (VpcFirewallRuleHostFilterInstance) isVpcFirewallRuleHostFilterVariant() {}
-
-// VpcFirewallRuleHostFilterIp is the rule applies to traffic from/to a specific IP address
-type VpcFirewallRuleHostFilterIp struct {
-	Value string `json:"value,omitempty" yaml:"value,omitempty"`
-}
-
-func (VpcFirewallRuleHostFilterIp) isVpcFirewallRuleHostFilterVariant() {}
-
-// VpcFirewallRuleHostFilterIpNet is the rule applies to traffic from/to a specific IP subnet
-type VpcFirewallRuleHostFilterIpNet struct {
-	Value IpNet `json:"value,omitzero" yaml:"value,omitzero"`
-}
-
-func (VpcFirewallRuleHostFilterIpNet) isVpcFirewallRuleHostFilterVariant() {}
 
 // VpcFirewallRuleHostFilter is the `VpcFirewallRuleHostFilter` is used to filter traffic on the basis of
 // its source or destination host.
 type VpcFirewallRuleHostFilter struct {
-	Value vpcFirewallRuleHostFilterVariant `json:"value,omitzero" yaml:"value,omitzero"`
-}
-
-// UnmarshalJSON implements json.Unmarshaler for VpcFirewallRuleHostFilter, selecting the correct
-// variant of the Value field based on the type discriminator.
-func (v *VpcFirewallRuleHostFilter) UnmarshalJSON(data []byte) error {
-	var raw struct {
-		Type  VpcFirewallRuleHostFilterType `json:"type"`
-		Value json.RawMessage               `json:"value"`
-	}
-	if err := json.Unmarshal(data, &raw); err != nil {
-		return fmt.Errorf("unmarshaling VpcFirewallRuleHostFilter: %w\nJSON: %s", err, string(data))
-	}
-	switch raw.Type {
-	case VpcFirewallRuleHostFilterTypeVpc:
-		var val VpcFirewallRuleHostFilterVpc
-		if err := json.Unmarshal(data, &val); err != nil {
-			return fmt.Errorf("unmarshaling VpcFirewallRuleHostFilter variant VpcFirewallRuleHostFilterVpc: %w\nJSON: %s", err, string(data))
-		}
-		v.Value = val
-	case VpcFirewallRuleHostFilterTypeSubnet:
-		var val VpcFirewallRuleHostFilterSubnet
-		if err := json.Unmarshal(data, &val); err != nil {
-			return fmt.Errorf("unmarshaling VpcFirewallRuleHostFilter variant VpcFirewallRuleHostFilterSubnet: %w\nJSON: %s", err, string(data))
-		}
-		v.Value = val
-	case VpcFirewallRuleHostFilterTypeInstance:
-		var val VpcFirewallRuleHostFilterInstance
-		if err := json.Unmarshal(data, &val); err != nil {
-			return fmt.Errorf("unmarshaling VpcFirewallRuleHostFilter variant VpcFirewallRuleHostFilterInstance: %w\nJSON: %s", err, string(data))
-		}
-		v.Value = val
-	case VpcFirewallRuleHostFilterTypeIp:
-		var val VpcFirewallRuleHostFilterIp
-		if err := json.Unmarshal(data, &val); err != nil {
-			return fmt.Errorf("unmarshaling VpcFirewallRuleHostFilter variant VpcFirewallRuleHostFilterIp: %w\nJSON: %s", err, string(data))
-		}
-		v.Value = val
-	case VpcFirewallRuleHostFilterTypeIpNet:
-		var val VpcFirewallRuleHostFilterIpNet
-		if err := json.Unmarshal(data, &val); err != nil {
-			return fmt.Errorf("unmarshaling VpcFirewallRuleHostFilter variant VpcFirewallRuleHostFilterIpNet: %w\nJSON: %s", err, string(data))
-		}
-		v.Value = val
-	}
-	return nil
-}
-
-// MarshalJSON implements json.Marshaler for VpcFirewallRuleHostFilter, setting the type
-// discriminator based on the Value variant type.
-func (v VpcFirewallRuleHostFilter) MarshalJSON() ([]byte, error) {
-	var discriminator VpcFirewallRuleHostFilterType
-	var innerValue any
-	switch val := v.Value.(type) {
-	case VpcFirewallRuleHostFilterVpc:
-		discriminator = VpcFirewallRuleHostFilterTypeVpc
-		innerValue = val.Value
-	case VpcFirewallRuleHostFilterSubnet:
-		discriminator = VpcFirewallRuleHostFilterTypeSubnet
-		innerValue = val.Value
-	case VpcFirewallRuleHostFilterInstance:
-		discriminator = VpcFirewallRuleHostFilterTypeInstance
-		innerValue = val.Value
-	case VpcFirewallRuleHostFilterIp:
-		discriminator = VpcFirewallRuleHostFilterTypeIp
-		innerValue = val.Value
-	case VpcFirewallRuleHostFilterIpNet:
-		discriminator = VpcFirewallRuleHostFilterTypeIpNet
-		innerValue = val.Value
-	}
-	return json.Marshal(struct {
-		Type  VpcFirewallRuleHostFilterType `json:"type"`
-		Value any                           `json:"value,omitzero"`
-	}{
-		Type:  discriminator,
-		Value: innerValue,
-	})
+	Type VpcFirewallRuleHostFilterType `json:"type" yaml:"type"`
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
+	Value Name `json:"value,omitzero" yaml:"value,omitzero"`
 }
 
 // VpcFirewallRuleProtocolType is the type definition for a VpcFirewallRuleProtocolType.
@@ -7793,140 +7382,19 @@ type VpcFirewallRuleProtocol struct {
 // VpcFirewallRuleStatus is the type definition for a VpcFirewallRuleStatus.
 type VpcFirewallRuleStatus string
 
-// vpcFirewallRuleTargetVariant is an interface for VpcFirewallRuleTarget variants.
-type vpcFirewallRuleTargetVariant interface {
-	isVpcFirewallRuleTargetVariant()
-}
-
 // VpcFirewallRuleTargetType is the type definition for a VpcFirewallRuleTargetType.
 type VpcFirewallRuleTargetType string
-
-// VpcFirewallRuleTargetVpc is the rule applies to all instances in the VPC
-type VpcFirewallRuleTargetVpc struct {
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
-	Value Name `json:"value,omitzero" yaml:"value,omitzero"`
-}
-
-func (VpcFirewallRuleTargetVpc) isVpcFirewallRuleTargetVariant() {}
-
-// VpcFirewallRuleTargetSubnet is the rule applies to all instances in the VPC Subnet
-type VpcFirewallRuleTargetSubnet struct {
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
-	Value Name `json:"value,omitzero" yaml:"value,omitzero"`
-}
-
-func (VpcFirewallRuleTargetSubnet) isVpcFirewallRuleTargetVariant() {}
-
-// VpcFirewallRuleTargetInstance is the rule applies to this specific instance
-type VpcFirewallRuleTargetInstance struct {
-	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
-	Value Name `json:"value,omitzero" yaml:"value,omitzero"`
-}
-
-func (VpcFirewallRuleTargetInstance) isVpcFirewallRuleTargetVariant() {}
-
-// VpcFirewallRuleTargetIp is the rule applies to a specific IP address
-type VpcFirewallRuleTargetIp struct {
-	Value string `json:"value,omitempty" yaml:"value,omitempty"`
-}
-
-func (VpcFirewallRuleTargetIp) isVpcFirewallRuleTargetVariant() {}
-
-// VpcFirewallRuleTargetIpNet is the rule applies to a specific IP subnet
-type VpcFirewallRuleTargetIpNet struct {
-	Value IpNet `json:"value,omitzero" yaml:"value,omitzero"`
-}
-
-func (VpcFirewallRuleTargetIpNet) isVpcFirewallRuleTargetVariant() {}
 
 // VpcFirewallRuleTarget is a `VpcFirewallRuleTarget` is used to specify the set of instances to which a
 // firewall rule applies. You can target instances directly by name, or specify a VPC, VPC subnet, IP, or IP
 // subnet, which will apply the rule to traffic going to all matching instances. Targets are additive: the rule
 // applies to instances matching ANY target.
 type VpcFirewallRuleTarget struct {
-	Value vpcFirewallRuleTargetVariant `json:"value,omitzero" yaml:"value,omitzero"`
-}
-
-// UnmarshalJSON implements json.Unmarshaler for VpcFirewallRuleTarget, selecting the correct
-// variant of the Value field based on the type discriminator.
-func (v *VpcFirewallRuleTarget) UnmarshalJSON(data []byte) error {
-	var raw struct {
-		Type  VpcFirewallRuleTargetType `json:"type"`
-		Value json.RawMessage           `json:"value"`
-	}
-	if err := json.Unmarshal(data, &raw); err != nil {
-		return fmt.Errorf("unmarshaling VpcFirewallRuleTarget: %w\nJSON: %s", err, string(data))
-	}
-	switch raw.Type {
-	case VpcFirewallRuleTargetTypeVpc:
-		var val VpcFirewallRuleTargetVpc
-		if err := json.Unmarshal(data, &val); err != nil {
-			return fmt.Errorf("unmarshaling VpcFirewallRuleTarget variant VpcFirewallRuleTargetVpc: %w\nJSON: %s", err, string(data))
-		}
-		v.Value = val
-	case VpcFirewallRuleTargetTypeSubnet:
-		var val VpcFirewallRuleTargetSubnet
-		if err := json.Unmarshal(data, &val); err != nil {
-			return fmt.Errorf("unmarshaling VpcFirewallRuleTarget variant VpcFirewallRuleTargetSubnet: %w\nJSON: %s", err, string(data))
-		}
-		v.Value = val
-	case VpcFirewallRuleTargetTypeInstance:
-		var val VpcFirewallRuleTargetInstance
-		if err := json.Unmarshal(data, &val); err != nil {
-			return fmt.Errorf("unmarshaling VpcFirewallRuleTarget variant VpcFirewallRuleTargetInstance: %w\nJSON: %s", err, string(data))
-		}
-		v.Value = val
-	case VpcFirewallRuleTargetTypeIp:
-		var val VpcFirewallRuleTargetIp
-		if err := json.Unmarshal(data, &val); err != nil {
-			return fmt.Errorf("unmarshaling VpcFirewallRuleTarget variant VpcFirewallRuleTargetIp: %w\nJSON: %s", err, string(data))
-		}
-		v.Value = val
-	case VpcFirewallRuleTargetTypeIpNet:
-		var val VpcFirewallRuleTargetIpNet
-		if err := json.Unmarshal(data, &val); err != nil {
-			return fmt.Errorf("unmarshaling VpcFirewallRuleTarget variant VpcFirewallRuleTargetIpNet: %w\nJSON: %s", err, string(data))
-		}
-		v.Value = val
-	}
-	return nil
-}
-
-// MarshalJSON implements json.Marshaler for VpcFirewallRuleTarget, setting the type
-// discriminator based on the Value variant type.
-func (v VpcFirewallRuleTarget) MarshalJSON() ([]byte, error) {
-	var discriminator VpcFirewallRuleTargetType
-	var innerValue any
-	switch val := v.Value.(type) {
-	case VpcFirewallRuleTargetVpc:
-		discriminator = VpcFirewallRuleTargetTypeVpc
-		innerValue = val.Value
-	case VpcFirewallRuleTargetSubnet:
-		discriminator = VpcFirewallRuleTargetTypeSubnet
-		innerValue = val.Value
-	case VpcFirewallRuleTargetInstance:
-		discriminator = VpcFirewallRuleTargetTypeInstance
-		innerValue = val.Value
-	case VpcFirewallRuleTargetIp:
-		discriminator = VpcFirewallRuleTargetTypeIp
-		innerValue = val.Value
-	case VpcFirewallRuleTargetIpNet:
-		discriminator = VpcFirewallRuleTargetTypeIpNet
-		innerValue = val.Value
-	}
-	return json.Marshal(struct {
-		Type  VpcFirewallRuleTargetType `json:"type"`
-		Value any                       `json:"value,omitzero"`
-	}{
-		Type:  discriminator,
-		Value: innerValue,
-	})
+	Type VpcFirewallRuleTargetType `json:"type" yaml:"type"`
+	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
+	Value Name `json:"value,omitzero" yaml:"value,omitzero"`
 }
 
 // VpcFirewallRuleUpdate is a single rule in a VPC firewall

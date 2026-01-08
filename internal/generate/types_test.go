@@ -375,34 +375,16 @@ func Test_createOneOf(t *testing.T) {
 				},
 			},
 			typeName: "ImageSource",
+			// When all variants have string-based value types, we simplify to a flat struct
 			wantTypes: []TypeTemplate{
-				{
-					Description: "// imageSourceVariant is an interface for ImageSource variants.",
-					Name:        "imageSourceVariant",
-					Type:        "interface",
-					OneOfMarker: "isImageSourceVariant",
-				},
 				{Description: "// ImageSourceType is the type definition for a ImageSourceType.", Name: "ImageSourceType", Type: "string"},
-				{
-					Description: "// ImageSourceSnapshot is the type definition for a ImageSourceSnapshot.",
-					Name:        "ImageSourceSnapshot",
-					Type:        "struct",
-					Fields:      []TypeField{{Name: "Id", Type: "string", MarshalKey: "id"}},
-					OneOfMarker: "isImageSourceVariant",
-				},
 				{
 					Description: "// ImageSource is the source of the underlying image.",
 					Name:        "ImageSource",
 					Type:        "struct",
 					Fields: []TypeField{
-						{Name: "Id", Type: "imageSourceVariant", MarshalKey: "id", OmitDirective: "omitzero"},
-					},
-					OneOfInfo: &OneOfInfo{
-						Discriminator: Discriminator{Field: "Type", Key: "type", Type: "ImageSourceType"},
-						ValueField:    "Id",
-						ValueKey:      "id",
-						ValueType:     "imageSourceVariant",
-						Variants:      []OneOfVariant{{EnumValue: "ImageSourceTypeSnapshot", ImplType: "ImageSourceSnapshot"}},
+						{Name: "Type", Type: "ImageSourceType", MarshalKey: "type", Required: true},
+						{Name: "Id", Type: "string", MarshalKey: "id"},
 					},
 				},
 			},
