@@ -60,6 +60,33 @@ type TypeTemplate struct {
 	Type string
 	// Fields holds the information for the field
 	Fields []TypeField
+	// OneOfMarker is the marker method name for interface types (e.g., "isAddressSelectorVariant")
+	OneOfMarker string
+	// OneOfMarkerType is the interface type name for variant structs (e.g.,
+	// "addressSelectorVariant")
+	OneOfMarkerType string
+	// OneOfDiscriminator is the discriminator property name for oneOf types (e.g., "type")
+	OneOfDiscriminator string
+	// OneOfDiscriminatorMethod is the method name that returns the discriminator (e.g., "Type")
+	OneOfDiscriminatorMethod string
+	// OneOfDiscriminatorType is the type of the discriminator (e.g., "FieldValueType")
+	OneOfDiscriminatorType string
+	// OneOfValueField is the value property name for oneOf types (e.g., "value")
+	OneOfValueField string
+	// OneOfValueFieldName is the Go field name for the value field (e.g., "Value")
+	OneOfValueFieldName string
+	// OneOfVariantType is the interface type for the Value field (e.g., "addressSelectorVariant")
+	OneOfVariantType string
+	// OneOfVariants holds discriminator value -> variant type name mapping for JSON
+	// marshal/unmarshal
+	OneOfVariants []OneOfVariant
+}
+
+// OneOfVariant maps a discriminator value to its variant type
+type OneOfVariant struct {
+	DiscriminatorValue     string
+	DiscriminatorEnumValue string
+	TypeName               string
 }
 
 // Render renders the TypeTemplate to a Go type.
@@ -746,27 +773,17 @@ func createAllOf(
 }
 
 func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []EnumTemplate) {
-	enumTpls := make([]EnumTemplate, 0)
-	typeTpls := make([]TypeTemplate, 0)
-
-	// Loop over variants, creating types and enums for nested types, and gathering metadata about
-	// the oneOf overall.
-
-	// Set of candidate discriminator keys. There must be exactly zero or one discriminator key.
+	// First pass: identify discriminator key and find properties with multiple types across
+	// variants.
 	discriminatorKeys := map[string]struct{}{}
-	// Map of properties to sets of variant types. We use this to identify fields with multiple
-	// types across variants.
 	propToVariantTypes := map[string]map[string]struct{}{}
 
 	for _, variantRef := range s.OneOf {
-		enumField := ""
 		for _, propName := range sortedKeys(variantRef.Value.Properties) {
 			propRef := variantRef.Value.Properties[propName]
-			propField := strcase.ToCamel(propName)
 
 			if len(propRef.Value.Enum) == 1 {
 				discriminatorKeys[propName] = struct{}{}
-				enumField = strcase.ToCamel(propRef.Value.Enum[0].(string))
 			} else if len(propRef.Value.Enum) > 1 {
 				fmt.Printf(
 					"[WARN] TODO: oneOf for %q -> %q enum %#v\n",
@@ -774,18 +791,14 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 					propName,
 					propRef.Value.Enum,
 				)
-			} else if propRef.Value.Enum == nil && len(variantRef.Value.Properties) == 1 {
-				enumField = propField
 			}
+
 			if _, ok := propToVariantTypes[propName]; !ok {
 				propToVariantTypes[propName] = map[string]struct{}{}
 			}
 			goType := convertToValidGoType(propName, typeName, propRef)
 			propToVariantTypes[propName][goType] = struct{}{}
 		}
-		tt, et := populateTypeTemplates(name, variantRef.Value, enumField)
-		typeTpls = append(typeTpls, tt...)
-		enumTpls = append(enumTpls, et...)
 	}
 
 	// Check invariant: there must be exactly zero or one discriminator field.
@@ -807,7 +820,175 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 		}
 	}
 
-	// Build the struct type for the oneOf field, if defined.
+	// If we have a discriminator and a multi-type property, use interface + variants pattern.
+	// This gives us type safety instead of using `any`.
+	if len(discriminatorKeys) == 1 && len(multiTypeProps) == 1 {
+		var discriminatorKey, valuePropertyName string
+		for k := range discriminatorKeys {
+			discriminatorKey = k
+		}
+		for k := range multiTypeProps {
+			valuePropertyName = k
+		}
+		return createInterfaceOneOf(s, typeName, discriminatorKey, valuePropertyName)
+	}
+
+	// Otherwise, use flat struct pattern.
+	return createFlatOneOf(s, name, typeName, multiTypeProps)
+}
+
+// createInterfaceOneOf creates a oneOf type using an interface + variant wrapper types.
+// This is used when variants have the same property name but different types.
+func createInterfaceOneOf(
+	s *openapi3.Schema,
+	typeName, discriminatorKey, valuePropertyName string,
+) ([]TypeTemplate, []EnumTemplate) {
+	enumTpls := make([]EnumTemplate, 0)
+	typeTpls := make([]TypeTemplate, 0)
+
+	discriminatorType := typeName + strcase.ToCamel(discriminatorKey)
+
+	// Create the variant interface
+	interfaceName := toLowerFirstLetter(typeName) + "Variant"
+	markerMethod := "is" + typeName + "Variant"
+
+	interfaceTpl := TypeTemplate{
+		Description: fmt.Sprintf("// %s is implemented by %s variants.", interfaceName, typeName),
+		Name:        interfaceName,
+		Type:        "interface",
+		OneOfMarker: markerMethod,
+	}
+	typeTpls = append(typeTpls, interfaceTpl)
+
+	// Collect variant info for the main type's JSON methods
+	var variants []OneOfVariant
+
+	// Create discriminator enum type and variant wrapper types
+	for _, variantRef := range s.OneOf {
+		// Find the discriminator value for this variant
+		discRef, ok := variantRef.Value.Properties[discriminatorKey]
+		if !ok || len(discRef.Value.Enum) != 1 {
+			continue
+		}
+		discValue := discRef.Value.Enum[0].(string)
+
+		// Create enum constant for discriminator
+		enums, tt, et := createStringEnum(
+			discRef.Value,
+			collectEnumStringTypes,
+			discriminatorType,
+			discriminatorType,
+		)
+		collectEnumStringTypes = enums
+		typeTpls = append(typeTpls, tt...)
+		enumTpls = append(enumTpls, et...)
+
+		// Create variant wrapper type (e.g., AddressSelectorExplicit)
+		variantTypeName := typeName + strcase.ToCamel(discValue)
+
+		// Track variant for JSON methods
+		variants = append(variants, OneOfVariant{
+			DiscriminatorValue:     discValue,
+			DiscriminatorEnumValue: strcase.ToCamel(discValue),
+			TypeName:               variantTypeName,
+		})
+
+		// Find the value property in this variant
+		valueRef, hasValue := variantRef.Value.Properties[valuePropertyName]
+
+		var fields []TypeField
+		if hasValue {
+			valueType := convertToValidGoType(valuePropertyName, typeName, valueRef)
+
+			// If the value is an inline object (not a $ref), generate its type
+			if valueRef.Ref == "" && valueRef.Value != nil && valueRef.Value.Type != nil &&
+				valueRef.Value.Type.Is("object") {
+				inlineTypeName := typeName + strcase.ToCamel(valuePropertyName)
+				tt, et := populateTypeTemplates(inlineTypeName, valueRef.Value, "")
+				typeTpls = append(typeTpls, tt...)
+				enumTpls = append(enumTpls, et...)
+			}
+
+			isRequired := slices.Contains(variantRef.Value.Required, valuePropertyName)
+			fields = []TypeField{
+				{
+					Name:       strcase.ToCamel(valuePropertyName),
+					Type:       valueType,
+					MarshalKey: valuePropertyName,
+					Schema:     valueRef,
+					Required:   isRequired,
+				},
+			}
+		}
+
+		variantTpl := TypeTemplate{
+			Description:     fmt.Sprintf("// %s is a variant of %s.", variantTypeName, typeName),
+			Name:            variantTypeName,
+			Type:            "struct",
+			Fields:          fields,
+			OneOfMarker:     markerMethod,
+			OneOfMarkerType: interfaceName,
+		}
+		typeTpls = append(typeTpls, variantTpl)
+	}
+
+	// Create the main struct with only the interface-typed value field
+	// The discriminator is derived via a Type() method
+	mainFields := []TypeField{
+		{
+			Name:       strcase.ToCamel(valuePropertyName),
+			Type:       interfaceName,
+			MarshalKey: valuePropertyName,
+		},
+	}
+
+	mainTpl := TypeTemplate{
+		Description:              formatTypeDescription(typeName, s),
+		Name:                     typeName,
+		Type:                     "struct",
+		Fields:                   mainFields,
+		OneOfDiscriminator:       discriminatorKey,
+		OneOfDiscriminatorMethod: strcase.ToCamel(discriminatorKey),
+		OneOfDiscriminatorType:   discriminatorType,
+		OneOfValueField:          valuePropertyName,
+		OneOfValueFieldName:      strcase.ToCamel(valuePropertyName),
+		OneOfVariantType:         interfaceName,
+		OneOfVariants:            variants,
+	}
+	typeTpls = append(typeTpls, mainTpl)
+
+	return typeTpls, enumTpls
+}
+
+// createFlatOneOf creates a oneOf type using a flat struct with all properties.
+// Multi-type properties become `any`.
+func createFlatOneOf(
+	s *openapi3.Schema,
+	name, typeName string,
+	multiTypeProps map[string]struct{},
+) ([]TypeTemplate, []EnumTemplate) {
+	enumTpls := make([]EnumTemplate, 0)
+	typeTpls := make([]TypeTemplate, 0)
+
+	// Create variant types for nested enums
+	for _, variantRef := range s.OneOf {
+		enumField := ""
+		for _, propName := range sortedKeys(variantRef.Value.Properties) {
+			propRef := variantRef.Value.Properties[propName]
+			propField := strcase.ToCamel(propName)
+
+			if len(propRef.Value.Enum) == 1 {
+				enumField = strcase.ToCamel(propRef.Value.Enum[0].(string))
+			} else if propRef.Value.Enum == nil && len(variantRef.Value.Properties) == 1 {
+				enumField = propField
+			}
+		}
+		tt, et := populateTypeTemplates(name, variantRef.Value, enumField)
+		typeTpls = append(typeTpls, tt...)
+		enumTpls = append(enumTpls, et...)
+	}
+
+	// Build the struct type for the oneOf field
 	oneOfFields := []TypeField{}
 	seenFields := map[string]struct{}{}
 	for _, variantRef := range s.OneOf {

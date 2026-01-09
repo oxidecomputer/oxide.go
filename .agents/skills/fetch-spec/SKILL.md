@@ -3,6 +3,7 @@
 ## Description
 
 Use this skill when you need to look up details about the Oxide API, including:
+
 - Finding endpoint definitions, paths, or HTTP methods
 - Looking up schema/type definitions from the API spec
 - Understanding request/response formats for API operations

@@ -520,45 +520,61 @@ func Test_createOneOf(t *testing.T) {
 			},
 			typeName: "IntOrString",
 			wantTypes: []TypeTemplate{
+				// Interface for variant types
+				{
+					Description: "// intOrStringVariant is implemented by IntOrString variants.",
+					Name:        "intOrStringVariant",
+					Type:        "interface",
+					OneOfMarker: "isIntOrStringVariant",
+				},
 				{
 					Description: "// IntOrStringType is the type definition for a IntOrStringType.",
 					Name:        "IntOrStringType",
 					Type:        "string",
 				},
 				{
-					Description: "// IntOrStringInt is the type definition for a IntOrStringInt.\n//\n// Required fields:\n// - Type\n// - Value",
+					Description: "// IntOrStringInt is a variant of IntOrString.",
 					Name:        "IntOrStringInt",
 					Type:        "struct",
 					Fields: []TypeField{
-						{Name: "Type", Type: "IntOrStringType", MarshalKey: "type", Required: true},
 						{Name: "Value", Type: "*int", MarshalKey: "value", Required: true},
 					},
+					OneOfMarker:     "isIntOrStringVariant",
+					OneOfMarkerType: "intOrStringVariant",
 				},
 				{
-					Description: "// IntOrStringString is the type definition for a IntOrStringString.\n//\n// Required fields:\n// - Type\n// - Value",
+					Description: "// IntOrStringString is a variant of IntOrString.",
 					Name:        "IntOrStringString",
 					Type:        "struct",
 					Fields: []TypeField{
-						{Name: "Type", Type: "IntOrStringType", MarshalKey: "type", Required: true},
 						{Name: "Value", Type: "string", MarshalKey: "value", Required: true},
 					},
+					OneOfMarker:     "isIntOrStringVariant",
+					OneOfMarkerType: "intOrStringVariant",
 				},
 				{
 					Description: "// IntOrString is a value that can be an int or a string.",
 					Name:        "IntOrString",
 					Type:        "struct",
 					Fields: []TypeField{
+						{Name: "Value", Type: "intOrStringVariant", MarshalKey: "value"},
+					},
+					OneOfDiscriminator:       "type",
+					OneOfDiscriminatorMethod: "Type",
+					OneOfDiscriminatorType:   "IntOrStringType",
+					OneOfValueField:          "value",
+					OneOfValueFieldName:      "Value",
+					OneOfVariantType:         "intOrStringVariant",
+					OneOfVariants: []OneOfVariant{
 						{
-							Name:                "Type",
-							Type:                "IntOrStringType",
-							MarshalKey:          "type",
-							FallbackDescription: true,
+							DiscriminatorValue:     "int",
+							DiscriminatorEnumValue: "Int",
+							TypeName:               "IntOrStringInt",
 						},
 						{
-							Name:                "Value",
-							Type:                "any",
-							MarshalKey:          "value",
-							FallbackDescription: true,
+							DiscriminatorValue:     "string",
+							DiscriminatorEnumValue: "String",
+							TypeName:               "IntOrStringString",
 						},
 					},
 				},
