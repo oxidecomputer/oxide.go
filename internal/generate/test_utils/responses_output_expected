@@ -8,3 +8,4 @@ package oxide
 
 // ErrorResponse is the response given when error
 type ErrorResponse Error
+
