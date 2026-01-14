@@ -35,11 +35,9 @@ $(NAME): $(wildcard *.go) $(wildcard */*.go)
 all: generate test fmt lint staticcheck vet ## Runs a fmt, lint, test, staticcheck, and vet.
 
 .PHONY: fmt
-fmt: ## Verifies all files have been `gofmt`ed.
-	@ echo "+ Verifying all files have been gofmt-ed..."
-	@if [[ ! -z "$(shell gofmt -s -d . | grep -v -e internal/generate/test_generated -e internal/generate/test_utils | tee /dev/stderr)" ]]; then \
-		exit 1; \
-	fi
+fmt: tools ## Formats Go code including long line wrapping.
+	@ echo "+ Formatting Go code..."
+	@ $(GOBIN)/golangci-lint fmt
 
 .PHONY: fmt-md
 fmt-md: ## Formats markdown files with prettier.
@@ -49,7 +47,7 @@ fmt-md: ## Formats markdown files with prettier.
 .PHONY: lint
 lint: tools ## Verifies `golangci-lint` passes.
 	@ echo "+ Running Go linters..."
-	@ $(GOBIN)/golangci-lint run -E gofmt
+	@ $(GOBIN)/golangci-lint run
 
 .PHONY: test
 test: ## Runs the go tests.
@@ -90,7 +88,7 @@ help:
 # want to run the linters or generate the SDK.
 VERSION_DIR:=$(GOBIN)/versions
 VERSION_GOIMPORTS:=v0.33.0
-VERSION_GOLANGCILINT:=v1.64.8
+VERSION_GOLANGCILINT:=v2.8.0
 VERSION_STATICCHECK:=2025.1.1
 VERSION_WHATSIT:=053446d
 

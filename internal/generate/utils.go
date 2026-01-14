@@ -128,7 +128,11 @@ func schemaValueToGoType(schemaValue *openapi3.Schema, property string) string {
 		value := schemaValue.AllOf[0]
 		reference := getReferenceSchema(value)
 		if reference == "" {
-			fmt.Printf("[WARN] TODO: handle allOf %+v for %q, marking as any for now\n", value, property)
+			fmt.Printf(
+				"[WARN] TODO: handle allOf %+v for %q, marking as any for now\n",
+				value,
+				property,
+			)
 			return "any"
 		}
 		if schemaValue.Nullable {
@@ -178,7 +182,11 @@ func schemaValueToGoType(schemaValue *openapi3.Schema, property string) string {
 		return fmt.Sprintf("[]%v", schemaType)
 	}
 
-	fmt.Printf("[WARN] TODO: handle type %q for %q, marking as any for now\n", schemaValue.Type, property)
+	fmt.Printf(
+		"[WARN] TODO: handle type %q for %q, marking as any for now\n",
+		schemaValue.Type,
+		property,
+	)
 	return "any"
 }
 

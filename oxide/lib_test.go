@@ -152,7 +152,14 @@ func Test_buildRequest(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got, err := c.buildRequest(context.TODO(), tt.args.body, tt.args.method, tt.args.uri, tt.args.params, tt.args.queries)
+			got, err := c.buildRequest(
+				context.TODO(),
+				tt.args.body,
+				tt.args.method,
+				tt.args.uri,
+				tt.args.params,
+				tt.args.queries,
+			)
 			if err != nil {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
@@ -492,7 +499,11 @@ func Test_NewClient(t *testing.T) {
 			c, err := NewClient(opts...)
 
 			if testCase.expectedError != "" {
-				assert.EqualError(t, err, strings.ReplaceAll(testCase.expectedError, "<OXIDE_DIR>", oxideDir))
+				assert.EqualError(
+					t,
+					err,
+					strings.ReplaceAll(testCase.expectedError, "<OXIDE_DIR>", oxideDir),
+				)
 			} else {
 				assert.NoError(t, err)
 			}
@@ -520,8 +531,18 @@ host = "http://other-host"
 token = "other-token"
 user = "other-user"
 `)
-	require.NoError(t, os.WriteFile(filepath.Join(oxideDir, "credentials.toml"), credentials, 0o600))
-	require.NoError(t, os.WriteFile(filepath.Join(oxideDir, "config.toml"), []byte(`default-profile = "file"`), 0o644))
+	require.NoError(
+		t,
+		os.WriteFile(filepath.Join(oxideDir, "credentials.toml"), credentials, 0o600),
+	)
+	require.NoError(
+		t,
+		os.WriteFile(
+			filepath.Join(oxideDir, "config.toml"),
+			[]byte(`default-profile = "file"`),
+			0o644,
+		),
+	)
 
 	return tmpDir
 }
@@ -560,12 +581,14 @@ func Test_MakeRequest(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			var capturedRequest *http.Request
-			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				capturedRequest = r
-				w.WriteHeader(http.StatusOK)
-				_, err := w.Write([]byte(`{"status":"ok"}`))
-				require.NoError(t, err)
-			}))
+			server := httptest.NewServer(
+				http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					capturedRequest = r
+					w.WriteHeader(http.StatusOK)
+					_, err := w.Write([]byte(`{"status":"ok"}`))
+					require.NoError(t, err)
+				}),
+			)
 			defer server.Close()
 
 			client, err := NewClient(

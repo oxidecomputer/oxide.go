@@ -57,7 +57,10 @@ func Test_generateResponses(t *testing.T) {
 				return
 			}
 
-			if err := compareFiles("test_utils/responses_output_expected", tt.args.file); err != nil {
+			if err := compareFiles(
+				"test_utils/responses_output_expected",
+				tt.args.file,
+			); err != nil {
 				t.Error(err)
 			}
 		})

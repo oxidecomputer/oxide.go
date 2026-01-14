@@ -24,14 +24,24 @@ type HTTPError struct {
 func (err HTTPError) Error() string {
 	output := new(bytes.Buffer)
 	if err.HTTPResponse.Request.URL != nil {
-		fmt.Fprintf(output, "%s %s\n", err.HTTPResponse.Request.Method, err.HTTPResponse.Request.URL)
+		fmt.Fprintf(
+			output,
+			"%s %s\n",
+			err.HTTPResponse.Request.Method,
+			err.HTTPResponse.Request.URL,
+		)
 	} else {
 		// This case is extremely unlikely, just adding to avoid a panic due to a nil pointer
 		fmt.Fprintf(output, "%s <URL unavailable>\n", err.HTTPResponse.Request.Method)
 	}
 	fmt.Fprintln(output, "----------- RESPONSE -----------")
 	if err.ErrorResponse != nil {
-		fmt.Fprintf(output, "Status: %d %s\n", err.HTTPResponse.StatusCode, err.ErrorResponse.ErrorCode)
+		fmt.Fprintf(
+			output,
+			"Status: %d %s\n",
+			err.HTTPResponse.StatusCode,
+			err.ErrorResponse.ErrorCode,
+		)
 		fmt.Fprintf(output, "Message: %s\n", err.ErrorResponse.Message)
 		fmt.Fprintf(output, "RequestID: %s\n", err.ErrorResponse.RequestId)
 	} else {
