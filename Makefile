@@ -41,6 +41,11 @@ fmt: ## Verifies all files have been `gofmt`ed.
 		exit 1; \
 	fi
 
+.PHONY: fmt-md
+fmt-md: ## Formats markdown files with prettier.
+	@ echo "+ Formatting markdown files..."
+	@ npx prettier --write "**/*.md"
+
 .PHONY: lint
 lint: tools ## Verifies `golangci-lint` passes.
 	@ echo "+ Running Go linters..."

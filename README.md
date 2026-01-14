@@ -6,7 +6,8 @@ _**IMPORTANT:** This SDK is under heavy development and will have constant break
 
 The Go [API](https://docs.oxide.computer) client for administrating an Oxide rack.
 
-To contribute to this repository make sure you read the contributing [documentation](./CONTRIBUTING.md).
+To contribute to this repository make sure you read the contributing
+[documentation](./CONTRIBUTING.md).
 
 ## Getting started
 
@@ -101,10 +102,9 @@ The client supports several authentication methods.
    client, err := oxide.NewClient(oxide.WithDefaultProfile())
    ```
 
-When using profiles, the client reads from the Oxide credentials file
-located at `$HOME/.config/oxide/credentials.toml`, or a custom directory via
-`WithConfigDir`.
+When using profiles, the client reads from the Oxide credentials file located at
+`$HOME/.config/oxide/credentials.toml`, or a custom directory via `WithConfigDir`.
 
-Options override environment variables. Configuring both profile and host/token
-options is disallowed and will return an error, as will configuring both
-`WithProfile` and `WithDefaultProfile`.
+Options override environment variables. Configuring both profile and host/token options is
+disallowed and will return an error, as will configuring both `WithProfile` and
+`WithDefaultProfile`.
