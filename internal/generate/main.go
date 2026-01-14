@@ -135,7 +135,10 @@ func loadAPIFromFile(file string) (*openapi3.T, error) {
 // symbolic link target to get the versioned filename, then construct the URL
 // to the actual versioned specification.
 func getOpenAPISpecURL(omicronVersion string) (*url.URL, error) {
-	rawURL := fmt.Sprintf("https://raw.githubusercontent.com/oxidecomputer/omicron/%s", omicronVersion)
+	rawURL := fmt.Sprintf(
+		"https://raw.githubusercontent.com/oxidecomputer/omicron/%s",
+		omicronVersion,
+	)
 	baseURL, err := url.Parse(rawURL)
 	if err != nil {
 		return nil, fmt.Errorf("error parsing base url %q: %w", rawURL, err)

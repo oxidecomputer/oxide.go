@@ -17,9 +17,8 @@ import (
 	"github.com/iancoleman/strcase"
 )
 
-// TODO: Find a better way to deal with enum types
-// For now they are being collected to make sure they
-// are not duplicated in createStringEnum()
+// TODO: Find a better way to deal with enum types. For now they are being collected to make sure
+// they are not duplicated in createStringEnum()
 var collectEnumStringTypes = enumStringTypes()
 
 func enumStringTypes() map[string][]string {
@@ -76,7 +75,8 @@ type TypeField struct {
 	MarshalKey string
 	Required   bool
 
-	// FallbackDescription generates a generic description for the field when the Schema doesn't have one.
+	// FallbackDescription generates a generic description for the field when the Schema doesn't
+	// have one.
 	// TODO: Drop this, since generated descriptions don't contain useful information.
 	FallbackDescription bool
 
@@ -237,7 +237,10 @@ func constructParamTypes(paths map[string]*openapi3.PathItem) []TypeTemplate {
 								for _, field := range values {
 									str, ok := field.(string)
 									if ok {
-										requiredFields = requiredFields + fmt.Sprintf("\n// - %v", strcase.ToCamel(str))
+										requiredFields = requiredFields + fmt.Sprintf(
+											"\n// - %v",
+											strcase.ToCamel(str),
+										)
 									}
 								}
 							}
@@ -256,7 +259,10 @@ func constructParamTypes(paths map[string]*openapi3.PathItem) []TypeTemplate {
 				fields := make([]TypeField, 0)
 				for _, p := range o.Parameters {
 					if p.Ref != "" {
-						fmt.Printf("[WARN] TODO: skipping parameter for %q, since it is a reference\n", p.Value.Name)
+						fmt.Printf(
+							"[WARN] TODO: skipping parameter for %q, since it is a reference\n",
+							p.Value.Name,
+						)
 						continue
 					}
 
@@ -424,7 +430,10 @@ func constructEnums(enumStrCollection map[string][]string) []EnumTemplate {
 		sort.Strings(enums)
 		for _, enum := range enums {
 			// Most likely, the enum values are strings.
-			enumItems = enumItems + fmt.Sprintf("\t%s,\n", strcase.ToCamel(fmt.Sprintf("%s_%s", name, enum)))
+			enumItems = enumItems + fmt.Sprintf(
+				"\t%s,\n",
+				strcase.ToCamel(fmt.Sprintf("%s_%s", name, enum)),
+			)
 		}
 
 		if enumItems == "" {
@@ -448,7 +457,12 @@ func constructEnums(enumStrCollection map[string][]string) []EnumTemplate {
 }
 
 // writeTypes iterates over the templates, constructs the different types and writes to file.
-func writeTypes(f *os.File, typeCollection []TypeTemplate, typeValidationCollection []ValidationTemplate, enumCollection []EnumTemplate) {
+func writeTypes(
+	f *os.File,
+	typeCollection []TypeTemplate,
+	typeValidationCollection []ValidationTemplate,
+	enumCollection []EnumTemplate,
+) {
 	for _, tt := range typeCollection {
 		fmt.Fprint(f, tt.Render())
 	}
@@ -465,7 +479,11 @@ func writeTypes(f *os.File, typeCollection []TypeTemplate, typeValidationCollect
 // populateTypeTemplates populates the template of a type definition for the given schema.
 // The additional parameter is only used as a suffix for the type name.
 // This is mostly for oneOf types.
-func populateTypeTemplates(name string, s *openapi3.Schema, enumFieldName string) ([]TypeTemplate, []EnumTemplate) {
+func populateTypeTemplates(
+	name string,
+	s *openapi3.Schema,
+	enumFieldName string,
+) ([]TypeTemplate, []EnumTemplate) {
 	typeName := name
 
 	// Type name will change for each enum type
@@ -481,7 +499,9 @@ func populateTypeTemplates(name string, s *openapi3.Schema, enumFieldName string
 	if slices.Contains(emptyTypes(), name) {
 		bgpOT := getObjectType(s)
 		if bgpOT != "" {
-			panic("[ERROR] " + name + " is no longer an empty type. Remove workaround in exceptions.go")
+			panic(
+				"[ERROR] " + name + " is no longer an empty type. Remove workaround in exceptions.go",
+			)
 		}
 		s.Type = &openapi3.Types{"string"}
 	}
@@ -509,14 +529,22 @@ func populateTypeTemplates(name string, s *openapi3.Schema, enumFieldName string
 		for _, k := range properties {
 			v := s.Properties[k]
 			if isLocalEnum(v) {
-				tt, et := populateTypeTemplates(fmt.Sprintf("%s%s", name, strcase.ToCamel(k)), v.Value, "")
+				tt, et := populateTypeTemplates(
+					fmt.Sprintf("%s%s", name, strcase.ToCamel(k)),
+					v.Value,
+					"",
+				)
 				types = append(types, tt...)
 				enumTypes = append(enumTypes, et...)
 			}
 
 			// TODO: So far this code is never hit with the current openapi spec
 			if isLocalObject(v) {
-				tt, et := populateTypeTemplates(fmt.Sprintf("%s%s", name, strcase.ToCamel(k)), v.Value, "")
+				tt, et := populateTypeTemplates(
+					fmt.Sprintf("%s%s", name, strcase.ToCamel(k)),
+					v.Value,
+					"",
+				)
 				types = append(types, tt...)
 				enumTypes = append(enumTypes, et...)
 			}
@@ -577,7 +605,8 @@ func createTypeObject(schema *openapi3.Schema, name, typeName, description strin
 		}
 
 		// When `additionalProperties` is set, the type will be a map.
-		// See the spec for details: https://spec.openapis.org/oas/v3.0.3.html#x4-7-24-3-3-model-with-map-dictionary-properties.
+		// See the spec for details:
+		// https://spec.openapis.org/oas/v3.0.3.html#x4-7-24-3-3-model-with-map-dictionary-properties.
 		//
 		// TODO correctness: Currently our API spec does not specify
 		// what type the key will be, so we set it to string to avoid
@@ -623,7 +652,11 @@ func createTypeObject(schema *openapi3.Schema, name, typeName, description strin
 	return typeTpl
 }
 
-func createStringEnum(s *openapi3.Schema, stringEnums map[string][]string, name, typeName string) (map[string][]string, []TypeTemplate, []EnumTemplate) {
+func createStringEnum(
+	s *openapi3.Schema,
+	stringEnums map[string][]string,
+	name, typeName string,
+) (map[string][]string, []TypeTemplate, []EnumTemplate) {
 	typeTpls := make([]TypeTemplate, 0)
 
 	// Make sure we don't redeclare the enum type.
@@ -650,10 +683,15 @@ func createStringEnum(s *openapi3.Schema, stringEnums map[string][]string, name,
 		snakeCaseTypeName := fmt.Sprintf("%s_%s", name, enum)
 
 		enumTpl := EnumTemplate{
-			Description: fmt.Sprintf("// %s represents the %s `%q`.", strcase.ToCamel(snakeCaseTypeName), name, enum),
-			Name:        strcase.ToCamel(snakeCaseTypeName),
-			ValueType:   "const",
-			Value:       fmt.Sprintf("%s = %q", name, enum),
+			Description: fmt.Sprintf(
+				"// %s represents the %s `%q`.",
+				strcase.ToCamel(snakeCaseTypeName),
+				name,
+				enum,
+			),
+			Name:      strcase.ToCamel(snakeCaseTypeName),
+			ValueType: "const",
+			Value:     fmt.Sprintf("%s = %q", name, enum),
 		}
 
 		enumTpls = append(enumTpls, enumTpl)
@@ -678,7 +716,11 @@ func createStringEnum(s *openapi3.Schema, stringEnums map[string][]string, name,
 //
 // Probably not the best approach, but will leave them this way until I come up with
 // a more idiomatic solution. Keep an eye out on this one to refine.
-func createAllOf(s *openapi3.Schema, stringEnums map[string][]string, name, typeName string) []TypeTemplate {
+func createAllOf(
+	s *openapi3.Schema,
+	stringEnums map[string][]string,
+	name, typeName string,
+) []TypeTemplate {
 	typeTpls := make([]TypeTemplate, 0)
 
 	// Make sure we don't redeclare the enum type.
@@ -707,11 +749,13 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 	enumTpls := make([]EnumTemplate, 0)
 	typeTpls := make([]TypeTemplate, 0)
 
-	// Loop over variants, creating types and enums for nested types, and gathering metadata about the oneOf overall.
+	// Loop over variants, creating types and enums for nested types, and gathering metadata about
+	// the oneOf overall.
 
 	// Set of candidate discriminator keys. There must be exactly zero or one discriminator key.
 	discriminatorKeys := map[string]struct{}{}
-	// Map of properties to sets of variant types. We use this to identify fields with multiple types across variants.
+	// Map of properties to sets of variant types. We use this to identify fields with multiple
+	// types across variants.
 	propToVariantTypes := map[string]map[string]struct{}{}
 
 	for _, variantRef := range s.OneOf {
@@ -724,7 +768,12 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 				discriminatorKeys[propName] = struct{}{}
 				enumField = strcase.ToCamel(propRef.Value.Enum[0].(string))
 			} else if len(propRef.Value.Enum) > 1 {
-				fmt.Printf("[WARN] TODO: oneOf for %q -> %q enum %#v\n", name, propName, propRef.Value.Enum)
+				fmt.Printf(
+					"[WARN] TODO: oneOf for %q -> %q enum %#v\n",
+					name,
+					propName,
+					propRef.Value.Enum,
+				)
 			} else if propRef.Value.Enum == nil && len(variantRef.Value.Properties) == 1 {
 				enumField = propField
 			}
@@ -741,7 +790,13 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 
 	// Check invariant: there must be exactly zero or one discriminator field.
 	if len(discriminatorKeys) > 1 {
-		panic(fmt.Sprintf("[ERROR] Found multiple discriminator properties for type %s: %+v", name, discriminatorKeys))
+		panic(
+			fmt.Sprintf(
+				"[ERROR] Found multiple discriminator properties for type %s: %+v",
+				name,
+				discriminatorKeys,
+			),
+		)
 	}
 
 	// Find properties that have different types across variants.
@@ -856,7 +911,11 @@ func getObjectType(s *openapi3.Schema) string {
 // formatTypeDescription returns the description of the given type.
 func formatTypeDescription(name string, s *openapi3.Schema) string {
 	if s.Description != "" {
-		return fmt.Sprintf("// %s is %s", name, toLowerFirstLetter(strings.ReplaceAll(s.Description, "\n", "\n// ")))
+		return fmt.Sprintf(
+			"// %s is %s",
+			name,
+			toLowerFirstLetter(strings.ReplaceAll(s.Description, "\n", "\n// ")),
+		)
 	}
 	return fmt.Sprintf("// %s is the type definition for a %s.", name, name)
 }

@@ -228,11 +228,14 @@ func NewClient(opts ...ClientOption) (*Client, error) {
 	}
 
 	// Validate conflicting options.
-	if (cfg.profileSetFromOption || cfg.defaultProfileSetFromOption) && (cfg.hostSetFromOption || cfg.tokenSetFromOption) {
+	if (cfg.profileSetFromOption || cfg.defaultProfileSetFromOption) &&
+		(cfg.hostSetFromOption || cfg.tokenSetFromOption) {
 		return nil, errors.New("cannot authenticate with both a profile and host/token")
 	}
 	if cfg.profileSetFromOption && cfg.defaultProfileSetFromOption {
-		return nil, errors.New("cannot authenticate with both default profile and a defined profile")
+		return nil, errors.New(
+			"cannot authenticate with both default profile and a defined profile",
+		)
 	}
 
 	// Options override environment variables.
@@ -326,7 +329,12 @@ func getProfile(configDir string, profile string, useDefault bool) (*authCredent
 	credentialsPath := filepath.Join(configDir, credentialsFile)
 	fileCreds, err := parseCredentialsFile(credentialsPath, profile)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get credentials for profile %q from %q: %w", profile, credentialsPath, err)
+		return nil, fmt.Errorf(
+			"failed to get credentials for profile %q from %q: %w",
+			profile,
+			credentialsPath,
+			err,
+		)
 	}
 
 	return fileCreds, nil
@@ -404,7 +412,12 @@ func parseBaseURL(baseURL string) (string, error) {
 }
 
 // buildRequest creates an HTTP request to interact with the Oxide API.
-func (c *Client) buildRequest(ctx context.Context, body io.Reader, method, uri string, params, queries map[string]string) (*http.Request, error) {
+func (c *Client) buildRequest(
+	ctx context.Context,
+	body io.Reader,
+	method, uri string,
+	params, queries map[string]string,
+) (*http.Request, error) {
 	// Create the request.
 	req, err := http.NewRequestWithContext(ctx, method, uri, body)
 	if err != nil {

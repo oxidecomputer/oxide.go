@@ -46,10 +46,16 @@ func Test_generateTypes(t *testing.T) {
 								Type:        &openapi3.Types{"object"},
 								Properties: openapi3.Schemas{
 									"snapshot_id": &openapi3.SchemaRef{
-										Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Format: "uuid"},
+										Value: &openapi3.Schema{
+											Type:   &openapi3.Types{"string"},
+											Format: "uuid",
+										},
 									},
 									"type": &openapi3.SchemaRef{
-										Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []interface{}{"snapshot"}},
+										Value: &openapi3.Schema{
+											Type: &openapi3.Types{"string"},
+											Enum: []interface{}{"snapshot"},
+										},
 									},
 								},
 							},
@@ -60,10 +66,16 @@ func Test_generateTypes(t *testing.T) {
 								Type:        &openapi3.Types{"object"},
 								Properties: openapi3.Schemas{
 									"image_id": &openapi3.SchemaRef{
-										Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Format: "uuid"},
+										Value: &openapi3.Schema{
+											Type:   &openapi3.Types{"string"},
+											Format: "uuid",
+										},
 									},
 									"type": &openapi3.SchemaRef{
-										Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []interface{}{"image"}},
+										Value: &openapi3.Schema{
+											Type: &openapi3.Types{"string"},
+											Enum: []interface{}{"image"},
+										},
 									},
 								},
 							},
@@ -149,8 +161,10 @@ func TestTypeField_StructTag(t *testing.T) {
 		f := TypeField{
 			Name:       "Id",
 			MarshalKey: "id",
-			Schema:     &openapi3.SchemaRef{Value: &openapi3.Schema{Type: &openapi3.Types{"string"}}},
-			Required:   true,
+			Schema: &openapi3.SchemaRef{
+				Value: &openapi3.Schema{Type: &openapi3.Types{"string"}},
+			},
+			Required: true,
 		}
 		assert.Equal(t, "`json:\"id\" yaml:\"id\"`", f.StructTag())
 	})
@@ -159,8 +173,10 @@ func TestTypeField_StructTag(t *testing.T) {
 		f := TypeField{
 			Name:       "Items",
 			MarshalKey: "items",
-			Schema:     &openapi3.SchemaRef{Value: &openapi3.Schema{Type: &openapi3.Types{"array"}, Nullable: true}},
-			Required:   false,
+			Schema: &openapi3.SchemaRef{
+				Value: &openapi3.Schema{Type: &openapi3.Types{"array"}, Nullable: true},
+			},
+			Required: false,
 		}
 		assert.Equal(t, "`json:\"items\" yaml:\"items\"`", f.StructTag())
 	})
@@ -169,17 +185,21 @@ func TestTypeField_StructTag(t *testing.T) {
 		f := TypeField{
 			Name:       "Value",
 			MarshalKey: "value",
-			Schema:     &openapi3.SchemaRef{Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Nullable: true}},
-			Required:   false,
+			Schema: &openapi3.SchemaRef{
+				Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Nullable: true},
+			},
+			Required: false,
 		}
 		assert.Equal(t, "`json:\"value,omitempty\" yaml:\"value,omitempty\"`", f.StructTag())
 	})
 
 	t.Run("omitdirective", func(t *testing.T) {
 		f := TypeField{
-			Name:          "Value",
-			MarshalKey:    "value",
-			Schema:        &openapi3.SchemaRef{Value: &openapi3.Schema{Type: &openapi3.Types{"string"}}},
+			Name:       "Value",
+			MarshalKey: "value",
+			Schema: &openapi3.SchemaRef{
+				Value: &openapi3.Schema{Type: &openapi3.Types{"string"}},
+			},
 			OmitDirective: "omitzero",
 		}
 		assert.Equal(t, "`json:\"value,omitzero\" yaml:\"value,omitzero\"`", f.StructTag())
@@ -190,8 +210,10 @@ func TestTypeField_StructTag(t *testing.T) {
 			Name:       "Count",
 			Type:       "int",
 			MarshalKey: "count",
-			Schema:     &openapi3.SchemaRef{Value: &openapi3.Schema{Type: &openapi3.Types{"integer"}}},
-			Required:   false,
+			Schema: &openapi3.SchemaRef{
+				Value: &openapi3.Schema{Type: &openapi3.Types{"integer"}},
+			},
+			Required: false,
 		}
 		assert.Equal(t, "`json:\"count,omitempty\" yaml:\"count,omitempty\"`", f.StructTag())
 	})
@@ -211,9 +233,11 @@ func TestTypeField_IsPointer(t *testing.T) {
 		{
 			name: "nullable required",
 			field: TypeField{
-				Name:     "Config",
-				Type:     "SomeConfig",
-				Schema:   &openapi3.SchemaRef{Value: &openapi3.Schema{Type: &openapi3.Types{"object"}, Nullable: true}},
+				Name: "Config",
+				Type: "SomeConfig",
+				Schema: &openapi3.SchemaRef{
+					Value: &openapi3.Schema{Type: &openapi3.Types{"object"}, Nullable: true},
+				},
 				Required: true,
 			},
 			expected: true,
@@ -221,9 +245,11 @@ func TestTypeField_IsPointer(t *testing.T) {
 		{
 			name: "nullable not required",
 			field: TypeField{
-				Name:     "Config",
-				Type:     "SomeConfig",
-				Schema:   &openapi3.SchemaRef{Value: &openapi3.Schema{Type: &openapi3.Types{"object"}, Nullable: true}},
+				Name: "Config",
+				Type: "SomeConfig",
+				Schema: &openapi3.SchemaRef{
+					Value: &openapi3.Schema{Type: &openapi3.Types{"object"}, Nullable: true},
+				},
 				Required: false,
 			},
 			expected: false,
@@ -231,9 +257,11 @@ func TestTypeField_IsPointer(t *testing.T) {
 		{
 			name: "not nullable required",
 			field: TypeField{
-				Name:     "Config",
-				Type:     "SomeConfig",
-				Schema:   &openapi3.SchemaRef{Value: &openapi3.Schema{Type: &openapi3.Types{"object"}, Nullable: false}},
+				Name: "Config",
+				Type: "SomeConfig",
+				Schema: &openapi3.SchemaRef{
+					Value: &openapi3.Schema{Type: &openapi3.Types{"object"}, Nullable: false},
+				},
 				Required: true,
 			},
 			expected: false,
@@ -259,7 +287,12 @@ func Test_createTypeObject(t *testing.T) {
 			},
 		}}
 
-	got := createTypeObject(&typesSpec, "DiskSource", "DiskSourceSnapshot", "Create a disk from a disk snapshot")
+	got := createTypeObject(
+		&typesSpec,
+		"DiskSource",
+		"DiskSourceSnapshot",
+		"Create a disk from a disk snapshot",
+	)
 
 	want := TypeTemplate{
 		Name:        "DiskSourceSnapshot",
@@ -293,20 +326,46 @@ func Test_createStringEnum(t *testing.T) {
 		want2 []EnumTemplate
 	}{
 		{
-			name:  "success",
-			args:  args{typesSpec, enums, "FleetRole", "FleetRole"},
-			want:  map[string][]string{"FleetRole": {"admin", "collaborator", "viewer"}},
-			want1: []TypeTemplate{{Description: "// FleetRole is the type definition for a FleetRole.", Name: "FleetRole", Type: "string"}},
+			name: "success",
+			args: args{typesSpec, enums, "FleetRole", "FleetRole"},
+			want: map[string][]string{"FleetRole": {"admin", "collaborator", "viewer"}},
+			want1: []TypeTemplate{
+				{
+					Description: "// FleetRole is the type definition for a FleetRole.",
+					Name:        "FleetRole",
+					Type:        "string",
+				},
+			},
 			want2: []EnumTemplate{
-				{Description: "// FleetRoleAdmin represents the FleetRole `\"admin\"`.", Name: "FleetRoleAdmin", ValueType: "const", Value: "FleetRole = \"admin\""},
-				{Description: "// FleetRoleCollaborator represents the FleetRole `\"collaborator\"`.", Name: "FleetRoleCollaborator", ValueType: "const", Value: "FleetRole = \"collaborator\""},
-				{Description: "// FleetRoleViewer represents the FleetRole `\"viewer\"`.", Name: "FleetRoleViewer", ValueType: "const", Value: "FleetRole = \"viewer\""},
+				{
+					Description: "// FleetRoleAdmin represents the FleetRole `\"admin\"`.",
+					Name:        "FleetRoleAdmin",
+					ValueType:   "const",
+					Value:       "FleetRole = \"admin\"",
+				},
+				{
+					Description: "// FleetRoleCollaborator represents the FleetRole `\"collaborator\"`.",
+					Name:        "FleetRoleCollaborator",
+					ValueType:   "const",
+					Value:       "FleetRole = \"collaborator\"",
+				},
+				{
+					Description: "// FleetRoleViewer represents the FleetRole `\"viewer\"`.",
+					Name:        "FleetRoleViewer",
+					ValueType:   "const",
+					Value:       "FleetRole = \"viewer\"",
+				},
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, got1, got2 := createStringEnum(tt.args.s, tt.args.stringEnums, tt.args.name, tt.args.typeName)
+			got, got1, got2 := createStringEnum(
+				tt.args.s,
+				tt.args.stringEnums,
+				tt.args.name,
+				tt.args.typeName,
+			)
 			assert.Equal(t, tt.want, got)
 			assert.Equal(t, tt.want1, got1)
 			assert.Equal(t, tt.want2, got2)
@@ -331,8 +390,13 @@ func Test_createOneOf(t *testing.T) {
 						Value: &openapi3.Schema{
 							Type: &openapi3.Types{"object"},
 							Properties: map[string]*openapi3.SchemaRef{
-								"type": {Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []any{"url"}}},
-								"url":  {Value: &openapi3.Schema{Type: &openapi3.Types{"string"}}},
+								"type": {
+									Value: &openapi3.Schema{
+										Type: &openapi3.Types{"string"},
+										Enum: []any{"url"},
+									},
+								},
+								"url": {Value: &openapi3.Schema{Type: &openapi3.Types{"string"}}},
 							},
 							Required: []string{"type", "url"},
 						},
@@ -341,8 +405,18 @@ func Test_createOneOf(t *testing.T) {
 						Value: &openapi3.Schema{
 							Type: &openapi3.Types{"object"},
 							Properties: map[string]*openapi3.SchemaRef{
-								"id":   {Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Format: "uuid"}},
-								"type": {Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []any{"snapshot"}}},
+								"id": {
+									Value: &openapi3.Schema{
+										Type:   &openapi3.Types{"string"},
+										Format: "uuid",
+									},
+								},
+								"type": {
+									Value: &openapi3.Schema{
+										Type: &openapi3.Types{"string"},
+										Enum: []any{"snapshot"},
+									},
+								},
 							},
 							Required: []string{"id", "type"},
 						},
@@ -351,7 +425,11 @@ func Test_createOneOf(t *testing.T) {
 			},
 			typeName: "ImageSource",
 			wantTypes: []TypeTemplate{
-				{Description: "// ImageSourceType is the type definition for a ImageSourceType.", Name: "ImageSourceType", Type: "string"},
+				{
+					Description: "// ImageSourceType is the type definition for a ImageSourceType.",
+					Name:        "ImageSourceType",
+					Type:        "string",
+				},
 				{
 					Description: "// ImageSourceUrl is the type definition for a ImageSourceUrl.\n//\n// Required fields:\n// - Type\n// - Url",
 					Name:        "ImageSourceUrl",
@@ -375,15 +453,30 @@ func Test_createOneOf(t *testing.T) {
 					Name:        "ImageSource",
 					Type:        "struct",
 					Fields: []TypeField{
-						{Name: "Type", Type: "ImageSourceType", MarshalKey: "type", FallbackDescription: true},
+						{
+							Name:                "Type",
+							Type:                "ImageSourceType",
+							MarshalKey:          "type",
+							FallbackDescription: true,
+						},
 						{Name: "Url", Type: "string", MarshalKey: "url", FallbackDescription: true},
 						{Name: "Id", Type: "string", MarshalKey: "id", FallbackDescription: true},
 					},
 				},
 			},
 			wantEnums: []EnumTemplate{
-				{Description: "// ImageSourceTypeUrl represents the ImageSourceType `\"url\"`.", Name: "ImageSourceTypeUrl", ValueType: "const", Value: "ImageSourceType = \"url\""},
-				{Description: "// ImageSourceTypeSnapshot represents the ImageSourceType `\"snapshot\"`.", Name: "ImageSourceTypeSnapshot", ValueType: "const", Value: "ImageSourceType = \"snapshot\""},
+				{
+					Description: "// ImageSourceTypeUrl represents the ImageSourceType `\"url\"`.",
+					Name:        "ImageSourceTypeUrl",
+					ValueType:   "const",
+					Value:       "ImageSourceType = \"url\"",
+				},
+				{
+					Description: "// ImageSourceTypeSnapshot represents the ImageSourceType `\"snapshot\"`.",
+					Name:        "ImageSourceTypeSnapshot",
+					ValueType:   "const",
+					Value:       "ImageSourceType = \"snapshot\"",
+				},
 			},
 		},
 		{
@@ -395,8 +488,15 @@ func Test_createOneOf(t *testing.T) {
 						Value: &openapi3.Schema{
 							Type: &openapi3.Types{"object"},
 							Properties: map[string]*openapi3.SchemaRef{
-								"type":  {Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []any{"int"}}},
-								"value": {Value: &openapi3.Schema{Type: &openapi3.Types{"integer"}}},
+								"type": {
+									Value: &openapi3.Schema{
+										Type: &openapi3.Types{"string"},
+										Enum: []any{"int"},
+									},
+								},
+								"value": {
+									Value: &openapi3.Schema{Type: &openapi3.Types{"integer"}},
+								},
 							},
 							Required: []string{"type", "value"},
 						},
@@ -405,7 +505,12 @@ func Test_createOneOf(t *testing.T) {
 						Value: &openapi3.Schema{
 							Type: &openapi3.Types{"object"},
 							Properties: map[string]*openapi3.SchemaRef{
-								"type":  {Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []any{"string"}}},
+								"type": {
+									Value: &openapi3.Schema{
+										Type: &openapi3.Types{"string"},
+										Enum: []any{"string"},
+									},
+								},
 								"value": {Value: &openapi3.Schema{Type: &openapi3.Types{"string"}}},
 							},
 							Required: []string{"type", "value"},
@@ -415,7 +520,11 @@ func Test_createOneOf(t *testing.T) {
 			},
 			typeName: "IntOrString",
 			wantTypes: []TypeTemplate{
-				{Description: "// IntOrStringType is the type definition for a IntOrStringType.", Name: "IntOrStringType", Type: "string"},
+				{
+					Description: "// IntOrStringType is the type definition for a IntOrStringType.",
+					Name:        "IntOrStringType",
+					Type:        "string",
+				},
 				{
 					Description: "// IntOrStringInt is the type definition for a IntOrStringInt.\n//\n// Required fields:\n// - Type\n// - Value",
 					Name:        "IntOrStringInt",
@@ -439,14 +548,34 @@ func Test_createOneOf(t *testing.T) {
 					Name:        "IntOrString",
 					Type:        "struct",
 					Fields: []TypeField{
-						{Name: "Type", Type: "IntOrStringType", MarshalKey: "type", FallbackDescription: true},
-						{Name: "Value", Type: "any", MarshalKey: "value", FallbackDescription: true},
+						{
+							Name:                "Type",
+							Type:                "IntOrStringType",
+							MarshalKey:          "type",
+							FallbackDescription: true,
+						},
+						{
+							Name:                "Value",
+							Type:                "any",
+							MarshalKey:          "value",
+							FallbackDescription: true,
+						},
 					},
 				},
 			},
 			wantEnums: []EnumTemplate{
-				{Description: "// IntOrStringTypeInt represents the IntOrStringType `\"int\"`.", Name: "IntOrStringTypeInt", ValueType: "const", Value: "IntOrStringType = \"int\""},
-				{Description: "// IntOrStringTypeString represents the IntOrStringType `\"string\"`.", Name: "IntOrStringTypeString", ValueType: "const", Value: "IntOrStringType = \"string\""},
+				{
+					Description: "// IntOrStringTypeInt represents the IntOrStringType `\"int\"`.",
+					Name:        "IntOrStringTypeInt",
+					ValueType:   "const",
+					Value:       "IntOrStringType = \"int\"",
+				},
+				{
+					Description: "// IntOrStringTypeString represents the IntOrStringType `\"string\"`.",
+					Name:        "IntOrStringTypeString",
+					ValueType:   "const",
+					Value:       "IntOrStringType = \"string\"",
+				},
 			},
 		},
 	}
@@ -470,8 +599,18 @@ func Test_createOneOf(t *testing.T) {
 					Value: &openapi3.Schema{
 						Type: &openapi3.Types{"object"},
 						Properties: map[string]*openapi3.SchemaRef{
-							"type":  {Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []any{"a"}}},
-							"kind":  {Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []any{"x"}}},
+							"type": {
+								Value: &openapi3.Schema{
+									Type: &openapi3.Types{"string"},
+									Enum: []any{"a"},
+								},
+							},
+							"kind": {
+								Value: &openapi3.Schema{
+									Type: &openapi3.Types{"string"},
+									Enum: []any{"x"},
+								},
+							},
 							"value": {Value: &openapi3.Schema{Type: &openapi3.Types{"string"}}},
 						},
 					},
@@ -480,8 +619,18 @@ func Test_createOneOf(t *testing.T) {
 					Value: &openapi3.Schema{
 						Type: &openapi3.Types{"object"},
 						Properties: map[string]*openapi3.SchemaRef{
-							"type":  {Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []any{"b"}}},
-							"kind":  {Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Enum: []any{"y"}}},
+							"type": {
+								Value: &openapi3.Schema{
+									Type: &openapi3.Types{"string"},
+									Enum: []any{"b"},
+								},
+							},
+							"kind": {
+								Value: &openapi3.Schema{
+									Type: &openapi3.Types{"string"},
+									Enum: []any{"y"},
+								},
+							},
 							"value": {Value: &openapi3.Schema{Type: &openapi3.Types{"string"}}},
 						},
 					},
@@ -489,7 +638,8 @@ func Test_createOneOf(t *testing.T) {
 			},
 		}
 
-		assert.PanicsWithValue(t,
+		assert.PanicsWithValue(
+			t,
 			"[ERROR] Found multiple discriminator properties for type MultiDiscriminator: map[kind:{} type:{}]",
 			func() { createOneOf(schema, "MultiDiscriminator", "MultiDiscriminator") },
 		)

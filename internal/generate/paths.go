@@ -124,7 +124,14 @@ func buildPath(f *os.File, spec *openapi3.T, path string, p *openapi3.PathItem) 
 	return nil
 }
 
-func buildMethod(f *os.File, spec *openapi3.T, method string, path string, o *openapi3.Operation, isGetAllPages bool) error {
+func buildMethod(
+	f *os.File,
+	spec *openapi3.T,
+	method string,
+	path string,
+	o *openapi3.Operation,
+	isGetAllPages bool,
+) error {
 	respType, pagedRespType, err := getSuccessResponseType(o, isGetAllPages)
 	if err != nil {
 		return err
@@ -141,7 +148,10 @@ func buildMethod(f *os.File, spec *openapi3.T, method string, path string, o *op
 	}
 
 	if o.Tags[0] == "console-auth" {
-		fmt.Printf("[WARN] TODO: skipping operation %q, since it is for console authentication\n", o.OperationID)
+		fmt.Printf(
+			"[WARN] TODO: skipping operation %q, since it is for console authentication\n",
+			o.OperationID,
+		)
 		return nil
 	}
 
@@ -247,7 +257,11 @@ func getSuccessResponseType(o *openapi3.Operation, isGetAllPages bool) (string, 
 		}
 
 		if response.Ref != "" {
-			fmt.Printf("[WARN] TODO: skipping response for %q, since it is a reference: %q\n", name, response.Ref)
+			fmt.Printf(
+				"[WARN] TODO: skipping response for %q, since it is a reference: %q\n",
+				name,
+				response.Ref,
+			)
 			continue
 		}
 
@@ -258,7 +272,11 @@ func getSuccessResponseType(o *openapi3.Operation, isGetAllPages bool) (string, 
 				if items, ok := content.Schema.Value.Properties["items"]; ok {
 					getAllPagesType = convertToValidGoType("", "", items)
 				} else {
-					fmt.Printf("[WARN] TODO: skipping response for %q, since it is a get all pages response and has no `items` property:\n%#v\n", o.OperationID, content.Schema.Value.Properties)
+					fmt.Printf(
+						"[WARN] TODO: skipping response for %q, since it is a get all pages response and has no `items` property:\n%#v\n",
+						o.OperationID,
+						content.Schema.Value.Properties,
+					)
 					return "", "", nil
 				}
 			}
@@ -267,7 +285,10 @@ func getSuccessResponseType(o *openapi3.Operation, isGetAllPages bool) (string, 
 			}
 
 			if content.Schema.Value.Type.Is("array") {
-				return fmt.Sprintf("[]%s", getReferenceSchema(content.Schema.Value.Items)), getAllPagesType, nil
+				return fmt.Sprintf(
+					"[]%s",
+					getReferenceSchema(content.Schema.Value.Items),
+				), getAllPagesType, nil
 			}
 
 			return fmt.Sprintf("%sResponse", strcase.ToCamel(o.OperationID)), getAllPagesType, nil
@@ -279,8 +300,8 @@ func getSuccessResponseType(o *openapi3.Operation, isGetAllPages bool) (string, 
 
 // cleanPath returns the path as a function we can use for a go template.
 func cleanPath(path string) string {
-	path = strings.Replace(path, "{", "{{.", -1)
-	return strings.Replace(path, "}", "}}", -1)
+	path = strings.ReplaceAll(path, "{", "{{.")
+	return strings.ReplaceAll(path, "}", "}}")
 }
 
 // splitDocString inserts newlines into doc comments at approximately 100 character intervals.
@@ -315,27 +336,42 @@ func writeTpl(f *os.File, config methodTemplate) error {
 	var err error
 
 	if config.IsListAll {
-		t, err = template.ParseFiles("./templates/listall_method.go.tpl", "./templates/description.go.tpl")
+		t, err = template.ParseFiles(
+			"./templates/listall_method.go.tpl",
+			"./templates/description.go.tpl",
+		)
 		if err != nil {
 			return err
 		}
 	} else if config.ResponseType == "" && config.HasBody {
-		t, err = template.ParseFiles("./templates/no_resptype_body_method.go.tpl", "./templates/description.go.tpl")
+		t, err = template.ParseFiles(
+			"./templates/no_resptype_body_method.go.tpl",
+			"./templates/description.go.tpl",
+		)
 		if err != nil {
 			return err
 		}
 	} else if config.ResponseType == "" {
-		t, err = template.ParseFiles("./templates/no_resptype_method.go.tpl", "./templates/description.go.tpl")
+		t, err = template.ParseFiles(
+			"./templates/no_resptype_method.go.tpl",
+			"./templates/description.go.tpl",
+		)
 		if err != nil {
 			return err
 		}
 	} else if config.HasBody {
-		t, err = template.ParseFiles("./templates/resptype_body_method.go.tpl", "./templates/description.go.tpl")
+		t, err = template.ParseFiles(
+			"./templates/resptype_body_method.go.tpl",
+			"./templates/description.go.tpl",
+		)
 		if err != nil {
 			return err
 		}
 	} else {
-		t, err = template.ParseFiles("./templates/resptype_method.go.tpl", "./templates/description.go.tpl")
+		t, err = template.ParseFiles(
+			"./templates/resptype_method.go.tpl",
+			"./templates/description.go.tpl",
+		)
 		if err != nil {
 			return err
 		}
@@ -349,7 +385,10 @@ func writeTpl(f *os.File, config methodTemplate) error {
 	return nil
 }
 
-func buildPathOrQueryParams(paramType string, params map[string]*openapi3.Parameter) ([]string, error) {
+func buildPathOrQueryParams(
+	paramType string,
+	params map[string]*openapi3.Parameter,
+) ([]string, error) {
 	pathParams := make([]string, 0)
 	if paramType != "query" && paramType != "path" {
 		return nil, errors.New("paramType must be one of 'query' or 'path'")
@@ -376,11 +415,17 @@ func buildPathOrQueryParams(paramType string, params map[string]*openapi3.Parame
 			case "bool":
 				pathParams = append(pathParams, fmt.Sprintf("%q: strconv.FormatBool(%s),", name, n))
 			case "*bool":
-				pathParams = append(pathParams, fmt.Sprintf("%q: strconv.FormatBool(*%s),", name, n))
+				pathParams = append(
+					pathParams,
+					fmt.Sprintf("%q: strconv.FormatBool(*%s),", name, n),
+				)
 			case "*int":
 				pathParams = append(pathParams, fmt.Sprintf("%q: PointerIntToStr(%s),", name, n))
 			case "*time.Time":
-				pathParams = append(pathParams, fmt.Sprintf("%q: %s.Format(time.RFC3339),", name, n))
+				pathParams = append(
+					pathParams,
+					fmt.Sprintf("%q: %s.Format(time.RFC3339),", name, n),
+				)
 			default:
 				pathParams = append(pathParams, fmt.Sprintf("%q: string(%s),", name, n))
 			}
@@ -399,7 +444,10 @@ func buildParams(operation *openapi3.Operation, opID string) paramsInfo {
 
 		for _, p := range operation.Parameters {
 			if p.Ref != "" {
-				fmt.Printf("[WARN] TODO: skipping parameter for %q, since it is a reference\n", p.Value.Name)
+				fmt.Printf(
+					"[WARN] TODO: skipping parameter for %q, since it is a reference\n",
+					p.Value.Name,
+				)
 				continue
 			}
 
