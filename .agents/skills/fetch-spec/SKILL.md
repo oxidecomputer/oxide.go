@@ -54,6 +54,11 @@ If the user provides arguments like:
 
 Use `jq` or read the temp file to fulfill these queries.
 
+## Output Format
+
+- **Default to YAML** when displaying schemas or endpoint details (use `yq` or `jq ... | yq -P`)
+- Only use JSON or table format if the user explicitly requests it (e.g., `--json` or `--table`)
+
 ## Notes
 
 - The spec is large (~2MB JSON), so summarize rather than output the entire thing
