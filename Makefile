@@ -54,6 +54,11 @@ test: ## Runs the go tests.
 	@ echo "+ Running Go tests..."
 	@ $(GO) test -v -tags "$(BUILDTAGS)" ./...
 
+.PHONY: golden-fixtures
+golden-fixtures: ## Refreshes golden test fixtures. Requires OXIDE_HOST, OXIDE_TOKEN, and OXIDE_PROJECT.
+	@ echo "+ Refreshing golden test fixtures..."
+	@ $(GO) run ./oxide/testdata/main.go
+
 .PHONY: vet
 vet: ## Verifies `go vet` passes.
 	@ echo "+ Verifying go vet passes..."
