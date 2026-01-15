@@ -1,7 +1,7 @@
 {{splitDocString .Description}}
 {{- if eq .Type "interface"}}
 type {{.Name}} interface {
-	{{.OneOfMarker}}()
+	{{.VariantMarker.Method}}()
 }
 
 {{else if .Fields}}
@@ -14,17 +14,17 @@ type {{.Name}} {{.Type}} {
 {{- end}}
 }
 
-{{- if .OneOfMarker}}
+{{- if .VariantMarker}}
 
-func ({{.Name}}) {{.OneOfMarker}}() {}
+func ({{.Name}}) {{.VariantMarker.Method}}() {}
 {{- end}}
-{{- if .OneOfDiscriminator}}
+{{- if .Variants}}
 
-func (v {{.Name}}) {{.OneOfDiscriminatorMethod}}() {{.OneOfDiscriminatorType}} {
-	switch v.{{.OneOfValueFieldName}}.(type) {
-	{{- range .OneOfVariants}}
+func (v {{.Name}}) {{.Variants.DiscriminatorMethod}}() {{.Variants.DiscriminatorType}} {
+	switch v.{{.Variants.ValueFieldName}}.(type) {
+	{{- range .Variants.Variants}}
 	case *{{.TypeName}}:
-		return {{$.OneOfDiscriminatorType}}{{.DiscriminatorEnumValue}}
+		return {{$.Variants.DiscriminatorType}}{{.DiscriminatorEnumValue}}
 	{{- end}}
 	default:
 		return ""
@@ -33,34 +33,34 @@ func (v {{.Name}}) {{.OneOfDiscriminatorMethod}}() {{.OneOfDiscriminatorType}} {
 
 func (v *{{.Name}}) UnmarshalJSON(data []byte) error {
 	type discriminator struct {
-		Type string `json:"{{.OneOfDiscriminator}}"`
+		Type string `json:"{{.Variants.Discriminator}}"`
 	}
 	var d discriminator
 	if err := json.Unmarshal(data, &d); err != nil {
 		return err
 	}
 
-	var value {{.OneOfVariantType}}
+	var value {{.Variants.VariantType}}
 	switch d.Type {
-	{{- range .OneOfVariants}}
+	{{- range .Variants.Variants}}
 	case "{{.DiscriminatorValue}}":
 		value = &{{.TypeName}}{}
 	{{- end}}
 	default:
-		return fmt.Errorf("unknown variant %q, expected {{range $i, $v := .OneOfVariants}}{{if $i}} or {{end}}'{{.DiscriminatorValue}}'{{end}}", d.Type)
+		return fmt.Errorf("unknown variant %q, expected {{range $i, $v := .Variants.Variants}}{{if $i}} or {{end}}'{{.DiscriminatorValue}}'{{end}}", d.Type)
 	}
 	if err := json.Unmarshal(data, value); err != nil {
 		return err
 	}
-	v.{{.OneOfValueFieldName}} = value
+	v.{{.Variants.ValueFieldName}} = value
 	return nil
 }
 
 func (v {{.Name}}) MarshalJSON() ([]byte, error) {
 	m := make(map[string]any)
-	m["{{.OneOfDiscriminator}}"] = v.{{.OneOfDiscriminatorMethod}}()
-	if v.{{.OneOfValueFieldName}} != nil {
-		valueBytes, err := json.Marshal(v.{{.OneOfValueFieldName}})
+	m["{{.Variants.Discriminator}}"] = v.{{.Variants.DiscriminatorMethod}}()
+	if v.{{.Variants.ValueFieldName}} != nil {
+		valueBytes, err := json.Marshal(v.{{.Variants.ValueFieldName}})
 		if err != nil {
 			return nil, err
 		}
@@ -76,10 +76,10 @@ func (v {{.Name}}) MarshalJSON() ([]byte, error) {
 }
 {{- end}}
 
-{{else if and (eq .Type "struct") .OneOfMarker}}
+{{else if and (eq .Type "struct") .VariantMarker}}
 type {{.Name}} struct{}
 
-func ({{.Name}}) {{.OneOfMarker}}() {}
+func ({{.Name}}) {{.VariantMarker.Method}}() {}
 
 {{else}}
 type {{.Name}} {{.Type}}

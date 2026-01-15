@@ -60,30 +60,43 @@ type TypeTemplate struct {
 	Type string
 	// Fields holds the information for the field
 	Fields []TypeField
-	// OneOfMarker is the marker method name for interface types (e.g., "isAddressSelectorVariant")
-	OneOfMarker string
-	// OneOfMarkerType is the interface type name for variant structs (e.g.,
-	// "addressSelectorVariant")
-	OneOfMarkerType string
-	// OneOfDiscriminator is the discriminator property name for oneOf types (e.g., "type")
-	OneOfDiscriminator string
-	// OneOfDiscriminatorMethod is the method name that returns the discriminator (e.g., "Type")
-	OneOfDiscriminatorMethod string
-	// OneOfDiscriminatorType is the type of the discriminator (e.g., "FieldValueType")
-	OneOfDiscriminatorType string
-	// OneOfValueField is the value property name for oneOf types (e.g., "value")
-	OneOfValueField string
-	// OneOfValueFieldName is the Go field name for the value field (e.g., "Value")
-	OneOfValueFieldName string
-	// OneOfVariantType is the interface type for the Value field (e.g., "addressSelectorVariant")
-	OneOfVariantType string
-	// OneOfVariants holds discriminator value -> variant type name mapping for JSON
-	// marshal/unmarshal
-	OneOfVariants []OneOfVariant
+	// VariantMarker is set when this type is part of a tagged union: either the marker
+	// interface itself (e.g., privateIpStackVariant) or a variant struct that implements
+	// it (e.g., PrivateIpStackV4, PrivateIpStackV6, PrivateIpStackDualStack).
+	VariantMarker *VariantMarker
+	// Variants is set when this type represents a tagged union (e.g., PrivateIpStack).
+	Variants *VariantConfig
 }
 
-// OneOfVariant maps a discriminator value to its variant type
-type OneOfVariant struct {
+// VariantMarker describes a type that is a variant of a tagged union interface
+type VariantMarker struct {
+	// Method is the marker method name (e.g., "isPrivateIpStackVariant")
+	Method string
+	// InterfaceType is the interface type name (e.g., "privateIpStackVariant")
+	// Empty for the interface type itself, set for variant structs
+	InterfaceType string
+}
+
+// VariantConfig holds configuration for tagged union types
+type VariantConfig struct {
+	// Discriminator is the JSON property name for the discriminator (e.g., "type")
+	Discriminator string
+	// DiscriminatorMethod is the Go method name that returns the discriminator (e.g., "Type")
+	DiscriminatorMethod string
+	// DiscriminatorType is the enum type for the discriminator (e.g., "PrivateIpStackType")
+	DiscriminatorType string
+	// ValueField is the JSON property name for the value field (e.g., "value")
+	ValueField string
+	// ValueFieldName is the Go field name for the value field (e.g., "Value")
+	ValueFieldName string
+	// VariantType is the interface type for the Value field (e.g., "privateIpStackVariant")
+	VariantType string
+	// Variants holds discriminator value -> variant type name mapping for JSON marshal/unmarshal
+	Variants []Variant
+}
+
+// Variant maps a discriminator value to its variant type
+type Variant struct {
 	DiscriminatorValue     string
 	DiscriminatorEnumValue string
 	TypeName               string
@@ -853,15 +866,15 @@ func createInterfaceOneOf(
 	markerMethod := "is" + typeName + "Variant"
 
 	interfaceTpl := TypeTemplate{
-		Description: fmt.Sprintf("// %s is implemented by %s variants.", interfaceName, typeName),
-		Name:        interfaceName,
-		Type:        "interface",
-		OneOfMarker: markerMethod,
+		Description:   fmt.Sprintf("// %s is implemented by %s variants.", interfaceName, typeName),
+		Name:          interfaceName,
+		Type:          "interface",
+		VariantMarker: &VariantMarker{Method: markerMethod},
 	}
 	typeTpls = append(typeTpls, interfaceTpl)
 
 	// Collect variant info for the main type's JSON methods
-	var variants []OneOfVariant
+	var variants []Variant
 
 	// Create discriminator enum type and variant wrapper types
 	for _, variantRef := range s.OneOf {
@@ -887,7 +900,7 @@ func createInterfaceOneOf(
 		variantTypeName := typeName + strcase.ToCamel(discValue)
 
 		// Track variant for JSON methods
-		variants = append(variants, OneOfVariant{
+		variants = append(variants, Variant{
 			DiscriminatorValue:     discValue,
 			DiscriminatorEnumValue: strcase.ToCamel(discValue),
 			TypeName:               variantTypeName,
@@ -922,12 +935,14 @@ func createInterfaceOneOf(
 		}
 
 		variantTpl := TypeTemplate{
-			Description:     fmt.Sprintf("// %s is a variant of %s.", variantTypeName, typeName),
-			Name:            variantTypeName,
-			Type:            "struct",
-			Fields:          fields,
-			OneOfMarker:     markerMethod,
-			OneOfMarkerType: interfaceName,
+			Description: fmt.Sprintf("// %s is a variant of %s.", variantTypeName, typeName),
+			Name:        variantTypeName,
+			Type:        "struct",
+			Fields:      fields,
+			VariantMarker: &VariantMarker{
+				Method:        markerMethod,
+				InterfaceType: interfaceName,
+			},
 		}
 		typeTpls = append(typeTpls, variantTpl)
 	}
@@ -943,17 +958,19 @@ func createInterfaceOneOf(
 	}
 
 	mainTpl := TypeTemplate{
-		Description:              formatTypeDescription(typeName, s),
-		Name:                     typeName,
-		Type:                     "struct",
-		Fields:                   mainFields,
-		OneOfDiscriminator:       discriminatorKey,
-		OneOfDiscriminatorMethod: strcase.ToCamel(discriminatorKey),
-		OneOfDiscriminatorType:   discriminatorType,
-		OneOfValueField:          valuePropertyName,
-		OneOfValueFieldName:      strcase.ToCamel(valuePropertyName),
-		OneOfVariantType:         interfaceName,
-		OneOfVariants:            variants,
+		Description: formatTypeDescription(typeName, s),
+		Name:        typeName,
+		Type:        "struct",
+		Fields:      mainFields,
+		Variants: &VariantConfig{
+			Discriminator:       discriminatorKey,
+			DiscriminatorMethod: strcase.ToCamel(discriminatorKey),
+			DiscriminatorType:   discriminatorType,
+			ValueField:          valuePropertyName,
+			ValueFieldName:      strcase.ToCamel(valuePropertyName),
+			VariantType:         interfaceName,
+			Variants:            variants,
+		},
 	}
 	typeTpls = append(typeTpls, mainTpl)
 
