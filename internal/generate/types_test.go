@@ -572,14 +572,14 @@ func Test_createOneOf(t *testing.T) {
 						VariantType:         "intOrStringVariant",
 						Variants: []Variant{
 							{
-								DiscriminatorValue:     "int",
-								DiscriminatorEnumValue: "Int",
-								TypeName:               "IntOrStringInt",
+								DiscriminatorValue: "int",
+								TypeSuffix:         "Int",
+								TypeName:           "IntOrStringInt",
 							},
 							{
-								DiscriminatorValue:     "string",
-								DiscriminatorEnumValue: "String",
-								TypeName:               "IntOrStringString",
+								DiscriminatorValue: "string",
+								TypeSuffix:         "String",
+								TypeName:           "IntOrStringString",
 							},
 						},
 					},

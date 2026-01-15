@@ -24,7 +24,7 @@ func (v {{.Name}}) {{.Variants.DiscriminatorMethod}}() {{.Variants.Discriminator
 	switch v.{{.Variants.ValueFieldName}}.(type) {
 	{{- range .Variants.Variants}}
 	case *{{.TypeName}}:
-		return {{$.Variants.DiscriminatorType}}{{.DiscriminatorEnumValue}}
+		return {{$.Variants.DiscriminatorType}}{{.TypeSuffix}}
 	{{- end}}
 	default:
 		return ""

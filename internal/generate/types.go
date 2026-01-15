@@ -95,11 +95,14 @@ type VariantConfig struct {
 	Variants []Variant
 }
 
-// Variant maps a discriminator value to its variant type
+// Variant represents a single variant in a tagged union (oneOf with discriminator).
 type Variant struct {
-	DiscriminatorValue     string
-	DiscriminatorEnumValue string
-	TypeName               string
+	// DiscriminatorValue is the raw JSON tag value (e.g., "ip_net").
+	DiscriminatorValue string
+	// TypeSuffix is the Go-cased suffix used in type and enum names (e.g., "IpNet").
+	TypeSuffix string
+	// TypeName is the full Go type name for this variant (e.g., "RouteDestinationIpNet").
+	TypeName string
 }
 
 // Render renders the TypeTemplate to a Go type.
@@ -850,8 +853,9 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 	return createFlatOneOf(s, name, typeName, multiTypeProps)
 }
 
-// createInterfaceOneOf creates a oneOf type using an interface + variant wrapper types.
-// This is used when variants have the same property name but different types.
+// createInterfaceOneOf creates types representing a tagged union. We build an interface type to
+// represent the `oneOf`, a concrete variant struct for each `oneOf` variant, and a wrapper type
+// with a single field of the interface type.
 func createInterfaceOneOf(
 	s *openapi3.Schema,
 	typeName, discriminatorKey, valuePropertyName string,
@@ -861,10 +865,9 @@ func createInterfaceOneOf(
 
 	discriminatorType := typeName + strcase.ToCamel(discriminatorKey)
 
-	// Create the variant interface
+	// Build the interface type.
 	interfaceName := toLowerFirstLetter(typeName) + "Variant"
 	markerMethod := "is" + typeName + "Variant"
-
 	interfaceTpl := TypeTemplate{
 		Description:   fmt.Sprintf("// %s is implemented by %s variants.", interfaceName, typeName),
 		Name:          interfaceName,
@@ -873,21 +876,19 @@ func createInterfaceOneOf(
 	}
 	typeTpls = append(typeTpls, interfaceTpl)
 
-	// Collect variant info for the main type's JSON methods
 	var variants []Variant
-
-	// Create discriminator enum type and variant wrapper types
 	for _, variantRef := range s.OneOf {
-		// Find the discriminator value for this variant
-		discRef, ok := variantRef.Value.Properties[discriminatorKey]
-		if !ok || len(discRef.Value.Enum) != 1 {
-			continue
+		discProp, ok := variantRef.Value.Properties[discriminatorKey]
+		if !ok || len(discProp.Value.Enum) != 1 {
+			panic(fmt.Sprintf(
+				"[ERROR] Variant in %s oneOf missing discriminator %q or has invalid enum: %+v",
+				typeName, discriminatorKey, variantRef.Value,
+			))
 		}
-		discValue := discRef.Value.Enum[0].(string)
+		discValue := discProp.Value.Enum[0].(string)
 
-		// Create enum constant for discriminator
 		enums, tt, et := createStringEnum(
-			discRef.Value,
+			discProp.Value,
 			collectEnumStringTypes,
 			discriminatorType,
 			discriminatorType,
@@ -896,24 +897,22 @@ func createInterfaceOneOf(
 		typeTpls = append(typeTpls, tt...)
 		enumTpls = append(enumTpls, et...)
 
-		// Create variant wrapper type (e.g., AddressSelectorExplicit)
 		variantTypeName := typeName + strcase.ToCamel(discValue)
-
-		// Track variant for JSON methods
 		variants = append(variants, Variant{
-			DiscriminatorValue:     discValue,
-			DiscriminatorEnumValue: strcase.ToCamel(discValue),
-			TypeName:               variantTypeName,
+			DiscriminatorValue: discValue,
+			TypeSuffix:         strcase.ToCamel(discValue),
+			TypeName:           variantTypeName,
 		})
 
-		// Find the value property in this variant
-		valueRef, hasValue := variantRef.Value.Properties[valuePropertyName]
+		// Find the value property in this variant. `ok` is false for "unit" variants
+		// that carry no data: e.g., RouteTarget's "drop" variant is just {"type": "drop"}.
+		valueRef, ok := variantRef.Value.Properties[valuePropertyName]
 
 		var fields []TypeField
-		if hasValue {
+		if ok {
 			valueType := convertToValidGoType(valuePropertyName, typeName, valueRef)
 
-			// If the value is an inline object (not a $ref), generate its type
+			// If the value is an inline object (not a $ref), generate its type.
 			if valueRef.Ref == "" && valueRef.Value != nil && valueRef.Value.Type != nil &&
 				valueRef.Value.Type.Is("object") {
 				inlineTypeName := typeName + strcase.ToCamel(valuePropertyName)
@@ -947,9 +946,8 @@ func createInterfaceOneOf(
 		typeTpls = append(typeTpls, variantTpl)
 	}
 
-	// Create the main struct with only the interface-typed value field
-	// The discriminator is derived via a Type() method
-	mainFields := []TypeField{
+	// Create the wrapper struct with only the interface-typed value field.
+	wrapperFields := []TypeField{
 		{
 			Name:       strcase.ToCamel(valuePropertyName),
 			Type:       interfaceName,
@@ -957,11 +955,11 @@ func createInterfaceOneOf(
 		},
 	}
 
-	mainTpl := TypeTemplate{
+	wrapperTpl := TypeTemplate{
 		Description: formatTypeDescription(typeName, s),
 		Name:        typeName,
 		Type:        "struct",
-		Fields:      mainFields,
+		Fields:      wrapperFields,
 		Variants: &VariantConfig{
 			Discriminator:       discriminatorKey,
 			DiscriminatorMethod: strcase.ToCamel(discriminatorKey),
@@ -972,13 +970,12 @@ func createInterfaceOneOf(
 			Variants:            variants,
 		},
 	}
-	typeTpls = append(typeTpls, mainTpl)
+	typeTpls = append(typeTpls, wrapperTpl)
 
 	return typeTpls, enumTpls
 }
 
 // createFlatOneOf creates a oneOf type using a flat struct with all properties.
-// Multi-type properties become `any`.
 func createFlatOneOf(
 	s *openapi3.Schema,
 	name, typeName string,
