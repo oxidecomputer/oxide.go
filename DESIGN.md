@@ -154,6 +154,50 @@ params := oxide.InstanceNetworkInterfaceCreateParams{
 }
 ```
 
+**Why wrapper structs?**
+
+We represent each variant type using a wrapper struct, e.g.
+
+```go
+type PrivateIpStackV4 struct {
+    Value PrivateIpv4Stack `json:"value"`
+}
+```
+
+The wrapper struct implements the marker method for the relevant interface:
+
+```go
+func (PrivateIpStackV4) isPrivateIpStackVariant() {}
+```
+
+Why use wrapper structs? For some variant types, we could omit the wrapper and implement the marker
+method on the wrapped type instead:
+
+```go
+func (PrivateIpv4Stack) isPrivateIpStackVariant() {}
+```
+
+Primitive types can't implement methods, but we could use type definitions instead:
+
+```go
+type MyPrimitiveVariant string
+
+func (MyPrimitiveVariant) isMyTypeVariant() {}
+```
+
+However, this presents a few problems:
+
+- Some variant types are `interface{}` or `any`. We can't implement methods on `any`.
+- Some variant types are represented by pointers to primitive types, like `*bool` or `*int`. We
+  can't implement methods on pointers to primitive types.
+
+We could represent some variant types with wrapper structs and others as unwrapped structs or type
+definitions. But the complexity of conditionally wrapping variant types is potentially more
+confusing to end users than consistent use of wrappers.
+
+Note: we can reconsider this choice if we're able to drop the use of `interface{}` types and
+pointers to primitives for variants, and if we're confident that those cases won't emerge again.
+
 ### Discriminator with multiple value fields
 
 When a `oneOf` has a discriminator field and _multiple_ value fields, we use a flat struct that
