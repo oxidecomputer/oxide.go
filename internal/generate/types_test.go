@@ -520,27 +520,40 @@ func Test_createOneOf(t *testing.T) {
 			},
 			typeName: "IntOrString",
 			wantTypes: []TypeTemplate{
+				// Interface for variant types
+				{
+					Description:   "// intOrStringVariant is implemented by IntOrString variants.",
+					Name:          "intOrStringVariant",
+					Type:          "interface",
+					VariantMarker: &VariantMarker{Method: "isIntOrStringVariant"},
+				},
 				{
 					Description: "// IntOrStringType is the type definition for a IntOrStringType.",
 					Name:        "IntOrStringType",
 					Type:        "string",
 				},
 				{
-					Description: "// IntOrStringInt is the type definition for a IntOrStringInt.\n//\n// Required fields:\n// - Type\n// - Value",
+					Description: "// IntOrStringInt is a variant of IntOrString.",
 					Name:        "IntOrStringInt",
 					Type:        "struct",
 					Fields: []TypeField{
-						{Name: "Type", Type: "IntOrStringType", MarshalKey: "type", Required: true},
 						{Name: "Value", Type: "*int", MarshalKey: "value", Required: true},
+					},
+					VariantMarker: &VariantMarker{
+						Method:        "isIntOrStringVariant",
+						InterfaceType: "intOrStringVariant",
 					},
 				},
 				{
-					Description: "// IntOrStringString is the type definition for a IntOrStringString.\n//\n// Required fields:\n// - Type\n// - Value",
+					Description: "// IntOrStringString is a variant of IntOrString.",
 					Name:        "IntOrStringString",
 					Type:        "struct",
 					Fields: []TypeField{
-						{Name: "Type", Type: "IntOrStringType", MarshalKey: "type", Required: true},
 						{Name: "Value", Type: "string", MarshalKey: "value", Required: true},
+					},
+					VariantMarker: &VariantMarker{
+						Method:        "isIntOrStringVariant",
+						InterfaceType: "intOrStringVariant",
 					},
 				},
 				{
@@ -548,17 +561,26 @@ func Test_createOneOf(t *testing.T) {
 					Name:        "IntOrString",
 					Type:        "struct",
 					Fields: []TypeField{
-						{
-							Name:                "Type",
-							Type:                "IntOrStringType",
-							MarshalKey:          "type",
-							FallbackDescription: true,
-						},
-						{
-							Name:                "Value",
-							Type:                "any",
-							MarshalKey:          "value",
-							FallbackDescription: true,
+						{Name: "Value", Type: "intOrStringVariant", MarshalKey: "value"},
+					},
+					Variants: &VariantConfig{
+						Discriminator:       "type",
+						DiscriminatorMethod: "Type",
+						DiscriminatorType:   "IntOrStringType",
+						ValueField:          "value",
+						ValueFieldName:      "Value",
+						VariantType:         "intOrStringVariant",
+						Variants: []Variant{
+							{
+								DiscriminatorValue: "int",
+								TypeSuffix:         "Int",
+								TypeName:           "IntOrStringInt",
+							},
+							{
+								DiscriminatorValue: "string",
+								TypeSuffix:         "String",
+								TypeName:           "IntOrStringString",
+							},
 						},
 					},
 				},
