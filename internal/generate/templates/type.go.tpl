@@ -74,6 +74,16 @@ func (v {{.Name}}) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(m)
 }
+
+{{- range .Variants.Variants}}
+
+// As{{.TypeSuffix}} attempts to convert the {{$.Name}} to a {{.TypeName}}.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v {{$.Name}}) As{{.TypeSuffix}}() (*{{.TypeName}}, bool) {
+	val, ok := v.{{$.Variants.ValueFieldName}}.(*{{.TypeName}})
+	return val, ok
+}
+{{- end}}
 {{- end}}
 
 {{else if and (eq .Type "struct") .VariantMarker}}

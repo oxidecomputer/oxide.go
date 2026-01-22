@@ -2412,6 +2412,202 @@ func (v Datum) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+// AsBool attempts to convert the Datum to a DatumBool.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v Datum) AsBool() (*DatumBool, bool) {
+	val, ok := v.Datum.(*DatumBool)
+	return val, ok
+}
+
+// AsI8 attempts to convert the Datum to a DatumI8.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v Datum) AsI8() (*DatumI8, bool) {
+	val, ok := v.Datum.(*DatumI8)
+	return val, ok
+}
+
+// AsU8 attempts to convert the Datum to a DatumU8.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v Datum) AsU8() (*DatumU8, bool) {
+	val, ok := v.Datum.(*DatumU8)
+	return val, ok
+}
+
+// AsI16 attempts to convert the Datum to a DatumI16.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v Datum) AsI16() (*DatumI16, bool) {
+	val, ok := v.Datum.(*DatumI16)
+	return val, ok
+}
+
+// AsU16 attempts to convert the Datum to a DatumU16.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v Datum) AsU16() (*DatumU16, bool) {
+	val, ok := v.Datum.(*DatumU16)
+	return val, ok
+}
+
+// AsI32 attempts to convert the Datum to a DatumI32.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v Datum) AsI32() (*DatumI32, bool) {
+	val, ok := v.Datum.(*DatumI32)
+	return val, ok
+}
+
+// AsU32 attempts to convert the Datum to a DatumU32.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v Datum) AsU32() (*DatumU32, bool) {
+	val, ok := v.Datum.(*DatumU32)
+	return val, ok
+}
+
+// AsI64 attempts to convert the Datum to a DatumI64.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v Datum) AsI64() (*DatumI64, bool) {
+	val, ok := v.Datum.(*DatumI64)
+	return val, ok
+}
+
+// AsU64 attempts to convert the Datum to a DatumU64.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v Datum) AsU64() (*DatumU64, bool) {
+	val, ok := v.Datum.(*DatumU64)
+	return val, ok
+}
+
+// AsF32 attempts to convert the Datum to a DatumF32.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v Datum) AsF32() (*DatumF32, bool) {
+	val, ok := v.Datum.(*DatumF32)
+	return val, ok
+}
+
+// AsF64 attempts to convert the Datum to a DatumF64.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v Datum) AsF64() (*DatumF64, bool) {
+	val, ok := v.Datum.(*DatumF64)
+	return val, ok
+}
+
+// AsString attempts to convert the Datum to a DatumString.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v Datum) AsString() (*DatumString, bool) {
+	val, ok := v.Datum.(*DatumString)
+	return val, ok
+}
+
+// AsBytes attempts to convert the Datum to a DatumBytes.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v Datum) AsBytes() (*DatumBytes, bool) {
+	val, ok := v.Datum.(*DatumBytes)
+	return val, ok
+}
+
+// AsCumulativeI64 attempts to convert the Datum to a DatumCumulativeI64.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v Datum) AsCumulativeI64() (*DatumCumulativeI64, bool) {
+	val, ok := v.Datum.(*DatumCumulativeI64)
+	return val, ok
+}
+
+// AsCumulativeU64 attempts to convert the Datum to a DatumCumulativeU64.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v Datum) AsCumulativeU64() (*DatumCumulativeU64, bool) {
+	val, ok := v.Datum.(*DatumCumulativeU64)
+	return val, ok
+}
+
+// AsCumulativeF32 attempts to convert the Datum to a DatumCumulativeF32.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v Datum) AsCumulativeF32() (*DatumCumulativeF32, bool) {
+	val, ok := v.Datum.(*DatumCumulativeF32)
+	return val, ok
+}
+
+// AsCumulativeF64 attempts to convert the Datum to a DatumCumulativeF64.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v Datum) AsCumulativeF64() (*DatumCumulativeF64, bool) {
+	val, ok := v.Datum.(*DatumCumulativeF64)
+	return val, ok
+}
+
+// AsHistogramI8 attempts to convert the Datum to a DatumHistogramI8.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v Datum) AsHistogramI8() (*DatumHistogramI8, bool) {
+	val, ok := v.Datum.(*DatumHistogramI8)
+	return val, ok
+}
+
+// AsHistogramU8 attempts to convert the Datum to a DatumHistogramU8.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v Datum) AsHistogramU8() (*DatumHistogramU8, bool) {
+	val, ok := v.Datum.(*DatumHistogramU8)
+	return val, ok
+}
+
+// AsHistogramI16 attempts to convert the Datum to a DatumHistogramI16.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v Datum) AsHistogramI16() (*DatumHistogramI16, bool) {
+	val, ok := v.Datum.(*DatumHistogramI16)
+	return val, ok
+}
+
+// AsHistogramU16 attempts to convert the Datum to a DatumHistogramU16.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v Datum) AsHistogramU16() (*DatumHistogramU16, bool) {
+	val, ok := v.Datum.(*DatumHistogramU16)
+	return val, ok
+}
+
+// AsHistogramI32 attempts to convert the Datum to a DatumHistogramI32.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v Datum) AsHistogramI32() (*DatumHistogramI32, bool) {
+	val, ok := v.Datum.(*DatumHistogramI32)
+	return val, ok
+}
+
+// AsHistogramU32 attempts to convert the Datum to a DatumHistogramU32.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v Datum) AsHistogramU32() (*DatumHistogramU32, bool) {
+	val, ok := v.Datum.(*DatumHistogramU32)
+	return val, ok
+}
+
+// AsHistogramI64 attempts to convert the Datum to a DatumHistogramI64.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v Datum) AsHistogramI64() (*DatumHistogramI64, bool) {
+	val, ok := v.Datum.(*DatumHistogramI64)
+	return val, ok
+}
+
+// AsHistogramU64 attempts to convert the Datum to a DatumHistogramU64.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v Datum) AsHistogramU64() (*DatumHistogramU64, bool) {
+	val, ok := v.Datum.(*DatumHistogramU64)
+	return val, ok
+}
+
+// AsHistogramF32 attempts to convert the Datum to a DatumHistogramF32.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v Datum) AsHistogramF32() (*DatumHistogramF32, bool) {
+	val, ok := v.Datum.(*DatumHistogramF32)
+	return val, ok
+}
+
+// AsHistogramF64 attempts to convert the Datum to a DatumHistogramF64.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v Datum) AsHistogramF64() (*DatumHistogramF64, bool) {
+	val, ok := v.Datum.(*DatumHistogramF64)
+	return val, ok
+}
+
+// AsMissing attempts to convert the Datum to a DatumMissing.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v Datum) AsMissing() (*DatumMissing, bool) {
+	val, ok := v.Datum.(*DatumMissing)
+	return val, ok
+}
+
 // DerEncodedKeyPair is the type definition for a DerEncodedKeyPair.
 //
 // Required fields:
@@ -3216,6 +3412,90 @@ func (v FieldValue) MarshalJSON() ([]byte, error) {
 		}
 	}
 	return json.Marshal(m)
+}
+
+// AsString attempts to convert the FieldValue to a FieldValueString.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v FieldValue) AsString() (*FieldValueString, bool) {
+	val, ok := v.Value.(*FieldValueString)
+	return val, ok
+}
+
+// AsI8 attempts to convert the FieldValue to a FieldValueI8.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v FieldValue) AsI8() (*FieldValueI8, bool) {
+	val, ok := v.Value.(*FieldValueI8)
+	return val, ok
+}
+
+// AsU8 attempts to convert the FieldValue to a FieldValueU8.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v FieldValue) AsU8() (*FieldValueU8, bool) {
+	val, ok := v.Value.(*FieldValueU8)
+	return val, ok
+}
+
+// AsI16 attempts to convert the FieldValue to a FieldValueI16.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v FieldValue) AsI16() (*FieldValueI16, bool) {
+	val, ok := v.Value.(*FieldValueI16)
+	return val, ok
+}
+
+// AsU16 attempts to convert the FieldValue to a FieldValueU16.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v FieldValue) AsU16() (*FieldValueU16, bool) {
+	val, ok := v.Value.(*FieldValueU16)
+	return val, ok
+}
+
+// AsI32 attempts to convert the FieldValue to a FieldValueI32.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v FieldValue) AsI32() (*FieldValueI32, bool) {
+	val, ok := v.Value.(*FieldValueI32)
+	return val, ok
+}
+
+// AsU32 attempts to convert the FieldValue to a FieldValueU32.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v FieldValue) AsU32() (*FieldValueU32, bool) {
+	val, ok := v.Value.(*FieldValueU32)
+	return val, ok
+}
+
+// AsI64 attempts to convert the FieldValue to a FieldValueI64.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v FieldValue) AsI64() (*FieldValueI64, bool) {
+	val, ok := v.Value.(*FieldValueI64)
+	return val, ok
+}
+
+// AsU64 attempts to convert the FieldValue to a FieldValueU64.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v FieldValue) AsU64() (*FieldValueU64, bool) {
+	val, ok := v.Value.(*FieldValueU64)
+	return val, ok
+}
+
+// AsIpAddr attempts to convert the FieldValue to a FieldValueIpAddr.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v FieldValue) AsIpAddr() (*FieldValueIpAddr, bool) {
+	val, ok := v.Value.(*FieldValueIpAddr)
+	return val, ok
+}
+
+// AsUuid attempts to convert the FieldValue to a FieldValueUuid.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v FieldValue) AsUuid() (*FieldValueUuid, bool) {
+	val, ok := v.Value.(*FieldValueUuid)
+	return val, ok
+}
+
+// AsBool attempts to convert the FieldValue to a FieldValueBool.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v FieldValue) AsBool() (*FieldValueBool, bool) {
+	val, ok := v.Value.(*FieldValueBool)
+	return val, ok
 }
 
 // FinalizeDisk is parameters for finalizing a disk
@@ -5693,6 +5973,27 @@ func (v PrivateIpConfig) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+// AsV4 attempts to convert the PrivateIpConfig to a PrivateIpConfigV4.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v PrivateIpConfig) AsV4() (*PrivateIpConfigV4, bool) {
+	val, ok := v.Value.(*PrivateIpConfigV4)
+	return val, ok
+}
+
+// AsV6 attempts to convert the PrivateIpConfig to a PrivateIpConfigV6.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v PrivateIpConfig) AsV6() (*PrivateIpConfigV6, bool) {
+	val, ok := v.Value.(*PrivateIpConfigV6)
+	return val, ok
+}
+
+// AsDualStack attempts to convert the PrivateIpConfig to a PrivateIpConfigDualStack.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v PrivateIpConfig) AsDualStack() (*PrivateIpConfigDualStack, bool) {
+	val, ok := v.Value.(*PrivateIpConfigDualStack)
+	return val, ok
+}
+
 // privateIpStackVariant is implemented by PrivateIpStack variants.
 type privateIpStackVariant interface {
 	isPrivateIpStackVariant()
@@ -5800,6 +6101,27 @@ func (v PrivateIpStack) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+// AsV4 attempts to convert the PrivateIpStack to a PrivateIpStackV4.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v PrivateIpStack) AsV4() (*PrivateIpStackV4, bool) {
+	val, ok := v.Value.(*PrivateIpStackV4)
+	return val, ok
+}
+
+// AsV6 attempts to convert the PrivateIpStack to a PrivateIpStackV6.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v PrivateIpStack) AsV6() (*PrivateIpStackV6, bool) {
+	val, ok := v.Value.(*PrivateIpStackV6)
+	return val, ok
+}
+
+// AsDualStack attempts to convert the PrivateIpStack to a PrivateIpStackDualStack.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v PrivateIpStack) AsDualStack() (*PrivateIpStackDualStack, bool) {
+	val, ok := v.Value.(*PrivateIpStackDualStack)
+	return val, ok
+}
+
 // privateIpStackCreateVariant is implemented by PrivateIpStackCreate variants.
 type privateIpStackCreateVariant interface {
 	isPrivateIpStackCreateVariant()
@@ -5905,6 +6227,27 @@ func (v PrivateIpStackCreate) MarshalJSON() ([]byte, error) {
 		}
 	}
 	return json.Marshal(m)
+}
+
+// AsV4 attempts to convert the PrivateIpStackCreate to a PrivateIpStackCreateV4.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v PrivateIpStackCreate) AsV4() (*PrivateIpStackCreateV4, bool) {
+	val, ok := v.Value.(*PrivateIpStackCreateV4)
+	return val, ok
+}
+
+// AsV6 attempts to convert the PrivateIpStackCreate to a PrivateIpStackCreateV6.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v PrivateIpStackCreate) AsV6() (*PrivateIpStackCreateV6, bool) {
+	val, ok := v.Value.(*PrivateIpStackCreateV6)
+	return val, ok
+}
+
+// AsDualStack attempts to convert the PrivateIpStackCreate to a PrivateIpStackCreateDualStack.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v PrivateIpStackCreate) AsDualStack() (*PrivateIpStackCreateDualStack, bool) {
+	val, ok := v.Value.(*PrivateIpStackCreateDualStack)
+	return val, ok
 }
 
 // PrivateIpv4Config is vPC-private IPv4 configuration for a network interface.
@@ -6349,6 +6692,34 @@ func (v RouteDestination) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+// AsIp attempts to convert the RouteDestination to a RouteDestinationIp.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v RouteDestination) AsIp() (*RouteDestinationIp, bool) {
+	val, ok := v.Value.(*RouteDestinationIp)
+	return val, ok
+}
+
+// AsIpNet attempts to convert the RouteDestination to a RouteDestinationIpNet.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v RouteDestination) AsIpNet() (*RouteDestinationIpNet, bool) {
+	val, ok := v.Value.(*RouteDestinationIpNet)
+	return val, ok
+}
+
+// AsVpc attempts to convert the RouteDestination to a RouteDestinationVpc.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v RouteDestination) AsVpc() (*RouteDestinationVpc, bool) {
+	val, ok := v.Value.(*RouteDestinationVpc)
+	return val, ok
+}
+
+// AsSubnet attempts to convert the RouteDestination to a RouteDestinationSubnet.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v RouteDestination) AsSubnet() (*RouteDestinationSubnet, bool) {
+	val, ok := v.Value.(*RouteDestinationSubnet)
+	return val, ok
+}
+
 // routeTargetVariant is implemented by RouteTarget variants.
 type routeTargetVariant interface {
 	isRouteTargetVariant()
@@ -6484,6 +6855,48 @@ func (v RouteTarget) MarshalJSON() ([]byte, error) {
 		}
 	}
 	return json.Marshal(m)
+}
+
+// AsIp attempts to convert the RouteTarget to a RouteTargetIp.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v RouteTarget) AsIp() (*RouteTargetIp, bool) {
+	val, ok := v.Value.(*RouteTargetIp)
+	return val, ok
+}
+
+// AsVpc attempts to convert the RouteTarget to a RouteTargetVpc.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v RouteTarget) AsVpc() (*RouteTargetVpc, bool) {
+	val, ok := v.Value.(*RouteTargetVpc)
+	return val, ok
+}
+
+// AsSubnet attempts to convert the RouteTarget to a RouteTargetSubnet.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v RouteTarget) AsSubnet() (*RouteTargetSubnet, bool) {
+	val, ok := v.Value.(*RouteTargetSubnet)
+	return val, ok
+}
+
+// AsInstance attempts to convert the RouteTarget to a RouteTargetInstance.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v RouteTarget) AsInstance() (*RouteTargetInstance, bool) {
+	val, ok := v.Value.(*RouteTargetInstance)
+	return val, ok
+}
+
+// AsInternetGateway attempts to convert the RouteTarget to a RouteTargetInternetGateway.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v RouteTarget) AsInternetGateway() (*RouteTargetInternetGateway, bool) {
+	val, ok := v.Value.(*RouteTargetInternetGateway)
+	return val, ok
+}
+
+// AsDrop attempts to convert the RouteTarget to a RouteTargetDrop.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v RouteTarget) AsDrop() (*RouteTargetDrop, bool) {
+	val, ok := v.Value.(*RouteTargetDrop)
+	return val, ok
 }
 
 // RouterRoute is a route defines a rule that governs where traffic should be sent based on its destination.
@@ -8263,6 +8676,48 @@ func (v ValueArray) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+// AsInteger attempts to convert the ValueArray to a ValueArrayInteger.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v ValueArray) AsInteger() (*ValueArrayInteger, bool) {
+	val, ok := v.Values.(*ValueArrayInteger)
+	return val, ok
+}
+
+// AsDouble attempts to convert the ValueArray to a ValueArrayDouble.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v ValueArray) AsDouble() (*ValueArrayDouble, bool) {
+	val, ok := v.Values.(*ValueArrayDouble)
+	return val, ok
+}
+
+// AsBoolean attempts to convert the ValueArray to a ValueArrayBoolean.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v ValueArray) AsBoolean() (*ValueArrayBoolean, bool) {
+	val, ok := v.Values.(*ValueArrayBoolean)
+	return val, ok
+}
+
+// AsString attempts to convert the ValueArray to a ValueArrayString.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v ValueArray) AsString() (*ValueArrayString, bool) {
+	val, ok := v.Values.(*ValueArrayString)
+	return val, ok
+}
+
+// AsIntegerDistribution attempts to convert the ValueArray to a ValueArrayIntegerDistribution.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v ValueArray) AsIntegerDistribution() (*ValueArrayIntegerDistribution, bool) {
+	val, ok := v.Values.(*ValueArrayIntegerDistribution)
+	return val, ok
+}
+
+// AsDoubleDistribution attempts to convert the ValueArray to a ValueArrayDoubleDistribution.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v ValueArray) AsDoubleDistribution() (*ValueArrayDoubleDistribution, bool) {
+	val, ok := v.Values.(*ValueArrayDoubleDistribution)
+	return val, ok
+}
+
 // Values is a single list of values, for one dimension of a timeseries.
 //
 // Required fields:
@@ -8547,6 +9002,41 @@ func (v VpcFirewallRuleHostFilter) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+// AsVpc attempts to convert the VpcFirewallRuleHostFilter to a VpcFirewallRuleHostFilterVpc.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v VpcFirewallRuleHostFilter) AsVpc() (*VpcFirewallRuleHostFilterVpc, bool) {
+	val, ok := v.Value.(*VpcFirewallRuleHostFilterVpc)
+	return val, ok
+}
+
+// AsSubnet attempts to convert the VpcFirewallRuleHostFilter to a VpcFirewallRuleHostFilterSubnet.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v VpcFirewallRuleHostFilter) AsSubnet() (*VpcFirewallRuleHostFilterSubnet, bool) {
+	val, ok := v.Value.(*VpcFirewallRuleHostFilterSubnet)
+	return val, ok
+}
+
+// AsInstance attempts to convert the VpcFirewallRuleHostFilter to a VpcFirewallRuleHostFilterInstance.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v VpcFirewallRuleHostFilter) AsInstance() (*VpcFirewallRuleHostFilterInstance, bool) {
+	val, ok := v.Value.(*VpcFirewallRuleHostFilterInstance)
+	return val, ok
+}
+
+// AsIp attempts to convert the VpcFirewallRuleHostFilter to a VpcFirewallRuleHostFilterIp.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v VpcFirewallRuleHostFilter) AsIp() (*VpcFirewallRuleHostFilterIp, bool) {
+	val, ok := v.Value.(*VpcFirewallRuleHostFilterIp)
+	return val, ok
+}
+
+// AsIpNet attempts to convert the VpcFirewallRuleHostFilter to a VpcFirewallRuleHostFilterIpNet.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v VpcFirewallRuleHostFilter) AsIpNet() (*VpcFirewallRuleHostFilterIpNet, bool) {
+	val, ok := v.Value.(*VpcFirewallRuleHostFilterIpNet)
+	return val, ok
+}
+
 // VpcFirewallRuleProtocolType is the type definition for a VpcFirewallRuleProtocolType.
 type VpcFirewallRuleProtocolType string
 
@@ -8712,6 +9202,41 @@ func (v VpcFirewallRuleTarget) MarshalJSON() ([]byte, error) {
 		}
 	}
 	return json.Marshal(m)
+}
+
+// AsVpc attempts to convert the VpcFirewallRuleTarget to a VpcFirewallRuleTargetVpc.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v VpcFirewallRuleTarget) AsVpc() (*VpcFirewallRuleTargetVpc, bool) {
+	val, ok := v.Value.(*VpcFirewallRuleTargetVpc)
+	return val, ok
+}
+
+// AsSubnet attempts to convert the VpcFirewallRuleTarget to a VpcFirewallRuleTargetSubnet.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v VpcFirewallRuleTarget) AsSubnet() (*VpcFirewallRuleTargetSubnet, bool) {
+	val, ok := v.Value.(*VpcFirewallRuleTargetSubnet)
+	return val, ok
+}
+
+// AsInstance attempts to convert the VpcFirewallRuleTarget to a VpcFirewallRuleTargetInstance.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v VpcFirewallRuleTarget) AsInstance() (*VpcFirewallRuleTargetInstance, bool) {
+	val, ok := v.Value.(*VpcFirewallRuleTargetInstance)
+	return val, ok
+}
+
+// AsIp attempts to convert the VpcFirewallRuleTarget to a VpcFirewallRuleTargetIp.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v VpcFirewallRuleTarget) AsIp() (*VpcFirewallRuleTargetIp, bool) {
+	val, ok := v.Value.(*VpcFirewallRuleTargetIp)
+	return val, ok
+}
+
+// AsIpNet attempts to convert the VpcFirewallRuleTarget to a VpcFirewallRuleTargetIpNet.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v VpcFirewallRuleTarget) AsIpNet() (*VpcFirewallRuleTargetIpNet, bool) {
+	val, ok := v.Value.(*VpcFirewallRuleTargetIpNet)
+	return val, ok
 }
 
 // VpcFirewallRuleUpdate is a single rule in a VPC firewall
