@@ -27,6 +27,47 @@ type Address struct {
 	VlanId *int `json:"vlan_id,omitempty" yaml:"vlan_id,omitempty"`
 }
 
+// AddressAllocatorType is the type definition for a AddressAllocatorType.
+type AddressAllocatorType string
+
+// AddressAllocatorExplicit is reserve a specific IP address. The pool is inferred from the address since IP
+// pools cannot have overlapping ranges.
+//
+// Required fields:
+// - Ip
+// - Type
+type AddressAllocatorExplicit struct {
+	// Ip is the IP address to reserve.
+	Ip   string               `json:"ip" yaml:"ip"`
+	Type AddressAllocatorType `json:"type" yaml:"type"`
+}
+
+// AddressAllocatorAuto is automatically allocate an IP address from a pool.
+//
+// Required fields:
+// - Type
+type AddressAllocatorAuto struct {
+	// PoolSelector is pool selection.
+	//
+	// If omitted, the silo's default pool is used. If the silo has default pools for both IPv4 and IPv6, the request
+	// will fail unless `ip_version` is specified.
+	PoolSelector PoolSelector         `json:"pool_selector,omitempty" yaml:"pool_selector,omitempty"`
+	Type         AddressAllocatorType `json:"type" yaml:"type"`
+}
+
+// AddressAllocator is specify how to allocate a floating IP address.
+type AddressAllocator struct {
+	// Ip is the IP address to reserve.
+	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
+	// Type is the type definition for a Type.
+	Type AddressAllocatorType `json:"type,omitempty" yaml:"type,omitempty"`
+	// PoolSelector is pool selection.
+	//
+	// If omitted, the silo's default pool is used. If the silo has default pools for both IPv4 and IPv6, the request
+	// will fail unless `ip_version` is specified.
+	PoolSelector PoolSelector `json:"pool_selector,omitempty" yaml:"pool_selector,omitempty"`
+}
+
 // AddressConfig is a set of addresses associated with a port configuration.
 //
 // Required fields:
@@ -160,52 +201,6 @@ type AddressLotViewResponse struct {
 	Blocks []AddressLotBlock `json:"blocks" yaml:"blocks"`
 	// Lot is the address lot.
 	Lot AddressLot `json:"lot" yaml:"lot"`
-}
-
-// AddressSelectorType is the type definition for a AddressSelectorType.
-type AddressSelectorType string
-
-// AddressSelectorExplicit is reserve a specific IP address.
-//
-// Required fields:
-// - Ip
-// - Type
-type AddressSelectorExplicit struct {
-	// Ip is the IP address to reserve. Must be available in the pool.
-	Ip string `json:"ip" yaml:"ip"`
-	// Pool is the pool containing this address. If not specified, the default pool for the address's IP version
-	// is used.
-	Pool NameOrId            `json:"pool,omitempty" yaml:"pool,omitempty"`
-	Type AddressSelectorType `json:"type" yaml:"type"`
-}
-
-// AddressSelectorAuto is automatically allocate an IP address from a specified pool.
-//
-// Required fields:
-// - Type
-type AddressSelectorAuto struct {
-	// PoolSelector is pool selection.
-	//
-	// If omitted, this field uses the silo's default pool. If the silo has default pools for both IPv4 and IPv6,
-	// the request will fail unless `ip_version` is specified in the pool selector.
-	PoolSelector PoolSelector        `json:"pool_selector,omitempty" yaml:"pool_selector,omitempty"`
-	Type         AddressSelectorType `json:"type" yaml:"type"`
-}
-
-// AddressSelector is specify how to allocate a floating IP address.
-type AddressSelector struct {
-	// Ip is the IP address to reserve. Must be available in the pool.
-	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
-	// Pool is the pool containing this address. If not specified, the default pool for the address's IP version
-	// is used.
-	Pool NameOrId `json:"pool,omitzero" yaml:"pool,omitzero"`
-	// Type is the type definition for a Type.
-	Type AddressSelectorType `json:"type,omitempty" yaml:"type,omitempty"`
-	// PoolSelector is pool selection.
-	//
-	// If omitted, this field uses the silo's default pool. If the silo has default pools for both IPv4 and IPv6,
-	// the request will fail unless `ip_version` is specified in the pool selector.
-	PoolSelector PoolSelector `json:"pool_selector,omitempty" yaml:"pool_selector,omitempty"`
 }
 
 // AffinityGroup is view of an Affinity Group
@@ -743,9 +738,12 @@ type AntiAffinityGroupUpdate struct {
 // - TimeStarted
 type AuditLogEntry struct {
 	Actor AuditLogEntryActor `json:"actor" yaml:"actor"`
-	// AuthMethod is how the user authenticated the request. Possible values are "session_cookie" and "access_token". Optional
-	// because it will not be defined on unauthenticated requests like login attempts.
-	AuthMethod string `json:"auth_method,omitempty" yaml:"auth_method,omitempty"`
+	// AuthMethod is how the user authenticated the request (access token, session, or SCIM token). Null for
+	// unauthenticated requests like login attempts.
+	AuthMethod AuthMethod `json:"auth_method,omitempty" yaml:"auth_method,omitempty"`
+	// CredentialId is iD of the credential used for authentication. Null for unauthenticated requests. The value
+	// of `auth_method` indicates what kind of credential it is (access token, session, or SCIM token).
+	CredentialId string `json:"credential_id,omitempty" yaml:"credential_id,omitempty"`
 	// Id is unique identifier for the audit log entry
 	Id string `json:"id" yaml:"id"`
 	// OperationId is aPI endpoint ID, e.g., `project_create`
@@ -883,6 +881,9 @@ type AuditLogEntryResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+// AuthMethod is console session cookie
+type AuthMethod string
+
 // AuthzScope is timeseries data is limited to fleet readers.
 type AuthzScope string
 
@@ -896,6 +897,21 @@ type Baseboard struct {
 	Part     string `json:"part" yaml:"part"`
 	Revision *int   `json:"revision" yaml:"revision"`
 	Serial   string `json:"serial" yaml:"serial"`
+}
+
+// BaseboardId is a representation of a Baseboard ID as used in the inventory subsystem.
+//
+// This type is essentially the same as a `Baseboard` except it doesn't have a revision or HW type (Gimlet, PC,
+// Unknown).
+//
+// Required fields:
+// - PartNumber
+// - SerialNumber
+type BaseboardId struct {
+	// PartNumber is oxide Part Number
+	PartNumber string `json:"part_number" yaml:"part_number"`
+	// SerialNumber is serial number (unique for a given part number)
+	SerialNumber string `json:"serial_number" yaml:"serial_number"`
 }
 
 // BfdMode is bFD connection mode.
@@ -3197,6 +3213,128 @@ type ExternalIpResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+// ExternalSubnet is an external subnet allocated from a subnet pool
+//
+// Required fields:
+// - Description
+// - Id
+// - Name
+// - ProjectId
+// - Subnet
+// - SubnetPoolId
+// - SubnetPoolMemberId
+// - TimeCreated
+// - TimeModified
+type ExternalSubnet struct {
+	// Description is human-readable free-form text about a resource
+	Description string `json:"description" yaml:"description"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id" yaml:"id"`
+	// InstanceId is the instance this subnet is attached to, if any
+	InstanceId string `json:"instance_id,omitempty" yaml:"instance_id,omitempty"`
+	// Name is unique, mutable, user-controlled identifier for each resource
+	Name Name `json:"name" yaml:"name"`
+	// ProjectId is the project this subnet belongs to
+	ProjectId string `json:"project_id" yaml:"project_id"`
+	// Subnet is the allocated subnet CIDR
+	Subnet IpNet `json:"subnet" yaml:"subnet"`
+	// SubnetPoolId is the subnet pool this was allocated from
+	SubnetPoolId string `json:"subnet_pool_id" yaml:"subnet_pool_id"`
+	// SubnetPoolMemberId is the subnet pool member this subnet corresponds to
+	SubnetPoolMemberId string `json:"subnet_pool_member_id" yaml:"subnet_pool_member_id"`
+	// TimeCreated is timestamp when this resource was created
+	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
+	// TimeModified is timestamp when this resource was last modified
+	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
+}
+
+// ExternalSubnetAllocatorType is the type definition for a ExternalSubnetAllocatorType.
+type ExternalSubnetAllocatorType string
+
+// ExternalSubnetAllocatorExplicit is reserve a specific subnet.
+//
+// Required fields:
+// - Subnet
+// - Type
+type ExternalSubnetAllocatorExplicit struct {
+	// Subnet is the subnet CIDR to reserve. Must be available in the pool.
+	Subnet IpNet                       `json:"subnet" yaml:"subnet"`
+	Type   ExternalSubnetAllocatorType `json:"type" yaml:"type"`
+}
+
+// ExternalSubnetAllocatorAuto is automatically allocate a subnet with the specified prefix length.
+//
+// Required fields:
+// - PrefixLen
+// - Type
+type ExternalSubnetAllocatorAuto struct {
+	// PoolSelector is pool selection.
+	//
+	// If omitted, this field uses the silo's default pool. If the silo has default pools for both IPv4 and IPv6,
+	// the request will fail unless `ip_version` is specified in the pool selector.
+	PoolSelector PoolSelector `json:"pool_selector,omitempty" yaml:"pool_selector,omitempty"`
+	// PrefixLen is the prefix length for the allocated subnet (e.g., 24 for a /24).
+	PrefixLen *int                        `json:"prefix_len" yaml:"prefix_len"`
+	Type      ExternalSubnetAllocatorType `json:"type" yaml:"type"`
+}
+
+// ExternalSubnetAllocator is specify how to allocate an external subnet.
+type ExternalSubnetAllocator struct {
+	// Subnet is the subnet CIDR to reserve. Must be available in the pool.
+	Subnet IpNet `json:"subnet,omitempty" yaml:"subnet,omitempty"`
+	// Type is the type definition for a Type.
+	Type ExternalSubnetAllocatorType `json:"type,omitempty" yaml:"type,omitempty"`
+	// PoolSelector is pool selection.
+	//
+	// If omitted, this field uses the silo's default pool. If the silo has default pools for both IPv4 and IPv6,
+	// the request will fail unless `ip_version` is specified in the pool selector.
+	PoolSelector PoolSelector `json:"pool_selector,omitempty" yaml:"pool_selector,omitempty"`
+	// PrefixLen is the prefix length for the allocated subnet (e.g., 24 for a /24).
+	PrefixLen *int `json:"prefix_len,omitempty" yaml:"prefix_len,omitempty"`
+}
+
+// ExternalSubnetAttach is attach an external subnet to an instance
+//
+// Required fields:
+// - Instance
+type ExternalSubnetAttach struct {
+	// Instance is name or ID of the instance to attach to
+	Instance NameOrId `json:"instance" yaml:"instance"`
+}
+
+// ExternalSubnetCreate is create an external subnet
+//
+// Required fields:
+// - Allocator
+// - Description
+// - Name
+type ExternalSubnetCreate struct {
+	// Allocator is subnet allocation method.
+	Allocator   ExternalSubnetAllocator `json:"allocator" yaml:"allocator"`
+	Description string                  `json:"description" yaml:"description"`
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
+	Name Name `json:"name" yaml:"name"`
+}
+
+// ExternalSubnetResultsPage is a single page of results
+//
+// Required fields:
+// - Items
+type ExternalSubnetResultsPage struct {
+	// Items is list of items on this page of results
+	Items []ExternalSubnet `json:"items" yaml:"items"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// ExternalSubnetUpdate is update an external subnet
+type ExternalSubnetUpdate struct {
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
+}
+
 // FailureDomain is instances are considered co-located if they are on the same sled
 type FailureDomain string
 
@@ -3588,9 +3726,9 @@ type FloatingIpAttach struct {
 // - Description
 // - Name
 type FloatingIpCreate struct {
-	// AddressSelector is iP address allocation method.
-	AddressSelector AddressSelector `json:"address_selector,omitempty" yaml:"address_selector,omitempty"`
-	Description     string          `json:"description" yaml:"description"`
+	// AddressAllocator is iP address allocation method.
+	AddressAllocator AddressAllocator `json:"address_allocator,omitempty" yaml:"address_allocator,omitempty"`
+	Description      string           `json:"description" yaml:"description"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
 	// can be at most 63 characters long.
@@ -5855,7 +5993,7 @@ type PoolSelectorAuto struct {
 	Type      PoolSelectorType `json:"type" yaml:"type"`
 }
 
-// PoolSelector is specify which IP pool to allocate from.
+// PoolSelector is specify which IP or external subnet pool to allocate from.
 type PoolSelector struct {
 	// Pool is the pool to allocate from.
 	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
@@ -6537,6 +6675,44 @@ type Rack struct {
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
+
+// RackMembershipAddSledsRequest is the type definition for a RackMembershipAddSledsRequest.
+//
+// Required fields:
+// - SledIds
+type RackMembershipAddSledsRequest struct {
+	SledIds []BaseboardId `json:"sled_ids" yaml:"sled_ids"`
+}
+
+// RackMembershipChangeState is the type definition for a RackMembershipChangeState.
+type RackMembershipChangeState string
+
+// RackMembershipStatus is status of the rack membership uniquely identified by the (rack_id, version) pair
+//
+// Required fields:
+// - Members
+// - RackId
+// - State
+// - TimeCreated
+// - UnacknowledgedMembers
+// - Version
+type RackMembershipStatus struct {
+	// Members is all members of the rack for this version
+	Members       []BaseboardId             `json:"members" yaml:"members"`
+	RackId        string                    `json:"rack_id" yaml:"rack_id"`
+	State         RackMembershipChangeState `json:"state" yaml:"state"`
+	TimeAborted   *time.Time                `json:"time_aborted,omitempty" yaml:"time_aborted,omitempty"`
+	TimeCommitted *time.Time                `json:"time_committed,omitempty" yaml:"time_committed,omitempty"`
+	TimeCreated   *time.Time                `json:"time_created" yaml:"time_created"`
+	// UnacknowledgedMembers is all members that have not yet confirmed this membership version
+	UnacknowledgedMembers []BaseboardId `json:"unacknowledged_members" yaml:"unacknowledged_members"`
+	// Version is version that uniquely identifies the rack membership at a given point in time
+	Version RackMembershipVersion `json:"version" yaml:"version"`
+}
+
+// RackMembershipVersion is a unique, monotonically increasing number representing the set of active sleds
+// in a rack at a given point in time.
+type RackMembershipVersion uint64
 
 // RackResultsPage is a single page of results
 //
@@ -7665,6 +7841,199 @@ type SshKeyResultsPage struct {
 	Items []SshKey `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// SubnetPool is a pool of subnets for external subnet allocation
+//
+// Required fields:
+// - Description
+// - Id
+// - IpVersion
+// - Name
+// - PoolType
+// - TimeCreated
+// - TimeModified
+type SubnetPool struct {
+	// Description is human-readable free-form text about a resource
+	Description string `json:"description" yaml:"description"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id" yaml:"id"`
+	// IpVersion is the IP version for this pool
+	IpVersion IpVersion `json:"ip_version" yaml:"ip_version"`
+	// Name is unique, mutable, user-controlled identifier for each resource
+	Name Name `json:"name" yaml:"name"`
+	// PoolType is type of subnet pool (unicast or multicast)
+	PoolType IpPoolType `json:"pool_type" yaml:"pool_type"`
+	// TimeCreated is timestamp when this resource was created
+	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
+	// TimeModified is timestamp when this resource was last modified
+	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
+}
+
+// SubnetPoolCreate is create a subnet pool
+//
+// Required fields:
+// - Description
+// - IpVersion
+// - Name
+type SubnetPoolCreate struct {
+	Description string `json:"description" yaml:"description"`
+	// IpVersion is the IP version for this pool (IPv4 or IPv6). All subnets in the pool must match this version.
+	//
+	IpVersion IpVersion `json:"ip_version" yaml:"ip_version"`
+	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
+	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+	// can be at most 63 characters long.
+	Name Name `json:"name" yaml:"name"`
+}
+
+// SubnetPoolLinkSilo is link a subnet pool to a silo
+//
+// Required fields:
+// - IsDefault
+// - Silo
+type SubnetPoolLinkSilo struct {
+	// IsDefault is whether this is the default subnet pool for the silo. When true, external subnet allocations that
+	// don't specify a pool use this one.
+	IsDefault *bool `json:"is_default" yaml:"is_default"`
+	// Silo is the silo to link
+	Silo NameOrId `json:"silo" yaml:"silo"`
+}
+
+// SubnetPoolMember is a member (subnet) within a subnet pool
+//
+// Required fields:
+// - Description
+// - Id
+// - MaxPrefixLength
+// - MinPrefixLength
+// - Name
+// - Subnet
+// - SubnetPoolId
+// - TimeCreated
+// - TimeModified
+type SubnetPoolMember struct {
+	// Description is human-readable free-form text about a resource
+	Description string `json:"description" yaml:"description"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id" yaml:"id"`
+	// MaxPrefixLength is maximum prefix length for allocations from this subnet; a larger prefix means smaller allocations
+	// are allowed (e.g. a /24 prefix yields smaller subnet allocations than a /16 prefix).
+	MaxPrefixLength *int `json:"max_prefix_length" yaml:"max_prefix_length"`
+	// MinPrefixLength is minimum prefix length for allocations from this subnet; a smaller prefix means larger
+	// allocations are allowed (e.g. a /16 prefix yields larger subnet allocations than a /24 prefix).
+	MinPrefixLength *int `json:"min_prefix_length" yaml:"min_prefix_length"`
+	// Name is unique, mutable, user-controlled identifier for each resource
+	Name Name `json:"name" yaml:"name"`
+	// Subnet is the subnet CIDR
+	Subnet IpNet `json:"subnet" yaml:"subnet"`
+	// SubnetPoolId is iD of the parent subnet pool
+	SubnetPoolId string `json:"subnet_pool_id" yaml:"subnet_pool_id"`
+	// TimeCreated is timestamp when this resource was created
+	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
+	// TimeModified is timestamp when this resource was last modified
+	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
+}
+
+// SubnetPoolMemberAdd is add a member (subnet) to a subnet pool
+//
+// Required fields:
+// - Subnet
+type SubnetPoolMemberAdd struct {
+	// MaxPrefixLength is maximum prefix length for allocations from this subnet; a larger prefix means smaller allocations
+	// are allowed (e.g. a /24 prefix yields smaller subnet allocations than a /16 prefix).
+	//
+	// Valid values: 0-32 for IPv4, 0-128 for IPv6. Default if not specified is 32 for IPv4 and 128 for IPv6.
+	MaxPrefixLength *int `json:"max_prefix_length,omitempty" yaml:"max_prefix_length,omitempty"`
+	// MinPrefixLength is minimum prefix length for allocations from this subnet; a smaller prefix means larger
+	// allocations are allowed (e.g. a /16 prefix yields larger subnet allocations than a /24 prefix).
+	//
+	// Valid values: 0-32 for IPv4, 0-128 for IPv6. Default if not specified is equal to the subnet's prefix length.
+	//
+	MinPrefixLength *int `json:"min_prefix_length,omitempty" yaml:"min_prefix_length,omitempty"`
+	// Subnet is the subnet to add to the pool
+	Subnet IpNet `json:"subnet" yaml:"subnet"`
+}
+
+// SubnetPoolMemberRemove is remove a subnet from a pool
+//
+// Required fields:
+// - Subnet
+type SubnetPoolMemberRemove struct {
+	// Subnet is the subnet to remove from the pool. Must match an existing entry exactly.
+	Subnet IpNet `json:"subnet" yaml:"subnet"`
+}
+
+// SubnetPoolMemberResultsPage is a single page of results
+//
+// Required fields:
+// - Items
+type SubnetPoolMemberResultsPage struct {
+	// Items is list of items on this page of results
+	Items []SubnetPoolMember `json:"items" yaml:"items"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// SubnetPoolResultsPage is a single page of results
+//
+// Required fields:
+// - Items
+type SubnetPoolResultsPage struct {
+	// Items is list of items on this page of results
+	Items []SubnetPool `json:"items" yaml:"items"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// SubnetPoolSiloLink is a link between a subnet pool and a silo
+//
+// Required fields:
+// - IsDefault
+// - SiloId
+// - SubnetPoolId
+type SubnetPoolSiloLink struct {
+	IsDefault    *bool  `json:"is_default" yaml:"is_default"`
+	SiloId       string `json:"silo_id" yaml:"silo_id"`
+	SubnetPoolId string `json:"subnet_pool_id" yaml:"subnet_pool_id"`
+}
+
+// SubnetPoolSiloLinkResultsPage is a single page of results
+//
+// Required fields:
+// - Items
+type SubnetPoolSiloLinkResultsPage struct {
+	// Items is list of items on this page of results
+	Items []SubnetPoolSiloLink `json:"items" yaml:"items"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// SubnetPoolSiloUpdate is update a subnet pool's silo link
+//
+// Required fields:
+// - IsDefault
+type SubnetPoolSiloUpdate struct {
+	// IsDefault is whether this is the default subnet pool for the silo
+	IsDefault *bool `json:"is_default" yaml:"is_default"`
+}
+
+// SubnetPoolUpdate is update a subnet pool
+type SubnetPoolUpdate struct {
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
+}
+
+// SubnetPoolUtilization is utilization information for a subnet pool
+//
+// Required fields:
+// - Allocated
+// - Capacity
+type SubnetPoolUtilization struct {
+	// Allocated is number of addresses allocated from this pool
+	Allocated float64 `json:"allocated" yaml:"allocated"`
+	// Capacity is total capacity of this pool in addresses
+	Capacity float64 `json:"capacity" yaml:"capacity"`
 }
 
 // SupportBundleCreate is the type definition for a SupportBundleCreate.
@@ -10129,6 +10498,76 @@ type DiskFinalizeImportParams struct {
 	Body    *FinalizeDisk `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+// ExternalSubnetListParams is the request parameters for ExternalSubnetList
+//
+// Required fields:
+// - Project
+type ExternalSubnetListParams struct {
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// ExternalSubnetCreateParams is the request parameters for ExternalSubnetCreate
+//
+// Required fields:
+// - Project
+// - Body
+type ExternalSubnetCreateParams struct {
+	Project NameOrId              `json:"project,omitempty" yaml:"project,omitempty"`
+	Body    *ExternalSubnetCreate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// ExternalSubnetDeleteParams is the request parameters for ExternalSubnetDelete
+//
+// Required fields:
+// - ExternalSubnet
+type ExternalSubnetDeleteParams struct {
+	ExternalSubnet NameOrId `json:"external_subnet,omitempty" yaml:"external_subnet,omitempty"`
+	Project        NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// ExternalSubnetViewParams is the request parameters for ExternalSubnetView
+//
+// Required fields:
+// - ExternalSubnet
+type ExternalSubnetViewParams struct {
+	ExternalSubnet NameOrId `json:"external_subnet,omitempty" yaml:"external_subnet,omitempty"`
+	Project        NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
+// ExternalSubnetUpdateParams is the request parameters for ExternalSubnetUpdate
+//
+// Required fields:
+// - ExternalSubnet
+// - Body
+type ExternalSubnetUpdateParams struct {
+	ExternalSubnet NameOrId              `json:"external_subnet,omitempty" yaml:"external_subnet,omitempty"`
+	Project        NameOrId              `json:"project,omitempty" yaml:"project,omitempty"`
+	Body           *ExternalSubnetUpdate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// ExternalSubnetAttachParams is the request parameters for ExternalSubnetAttach
+//
+// Required fields:
+// - ExternalSubnet
+// - Body
+type ExternalSubnetAttachParams struct {
+	ExternalSubnet NameOrId              `json:"external_subnet,omitempty" yaml:"external_subnet,omitempty"`
+	Project        NameOrId              `json:"project,omitempty" yaml:"project,omitempty"`
+	Body           *ExternalSubnetAttach `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// ExternalSubnetDetachParams is the request parameters for ExternalSubnetDetach
+//
+// Required fields:
+// - ExternalSubnet
+type ExternalSubnetDetachParams struct {
+	ExternalSubnet NameOrId `json:"external_subnet,omitempty" yaml:"external_subnet,omitempty"`
+	Project        NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+}
+
 // FloatingIpListParams is the request parameters for FloatingIpList
 //
 // Required fields:
@@ -10390,8 +10829,9 @@ type InstanceExternalIpListParams struct {
 // Required fields:
 // - Instance
 type InstanceEphemeralIpDetachParams struct {
-	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
-	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Instance  NameOrId  `json:"instance,omitempty" yaml:"instance,omitempty"`
+	IpVersion IpVersion `json:"ip_version,omitempty" yaml:"ip_version,omitempty"`
+	Project   NameOrId  `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
 // InstanceEphemeralIpAttachParams is the request parameters for InstanceEphemeralIpAttach
@@ -10956,6 +11396,25 @@ type RackListParams struct {
 // - RackId
 type RackViewParams struct {
 	RackId string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
+}
+
+// RackMembershipStatusParams is the request parameters for RackMembershipStatus
+//
+// Required fields:
+// - RackId
+type RackMembershipStatusParams struct {
+	RackId  string                `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
+	Version RackMembershipVersion `json:"version,omitempty" yaml:"version,omitempty"`
+}
+
+// RackMembershipAddSledsParams is the request parameters for RackMembershipAddSleds
+//
+// Required fields:
+// - RackId
+// - Body
+type RackMembershipAddSledsParams struct {
+	RackId string                         `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
+	Body   *RackMembershipAddSledsRequest `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // SledListParams is the request parameters for SledList
@@ -11657,6 +12116,129 @@ type SiloQuotasViewParams struct {
 type SiloQuotasUpdateParams struct {
 	Silo NameOrId          `json:"silo,omitempty" yaml:"silo,omitempty"`
 	Body *SiloQuotasUpdate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// SubnetPoolListParams is the request parameters for SubnetPoolList
+type SubnetPoolListParams struct {
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// SubnetPoolCreateParams is the request parameters for SubnetPoolCreate
+//
+// Required fields:
+// - Body
+type SubnetPoolCreateParams struct {
+	Body *SubnetPoolCreate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// SubnetPoolDeleteParams is the request parameters for SubnetPoolDelete
+//
+// Required fields:
+// - Pool
+type SubnetPoolDeleteParams struct {
+	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
+}
+
+// SubnetPoolViewParams is the request parameters for SubnetPoolView
+//
+// Required fields:
+// - Pool
+type SubnetPoolViewParams struct {
+	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
+}
+
+// SubnetPoolUpdateParams is the request parameters for SubnetPoolUpdate
+//
+// Required fields:
+// - Pool
+// - Body
+type SubnetPoolUpdateParams struct {
+	Pool NameOrId          `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Body *SubnetPoolUpdate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// SubnetPoolMemberListParams is the request parameters for SubnetPoolMemberList
+//
+// Required fields:
+// - Pool
+type SubnetPoolMemberListParams struct {
+	Pool      NameOrId         `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// SubnetPoolMemberAddParams is the request parameters for SubnetPoolMemberAdd
+//
+// Required fields:
+// - Pool
+// - Body
+type SubnetPoolMemberAddParams struct {
+	Pool NameOrId             `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Body *SubnetPoolMemberAdd `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// SubnetPoolMemberRemoveParams is the request parameters for SubnetPoolMemberRemove
+//
+// Required fields:
+// - Pool
+// - Body
+type SubnetPoolMemberRemoveParams struct {
+	Pool NameOrId                `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Body *SubnetPoolMemberRemove `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// SubnetPoolSiloListParams is the request parameters for SubnetPoolSiloList
+//
+// Required fields:
+// - Pool
+type SubnetPoolSiloListParams struct {
+	Pool      NameOrId   `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// SubnetPoolSiloLinkParams is the request parameters for SubnetPoolSiloLink
+//
+// Required fields:
+// - Pool
+// - Body
+type SubnetPoolSiloLinkParams struct {
+	Pool NameOrId            `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Body *SubnetPoolLinkSilo `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// SubnetPoolSiloUnlinkParams is the request parameters for SubnetPoolSiloUnlink
+//
+// Required fields:
+// - Pool
+// - Silo
+type SubnetPoolSiloUnlinkParams struct {
+	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
+}
+
+// SubnetPoolSiloUpdateParams is the request parameters for SubnetPoolSiloUpdate
+//
+// Required fields:
+// - Pool
+// - Silo
+// - Body
+type SubnetPoolSiloUpdateParams struct {
+	Pool NameOrId              `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Silo NameOrId              `json:"silo,omitempty" yaml:"silo,omitempty"`
+	Body *SubnetPoolSiloUpdate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// SubnetPoolUtilizationViewParams is the request parameters for SubnetPoolUtilizationView
+//
+// Required fields:
+// - Pool
+type SubnetPoolUtilizationViewParams struct {
+	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 }
 
 // SystemTimeseriesQueryParams is the request parameters for SystemTimeseriesQuery
@@ -12737,6 +13319,78 @@ func (p *DiskFinalizeImportParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for ExternalSubnetListParams are set
+func (p *ExternalSubnetListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ExternalSubnetCreateParams are set
+func (p *ExternalSubnetCreateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Project), "Project")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ExternalSubnetDeleteParams are set
+func (p *ExternalSubnetDeleteParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.ExternalSubnet), "ExternalSubnet")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ExternalSubnetViewParams are set
+func (p *ExternalSubnetViewParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.ExternalSubnet), "ExternalSubnet")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ExternalSubnetUpdateParams are set
+func (p *ExternalSubnetUpdateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.ExternalSubnet), "ExternalSubnet")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ExternalSubnetAttachParams are set
+func (p *ExternalSubnetAttachParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.ExternalSubnet), "ExternalSubnet")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for ExternalSubnetDetachParams are set
+func (p *ExternalSubnetDetachParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.ExternalSubnet), "ExternalSubnet")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for FloatingIpListParams are set
 func (p *FloatingIpListParams) Validate() error {
 	v := new(Validator)
@@ -13582,6 +14236,27 @@ func (p *RackViewParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for RackMembershipStatusParams are set
+func (p *RackMembershipStatusParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.RackId), "RackId")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for RackMembershipAddSledsParams are set
+func (p *RackMembershipAddSledsParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.RackId), "RackId")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for SledListParams are set
 func (p *SledListParams) Validate() error {
 	v := new(Validator)
@@ -14379,6 +15054,142 @@ func (p *SiloQuotasUpdateParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for SubnetPoolListParams are set
+func (p *SubnetPoolListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SubnetPoolCreateParams are set
+func (p *SubnetPoolCreateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SubnetPoolDeleteParams are set
+func (p *SubnetPoolDeleteParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Pool), "Pool")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SubnetPoolViewParams are set
+func (p *SubnetPoolViewParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Pool), "Pool")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SubnetPoolUpdateParams are set
+func (p *SubnetPoolUpdateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Pool), "Pool")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SubnetPoolMemberListParams are set
+func (p *SubnetPoolMemberListParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Pool), "Pool")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SubnetPoolMemberAddParams are set
+func (p *SubnetPoolMemberAddParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Pool), "Pool")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SubnetPoolMemberRemoveParams are set
+func (p *SubnetPoolMemberRemoveParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Pool), "Pool")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SubnetPoolSiloListParams are set
+func (p *SubnetPoolSiloListParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Pool), "Pool")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SubnetPoolSiloLinkParams are set
+func (p *SubnetPoolSiloLinkParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Pool), "Pool")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SubnetPoolSiloUnlinkParams are set
+func (p *SubnetPoolSiloUnlinkParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Pool), "Pool")
+	v.HasRequiredStr(string(p.Silo), "Silo")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SubnetPoolSiloUpdateParams are set
+func (p *SubnetPoolSiloUpdateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Pool), "Pool")
+	v.HasRequiredStr(string(p.Silo), "Silo")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SubnetPoolUtilizationViewParams are set
+func (p *SubnetPoolUtilizationViewParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Pool), "Pool")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for SystemTimeseriesQueryParams are set
 func (p *SystemTimeseriesQueryParams) Validate() error {
 	v := new(Validator)
@@ -14882,17 +15693,17 @@ func (p *WebhookSecretsDeleteParams) Validate() error {
 	return nil
 }
 
+// AddressAllocatorTypeExplicit represents the AddressAllocatorType `"explicit"`.
+const AddressAllocatorTypeExplicit AddressAllocatorType = "explicit"
+
+// AddressAllocatorTypeAuto represents the AddressAllocatorType `"auto"`.
+const AddressAllocatorTypeAuto AddressAllocatorType = "auto"
+
 // AddressLotKindInfra represents the AddressLotKind `"infra"`.
 const AddressLotKindInfra AddressLotKind = "infra"
 
 // AddressLotKindPool represents the AddressLotKind `"pool"`.
 const AddressLotKindPool AddressLotKind = "pool"
-
-// AddressSelectorTypeExplicit represents the AddressSelectorType `"explicit"`.
-const AddressSelectorTypeExplicit AddressSelectorType = "explicit"
-
-// AddressSelectorTypeAuto represents the AddressSelectorType `"auto"`.
-const AddressSelectorTypeAuto AddressSelectorType = "auto"
 
 // AffinityGroupMemberTypeInstance represents the AffinityGroupMemberType `"instance"`.
 const AffinityGroupMemberTypeInstance AffinityGroupMemberType = "instance"
@@ -14953,6 +15764,15 @@ const AuditLogEntryResultKindError AuditLogEntryResultKind = "error"
 
 // AuditLogEntryResultKindUnknown represents the AuditLogEntryResultKind `"unknown"`.
 const AuditLogEntryResultKindUnknown AuditLogEntryResultKind = "unknown"
+
+// AuthMethodSessionCookie represents the AuthMethod `"session_cookie"`.
+const AuthMethodSessionCookie AuthMethod = "session_cookie"
+
+// AuthMethodAccessToken represents the AuthMethod `"access_token"`.
+const AuthMethodAccessToken AuthMethod = "access_token"
+
+// AuthMethodScimToken represents the AuthMethod `"scim_token"`.
+const AuthMethodScimToken AuthMethod = "scim_token"
 
 // AuthzScopeFleet represents the AuthzScope `"fleet"`.
 const AuthzScopeFleet AuthzScope = "fleet"
@@ -15259,6 +16079,12 @@ const ExternalIpCreateTypeEphemeral ExternalIpCreateType = "ephemeral"
 
 // ExternalIpCreateTypeFloating represents the ExternalIpCreateType `"floating"`.
 const ExternalIpCreateTypeFloating ExternalIpCreateType = "floating"
+
+// ExternalSubnetAllocatorTypeExplicit represents the ExternalSubnetAllocatorType `"explicit"`.
+const ExternalSubnetAllocatorTypeExplicit ExternalSubnetAllocatorType = "explicit"
+
+// ExternalSubnetAllocatorTypeAuto represents the ExternalSubnetAllocatorType `"auto"`.
+const ExternalSubnetAllocatorTypeAuto ExternalSubnetAllocatorType = "auto"
 
 // FailureDomainSled represents the FailureDomain `"sled"`.
 const FailureDomainSled FailureDomain = "sled"
@@ -15614,6 +16440,15 @@ const ProjectRoleLimitedCollaborator ProjectRole = "limited_collaborator"
 // ProjectRoleViewer represents the ProjectRole `"viewer"`.
 const ProjectRoleViewer ProjectRole = "viewer"
 
+// RackMembershipChangeStateInProgress represents the RackMembershipChangeState `"in_progress"`.
+const RackMembershipChangeStateInProgress RackMembershipChangeState = "in_progress"
+
+// RackMembershipChangeStateCommitted represents the RackMembershipChangeState `"committed"`.
+const RackMembershipChangeStateCommitted RackMembershipChangeState = "committed"
+
+// RackMembershipChangeStateAborted represents the RackMembershipChangeState `"aborted"`.
+const RackMembershipChangeStateAborted RackMembershipChangeState = "aborted"
+
 // RouteDestinationTypeIp represents the RouteDestinationType `"ip"`.
 const RouteDestinationTypeIp RouteDestinationType = "ip"
 
@@ -15920,16 +16755,16 @@ const WebhookDeliveryAttemptResultFailedUnreachable WebhookDeliveryAttemptResult
 // WebhookDeliveryAttemptResultFailedTimeout represents the WebhookDeliveryAttemptResult `"failed_timeout"`.
 const WebhookDeliveryAttemptResultFailedTimeout WebhookDeliveryAttemptResult = "failed_timeout"
 
+// AddressAllocatorTypeCollection is the collection of all AddressAllocatorType values.
+var AddressAllocatorTypeCollection = []AddressAllocatorType{
+	AddressAllocatorTypeAuto,
+	AddressAllocatorTypeExplicit,
+}
+
 // AddressLotKindCollection is the collection of all AddressLotKind values.
 var AddressLotKindCollection = []AddressLotKind{
 	AddressLotKindInfra,
 	AddressLotKindPool,
-}
-
-// AddressSelectorTypeCollection is the collection of all AddressSelectorType values.
-var AddressSelectorTypeCollection = []AddressSelectorType{
-	AddressSelectorTypeAuto,
-	AddressSelectorTypeExplicit,
 }
 
 // AffinityGroupMemberTypeCollection is the collection of all AffinityGroupMemberType values.
@@ -15986,6 +16821,13 @@ var AuditLogEntryResultKindCollection = []AuditLogEntryResultKind{
 	AuditLogEntryResultKindError,
 	AuditLogEntryResultKindSuccess,
 	AuditLogEntryResultKindUnknown,
+}
+
+// AuthMethodCollection is the collection of all AuthMethod values.
+var AuthMethodCollection = []AuthMethod{
+	AuthMethodAccessToken,
+	AuthMethodScimToken,
+	AuthMethodSessionCookie,
 }
 
 // AuthzScopeCollection is the collection of all AuthzScope values.
@@ -16176,6 +17018,12 @@ var ExternalIpKindCollection = []ExternalIpKind{
 	ExternalIpKindEphemeral,
 	ExternalIpKindFloating,
 	ExternalIpKindSnat,
+}
+
+// ExternalSubnetAllocatorTypeCollection is the collection of all ExternalSubnetAllocatorType values.
+var ExternalSubnetAllocatorTypeCollection = []ExternalSubnetAllocatorType{
+	ExternalSubnetAllocatorTypeAuto,
+	ExternalSubnetAllocatorTypeExplicit,
 }
 
 // FailureDomainCollection is the collection of all FailureDomain values.
@@ -16446,6 +17294,13 @@ var ProjectRoleCollection = []ProjectRole{
 	ProjectRoleCollaborator,
 	ProjectRoleLimitedCollaborator,
 	ProjectRoleViewer,
+}
+
+// RackMembershipChangeStateCollection is the collection of all RackMembershipChangeState values.
+var RackMembershipChangeStateCollection = []RackMembershipChangeState{
+	RackMembershipChangeStateAborted,
+	RackMembershipChangeStateCommitted,
+	RackMembershipChangeStateInProgress,
 }
 
 // RouteDestinationTypeCollection is the collection of all RouteDestinationType values.
