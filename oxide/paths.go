@@ -1437,7 +1437,7 @@ func (c *Client) DiskListAllPages(ctx context.Context, params DiskListParams) ([
 	return allPages, nil
 }
 
-// DiskCreate: Create a disk
+// DiskCreate: Create disk
 func (c *Client) DiskCreate(ctx context.Context, params DiskCreateParams) (*Disk, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -1736,6 +1736,379 @@ func (c *Client) DiskFinalizeImport(ctx context.Context, params DiskFinalizeImpo
 	return nil
 }
 
+// ExternalSubnetList: List external subnets in a project
+//
+// To iterate over all pages, use the `ExternalSubnetListAllPages` method, instead.
+func (c *Client) ExternalSubnetList(ctx context.Context, params ExternalSubnetListParams) (*ExternalSubnetResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/external-subnets"),
+		map[string]string{},
+		map[string]string{
+			"limit":      PointerIntToStr(params.Limit),
+			"page_token": params.PageToken,
+			"project":    string(params.Project),
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body ExternalSubnetResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// ExternalSubnetListAllPages: List external subnets in a project
+//
+// This method is a wrapper around the `ExternalSubnetList` method.
+// This method returns all the pages at once.
+func (c *Client) ExternalSubnetListAllPages(ctx context.Context, params ExternalSubnetListParams) ([]ExternalSubnet, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []ExternalSubnet
+	params.PageToken = ""
+	params.Limit = NewPointer(100)
+	for {
+		page, err := c.ExternalSubnetList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
+}
+
+// ExternalSubnetCreate: Create an external subnet
+func (c *Client) ExternalSubnetCreate(ctx context.Context, params ExternalSubnetCreateParams) (*ExternalSubnet, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"POST",
+		resolveRelative(c.host, "/v1/external-subnets"),
+		map[string]string{},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body ExternalSubnet
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// ExternalSubnetView: Fetch an external subnet
+func (c *Client) ExternalSubnetView(ctx context.Context, params ExternalSubnetViewParams) (*ExternalSubnet, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/external-subnets/{{.external_subnet}}"),
+		map[string]string{
+			"external_subnet": string(params.ExternalSubnet),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body ExternalSubnet
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// ExternalSubnetUpdate: Update an external subnet
+func (c *Client) ExternalSubnetUpdate(ctx context.Context, params ExternalSubnetUpdateParams) (*ExternalSubnet, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"PUT",
+		resolveRelative(c.host, "/v1/external-subnets/{{.external_subnet}}"),
+		map[string]string{
+			"external_subnet": string(params.ExternalSubnet),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body ExternalSubnet
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// ExternalSubnetDelete: Delete an external subnet
+func (c *Client) ExternalSubnetDelete(ctx context.Context, params ExternalSubnetDeleteParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"DELETE",
+		resolveRelative(c.host, "/v1/external-subnets/{{.external_subnet}}"),
+		map[string]string{
+			"external_subnet": string(params.ExternalSubnet),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// ExternalSubnetAttach: Attach an external subnet to an instance
+// Begins an asynchronous attach operation. Returns the subnet with `instance_id` set to the target instance. The
+// attach completes asynchronously; poll the subnet to check completion.
+func (c *Client) ExternalSubnetAttach(ctx context.Context, params ExternalSubnetAttachParams) (*ExternalSubnet, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"POST",
+		resolveRelative(c.host, "/v1/external-subnets/{{.external_subnet}}/attach"),
+		map[string]string{
+			"external_subnet": string(params.ExternalSubnet),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body ExternalSubnet
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// ExternalSubnetDetach: Detach an external subnet from an instance
+// Begins an asynchronous detach operation. Returns the subnet with `instance_id` cleared. The detach completes asynchronously.
+func (c *Client) ExternalSubnetDetach(ctx context.Context, params ExternalSubnetDetachParams) (*ExternalSubnet, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"POST",
+		resolveRelative(c.host, "/v1/external-subnets/{{.external_subnet}}/detach"),
+		map[string]string{
+			"external_subnet": string(params.ExternalSubnet),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body ExternalSubnet
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
 // FloatingIpList: List floating IPs
 //
 // To iterate over all pages, use the `FloatingIpListAllPages` method, instead.
@@ -1813,7 +2186,9 @@ func (c *Client) FloatingIpListAllPages(ctx context.Context, params FloatingIpLi
 	return allPages, nil
 }
 
-// FloatingIpCreate: Create floating IP
+// FloatingIpCreate: Create a floating IP
+// A specific IP address can be reserved, or an IP can be auto-allocated from a specific pool or the silo's default
+// pool.
 func (c *Client) FloatingIpCreate(ctx context.Context, params FloatingIpCreateParams) (*FloatingIp, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -3186,6 +3561,8 @@ func (c *Client) InstanceEphemeralIpAttach(ctx context.Context, params InstanceE
 }
 
 // InstanceEphemeralIpDetach: Detach and deallocate ephemeral IP from instance
+// When an instance has both IPv4 and IPv6 ephemeral IPs, the `ip_version` query parameter must be specified to
+// identify which IP to detach.
 func (c *Client) InstanceEphemeralIpDetach(ctx context.Context, params InstanceEphemeralIpDetachParams) error {
 	if err := params.Validate(); err != nil {
 		return err
@@ -3200,7 +3577,8 @@ func (c *Client) InstanceEphemeralIpDetach(ctx context.Context, params InstanceE
 			"instance": string(params.Instance),
 		},
 		map[string]string{
-			"project": string(params.Project),
+			"ip_version": string(params.IpVersion),
+			"project":    string(params.Project),
 		},
 	)
 	if err != nil {
@@ -3222,7 +3600,7 @@ func (c *Client) InstanceEphemeralIpDetach(ctx context.Context, params InstanceE
 	return nil
 }
 
-// InstanceReboot: Reboot an instance
+// InstanceReboot: Reboot instance
 func (c *Client) InstanceReboot(ctx context.Context, params InstanceRebootParams) (*Instance, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -5373,7 +5751,7 @@ func (c *Client) ProjectView(ctx context.Context, params ProjectViewParams) (*Pr
 	return &body, nil
 }
 
-// ProjectUpdate: Update a project
+// ProjectUpdate: Update project
 func (c *Client) ProjectUpdate(ctx context.Context, params ProjectUpdateParams) (*Project, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -5945,7 +6323,7 @@ func (c *Client) PhysicalDiskListAllPages(ctx context.Context, params PhysicalDi
 	return allPages, nil
 }
 
-// PhysicalDiskView: Get a physical disk
+// PhysicalDiskView: Get physical disk
 func (c *Client) PhysicalDiskView(ctx context.Context, params PhysicalDiskViewParams) (*PhysicalDisk, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -7932,7 +8310,7 @@ func (c *Client) IpPoolRangeListAllPages(ctx context.Context, params IpPoolRange
 	return allPages, nil
 }
 
-// IpPoolRangeAdd: Add range to IP pool.
+// IpPoolRangeAdd: Add range to an IP pool
 // IPv6 ranges are not allowed yet for unicast pools.
 //
 // For multicast pools, all ranges must be either Any-Source Multicast (ASM) or Source-Specific Multicast (SSM),
@@ -8762,7 +9140,7 @@ func (c *Client) NetworkingAllowListUpdate(ctx context.Context, params Networkin
 	return &body, nil
 }
 
-// NetworkingBfdDisable: Disable a BFD session
+// NetworkingBfdDisable: Disable BFD session
 func (c *Client) NetworkingBfdDisable(ctx context.Context, params NetworkingBfdDisableParams) error {
 	if err := params.Validate(); err != nil {
 		return err
@@ -8801,7 +9179,7 @@ func (c *Client) NetworkingBfdDisable(ctx context.Context, params NetworkingBfdD
 	return nil
 }
 
-// NetworkingBfdEnable: Enable a BFD session
+// NetworkingBfdEnable: Enable BFD session
 func (c *Client) NetworkingBfdEnable(ctx context.Context, params NetworkingBfdEnableParams) error {
 	if err := params.Validate(); err != nil {
 		return err
@@ -10277,7 +10655,7 @@ func (c *Client) SiloListAllPages(ctx context.Context, params SiloListParams) ([
 	return allPages, nil
 }
 
-// SiloCreate: Create a silo
+// SiloCreate: Create silo
 func (c *Client) SiloCreate(ctx context.Context, params SiloCreateParams) (*Silo, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -10374,7 +10752,7 @@ func (c *Client) SiloView(ctx context.Context, params SiloViewParams) (*Silo, er
 	return &body, nil
 }
 
-// SiloDelete: Delete a silo
+// SiloDelete: Delete silo
 // Delete a silo by name or ID.
 func (c *Client) SiloDelete(ctx context.Context, params SiloDeleteParams) error {
 	if err := params.Validate(); err != nil {
@@ -10681,6 +11059,701 @@ func (c *Client) SiloQuotasUpdate(ctx context.Context, params SiloQuotasUpdatePa
 	}
 
 	var body SiloQuotas
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SubnetPoolList: List subnet pools
+//
+// To iterate over all pages, use the `SubnetPoolListAllPages` method, instead.
+func (c *Client) SubnetPoolList(ctx context.Context, params SubnetPoolListParams) (*SubnetPoolResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/subnet-pools"),
+		map[string]string{},
+		map[string]string{
+			"limit":      PointerIntToStr(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SubnetPoolResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SubnetPoolListAllPages: List subnet pools
+//
+// This method is a wrapper around the `SubnetPoolList` method.
+// This method returns all the pages at once.
+func (c *Client) SubnetPoolListAllPages(ctx context.Context, params SubnetPoolListParams) ([]SubnetPool, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []SubnetPool
+	params.PageToken = ""
+	params.Limit = NewPointer(100)
+	for {
+		page, err := c.SubnetPoolList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
+}
+
+// SubnetPoolCreate: Create a subnet pool
+func (c *Client) SubnetPoolCreate(ctx context.Context, params SubnetPoolCreateParams) (*SubnetPool, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"POST",
+		resolveRelative(c.host, "/v1/system/subnet-pools"),
+		map[string]string{},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SubnetPool
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SubnetPoolView: Fetch a subnet pool
+func (c *Client) SubnetPoolView(ctx context.Context, params SubnetPoolViewParams) (*SubnetPool, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/subnet-pools/{{.pool}}"),
+		map[string]string{
+			"pool": string(params.Pool),
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SubnetPool
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SubnetPoolUpdate: Update a subnet pool
+func (c *Client) SubnetPoolUpdate(ctx context.Context, params SubnetPoolUpdateParams) (*SubnetPool, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"PUT",
+		resolveRelative(c.host, "/v1/system/subnet-pools/{{.pool}}"),
+		map[string]string{
+			"pool": string(params.Pool),
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SubnetPool
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SubnetPoolDelete: Delete a subnet pool
+func (c *Client) SubnetPoolDelete(ctx context.Context, params SubnetPoolDeleteParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"DELETE",
+		resolveRelative(c.host, "/v1/system/subnet-pools/{{.pool}}"),
+		map[string]string{
+			"pool": string(params.Pool),
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// SubnetPoolMemberList: List members in a subnet pool
+//
+// To iterate over all pages, use the `SubnetPoolMemberListAllPages` method, instead.
+func (c *Client) SubnetPoolMemberList(ctx context.Context, params SubnetPoolMemberListParams) (*SubnetPoolMemberResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/subnet-pools/{{.pool}}/members"),
+		map[string]string{
+			"pool": string(params.Pool),
+		},
+		map[string]string{
+			"limit":      PointerIntToStr(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SubnetPoolMemberResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SubnetPoolMemberListAllPages: List members in a subnet pool
+//
+// This method is a wrapper around the `SubnetPoolMemberList` method.
+// This method returns all the pages at once.
+func (c *Client) SubnetPoolMemberListAllPages(ctx context.Context, params SubnetPoolMemberListParams) ([]SubnetPoolMember, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []SubnetPoolMember
+	params.PageToken = ""
+	params.Limit = NewPointer(100)
+	for {
+		page, err := c.SubnetPoolMemberList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
+}
+
+// SubnetPoolMemberAdd: Add a member to a subnet pool
+func (c *Client) SubnetPoolMemberAdd(ctx context.Context, params SubnetPoolMemberAddParams) (*SubnetPoolMember, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"POST",
+		resolveRelative(c.host, "/v1/system/subnet-pools/{{.pool}}/members/add"),
+		map[string]string{
+			"pool": string(params.Pool),
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SubnetPoolMember
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SubnetPoolMemberRemove: Remove a member from a subnet pool
+func (c *Client) SubnetPoolMemberRemove(ctx context.Context, params SubnetPoolMemberRemoveParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"POST",
+		resolveRelative(c.host, "/v1/system/subnet-pools/{{.pool}}/members/remove"),
+		map[string]string{
+			"pool": string(params.Pool),
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// SubnetPoolSiloList: List silos linked to a subnet pool
+//
+// To iterate over all pages, use the `SubnetPoolSiloListAllPages` method, instead.
+func (c *Client) SubnetPoolSiloList(ctx context.Context, params SubnetPoolSiloListParams) (*SubnetPoolSiloLinkResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/subnet-pools/{{.pool}}/silos"),
+		map[string]string{
+			"pool": string(params.Pool),
+		},
+		map[string]string{
+			"limit":      PointerIntToStr(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SubnetPoolSiloLinkResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SubnetPoolSiloListAllPages: List silos linked to a subnet pool
+//
+// This method is a wrapper around the `SubnetPoolSiloList` method.
+// This method returns all the pages at once.
+func (c *Client) SubnetPoolSiloListAllPages(ctx context.Context, params SubnetPoolSiloListParams) ([]SubnetPoolSiloLink, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []SubnetPoolSiloLink
+	params.PageToken = ""
+	params.Limit = NewPointer(100)
+	for {
+		page, err := c.SubnetPoolSiloList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
+}
+
+// SubnetPoolSiloLink: Link a subnet pool to a silo
+func (c *Client) SubnetPoolSiloLink(ctx context.Context, params SubnetPoolSiloLinkParams) (*SubnetPoolSiloLink, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"POST",
+		resolveRelative(c.host, "/v1/system/subnet-pools/{{.pool}}/silos"),
+		map[string]string{
+			"pool": string(params.Pool),
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SubnetPoolSiloLink
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SubnetPoolSiloUpdate: Update a subnet pool's link to a silo
+func (c *Client) SubnetPoolSiloUpdate(ctx context.Context, params SubnetPoolSiloUpdateParams) (*SubnetPoolSiloLink, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"PUT",
+		resolveRelative(c.host, "/v1/system/subnet-pools/{{.pool}}/silos/{{.silo}}"),
+		map[string]string{
+			"pool": string(params.Pool),
+			"silo": string(params.Silo),
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SubnetPoolSiloLink
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SubnetPoolSiloUnlink: Unlink a subnet pool from a silo
+func (c *Client) SubnetPoolSiloUnlink(ctx context.Context, params SubnetPoolSiloUnlinkParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"DELETE",
+		resolveRelative(c.host, "/v1/system/subnet-pools/{{.pool}}/silos/{{.silo}}"),
+		map[string]string{
+			"pool": string(params.Pool),
+			"silo": string(params.Silo),
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// SubnetPoolUtilizationView: Fetch subnet pool utilization
+func (c *Client) SubnetPoolUtilizationView(ctx context.Context, params SubnetPoolUtilizationViewParams) (*SubnetPoolUtilization, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/subnet-pools/{{.pool}}/utilization"),
+		map[string]string{
+			"pool": string(params.Pool),
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SubnetPoolUtilization
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -13206,7 +14279,7 @@ func (c *Client) VpcView(ctx context.Context, params VpcViewParams) (*Vpc, error
 	return &body, nil
 }
 
-// VpcUpdate: Update a VPC
+// VpcUpdate: Update VPC
 func (c *Client) VpcUpdate(ctx context.Context, params VpcUpdateParams) (*Vpc, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
