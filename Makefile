@@ -15,11 +15,11 @@ export GOBIN = $(shell pwd)/bin
 VERSION := $(shell cat $(CURDIR)/VERSION)
 
 .PHONY: generate
-generate: tools
+generate:
 	@ echo "+ Generating SDK..."
 	@ go generate ./...
 	@ echo "+ Updating imports..."
-	@ $(GOBIN)/goimports -w oxide/*.go
+	@ go tool goimports -w oxide/*.go
 	@ echo "+ Formatting generated SDK..."
 	@ gofmt -s -w oxide/*.go
 	@ echo "+ Tidying up modules..."
@@ -35,9 +35,9 @@ $(NAME): $(wildcard *.go) $(wildcard */*.go)
 all: generate test fmt lint staticcheck vet ## Runs a fmt, lint, test, staticcheck, and vet.
 
 .PHONY: fmt
-fmt: tools ## Formats Go code including long line wrapping.
+fmt: ## Formats Go code including long line wrapping.
 	@ echo "+ Formatting Go code..."
-	@ $(GOBIN)/golangci-lint fmt
+	@ go tool golangci-lint fmt
 
 .PHONY: fmt-md
 fmt-md: ## Formats markdown files with prettier.
@@ -45,9 +45,9 @@ fmt-md: ## Formats markdown files with prettier.
 	@ npx prettier --write "**/*.md"
 
 .PHONY: lint
-lint: tools ## Verifies `golangci-lint` passes.
+lint: ## Verifies `golangci-lint` passes.
 	@ echo "+ Running Go linters..."
-	@ $(GOBIN)/golangci-lint run
+	@ go tool golangci-lint run
 
 .PHONY: test
 test: ## Runs the go tests.
@@ -67,9 +67,9 @@ vet: ## Verifies `go vet` passes.
 	fi
 
 .PHONY: staticcheck
-staticcheck: tools ## Verifies `staticcheck` passes.
+staticcheck: ## Verifies `staticcheck` passes.
 	@ echo "+ Verifying staticcheck passes..."
-	@if [[ ! -z "$(shell $(GOBIN)/staticcheck ./... | tee /dev/stderr)" ]]; then \
+	@if [[ ! -z "$(shell go tool staticcheck ./... | tee /dev/stderr)" ]]; then \
 		exit 1; \
 	fi
 
@@ -88,54 +88,15 @@ changelog: tools-private
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-# The following installs the necessary tools within the local /bin directory.
-# This way linting tools don't need to be downloaded/installed every time you
-# want to run the linters or generate the SDK.
-VERSION_DIR:=$(GOBIN)/versions
-VERSION_GOIMPORTS:=v0.33.0
-VERSION_GOLANGCILINT:=v2.8.0
-VERSION_STATICCHECK:=2025.1.1
+# whatsit is a Rust tool used for changelog generation, installed via cargo.
 VERSION_WHATSIT:=053446d
-
-tools: $(GOBIN)/golangci-lint $(GOBIN)/goimports $(GOBIN)/staticcheck
 
 tools-private: $(GOBIN)/whatsit
 
 $(GOBIN):
 	@ mkdir -p $(GOBIN)
 
-$(VERSION_DIR): | $(GOBIN)
-	@ mkdir -p $(GOBIN)/versions
-
-$(VERSION_DIR)/.version-golangci-lint-$(VERSION_GOLANGCILINT): | $(VERSION_DIR)
-	@ rm -f $(VERSION_DIR)/.version-golangci-lint-*
-	@ echo $(VERSION_GOLANGCILINT) > $(VERSION_DIR)/.version-golangci-lint-$(VERSION_GOLANGCILINT)
-
-$(GOBIN)/golangci-lint: $(VERSION_DIR)/.version-golangci-lint-$(VERSION_GOLANGCILINT) | $(GOBIN)
-	@ echo "-> Installing golangci-lint $(VERSION_GOLANGCILINT)..."
-	@ curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b $(GOBIN) $(VERSION_GOLANGCILINT)
-
-$(VERSION_DIR)/.version-goimports-$(VERSION_GOIMPORTS): | $(VERSION_DIR)
-	@ rm -f $(VERSION_DIR)/.version-goimports-*
-	@ echo $(VERSION_GOIMPORTS) > $(VERSION_DIR)/.version-goimports-$(VERSION_GOIMPORTS)
-
-$(GOBIN)/goimports: $(VERSION_DIR)/.version-goimports-$(VERSION_GOIMPORTS) | $(GOBIN)
-	@ echo "-> Installing goimports $(VERSION_GOIMPORTS)..."
-	@ go install golang.org/x/tools/cmd/goimports@$(VERSION_GOIMPORTS)
-
-$(VERSION_DIR)/.version-staticcheck-$(VERSION_STATICCHECK): | $(VERSION_DIR)
-	@ rm -f $(VERSION_DIR)/.version-staticcheck-*
-	@ echo $(VERSION_STATICCHECK) > $(VERSION_DIR)/.version-staticcheck-$(VERSION_STATICCHECK)
-
-$(GOBIN)/staticcheck: $(VERSION_DIR)/.version-staticcheck-$(VERSION_STATICCHECK) | $(GOBIN)
-	@ echo "-> Installing staticcheck $(VERSION_STATICCHECK)..."
-	@ go install honnef.co/go/tools/cmd/staticcheck@$(VERSION_STATICCHECK)
-
-$(VERSION_DIR)/.version-whatsit-$(VERSION_WHATSIT): | $(VERSION_DIR)
-	@ rm -f $(VERSION_DIR)/.version-whatsit-*
-	@ echo $(VERSION_WHATSIT) > $(VERSION_DIR)/.version-whatsit-$(VERSION_WHATSIT)
-
 # TODO: actually release a version of whatsit to use the tag flag
-$(GOBIN)/whatsit: $(VERSION_DIR)/.version-whatsit-$(VERSION_WHATSIT) | $(GOBIN)
+$(GOBIN)/whatsit: | $(GOBIN)
 	@ echo "-> Installing whatsit $(VERSION_WHATSIT)..."
 	@ cargo install --git ssh://git@github.com/oxidecomputer/whatsit.git --rev $(VERSION_WHATSIT) --branch main --root ./ 
