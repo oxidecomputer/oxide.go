@@ -6,7 +6,10 @@ package oxide
 
 // This file contains hand-written helper methods for generated types.
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+)
 
 // String helpers for oneOf types whose variants are all string or string-like (Name, NameOrId,
 // etc.).
@@ -99,6 +102,67 @@ func (v RouteTarget) String() string {
 	}
 }
 
+// NewIpNet creates an IpNet from a string value (e.g., "192.168.1.0/24" or "fd00::/64").
+// The string is parsed to determine whether it's an IPv4 or IPv6 network.
+func NewIpNet(value string) (IpNet, error) {
+	var ipNet IpNet
+	if err := json.Unmarshal([]byte(`"`+value+`"`), &ipNet); err != nil {
+		return IpNet{}, fmt.Errorf("invalid IP network %q: %w", value, err)
+	}
+	return ipNet, nil
+}
+
+// MustIpNet creates an IpNet from a string value, panicking on error.
+// Use this only for known-good values.
+func MustIpNet(value string) IpNet {
+	ipNet, err := NewIpNet(value)
+	if err != nil {
+		panic(err)
+	}
+	return ipNet
+}
+
+// String returns the string representation of the IpNet.
+func (v IpNet) String() string {
+	if v.Value == nil {
+		return ""
+	}
+	switch val := v.Value.(type) {
+	case *Ipv4Net:
+		return string(*val)
+	case *Ipv6Net:
+		return string(*val)
+	default:
+		return fmt.Sprintf("%v", val)
+	}
+}
+
+// NewIpRange creates an IpRange from first and last IP strings.
+// The IPs are parsed to determine whether they're IPv4 or IPv6.
+func NewIpRange(first, last string) (IpRange, error) {
+	data := fmt.Sprintf(`{"first":%q,"last":%q}`, first, last)
+	var ipRange IpRange
+	if err := json.Unmarshal([]byte(data), &ipRange); err != nil {
+		return IpRange{}, fmt.Errorf("invalid IP range %q-%q: %w", first, last, err)
+	}
+	return ipRange, nil
+}
+
+// String returns the string representation of the IpRange.
+func (v IpRange) String() string {
+	if v.Value == nil {
+		return ""
+	}
+	switch val := v.Value.(type) {
+	case *Ipv4Range:
+		return fmt.Sprintf("%s-%s", val.First, val.Last)
+	case *Ipv6Range:
+		return fmt.Sprintf("%s-%s", val.First, val.Last)
+	default:
+		return fmt.Sprintf("%v", val)
+	}
+}
+
 // Constructor helpers for oneOf types whose variants are all string or string-like.
 
 // NewRouteDestination creates a RouteDestination from a type constant and string value.
@@ -107,7 +171,11 @@ func NewRouteDestination(t RouteDestinationType, value string) (RouteDestination
 	case RouteDestinationTypeIp:
 		return RouteDestination{Value: &RouteDestinationIp{Value: value}}, nil
 	case RouteDestinationTypeIpNet:
-		return RouteDestination{Value: &RouteDestinationIpNet{Value: IpNet(value)}}, nil
+		ipNet, err := NewIpNet(value)
+		if err != nil {
+			return RouteDestination{}, err
+		}
+		return RouteDestination{Value: &RouteDestinationIpNet{Value: ipNet}}, nil
 	case RouteDestinationTypeVpc:
 		return RouteDestination{Value: &RouteDestinationVpc{Value: Name(value)}}, nil
 	case RouteDestinationTypeSubnet:
@@ -160,8 +228,12 @@ func NewVpcFirewallRuleHostFilter(
 	case VpcFirewallRuleHostFilterTypeIp:
 		return VpcFirewallRuleHostFilter{Value: &VpcFirewallRuleHostFilterIp{Value: value}}, nil
 	case VpcFirewallRuleHostFilterTypeIpNet:
+		ipNet, err := NewIpNet(value)
+		if err != nil {
+			return VpcFirewallRuleHostFilter{}, err
+		}
 		return VpcFirewallRuleHostFilter{
-			Value: &VpcFirewallRuleHostFilterIpNet{Value: IpNet(value)},
+			Value: &VpcFirewallRuleHostFilterIpNet{Value: ipNet},
 		}, nil
 	default:
 		return VpcFirewallRuleHostFilter{}, fmt.Errorf(
@@ -187,7 +259,11 @@ func NewVpcFirewallRuleTarget(
 	case VpcFirewallRuleTargetTypeIp:
 		return VpcFirewallRuleTarget{Value: &VpcFirewallRuleTargetIp{Value: value}}, nil
 	case VpcFirewallRuleTargetTypeIpNet:
-		return VpcFirewallRuleTarget{Value: &VpcFirewallRuleTargetIpNet{Value: IpNet(value)}}, nil
+		ipNet, err := NewIpNet(value)
+		if err != nil {
+			return VpcFirewallRuleTarget{}, err
+		}
+		return VpcFirewallRuleTarget{Value: &VpcFirewallRuleTargetIpNet{Value: ipNet}}, nil
 	default:
 		return VpcFirewallRuleTarget{}, fmt.Errorf("unknown VpcFirewallRuleTargetType: %s", t)
 	}

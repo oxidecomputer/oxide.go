@@ -54,6 +54,7 @@ func main() {
 	recordTimeseriesQuery(host, token, testdataDir)
 	recordDiskList(host, token, project, testdataDir)
 	recordLoopbackAddresses(host, token, testdataDir)
+	recordIpPoolRanges(host, token, testdataDir)
 }
 
 func recordTimeseriesQuery(host, token, testdataDir string) {
@@ -114,6 +115,52 @@ func recordLoopbackAddresses(host, token, testdataDir string) {
 		return
 	}
 	if err := saveFixture(testdataDir, "loopback_addresses_response.json", normalized); err != nil {
+		log.Printf("Warning: %v", err)
+		return
+	}
+}
+
+func recordIpPoolRanges(host, token, testdataDir string) {
+	fmt.Println("Recording IP pool ranges response...")
+
+	// Fetch ranges from specific pools to get both IPv4 and IPv6 coverage
+	pools := []string{"fake-address", "fake-address-v6"}
+	var allItems []any
+
+	for _, poolName := range pools {
+		url := fmt.Sprintf("%s/v1/system/ip-pools/%s/ranges?limit=1", host, poolName)
+		data, err := doRequest("GET", url, token, "")
+		if err != nil {
+			log.Printf("Warning: IP pool ranges for %s failed: %v", poolName, err)
+			continue
+		}
+
+		var resp struct {
+			Items []any `json:"items"`
+		}
+		if err := json.Unmarshal(data, &resp); err != nil {
+			log.Printf("Warning: failed to parse IP pool ranges response for %s: %v", poolName, err)
+			continue
+		}
+		allItems = append(allItems, resp.Items...)
+	}
+
+	if len(allItems) == 0 {
+		log.Printf("Warning: no IP pool ranges found, skipping recording")
+		return
+	}
+
+	// Combine into a single response
+	combined := map[string]any{
+		"items": allItems,
+	}
+	data, err := json.Marshal(combined)
+	if err != nil {
+		log.Printf("Warning: failed to marshal combined response: %v", err)
+		return
+	}
+
+	if err := saveFixture(testdataDir, "ip_pool_range_list_response.json", data); err != nil {
 		log.Printf("Warning: %v", err)
 		return
 	}

@@ -1,5 +1,17 @@
 # Design Notes
 
+## Goals and non-goals
+
+The code generation logic in internal/ is developed and tested against the Nexus API and its OpenAPI
+specification. Nexus is built with Rust and uses crates like serde, schemars, and dropshot to build
+its OpenAPI spec, so we focus on the patterns used by those tools. We don't aim to support all
+OpenAPI features or patterns as of this writing.
+
+For example, Nexus represents tagged unions using inline object definitions, but represents untagged
+unions with references to schemas defined elsewhere in the spec. Different tools might generate
+OpenAPI spec files where tagged unions are instead represented as schema references, or untagged
+unions as inline objects, but we don't support those cases because they can't occur in Nexus.
+
 ## oneOf Type Generation
 
 ### Overview
@@ -258,10 +270,21 @@ If any property had different types across variants, it would become `any`.
 
 ### Untagged union
 
-When a `oneOf` has no object properties (i.e., variants are primitive types or references wrapped in
-`allOf`), the type becomes `interface{}`.
+When a `oneOf` schema has no discriminator property (i.e., it's defined in Rust using
+`serde(untagged)`), we can't use the discriminator to determine the correct variant type for
+unmarshalling. Instead, if the variants use OpenAPI `format` or `pattern` fields, we use those to
+choose the variant type. In this case, we use the interface with marker methods pattern, as for
+tagged unions.
 
-**Example: `IpNet`**
+Untagged unions are detected when:
+
+1. Each variant is an `allOf` wrapper containing a single `$ref`
+2. The referenced types can be discriminated by either:
+   - **Format-based**: Object types where fields have distinct `format` values (e.g., `ipv4` vs
+     `ipv6`)
+   - **Pattern-based**: String types with distinct regex `pattern` values
+
+**Example: `IpNet` (pattern-based)**
 
 In Rust, `IpNet` is defined as:
 
@@ -284,13 +307,191 @@ IpNet:
     - title: v6
       allOf:
         - $ref: "#/components/schemas/Ipv6Net"
+
+Ipv4Net:
+  type: string
+  pattern: "^([0-9]{1,3}\\.){3}[0-9]{1,3}/[0-9]{1,2}$"
+
+Ipv6Net:
+  type: string
+  pattern: "^[0-9a-fA-F:]+/[0-9]{1,3}$"
+```
+
+Since `Ipv4Net` and `Ipv6Net` are string types with distinct regex patterns, we generate:
+
+```go
+// Interface with marker method
+type ipNetVariant interface {
+    isIpNetVariant()
+}
+
+// Marker methods on existing types
+func (Ipv4Net) isIpNetVariant() {}
+func (Ipv6Net) isIpNetVariant() {}
+
+// Wrapper struct
+type IpNet struct {
+    Value ipNetVariant `json:"value,omitempty"`
+}
+
+// Pattern-based discrimination using compiled regexes
+var (
+    ipv4netPattern = regexp.MustCompile(`^...`)
+    ipv6netPattern = regexp.MustCompile(`^...`)
+)
+
+func (v *IpNet) UnmarshalJSON(data []byte) error {
+    var s string
+    if err := json.Unmarshal(data, &s); err != nil {
+        return err
+    }
+    if ipv4netPattern.MatchString(s) {
+        val := Ipv4Net(s)
+        v.Value = &val
+        return nil
+    }
+    if ipv6netPattern.MatchString(s) {
+        val := Ipv6Net(s)
+        v.Value = &val
+        return nil
+    }
+    return fmt.Errorf("no variant matched for IpNet: %q", s)
+}
+```
+
+**Example: `IpRange` (format-based)**
+
+In Rust, `IpRange` is defined as:
+
+```rust
+#[serde(untagged)]
+pub enum IpRange {
+    V4(Ipv4Range),
+    V6(Ipv6Range),
+}
+```
+
+This generates the following OpenAPI spec:
+
+```yaml
+IpRange:
+  oneOf:
+    - title: v4
+      allOf:
+        - $ref: "#/components/schemas/Ipv4Range"
+    - title: v6
+      allOf:
+        - $ref: "#/components/schemas/Ipv6Range"
+
+Ipv4Range:
+  type: object
+  properties:
+    first: { type: string, format: ipv4 }
+    last: { type: string, format: ipv4 }
+
+Ipv6Range:
+  type: object
+  properties:
+    first: { type: string, format: ipv6 }
+    last: { type: string, format: ipv6 }
+```
+
+Since `Ipv4Range` and `Ipv6Range` have fields with distinct `format` values, we generate:
+
+```go
+// Interface with marker method
+type ipRangeVariant interface {
+    isIpRangeVariant()
+}
+
+// Marker methods on existing types
+func (Ipv4Range) isIpRangeVariant() {}
+func (Ipv6Range) isIpRangeVariant() {}
+
+// Wrapper struct
+type IpRange struct {
+    Value ipRangeVariant `json:"value,omitempty"`
+}
+
+// Format detection functions (call DetectXxxFormat from format_detectors.go)
+func detectIpv4Range(v *Ipv4Range) bool {
+    if !DetectIpv4Format(v.First) {
+        return false
+    }
+    if !DetectIpv4Format(v.Last) {
+        return false
+    }
+    return true
+}
+
+func detectIpv6Range(v *Ipv6Range) bool {
+    if !DetectIpv6Format(v.First) {
+        return false
+    }
+    if !DetectIpv6Format(v.Last) {
+        return false
+    }
+    return true
+}
+
+func (v *IpRange) UnmarshalJSON(data []byte) error {
+    // Try Ipv4Range
+    {
+        var candidate Ipv4Range
+        if err := json.Unmarshal(data, &candidate); err == nil {
+            if detectIpv4Range(&candidate) {
+                v.Value = &candidate
+                return nil
+            }
+        }
+    }
+    // Try Ipv6Range
+    {
+        var candidate Ipv6Range
+        if err := json.Unmarshal(data, &candidate); err == nil {
+            if detectIpv6Range(&candidate) {
+                v.Value = &candidate
+                return nil
+            }
+        }
+    }
+    return fmt.Errorf("no variant matched for IpRange: %s", string(data))
+}
+```
+
+Note that we only use the `format` and `pattern` fields for variant type detection, not for
+validation. In the future, we may consider validating based on `format` and/or `pattern` during
+unmarshalling, marshalling, or both. For now, we trust the API to send valid data and error when
+receiving bad data.
+
+**Usage examples:**
+
+```go
+// Reading an IP range from the API
+poolRange, _ := client.IpPoolRangeList(ctx, params)
+for _, item := range poolRange.Items {
+    switch v := item.Range.Value.(type) {
+    case *oxide.Ipv4Range:
+        fmt.Printf("IPv4: %s - %s\n", v.First, v.Last)
+    case *oxide.Ipv6Range:
+        fmt.Printf("IPv6: %s - %s\n", v.First, v.Last)
+    }
+}
 ```
 
 ```go
-type IpNet interface{}
+// Creating an IP range
+ipRange := oxide.IpRange{Value: &oxide.Ipv4Range{
+    First: "192.168.1.1",
+    Last:  "192.168.1.100",
+}}
 ```
 
-Note: we may be able to handle these types better in the future. For example, we could detect that
-all variants are effectively strings and represent `IpNet` as `string`. Alternatively, we could
-represent `Ipv4Net` and `Ipv6Net` as distinct types with their own validation logic, and attempt to
-unmarshal into each variant type until we find a match.
+**Fallback behavior:**
+
+If we cannot distinguish between variant types, we fall back to generating `interface{}`. This
+happens when:
+
+- Variants are not wrapped in `allOf` with a single `$ref`
+- Not all variants have regex patterns (for pattern-based discrimination)
+- Not all variants have format-constrained fields (for format-based discrimination)
