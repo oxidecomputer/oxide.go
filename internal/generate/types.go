@@ -28,7 +28,10 @@ func enumStringTypes() map[string][]string {
 var (
 	typeTemplate = template.Must(
 		template.New("type.go.tpl").
-			Funcs(template.FuncMap{"splitDocString": splitDocString}).
+			Funcs(template.FuncMap{
+				"splitDocString": splitDocString,
+				"lower":          strings.ToLower,
+			}).
 			ParseFiles("./templates/type.go.tpl"),
 	)
 	enumTemplate = template.Must(
@@ -79,6 +82,8 @@ type VariantMarker struct {
 
 // VariantConfig holds configuration for tagged union types
 type VariantConfig struct {
+	// UnionType indicates how variants are distinguished (tagged, format, pattern).
+	UnionType UnionType
 	// Discriminator is the JSON property name for the discriminator (e.g., "type")
 	Discriminator string
 	// DiscriminatorMethod is the Go method name that returns the discriminator (e.g., "Type")
@@ -95,6 +100,18 @@ type VariantConfig struct {
 	Variants []Variant
 }
 
+// UnionType describes how to distinguish variants in a oneOf.
+type UnionType string
+
+const (
+	// UnionTagged uses a discriminator property (e.g., "type": "v4").
+	UnionTagged UnionType = "tagged"
+	// UnionFormat uses format fields (e.g., format: "ipv4" vs "ipv6").
+	UnionFormat UnionType = "format"
+	// UnionPattern uses regex patterns on string types.
+	UnionPattern UnionType = "pattern"
+)
+
 // Variant represents a single variant in a tagged union (oneOf with discriminator).
 type Variant struct {
 	// DiscriminatorValue is the raw JSON tag value (e.g., "ip_net").
@@ -103,6 +120,20 @@ type Variant struct {
 	TypeSuffix string
 	// TypeName is the full Go type name for this variant (e.g., "RouteDestinationIpNet").
 	TypeName string
+	// Format is set for format-based discrimination (e.g., "ipv4", "ipv6").
+	Format string
+	// Pattern is set for pattern-based discrimination (regex).
+	Pattern string
+	// FormatFields holds fields with format constraints for validation.
+	FormatFields []FormatField
+}
+
+// FormatField describes a field with a format constraint for validation.
+type FormatField struct {
+	// Name is the Go field name.
+	Name string
+	// Format is the OpenAPI format (e.g., "ipv4", "ipv6").
+	Format string
 }
 
 // Render renders the TypeTemplate to a Go type.
@@ -789,6 +820,11 @@ func createAllOf(
 }
 
 func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []EnumTemplate) {
+	// Check for untagged union (format/pattern discriminated) first.
+	if analysis := analyzeUntaggedUnion(s); analysis != nil {
+		return createUntaggedUnionOneOf(s, name, typeName, analysis)
+	}
+
 	// First pass: identify discriminator key and find properties with multiple types across
 	// variants.
 	discriminatorKeys := map[string]struct{}{}
@@ -961,6 +997,7 @@ func createInterfaceOneOf(
 		Type:        "struct",
 		Fields:      wrapperFields,
 		Variants: &VariantConfig{
+			UnionType:           UnionTagged,
 			Discriminator:       discriminatorKey,
 			DiscriminatorMethod: strcase.ToCamel(discriminatorKey),
 			DiscriminatorType:   discriminatorType,
@@ -1056,6 +1093,215 @@ func createFlatOneOf(
 	}
 
 	return typeTpls, enumTpls
+}
+
+// UntaggedUnionAnalysis holds analysis results for untagged union detection.
+type UntaggedUnionAnalysis struct {
+	// Type is the discrimination type (format or pattern).
+	Type UnionType
+	// Variants holds the variant information.
+	Variants []UntaggedVariantInfo
+}
+
+// UntaggedVariantInfo holds information about a variant in an untagged union.
+type UntaggedVariantInfo struct {
+	// RefName is the referenced type name (e.g., "Ipv4Range").
+	RefName string
+	// Title is the variant title from the schema (e.g., "v4").
+	Title string
+	// Format is set for format discrimination (e.g., "ipv4").
+	Format string
+	// Pattern is set for pattern discrimination.
+	Pattern string
+	// FormatFields holds fields with format constraints.
+	FormatFields []FormatField
+}
+
+// analyzeUntaggedUnion checks if a oneOf schema represents an untagged union
+// with format or pattern discrimination.
+//
+// An untagged union is a oneOf where:
+// 1. Each variant is an allOf with a single $ref (wrapper pattern)
+// 2. The referenced types can be discriminated by format or pattern
+//
+// Returns nil if the schema is not an untagged union.
+func analyzeUntaggedUnion(s *openapi3.Schema) *UntaggedUnionAnalysis {
+	if len(s.OneOf) < 2 {
+		return nil
+	}
+
+	var variants []UntaggedVariantInfo
+
+	for _, variantRef := range s.OneOf {
+		// Check if this variant is an allOf wrapper with a single $ref
+		if variantRef.Value.AllOf == nil || len(variantRef.Value.AllOf) != 1 {
+			return nil
+		}
+
+		innerRef := variantRef.Value.AllOf[0]
+		if innerRef.Ref == "" {
+			return nil
+		}
+
+		refName := strings.TrimPrefix(innerRef.Ref, "#/components/schemas/")
+		title := variantRef.Value.Title
+
+		// Get the underlying schema to check for format/pattern
+		underlyingSchema := innerRef.Value
+		if underlyingSchema == nil {
+			return nil
+		}
+
+		variant := UntaggedVariantInfo{
+			RefName: refName,
+			Title:   title,
+		}
+
+		// Check if it's a string type with pattern (e.g., Ipv4Net)
+		if underlyingSchema.Type.Is("string") {
+			if underlyingSchema.Pattern != "" {
+				variant.Pattern = underlyingSchema.Pattern
+			}
+			// Check format on string type
+			if underlyingSchema.Format != "" {
+				variant.Format = underlyingSchema.Format
+			}
+		}
+
+		// Check if it's an object type with format-constrained fields (e.g., Ipv4Range)
+		if underlyingSchema.Type.Is("object") && len(underlyingSchema.Properties) > 0 {
+			var formatFields []FormatField
+			for propName, propRef := range underlyingSchema.Properties {
+				if propRef.Value != nil && propRef.Value.Format != "" {
+					formatFields = append(formatFields, FormatField{
+						Name:   strcase.ToCamel(propName),
+						Format: propRef.Value.Format,
+					})
+				}
+			}
+			if len(formatFields) > 0 {
+				// Sort for deterministic output
+				sort.Slice(formatFields, func(i, j int) bool {
+					return formatFields[i].Name < formatFields[j].Name
+				})
+				variant.FormatFields = formatFields
+				// Use the first format field to determine the variant's format
+				variant.Format = formatFields[0].Format
+			}
+		}
+
+		variants = append(variants, variant)
+	}
+
+	if len(variants) == 0 {
+		return nil
+	}
+
+	// Determine discrimination type
+	var discType UnionType
+
+	// Check if all variants have patterns (pattern discrimination)
+	allHavePatterns := true
+	for _, v := range variants {
+		if v.Pattern == "" {
+			allHavePatterns = false
+			break
+		}
+	}
+	if allHavePatterns {
+		discType = UnionPattern
+	}
+
+	// Check if all variants have formats (format discrimination)
+	allHaveFormats := true
+	for _, v := range variants {
+		if v.Format == "" && len(v.FormatFields) == 0 {
+			allHaveFormats = false
+			break
+		}
+	}
+	if allHaveFormats && discType == "" {
+		discType = UnionFormat
+	}
+
+	if discType == "" {
+		return nil
+	}
+
+	return &UntaggedUnionAnalysis{
+		Type:     discType,
+		Variants: variants,
+	}
+}
+
+// createUntaggedUnionOneOf creates types for an untagged union (format/pattern discriminated).
+func createUntaggedUnionOneOf(
+	s *openapi3.Schema,
+	name, typeName string,
+	analysis *UntaggedUnionAnalysis,
+) ([]TypeTemplate, []EnumTemplate) {
+	typeTpls := make([]TypeTemplate, 0)
+
+	// Build the interface type.
+	interfaceName := toLowerFirstLetter(typeName) + "Variant"
+	markerMethod := "is" + typeName + "Variant"
+	interfaceTpl := TypeTemplate{
+		Description:   fmt.Sprintf("// %s is implemented by %s variants.", interfaceName, typeName),
+		Name:          interfaceName,
+		Type:          "interface",
+		VariantMarker: &VariantMarker{Method: markerMethod},
+	}
+	typeTpls = append(typeTpls, interfaceTpl)
+
+	// Build variant info for the wrapper type
+	var variants []Variant
+	for _, v := range analysis.Variants {
+		variantTypeName := strcase.ToCamel(v.RefName)
+		variants = append(variants, Variant{
+			TypeSuffix:   variantTypeName,
+			TypeName:     variantTypeName,
+			Format:       v.Format,
+			Pattern:      v.Pattern,
+			FormatFields: v.FormatFields,
+		})
+
+		// Create a type template to add the marker method to the referenced type.
+		// We need to emit a marker method for the existing type.
+		markerTpl := TypeTemplate{
+			Name: variantTypeName,
+			Type: "marker_only",
+			VariantMarker: &VariantMarker{
+				Method:        markerMethod,
+				InterfaceType: interfaceName,
+			},
+		}
+		typeTpls = append(typeTpls, markerTpl)
+	}
+
+	// Create the wrapper struct with only the interface-typed value field.
+	wrapperFields := []TypeField{
+		{
+			Name:       "Value",
+			Type:       interfaceName,
+			MarshalKey: "value",
+		},
+	}
+
+	wrapperTpl := TypeTemplate{
+		Description: formatTypeDescription(typeName, s),
+		Name:        typeName,
+		Type:        "struct",
+		Fields:      wrapperFields,
+		Variants: &VariantConfig{
+			UnionType:      analysis.Type,
+			ValueFieldName: "Value",
+			VariantType:    interfaceName,
+			Variants:       variants,
+		},
+	}
+	typeTpls = append(typeTpls, wrapperTpl)
+
+	return typeTpls, nil
 }
 
 func getObjectType(s *openapi3.Schema) string {

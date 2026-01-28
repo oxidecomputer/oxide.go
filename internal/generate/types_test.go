@@ -564,6 +564,7 @@ func Test_createOneOf(t *testing.T) {
 						{Name: "Value", Type: "intOrStringVariant", MarshalKey: "value"},
 					},
 					Variants: &VariantConfig{
+						UnionType:           UnionTagged,
 						Discriminator:       "type",
 						DiscriminatorMethod: "Type",
 						DiscriminatorType:   "IntOrStringType",
@@ -708,6 +709,179 @@ func Test_createAllOf(t *testing.T) {
 				got := createAllOf(tt.args.s, tt.args.stringEnums, tt.args.name, tt.args.typeName)
 				assert.Equal(t, tt.want, got)
 			})
+		})
+	}
+}
+
+func Test_analyzeUntaggedUnion(t *testing.T) {
+	tests := []struct {
+		name   string
+		schema *openapi3.Schema
+		want   *UntaggedUnionAnalysis
+	}{
+		{
+			name: "pattern-based discrimination (IpNet style)",
+			schema: &openapi3.Schema{
+				OneOf: openapi3.SchemaRefs{
+					{
+						Value: &openapi3.Schema{
+							Title: "v4",
+							AllOf: openapi3.SchemaRefs{
+								{
+									Ref: "#/components/schemas/Ipv4Net",
+									Value: &openapi3.Schema{
+										Type:    &openapi3.Types{"string"},
+										Pattern: `^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/[0-9]+$`,
+									},
+								},
+							},
+						},
+					},
+					{
+						Value: &openapi3.Schema{
+							Title: "v6",
+							AllOf: openapi3.SchemaRefs{
+								{
+									Ref: "#/components/schemas/Ipv6Net",
+									Value: &openapi3.Schema{
+										Type:    &openapi3.Types{"string"},
+										Pattern: `^[0-9a-fA-F:]+/[0-9]+$`,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			want: &UntaggedUnionAnalysis{
+				Type: UnionPattern,
+				Variants: []UntaggedVariantInfo{
+					{
+						RefName: "Ipv4Net",
+						Title:   "v4",
+						Pattern: `^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/[0-9]+$`,
+					},
+					{RefName: "Ipv6Net", Title: "v6", Pattern: `^[0-9a-fA-F:]+/[0-9]+$`},
+				},
+			},
+		},
+		{
+			name: "format-based discrimination (IpRange style)",
+			schema: &openapi3.Schema{
+				OneOf: openapi3.SchemaRefs{
+					{
+						Value: &openapi3.Schema{
+							Title: "v4",
+							AllOf: openapi3.SchemaRefs{
+								{
+									Ref: "#/components/schemas/Ipv4Range",
+									Value: &openapi3.Schema{
+										Type: &openapi3.Types{"object"},
+										Properties: openapi3.Schemas{
+											"first": {
+												Value: &openapi3.Schema{
+													Type:   &openapi3.Types{"string"},
+													Format: "ipv4",
+												},
+											},
+											"last": {
+												Value: &openapi3.Schema{
+													Type:   &openapi3.Types{"string"},
+													Format: "ipv4",
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+					{
+						Value: &openapi3.Schema{
+							Title: "v6",
+							AllOf: openapi3.SchemaRefs{
+								{
+									Ref: "#/components/schemas/Ipv6Range",
+									Value: &openapi3.Schema{
+										Type: &openapi3.Types{"object"},
+										Properties: openapi3.Schemas{
+											"first": {
+												Value: &openapi3.Schema{
+													Type:   &openapi3.Types{"string"},
+													Format: "ipv6",
+												},
+											},
+											"last": {
+												Value: &openapi3.Schema{
+													Type:   &openapi3.Types{"string"},
+													Format: "ipv6",
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			want: &UntaggedUnionAnalysis{
+				Type: UnionFormat,
+				Variants: []UntaggedVariantInfo{
+					{
+						RefName: "Ipv4Range",
+						Title:   "v4",
+						Format:  "ipv4",
+						FormatFields: []FormatField{
+							{Name: "First", Format: "ipv4"},
+							{Name: "Last", Format: "ipv4"},
+						},
+					},
+					{
+						RefName: "Ipv6Range",
+						Title:   "v6",
+						Format:  "ipv6",
+						FormatFields: []FormatField{
+							{Name: "First", Format: "ipv6"},
+							{Name: "Last", Format: "ipv6"},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "not an untagged union - regular oneOf",
+			schema: &openapi3.Schema{
+				OneOf: openapi3.SchemaRefs{
+					{
+						Value: &openapi3.Schema{
+							Type: &openapi3.Types{"object"},
+							Properties: openapi3.Schemas{
+								"type": {
+									Value: &openapi3.Schema{
+										Type: &openapi3.Types{"string"},
+										Enum: []any{"a"},
+									},
+								},
+								"value": {Value: &openapi3.Schema{Type: &openapi3.Types{"string"}}},
+							},
+						},
+					},
+				},
+			},
+			want: nil,
+		},
+		{
+			name:   "nil oneOf",
+			schema: &openapi3.Schema{},
+			want:   nil,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			got := analyzeUntaggedUnion(tc.schema)
+			assert.Equal(t, tc.want, got)
 		})
 	}
 }
