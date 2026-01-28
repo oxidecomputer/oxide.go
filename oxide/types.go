@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"regexp"
 	"time"
 )
 
@@ -5099,8 +5100,63 @@ type InternetGatewayResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+// ipNetVariant is implemented by IpNet variants.
+type ipNetVariant interface {
+	isIpNetVariant()
+}
+
+func (Ipv4Net) isIpNetVariant() {}
+
+func (Ipv6Net) isIpNetVariant() {}
+
 // IpNet is the type definition for a IpNet.
-type IpNet interface{}
+type IpNet struct {
+	Value ipNetVariant `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+var (
+	ipv4netPattern = regexp.MustCompile(`^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])/([0-9]|1[0-9]|2[0-9]|3[0-2])$`)
+	ipv6netPattern = regexp.MustCompile(`^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\/([0-9]|[1-9][0-9]|1[0-1][0-9]|12[0-8])$`)
+)
+
+func (v *IpNet) UnmarshalJSON(data []byte) error {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return err
+	}
+	if ipv4netPattern.MatchString(s) {
+		val := Ipv4Net(s)
+		v.Value = &val
+		return nil
+	}
+	if ipv6netPattern.MatchString(s) {
+		val := Ipv6Net(s)
+		v.Value = &val
+		return nil
+	}
+	return fmt.Errorf("no pattern matched for IpNet")
+}
+
+func (v IpNet) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	return json.Marshal(v.Value)
+}
+
+// AsIpv4Net attempts to convert the IpNet to a Ipv4Net.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v IpNet) AsIpv4Net() (*Ipv4Net, bool) {
+	val, ok := v.Value.(*Ipv4Net)
+	return val, ok
+}
+
+// AsIpv6Net attempts to convert the IpNet to a Ipv6Net.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v IpNet) AsIpv6Net() (*Ipv6Net, bool) {
+	val, ok := v.Value.(*Ipv6Net)
+	return val, ok
+}
 
 // IpPool is a collection of IP ranges. If a pool is linked to a silo, IP addresses from the pool can be
 // allocated within that silo
@@ -5275,8 +5331,84 @@ type IpPoolUtilization struct {
 	Remaining float64 `json:"remaining" yaml:"remaining"`
 }
 
+// ipRangeVariant is implemented by IpRange variants.
+type ipRangeVariant interface {
+	isIpRangeVariant()
+}
+
+func (Ipv4Range) isIpRangeVariant() {}
+
+func (Ipv6Range) isIpRangeVariant() {}
+
 // IpRange is the type definition for a IpRange.
-type IpRange interface{}
+type IpRange struct {
+	Value ipRangeVariant `json:"value,omitempty" yaml:"value,omitempty"`
+}
+
+func (v *IpRange) UnmarshalJSON(data []byte) error {
+	// Try Ipv4Range
+	{
+		var candidate Ipv4Range
+		if err := json.Unmarshal(data, &candidate); err == nil {
+			if detectIpv4RangeFormat(&candidate) {
+				v.Value = &candidate
+				return nil
+			}
+		}
+	}
+	// Try Ipv6Range
+	{
+		var candidate Ipv6Range
+		if err := json.Unmarshal(data, &candidate); err == nil {
+			if detectIpv6RangeFormat(&candidate) {
+				v.Value = &candidate
+				return nil
+			}
+		}
+	}
+	return fmt.Errorf("no variant matched for IpRange")
+}
+
+func (v IpRange) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	return json.Marshal(v.Value)
+}
+
+func detectIpv4RangeFormat(v *Ipv4Range) bool {
+	if !formatDetectors["ipv4"](v.First) {
+		return false
+	}
+	if !formatDetectors["ipv4"](v.Last) {
+		return false
+	}
+	return true
+}
+
+func detectIpv6RangeFormat(v *Ipv6Range) bool {
+	if !formatDetectors["ipv6"](v.First) {
+		return false
+	}
+	if !formatDetectors["ipv6"](v.Last) {
+		return false
+	}
+	return true
+}
+
+// AsIpv4Range attempts to convert the IpRange to a Ipv4Range.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v IpRange) AsIpv4Range() (*Ipv4Range, bool) {
+	val, ok := v.Value.(*Ipv4Range)
+	return val, ok
+}
+
+// AsIpv6Range attempts to convert the IpRange to a Ipv6Range.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v IpRange) AsIpv6Range() (*Ipv6Range, bool) {
+	val, ok := v.Value.(*Ipv6Range)
+	return val, ok
+}
 
 // IpVersion is the IP address version.
 type IpVersion string
