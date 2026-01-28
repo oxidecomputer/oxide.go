@@ -42,6 +42,11 @@ func TestGoldenRoundTrip(t *testing.T) {
 			fixture: "testdata/recordings/loopback_addresses_response.json",
 			test:    testRoundTrip[LoopbackAddressResultsPage],
 		},
+		{
+			name:    "ip_pool_range_list_response",
+			fixture: "testdata/recordings/ip_pool_range_list_response.json",
+			test:    testRoundTrip[IpPoolRangeResultsPage],
+		},
 	}
 
 	for _, tt := range tests {
