@@ -2271,61 +2271,61 @@ type Datum struct {
 
 func (v Datum) Type() DatumType {
 	switch v.Datum.(type) {
-	case *DatumBool:
+	case DatumBool, *DatumBool:
 		return DatumTypeBool
-	case *DatumI8:
+	case DatumI8, *DatumI8:
 		return DatumTypeI8
-	case *DatumU8:
+	case DatumU8, *DatumU8:
 		return DatumTypeU8
-	case *DatumI16:
+	case DatumI16, *DatumI16:
 		return DatumTypeI16
-	case *DatumU16:
+	case DatumU16, *DatumU16:
 		return DatumTypeU16
-	case *DatumI32:
+	case DatumI32, *DatumI32:
 		return DatumTypeI32
-	case *DatumU32:
+	case DatumU32, *DatumU32:
 		return DatumTypeU32
-	case *DatumI64:
+	case DatumI64, *DatumI64:
 		return DatumTypeI64
-	case *DatumU64:
+	case DatumU64, *DatumU64:
 		return DatumTypeU64
-	case *DatumF32:
+	case DatumF32, *DatumF32:
 		return DatumTypeF32
-	case *DatumF64:
+	case DatumF64, *DatumF64:
 		return DatumTypeF64
-	case *DatumString:
+	case DatumString, *DatumString:
 		return DatumTypeString
-	case *DatumBytes:
+	case DatumBytes, *DatumBytes:
 		return DatumTypeBytes
-	case *DatumCumulativeI64:
+	case DatumCumulativeI64, *DatumCumulativeI64:
 		return DatumTypeCumulativeI64
-	case *DatumCumulativeU64:
+	case DatumCumulativeU64, *DatumCumulativeU64:
 		return DatumTypeCumulativeU64
-	case *DatumCumulativeF32:
+	case DatumCumulativeF32, *DatumCumulativeF32:
 		return DatumTypeCumulativeF32
-	case *DatumCumulativeF64:
+	case DatumCumulativeF64, *DatumCumulativeF64:
 		return DatumTypeCumulativeF64
-	case *DatumHistogramI8:
+	case DatumHistogramI8, *DatumHistogramI8:
 		return DatumTypeHistogramI8
-	case *DatumHistogramU8:
+	case DatumHistogramU8, *DatumHistogramU8:
 		return DatumTypeHistogramU8
-	case *DatumHistogramI16:
+	case DatumHistogramI16, *DatumHistogramI16:
 		return DatumTypeHistogramI16
-	case *DatumHistogramU16:
+	case DatumHistogramU16, *DatumHistogramU16:
 		return DatumTypeHistogramU16
-	case *DatumHistogramI32:
+	case DatumHistogramI32, *DatumHistogramI32:
 		return DatumTypeHistogramI32
-	case *DatumHistogramU32:
+	case DatumHistogramU32, *DatumHistogramU32:
 		return DatumTypeHistogramU32
-	case *DatumHistogramI64:
+	case DatumHistogramI64, *DatumHistogramI64:
 		return DatumTypeHistogramI64
-	case *DatumHistogramU64:
+	case DatumHistogramU64, *DatumHistogramU64:
 		return DatumTypeHistogramU64
-	case *DatumHistogramF32:
+	case DatumHistogramF32, *DatumHistogramF32:
 		return DatumTypeHistogramF32
-	case *DatumHistogramF64:
+	case DatumHistogramF64, *DatumHistogramF64:
 		return DatumTypeHistogramF64
-	case *DatumMissing:
+	case DatumMissing, *DatumMissing:
 		return DatumTypeMissing
 	default:
 		return ""
@@ -3459,29 +3459,29 @@ type FieldValue struct {
 
 func (v FieldValue) Type() FieldValueType {
 	switch v.Value.(type) {
-	case *FieldValueString:
+	case FieldValueString, *FieldValueString:
 		return FieldValueTypeString
-	case *FieldValueI8:
+	case FieldValueI8, *FieldValueI8:
 		return FieldValueTypeI8
-	case *FieldValueU8:
+	case FieldValueU8, *FieldValueU8:
 		return FieldValueTypeU8
-	case *FieldValueI16:
+	case FieldValueI16, *FieldValueI16:
 		return FieldValueTypeI16
-	case *FieldValueU16:
+	case FieldValueU16, *FieldValueU16:
 		return FieldValueTypeU16
-	case *FieldValueI32:
+	case FieldValueI32, *FieldValueI32:
 		return FieldValueTypeI32
-	case *FieldValueU32:
+	case FieldValueU32, *FieldValueU32:
 		return FieldValueTypeU32
-	case *FieldValueI64:
+	case FieldValueI64, *FieldValueI64:
 		return FieldValueTypeI64
-	case *FieldValueU64:
+	case FieldValueU64, *FieldValueU64:
 		return FieldValueTypeU64
-	case *FieldValueIpAddr:
+	case FieldValueIpAddr, *FieldValueIpAddr:
 		return FieldValueTypeIpAddr
-	case *FieldValueUuid:
+	case FieldValueUuid, *FieldValueUuid:
 		return FieldValueTypeUuid
-	case *FieldValueBool:
+	case FieldValueBool, *FieldValueBool:
 		return FieldValueTypeBool
 	default:
 		return ""
@@ -6054,11 +6054,11 @@ type PrivateIpConfig struct {
 
 func (v PrivateIpConfig) Type() PrivateIpConfigType {
 	switch v.Value.(type) {
-	case *PrivateIpConfigV4:
+	case PrivateIpConfigV4, *PrivateIpConfigV4:
 		return PrivateIpConfigTypeV4
-	case *PrivateIpConfigV6:
+	case PrivateIpConfigV6, *PrivateIpConfigV6:
 		return PrivateIpConfigTypeV6
-	case *PrivateIpConfigDualStack:
+	case PrivateIpConfigDualStack, *PrivateIpConfigDualStack:
 		return PrivateIpConfigTypeDualStack
 	default:
 		return ""
@@ -6182,11 +6182,11 @@ type PrivateIpStack struct {
 
 func (v PrivateIpStack) Type() PrivateIpStackType {
 	switch v.Value.(type) {
-	case *PrivateIpStackV4:
+	case PrivateIpStackV4, *PrivateIpStackV4:
 		return PrivateIpStackTypeV4
-	case *PrivateIpStackV6:
+	case PrivateIpStackV6, *PrivateIpStackV6:
 		return PrivateIpStackTypeV6
-	case *PrivateIpStackDualStack:
+	case PrivateIpStackDualStack, *PrivateIpStackDualStack:
 		return PrivateIpStackTypeDualStack
 	default:
 		return ""
@@ -6310,11 +6310,11 @@ type PrivateIpStackCreate struct {
 
 func (v PrivateIpStackCreate) Type() PrivateIpStackCreateType {
 	switch v.Value.(type) {
-	case *PrivateIpStackCreateV4:
+	case PrivateIpStackCreateV4, *PrivateIpStackCreateV4:
 		return PrivateIpStackCreateTypeV4
-	case *PrivateIpStackCreateV6:
+	case PrivateIpStackCreateV6, *PrivateIpStackCreateV6:
 		return PrivateIpStackCreateTypeV6
-	case *PrivateIpStackCreateDualStack:
+	case PrivateIpStackCreateDualStack, *PrivateIpStackCreateDualStack:
 		return PrivateIpStackCreateTypeDualStack
 	default:
 		return ""
@@ -6807,13 +6807,13 @@ type RouteDestination struct {
 
 func (v RouteDestination) Type() RouteDestinationType {
 	switch v.Value.(type) {
-	case *RouteDestinationIp:
+	case RouteDestinationIp, *RouteDestinationIp:
 		return RouteDestinationTypeIp
-	case *RouteDestinationIpNet:
+	case RouteDestinationIpNet, *RouteDestinationIpNet:
 		return RouteDestinationTypeIpNet
-	case *RouteDestinationVpc:
+	case RouteDestinationVpc, *RouteDestinationVpc:
 		return RouteDestinationTypeVpc
-	case *RouteDestinationSubnet:
+	case RouteDestinationSubnet, *RouteDestinationSubnet:
 		return RouteDestinationTypeSubnet
 	default:
 		return ""
@@ -6964,17 +6964,17 @@ type RouteTarget struct {
 
 func (v RouteTarget) Type() RouteTargetType {
 	switch v.Value.(type) {
-	case *RouteTargetIp:
+	case RouteTargetIp, *RouteTargetIp:
 		return RouteTargetTypeIp
-	case *RouteTargetVpc:
+	case RouteTargetVpc, *RouteTargetVpc:
 		return RouteTargetTypeVpc
-	case *RouteTargetSubnet:
+	case RouteTargetSubnet, *RouteTargetSubnet:
 		return RouteTargetTypeSubnet
-	case *RouteTargetInstance:
+	case RouteTargetInstance, *RouteTargetInstance:
 		return RouteTargetTypeInstance
-	case *RouteTargetInternetGateway:
+	case RouteTargetInternetGateway, *RouteTargetInternetGateway:
 		return RouteTargetTypeInternetGateway
-	case *RouteTargetDrop:
+	case RouteTargetDrop, *RouteTargetDrop:
 		return RouteTargetTypeDrop
 	default:
 		return ""
@@ -8976,17 +8976,17 @@ type ValueArray struct {
 
 func (v ValueArray) Type() ValueArrayType {
 	switch v.Values.(type) {
-	case *ValueArrayInteger:
+	case ValueArrayInteger, *ValueArrayInteger:
 		return ValueArrayTypeInteger
-	case *ValueArrayDouble:
+	case ValueArrayDouble, *ValueArrayDouble:
 		return ValueArrayTypeDouble
-	case *ValueArrayBoolean:
+	case ValueArrayBoolean, *ValueArrayBoolean:
 		return ValueArrayTypeBoolean
-	case *ValueArrayString:
+	case ValueArrayString, *ValueArrayString:
 		return ValueArrayTypeString
-	case *ValueArrayIntegerDistribution:
+	case ValueArrayIntegerDistribution, *ValueArrayIntegerDistribution:
 		return ValueArrayTypeIntegerDistribution
-	case *ValueArrayDoubleDistribution:
+	case ValueArrayDoubleDistribution, *ValueArrayDoubleDistribution:
 		return ValueArrayTypeDoubleDistribution
 	default:
 		return ""
@@ -9306,15 +9306,15 @@ type VpcFirewallRuleHostFilter struct {
 
 func (v VpcFirewallRuleHostFilter) Type() VpcFirewallRuleHostFilterType {
 	switch v.Value.(type) {
-	case *VpcFirewallRuleHostFilterVpc:
+	case VpcFirewallRuleHostFilterVpc, *VpcFirewallRuleHostFilterVpc:
 		return VpcFirewallRuleHostFilterTypeVpc
-	case *VpcFirewallRuleHostFilterSubnet:
+	case VpcFirewallRuleHostFilterSubnet, *VpcFirewallRuleHostFilterSubnet:
 		return VpcFirewallRuleHostFilterTypeSubnet
-	case *VpcFirewallRuleHostFilterInstance:
+	case VpcFirewallRuleHostFilterInstance, *VpcFirewallRuleHostFilterInstance:
 		return VpcFirewallRuleHostFilterTypeInstance
-	case *VpcFirewallRuleHostFilterIp:
+	case VpcFirewallRuleHostFilterIp, *VpcFirewallRuleHostFilterIp:
 		return VpcFirewallRuleHostFilterTypeIp
-	case *VpcFirewallRuleHostFilterIpNet:
+	case VpcFirewallRuleHostFilterIpNet, *VpcFirewallRuleHostFilterIpNet:
 		return VpcFirewallRuleHostFilterTypeIpNet
 	default:
 		return ""
@@ -9508,15 +9508,15 @@ type VpcFirewallRuleTarget struct {
 
 func (v VpcFirewallRuleTarget) Type() VpcFirewallRuleTargetType {
 	switch v.Value.(type) {
-	case *VpcFirewallRuleTargetVpc:
+	case VpcFirewallRuleTargetVpc, *VpcFirewallRuleTargetVpc:
 		return VpcFirewallRuleTargetTypeVpc
-	case *VpcFirewallRuleTargetSubnet:
+	case VpcFirewallRuleTargetSubnet, *VpcFirewallRuleTargetSubnet:
 		return VpcFirewallRuleTargetTypeSubnet
-	case *VpcFirewallRuleTargetInstance:
+	case VpcFirewallRuleTargetInstance, *VpcFirewallRuleTargetInstance:
 		return VpcFirewallRuleTargetTypeInstance
-	case *VpcFirewallRuleTargetIp:
+	case VpcFirewallRuleTargetIp, *VpcFirewallRuleTargetIp:
 		return VpcFirewallRuleTargetTypeIp
-	case *VpcFirewallRuleTargetIpNet:
+	case VpcFirewallRuleTargetIpNet, *VpcFirewallRuleTargetIpNet:
 		return VpcFirewallRuleTargetTypeIpNet
 	default:
 		return ""
