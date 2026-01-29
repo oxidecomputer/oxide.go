@@ -23,7 +23,7 @@ func ({{.Name}}) {{.VariantMarker.Method}}() {}
 func (v {{.Name}}) {{.Variants.DiscriminatorMethod}}() {{.Variants.DiscriminatorType}} {
 	switch v.{{.Variants.ValueFieldName}}.(type) {
 	{{- range .Variants.Variants}}
-	case *{{.TypeName}}:
+	case {{.TypeName}}, *{{.TypeName}}:
 		return {{$.Variants.DiscriminatorType}}{{.TypeSuffix}}
 	{{- end}}
 	default:
