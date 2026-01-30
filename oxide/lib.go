@@ -27,8 +27,7 @@ const (
 	// HostEnvVar is the environment variable that contains the host.
 	HostEnvVar = "OXIDE_HOST"
 
-	// ProfileEnvVar is the environment variable that contains the credentials
-	// profile to use.
+	// ProfileEnvVar is the environment variable that contains the credentials profile to use.
 	ProfileEnvVar = "OXIDE_PROFILE"
 
 	// credentialsFile is the name of the file the Oxide CLI stores credentials in.
@@ -46,19 +45,17 @@ type ClientOption interface {
 	apply(cfg *clientConfig) error
 }
 
-// clientOptionFunc provides a simpler type to implement the [ClientOption]
-// interface using closure functions. It allows the [clientConfig] to remain
-// unexported and out of the documentation for external users.
+// clientOptionFunc provides a simpler type to implement the [ClientOption] interface using closure
+// functions. It allows the [clientConfig] to remain unexported and out of the documentation for
+// external users.
 type clientOptionFunc func(cfg *clientConfig) error
 
-// apply modifies cfg using the given clientOptionFunc, implementing
-// [ClientOption].
+// apply modifies cfg using the given clientOptionFunc, implementing [ClientOption].
 func (c clientOptionFunc) apply(cfg *clientConfig) error {
 	return c(cfg)
 }
 
-// clientConfig holds the configuration for a [Client] while it's being
-// constructed via [NewClient].
+// clientConfig holds the configuration for a [Client] while it's being constructed via [NewClient].
 type clientConfig struct {
 	host              string
 	token             string
@@ -77,8 +74,7 @@ type clientConfig struct {
 	defaultProfileSetFromOption bool
 }
 
-// WithHost sets the Oxide host for [Client] (e.g.,
-// https://oxide.sys.example.com).
+// WithHost sets the Oxide host for [Client] (e.g., https://oxide.sys.example.com).
 func WithHost(host string) ClientOption {
 	return clientOptionFunc(func(cfg *clientConfig) error {
 		cfg.host = host
@@ -96,9 +92,8 @@ func WithToken(token string) ClientOption {
 	})
 }
 
-// WithProfile sets the profile name within the credentials file to use for
-// authentication. This is mutually exclusive with [WithHost], [WithToken], and
-// [WithDefaultProfile].
+// WithProfile sets the profile name within the credentials file to use for authentication. This is
+// mutually exclusive with [WithHost], [WithToken], and [WithDefaultProfile].
 func WithProfile(profile string) ClientOption {
 	return clientOptionFunc(func(cfg *clientConfig) error {
 		cfg.profile = profile
@@ -107,9 +102,8 @@ func WithProfile(profile string) ClientOption {
 	})
 }
 
-// WithDefaultProfile uses the default profile within the credentials file
-// to use for authentication. This is mutually exclusive with [WithHost],
-// [WithToken], and [WithProfile].
+// WithDefaultProfile uses the default profile within the credentials file to use for
+// authentication. This is mutually exclusive with [WithHost], [WithToken], and [WithProfile].
 func WithDefaultProfile() ClientOption {
 	return clientOptionFunc(func(cfg *clientConfig) error {
 		cfg.useDefaultProfile = true
@@ -126,8 +120,8 @@ func WithConfigDir(dir string) ClientOption {
 	})
 }
 
-// WithTimeout sets the timeout for the HTTP client. This option is overriden if
-// [WithHTTPClient] is set.
+// WithTimeout sets the timeout for the HTTP client. This option is overridden if [WithHTTPClient]
+// is set after this option.
 func WithTimeout(timeout time.Duration) ClientOption {
 	return clientOptionFunc(func(cfg *clientConfig) error {
 		if cfg.httpClient == nil {
@@ -138,10 +132,9 @@ func WithTimeout(timeout time.Duration) ClientOption {
 	})
 }
 
-// WithHTTPClient sets a custom HTTP client, replacing the default HTTP client
-// entirely. This overrides [WithTimeout], [WithInsecureSkipVerify], and
-// [WithUserAgent] and should only be used in advanced use cases such as
-// configuring a proxy or changing TLS configuration.
+// WithHTTPClient sets a custom HTTP client, replacing the default HTTP client entirely. This
+// overrides [WithTimeout] and [WithInsecureSkipVerify] if called after those options, and should
+// only be used in advanced use cases such as configuring a proxy or changing TLS configuration.
 func WithHTTPClient(client *http.Client) ClientOption {
 	return clientOptionFunc(func(cfg *clientConfig) error {
 		cfg.httpClient = client
@@ -149,9 +142,9 @@ func WithHTTPClient(client *http.Client) ClientOption {
 	})
 }
 
-// WithInsecureSkipVerify disables TLS certificate verification. This is
-// insecure and should only be used for testing or in controlled environments.
-// This option is overridden if [WithHTTPClient] is set.
+// WithInsecureSkipVerify disables TLS certificate verification. This is insecure and should only be
+// used for testing or in controlled environments. This option is overridden if [WithHTTPClient] is
+// set after this option.
 func WithInsecureSkipVerify() ClientOption {
 	return clientOptionFunc(func(cfg *clientConfig) error {
 		if cfg.httpClient == nil {
@@ -170,8 +163,7 @@ func WithInsecureSkipVerify() ClientOption {
 	})
 }
 
-// WithUserAgent sets the user agent string for the client. This option is
-// overriden if [WithHTTPClient] is set.
+// WithUserAgent sets the user agent string for the client.
 func WithUserAgent(userAgent string) ClientOption {
 	return clientOptionFunc(func(cfg *clientConfig) error {
 		cfg.userAgent = userAgent
@@ -181,8 +173,7 @@ func WithUserAgent(userAgent string) ClientOption {
 
 // Client which conforms to the OpenAPI3 specification for this service.
 type Client struct {
-	// Base URL of the Oxide API including the scheme. For example,
-	// https://api.oxide.computer.
+	// Base URL of the Oxide API including the scheme. For example, https://api.oxide.computer.
 	host string
 
 	// Oxide API authentication token.
@@ -200,14 +191,13 @@ type authCredentials struct {
 	token string
 }
 
-// NewClient creates an Oxide API client. When called with no options, it reads
-// configuration from environment variables `OXIDE_HOST` and `OXIDE_TOKEN`, or
-// `OXIDE_PROFILE`. When called with one or more [ClientOption], it configure
-// the client accordingly, overriding values from environment variables. When
-// the same [ClientOption] is passed multiple times, the last argument wins.
+// NewClient creates an Oxide API client. When called with no options, it reads configuration from
+// environment variables `OXIDE_HOST` and `OXIDE_TOKEN`, or `OXIDE_PROFILE`. When called with one or
+// more [ClientOption], it configure the client accordingly, overriding values from environment
+// variables. When the same [ClientOption] is passed multiple times, the last argument wins.
 //
-// The [WithHost] and [WithToken] options are mutually exclusive with
-// [WithProfile] and [WithDefaultProfile].
+// The [WithHost] and [WithToken] options are mutually exclusive with [WithProfile] and
+// [WithDefaultProfile].
 func NewClient(opts ...ClientOption) (*Client, error) {
 	cfg := &clientConfig{
 		host:       os.Getenv(HostEnvVar),
@@ -312,9 +302,13 @@ func defaultUserAgent() string {
 	return fmt.Sprintf("oxide.go/%s", sdkVersion)
 }
 
-// getProfile determines the path of the user's credentials file
-// and returns the host and token for the requested profile.
-func getProfile(configDir string, profile string, useDefault bool) (*authCredentials, error) {
+// getProfile determines the path of the user's credentials file and returns the host and token for
+// the requested profile.
+func getProfile(
+	configDir string,
+	profile string,
+	useDefault bool,
+) (*authCredentials, error) {
 	// Use explicitly configured profile over default when both are set.
 	if useDefault && profile == "" {
 		configPath := filepath.Join(configDir, configFile)
@@ -322,7 +316,11 @@ func getProfile(configDir string, profile string, useDefault bool) (*authCredent
 		var err error
 		profile, err = defaultProfile(configPath)
 		if err != nil {
-			return nil, fmt.Errorf("failed to get default profile from %q: %w", configPath, err)
+			return nil, fmt.Errorf(
+				"failed to get default profile from %q: %w",
+				configPath,
+				err,
+			)
 		}
 	}
 
@@ -354,8 +352,8 @@ func defaultProfile(configPath string) (string, error) {
 	return "", errors.New("no default profile set")
 }
 
-// parseCredentialsFile parses a credentials.toml and returns the token and host
-// associated with the requested profile.
+// parseCredentialsFile parses a credentials.toml and returns the token and host associated with the
+// requested profile.
 func parseCredentialsFile(credentialsPath, profileName string) (*authCredentials, error) {
 	if profileName == "" {
 		return nil, errors.New("no profile name provided")
@@ -451,8 +449,8 @@ type Request struct {
 	Query  map[string]string
 }
 
-// MakeRequest takes a `Request` that defines the desired API request, builds
-// the URI using the configured API host, and sends the request to the API.
+// MakeRequest takes a `Request` that defines the desired API request, builds the URI using the
+// configured API host, and sends the request to the API.
 func (c *Client) MakeRequest(ctx context.Context, req Request) (*http.Response, error) {
 	uri := resolveRelative(c.host, req.Path)
 	httpReq, err := c.buildRequest(ctx, req.Body, req.Method, uri, req.Params, req.Query)
