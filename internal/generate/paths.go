@@ -61,7 +61,7 @@ func generatePaths(file string, spec *openapi3.T) error {
 			continue
 		}
 
-		err := buildPath(f, spec, path, p)
+		err := buildPath(f, path, p)
 		if err != nil {
 			return err
 		}
@@ -71,51 +71,51 @@ func generatePaths(file string, spec *openapi3.T) error {
 }
 
 // buildPath builds the given path as an http request to the given file.
-func buildPath(f *os.File, spec *openapi3.T, path string, p *openapi3.PathItem) error {
+func buildPath(f *os.File, path string, p *openapi3.PathItem) error {
 	if p.Get != nil {
-		err := buildMethod(f, spec, http.MethodGet, path, p.Get, false)
+		err := buildMethod(f, http.MethodGet, path, p.Get, false)
 		if err != nil {
 			return err
 		}
 	}
 
 	if p.Post != nil {
-		err := buildMethod(f, spec, http.MethodPost, path, p.Post, false)
+		err := buildMethod(f, http.MethodPost, path, p.Post, false)
 		if err != nil {
 			return err
 		}
 	}
 
 	if p.Put != nil {
-		err := buildMethod(f, spec, http.MethodPut, path, p.Put, false)
+		err := buildMethod(f, http.MethodPut, path, p.Put, false)
 		if err != nil {
 			return err
 		}
 	}
 
 	if p.Delete != nil {
-		err := buildMethod(f, spec, http.MethodDelete, path, p.Delete, false)
+		err := buildMethod(f, http.MethodDelete, path, p.Delete, false)
 		if err != nil {
 			return err
 		}
 	}
 
 	if p.Patch != nil {
-		err := buildMethod(f, spec, http.MethodPatch, path, p.Patch, false)
+		err := buildMethod(f, http.MethodPatch, path, p.Patch, false)
 		if err != nil {
 			return err
 		}
 	}
 
 	if p.Head != nil {
-		err := buildMethod(f, spec, http.MethodHead, path, p.Head, false)
+		err := buildMethod(f, http.MethodHead, path, p.Head, false)
 		if err != nil {
 			return err
 		}
 	}
 
 	if p.Options != nil {
-		err := buildMethod(f, spec, http.MethodOptions, path, p.Options, false)
+		err := buildMethod(f, http.MethodOptions, path, p.Options, false)
 		if err != nil {
 			return err
 		}
@@ -126,7 +126,6 @@ func buildPath(f *os.File, spec *openapi3.T, path string, p *openapi3.PathItem) 
 
 func buildMethod(
 	f *os.File,
-	spec *openapi3.T,
 	method string,
 	path string,
 	o *openapi3.Operation,
@@ -231,7 +230,7 @@ func buildMethod(
 
 	if pInfo.isPageResult && !isGetAllPages {
 		// Run the method again with get all pages for ListAll methods.
-		err := buildMethod(f, spec, method, path, o, true)
+		err := buildMethod(f, method, path, o, true)
 		if err != nil {
 			return err
 		}
