@@ -25,10 +25,18 @@ func enumStringTypes() map[string][]string {
 	return map[string][]string{}
 }
 
+var templateFuncs = template.FuncMap{
+	"splitDocString": splitDocString,
+	"lower":          strings.ToLower,
+	"formatDetectorFunc": func(format string) string {
+		return "Detect" + strcase.ToCamel(format) + "Format"
+	},
+}
+
 var (
 	typeTemplate = template.Must(
 		template.New("type.go.tpl").
-			Funcs(template.FuncMap{"splitDocString": splitDocString}).
+			Funcs(templateFuncs).
 			ParseFiles("./templates/type.go.tpl"),
 	)
 	enumTemplate = template.Must(
@@ -38,6 +46,23 @@ var (
 	)
 	validationTemplate = template.Must(
 		template.ParseFiles("./templates/validation.go.tpl"),
+	)
+
+	// Union sub-templates for generating marshal/unmarshal methods.
+	unionTaggedTemplate = template.Must(
+		template.New("union_tagged.go.tpl").
+			Funcs(templateFuncs).
+			ParseFiles("./templates/union_tagged.go.tpl"),
+	)
+	unionStringTemplate = template.Must(
+		template.New("union_string.go.tpl").
+			Funcs(templateFuncs).
+			ParseFiles("./templates/union_string.go.tpl"),
+	)
+	unionStructTemplate = template.Must(
+		template.New("union_struct.go.tpl").
+			Funcs(templateFuncs).
+			ParseFiles("./templates/union_struct.go.tpl"),
 	)
 )
 
@@ -60,25 +85,17 @@ type TypeTemplate struct {
 	Type string
 	// Fields holds the information for the field
 	Fields []TypeField
-	// VariantMarker is set when this type is part of a tagged union: either the marker
-	// interface itself (e.g., privateIpStackVariant) or a variant struct that implements
-	// it (e.g., PrivateIpStackV4, PrivateIpStackV6, PrivateIpStackDualStack).
-	VariantMarker *VariantMarker
-	// Variants is set when this type represents a tagged union (e.g., PrivateIpStack).
-	Variants *VariantConfig
+	// VariantMarker is the marker method name when this type is a marker interface
+	// for a union type (e.g., "isPrivateIpStackVariant").
+	VariantMarker string
+	// Union is set when this type represents a union (e.g., PrivateIpStack).
+	Union *UnionConfig
 }
 
-// VariantMarker describes a type that is a variant of a tagged union interface
-type VariantMarker struct {
-	// Method is the marker method name (e.g., "isPrivateIpStackVariant")
-	Method string
-	// InterfaceType is the interface type name (e.g., "privateIpStackVariant")
-	// Empty for the interface type itself, set for variant structs
-	InterfaceType string
-}
-
-// VariantConfig holds configuration for tagged union types
-type VariantConfig struct {
+// UnionConfig holds configuration for tagged union types
+type UnionConfig struct {
+	// UnionType indicates how variants are distinguished (tagged, format, pattern).
+	UnionType UnionType
 	// Discriminator is the JSON property name for the discriminator (e.g., "type")
 	Discriminator string
 	// DiscriminatorMethod is the Go method name that returns the discriminator (e.g., "Type")
@@ -95,7 +112,25 @@ type VariantConfig struct {
 	Variants []Variant
 }
 
-// Variant represents a single variant in a tagged union (oneOf with discriminator).
+// MarkerMethod returns the marker method name derived from VariantType.
+// For example, "datumVariant" -> "isDatumVariant".
+func (v UnionConfig) MarkerMethod() string {
+	return "is" + strcase.ToCamel(v.VariantType)
+}
+
+// UnionType describes how to distinguish variants in a oneOf.
+type UnionType string
+
+const (
+	// UnionTagged represents a tagged union with a discriminator property.
+	UnionTagged UnionType = "tagged"
+	// UnionUntaggedString represents an untagged union with string variants.
+	UnionUntaggedString UnionType = "untagged_string"
+	// UnionUntaggedStruct represents an untagged union with struct types.
+	UnionUntaggedStruct UnionType = "untagged_struct"
+)
+
+// Variant represents a single variant in a union type.
 type Variant struct {
 	// DiscriminatorValue is the raw JSON tag value (e.g., "ip_net").
 	DiscriminatorValue string
@@ -103,6 +138,62 @@ type Variant struct {
 	TypeSuffix string
 	// TypeName is the full Go type name for this variant (e.g., "RouteDestinationIpNet").
 	TypeName string
+	// Format is the OpenAPI format; set on string types.
+	Format string
+	// Pattern is the OpenAPI pattern; set on string types.
+	Pattern string
+	// FormatFields holds fields with format constraints for struct types.
+	FormatFields []FormatField
+	// PatternFields holds fields with pattern constraints for struct types.
+	PatternFields []PatternField
+}
+
+// unionTemplateData is the data passed to union sub-templates.
+type unionTemplateData struct {
+	*UnionConfig
+	TypeName string
+}
+
+// RenderMethods renders the marshal/unmarshal methods for this union type.
+func (v *UnionConfig) RenderMethods(typeName string) string {
+	if v == nil {
+		return ""
+	}
+
+	data := unionTemplateData{
+		UnionConfig: v,
+		TypeName:    typeName,
+	}
+
+	var tmpl *template.Template
+	switch v.UnionType {
+	case UnionTagged:
+		tmpl = unionTaggedTemplate
+	case UnionUntaggedString:
+		tmpl = unionStringTemplate
+	case UnionUntaggedStruct:
+		tmpl = unionStructTemplate
+	default:
+		return ""
+	}
+
+	return renderTemplate(tmpl, data)
+}
+
+// FormatField describes a field with an OpenAPI format constraint.
+type FormatField struct {
+	// Name is the Go field name.
+	Name string
+	// Format is the OpenAPI format (e.g., "ipv4", "ipv6").
+	Format string
+}
+
+// PatternField describes a field with an OpenAPI pattern constraint.
+type PatternField struct {
+	// Name is the Go field name.
+	Name string
+	// Pattern is the regex pattern.
+	Pattern string
 }
 
 // Render renders the TypeTemplate to a Go type.
@@ -151,6 +242,13 @@ func (f TypeField) Description() string {
 // TODO: Use `omitzero` rather than `omitempty` on all relevant
 // fields: https://github.com/oxidecomputer/oxide.go/issues/290
 func (f TypeField) StructTag() string {
+	// Fields with no MarshalKey don't need json tags. This is used for wrapper
+	// struct fields that have custom MarshalJSON/UnmarshalJSON methods, where
+	// the struct field tag would be ignored anyway.
+	if f.MarshalKey == "" {
+		return ""
+	}
+
 	var omitDirective string
 	switch {
 	case f.OmitDirective != "":
@@ -789,6 +887,11 @@ func createAllOf(
 }
 
 func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []EnumTemplate) {
+	// Check for untagged union (format/pattern discriminated) first.
+	if analysis := checkUntaggedOneOf(s); analysis != nil {
+		return createUntaggedOneOf(s, typeName, analysis)
+	}
+
 	// First pass: identify discriminator key and find properties with multiple types across
 	// variants.
 	discriminatorKeys := map[string]struct{}{}
@@ -872,7 +975,7 @@ func createInterfaceOneOf(
 		Description:   fmt.Sprintf("// %s is implemented by %s variants.", interfaceName, typeName),
 		Name:          interfaceName,
 		Type:          "interface",
-		VariantMarker: &VariantMarker{Method: markerMethod},
+		VariantMarker: markerMethod,
 	}
 	typeTpls = append(typeTpls, interfaceTpl)
 
@@ -934,24 +1037,21 @@ func createInterfaceOneOf(
 		}
 
 		variantTpl := TypeTemplate{
-			Description: fmt.Sprintf("// %s is a variant of %s.", variantTypeName, typeName),
-			Name:        variantTypeName,
-			Type:        "struct",
-			Fields:      fields,
-			VariantMarker: &VariantMarker{
-				Method:        markerMethod,
-				InterfaceType: interfaceName,
-			},
+			Description:   fmt.Sprintf("// %s is a variant of %s.", variantTypeName, typeName),
+			Name:          variantTypeName,
+			Type:          "struct",
+			Fields:        fields,
+			VariantMarker: markerMethod,
 		}
 		typeTpls = append(typeTpls, variantTpl)
 	}
 
 	// Create the wrapper struct with only the interface-typed value field.
+	// MarshalKey is omitted because the wrapper has custom marshal/unmarshal methods.
 	wrapperFields := []TypeField{
 		{
-			Name:       strcase.ToCamel(valuePropertyName),
-			Type:       interfaceName,
-			MarshalKey: valuePropertyName,
+			Name: strcase.ToCamel(valuePropertyName),
+			Type: interfaceName,
 		},
 	}
 
@@ -960,7 +1060,8 @@ func createInterfaceOneOf(
 		Name:        typeName,
 		Type:        "struct",
 		Fields:      wrapperFields,
-		Variants: &VariantConfig{
+		Union: &UnionConfig{
+			UnionType:           UnionTagged,
 			Discriminator:       discriminatorKey,
 			DiscriminatorMethod: strcase.ToCamel(discriminatorKey),
 			DiscriminatorType:   discriminatorType,
@@ -1056,6 +1157,204 @@ func createFlatOneOf(
 	}
 
 	return typeTpls, enumTpls
+}
+
+// UntaggedUnion holds analysis results for untagged union detection.
+type UntaggedUnion struct {
+	// Type is the union type based on variant shape (string or struct).
+	Type UnionType
+	// Variants holds the variant information.
+	Variants []UntaggedVariant
+}
+
+// UntaggedVariant holds information about a variant in an untagged union.
+type UntaggedVariant struct {
+	// RefName is the referenced type name (e.g., "Ipv4Range").
+	RefName string
+	// Format is set for string types with format constraints (e.g., "ipv4").
+	Format string
+	// Pattern is set for string types with pattern constraints.
+	Pattern string
+	// FormatFields holds fields with format constraints (for struct types).
+	FormatFields []FormatField
+	// PatternFields holds fields with pattern constraints (for struct types).
+	PatternFields []PatternField
+}
+
+// checkUntaggedOneOf checks if a oneOf schema represents an untagged union that can be
+// discriminated by format or pattern constraints.
+//
+// An untagged union is a oneOf where:
+// 1. Each variant is a $ref to another schema
+// 2. All variants have the same shape (all strings or all structs)
+// 3. Each variant can be discriminated by format or pattern constraints
+//
+// Note that we only handle string types and struct types containing strings. We can add format
+// support for number types in the future if necessary, or discriminate between untagged variants by
+// attempting to unmarshal into each variant.
+func checkUntaggedOneOf(s *openapi3.Schema) *UntaggedUnion {
+	if len(s.OneOf) < 2 {
+		return nil
+	}
+
+	var variants []UntaggedVariant
+	var stringCount, objectCount int
+
+	for _, variantRef := range s.OneOf {
+		var ref *openapi3.SchemaRef
+
+		if variantRef.Ref != "" {
+			ref = variantRef
+		} else if len(variantRef.Value.AllOf) == 1 && variantRef.Value.AllOf[0].Ref != "" {
+			ref = variantRef.Value.AllOf[0]
+		} else {
+			return nil
+		}
+
+		refName := strings.TrimPrefix(ref.Ref, "#/components/schemas/")
+		schema := ref.Value
+		if schema == nil {
+			return nil
+		}
+
+		variant := UntaggedVariant{
+			RefName: refName,
+		}
+
+		if schema.Type.Is("string") {
+			stringCount++
+			if schema.Pattern != "" {
+				variant.Pattern = schema.Pattern
+			}
+			if schema.Format != "" {
+				variant.Format = schema.Format
+			}
+		}
+
+		if schema.Type.Is("object") && len(schema.Properties) > 0 {
+			objectCount++
+			var formatFields []FormatField
+			var patternFields []PatternField
+			for propName, propRef := range schema.Properties {
+				if propRef.Value != nil {
+					fieldName := strcase.ToCamel(propName)
+					if propRef.Value.Format != "" {
+						formatFields = append(formatFields, FormatField{
+							Name:   fieldName,
+							Format: propRef.Value.Format,
+						})
+					}
+					if propRef.Value.Pattern != "" {
+						patternFields = append(patternFields, PatternField{
+							Name:    fieldName,
+							Pattern: propRef.Value.Pattern,
+						})
+					}
+				}
+			}
+			if len(formatFields) > 0 {
+				sort.Slice(formatFields, func(i, j int) bool {
+					return formatFields[i].Name < formatFields[j].Name
+				})
+				variant.FormatFields = formatFields
+			}
+			if len(patternFields) > 0 {
+				sort.Slice(patternFields, func(i, j int) bool {
+					return patternFields[i].Name < patternFields[j].Name
+				})
+				variant.PatternFields = patternFields
+			}
+		}
+
+		variants = append(variants, variant)
+	}
+
+	if len(variants) == 0 {
+		return nil
+	}
+
+	var unionType UnionType
+	if stringCount == len(variants) {
+		for _, v := range variants {
+			if v.Pattern == "" && v.Format == "" {
+				return nil
+			}
+		}
+		unionType = UnionUntaggedString
+	} else if objectCount == len(variants) {
+		for _, v := range variants {
+			if len(v.PatternFields) == 0 && len(v.FormatFields) == 0 {
+				return nil
+			}
+		}
+		unionType = UnionUntaggedStruct
+	} else {
+		return nil
+	}
+
+	return &UntaggedUnion{
+		Type:     unionType,
+		Variants: variants,
+	}
+}
+
+// createUntaggedOneOf creates types for an untagged union (format/pattern discriminated).
+func createUntaggedOneOf(
+	s *openapi3.Schema,
+	typeName string,
+	analysis *UntaggedUnion,
+) ([]TypeTemplate, []EnumTemplate) {
+	typeTpls := make([]TypeTemplate, 0)
+
+	// Build the interface type.
+	interfaceName := toLowerFirstLetter(typeName) + "Variant"
+	markerMethod := "is" + typeName + "Variant"
+	interfaceTpl := TypeTemplate{
+		Description:   fmt.Sprintf("// %s is implemented by %s variants.", interfaceName, typeName),
+		Name:          interfaceName,
+		Type:          "interface",
+		VariantMarker: markerMethod,
+	}
+	typeTpls = append(typeTpls, interfaceTpl)
+
+	// Build variant info for the wrapper type
+	var variants []Variant
+	for _, v := range analysis.Variants {
+		variantTypeName := strcase.ToCamel(v.RefName)
+		variants = append(variants, Variant{
+			TypeSuffix:    variantTypeName,
+			TypeName:      variantTypeName,
+			Format:        v.Format,
+			Pattern:       v.Pattern,
+			FormatFields:  v.FormatFields,
+			PatternFields: v.PatternFields,
+		})
+	}
+
+	// Create the wrapper struct with only the interface-typed value field.
+	// MarshalKey is omitted because the wrapper has custom marshal/unmarshal methods.
+	wrapperFields := []TypeField{
+		{
+			Name: "Value",
+			Type: interfaceName,
+		},
+	}
+
+	wrapperTpl := TypeTemplate{
+		Description: formatTypeDescription(typeName, s),
+		Name:        typeName,
+		Type:        "struct",
+		Fields:      wrapperFields,
+		Union: &UnionConfig{
+			UnionType:      analysis.Type,
+			ValueFieldName: "Value",
+			VariantType:    interfaceName,
+			Variants:       variants,
+		},
+	}
+	typeTpls = append(typeTpls, wrapperTpl)
+
+	return typeTpls, nil
 }
 
 func getObjectType(s *openapi3.Schema) string {
