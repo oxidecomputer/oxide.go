@@ -3600,6 +3600,54 @@ func (c *Client) InstanceEphemeralIpDetach(ctx context.Context, params InstanceE
 	return nil
 }
 
+// InstanceExternalSubnetList: List external subnets attached to instance
+func (c *Client) InstanceExternalSubnetList(ctx context.Context, params InstanceExternalSubnetListParams) (*ExternalSubnetResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/instances/{{.instance}}/external-subnets"),
+		map[string]string{
+			"instance": string(params.Instance),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body ExternalSubnetResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
 // InstanceReboot: Reboot instance
 func (c *Client) InstanceReboot(ctx context.Context, params InstanceRebootParams) (*Instance, error) {
 	if err := params.Validate(); err != nil {
@@ -11345,7 +11393,6 @@ func (c *Client) SubnetPoolMemberList(ctx context.Context, params SubnetPoolMemb
 		map[string]string{
 			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
 		},
 	)
 	if err != nil {
