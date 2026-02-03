@@ -2731,6 +2731,7 @@ type Digest struct {
 // - Id
 // - Name
 // - ProjectId
+// - ReadOnly
 // - Size
 // - State
 // - TimeCreated
@@ -2749,6 +2750,8 @@ type Disk struct {
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name      Name   `json:"name" yaml:"name"`
 	ProjectId string `json:"project_id" yaml:"project_id"`
+	// ReadOnly is whether or not this disk is read-only.
+	ReadOnly *bool `json:"read_only" yaml:"read_only"`
 	// Size is byte count to express memory or storage capacity.
 	Size ByteCount `json:"size" yaml:"size"`
 	// SnapshotId is iD of snapshot from which disk was created, if any
@@ -2850,6 +2853,8 @@ type DiskSourceBlank struct {
 // - SnapshotId
 // - Type
 type DiskSourceSnapshot struct {
+	// ReadOnly is if `true`, the disk created from this snapshot will be read-only.
+	ReadOnly   *bool          `json:"read_only,omitempty" yaml:"read_only,omitempty"`
 	SnapshotId string         `json:"snapshot_id" yaml:"snapshot_id"`
 	Type       DiskSourceType `json:"type" yaml:"type"`
 }
@@ -2860,8 +2865,10 @@ type DiskSourceSnapshot struct {
 // - ImageId
 // - Type
 type DiskSourceImage struct {
-	ImageId string         `json:"image_id" yaml:"image_id"`
-	Type    DiskSourceType `json:"type" yaml:"type"`
+	ImageId string `json:"image_id" yaml:"image_id"`
+	// ReadOnly is if `true`, the disk created from this image will be read-only.
+	ReadOnly *bool          `json:"read_only,omitempty" yaml:"read_only,omitempty"`
+	Type     DiskSourceType `json:"type" yaml:"type"`
 }
 
 // DiskSourceImportingBlocks is create a blank disk that will accept bulk writes or pull blocks from an
@@ -2881,6 +2888,8 @@ type DiskSource struct {
 	BlockSize BlockSize `json:"block_size,omitempty" yaml:"block_size,omitempty"`
 	// Type is the type definition for a Type.
 	Type DiskSourceType `json:"type,omitempty" yaml:"type,omitempty"`
+	// ReadOnly is if `true`, the disk created from this snapshot will be read-only.
+	ReadOnly *bool `json:"read_only,omitempty" yaml:"read_only,omitempty"`
 	// SnapshotId is the type definition for a SnapshotId.
 	SnapshotId string `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
 	// ImageId is the type definition for a ImageId.
@@ -7983,7 +7992,6 @@ type SshKeyResultsPage struct {
 // - Id
 // - IpVersion
 // - Name
-// - PoolType
 // - TimeCreated
 // - TimeModified
 type SubnetPool struct {
@@ -7995,8 +8003,6 @@ type SubnetPool struct {
 	IpVersion IpVersion `json:"ip_version" yaml:"ip_version"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name" yaml:"name"`
-	// PoolType is type of subnet pool (unicast or multicast)
-	PoolType IpPoolType `json:"pool_type" yaml:"pool_type"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
 	// TimeModified is timestamp when this resource was last modified
@@ -8036,19 +8042,14 @@ type SubnetPoolLinkSilo struct {
 // SubnetPoolMember is a member (subnet) within a subnet pool
 //
 // Required fields:
-// - Description
 // - Id
 // - MaxPrefixLength
 // - MinPrefixLength
-// - Name
 // - Subnet
 // - SubnetPoolId
 // - TimeCreated
-// - TimeModified
 type SubnetPoolMember struct {
-	// Description is human-readable free-form text about a resource
-	Description string `json:"description" yaml:"description"`
-	// Id is unique, immutable, system-controlled identifier for each resource
+	// Id is iD of the pool member
 	Id string `json:"id" yaml:"id"`
 	// MaxPrefixLength is maximum prefix length for allocations from this subnet; a larger prefix means smaller allocations
 	// are allowed (e.g. a /24 prefix yields smaller subnet allocations than a /16 prefix).
@@ -8056,16 +8057,12 @@ type SubnetPoolMember struct {
 	// MinPrefixLength is minimum prefix length for allocations from this subnet; a smaller prefix means larger
 	// allocations are allowed (e.g. a /16 prefix yields larger subnet allocations than a /24 prefix).
 	MinPrefixLength *int `json:"min_prefix_length" yaml:"min_prefix_length"`
-	// Name is unique, mutable, user-controlled identifier for each resource
-	Name Name `json:"name" yaml:"name"`
 	// Subnet is the subnet CIDR
 	Subnet IpNet `json:"subnet" yaml:"subnet"`
 	// SubnetPoolId is iD of the parent subnet pool
 	SubnetPoolId string `json:"subnet_pool_id" yaml:"subnet_pool_id"`
-	// TimeCreated is timestamp when this resource was created
+	// TimeCreated is time the pool member was created.
 	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
-	// TimeModified is timestamp when this resource was last modified
-	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
 
 // SubnetPoolMemberAdd is add a member (subnet) to a subnet pool
@@ -10978,6 +10975,15 @@ type InstanceEphemeralIpAttachParams struct {
 	Body     *EphemeralIpCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+// InstanceExternalSubnetListParams is the request parameters for InstanceExternalSubnetList
+//
+// Required fields:
+// - Instance
+type InstanceExternalSubnetListParams struct {
+	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+}
+
 // InstanceMulticastGroupListParams is the request parameters for InstanceMulticastGroupList
 //
 // Required fields:
@@ -11538,6 +11544,14 @@ type RackViewParams struct {
 type RackMembershipStatusParams struct {
 	RackId  string                `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
 	Version RackMembershipVersion `json:"version,omitempty" yaml:"version,omitempty"`
+}
+
+// RackMembershipAbortParams is the request parameters for RackMembershipAbort
+//
+// Required fields:
+// - RackId
+type RackMembershipAbortParams struct {
+	RackId string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
 }
 
 // RackMembershipAddSledsParams is the request parameters for RackMembershipAddSleds
@@ -12297,10 +12311,9 @@ type SubnetPoolUpdateParams struct {
 // Required fields:
 // - Pool
 type SubnetPoolMemberListParams struct {
-	Pool      NameOrId         `json:"pool,omitempty" yaml:"pool,omitempty"`
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Pool      NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Limit     *int     `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string   `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 }
 
 // SubnetPoolMemberAddParams is the request parameters for SubnetPoolMemberAdd
@@ -13809,6 +13822,16 @@ func (p *InstanceEphemeralIpAttachParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for InstanceExternalSubnetListParams are set
+func (p *InstanceExternalSubnetListParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Instance), "Instance")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for InstanceMulticastGroupListParams are set
 func (p *InstanceMulticastGroupListParams) Validate() error {
 	v := new(Validator)
@@ -14371,6 +14394,16 @@ func (p *RackViewParams) Validate() error {
 
 // Validate verifies all required fields for RackMembershipStatusParams are set
 func (p *RackMembershipStatusParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.RackId), "RackId")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for RackMembershipAbortParams are set
+func (p *RackMembershipAbortParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.RackId), "RackId")
 	if !v.IsValid() {
