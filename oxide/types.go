@@ -7671,6 +7671,48 @@ type SiloRoleRoleAssignment struct {
 	RoleName     SiloRole     `json:"role_name" yaml:"role_name"`
 }
 
+// SiloSubnetPool is a subnet pool in the context of a silo
+//
+// Required fields:
+// - Description
+// - Id
+// - IpVersion
+// - IsDefault
+// - Name
+// - TimeCreated
+// - TimeModified
+type SiloSubnetPool struct {
+	// Description is human-readable free-form text about a resource
+	Description string `json:"description" yaml:"description"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id" yaml:"id"`
+	// IpVersion is the IP version for the pool.
+	IpVersion IpVersion `json:"ip_version" yaml:"ip_version"`
+	// IsDefault is when a pool is the default for a silo, external subnet allocations will come from that pool
+	// when no other pool is specified.
+	//
+	// A silo can have at most one default pool per IP version (IPv4 or IPv6), allowing up to 2 default pools total.
+	//
+	IsDefault *bool `json:"is_default" yaml:"is_default"`
+	// Name is unique, mutable, user-controlled identifier for each resource
+	Name Name `json:"name" yaml:"name"`
+	// TimeCreated is timestamp when this resource was created
+	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
+	// TimeModified is timestamp when this resource was last modified
+	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
+}
+
+// SiloSubnetPoolResultsPage is a single page of results
+//
+// Required fields:
+// - Items
+type SiloSubnetPoolResultsPage struct {
+	// Items is list of items on this page of results
+	Items []SiloSubnetPool `json:"items" yaml:"items"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
 // SiloUtilization is view of a silo's resource utilization and capacity
 //
 // Required fields:
@@ -11480,6 +11522,13 @@ type SnapshotViewParams struct {
 	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
+// CurrentSiloSubnetPoolListParams is the request parameters for CurrentSiloSubnetPoolList
+type CurrentSiloSubnetPoolListParams struct {
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
 // AuditLogListParams is the request parameters for AuditLogList
 //
 // Required fields:
@@ -12263,6 +12312,17 @@ type SiloQuotasViewParams struct {
 type SiloQuotasUpdateParams struct {
 	Silo NameOrId          `json:"silo,omitempty" yaml:"silo,omitempty"`
 	Body *SiloQuotasUpdate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// SiloSubnetPoolListParams is the request parameters for SiloSubnetPoolList
+//
+// Required fields:
+// - Silo
+type SiloSubnetPoolListParams struct {
+	Silo      NameOrId         `json:"silo,omitempty" yaml:"silo,omitempty"`
+	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
 
 // SubnetPoolListParams is the request parameters for SubnetPoolList
@@ -14333,6 +14393,15 @@ func (p *SnapshotViewParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for CurrentSiloSubnetPoolListParams are set
+func (p *CurrentSiloSubnetPoolListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for AuditLogListParams are set
 func (p *AuditLogListParams) Validate() error {
 	v := new(Validator)
@@ -15213,6 +15282,16 @@ func (p *SiloQuotasViewParams) Validate() error {
 func (p *SiloQuotasUpdateParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Silo), "Silo")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloSubnetPoolListParams are set
+func (p *SiloSubnetPoolListParams) Validate() error {
+	v := new(Validator)
 	v.HasRequiredStr(string(p.Silo), "Silo")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())

@@ -6199,6 +6199,82 @@ func (c *Client) SnapshotDelete(ctx context.Context, params SnapshotDeleteParams
 	return nil
 }
 
+// CurrentSiloSubnetPoolList: List subnet pools linked to the user's current silo
+//
+// To iterate over all pages, use the `CurrentSiloSubnetPoolListAllPages` method, instead.
+func (c *Client) CurrentSiloSubnetPoolList(ctx context.Context, params CurrentSiloSubnetPoolListParams) (*SiloSubnetPoolResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/subnet-pools"),
+		map[string]string{},
+		map[string]string{
+			"limit":      PointerIntToStr(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SiloSubnetPoolResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// CurrentSiloSubnetPoolListAllPages: List subnet pools linked to the user's current silo
+//
+// This method is a wrapper around the `CurrentSiloSubnetPoolList` method.
+// This method returns all the pages at once.
+func (c *Client) CurrentSiloSubnetPoolListAllPages(ctx context.Context, params CurrentSiloSubnetPoolListParams) ([]SiloSubnetPool, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []SiloSubnetPool
+	params.PageToken = ""
+	params.Limit = NewPointer(100)
+	for {
+		page, err := c.CurrentSiloSubnetPoolList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
+}
+
 // AuditLogList: View audit log
 // A single item in the audit log represents both the beginning and end of the logged operation (represented by
 // `time_started` and `time_completed`) so that clients do not have to find multiple entries and match them up
@@ -11113,6 +11189,84 @@ func (c *Client) SiloQuotasUpdate(ctx context.Context, params SiloQuotasUpdatePa
 
 	// Return the response.
 	return &body, nil
+}
+
+// SiloSubnetPoolList: List subnet pools linked to a silo
+//
+// To iterate over all pages, use the `SiloSubnetPoolListAllPages` method, instead.
+func (c *Client) SiloSubnetPoolList(ctx context.Context, params SiloSubnetPoolListParams) (*SiloSubnetPoolResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/silos/{{.silo}}/subnet-pools"),
+		map[string]string{
+			"silo": string(params.Silo),
+		},
+		map[string]string{
+			"limit":      PointerIntToStr(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SiloSubnetPoolResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SiloSubnetPoolListAllPages: List subnet pools linked to a silo
+//
+// This method is a wrapper around the `SiloSubnetPoolList` method.
+// This method returns all the pages at once.
+func (c *Client) SiloSubnetPoolListAllPages(ctx context.Context, params SiloSubnetPoolListParams) ([]SiloSubnetPool, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []SiloSubnetPool
+	params.PageToken = ""
+	params.Limit = NewPointer(100)
+	for {
+		page, err := c.SiloSubnetPoolList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
 }
 
 // SubnetPoolList: List subnet pools
