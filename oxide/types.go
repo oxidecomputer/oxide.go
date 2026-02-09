@@ -11241,18 +11241,18 @@ type InternetGatewayViewParams struct {
 	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
 }
 
-// ProjectIpPoolListParams is the request parameters for ProjectIpPoolList
-type ProjectIpPoolListParams struct {
+// IpPoolListParams is the request parameters for IpPoolList
+type IpPoolListParams struct {
 	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
 
-// ProjectIpPoolViewParams is the request parameters for ProjectIpPoolView
+// IpPoolViewParams is the request parameters for IpPoolView
 //
 // Required fields:
 // - Pool
-type ProjectIpPoolViewParams struct {
+type IpPoolViewParams struct {
 	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 }
 
@@ -11522,11 +11522,19 @@ type SnapshotViewParams struct {
 	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
-// CurrentSiloSubnetPoolListParams is the request parameters for CurrentSiloSubnetPoolList
-type CurrentSiloSubnetPoolListParams struct {
+// SubnetPoolListParams is the request parameters for SubnetPoolList
+type SubnetPoolListParams struct {
 	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+}
+
+// SubnetPoolViewParams is the request parameters for SubnetPoolView
+//
+// Required fields:
+// - Pool
+type SubnetPoolViewParams struct {
+	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 }
 
 // AuditLogListParams is the request parameters for AuditLogList
@@ -11823,147 +11831,147 @@ type SamlIdentityProviderViewParams struct {
 	Silo     NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 }
 
-// IpPoolListParams is the request parameters for IpPoolList
-type IpPoolListParams struct {
+// SystemIpPoolListParams is the request parameters for SystemIpPoolList
+type SystemIpPoolListParams struct {
 	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
 
-// IpPoolCreateParams is the request parameters for IpPoolCreate
+// SystemIpPoolCreateParams is the request parameters for SystemIpPoolCreate
 //
 // Required fields:
 // - Body
-type IpPoolCreateParams struct {
+type SystemIpPoolCreateParams struct {
 	Body *IpPoolCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
-// IpPoolServiceRangeListParams is the request parameters for IpPoolServiceRangeList
-type IpPoolServiceRangeListParams struct {
+// SystemIpPoolServiceRangeListParams is the request parameters for SystemIpPoolServiceRangeList
+type SystemIpPoolServiceRangeListParams struct {
 	Limit     *int   `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 }
 
-// IpPoolServiceRangeAddParams is the request parameters for IpPoolServiceRangeAdd
+// SystemIpPoolServiceRangeAddParams is the request parameters for SystemIpPoolServiceRangeAdd
 //
 // Required fields:
 // - Body
-type IpPoolServiceRangeAddParams struct {
+type SystemIpPoolServiceRangeAddParams struct {
 	Body *IpRange `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
-// IpPoolServiceRangeRemoveParams is the request parameters for IpPoolServiceRangeRemove
+// SystemIpPoolServiceRangeRemoveParams is the request parameters for SystemIpPoolServiceRangeRemove
 //
 // Required fields:
 // - Body
-type IpPoolServiceRangeRemoveParams struct {
+type SystemIpPoolServiceRangeRemoveParams struct {
 	Body *IpRange `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
-// IpPoolDeleteParams is the request parameters for IpPoolDelete
+// SystemIpPoolDeleteParams is the request parameters for SystemIpPoolDelete
 //
 // Required fields:
 // - Pool
-type IpPoolDeleteParams struct {
+type SystemIpPoolDeleteParams struct {
 	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 }
 
-// IpPoolViewParams is the request parameters for IpPoolView
+// SystemIpPoolViewParams is the request parameters for SystemIpPoolView
 //
 // Required fields:
 // - Pool
-type IpPoolViewParams struct {
+type SystemIpPoolViewParams struct {
 	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 }
 
-// IpPoolUpdateParams is the request parameters for IpPoolUpdate
+// SystemIpPoolUpdateParams is the request parameters for SystemIpPoolUpdate
 //
 // Required fields:
 // - Pool
 // - Body
-type IpPoolUpdateParams struct {
+type SystemIpPoolUpdateParams struct {
 	Pool NameOrId      `json:"pool,omitempty" yaml:"pool,omitempty"`
 	Body *IpPoolUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
-// IpPoolRangeListParams is the request parameters for IpPoolRangeList
+// SystemIpPoolRangeListParams is the request parameters for SystemIpPoolRangeList
 //
 // Required fields:
 // - Pool
-type IpPoolRangeListParams struct {
+type SystemIpPoolRangeListParams struct {
 	Pool      NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 	Limit     *int     `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string   `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 }
 
-// IpPoolRangeAddParams is the request parameters for IpPoolRangeAdd
+// SystemIpPoolRangeAddParams is the request parameters for SystemIpPoolRangeAdd
 //
 // Required fields:
 // - Pool
 // - Body
-type IpPoolRangeAddParams struct {
+type SystemIpPoolRangeAddParams struct {
 	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 	Body *IpRange `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
-// IpPoolRangeRemoveParams is the request parameters for IpPoolRangeRemove
+// SystemIpPoolRangeRemoveParams is the request parameters for SystemIpPoolRangeRemove
 //
 // Required fields:
 // - Pool
 // - Body
-type IpPoolRangeRemoveParams struct {
+type SystemIpPoolRangeRemoveParams struct {
 	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 	Body *IpRange `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
-// IpPoolSiloListParams is the request parameters for IpPoolSiloList
+// SystemIpPoolSiloListParams is the request parameters for SystemIpPoolSiloList
 //
 // Required fields:
 // - Pool
-type IpPoolSiloListParams struct {
+type SystemIpPoolSiloListParams struct {
 	Pool      NameOrId   `json:"pool,omitempty" yaml:"pool,omitempty"`
 	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
 
-// IpPoolSiloLinkParams is the request parameters for IpPoolSiloLink
+// SystemIpPoolSiloLinkParams is the request parameters for SystemIpPoolSiloLink
 //
 // Required fields:
 // - Pool
 // - Body
-type IpPoolSiloLinkParams struct {
+type SystemIpPoolSiloLinkParams struct {
 	Pool NameOrId        `json:"pool,omitempty" yaml:"pool,omitempty"`
 	Body *IpPoolLinkSilo `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
-// IpPoolSiloUnlinkParams is the request parameters for IpPoolSiloUnlink
+// SystemIpPoolSiloUnlinkParams is the request parameters for SystemIpPoolSiloUnlink
 //
 // Required fields:
 // - Pool
 // - Silo
-type IpPoolSiloUnlinkParams struct {
+type SystemIpPoolSiloUnlinkParams struct {
 	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 }
 
-// IpPoolSiloUpdateParams is the request parameters for IpPoolSiloUpdate
+// SystemIpPoolSiloUpdateParams is the request parameters for SystemIpPoolSiloUpdate
 //
 // Required fields:
 // - Pool
 // - Silo
 // - Body
-type IpPoolSiloUpdateParams struct {
+type SystemIpPoolSiloUpdateParams struct {
 	Pool NameOrId          `json:"pool,omitempty" yaml:"pool,omitempty"`
 	Silo NameOrId          `json:"silo,omitempty" yaml:"silo,omitempty"`
 	Body *IpPoolSiloUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
-// IpPoolUtilizationViewParams is the request parameters for IpPoolUtilizationView
+// SystemIpPoolUtilizationViewParams is the request parameters for SystemIpPoolUtilizationView
 //
 // Required fields:
 // - Pool
-type IpPoolUtilizationViewParams struct {
+type SystemIpPoolUtilizationViewParams struct {
 	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 }
 
@@ -12325,125 +12333,125 @@ type SiloSubnetPoolListParams struct {
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
 
-// SubnetPoolListParams is the request parameters for SubnetPoolList
-type SubnetPoolListParams struct {
+// SystemSubnetPoolListParams is the request parameters for SystemSubnetPoolList
+type SystemSubnetPoolListParams struct {
 	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
 
-// SubnetPoolCreateParams is the request parameters for SubnetPoolCreate
+// SystemSubnetPoolCreateParams is the request parameters for SystemSubnetPoolCreate
 //
 // Required fields:
 // - Body
-type SubnetPoolCreateParams struct {
+type SystemSubnetPoolCreateParams struct {
 	Body *SubnetPoolCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
-// SubnetPoolDeleteParams is the request parameters for SubnetPoolDelete
+// SystemSubnetPoolDeleteParams is the request parameters for SystemSubnetPoolDelete
 //
 // Required fields:
 // - Pool
-type SubnetPoolDeleteParams struct {
+type SystemSubnetPoolDeleteParams struct {
 	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 }
 
-// SubnetPoolViewParams is the request parameters for SubnetPoolView
+// SystemSubnetPoolViewParams is the request parameters for SystemSubnetPoolView
 //
 // Required fields:
 // - Pool
-type SubnetPoolViewParams struct {
+type SystemSubnetPoolViewParams struct {
 	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 }
 
-// SubnetPoolUpdateParams is the request parameters for SubnetPoolUpdate
+// SystemSubnetPoolUpdateParams is the request parameters for SystemSubnetPoolUpdate
 //
 // Required fields:
 // - Pool
 // - Body
-type SubnetPoolUpdateParams struct {
+type SystemSubnetPoolUpdateParams struct {
 	Pool NameOrId          `json:"pool,omitempty" yaml:"pool,omitempty"`
 	Body *SubnetPoolUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
-// SubnetPoolMemberListParams is the request parameters for SubnetPoolMemberList
+// SystemSubnetPoolMemberListParams is the request parameters for SystemSubnetPoolMemberList
 //
 // Required fields:
 // - Pool
-type SubnetPoolMemberListParams struct {
+type SystemSubnetPoolMemberListParams struct {
 	Pool      NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 	Limit     *int     `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string   `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 }
 
-// SubnetPoolMemberAddParams is the request parameters for SubnetPoolMemberAdd
+// SystemSubnetPoolMemberAddParams is the request parameters for SystemSubnetPoolMemberAdd
 //
 // Required fields:
 // - Pool
 // - Body
-type SubnetPoolMemberAddParams struct {
+type SystemSubnetPoolMemberAddParams struct {
 	Pool NameOrId             `json:"pool,omitempty" yaml:"pool,omitempty"`
 	Body *SubnetPoolMemberAdd `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
-// SubnetPoolMemberRemoveParams is the request parameters for SubnetPoolMemberRemove
+// SystemSubnetPoolMemberRemoveParams is the request parameters for SystemSubnetPoolMemberRemove
 //
 // Required fields:
 // - Pool
 // - Body
-type SubnetPoolMemberRemoveParams struct {
+type SystemSubnetPoolMemberRemoveParams struct {
 	Pool NameOrId                `json:"pool,omitempty" yaml:"pool,omitempty"`
 	Body *SubnetPoolMemberRemove `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
-// SubnetPoolSiloListParams is the request parameters for SubnetPoolSiloList
+// SystemSubnetPoolSiloListParams is the request parameters for SystemSubnetPoolSiloList
 //
 // Required fields:
 // - Pool
-type SubnetPoolSiloListParams struct {
+type SystemSubnetPoolSiloListParams struct {
 	Pool      NameOrId   `json:"pool,omitempty" yaml:"pool,omitempty"`
 	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
 
-// SubnetPoolSiloLinkParams is the request parameters for SubnetPoolSiloLink
+// SystemSubnetPoolSiloLinkParams is the request parameters for SystemSubnetPoolSiloLink
 //
 // Required fields:
 // - Pool
 // - Body
-type SubnetPoolSiloLinkParams struct {
+type SystemSubnetPoolSiloLinkParams struct {
 	Pool NameOrId            `json:"pool,omitempty" yaml:"pool,omitempty"`
 	Body *SubnetPoolLinkSilo `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
-// SubnetPoolSiloUnlinkParams is the request parameters for SubnetPoolSiloUnlink
+// SystemSubnetPoolSiloUnlinkParams is the request parameters for SystemSubnetPoolSiloUnlink
 //
 // Required fields:
 // - Pool
 // - Silo
-type SubnetPoolSiloUnlinkParams struct {
+type SystemSubnetPoolSiloUnlinkParams struct {
 	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 }
 
-// SubnetPoolSiloUpdateParams is the request parameters for SubnetPoolSiloUpdate
+// SystemSubnetPoolSiloUpdateParams is the request parameters for SystemSubnetPoolSiloUpdate
 //
 // Required fields:
 // - Pool
 // - Silo
 // - Body
-type SubnetPoolSiloUpdateParams struct {
+type SystemSubnetPoolSiloUpdateParams struct {
 	Pool NameOrId              `json:"pool,omitempty" yaml:"pool,omitempty"`
 	Silo NameOrId              `json:"silo,omitempty" yaml:"silo,omitempty"`
 	Body *SubnetPoolSiloUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
-// SubnetPoolUtilizationViewParams is the request parameters for SubnetPoolUtilizationView
+// SystemSubnetPoolUtilizationViewParams is the request parameters for SystemSubnetPoolUtilizationView
 //
 // Required fields:
 // - Pool
-type SubnetPoolUtilizationViewParams struct {
+type SystemSubnetPoolUtilizationViewParams struct {
 	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 }
 
@@ -14085,8 +14093,8 @@ func (p *InternetGatewayViewParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for ProjectIpPoolListParams are set
-func (p *ProjectIpPoolListParams) Validate() error {
+// Validate verifies all required fields for IpPoolListParams are set
+func (p *IpPoolListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
@@ -14094,8 +14102,8 @@ func (p *ProjectIpPoolListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for ProjectIpPoolViewParams are set
-func (p *ProjectIpPoolViewParams) Validate() error {
+// Validate verifies all required fields for IpPoolViewParams are set
+func (p *IpPoolViewParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.Pool), "Pool")
 	if !v.IsValid() {
@@ -14393,9 +14401,19 @@ func (p *SnapshotViewParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for CurrentSiloSubnetPoolListParams are set
-func (p *CurrentSiloSubnetPoolListParams) Validate() error {
+// Validate verifies all required fields for SubnetPoolListParams are set
+func (p *SubnetPoolListParams) Validate() error {
 	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SubnetPoolViewParams are set
+func (p *SubnetPoolViewParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Pool), "Pool")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -14715,8 +14733,8 @@ func (p *SamlIdentityProviderViewParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for IpPoolListParams are set
-func (p *IpPoolListParams) Validate() error {
+// Validate verifies all required fields for SystemIpPoolListParams are set
+func (p *SystemIpPoolListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
@@ -14724,27 +14742,8 @@ func (p *IpPoolListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for IpPoolCreateParams are set
-func (p *IpPoolCreateParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for IpPoolServiceRangeListParams are set
-func (p *IpPoolServiceRangeListParams) Validate() error {
-	v := new(Validator)
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for IpPoolServiceRangeAddParams are set
-func (p *IpPoolServiceRangeAddParams) Validate() error {
+// Validate verifies all required fields for SystemIpPoolCreateParams are set
+func (p *SystemIpPoolCreateParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredObj(p.Body, "Body")
 	if !v.IsValid() {
@@ -14753,8 +14752,17 @@ func (p *IpPoolServiceRangeAddParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for IpPoolServiceRangeRemoveParams are set
-func (p *IpPoolServiceRangeRemoveParams) Validate() error {
+// Validate verifies all required fields for SystemIpPoolServiceRangeListParams are set
+func (p *SystemIpPoolServiceRangeListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SystemIpPoolServiceRangeAddParams are set
+func (p *SystemIpPoolServiceRangeAddParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredObj(p.Body, "Body")
 	if !v.IsValid() {
@@ -14763,39 +14771,18 @@ func (p *IpPoolServiceRangeRemoveParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for IpPoolDeleteParams are set
-func (p *IpPoolDeleteParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredStr(string(p.Pool), "Pool")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for IpPoolViewParams are set
-func (p *IpPoolViewParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredStr(string(p.Pool), "Pool")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for IpPoolUpdateParams are set
-func (p *IpPoolUpdateParams) Validate() error {
+// Validate verifies all required fields for SystemIpPoolServiceRangeRemoveParams are set
+func (p *SystemIpPoolServiceRangeRemoveParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Pool), "Pool")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for IpPoolRangeListParams are set
-func (p *IpPoolRangeListParams) Validate() error {
+// Validate verifies all required fields for SystemIpPoolDeleteParams are set
+func (p *SystemIpPoolDeleteParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.Pool), "Pool")
 	if !v.IsValid() {
@@ -14804,8 +14791,18 @@ func (p *IpPoolRangeListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for IpPoolRangeAddParams are set
-func (p *IpPoolRangeAddParams) Validate() error {
+// Validate verifies all required fields for SystemIpPoolViewParams are set
+func (p *SystemIpPoolViewParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Pool), "Pool")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SystemIpPoolUpdateParams are set
+func (p *SystemIpPoolUpdateParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredObj(p.Body, "Body")
 	v.HasRequiredStr(string(p.Pool), "Pool")
@@ -14815,8 +14812,18 @@ func (p *IpPoolRangeAddParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for IpPoolRangeRemoveParams are set
-func (p *IpPoolRangeRemoveParams) Validate() error {
+// Validate verifies all required fields for SystemIpPoolRangeListParams are set
+func (p *SystemIpPoolRangeListParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Pool), "Pool")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SystemIpPoolRangeAddParams are set
+func (p *SystemIpPoolRangeAddParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredObj(p.Body, "Body")
 	v.HasRequiredStr(string(p.Pool), "Pool")
@@ -14826,18 +14833,8 @@ func (p *IpPoolRangeRemoveParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for IpPoolSiloListParams are set
-func (p *IpPoolSiloListParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredStr(string(p.Pool), "Pool")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for IpPoolSiloLinkParams are set
-func (p *IpPoolSiloLinkParams) Validate() error {
+// Validate verifies all required fields for SystemIpPoolRangeRemoveParams are set
+func (p *SystemIpPoolRangeRemoveParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredObj(p.Body, "Body")
 	v.HasRequiredStr(string(p.Pool), "Pool")
@@ -14847,8 +14844,29 @@ func (p *IpPoolSiloLinkParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for IpPoolSiloUnlinkParams are set
-func (p *IpPoolSiloUnlinkParams) Validate() error {
+// Validate verifies all required fields for SystemIpPoolSiloListParams are set
+func (p *SystemIpPoolSiloListParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Pool), "Pool")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SystemIpPoolSiloLinkParams are set
+func (p *SystemIpPoolSiloLinkParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Pool), "Pool")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SystemIpPoolSiloUnlinkParams are set
+func (p *SystemIpPoolSiloUnlinkParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.Pool), "Pool")
 	v.HasRequiredStr(string(p.Silo), "Silo")
@@ -14858,8 +14876,8 @@ func (p *IpPoolSiloUnlinkParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for IpPoolSiloUpdateParams are set
-func (p *IpPoolSiloUpdateParams) Validate() error {
+// Validate verifies all required fields for SystemIpPoolSiloUpdateParams are set
+func (p *SystemIpPoolSiloUpdateParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredObj(p.Body, "Body")
 	v.HasRequiredStr(string(p.Pool), "Pool")
@@ -14870,8 +14888,8 @@ func (p *IpPoolSiloUpdateParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for IpPoolUtilizationViewParams are set
-func (p *IpPoolUtilizationViewParams) Validate() error {
+// Validate verifies all required fields for SystemIpPoolUtilizationViewParams are set
+func (p *SystemIpPoolUtilizationViewParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.Pool), "Pool")
 	if !v.IsValid() {
@@ -15299,8 +15317,8 @@ func (p *SiloSubnetPoolListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for SubnetPoolListParams are set
-func (p *SubnetPoolListParams) Validate() error {
+// Validate verifies all required fields for SystemSubnetPoolListParams are set
+func (p *SystemSubnetPoolListParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
@@ -15308,49 +15326,18 @@ func (p *SubnetPoolListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for SubnetPoolCreateParams are set
-func (p *SubnetPoolCreateParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for SubnetPoolDeleteParams are set
-func (p *SubnetPoolDeleteParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredStr(string(p.Pool), "Pool")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for SubnetPoolViewParams are set
-func (p *SubnetPoolViewParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredStr(string(p.Pool), "Pool")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for SubnetPoolUpdateParams are set
-func (p *SubnetPoolUpdateParams) Validate() error {
+// Validate verifies all required fields for SystemSubnetPoolCreateParams are set
+func (p *SystemSubnetPoolCreateParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.Pool), "Pool")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
 	return nil
 }
 
-// Validate verifies all required fields for SubnetPoolMemberListParams are set
-func (p *SubnetPoolMemberListParams) Validate() error {
+// Validate verifies all required fields for SystemSubnetPoolDeleteParams are set
+func (p *SystemSubnetPoolDeleteParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.Pool), "Pool")
 	if !v.IsValid() {
@@ -15359,8 +15346,18 @@ func (p *SubnetPoolMemberListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for SubnetPoolMemberAddParams are set
-func (p *SubnetPoolMemberAddParams) Validate() error {
+// Validate verifies all required fields for SystemSubnetPoolViewParams are set
+func (p *SystemSubnetPoolViewParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Pool), "Pool")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SystemSubnetPoolUpdateParams are set
+func (p *SystemSubnetPoolUpdateParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredObj(p.Body, "Body")
 	v.HasRequiredStr(string(p.Pool), "Pool")
@@ -15370,8 +15367,18 @@ func (p *SubnetPoolMemberAddParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for SubnetPoolMemberRemoveParams are set
-func (p *SubnetPoolMemberRemoveParams) Validate() error {
+// Validate verifies all required fields for SystemSubnetPoolMemberListParams are set
+func (p *SystemSubnetPoolMemberListParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Pool), "Pool")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SystemSubnetPoolMemberAddParams are set
+func (p *SystemSubnetPoolMemberAddParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredObj(p.Body, "Body")
 	v.HasRequiredStr(string(p.Pool), "Pool")
@@ -15381,18 +15388,8 @@ func (p *SubnetPoolMemberRemoveParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for SubnetPoolSiloListParams are set
-func (p *SubnetPoolSiloListParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredStr(string(p.Pool), "Pool")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for SubnetPoolSiloLinkParams are set
-func (p *SubnetPoolSiloLinkParams) Validate() error {
+// Validate verifies all required fields for SystemSubnetPoolMemberRemoveParams are set
+func (p *SystemSubnetPoolMemberRemoveParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredObj(p.Body, "Body")
 	v.HasRequiredStr(string(p.Pool), "Pool")
@@ -15402,8 +15399,29 @@ func (p *SubnetPoolSiloLinkParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for SubnetPoolSiloUnlinkParams are set
-func (p *SubnetPoolSiloUnlinkParams) Validate() error {
+// Validate verifies all required fields for SystemSubnetPoolSiloListParams are set
+func (p *SystemSubnetPoolSiloListParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Pool), "Pool")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SystemSubnetPoolSiloLinkParams are set
+func (p *SystemSubnetPoolSiloLinkParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Pool), "Pool")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SystemSubnetPoolSiloUnlinkParams are set
+func (p *SystemSubnetPoolSiloUnlinkParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.Pool), "Pool")
 	v.HasRequiredStr(string(p.Silo), "Silo")
@@ -15413,8 +15431,8 @@ func (p *SubnetPoolSiloUnlinkParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for SubnetPoolSiloUpdateParams are set
-func (p *SubnetPoolSiloUpdateParams) Validate() error {
+// Validate verifies all required fields for SystemSubnetPoolSiloUpdateParams are set
+func (p *SystemSubnetPoolSiloUpdateParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredObj(p.Body, "Body")
 	v.HasRequiredStr(string(p.Pool), "Pool")
@@ -15425,8 +15443,8 @@ func (p *SubnetPoolSiloUpdateParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for SubnetPoolUtilizationViewParams are set
-func (p *SubnetPoolUtilizationViewParams) Validate() error {
+// Validate verifies all required fields for SystemSubnetPoolUtilizationViewParams are set
+func (p *SystemSubnetPoolUtilizationViewParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.Pool), "Pool")
 	if !v.IsValid() {
