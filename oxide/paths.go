@@ -2005,8 +2005,6 @@ func (c *Client) ExternalSubnetDelete(ctx context.Context, params ExternalSubnet
 }
 
 // ExternalSubnetAttach: Attach an external subnet to an instance
-// Begins an asynchronous attach operation. Returns the subnet with `instance_id` set to the target instance. The
-// attach completes asynchronously; poll the subnet to check completion.
 func (c *Client) ExternalSubnetAttach(ctx context.Context, params ExternalSubnetAttachParams) (*ExternalSubnet, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -2061,7 +2059,6 @@ func (c *Client) ExternalSubnetAttach(ctx context.Context, params ExternalSubnet
 }
 
 // ExternalSubnetDetach: Detach an external subnet from an instance
-// Begins an asynchronous detach operation. Returns the subnet with `instance_id` cleared. The detach completes asynchronously.
 func (c *Client) ExternalSubnetDetach(ctx context.Context, params ExternalSubnetDetachParams) (*ExternalSubnet, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -4529,10 +4526,10 @@ func (c *Client) InternetGatewayDelete(ctx context.Context, params InternetGatew
 	return nil
 }
 
-// ProjectIpPoolList: List IP pools
+// IpPoolList: List IP pools
 //
-// To iterate over all pages, use the `ProjectIpPoolListAllPages` method, instead.
-func (c *Client) ProjectIpPoolList(ctx context.Context, params ProjectIpPoolListParams) (*SiloIpPoolResultsPage, error) {
+// To iterate over all pages, use the `IpPoolListAllPages` method, instead.
+func (c *Client) IpPoolList(ctx context.Context, params IpPoolListParams) (*SiloIpPoolResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4579,11 +4576,11 @@ func (c *Client) ProjectIpPoolList(ctx context.Context, params ProjectIpPoolList
 	return &body, nil
 }
 
-// ProjectIpPoolListAllPages: List IP pools
+// IpPoolListAllPages: List IP pools
 //
-// This method is a wrapper around the `ProjectIpPoolList` method.
+// This method is a wrapper around the `IpPoolList` method.
 // This method returns all the pages at once.
-func (c *Client) ProjectIpPoolListAllPages(ctx context.Context, params ProjectIpPoolListParams) ([]SiloIpPool, error) {
+func (c *Client) IpPoolListAllPages(ctx context.Context, params IpPoolListParams) ([]SiloIpPool, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4591,7 +4588,7 @@ func (c *Client) ProjectIpPoolListAllPages(ctx context.Context, params ProjectIp
 	params.PageToken = ""
 	params.Limit = NewPointer(100)
 	for {
-		page, err := c.ProjectIpPoolList(ctx, params)
+		page, err := c.IpPoolList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -4605,8 +4602,8 @@ func (c *Client) ProjectIpPoolListAllPages(ctx context.Context, params ProjectIp
 	return allPages, nil
 }
 
-// ProjectIpPoolView: Fetch IP pool
-func (c *Client) ProjectIpPoolView(ctx context.Context, params ProjectIpPoolViewParams) (*SiloIpPool, error) {
+// IpPoolView: Fetch IP pool
+func (c *Client) IpPoolView(ctx context.Context, params IpPoolViewParams) (*SiloIpPool, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6199,10 +6196,10 @@ func (c *Client) SnapshotDelete(ctx context.Context, params SnapshotDeleteParams
 	return nil
 }
 
-// CurrentSiloSubnetPoolList: List subnet pools linked to the user's current silo
+// SubnetPoolList: List subnet pools
 //
-// To iterate over all pages, use the `CurrentSiloSubnetPoolListAllPages` method, instead.
-func (c *Client) CurrentSiloSubnetPoolList(ctx context.Context, params CurrentSiloSubnetPoolListParams) (*SiloSubnetPoolResultsPage, error) {
+// To iterate over all pages, use the `SubnetPoolListAllPages` method, instead.
+func (c *Client) SubnetPoolList(ctx context.Context, params SubnetPoolListParams) (*SiloSubnetPoolResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6249,11 +6246,11 @@ func (c *Client) CurrentSiloSubnetPoolList(ctx context.Context, params CurrentSi
 	return &body, nil
 }
 
-// CurrentSiloSubnetPoolListAllPages: List subnet pools linked to the user's current silo
+// SubnetPoolListAllPages: List subnet pools
 //
-// This method is a wrapper around the `CurrentSiloSubnetPoolList` method.
+// This method is a wrapper around the `SubnetPoolList` method.
 // This method returns all the pages at once.
-func (c *Client) CurrentSiloSubnetPoolListAllPages(ctx context.Context, params CurrentSiloSubnetPoolListParams) ([]SiloSubnetPool, error) {
+func (c *Client) SubnetPoolListAllPages(ctx context.Context, params SubnetPoolListParams) ([]SiloSubnetPool, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6261,7 +6258,7 @@ func (c *Client) CurrentSiloSubnetPoolListAllPages(ctx context.Context, params C
 	params.PageToken = ""
 	params.Limit = NewPointer(100)
 	for {
-		page, err := c.CurrentSiloSubnetPoolList(ctx, params)
+		page, err := c.SubnetPoolList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -6273,6 +6270,52 @@ func (c *Client) CurrentSiloSubnetPoolListAllPages(ctx context.Context, params C
 	}
 
 	return allPages, nil
+}
+
+// SubnetPoolView: Fetch subnet pool
+func (c *Client) SubnetPoolView(ctx context.Context, params SubnetPoolViewParams) (*SiloSubnetPool, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/subnet-pools/{{.pool}}"),
+		map[string]string{
+			"pool": string(params.Pool),
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SiloSubnetPool
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
 }
 
 // AuditLogList: View audit log
@@ -7887,10 +7930,10 @@ func (c *Client) SamlIdentityProviderView(ctx context.Context, params SamlIdenti
 	return &body, nil
 }
 
-// IpPoolList: List IP pools
+// SystemIpPoolList: List IP pools
 //
-// To iterate over all pages, use the `IpPoolListAllPages` method, instead.
-func (c *Client) IpPoolList(ctx context.Context, params IpPoolListParams) (*IpPoolResultsPage, error) {
+// To iterate over all pages, use the `SystemIpPoolListAllPages` method, instead.
+func (c *Client) SystemIpPoolList(ctx context.Context, params SystemIpPoolListParams) (*IpPoolResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7937,11 +7980,11 @@ func (c *Client) IpPoolList(ctx context.Context, params IpPoolListParams) (*IpPo
 	return &body, nil
 }
 
-// IpPoolListAllPages: List IP pools
+// SystemIpPoolListAllPages: List IP pools
 //
-// This method is a wrapper around the `IpPoolList` method.
+// This method is a wrapper around the `SystemIpPoolList` method.
 // This method returns all the pages at once.
-func (c *Client) IpPoolListAllPages(ctx context.Context, params IpPoolListParams) ([]IpPool, error) {
+func (c *Client) SystemIpPoolListAllPages(ctx context.Context, params SystemIpPoolListParams) ([]IpPool, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7949,7 +7992,7 @@ func (c *Client) IpPoolListAllPages(ctx context.Context, params IpPoolListParams
 	params.PageToken = ""
 	params.Limit = NewPointer(100)
 	for {
-		page, err := c.IpPoolList(ctx, params)
+		page, err := c.SystemIpPoolList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -7963,9 +8006,9 @@ func (c *Client) IpPoolListAllPages(ctx context.Context, params IpPoolListParams
 	return allPages, nil
 }
 
-// IpPoolCreate: Create IP pool
+// SystemIpPoolCreate: Create IP pool
 // IPv6 is not yet supported for unicast pools.
-func (c *Client) IpPoolCreate(ctx context.Context, params IpPoolCreateParams) (*IpPool, error) {
+func (c *Client) SystemIpPoolCreate(ctx context.Context, params SystemIpPoolCreateParams) (*IpPool, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8014,8 +8057,8 @@ func (c *Client) IpPoolCreate(ctx context.Context, params IpPoolCreateParams) (*
 	return &body, nil
 }
 
-// IpPoolServiceView: Fetch Oxide service IP pool
-func (c *Client) IpPoolServiceView(ctx context.Context) (*IpPool, error) {
+// SystemIpPoolServiceView: Fetch Oxide service IP pool
+func (c *Client) SystemIpPoolServiceView(ctx context.Context) (*IpPool, error) {
 	// Create the request
 	req, err := c.buildRequest(
 		ctx,
@@ -8055,11 +8098,11 @@ func (c *Client) IpPoolServiceView(ctx context.Context) (*IpPool, error) {
 	return &body, nil
 }
 
-// IpPoolServiceRangeList: List IP ranges for the Oxide service pool
+// SystemIpPoolServiceRangeList: List IP ranges for the Oxide service pool
 // Ranges are ordered by their first address.
 //
-// To iterate over all pages, use the `IpPoolServiceRangeListAllPages` method, instead.
-func (c *Client) IpPoolServiceRangeList(ctx context.Context, params IpPoolServiceRangeListParams) (*IpPoolRangeResultsPage, error) {
+// To iterate over all pages, use the `SystemIpPoolServiceRangeListAllPages` method, instead.
+func (c *Client) SystemIpPoolServiceRangeList(ctx context.Context, params SystemIpPoolServiceRangeListParams) (*IpPoolRangeResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8105,12 +8148,12 @@ func (c *Client) IpPoolServiceRangeList(ctx context.Context, params IpPoolServic
 	return &body, nil
 }
 
-// IpPoolServiceRangeListAllPages: List IP ranges for the Oxide service pool
+// SystemIpPoolServiceRangeListAllPages: List IP ranges for the Oxide service pool
 // Ranges are ordered by their first address.
 //
-// This method is a wrapper around the `IpPoolServiceRangeList` method.
+// This method is a wrapper around the `SystemIpPoolServiceRangeList` method.
 // This method returns all the pages at once.
-func (c *Client) IpPoolServiceRangeListAllPages(ctx context.Context, params IpPoolServiceRangeListParams) ([]IpPoolRange, error) {
+func (c *Client) SystemIpPoolServiceRangeListAllPages(ctx context.Context, params SystemIpPoolServiceRangeListParams) ([]IpPoolRange, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8118,7 +8161,7 @@ func (c *Client) IpPoolServiceRangeListAllPages(ctx context.Context, params IpPo
 	params.PageToken = ""
 	params.Limit = NewPointer(100)
 	for {
-		page, err := c.IpPoolServiceRangeList(ctx, params)
+		page, err := c.SystemIpPoolServiceRangeList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -8132,9 +8175,9 @@ func (c *Client) IpPoolServiceRangeListAllPages(ctx context.Context, params IpPo
 	return allPages, nil
 }
 
-// IpPoolServiceRangeAdd: Add IP range to Oxide service pool
+// SystemIpPoolServiceRangeAdd: Add IP range to Oxide service pool
 // IPv6 ranges are not allowed yet.
-func (c *Client) IpPoolServiceRangeAdd(ctx context.Context, params IpPoolServiceRangeAddParams) (*IpPoolRange, error) {
+func (c *Client) SystemIpPoolServiceRangeAdd(ctx context.Context, params SystemIpPoolServiceRangeAddParams) (*IpPoolRange, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8183,8 +8226,8 @@ func (c *Client) IpPoolServiceRangeAdd(ctx context.Context, params IpPoolService
 	return &body, nil
 }
 
-// IpPoolServiceRangeRemove: Remove IP range from Oxide service pool
-func (c *Client) IpPoolServiceRangeRemove(ctx context.Context, params IpPoolServiceRangeRemoveParams) error {
+// SystemIpPoolServiceRangeRemove: Remove IP range from Oxide service pool
+func (c *Client) SystemIpPoolServiceRangeRemove(ctx context.Context, params SystemIpPoolServiceRangeRemoveParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -8222,8 +8265,8 @@ func (c *Client) IpPoolServiceRangeRemove(ctx context.Context, params IpPoolServ
 	return nil
 }
 
-// IpPoolView: Fetch IP pool
-func (c *Client) IpPoolView(ctx context.Context, params IpPoolViewParams) (*IpPool, error) {
+// SystemIpPoolView: Fetch IP pool
+func (c *Client) SystemIpPoolView(ctx context.Context, params SystemIpPoolViewParams) (*IpPool, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8268,8 +8311,8 @@ func (c *Client) IpPoolView(ctx context.Context, params IpPoolViewParams) (*IpPo
 	return &body, nil
 }
 
-// IpPoolUpdate: Update IP pool
-func (c *Client) IpPoolUpdate(ctx context.Context, params IpPoolUpdateParams) (*IpPool, error) {
+// SystemIpPoolUpdate: Update IP pool
+func (c *Client) SystemIpPoolUpdate(ctx context.Context, params SystemIpPoolUpdateParams) (*IpPool, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8320,8 +8363,8 @@ func (c *Client) IpPoolUpdate(ctx context.Context, params IpPoolUpdateParams) (*
 	return &body, nil
 }
 
-// IpPoolDelete: Delete IP pool
-func (c *Client) IpPoolDelete(ctx context.Context, params IpPoolDeleteParams) error {
+// SystemIpPoolDelete: Delete IP pool
+func (c *Client) SystemIpPoolDelete(ctx context.Context, params SystemIpPoolDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -8355,11 +8398,11 @@ func (c *Client) IpPoolDelete(ctx context.Context, params IpPoolDeleteParams) er
 	return nil
 }
 
-// IpPoolRangeList: List ranges for IP pool
+// SystemIpPoolRangeList: List ranges for IP pool
 // Ranges are ordered by their first address.
 //
-// To iterate over all pages, use the `IpPoolRangeListAllPages` method, instead.
-func (c *Client) IpPoolRangeList(ctx context.Context, params IpPoolRangeListParams) (*IpPoolRangeResultsPage, error) {
+// To iterate over all pages, use the `SystemIpPoolRangeListAllPages` method, instead.
+func (c *Client) SystemIpPoolRangeList(ctx context.Context, params SystemIpPoolRangeListParams) (*IpPoolRangeResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8407,12 +8450,12 @@ func (c *Client) IpPoolRangeList(ctx context.Context, params IpPoolRangeListPara
 	return &body, nil
 }
 
-// IpPoolRangeListAllPages: List ranges for IP pool
+// SystemIpPoolRangeListAllPages: List ranges for IP pool
 // Ranges are ordered by their first address.
 //
-// This method is a wrapper around the `IpPoolRangeList` method.
+// This method is a wrapper around the `SystemIpPoolRangeList` method.
 // This method returns all the pages at once.
-func (c *Client) IpPoolRangeListAllPages(ctx context.Context, params IpPoolRangeListParams) ([]IpPoolRange, error) {
+func (c *Client) SystemIpPoolRangeListAllPages(ctx context.Context, params SystemIpPoolRangeListParams) ([]IpPoolRange, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8420,7 +8463,7 @@ func (c *Client) IpPoolRangeListAllPages(ctx context.Context, params IpPoolRange
 	params.PageToken = ""
 	params.Limit = NewPointer(100)
 	for {
-		page, err := c.IpPoolRangeList(ctx, params)
+		page, err := c.SystemIpPoolRangeList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -8434,7 +8477,7 @@ func (c *Client) IpPoolRangeListAllPages(ctx context.Context, params IpPoolRange
 	return allPages, nil
 }
 
-// IpPoolRangeAdd: Add range to an IP pool
+// SystemIpPoolRangeAdd: Add range to IP pool
 // IPv6 ranges are not allowed yet for unicast pools.
 //
 // For multicast pools, all ranges must be either Any-Source Multicast (ASM) or Source-Specific Multicast (SSM),
@@ -8442,7 +8485,7 @@ func (c *Client) IpPoolRangeListAllPages(ctx context.Context, params IpPoolRange
 //
 // ASM: IPv4 addresses outside 232.0.0.0/8, IPv6 addresses with flag field != 3 SSM: IPv4 addresses in 232.0.0.0/8, IPv6
 // addresses with flag field = 3
-func (c *Client) IpPoolRangeAdd(ctx context.Context, params IpPoolRangeAddParams) (*IpPoolRange, error) {
+func (c *Client) SystemIpPoolRangeAdd(ctx context.Context, params SystemIpPoolRangeAddParams) (*IpPoolRange, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8493,8 +8536,8 @@ func (c *Client) IpPoolRangeAdd(ctx context.Context, params IpPoolRangeAddParams
 	return &body, nil
 }
 
-// IpPoolRangeRemove: Remove range from IP pool
-func (c *Client) IpPoolRangeRemove(ctx context.Context, params IpPoolRangeRemoveParams) error {
+// SystemIpPoolRangeRemove: Remove range from IP pool
+func (c *Client) SystemIpPoolRangeRemove(ctx context.Context, params SystemIpPoolRangeRemoveParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -8534,10 +8577,10 @@ func (c *Client) IpPoolRangeRemove(ctx context.Context, params IpPoolRangeRemove
 	return nil
 }
 
-// IpPoolSiloList: List IP pool's linked silos
+// SystemIpPoolSiloList: List IP pool's linked silos
 //
-// To iterate over all pages, use the `IpPoolSiloListAllPages` method, instead.
-func (c *Client) IpPoolSiloList(ctx context.Context, params IpPoolSiloListParams) (*IpPoolSiloLinkResultsPage, error) {
+// To iterate over all pages, use the `SystemIpPoolSiloListAllPages` method, instead.
+func (c *Client) SystemIpPoolSiloList(ctx context.Context, params SystemIpPoolSiloListParams) (*IpPoolSiloLinkResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8586,11 +8629,11 @@ func (c *Client) IpPoolSiloList(ctx context.Context, params IpPoolSiloListParams
 	return &body, nil
 }
 
-// IpPoolSiloListAllPages: List IP pool's linked silos
+// SystemIpPoolSiloListAllPages: List IP pool's linked silos
 //
-// This method is a wrapper around the `IpPoolSiloList` method.
+// This method is a wrapper around the `SystemIpPoolSiloList` method.
 // This method returns all the pages at once.
-func (c *Client) IpPoolSiloListAllPages(ctx context.Context, params IpPoolSiloListParams) ([]IpPoolSiloLink, error) {
+func (c *Client) SystemIpPoolSiloListAllPages(ctx context.Context, params SystemIpPoolSiloListParams) ([]IpPoolSiloLink, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8598,7 +8641,7 @@ func (c *Client) IpPoolSiloListAllPages(ctx context.Context, params IpPoolSiloLi
 	params.PageToken = ""
 	params.Limit = NewPointer(100)
 	for {
-		page, err := c.IpPoolSiloList(ctx, params)
+		page, err := c.SystemIpPoolSiloList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -8612,10 +8655,10 @@ func (c *Client) IpPoolSiloListAllPages(ctx context.Context, params IpPoolSiloLi
 	return allPages, nil
 }
 
-// IpPoolSiloLink: Link IP pool to silo
+// SystemIpPoolSiloLink: Link IP pool to silo
 // Users in linked silos can allocate external IPs from this pool for their instances. A silo can have at most
 // one default pool. IPs are allocated from the default pool when users ask for one without specifying a pool.
-func (c *Client) IpPoolSiloLink(ctx context.Context, params IpPoolSiloLinkParams) (*IpPoolSiloLink, error) {
+func (c *Client) SystemIpPoolSiloLink(ctx context.Context, params SystemIpPoolSiloLinkParams) (*IpPoolSiloLink, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8666,11 +8709,11 @@ func (c *Client) IpPoolSiloLink(ctx context.Context, params IpPoolSiloLinkParams
 	return &body, nil
 }
 
-// IpPoolSiloUpdate: Make IP pool default for silo
+// SystemIpPoolSiloUpdate: Make IP pool default for silo
 // When a user asks for an IP (e.g., at instance create time) without specifying a pool, the IP comes from the
 // default pool if a default is configured. When a pool is made the default for a silo, any existing default will
 // remain linked to the silo, but will no longer be the default.
-func (c *Client) IpPoolSiloUpdate(ctx context.Context, params IpPoolSiloUpdateParams) (*IpPoolSiloLink, error) {
+func (c *Client) SystemIpPoolSiloUpdate(ctx context.Context, params SystemIpPoolSiloUpdateParams) (*IpPoolSiloLink, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8722,9 +8765,9 @@ func (c *Client) IpPoolSiloUpdate(ctx context.Context, params IpPoolSiloUpdatePa
 	return &body, nil
 }
 
-// IpPoolSiloUnlink: Unlink IP pool from silo
+// SystemIpPoolSiloUnlink: Unlink IP pool from silo
 // Will fail if there are any outstanding IPs allocated in the silo.
-func (c *Client) IpPoolSiloUnlink(ctx context.Context, params IpPoolSiloUnlinkParams) error {
+func (c *Client) SystemIpPoolSiloUnlink(ctx context.Context, params SystemIpPoolSiloUnlinkParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -8759,8 +8802,8 @@ func (c *Client) IpPoolSiloUnlink(ctx context.Context, params IpPoolSiloUnlinkPa
 	return nil
 }
 
-// IpPoolUtilizationView: Fetch IP pool utilization
-func (c *Client) IpPoolUtilizationView(ctx context.Context, params IpPoolUtilizationViewParams) (*IpPoolUtilization, error) {
+// SystemIpPoolUtilizationView: Fetch IP pool utilization
+func (c *Client) SystemIpPoolUtilizationView(ctx context.Context, params SystemIpPoolUtilizationViewParams) (*IpPoolUtilization, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -11269,10 +11312,10 @@ func (c *Client) SiloSubnetPoolListAllPages(ctx context.Context, params SiloSubn
 	return allPages, nil
 }
 
-// SubnetPoolList: List subnet pools
+// SystemSubnetPoolList: List subnet pools
 //
-// To iterate over all pages, use the `SubnetPoolListAllPages` method, instead.
-func (c *Client) SubnetPoolList(ctx context.Context, params SubnetPoolListParams) (*SubnetPoolResultsPage, error) {
+// To iterate over all pages, use the `SystemSubnetPoolListAllPages` method, instead.
+func (c *Client) SystemSubnetPoolList(ctx context.Context, params SystemSubnetPoolListParams) (*SubnetPoolResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -11319,11 +11362,11 @@ func (c *Client) SubnetPoolList(ctx context.Context, params SubnetPoolListParams
 	return &body, nil
 }
 
-// SubnetPoolListAllPages: List subnet pools
+// SystemSubnetPoolListAllPages: List subnet pools
 //
-// This method is a wrapper around the `SubnetPoolList` method.
+// This method is a wrapper around the `SystemSubnetPoolList` method.
 // This method returns all the pages at once.
-func (c *Client) SubnetPoolListAllPages(ctx context.Context, params SubnetPoolListParams) ([]SubnetPool, error) {
+func (c *Client) SystemSubnetPoolListAllPages(ctx context.Context, params SystemSubnetPoolListParams) ([]SubnetPool, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -11331,7 +11374,7 @@ func (c *Client) SubnetPoolListAllPages(ctx context.Context, params SubnetPoolLi
 	params.PageToken = ""
 	params.Limit = NewPointer(100)
 	for {
-		page, err := c.SubnetPoolList(ctx, params)
+		page, err := c.SystemSubnetPoolList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -11345,8 +11388,8 @@ func (c *Client) SubnetPoolListAllPages(ctx context.Context, params SubnetPoolLi
 	return allPages, nil
 }
 
-// SubnetPoolCreate: Create a subnet pool
-func (c *Client) SubnetPoolCreate(ctx context.Context, params SubnetPoolCreateParams) (*SubnetPool, error) {
+// SystemSubnetPoolCreate: Create subnet pool
+func (c *Client) SystemSubnetPoolCreate(ctx context.Context, params SystemSubnetPoolCreateParams) (*SubnetPool, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -11395,8 +11438,8 @@ func (c *Client) SubnetPoolCreate(ctx context.Context, params SubnetPoolCreatePa
 	return &body, nil
 }
 
-// SubnetPoolView: Fetch a subnet pool
-func (c *Client) SubnetPoolView(ctx context.Context, params SubnetPoolViewParams) (*SubnetPool, error) {
+// SystemSubnetPoolView: Fetch subnet pool
+func (c *Client) SystemSubnetPoolView(ctx context.Context, params SystemSubnetPoolViewParams) (*SubnetPool, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -11441,8 +11484,8 @@ func (c *Client) SubnetPoolView(ctx context.Context, params SubnetPoolViewParams
 	return &body, nil
 }
 
-// SubnetPoolUpdate: Update a subnet pool
-func (c *Client) SubnetPoolUpdate(ctx context.Context, params SubnetPoolUpdateParams) (*SubnetPool, error) {
+// SystemSubnetPoolUpdate: Update subnet pool
+func (c *Client) SystemSubnetPoolUpdate(ctx context.Context, params SystemSubnetPoolUpdateParams) (*SubnetPool, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -11493,8 +11536,8 @@ func (c *Client) SubnetPoolUpdate(ctx context.Context, params SubnetPoolUpdatePa
 	return &body, nil
 }
 
-// SubnetPoolDelete: Delete a subnet pool
-func (c *Client) SubnetPoolDelete(ctx context.Context, params SubnetPoolDeleteParams) error {
+// SystemSubnetPoolDelete: Delete subnet pool
+func (c *Client) SystemSubnetPoolDelete(ctx context.Context, params SystemSubnetPoolDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -11528,10 +11571,10 @@ func (c *Client) SubnetPoolDelete(ctx context.Context, params SubnetPoolDeletePa
 	return nil
 }
 
-// SubnetPoolMemberList: List members in a subnet pool
+// SystemSubnetPoolMemberList: List members in subnet pool
 //
-// To iterate over all pages, use the `SubnetPoolMemberListAllPages` method, instead.
-func (c *Client) SubnetPoolMemberList(ctx context.Context, params SubnetPoolMemberListParams) (*SubnetPoolMemberResultsPage, error) {
+// To iterate over all pages, use the `SystemSubnetPoolMemberListAllPages` method, instead.
+func (c *Client) SystemSubnetPoolMemberList(ctx context.Context, params SystemSubnetPoolMemberListParams) (*SubnetPoolMemberResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -11579,11 +11622,11 @@ func (c *Client) SubnetPoolMemberList(ctx context.Context, params SubnetPoolMemb
 	return &body, nil
 }
 
-// SubnetPoolMemberListAllPages: List members in a subnet pool
+// SystemSubnetPoolMemberListAllPages: List members in subnet pool
 //
-// This method is a wrapper around the `SubnetPoolMemberList` method.
+// This method is a wrapper around the `SystemSubnetPoolMemberList` method.
 // This method returns all the pages at once.
-func (c *Client) SubnetPoolMemberListAllPages(ctx context.Context, params SubnetPoolMemberListParams) ([]SubnetPoolMember, error) {
+func (c *Client) SystemSubnetPoolMemberListAllPages(ctx context.Context, params SystemSubnetPoolMemberListParams) ([]SubnetPoolMember, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -11591,7 +11634,7 @@ func (c *Client) SubnetPoolMemberListAllPages(ctx context.Context, params Subnet
 	params.PageToken = ""
 	params.Limit = NewPointer(100)
 	for {
-		page, err := c.SubnetPoolMemberList(ctx, params)
+		page, err := c.SystemSubnetPoolMemberList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -11605,8 +11648,8 @@ func (c *Client) SubnetPoolMemberListAllPages(ctx context.Context, params Subnet
 	return allPages, nil
 }
 
-// SubnetPoolMemberAdd: Add a member to a subnet pool
-func (c *Client) SubnetPoolMemberAdd(ctx context.Context, params SubnetPoolMemberAddParams) (*SubnetPoolMember, error) {
+// SystemSubnetPoolMemberAdd: Add member to subnet pool
+func (c *Client) SystemSubnetPoolMemberAdd(ctx context.Context, params SystemSubnetPoolMemberAddParams) (*SubnetPoolMember, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -11657,8 +11700,8 @@ func (c *Client) SubnetPoolMemberAdd(ctx context.Context, params SubnetPoolMembe
 	return &body, nil
 }
 
-// SubnetPoolMemberRemove: Remove a member from a subnet pool
-func (c *Client) SubnetPoolMemberRemove(ctx context.Context, params SubnetPoolMemberRemoveParams) error {
+// SystemSubnetPoolMemberRemove: Remove member from subnet pool
+func (c *Client) SystemSubnetPoolMemberRemove(ctx context.Context, params SystemSubnetPoolMemberRemoveParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -11698,10 +11741,10 @@ func (c *Client) SubnetPoolMemberRemove(ctx context.Context, params SubnetPoolMe
 	return nil
 }
 
-// SubnetPoolSiloList: List silos linked to a subnet pool
+// SystemSubnetPoolSiloList: List silos linked to subnet pool
 //
-// To iterate over all pages, use the `SubnetPoolSiloListAllPages` method, instead.
-func (c *Client) SubnetPoolSiloList(ctx context.Context, params SubnetPoolSiloListParams) (*SubnetPoolSiloLinkResultsPage, error) {
+// To iterate over all pages, use the `SystemSubnetPoolSiloListAllPages` method, instead.
+func (c *Client) SystemSubnetPoolSiloList(ctx context.Context, params SystemSubnetPoolSiloListParams) (*SubnetPoolSiloLinkResultsPage, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -11750,11 +11793,11 @@ func (c *Client) SubnetPoolSiloList(ctx context.Context, params SubnetPoolSiloLi
 	return &body, nil
 }
 
-// SubnetPoolSiloListAllPages: List silos linked to a subnet pool
+// SystemSubnetPoolSiloListAllPages: List silos linked to subnet pool
 //
-// This method is a wrapper around the `SubnetPoolSiloList` method.
+// This method is a wrapper around the `SystemSubnetPoolSiloList` method.
 // This method returns all the pages at once.
-func (c *Client) SubnetPoolSiloListAllPages(ctx context.Context, params SubnetPoolSiloListParams) ([]SubnetPoolSiloLink, error) {
+func (c *Client) SystemSubnetPoolSiloListAllPages(ctx context.Context, params SystemSubnetPoolSiloListParams) ([]SubnetPoolSiloLink, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -11762,7 +11805,7 @@ func (c *Client) SubnetPoolSiloListAllPages(ctx context.Context, params SubnetPo
 	params.PageToken = ""
 	params.Limit = NewPointer(100)
 	for {
-		page, err := c.SubnetPoolSiloList(ctx, params)
+		page, err := c.SystemSubnetPoolSiloList(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -11776,8 +11819,8 @@ func (c *Client) SubnetPoolSiloListAllPages(ctx context.Context, params SubnetPo
 	return allPages, nil
 }
 
-// SubnetPoolSiloLink: Link a subnet pool to a silo
-func (c *Client) SubnetPoolSiloLink(ctx context.Context, params SubnetPoolSiloLinkParams) (*SubnetPoolSiloLink, error) {
+// SystemSubnetPoolSiloLink: Link subnet pool to silo
+func (c *Client) SystemSubnetPoolSiloLink(ctx context.Context, params SystemSubnetPoolSiloLinkParams) (*SubnetPoolSiloLink, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -11828,8 +11871,8 @@ func (c *Client) SubnetPoolSiloLink(ctx context.Context, params SubnetPoolSiloLi
 	return &body, nil
 }
 
-// SubnetPoolSiloUpdate: Update a subnet pool's link to a silo
-func (c *Client) SubnetPoolSiloUpdate(ctx context.Context, params SubnetPoolSiloUpdateParams) (*SubnetPoolSiloLink, error) {
+// SystemSubnetPoolSiloUpdate: Update subnet pool's link to silo
+func (c *Client) SystemSubnetPoolSiloUpdate(ctx context.Context, params SystemSubnetPoolSiloUpdateParams) (*SubnetPoolSiloLink, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -11881,8 +11924,8 @@ func (c *Client) SubnetPoolSiloUpdate(ctx context.Context, params SubnetPoolSilo
 	return &body, nil
 }
 
-// SubnetPoolSiloUnlink: Unlink a subnet pool from a silo
-func (c *Client) SubnetPoolSiloUnlink(ctx context.Context, params SubnetPoolSiloUnlinkParams) error {
+// SystemSubnetPoolSiloUnlink: Unlink subnet pool from silo
+func (c *Client) SystemSubnetPoolSiloUnlink(ctx context.Context, params SystemSubnetPoolSiloUnlinkParams) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
@@ -11917,8 +11960,8 @@ func (c *Client) SubnetPoolSiloUnlink(ctx context.Context, params SubnetPoolSilo
 	return nil
 }
 
-// SubnetPoolUtilizationView: Fetch subnet pool utilization
-func (c *Client) SubnetPoolUtilizationView(ctx context.Context, params SubnetPoolUtilizationViewParams) (*SubnetPoolUtilization, error) {
+// SystemSubnetPoolUtilizationView: Fetch subnet pool utilization
+func (c *Client) SystemSubnetPoolUtilizationView(ctx context.Context, params SystemSubnetPoolUtilizationViewParams) (*SubnetPoolUtilization, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
