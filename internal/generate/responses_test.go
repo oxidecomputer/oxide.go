@@ -95,7 +95,9 @@ func Test_populateResponseType(t *testing.T) {
 			args: args{"Error", &respType},
 			want: []TypeTemplate{
 				{
-					Description: "// ErrorResponse is the response given when error", Name: "ErrorResponse", Type: "Error",
+					Description: "// ErrorResponse is the response given when error",
+					Name:        "ErrorResponse",
+					Type:        "Error",
 				},
 			},
 			want1: []EnumTemplate{},

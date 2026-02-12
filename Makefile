@@ -19,7 +19,7 @@ generate:
 	@ echo "+ Generating SDK..."
 	@ go generate ./...
 	@ echo "+ Updating imports..."
-	@ go tool goimports -w oxide/*.go
+	@ go tool -modfile tools/go.mod goimports -w oxide/*.go
 	@ echo "+ Formatting generated SDK..."
 	@ gofmt -s -w oxide/*.go
 	@ echo "+ Tidying up modules..."
@@ -37,7 +37,7 @@ all: generate test fmt lint staticcheck vet ## Runs a fmt, lint, test, staticche
 .PHONY: fmt
 fmt: ## Formats Go code including long line wrapping.
 	@ echo "+ Formatting Go code..."
-	@ go tool golangci-lint fmt
+	@ go tool -modfile tools/go.mod golangci-lint fmt
 
 .PHONY: fmt-md
 fmt-md: ## Formats markdown files with prettier.
@@ -47,7 +47,7 @@ fmt-md: ## Formats markdown files with prettier.
 .PHONY: lint
 lint: ## Verifies `golangci-lint` passes.
 	@ echo "+ Running Go linters..."
-	@ go tool golangci-lint run
+	@ go tool -modfile tools/go.mod golangci-lint run
 
 .PHONY: test
 test: ## Runs the go tests.
@@ -69,7 +69,7 @@ vet: ## Verifies `go vet` passes.
 .PHONY: staticcheck
 staticcheck: ## Verifies `staticcheck` passes.
 	@ echo "+ Verifying staticcheck passes..."
-	@if [[ ! -z "$(shell go tool staticcheck ./... | tee /dev/stderr)" ]]; then \
+	@if [[ ! -z "$(shell go tool -modfile tools/go.mod staticcheck ./... | tee /dev/stderr)" ]]; then \
 		exit 1; \
 	fi
 
