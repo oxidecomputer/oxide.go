@@ -10,6 +10,9 @@ func (v {{.TypeName}}) {{.DiscriminatorMethod}}() {{.DiscriminatorType}} {
 }
 
 func (v *{{.TypeName}}) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
 	type discriminator struct {
 		Type string `json:"{{.Discriminator}}"`
 	}
@@ -35,20 +38,21 @@ func (v *{{.TypeName}}) UnmarshalJSON(data []byte) error {
 }
 
 func (v {{.TypeName}}) MarshalJSON() ([]byte, error) {
+	if v.{{.ValueFieldName}} == nil {
+		return []byte("null"), nil
+	}
 	m := make(map[string]any)
 	m["{{.Discriminator}}"] = v.{{.DiscriminatorMethod}}()
-	if v.{{.ValueFieldName}} != nil {
-		valueBytes, err := json.Marshal(v.{{.ValueFieldName}})
-		if err != nil {
-			return nil, err
-		}
-		var valueMap map[string]any
-		if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
-			return nil, err
-		}
-		for k, val := range valueMap {
-			m[k] = val
-		}
+	valueBytes, err := json.Marshal(v.{{.ValueFieldName}})
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
 	}
 	return json.Marshal(m)
 }

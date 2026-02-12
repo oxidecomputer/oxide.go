@@ -28,45 +28,109 @@ type Address struct {
 	VlanId *int `json:"vlan_id,omitempty" yaml:"vlan_id,omitempty"`
 }
 
+// addressAllocatorVariant is implemented by AddressAllocator variants.
+type addressAllocatorVariant interface {
+	isAddressAllocatorVariant()
+}
+
 // AddressAllocatorType is the type definition for a AddressAllocatorType.
 type AddressAllocatorType string
 
-// AddressAllocatorExplicit is reserve a specific IP address. The pool is inferred from the address since IP
-// pools cannot have overlapping ranges.
-//
-// Required fields:
-// - Ip
-// - Type
+// AddressAllocatorExplicit is a variant of AddressAllocator.
 type AddressAllocatorExplicit struct {
 	// Ip is the IP address to reserve.
-	Ip   string               `json:"ip" yaml:"ip"`
-	Type AddressAllocatorType `json:"type" yaml:"type"`
+	Ip string `json:"ip" yaml:"ip"`
 }
 
-// AddressAllocatorAuto is automatically allocate an IP address from a pool.
-//
-// Required fields:
-// - Type
+func (AddressAllocatorExplicit) isAddressAllocatorVariant() {}
+
+// AddressAllocatorAuto is a variant of AddressAllocator.
 type AddressAllocatorAuto struct {
 	// PoolSelector is pool selection.
 	//
 	// If omitted, the silo's default pool is used. If the silo has default pools for both IPv4 and IPv6, the request
 	// will fail unless `ip_version` is specified.
-	PoolSelector PoolSelector         `json:"pool_selector,omitempty" yaml:"pool_selector,omitempty"`
-	Type         AddressAllocatorType `json:"type" yaml:"type"`
+	PoolSelector PoolSelector `json:"pool_selector,omitempty" yaml:"pool_selector,omitempty"`
 }
+
+func (AddressAllocatorAuto) isAddressAllocatorVariant() {}
 
 // AddressAllocator is specify how to allocate a floating IP address.
 type AddressAllocator struct {
-	// Ip is the IP address to reserve.
-	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
-	// Type is the type definition for a Type.
-	Type AddressAllocatorType `json:"type,omitempty" yaml:"type,omitempty"`
-	// PoolSelector is pool selection.
-	//
-	// If omitted, the silo's default pool is used. If the silo has default pools for both IPv4 and IPv6, the request
-	// will fail unless `ip_version` is specified.
-	PoolSelector PoolSelector `json:"pool_selector,omitempty" yaml:"pool_selector,omitempty"`
+	Value addressAllocatorVariant
+}
+
+func (v AddressAllocator) Type() AddressAllocatorType {
+	switch v.Value.(type) {
+	case AddressAllocatorExplicit, *AddressAllocatorExplicit:
+		return AddressAllocatorTypeExplicit
+	case AddressAllocatorAuto, *AddressAllocatorAuto:
+		return AddressAllocatorTypeAuto
+	default:
+		return ""
+	}
+}
+
+func (v *AddressAllocator) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"type"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value addressAllocatorVariant
+	switch d.Type {
+	case "explicit":
+		value = &AddressAllocatorExplicit{}
+	case "auto":
+		value = &AddressAllocatorAuto{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'explicit' or 'auto'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v AddressAllocator) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["type"] = v.Type()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsExplicit attempts to convert the AddressAllocator to a AddressAllocatorExplicit.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v AddressAllocator) AsExplicit() (*AddressAllocatorExplicit, bool) {
+	val, ok := v.Value.(*AddressAllocatorExplicit)
+	return val, ok
+}
+
+// AsAuto attempts to convert the AddressAllocator to a AddressAllocatorAuto.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v AddressAllocator) AsAuto() (*AddressAllocatorAuto, bool) {
+	val, ok := v.Value.(*AddressAllocatorAuto)
+	return val, ok
 }
 
 // AddressConfig is a set of addresses associated with a port configuration.
@@ -256,16 +320,21 @@ type AffinityGroupCreate struct {
 	Policy AffinityPolicy `json:"policy" yaml:"policy"`
 }
 
+// affinityGroupMemberVariant is implemented by AffinityGroupMember variants.
+type affinityGroupMemberVariant interface {
+	isAffinityGroupMemberVariant()
+}
+
 // AffinityGroupMemberType is the type definition for a AffinityGroupMemberType.
 type AffinityGroupMemberType string
 
-// AffinityGroupMemberValue is the type definition for a AffinityGroupMemberValue.
+// AffinityGroupMemberInstanceValue is the type definition for a AffinityGroupMemberInstanceValue.
 //
 // Required fields:
 // - Id
 // - Name
 // - RunState
-type AffinityGroupMemberValue struct {
+type AffinityGroupMemberInstanceValue struct {
 	Id string `json:"id" yaml:"id"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
@@ -278,17 +347,12 @@ type AffinityGroupMemberValue struct {
 	RunState InstanceState `json:"run_state" yaml:"run_state"`
 }
 
-// AffinityGroupMemberInstance is an instance belonging to this group
-//
-// Instances can belong to up to 16 affinity groups.
-//
-// Required fields:
-// - Type
-// - Value
+// AffinityGroupMemberInstance is a variant of AffinityGroupMember.
 type AffinityGroupMemberInstance struct {
-	Type  AffinityGroupMemberType  `json:"type" yaml:"type"`
-	Value AffinityGroupMemberValue `json:"value" yaml:"value"`
+	Value AffinityGroupMemberInstanceValue `json:"value" yaml:"value"`
 }
+
+func (AffinityGroupMemberInstance) isAffinityGroupMemberVariant() {}
 
 // AffinityGroupMember is a member of an Affinity Group
 //
@@ -296,10 +360,69 @@ type AffinityGroupMemberInstance struct {
 //
 // Affinity Groups can contain up to 32 members.
 type AffinityGroupMember struct {
-	// Type is the type definition for a Type.
-	Type AffinityGroupMemberType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is the type definition for a Value.
-	Value AffinityGroupMemberValue `json:"value,omitempty" yaml:"value,omitempty"`
+	Value affinityGroupMemberVariant
+}
+
+func (v AffinityGroupMember) Type() AffinityGroupMemberType {
+	switch v.Value.(type) {
+	case AffinityGroupMemberInstance, *AffinityGroupMemberInstance:
+		return AffinityGroupMemberTypeInstance
+	default:
+		return ""
+	}
+}
+
+func (v *AffinityGroupMember) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"type"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value affinityGroupMemberVariant
+	switch d.Type {
+	case "instance":
+		value = &AffinityGroupMemberInstance{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'instance'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v AffinityGroupMember) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["type"] = v.Type()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsInstance attempts to convert the AffinityGroupMember to a AffinityGroupMemberInstance.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v AffinityGroupMember) AsInstance() (*AffinityGroupMemberInstance, bool) {
+	val, ok := v.Value.(*AffinityGroupMemberInstance)
+	return val, ok
 }
 
 // AffinityGroupMemberResultsPage is a single page of results
@@ -485,31 +608,89 @@ type AlertReceiver struct {
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
 
+// alertReceiverKindVariant is implemented by AlertReceiverKind variants.
+type alertReceiverKindVariant interface {
+	isAlertReceiverKindVariant()
+}
+
 // AlertReceiverKindKind is the type definition for a AlertReceiverKindKind.
 type AlertReceiverKindKind string
 
-// AlertReceiverKindWebhook is webhook-specific alert receiver configuration.
-//
-// Required fields:
-// - Endpoint
-// - Kind
-// - Secrets
+// AlertReceiverKindWebhook is a variant of AlertReceiverKind.
 type AlertReceiverKindWebhook struct {
 	// Endpoint is the URL that webhook notification requests are sent to.
-	Endpoint string                `json:"endpoint" yaml:"endpoint"`
-	Kind     AlertReceiverKindKind `json:"kind" yaml:"kind"`
+	Endpoint string `json:"endpoint" yaml:"endpoint"`
 	// Secrets is a list containing the IDs of the secret keys used to sign payloads sent to this receiver.
 	Secrets []WebhookSecret `json:"secrets" yaml:"secrets"`
 }
 
+func (AlertReceiverKindWebhook) isAlertReceiverKindVariant() {}
+
 // AlertReceiverKind is the possible alert delivery mechanisms for an alert receiver.
 type AlertReceiverKind struct {
-	// Endpoint is the URL that webhook notification requests are sent to.
-	Endpoint string `json:"endpoint,omitempty" yaml:"endpoint,omitempty"`
-	// Kind is the type definition for a Kind.
-	Kind AlertReceiverKindKind `json:"kind,omitempty" yaml:"kind,omitempty"`
-	// Secrets is a list containing the IDs of the secret keys used to sign payloads sent to this receiver.
-	Secrets []WebhookSecret `json:"secrets,omitempty" yaml:"secrets,omitempty"`
+	Value alertReceiverKindVariant
+}
+
+func (v AlertReceiverKind) Kind() AlertReceiverKindKind {
+	switch v.Value.(type) {
+	case AlertReceiverKindWebhook, *AlertReceiverKindWebhook:
+		return AlertReceiverKindKindWebhook
+	default:
+		return ""
+	}
+}
+
+func (v *AlertReceiverKind) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"kind"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value alertReceiverKindVariant
+	switch d.Type {
+	case "webhook":
+		value = &AlertReceiverKindWebhook{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'webhook'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v AlertReceiverKind) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["kind"] = v.Kind()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsWebhook attempts to convert the AlertReceiverKind to a AlertReceiverKindWebhook.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v AlertReceiverKind) AsWebhook() (*AlertReceiverKindWebhook, bool) {
+	val, ok := v.Value.(*AlertReceiverKindWebhook)
+	return val, ok
 }
 
 // AlertReceiverResultsPage is a single page of results
@@ -569,35 +750,103 @@ type AllowListUpdate struct {
 	AllowedIps AllowedSourceIps `json:"allowed_ips" yaml:"allowed_ips"`
 }
 
+// allowedSourceIpsVariant is implemented by AllowedSourceIps variants.
+type allowedSourceIpsVariant interface {
+	isAllowedSourceIpsVariant()
+}
+
 // AllowedSourceIpsAllow is the type definition for a AllowedSourceIpsAllow.
 type AllowedSourceIpsAllow string
 
-// AllowedSourceIpsAny is allow traffic from any external IP address.
-//
-// Required fields:
-// - Allow
+// AllowedSourceIpsAny is a variant of AllowedSourceIps.
 type AllowedSourceIpsAny struct {
-	Allow AllowedSourceIpsAllow `json:"allow" yaml:"allow"`
 }
 
-// AllowedSourceIpsList is restrict access to a specific set of source IP addresses or subnets.
-//
-// All others are prevented from reaching rack services.
-//
-// Required fields:
-// - Allow
-// - Ips
+func (AllowedSourceIpsAny) isAllowedSourceIpsVariant() {}
+
+// AllowedSourceIpsList is a variant of AllowedSourceIps.
 type AllowedSourceIpsList struct {
-	Allow AllowedSourceIpsAllow `json:"allow" yaml:"allow"`
-	Ips   []IpNet               `json:"ips" yaml:"ips"`
+	Ips []IpNet `json:"ips" yaml:"ips"`
 }
+
+func (AllowedSourceIpsList) isAllowedSourceIpsVariant() {}
 
 // AllowedSourceIps is description of source IPs allowed to reach rack services.
 type AllowedSourceIps struct {
-	// Allow is the type definition for a Allow.
-	Allow AllowedSourceIpsAllow `json:"allow,omitempty" yaml:"allow,omitempty"`
-	// Ips is the type definition for a Ips.
-	Ips []IpNet `json:"ips,omitempty" yaml:"ips,omitempty"`
+	Value allowedSourceIpsVariant
+}
+
+func (v AllowedSourceIps) Allow() AllowedSourceIpsAllow {
+	switch v.Value.(type) {
+	case AllowedSourceIpsAny, *AllowedSourceIpsAny:
+		return AllowedSourceIpsAllowAny
+	case AllowedSourceIpsList, *AllowedSourceIpsList:
+		return AllowedSourceIpsAllowList
+	default:
+		return ""
+	}
+}
+
+func (v *AllowedSourceIps) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"allow"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value allowedSourceIpsVariant
+	switch d.Type {
+	case "any":
+		value = &AllowedSourceIpsAny{}
+	case "list":
+		value = &AllowedSourceIpsList{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'any' or 'list'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v AllowedSourceIps) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["allow"] = v.Allow()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsAny attempts to convert the AllowedSourceIps to a AllowedSourceIpsAny.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v AllowedSourceIps) AsAny() (*AllowedSourceIpsAny, bool) {
+	val, ok := v.Value.(*AllowedSourceIpsAny)
+	return val, ok
+}
+
+// AsList attempts to convert the AllowedSourceIps to a AllowedSourceIpsList.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v AllowedSourceIps) AsList() (*AllowedSourceIpsList, bool) {
+	val, ok := v.Value.(*AllowedSourceIpsList)
+	return val, ok
 }
 
 // AntiAffinityGroup is view of an Anti-Affinity Group
@@ -652,16 +901,21 @@ type AntiAffinityGroupCreate struct {
 	Policy AffinityPolicy `json:"policy" yaml:"policy"`
 }
 
+// antiAffinityGroupMemberVariant is implemented by AntiAffinityGroupMember variants.
+type antiAffinityGroupMemberVariant interface {
+	isAntiAffinityGroupMemberVariant()
+}
+
 // AntiAffinityGroupMemberType is the type definition for a AntiAffinityGroupMemberType.
 type AntiAffinityGroupMemberType string
 
-// AntiAffinityGroupMemberValue is the type definition for a AntiAffinityGroupMemberValue.
+// AntiAffinityGroupMemberInstanceValue is the type definition for a AntiAffinityGroupMemberInstanceValue.
 //
 // Required fields:
 // - Id
 // - Name
 // - RunState
-type AntiAffinityGroupMemberValue struct {
+type AntiAffinityGroupMemberInstanceValue struct {
 	Id string `json:"id" yaml:"id"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
@@ -674,17 +928,12 @@ type AntiAffinityGroupMemberValue struct {
 	RunState InstanceState `json:"run_state" yaml:"run_state"`
 }
 
-// AntiAffinityGroupMemberInstance is an instance belonging to this group
-//
-// Instances can belong to up to 16 anti-affinity groups.
-//
-// Required fields:
-// - Type
-// - Value
+// AntiAffinityGroupMemberInstance is a variant of AntiAffinityGroupMember.
 type AntiAffinityGroupMemberInstance struct {
-	Type  AntiAffinityGroupMemberType  `json:"type" yaml:"type"`
-	Value AntiAffinityGroupMemberValue `json:"value" yaml:"value"`
+	Value AntiAffinityGroupMemberInstanceValue `json:"value" yaml:"value"`
 }
+
+func (AntiAffinityGroupMemberInstance) isAntiAffinityGroupMemberVariant() {}
 
 // AntiAffinityGroupMember is a member of an Anti-Affinity Group
 //
@@ -692,10 +941,69 @@ type AntiAffinityGroupMemberInstance struct {
 //
 // Anti-Affinity Groups can contain up to 32 members.
 type AntiAffinityGroupMember struct {
-	// Type is the type definition for a Type.
-	Type AntiAffinityGroupMemberType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is the type definition for a Value.
-	Value AntiAffinityGroupMemberValue `json:"value,omitempty" yaml:"value,omitempty"`
+	Value antiAffinityGroupMemberVariant
+}
+
+func (v AntiAffinityGroupMember) Type() AntiAffinityGroupMemberType {
+	switch v.Value.(type) {
+	case AntiAffinityGroupMemberInstance, *AntiAffinityGroupMemberInstance:
+		return AntiAffinityGroupMemberTypeInstance
+	default:
+		return ""
+	}
+}
+
+func (v *AntiAffinityGroupMember) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"type"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value antiAffinityGroupMemberVariant
+	switch d.Type {
+	case "instance":
+		value = &AntiAffinityGroupMemberInstance{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'instance'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v AntiAffinityGroupMember) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["type"] = v.Type()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsInstance attempts to convert the AntiAffinityGroupMember to a AntiAffinityGroupMemberInstance.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v AntiAffinityGroupMember) AsInstance() (*AntiAffinityGroupMemberInstance, bool) {
+	val, ok := v.Value.(*AntiAffinityGroupMemberInstance)
+	return val, ok
 }
 
 // AntiAffinityGroupMemberResultsPage is a single page of results
@@ -767,109 +1075,261 @@ type AuditLogEntry struct {
 	UserAgent string `json:"user_agent,omitempty" yaml:"user_agent,omitempty"`
 }
 
+// auditLogEntryActorVariant is implemented by AuditLogEntryActor variants.
+type auditLogEntryActorVariant interface {
+	isAuditLogEntryActorVariant()
+}
+
 // AuditLogEntryActorKind is the type definition for a AuditLogEntryActorKind.
 type AuditLogEntryActorKind string
 
-// AuditLogEntryActorUserBuiltin is the type definition for a AuditLogEntryActorUserBuiltin.
-//
-// Required fields:
-// - Kind
-// - UserBuiltinId
+// AuditLogEntryActorUserBuiltin is a variant of AuditLogEntryActor.
 type AuditLogEntryActorUserBuiltin struct {
-	Kind          AuditLogEntryActorKind `json:"kind" yaml:"kind"`
-	UserBuiltinId string                 `json:"user_builtin_id" yaml:"user_builtin_id"`
+	UserBuiltinId string `json:"user_builtin_id" yaml:"user_builtin_id"`
 }
 
-// AuditLogEntryActorSiloUser is the type definition for a AuditLogEntryActorSiloUser.
-//
-// Required fields:
-// - Kind
-// - SiloId
-// - SiloUserId
+func (AuditLogEntryActorUserBuiltin) isAuditLogEntryActorVariant() {}
+
+// AuditLogEntryActorSiloUser is a variant of AuditLogEntryActor.
 type AuditLogEntryActorSiloUser struct {
-	Kind       AuditLogEntryActorKind `json:"kind" yaml:"kind"`
-	SiloId     string                 `json:"silo_id" yaml:"silo_id"`
-	SiloUserId string                 `json:"silo_user_id" yaml:"silo_user_id"`
+	SiloId     string `json:"silo_id" yaml:"silo_id"`
+	SiloUserId string `json:"silo_user_id" yaml:"silo_user_id"`
 }
 
-// AuditLogEntryActorScim is the type definition for a AuditLogEntryActorScim.
-//
-// Required fields:
-// - Kind
-// - SiloId
+func (AuditLogEntryActorSiloUser) isAuditLogEntryActorVariant() {}
+
+// AuditLogEntryActorScim is a variant of AuditLogEntryActor.
 type AuditLogEntryActorScim struct {
-	Kind   AuditLogEntryActorKind `json:"kind" yaml:"kind"`
-	SiloId string                 `json:"silo_id" yaml:"silo_id"`
+	SiloId string `json:"silo_id" yaml:"silo_id"`
 }
 
-// AuditLogEntryActorUnauthenticated is the type definition for a AuditLogEntryActorUnauthenticated.
-//
-// Required fields:
-// - Kind
+func (AuditLogEntryActorScim) isAuditLogEntryActorVariant() {}
+
+// AuditLogEntryActorUnauthenticated is a variant of AuditLogEntryActor.
 type AuditLogEntryActorUnauthenticated struct {
-	Kind AuditLogEntryActorKind `json:"kind" yaml:"kind"`
 }
+
+func (AuditLogEntryActorUnauthenticated) isAuditLogEntryActorVariant() {}
 
 // AuditLogEntryActor is the type definition for a AuditLogEntryActor.
 type AuditLogEntryActor struct {
-	// Kind is the type definition for a Kind.
-	Kind AuditLogEntryActorKind `json:"kind,omitempty" yaml:"kind,omitempty"`
-	// UserBuiltinId is the type definition for a UserBuiltinId.
-	UserBuiltinId string `json:"user_builtin_id,omitempty" yaml:"user_builtin_id,omitempty"`
-	// SiloId is the type definition for a SiloId.
-	SiloId string `json:"silo_id,omitempty" yaml:"silo_id,omitempty"`
-	// SiloUserId is the type definition for a SiloUserId.
-	SiloUserId string `json:"silo_user_id,omitempty" yaml:"silo_user_id,omitempty"`
+	Value auditLogEntryActorVariant
+}
+
+func (v AuditLogEntryActor) Kind() AuditLogEntryActorKind {
+	switch v.Value.(type) {
+	case AuditLogEntryActorUserBuiltin, *AuditLogEntryActorUserBuiltin:
+		return AuditLogEntryActorKindUserBuiltin
+	case AuditLogEntryActorSiloUser, *AuditLogEntryActorSiloUser:
+		return AuditLogEntryActorKindSiloUser
+	case AuditLogEntryActorScim, *AuditLogEntryActorScim:
+		return AuditLogEntryActorKindScim
+	case AuditLogEntryActorUnauthenticated, *AuditLogEntryActorUnauthenticated:
+		return AuditLogEntryActorKindUnauthenticated
+	default:
+		return ""
+	}
+}
+
+func (v *AuditLogEntryActor) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"kind"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value auditLogEntryActorVariant
+	switch d.Type {
+	case "user_builtin":
+		value = &AuditLogEntryActorUserBuiltin{}
+	case "silo_user":
+		value = &AuditLogEntryActorSiloUser{}
+	case "scim":
+		value = &AuditLogEntryActorScim{}
+	case "unauthenticated":
+		value = &AuditLogEntryActorUnauthenticated{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'user_builtin' or 'silo_user' or 'scim' or 'unauthenticated'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v AuditLogEntryActor) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["kind"] = v.Kind()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsUserBuiltin attempts to convert the AuditLogEntryActor to a AuditLogEntryActorUserBuiltin.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v AuditLogEntryActor) AsUserBuiltin() (*AuditLogEntryActorUserBuiltin, bool) {
+	val, ok := v.Value.(*AuditLogEntryActorUserBuiltin)
+	return val, ok
+}
+
+// AsSiloUser attempts to convert the AuditLogEntryActor to a AuditLogEntryActorSiloUser.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v AuditLogEntryActor) AsSiloUser() (*AuditLogEntryActorSiloUser, bool) {
+	val, ok := v.Value.(*AuditLogEntryActorSiloUser)
+	return val, ok
+}
+
+// AsScim attempts to convert the AuditLogEntryActor to a AuditLogEntryActorScim.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v AuditLogEntryActor) AsScim() (*AuditLogEntryActorScim, bool) {
+	val, ok := v.Value.(*AuditLogEntryActorScim)
+	return val, ok
+}
+
+// AsUnauthenticated attempts to convert the AuditLogEntryActor to a AuditLogEntryActorUnauthenticated.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v AuditLogEntryActor) AsUnauthenticated() (*AuditLogEntryActorUnauthenticated, bool) {
+	val, ok := v.Value.(*AuditLogEntryActorUnauthenticated)
+	return val, ok
+}
+
+// auditLogEntryResultVariant is implemented by AuditLogEntryResult variants.
+type auditLogEntryResultVariant interface {
+	isAuditLogEntryResultVariant()
 }
 
 // AuditLogEntryResultKind is the type definition for a AuditLogEntryResultKind.
 type AuditLogEntryResultKind string
 
-// AuditLogEntryResultSuccess is the operation completed successfully
-//
-// Required fields:
-// - HttpStatusCode
-// - Kind
+// AuditLogEntryResultSuccess is a variant of AuditLogEntryResult.
 type AuditLogEntryResultSuccess struct {
 	// HttpStatusCode is hTTP status code
-	HttpStatusCode *int                    `json:"http_status_code" yaml:"http_status_code"`
-	Kind           AuditLogEntryResultKind `json:"kind" yaml:"kind"`
+	HttpStatusCode *int `json:"http_status_code" yaml:"http_status_code"`
 }
 
-// AuditLogEntryResultError is the operation failed
-//
-// Required fields:
-// - ErrorMessage
-// - HttpStatusCode
-// - Kind
+func (AuditLogEntryResultSuccess) isAuditLogEntryResultVariant() {}
+
+// AuditLogEntryResultError is a variant of AuditLogEntryResult.
 type AuditLogEntryResultError struct {
 	ErrorCode    string `json:"error_code,omitempty" yaml:"error_code,omitempty"`
 	ErrorMessage string `json:"error_message" yaml:"error_message"`
 	// HttpStatusCode is hTTP status code
-	HttpStatusCode *int                    `json:"http_status_code" yaml:"http_status_code"`
-	Kind           AuditLogEntryResultKind `json:"kind" yaml:"kind"`
+	HttpStatusCode *int `json:"http_status_code" yaml:"http_status_code"`
 }
 
-// AuditLogEntryResultUnknown is after the logged operation completed, our attempt to write the result to
-// the audit log failed, so it was automatically marked completed later by a background job. This does not imply
-// that the operation itself timed out or failed, only our attempts to log its result.
-//
-// Required fields:
-// - Kind
+func (AuditLogEntryResultError) isAuditLogEntryResultVariant() {}
+
+// AuditLogEntryResultUnknown is a variant of AuditLogEntryResult.
 type AuditLogEntryResultUnknown struct {
-	Kind AuditLogEntryResultKind `json:"kind" yaml:"kind"`
 }
+
+func (AuditLogEntryResultUnknown) isAuditLogEntryResultVariant() {}
 
 // AuditLogEntryResult is result of an audit log entry
 type AuditLogEntryResult struct {
-	// HttpStatusCode is hTTP status code
-	HttpStatusCode *int `json:"http_status_code,omitempty" yaml:"http_status_code,omitempty"`
-	// Kind is the type definition for a Kind.
-	Kind AuditLogEntryResultKind `json:"kind,omitempty" yaml:"kind,omitempty"`
-	// ErrorCode is the type definition for a ErrorCode.
-	ErrorCode string `json:"error_code,omitzero" yaml:"error_code,omitzero"`
-	// ErrorMessage is the type definition for a ErrorMessage.
-	ErrorMessage string `json:"error_message,omitempty" yaml:"error_message,omitempty"`
+	Value auditLogEntryResultVariant
+}
+
+func (v AuditLogEntryResult) Kind() AuditLogEntryResultKind {
+	switch v.Value.(type) {
+	case AuditLogEntryResultSuccess, *AuditLogEntryResultSuccess:
+		return AuditLogEntryResultKindSuccess
+	case AuditLogEntryResultError, *AuditLogEntryResultError:
+		return AuditLogEntryResultKindError
+	case AuditLogEntryResultUnknown, *AuditLogEntryResultUnknown:
+		return AuditLogEntryResultKindUnknown
+	default:
+		return ""
+	}
+}
+
+func (v *AuditLogEntryResult) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"kind"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value auditLogEntryResultVariant
+	switch d.Type {
+	case "success":
+		value = &AuditLogEntryResultSuccess{}
+	case "error":
+		value = &AuditLogEntryResultError{}
+	case "unknown":
+		value = &AuditLogEntryResultUnknown{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'success' or 'error' or 'unknown'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v AuditLogEntryResult) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["kind"] = v.Kind()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsSuccess attempts to convert the AuditLogEntryResult to a AuditLogEntryResultSuccess.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v AuditLogEntryResult) AsSuccess() (*AuditLogEntryResultSuccess, bool) {
+	val, ok := v.Value.(*AuditLogEntryResultSuccess)
+	return val, ok
+}
+
+// AsError attempts to convert the AuditLogEntryResult to a AuditLogEntryResultError.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v AuditLogEntryResult) AsError() (*AuditLogEntryResultError, bool) {
+	val, ok := v.Value.(*AuditLogEntryResultError)
+	return val, ok
+}
+
+// AsUnknown attempts to convert the AuditLogEntryResult to a AuditLogEntryResultUnknown.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v AuditLogEntryResult) AsUnknown() (*AuditLogEntryResultUnknown, bool) {
+	val, ok := v.Value.(*AuditLogEntryResultUnknown)
+	return val, ok
 }
 
 // AuditLogEntryResultsPage is a single page of results
@@ -1233,484 +1693,1224 @@ type BgpPeerStatus struct {
 	Switch SwitchLocation `json:"switch" yaml:"switch"`
 }
 
+// binRangedoubleVariant is implemented by BinRangedouble variants.
+type binRangedoubleVariant interface {
+	isBinRangedoubleVariant()
+}
+
 // BinRangedoubleType is the type definition for a BinRangedoubleType.
 type BinRangedoubleType string
 
-// BinRangedoubleRangeTo is a range unbounded below and exclusively above, `..end`.
-//
-// Required fields:
-// - End
-// - Type
+// BinRangedoubleRangeTo is a variant of BinRangedouble.
 type BinRangedoubleRangeTo struct {
-	End  float64            `json:"end" yaml:"end"`
-	Type BinRangedoubleType `json:"type" yaml:"type"`
+	End float64 `json:"end" yaml:"end"`
 }
 
-// BinRangedoubleRange is a range bounded inclusively below and exclusively above, `start..end`.
-//
-// Required fields:
-// - End
-// - Start
-// - Type
+func (BinRangedoubleRangeTo) isBinRangedoubleVariant() {}
+
+// BinRangedoubleRange is a variant of BinRangedouble.
 type BinRangedoubleRange struct {
-	End   float64            `json:"end" yaml:"end"`
-	Start float64            `json:"start" yaml:"start"`
-	Type  BinRangedoubleType `json:"type" yaml:"type"`
+	End   float64 `json:"end" yaml:"end"`
+	Start float64 `json:"start" yaml:"start"`
 }
 
-// BinRangedoubleRangeFrom is a range bounded inclusively below and unbounded above, `start..`.
-//
-// Required fields:
-// - Start
-// - Type
+func (BinRangedoubleRange) isBinRangedoubleVariant() {}
+
+// BinRangedoubleRangeFrom is a variant of BinRangedouble.
 type BinRangedoubleRangeFrom struct {
-	Start float64            `json:"start" yaml:"start"`
-	Type  BinRangedoubleType `json:"type" yaml:"type"`
+	Start float64 `json:"start" yaml:"start"`
 }
+
+func (BinRangedoubleRangeFrom) isBinRangedoubleVariant() {}
 
 // BinRangedouble is a type storing a range over `T`.
 //
 // This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangedouble struct {
-	// End is the type definition for a End.
-	End float64 `json:"end,omitempty" yaml:"end,omitempty"`
-	// Type is the type definition for a Type.
-	Type BinRangedoubleType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Start is the type definition for a Start.
-	Start float64 `json:"start,omitempty" yaml:"start,omitempty"`
+	Value binRangedoubleVariant
+}
+
+func (v BinRangedouble) Type() BinRangedoubleType {
+	switch v.Value.(type) {
+	case BinRangedoubleRangeTo, *BinRangedoubleRangeTo:
+		return BinRangedoubleTypeRangeTo
+	case BinRangedoubleRange, *BinRangedoubleRange:
+		return BinRangedoubleTypeRange
+	case BinRangedoubleRangeFrom, *BinRangedoubleRangeFrom:
+		return BinRangedoubleTypeRangeFrom
+	default:
+		return ""
+	}
+}
+
+func (v *BinRangedouble) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"type"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value binRangedoubleVariant
+	switch d.Type {
+	case "range_to":
+		value = &BinRangedoubleRangeTo{}
+	case "range":
+		value = &BinRangedoubleRange{}
+	case "range_from":
+		value = &BinRangedoubleRangeFrom{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'range_to' or 'range' or 'range_from'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v BinRangedouble) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["type"] = v.Type()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsRangeTo attempts to convert the BinRangedouble to a BinRangedoubleRangeTo.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v BinRangedouble) AsRangeTo() (*BinRangedoubleRangeTo, bool) {
+	val, ok := v.Value.(*BinRangedoubleRangeTo)
+	return val, ok
+}
+
+// AsRange attempts to convert the BinRangedouble to a BinRangedoubleRange.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v BinRangedouble) AsRange() (*BinRangedoubleRange, bool) {
+	val, ok := v.Value.(*BinRangedoubleRange)
+	return val, ok
+}
+
+// AsRangeFrom attempts to convert the BinRangedouble to a BinRangedoubleRangeFrom.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v BinRangedouble) AsRangeFrom() (*BinRangedoubleRangeFrom, bool) {
+	val, ok := v.Value.(*BinRangedoubleRangeFrom)
+	return val, ok
+}
+
+// binRangefloatVariant is implemented by BinRangefloat variants.
+type binRangefloatVariant interface {
+	isBinRangefloatVariant()
 }
 
 // BinRangefloatType is the type definition for a BinRangefloatType.
 type BinRangefloatType string
 
-// BinRangefloatRangeTo is a range unbounded below and exclusively above, `..end`.
-//
-// Required fields:
-// - End
-// - Type
+// BinRangefloatRangeTo is a variant of BinRangefloat.
 type BinRangefloatRangeTo struct {
-	End  float64           `json:"end" yaml:"end"`
-	Type BinRangefloatType `json:"type" yaml:"type"`
+	End float64 `json:"end" yaml:"end"`
 }
 
-// BinRangefloatRange is a range bounded inclusively below and exclusively above, `start..end`.
-//
-// Required fields:
-// - End
-// - Start
-// - Type
+func (BinRangefloatRangeTo) isBinRangefloatVariant() {}
+
+// BinRangefloatRange is a variant of BinRangefloat.
 type BinRangefloatRange struct {
-	End   float64           `json:"end" yaml:"end"`
-	Start float64           `json:"start" yaml:"start"`
-	Type  BinRangefloatType `json:"type" yaml:"type"`
+	End   float64 `json:"end" yaml:"end"`
+	Start float64 `json:"start" yaml:"start"`
 }
 
-// BinRangefloatRangeFrom is a range bounded inclusively below and unbounded above, `start..`.
-//
-// Required fields:
-// - Start
-// - Type
+func (BinRangefloatRange) isBinRangefloatVariant() {}
+
+// BinRangefloatRangeFrom is a variant of BinRangefloat.
 type BinRangefloatRangeFrom struct {
-	Start float64           `json:"start" yaml:"start"`
-	Type  BinRangefloatType `json:"type" yaml:"type"`
+	Start float64 `json:"start" yaml:"start"`
 }
+
+func (BinRangefloatRangeFrom) isBinRangefloatVariant() {}
 
 // BinRangefloat is a type storing a range over `T`.
 //
 // This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangefloat struct {
-	// End is the type definition for a End.
-	End float64 `json:"end,omitempty" yaml:"end,omitempty"`
-	// Type is the type definition for a Type.
-	Type BinRangefloatType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Start is the type definition for a Start.
-	Start float64 `json:"start,omitempty" yaml:"start,omitempty"`
+	Value binRangefloatVariant
+}
+
+func (v BinRangefloat) Type() BinRangefloatType {
+	switch v.Value.(type) {
+	case BinRangefloatRangeTo, *BinRangefloatRangeTo:
+		return BinRangefloatTypeRangeTo
+	case BinRangefloatRange, *BinRangefloatRange:
+		return BinRangefloatTypeRange
+	case BinRangefloatRangeFrom, *BinRangefloatRangeFrom:
+		return BinRangefloatTypeRangeFrom
+	default:
+		return ""
+	}
+}
+
+func (v *BinRangefloat) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"type"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value binRangefloatVariant
+	switch d.Type {
+	case "range_to":
+		value = &BinRangefloatRangeTo{}
+	case "range":
+		value = &BinRangefloatRange{}
+	case "range_from":
+		value = &BinRangefloatRangeFrom{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'range_to' or 'range' or 'range_from'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v BinRangefloat) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["type"] = v.Type()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsRangeTo attempts to convert the BinRangefloat to a BinRangefloatRangeTo.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v BinRangefloat) AsRangeTo() (*BinRangefloatRangeTo, bool) {
+	val, ok := v.Value.(*BinRangefloatRangeTo)
+	return val, ok
+}
+
+// AsRange attempts to convert the BinRangefloat to a BinRangefloatRange.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v BinRangefloat) AsRange() (*BinRangefloatRange, bool) {
+	val, ok := v.Value.(*BinRangefloatRange)
+	return val, ok
+}
+
+// AsRangeFrom attempts to convert the BinRangefloat to a BinRangefloatRangeFrom.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v BinRangefloat) AsRangeFrom() (*BinRangefloatRangeFrom, bool) {
+	val, ok := v.Value.(*BinRangefloatRangeFrom)
+	return val, ok
+}
+
+// binRangeint16Variant is implemented by BinRangeint16 variants.
+type binRangeint16Variant interface {
+	isBinRangeint16Variant()
 }
 
 // BinRangeint16Type is the type definition for a BinRangeint16Type.
 type BinRangeint16Type string
 
-// BinRangeint16RangeTo is a range unbounded below and exclusively above, `..end`.
-//
-// Required fields:
-// - End
-// - Type
+// BinRangeint16RangeTo is a variant of BinRangeint16.
 type BinRangeint16RangeTo struct {
-	End  *int              `json:"end" yaml:"end"`
-	Type BinRangeint16Type `json:"type" yaml:"type"`
+	End *int `json:"end" yaml:"end"`
 }
 
-// BinRangeint16Range is a range bounded inclusively below and exclusively above, `start..end`.
-//
-// Required fields:
-// - End
-// - Start
-// - Type
+func (BinRangeint16RangeTo) isBinRangeint16Variant() {}
+
+// BinRangeint16Range is a variant of BinRangeint16.
 type BinRangeint16Range struct {
-	End   *int              `json:"end" yaml:"end"`
-	Start *int              `json:"start" yaml:"start"`
-	Type  BinRangeint16Type `json:"type" yaml:"type"`
+	End   *int `json:"end" yaml:"end"`
+	Start *int `json:"start" yaml:"start"`
 }
 
-// BinRangeint16RangeFrom is a range bounded inclusively below and unbounded above, `start..`.
-//
-// Required fields:
-// - Start
-// - Type
+func (BinRangeint16Range) isBinRangeint16Variant() {}
+
+// BinRangeint16RangeFrom is a variant of BinRangeint16.
 type BinRangeint16RangeFrom struct {
-	Start *int              `json:"start" yaml:"start"`
-	Type  BinRangeint16Type `json:"type" yaml:"type"`
+	Start *int `json:"start" yaml:"start"`
 }
+
+func (BinRangeint16RangeFrom) isBinRangeint16Variant() {}
 
 // BinRangeint16 is a type storing a range over `T`.
 //
 // This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeint16 struct {
-	// End is the type definition for a End.
-	End *int `json:"end,omitempty" yaml:"end,omitempty"`
-	// Type is the type definition for a Type.
-	Type BinRangeint16Type `json:"type,omitempty" yaml:"type,omitempty"`
-	// Start is the type definition for a Start.
-	Start *int `json:"start,omitempty" yaml:"start,omitempty"`
+	Value binRangeint16Variant
+}
+
+func (v BinRangeint16) Type() BinRangeint16Type {
+	switch v.Value.(type) {
+	case BinRangeint16RangeTo, *BinRangeint16RangeTo:
+		return BinRangeint16TypeRangeTo
+	case BinRangeint16Range, *BinRangeint16Range:
+		return BinRangeint16TypeRange
+	case BinRangeint16RangeFrom, *BinRangeint16RangeFrom:
+		return BinRangeint16TypeRangeFrom
+	default:
+		return ""
+	}
+}
+
+func (v *BinRangeint16) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"type"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value binRangeint16Variant
+	switch d.Type {
+	case "range_to":
+		value = &BinRangeint16RangeTo{}
+	case "range":
+		value = &BinRangeint16Range{}
+	case "range_from":
+		value = &BinRangeint16RangeFrom{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'range_to' or 'range' or 'range_from'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v BinRangeint16) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["type"] = v.Type()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsRangeTo attempts to convert the BinRangeint16 to a BinRangeint16RangeTo.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v BinRangeint16) AsRangeTo() (*BinRangeint16RangeTo, bool) {
+	val, ok := v.Value.(*BinRangeint16RangeTo)
+	return val, ok
+}
+
+// AsRange attempts to convert the BinRangeint16 to a BinRangeint16Range.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v BinRangeint16) AsRange() (*BinRangeint16Range, bool) {
+	val, ok := v.Value.(*BinRangeint16Range)
+	return val, ok
+}
+
+// AsRangeFrom attempts to convert the BinRangeint16 to a BinRangeint16RangeFrom.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v BinRangeint16) AsRangeFrom() (*BinRangeint16RangeFrom, bool) {
+	val, ok := v.Value.(*BinRangeint16RangeFrom)
+	return val, ok
+}
+
+// binRangeint32Variant is implemented by BinRangeint32 variants.
+type binRangeint32Variant interface {
+	isBinRangeint32Variant()
 }
 
 // BinRangeint32Type is the type definition for a BinRangeint32Type.
 type BinRangeint32Type string
 
-// BinRangeint32RangeTo is a range unbounded below and exclusively above, `..end`.
-//
-// Required fields:
-// - End
-// - Type
+// BinRangeint32RangeTo is a variant of BinRangeint32.
 type BinRangeint32RangeTo struct {
-	End  *int              `json:"end" yaml:"end"`
-	Type BinRangeint32Type `json:"type" yaml:"type"`
+	End *int `json:"end" yaml:"end"`
 }
 
-// BinRangeint32Range is a range bounded inclusively below and exclusively above, `start..end`.
-//
-// Required fields:
-// - End
-// - Start
-// - Type
+func (BinRangeint32RangeTo) isBinRangeint32Variant() {}
+
+// BinRangeint32Range is a variant of BinRangeint32.
 type BinRangeint32Range struct {
-	End   *int              `json:"end" yaml:"end"`
-	Start *int              `json:"start" yaml:"start"`
-	Type  BinRangeint32Type `json:"type" yaml:"type"`
+	End   *int `json:"end" yaml:"end"`
+	Start *int `json:"start" yaml:"start"`
 }
 
-// BinRangeint32RangeFrom is a range bounded inclusively below and unbounded above, `start..`.
-//
-// Required fields:
-// - Start
-// - Type
+func (BinRangeint32Range) isBinRangeint32Variant() {}
+
+// BinRangeint32RangeFrom is a variant of BinRangeint32.
 type BinRangeint32RangeFrom struct {
-	Start *int              `json:"start" yaml:"start"`
-	Type  BinRangeint32Type `json:"type" yaml:"type"`
+	Start *int `json:"start" yaml:"start"`
 }
+
+func (BinRangeint32RangeFrom) isBinRangeint32Variant() {}
 
 // BinRangeint32 is a type storing a range over `T`.
 //
 // This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeint32 struct {
-	// End is the type definition for a End.
-	End *int `json:"end,omitempty" yaml:"end,omitempty"`
-	// Type is the type definition for a Type.
-	Type BinRangeint32Type `json:"type,omitempty" yaml:"type,omitempty"`
-	// Start is the type definition for a Start.
-	Start *int `json:"start,omitempty" yaml:"start,omitempty"`
+	Value binRangeint32Variant
+}
+
+func (v BinRangeint32) Type() BinRangeint32Type {
+	switch v.Value.(type) {
+	case BinRangeint32RangeTo, *BinRangeint32RangeTo:
+		return BinRangeint32TypeRangeTo
+	case BinRangeint32Range, *BinRangeint32Range:
+		return BinRangeint32TypeRange
+	case BinRangeint32RangeFrom, *BinRangeint32RangeFrom:
+		return BinRangeint32TypeRangeFrom
+	default:
+		return ""
+	}
+}
+
+func (v *BinRangeint32) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"type"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value binRangeint32Variant
+	switch d.Type {
+	case "range_to":
+		value = &BinRangeint32RangeTo{}
+	case "range":
+		value = &BinRangeint32Range{}
+	case "range_from":
+		value = &BinRangeint32RangeFrom{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'range_to' or 'range' or 'range_from'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v BinRangeint32) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["type"] = v.Type()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsRangeTo attempts to convert the BinRangeint32 to a BinRangeint32RangeTo.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v BinRangeint32) AsRangeTo() (*BinRangeint32RangeTo, bool) {
+	val, ok := v.Value.(*BinRangeint32RangeTo)
+	return val, ok
+}
+
+// AsRange attempts to convert the BinRangeint32 to a BinRangeint32Range.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v BinRangeint32) AsRange() (*BinRangeint32Range, bool) {
+	val, ok := v.Value.(*BinRangeint32Range)
+	return val, ok
+}
+
+// AsRangeFrom attempts to convert the BinRangeint32 to a BinRangeint32RangeFrom.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v BinRangeint32) AsRangeFrom() (*BinRangeint32RangeFrom, bool) {
+	val, ok := v.Value.(*BinRangeint32RangeFrom)
+	return val, ok
+}
+
+// binRangeint64Variant is implemented by BinRangeint64 variants.
+type binRangeint64Variant interface {
+	isBinRangeint64Variant()
 }
 
 // BinRangeint64Type is the type definition for a BinRangeint64Type.
 type BinRangeint64Type string
 
-// BinRangeint64RangeTo is a range unbounded below and exclusively above, `..end`.
-//
-// Required fields:
-// - End
-// - Type
+// BinRangeint64RangeTo is a variant of BinRangeint64.
 type BinRangeint64RangeTo struct {
-	End  *int              `json:"end" yaml:"end"`
-	Type BinRangeint64Type `json:"type" yaml:"type"`
+	End *int `json:"end" yaml:"end"`
 }
 
-// BinRangeint64Range is a range bounded inclusively below and exclusively above, `start..end`.
-//
-// Required fields:
-// - End
-// - Start
-// - Type
+func (BinRangeint64RangeTo) isBinRangeint64Variant() {}
+
+// BinRangeint64Range is a variant of BinRangeint64.
 type BinRangeint64Range struct {
-	End   *int              `json:"end" yaml:"end"`
-	Start *int              `json:"start" yaml:"start"`
-	Type  BinRangeint64Type `json:"type" yaml:"type"`
+	End   *int `json:"end" yaml:"end"`
+	Start *int `json:"start" yaml:"start"`
 }
 
-// BinRangeint64RangeFrom is a range bounded inclusively below and unbounded above, `start..`.
-//
-// Required fields:
-// - Start
-// - Type
+func (BinRangeint64Range) isBinRangeint64Variant() {}
+
+// BinRangeint64RangeFrom is a variant of BinRangeint64.
 type BinRangeint64RangeFrom struct {
-	Start *int              `json:"start" yaml:"start"`
-	Type  BinRangeint64Type `json:"type" yaml:"type"`
+	Start *int `json:"start" yaml:"start"`
 }
+
+func (BinRangeint64RangeFrom) isBinRangeint64Variant() {}
 
 // BinRangeint64 is a type storing a range over `T`.
 //
 // This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeint64 struct {
-	// End is the type definition for a End.
-	End *int `json:"end,omitempty" yaml:"end,omitempty"`
-	// Type is the type definition for a Type.
-	Type BinRangeint64Type `json:"type,omitempty" yaml:"type,omitempty"`
-	// Start is the type definition for a Start.
-	Start *int `json:"start,omitempty" yaml:"start,omitempty"`
+	Value binRangeint64Variant
+}
+
+func (v BinRangeint64) Type() BinRangeint64Type {
+	switch v.Value.(type) {
+	case BinRangeint64RangeTo, *BinRangeint64RangeTo:
+		return BinRangeint64TypeRangeTo
+	case BinRangeint64Range, *BinRangeint64Range:
+		return BinRangeint64TypeRange
+	case BinRangeint64RangeFrom, *BinRangeint64RangeFrom:
+		return BinRangeint64TypeRangeFrom
+	default:
+		return ""
+	}
+}
+
+func (v *BinRangeint64) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"type"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value binRangeint64Variant
+	switch d.Type {
+	case "range_to":
+		value = &BinRangeint64RangeTo{}
+	case "range":
+		value = &BinRangeint64Range{}
+	case "range_from":
+		value = &BinRangeint64RangeFrom{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'range_to' or 'range' or 'range_from'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v BinRangeint64) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["type"] = v.Type()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsRangeTo attempts to convert the BinRangeint64 to a BinRangeint64RangeTo.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v BinRangeint64) AsRangeTo() (*BinRangeint64RangeTo, bool) {
+	val, ok := v.Value.(*BinRangeint64RangeTo)
+	return val, ok
+}
+
+// AsRange attempts to convert the BinRangeint64 to a BinRangeint64Range.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v BinRangeint64) AsRange() (*BinRangeint64Range, bool) {
+	val, ok := v.Value.(*BinRangeint64Range)
+	return val, ok
+}
+
+// AsRangeFrom attempts to convert the BinRangeint64 to a BinRangeint64RangeFrom.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v BinRangeint64) AsRangeFrom() (*BinRangeint64RangeFrom, bool) {
+	val, ok := v.Value.(*BinRangeint64RangeFrom)
+	return val, ok
+}
+
+// binRangeint8Variant is implemented by BinRangeint8 variants.
+type binRangeint8Variant interface {
+	isBinRangeint8Variant()
 }
 
 // BinRangeint8Type is the type definition for a BinRangeint8Type.
 type BinRangeint8Type string
 
-// BinRangeint8RangeTo is a range unbounded below and exclusively above, `..end`.
-//
-// Required fields:
-// - End
-// - Type
+// BinRangeint8RangeTo is a variant of BinRangeint8.
 type BinRangeint8RangeTo struct {
-	End  *int             `json:"end" yaml:"end"`
-	Type BinRangeint8Type `json:"type" yaml:"type"`
+	End *int `json:"end" yaml:"end"`
 }
 
-// BinRangeint8Range is a range bounded inclusively below and exclusively above, `start..end`.
-//
-// Required fields:
-// - End
-// - Start
-// - Type
+func (BinRangeint8RangeTo) isBinRangeint8Variant() {}
+
+// BinRangeint8Range is a variant of BinRangeint8.
 type BinRangeint8Range struct {
-	End   *int             `json:"end" yaml:"end"`
-	Start *int             `json:"start" yaml:"start"`
-	Type  BinRangeint8Type `json:"type" yaml:"type"`
+	End   *int `json:"end" yaml:"end"`
+	Start *int `json:"start" yaml:"start"`
 }
 
-// BinRangeint8RangeFrom is a range bounded inclusively below and unbounded above, `start..`.
-//
-// Required fields:
-// - Start
-// - Type
+func (BinRangeint8Range) isBinRangeint8Variant() {}
+
+// BinRangeint8RangeFrom is a variant of BinRangeint8.
 type BinRangeint8RangeFrom struct {
-	Start *int             `json:"start" yaml:"start"`
-	Type  BinRangeint8Type `json:"type" yaml:"type"`
+	Start *int `json:"start" yaml:"start"`
 }
+
+func (BinRangeint8RangeFrom) isBinRangeint8Variant() {}
 
 // BinRangeint8 is a type storing a range over `T`.
 //
 // This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeint8 struct {
-	// End is the type definition for a End.
-	End *int `json:"end,omitempty" yaml:"end,omitempty"`
-	// Type is the type definition for a Type.
-	Type BinRangeint8Type `json:"type,omitempty" yaml:"type,omitempty"`
-	// Start is the type definition for a Start.
-	Start *int `json:"start,omitempty" yaml:"start,omitempty"`
+	Value binRangeint8Variant
+}
+
+func (v BinRangeint8) Type() BinRangeint8Type {
+	switch v.Value.(type) {
+	case BinRangeint8RangeTo, *BinRangeint8RangeTo:
+		return BinRangeint8TypeRangeTo
+	case BinRangeint8Range, *BinRangeint8Range:
+		return BinRangeint8TypeRange
+	case BinRangeint8RangeFrom, *BinRangeint8RangeFrom:
+		return BinRangeint8TypeRangeFrom
+	default:
+		return ""
+	}
+}
+
+func (v *BinRangeint8) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"type"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value binRangeint8Variant
+	switch d.Type {
+	case "range_to":
+		value = &BinRangeint8RangeTo{}
+	case "range":
+		value = &BinRangeint8Range{}
+	case "range_from":
+		value = &BinRangeint8RangeFrom{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'range_to' or 'range' or 'range_from'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v BinRangeint8) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["type"] = v.Type()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsRangeTo attempts to convert the BinRangeint8 to a BinRangeint8RangeTo.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v BinRangeint8) AsRangeTo() (*BinRangeint8RangeTo, bool) {
+	val, ok := v.Value.(*BinRangeint8RangeTo)
+	return val, ok
+}
+
+// AsRange attempts to convert the BinRangeint8 to a BinRangeint8Range.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v BinRangeint8) AsRange() (*BinRangeint8Range, bool) {
+	val, ok := v.Value.(*BinRangeint8Range)
+	return val, ok
+}
+
+// AsRangeFrom attempts to convert the BinRangeint8 to a BinRangeint8RangeFrom.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v BinRangeint8) AsRangeFrom() (*BinRangeint8RangeFrom, bool) {
+	val, ok := v.Value.(*BinRangeint8RangeFrom)
+	return val, ok
+}
+
+// binRangeuint16Variant is implemented by BinRangeuint16 variants.
+type binRangeuint16Variant interface {
+	isBinRangeuint16Variant()
 }
 
 // BinRangeuint16Type is the type definition for a BinRangeuint16Type.
 type BinRangeuint16Type string
 
-// BinRangeuint16RangeTo is a range unbounded below and exclusively above, `..end`.
-//
-// Required fields:
-// - End
-// - Type
+// BinRangeuint16RangeTo is a variant of BinRangeuint16.
 type BinRangeuint16RangeTo struct {
-	End  *int               `json:"end" yaml:"end"`
-	Type BinRangeuint16Type `json:"type" yaml:"type"`
+	End *int `json:"end" yaml:"end"`
 }
 
-// BinRangeuint16Range is a range bounded inclusively below and exclusively above, `start..end`.
-//
-// Required fields:
-// - End
-// - Start
-// - Type
+func (BinRangeuint16RangeTo) isBinRangeuint16Variant() {}
+
+// BinRangeuint16Range is a variant of BinRangeuint16.
 type BinRangeuint16Range struct {
-	End   *int               `json:"end" yaml:"end"`
-	Start *int               `json:"start" yaml:"start"`
-	Type  BinRangeuint16Type `json:"type" yaml:"type"`
+	End   *int `json:"end" yaml:"end"`
+	Start *int `json:"start" yaml:"start"`
 }
 
-// BinRangeuint16RangeFrom is a range bounded inclusively below and unbounded above, `start..`.
-//
-// Required fields:
-// - Start
-// - Type
+func (BinRangeuint16Range) isBinRangeuint16Variant() {}
+
+// BinRangeuint16RangeFrom is a variant of BinRangeuint16.
 type BinRangeuint16RangeFrom struct {
-	Start *int               `json:"start" yaml:"start"`
-	Type  BinRangeuint16Type `json:"type" yaml:"type"`
+	Start *int `json:"start" yaml:"start"`
 }
+
+func (BinRangeuint16RangeFrom) isBinRangeuint16Variant() {}
 
 // BinRangeuint16 is a type storing a range over `T`.
 //
 // This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeuint16 struct {
-	// End is the type definition for a End.
-	End *int `json:"end,omitempty" yaml:"end,omitempty"`
-	// Type is the type definition for a Type.
-	Type BinRangeuint16Type `json:"type,omitempty" yaml:"type,omitempty"`
-	// Start is the type definition for a Start.
-	Start *int `json:"start,omitempty" yaml:"start,omitempty"`
+	Value binRangeuint16Variant
+}
+
+func (v BinRangeuint16) Type() BinRangeuint16Type {
+	switch v.Value.(type) {
+	case BinRangeuint16RangeTo, *BinRangeuint16RangeTo:
+		return BinRangeuint16TypeRangeTo
+	case BinRangeuint16Range, *BinRangeuint16Range:
+		return BinRangeuint16TypeRange
+	case BinRangeuint16RangeFrom, *BinRangeuint16RangeFrom:
+		return BinRangeuint16TypeRangeFrom
+	default:
+		return ""
+	}
+}
+
+func (v *BinRangeuint16) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"type"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value binRangeuint16Variant
+	switch d.Type {
+	case "range_to":
+		value = &BinRangeuint16RangeTo{}
+	case "range":
+		value = &BinRangeuint16Range{}
+	case "range_from":
+		value = &BinRangeuint16RangeFrom{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'range_to' or 'range' or 'range_from'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v BinRangeuint16) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["type"] = v.Type()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsRangeTo attempts to convert the BinRangeuint16 to a BinRangeuint16RangeTo.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v BinRangeuint16) AsRangeTo() (*BinRangeuint16RangeTo, bool) {
+	val, ok := v.Value.(*BinRangeuint16RangeTo)
+	return val, ok
+}
+
+// AsRange attempts to convert the BinRangeuint16 to a BinRangeuint16Range.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v BinRangeuint16) AsRange() (*BinRangeuint16Range, bool) {
+	val, ok := v.Value.(*BinRangeuint16Range)
+	return val, ok
+}
+
+// AsRangeFrom attempts to convert the BinRangeuint16 to a BinRangeuint16RangeFrom.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v BinRangeuint16) AsRangeFrom() (*BinRangeuint16RangeFrom, bool) {
+	val, ok := v.Value.(*BinRangeuint16RangeFrom)
+	return val, ok
+}
+
+// binRangeuint32Variant is implemented by BinRangeuint32 variants.
+type binRangeuint32Variant interface {
+	isBinRangeuint32Variant()
 }
 
 // BinRangeuint32Type is the type definition for a BinRangeuint32Type.
 type BinRangeuint32Type string
 
-// BinRangeuint32RangeTo is a range unbounded below and exclusively above, `..end`.
-//
-// Required fields:
-// - End
-// - Type
+// BinRangeuint32RangeTo is a variant of BinRangeuint32.
 type BinRangeuint32RangeTo struct {
-	End  *int               `json:"end" yaml:"end"`
-	Type BinRangeuint32Type `json:"type" yaml:"type"`
+	End *int `json:"end" yaml:"end"`
 }
 
-// BinRangeuint32Range is a range bounded inclusively below and exclusively above, `start..end`.
-//
-// Required fields:
-// - End
-// - Start
-// - Type
+func (BinRangeuint32RangeTo) isBinRangeuint32Variant() {}
+
+// BinRangeuint32Range is a variant of BinRangeuint32.
 type BinRangeuint32Range struct {
-	End   *int               `json:"end" yaml:"end"`
-	Start *int               `json:"start" yaml:"start"`
-	Type  BinRangeuint32Type `json:"type" yaml:"type"`
+	End   *int `json:"end" yaml:"end"`
+	Start *int `json:"start" yaml:"start"`
 }
 
-// BinRangeuint32RangeFrom is a range bounded inclusively below and unbounded above, `start..`.
-//
-// Required fields:
-// - Start
-// - Type
+func (BinRangeuint32Range) isBinRangeuint32Variant() {}
+
+// BinRangeuint32RangeFrom is a variant of BinRangeuint32.
 type BinRangeuint32RangeFrom struct {
-	Start *int               `json:"start" yaml:"start"`
-	Type  BinRangeuint32Type `json:"type" yaml:"type"`
+	Start *int `json:"start" yaml:"start"`
 }
+
+func (BinRangeuint32RangeFrom) isBinRangeuint32Variant() {}
 
 // BinRangeuint32 is a type storing a range over `T`.
 //
 // This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeuint32 struct {
-	// End is the type definition for a End.
-	End *int `json:"end,omitempty" yaml:"end,omitempty"`
-	// Type is the type definition for a Type.
-	Type BinRangeuint32Type `json:"type,omitempty" yaml:"type,omitempty"`
-	// Start is the type definition for a Start.
-	Start *int `json:"start,omitempty" yaml:"start,omitempty"`
+	Value binRangeuint32Variant
+}
+
+func (v BinRangeuint32) Type() BinRangeuint32Type {
+	switch v.Value.(type) {
+	case BinRangeuint32RangeTo, *BinRangeuint32RangeTo:
+		return BinRangeuint32TypeRangeTo
+	case BinRangeuint32Range, *BinRangeuint32Range:
+		return BinRangeuint32TypeRange
+	case BinRangeuint32RangeFrom, *BinRangeuint32RangeFrom:
+		return BinRangeuint32TypeRangeFrom
+	default:
+		return ""
+	}
+}
+
+func (v *BinRangeuint32) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"type"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value binRangeuint32Variant
+	switch d.Type {
+	case "range_to":
+		value = &BinRangeuint32RangeTo{}
+	case "range":
+		value = &BinRangeuint32Range{}
+	case "range_from":
+		value = &BinRangeuint32RangeFrom{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'range_to' or 'range' or 'range_from'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v BinRangeuint32) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["type"] = v.Type()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsRangeTo attempts to convert the BinRangeuint32 to a BinRangeuint32RangeTo.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v BinRangeuint32) AsRangeTo() (*BinRangeuint32RangeTo, bool) {
+	val, ok := v.Value.(*BinRangeuint32RangeTo)
+	return val, ok
+}
+
+// AsRange attempts to convert the BinRangeuint32 to a BinRangeuint32Range.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v BinRangeuint32) AsRange() (*BinRangeuint32Range, bool) {
+	val, ok := v.Value.(*BinRangeuint32Range)
+	return val, ok
+}
+
+// AsRangeFrom attempts to convert the BinRangeuint32 to a BinRangeuint32RangeFrom.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v BinRangeuint32) AsRangeFrom() (*BinRangeuint32RangeFrom, bool) {
+	val, ok := v.Value.(*BinRangeuint32RangeFrom)
+	return val, ok
+}
+
+// binRangeuint64Variant is implemented by BinRangeuint64 variants.
+type binRangeuint64Variant interface {
+	isBinRangeuint64Variant()
 }
 
 // BinRangeuint64Type is the type definition for a BinRangeuint64Type.
 type BinRangeuint64Type string
 
-// BinRangeuint64RangeTo is a range unbounded below and exclusively above, `..end`.
-//
-// Required fields:
-// - End
-// - Type
+// BinRangeuint64RangeTo is a variant of BinRangeuint64.
 type BinRangeuint64RangeTo struct {
-	End  *int               `json:"end" yaml:"end"`
-	Type BinRangeuint64Type `json:"type" yaml:"type"`
+	End *int `json:"end" yaml:"end"`
 }
 
-// BinRangeuint64Range is a range bounded inclusively below and exclusively above, `start..end`.
-//
-// Required fields:
-// - End
-// - Start
-// - Type
+func (BinRangeuint64RangeTo) isBinRangeuint64Variant() {}
+
+// BinRangeuint64Range is a variant of BinRangeuint64.
 type BinRangeuint64Range struct {
-	End   *int               `json:"end" yaml:"end"`
-	Start *int               `json:"start" yaml:"start"`
-	Type  BinRangeuint64Type `json:"type" yaml:"type"`
+	End   *int `json:"end" yaml:"end"`
+	Start *int `json:"start" yaml:"start"`
 }
 
-// BinRangeuint64RangeFrom is a range bounded inclusively below and unbounded above, `start..`.
-//
-// Required fields:
-// - Start
-// - Type
+func (BinRangeuint64Range) isBinRangeuint64Variant() {}
+
+// BinRangeuint64RangeFrom is a variant of BinRangeuint64.
 type BinRangeuint64RangeFrom struct {
-	Start *int               `json:"start" yaml:"start"`
-	Type  BinRangeuint64Type `json:"type" yaml:"type"`
+	Start *int `json:"start" yaml:"start"`
 }
+
+func (BinRangeuint64RangeFrom) isBinRangeuint64Variant() {}
 
 // BinRangeuint64 is a type storing a range over `T`.
 //
 // This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeuint64 struct {
-	// End is the type definition for a End.
-	End *int `json:"end,omitempty" yaml:"end,omitempty"`
-	// Type is the type definition for a Type.
-	Type BinRangeuint64Type `json:"type,omitempty" yaml:"type,omitempty"`
-	// Start is the type definition for a Start.
-	Start *int `json:"start,omitempty" yaml:"start,omitempty"`
+	Value binRangeuint64Variant
+}
+
+func (v BinRangeuint64) Type() BinRangeuint64Type {
+	switch v.Value.(type) {
+	case BinRangeuint64RangeTo, *BinRangeuint64RangeTo:
+		return BinRangeuint64TypeRangeTo
+	case BinRangeuint64Range, *BinRangeuint64Range:
+		return BinRangeuint64TypeRange
+	case BinRangeuint64RangeFrom, *BinRangeuint64RangeFrom:
+		return BinRangeuint64TypeRangeFrom
+	default:
+		return ""
+	}
+}
+
+func (v *BinRangeuint64) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"type"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value binRangeuint64Variant
+	switch d.Type {
+	case "range_to":
+		value = &BinRangeuint64RangeTo{}
+	case "range":
+		value = &BinRangeuint64Range{}
+	case "range_from":
+		value = &BinRangeuint64RangeFrom{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'range_to' or 'range' or 'range_from'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v BinRangeuint64) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["type"] = v.Type()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsRangeTo attempts to convert the BinRangeuint64 to a BinRangeuint64RangeTo.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v BinRangeuint64) AsRangeTo() (*BinRangeuint64RangeTo, bool) {
+	val, ok := v.Value.(*BinRangeuint64RangeTo)
+	return val, ok
+}
+
+// AsRange attempts to convert the BinRangeuint64 to a BinRangeuint64Range.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v BinRangeuint64) AsRange() (*BinRangeuint64Range, bool) {
+	val, ok := v.Value.(*BinRangeuint64Range)
+	return val, ok
+}
+
+// AsRangeFrom attempts to convert the BinRangeuint64 to a BinRangeuint64RangeFrom.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v BinRangeuint64) AsRangeFrom() (*BinRangeuint64RangeFrom, bool) {
+	val, ok := v.Value.(*BinRangeuint64RangeFrom)
+	return val, ok
+}
+
+// binRangeuint8Variant is implemented by BinRangeuint8 variants.
+type binRangeuint8Variant interface {
+	isBinRangeuint8Variant()
 }
 
 // BinRangeuint8Type is the type definition for a BinRangeuint8Type.
 type BinRangeuint8Type string
 
-// BinRangeuint8RangeTo is a range unbounded below and exclusively above, `..end`.
-//
-// Required fields:
-// - End
-// - Type
+// BinRangeuint8RangeTo is a variant of BinRangeuint8.
 type BinRangeuint8RangeTo struct {
-	End  *int              `json:"end" yaml:"end"`
-	Type BinRangeuint8Type `json:"type" yaml:"type"`
+	End *int `json:"end" yaml:"end"`
 }
 
-// BinRangeuint8Range is a range bounded inclusively below and exclusively above, `start..end`.
-//
-// Required fields:
-// - End
-// - Start
-// - Type
+func (BinRangeuint8RangeTo) isBinRangeuint8Variant() {}
+
+// BinRangeuint8Range is a variant of BinRangeuint8.
 type BinRangeuint8Range struct {
-	End   *int              `json:"end" yaml:"end"`
-	Start *int              `json:"start" yaml:"start"`
-	Type  BinRangeuint8Type `json:"type" yaml:"type"`
+	End   *int `json:"end" yaml:"end"`
+	Start *int `json:"start" yaml:"start"`
 }
 
-// BinRangeuint8RangeFrom is a range bounded inclusively below and unbounded above, `start..`.
-//
-// Required fields:
-// - Start
-// - Type
+func (BinRangeuint8Range) isBinRangeuint8Variant() {}
+
+// BinRangeuint8RangeFrom is a variant of BinRangeuint8.
 type BinRangeuint8RangeFrom struct {
-	Start *int              `json:"start" yaml:"start"`
-	Type  BinRangeuint8Type `json:"type" yaml:"type"`
+	Start *int `json:"start" yaml:"start"`
 }
+
+func (BinRangeuint8RangeFrom) isBinRangeuint8Variant() {}
 
 // BinRangeuint8 is a type storing a range over `T`.
 //
 // This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeuint8 struct {
-	// End is the type definition for a End.
-	End *int `json:"end,omitempty" yaml:"end,omitempty"`
-	// Type is the type definition for a Type.
-	Type BinRangeuint8Type `json:"type,omitempty" yaml:"type,omitempty"`
-	// Start is the type definition for a Start.
-	Start *int `json:"start,omitempty" yaml:"start,omitempty"`
+	Value binRangeuint8Variant
+}
+
+func (v BinRangeuint8) Type() BinRangeuint8Type {
+	switch v.Value.(type) {
+	case BinRangeuint8RangeTo, *BinRangeuint8RangeTo:
+		return BinRangeuint8TypeRangeTo
+	case BinRangeuint8Range, *BinRangeuint8Range:
+		return BinRangeuint8TypeRange
+	case BinRangeuint8RangeFrom, *BinRangeuint8RangeFrom:
+		return BinRangeuint8TypeRangeFrom
+	default:
+		return ""
+	}
+}
+
+func (v *BinRangeuint8) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"type"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value binRangeuint8Variant
+	switch d.Type {
+	case "range_to":
+		value = &BinRangeuint8RangeTo{}
+	case "range":
+		value = &BinRangeuint8Range{}
+	case "range_from":
+		value = &BinRangeuint8RangeFrom{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'range_to' or 'range' or 'range_from'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v BinRangeuint8) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["type"] = v.Type()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsRangeTo attempts to convert the BinRangeuint8 to a BinRangeuint8RangeTo.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v BinRangeuint8) AsRangeTo() (*BinRangeuint8RangeTo, bool) {
+	val, ok := v.Value.(*BinRangeuint8RangeTo)
+	return val, ok
+}
+
+// AsRange attempts to convert the BinRangeuint8 to a BinRangeuint8Range.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v BinRangeuint8) AsRange() (*BinRangeuint8Range, bool) {
+	val, ok := v.Value.(*BinRangeuint8Range)
+	return val, ok
+}
+
+// AsRangeFrom attempts to convert the BinRangeuint8 to a BinRangeuint8RangeFrom.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v BinRangeuint8) AsRangeFrom() (*BinRangeuint8RangeFrom, bool) {
+	val, ok := v.Value.(*BinRangeuint8RangeFrom)
+	return val, ok
 }
 
 // Bindouble is type storing bin edges and a count of samples within it.
@@ -2268,11 +3468,11 @@ func (DatumMissing) isDatumVariant() {}
 
 // Datum is a `Datum` is a single sampled data point from a metric.
 type Datum struct {
-	Datum datumVariant
+	Value datumVariant
 }
 
 func (v Datum) Type() DatumType {
-	switch v.Datum.(type) {
+	switch v.Value.(type) {
 	case DatumBool, *DatumBool:
 		return DatumTypeBool
 	case DatumI8, *DatumI8:
@@ -2335,6 +3535,9 @@ func (v Datum) Type() DatumType {
 }
 
 func (v *Datum) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
 	type discriminator struct {
 		Type string `json:"type"`
 	}
@@ -2407,25 +3610,26 @@ func (v *Datum) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, value); err != nil {
 		return err
 	}
-	v.Datum = value
+	v.Value = value
 	return nil
 }
 
 func (v Datum) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
 	m := make(map[string]any)
 	m["type"] = v.Type()
-	if v.Datum != nil {
-		valueBytes, err := json.Marshal(v.Datum)
-		if err != nil {
-			return nil, err
-		}
-		var valueMap map[string]any
-		if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
-			return nil, err
-		}
-		for k, val := range valueMap {
-			m[k] = val
-		}
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
 	}
 	return json.Marshal(m)
 }
@@ -2433,196 +3637,196 @@ func (v Datum) MarshalJSON() ([]byte, error) {
 // AsBool attempts to convert the Datum to a DatumBool.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v Datum) AsBool() (*DatumBool, bool) {
-	val, ok := v.Datum.(*DatumBool)
+	val, ok := v.Value.(*DatumBool)
 	return val, ok
 }
 
 // AsI8 attempts to convert the Datum to a DatumI8.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v Datum) AsI8() (*DatumI8, bool) {
-	val, ok := v.Datum.(*DatumI8)
+	val, ok := v.Value.(*DatumI8)
 	return val, ok
 }
 
 // AsU8 attempts to convert the Datum to a DatumU8.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v Datum) AsU8() (*DatumU8, bool) {
-	val, ok := v.Datum.(*DatumU8)
+	val, ok := v.Value.(*DatumU8)
 	return val, ok
 }
 
 // AsI16 attempts to convert the Datum to a DatumI16.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v Datum) AsI16() (*DatumI16, bool) {
-	val, ok := v.Datum.(*DatumI16)
+	val, ok := v.Value.(*DatumI16)
 	return val, ok
 }
 
 // AsU16 attempts to convert the Datum to a DatumU16.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v Datum) AsU16() (*DatumU16, bool) {
-	val, ok := v.Datum.(*DatumU16)
+	val, ok := v.Value.(*DatumU16)
 	return val, ok
 }
 
 // AsI32 attempts to convert the Datum to a DatumI32.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v Datum) AsI32() (*DatumI32, bool) {
-	val, ok := v.Datum.(*DatumI32)
+	val, ok := v.Value.(*DatumI32)
 	return val, ok
 }
 
 // AsU32 attempts to convert the Datum to a DatumU32.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v Datum) AsU32() (*DatumU32, bool) {
-	val, ok := v.Datum.(*DatumU32)
+	val, ok := v.Value.(*DatumU32)
 	return val, ok
 }
 
 // AsI64 attempts to convert the Datum to a DatumI64.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v Datum) AsI64() (*DatumI64, bool) {
-	val, ok := v.Datum.(*DatumI64)
+	val, ok := v.Value.(*DatumI64)
 	return val, ok
 }
 
 // AsU64 attempts to convert the Datum to a DatumU64.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v Datum) AsU64() (*DatumU64, bool) {
-	val, ok := v.Datum.(*DatumU64)
+	val, ok := v.Value.(*DatumU64)
 	return val, ok
 }
 
 // AsF32 attempts to convert the Datum to a DatumF32.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v Datum) AsF32() (*DatumF32, bool) {
-	val, ok := v.Datum.(*DatumF32)
+	val, ok := v.Value.(*DatumF32)
 	return val, ok
 }
 
 // AsF64 attempts to convert the Datum to a DatumF64.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v Datum) AsF64() (*DatumF64, bool) {
-	val, ok := v.Datum.(*DatumF64)
+	val, ok := v.Value.(*DatumF64)
 	return val, ok
 }
 
 // AsString attempts to convert the Datum to a DatumString.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v Datum) AsString() (*DatumString, bool) {
-	val, ok := v.Datum.(*DatumString)
+	val, ok := v.Value.(*DatumString)
 	return val, ok
 }
 
 // AsBytes attempts to convert the Datum to a DatumBytes.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v Datum) AsBytes() (*DatumBytes, bool) {
-	val, ok := v.Datum.(*DatumBytes)
+	val, ok := v.Value.(*DatumBytes)
 	return val, ok
 }
 
 // AsCumulativeI64 attempts to convert the Datum to a DatumCumulativeI64.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v Datum) AsCumulativeI64() (*DatumCumulativeI64, bool) {
-	val, ok := v.Datum.(*DatumCumulativeI64)
+	val, ok := v.Value.(*DatumCumulativeI64)
 	return val, ok
 }
 
 // AsCumulativeU64 attempts to convert the Datum to a DatumCumulativeU64.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v Datum) AsCumulativeU64() (*DatumCumulativeU64, bool) {
-	val, ok := v.Datum.(*DatumCumulativeU64)
+	val, ok := v.Value.(*DatumCumulativeU64)
 	return val, ok
 }
 
 // AsCumulativeF32 attempts to convert the Datum to a DatumCumulativeF32.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v Datum) AsCumulativeF32() (*DatumCumulativeF32, bool) {
-	val, ok := v.Datum.(*DatumCumulativeF32)
+	val, ok := v.Value.(*DatumCumulativeF32)
 	return val, ok
 }
 
 // AsCumulativeF64 attempts to convert the Datum to a DatumCumulativeF64.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v Datum) AsCumulativeF64() (*DatumCumulativeF64, bool) {
-	val, ok := v.Datum.(*DatumCumulativeF64)
+	val, ok := v.Value.(*DatumCumulativeF64)
 	return val, ok
 }
 
 // AsHistogramI8 attempts to convert the Datum to a DatumHistogramI8.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v Datum) AsHistogramI8() (*DatumHistogramI8, bool) {
-	val, ok := v.Datum.(*DatumHistogramI8)
+	val, ok := v.Value.(*DatumHistogramI8)
 	return val, ok
 }
 
 // AsHistogramU8 attempts to convert the Datum to a DatumHistogramU8.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v Datum) AsHistogramU8() (*DatumHistogramU8, bool) {
-	val, ok := v.Datum.(*DatumHistogramU8)
+	val, ok := v.Value.(*DatumHistogramU8)
 	return val, ok
 }
 
 // AsHistogramI16 attempts to convert the Datum to a DatumHistogramI16.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v Datum) AsHistogramI16() (*DatumHistogramI16, bool) {
-	val, ok := v.Datum.(*DatumHistogramI16)
+	val, ok := v.Value.(*DatumHistogramI16)
 	return val, ok
 }
 
 // AsHistogramU16 attempts to convert the Datum to a DatumHistogramU16.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v Datum) AsHistogramU16() (*DatumHistogramU16, bool) {
-	val, ok := v.Datum.(*DatumHistogramU16)
+	val, ok := v.Value.(*DatumHistogramU16)
 	return val, ok
 }
 
 // AsHistogramI32 attempts to convert the Datum to a DatumHistogramI32.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v Datum) AsHistogramI32() (*DatumHistogramI32, bool) {
-	val, ok := v.Datum.(*DatumHistogramI32)
+	val, ok := v.Value.(*DatumHistogramI32)
 	return val, ok
 }
 
 // AsHistogramU32 attempts to convert the Datum to a DatumHistogramU32.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v Datum) AsHistogramU32() (*DatumHistogramU32, bool) {
-	val, ok := v.Datum.(*DatumHistogramU32)
+	val, ok := v.Value.(*DatumHistogramU32)
 	return val, ok
 }
 
 // AsHistogramI64 attempts to convert the Datum to a DatumHistogramI64.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v Datum) AsHistogramI64() (*DatumHistogramI64, bool) {
-	val, ok := v.Datum.(*DatumHistogramI64)
+	val, ok := v.Value.(*DatumHistogramI64)
 	return val, ok
 }
 
 // AsHistogramU64 attempts to convert the Datum to a DatumHistogramU64.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v Datum) AsHistogramU64() (*DatumHistogramU64, bool) {
-	val, ok := v.Datum.(*DatumHistogramU64)
+	val, ok := v.Value.(*DatumHistogramU64)
 	return val, ok
 }
 
 // AsHistogramF32 attempts to convert the Datum to a DatumHistogramF32.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v Datum) AsHistogramF32() (*DatumHistogramF32, bool) {
-	val, ok := v.Datum.(*DatumHistogramF32)
+	val, ok := v.Value.(*DatumHistogramF32)
 	return val, ok
 }
 
 // AsHistogramF64 attempts to convert the Datum to a DatumHistogramF64.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v Datum) AsHistogramF64() (*DatumHistogramF64, bool) {
-	val, ok := v.Datum.(*DatumHistogramF64)
+	val, ok := v.Value.(*DatumHistogramF64)
 	return val, ok
 }
 
 // AsMissing attempts to convert the Datum to a DatumMissing.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v Datum) AsMissing() (*DatumMissing, bool) {
-	val, ok := v.Datum.(*DatumMissing)
+	val, ok := v.Value.(*DatumMissing)
 	return val, ok
 }
 
@@ -2702,25 +3906,86 @@ type DeviceAuthVerify struct {
 	UserCode string `json:"user_code" yaml:"user_code"`
 }
 
+// digestVariant is implemented by Digest variants.
+type digestVariant interface {
+	isDigestVariant()
+}
+
 // DigestType is the type definition for a DigestType.
 type DigestType string
 
-// DigestSha256 is the type definition for a DigestSha256.
-//
-// Required fields:
-// - Type
-// - Value
+// DigestSha256 is a variant of Digest.
 type DigestSha256 struct {
-	Type  DigestType `json:"type" yaml:"type"`
-	Value string     `json:"value" yaml:"value"`
+	Value string `json:"value" yaml:"value"`
 }
+
+func (DigestSha256) isDigestVariant() {}
 
 // Digest is the type definition for a Digest.
 type Digest struct {
-	// Type is the type definition for a Type.
-	Type DigestType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is the type definition for a Value.
-	Value string `json:"value,omitempty" yaml:"value,omitempty"`
+	Value digestVariant
+}
+
+func (v Digest) Type() DigestType {
+	switch v.Value.(type) {
+	case DigestSha256, *DigestSha256:
+		return DigestTypeSha256
+	default:
+		return ""
+	}
+}
+
+func (v *Digest) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"type"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value digestVariant
+	switch d.Type {
+	case "sha256":
+		value = &DigestSha256{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'sha256'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v Digest) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["type"] = v.Type()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsSha256 attempts to convert the Digest to a DigestSha256.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v Digest) AsSha256() (*DigestSha256, bool) {
+	val, ok := v.Value.(*DigestSha256)
+	return val, ok
 }
 
 // Disk is view of a Disk
@@ -2766,34 +4031,104 @@ type Disk struct {
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
 
+// diskBackendVariant is implemented by DiskBackend variants.
+type diskBackendVariant interface {
+	isDiskBackendVariant()
+}
+
 // DiskBackendType is the type definition for a DiskBackendType.
 type DiskBackendType string
 
-// DiskBackendLocal is the type definition for a DiskBackendLocal.
-//
-// Required fields:
-// - Type
+// DiskBackendLocal is a variant of DiskBackend.
 type DiskBackendLocal struct {
-	Type DiskBackendType `json:"type" yaml:"type"`
 }
 
-// DiskBackendDistributed is the type definition for a DiskBackendDistributed.
-//
-// Required fields:
-// - DiskSource
-// - Type
+func (DiskBackendLocal) isDiskBackendVariant() {}
+
+// DiskBackendDistributed is a variant of DiskBackend.
 type DiskBackendDistributed struct {
 	// DiskSource is the initial source for this disk
-	DiskSource DiskSource      `json:"disk_source" yaml:"disk_source"`
-	Type       DiskBackendType `json:"type" yaml:"type"`
+	DiskSource DiskSource `json:"disk_source" yaml:"disk_source"`
 }
+
+func (DiskBackendDistributed) isDiskBackendVariant() {}
 
 // DiskBackend is the source of a `Disk`'s blocks
 type DiskBackend struct {
-	// Type is the type definition for a Type.
-	Type DiskBackendType `json:"type,omitempty" yaml:"type,omitempty"`
-	// DiskSource is the initial source for this disk
-	DiskSource DiskSource `json:"disk_source,omitempty" yaml:"disk_source,omitempty"`
+	Value diskBackendVariant
+}
+
+func (v DiskBackend) Type() DiskBackendType {
+	switch v.Value.(type) {
+	case DiskBackendLocal, *DiskBackendLocal:
+		return DiskBackendTypeLocal
+	case DiskBackendDistributed, *DiskBackendDistributed:
+		return DiskBackendTypeDistributed
+	default:
+		return ""
+	}
+}
+
+func (v *DiskBackend) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"type"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value diskBackendVariant
+	switch d.Type {
+	case "local":
+		value = &DiskBackendLocal{}
+	case "distributed":
+		value = &DiskBackendDistributed{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'local' or 'distributed'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v DiskBackend) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["type"] = v.Type()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsLocal attempts to convert the DiskBackend to a DiskBackendLocal.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v DiskBackend) AsLocal() (*DiskBackendLocal, bool) {
+	val, ok := v.Value.(*DiskBackendLocal)
+	return val, ok
+}
+
+// AsDistributed attempts to convert the DiskBackend to a DiskBackendDistributed.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v DiskBackend) AsDistributed() (*DiskBackendDistributed, bool) {
+	val, ok := v.Value.(*DiskBackendDistributed)
+	return val, ok
 }
 
 // DiskCreate is create-time parameters for a `Disk`
@@ -2835,180 +4170,416 @@ type DiskResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+// diskSourceVariant is implemented by DiskSource variants.
+type diskSourceVariant interface {
+	isDiskSourceVariant()
+}
+
 // DiskSourceType is the type definition for a DiskSourceType.
 type DiskSourceType string
 
-// DiskSourceBlank is create a blank disk
-//
-// Required fields:
-// - BlockSize
-// - Type
+// DiskSourceBlank is a variant of DiskSource.
 type DiskSourceBlank struct {
 	// BlockSize is size of blocks for this disk. Valid values are: 512, 2048, or 4096.
-	BlockSize BlockSize      `json:"block_size" yaml:"block_size"`
-	Type      DiskSourceType `json:"type" yaml:"type"`
+	BlockSize BlockSize `json:"block_size" yaml:"block_size"`
 }
 
-// DiskSourceSnapshot is create a disk from a disk snapshot
-//
-// Required fields:
-// - SnapshotId
-// - Type
+func (DiskSourceBlank) isDiskSourceVariant() {}
+
+// DiskSourceSnapshot is a variant of DiskSource.
 type DiskSourceSnapshot struct {
 	// ReadOnly is if `true`, the disk created from this snapshot will be read-only.
-	ReadOnly   *bool          `json:"read_only,omitempty" yaml:"read_only,omitempty"`
-	SnapshotId string         `json:"snapshot_id" yaml:"snapshot_id"`
-	Type       DiskSourceType `json:"type" yaml:"type"`
+	ReadOnly   *bool  `json:"read_only,omitempty" yaml:"read_only,omitempty"`
+	SnapshotId string `json:"snapshot_id" yaml:"snapshot_id"`
 }
 
-// DiskSourceImage is create a disk from an image
-//
-// Required fields:
-// - ImageId
-// - Type
+func (DiskSourceSnapshot) isDiskSourceVariant() {}
+
+// DiskSourceImage is a variant of DiskSource.
 type DiskSourceImage struct {
 	ImageId string `json:"image_id" yaml:"image_id"`
 	// ReadOnly is if `true`, the disk created from this image will be read-only.
-	ReadOnly *bool          `json:"read_only,omitempty" yaml:"read_only,omitempty"`
-	Type     DiskSourceType `json:"type" yaml:"type"`
+	ReadOnly *bool `json:"read_only,omitempty" yaml:"read_only,omitempty"`
 }
 
-// DiskSourceImportingBlocks is create a blank disk that will accept bulk writes or pull blocks from an
-// external source.
-//
-// Required fields:
-// - BlockSize
-// - Type
+func (DiskSourceImage) isDiskSourceVariant() {}
+
+// DiskSourceImportingBlocks is a variant of DiskSource.
 type DiskSourceImportingBlocks struct {
-	BlockSize BlockSize      `json:"block_size" yaml:"block_size"`
-	Type      DiskSourceType `json:"type" yaml:"type"`
+	BlockSize BlockSize `json:"block_size" yaml:"block_size"`
 }
+
+func (DiskSourceImportingBlocks) isDiskSourceVariant() {}
 
 // DiskSource is different sources for a Distributed Disk
 type DiskSource struct {
-	// BlockSize is size of blocks for this disk. Valid values are: 512, 2048, or 4096.
-	BlockSize BlockSize `json:"block_size,omitempty" yaml:"block_size,omitempty"`
-	// Type is the type definition for a Type.
-	Type DiskSourceType `json:"type,omitempty" yaml:"type,omitempty"`
-	// ReadOnly is if `true`, the disk created from this snapshot will be read-only.
-	ReadOnly *bool `json:"read_only,omitempty" yaml:"read_only,omitempty"`
-	// SnapshotId is the type definition for a SnapshotId.
-	SnapshotId string `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
-	// ImageId is the type definition for a ImageId.
-	ImageId string `json:"image_id,omitempty" yaml:"image_id,omitempty"`
+	Value diskSourceVariant
+}
+
+func (v DiskSource) Type() DiskSourceType {
+	switch v.Value.(type) {
+	case DiskSourceBlank, *DiskSourceBlank:
+		return DiskSourceTypeBlank
+	case DiskSourceSnapshot, *DiskSourceSnapshot:
+		return DiskSourceTypeSnapshot
+	case DiskSourceImage, *DiskSourceImage:
+		return DiskSourceTypeImage
+	case DiskSourceImportingBlocks, *DiskSourceImportingBlocks:
+		return DiskSourceTypeImportingBlocks
+	default:
+		return ""
+	}
+}
+
+func (v *DiskSource) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"type"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value diskSourceVariant
+	switch d.Type {
+	case "blank":
+		value = &DiskSourceBlank{}
+	case "snapshot":
+		value = &DiskSourceSnapshot{}
+	case "image":
+		value = &DiskSourceImage{}
+	case "importing_blocks":
+		value = &DiskSourceImportingBlocks{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'blank' or 'snapshot' or 'image' or 'importing_blocks'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v DiskSource) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["type"] = v.Type()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsBlank attempts to convert the DiskSource to a DiskSourceBlank.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v DiskSource) AsBlank() (*DiskSourceBlank, bool) {
+	val, ok := v.Value.(*DiskSourceBlank)
+	return val, ok
+}
+
+// AsSnapshot attempts to convert the DiskSource to a DiskSourceSnapshot.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v DiskSource) AsSnapshot() (*DiskSourceSnapshot, bool) {
+	val, ok := v.Value.(*DiskSourceSnapshot)
+	return val, ok
+}
+
+// AsImage attempts to convert the DiskSource to a DiskSourceImage.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v DiskSource) AsImage() (*DiskSourceImage, bool) {
+	val, ok := v.Value.(*DiskSourceImage)
+	return val, ok
+}
+
+// AsImportingBlocks attempts to convert the DiskSource to a DiskSourceImportingBlocks.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v DiskSource) AsImportingBlocks() (*DiskSourceImportingBlocks, bool) {
+	val, ok := v.Value.(*DiskSourceImportingBlocks)
+	return val, ok
+}
+
+// diskStateVariant is implemented by DiskState variants.
+type diskStateVariant interface {
+	isDiskStateVariant()
 }
 
 // DiskStateState is the type definition for a DiskStateState.
 type DiskStateState string
 
-// DiskStateCreating is disk is being initialized
-//
-// Required fields:
-// - State
+// DiskStateCreating is a variant of DiskState.
 type DiskStateCreating struct {
-	State DiskStateState `json:"state" yaml:"state"`
 }
 
-// DiskStateDetached is disk is ready but detached from any Instance
-//
-// Required fields:
-// - State
+func (DiskStateCreating) isDiskStateVariant() {}
+
+// DiskStateDetached is a variant of DiskState.
 type DiskStateDetached struct {
-	State DiskStateState `json:"state" yaml:"state"`
 }
 
-// DiskStateImportReady is disk is ready to receive blocks from an external source
-//
-// Required fields:
-// - State
+func (DiskStateDetached) isDiskStateVariant() {}
+
+// DiskStateImportReady is a variant of DiskState.
 type DiskStateImportReady struct {
-	State DiskStateState `json:"state" yaml:"state"`
 }
 
-// DiskStateImportingFromUrl is disk is importing blocks from a URL
-//
-// Required fields:
-// - State
+func (DiskStateImportReady) isDiskStateVariant() {}
+
+// DiskStateImportingFromUrl is a variant of DiskState.
 type DiskStateImportingFromUrl struct {
-	State DiskStateState `json:"state" yaml:"state"`
 }
 
-// DiskStateImportingFromBulkWrites is disk is importing blocks from bulk writes
-//
-// Required fields:
-// - State
+func (DiskStateImportingFromUrl) isDiskStateVariant() {}
+
+// DiskStateImportingFromBulkWrites is a variant of DiskState.
 type DiskStateImportingFromBulkWrites struct {
-	State DiskStateState `json:"state" yaml:"state"`
 }
 
-// DiskStateFinalizing is disk is being finalized to state Detached
-//
-// Required fields:
-// - State
+func (DiskStateImportingFromBulkWrites) isDiskStateVariant() {}
+
+// DiskStateFinalizing is a variant of DiskState.
 type DiskStateFinalizing struct {
-	State DiskStateState `json:"state" yaml:"state"`
 }
 
-// DiskStateMaintenance is disk is undergoing maintenance
-//
-// Required fields:
-// - State
+func (DiskStateFinalizing) isDiskStateVariant() {}
+
+// DiskStateMaintenance is a variant of DiskState.
 type DiskStateMaintenance struct {
-	State DiskStateState `json:"state" yaml:"state"`
 }
 
-// DiskStateAttaching is disk is being attached to the given Instance
-//
-// Required fields:
-// - Instance
-// - State
+func (DiskStateMaintenance) isDiskStateVariant() {}
+
+// DiskStateAttaching is a variant of DiskState.
 type DiskStateAttaching struct {
-	Instance string         `json:"instance" yaml:"instance"`
-	State    DiskStateState `json:"state" yaml:"state"`
+	Instance string `json:"instance" yaml:"instance"`
 }
 
-// DiskStateAttached is disk is attached to the given Instance
-//
-// Required fields:
-// - Instance
-// - State
+func (DiskStateAttaching) isDiskStateVariant() {}
+
+// DiskStateAttached is a variant of DiskState.
 type DiskStateAttached struct {
-	Instance string         `json:"instance" yaml:"instance"`
-	State    DiskStateState `json:"state" yaml:"state"`
+	Instance string `json:"instance" yaml:"instance"`
 }
 
-// DiskStateDetaching is disk is being detached from the given Instance
-//
-// Required fields:
-// - Instance
-// - State
+func (DiskStateAttached) isDiskStateVariant() {}
+
+// DiskStateDetaching is a variant of DiskState.
 type DiskStateDetaching struct {
-	Instance string         `json:"instance" yaml:"instance"`
-	State    DiskStateState `json:"state" yaml:"state"`
+	Instance string `json:"instance" yaml:"instance"`
 }
 
-// DiskStateDestroyed is disk has been destroyed
-//
-// Required fields:
-// - State
+func (DiskStateDetaching) isDiskStateVariant() {}
+
+// DiskStateDestroyed is a variant of DiskState.
 type DiskStateDestroyed struct {
-	State DiskStateState `json:"state" yaml:"state"`
 }
 
-// DiskStateFaulted is disk is unavailable
-//
-// Required fields:
-// - State
+func (DiskStateDestroyed) isDiskStateVariant() {}
+
+// DiskStateFaulted is a variant of DiskState.
 type DiskStateFaulted struct {
-	State DiskStateState `json:"state" yaml:"state"`
 }
+
+func (DiskStateFaulted) isDiskStateVariant() {}
 
 // DiskState is state of a Disk
 type DiskState struct {
-	// State is the type definition for a State.
-	State DiskStateState `json:"state,omitempty" yaml:"state,omitempty"`
-	// Instance is the type definition for a Instance.
-	Instance string `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Value diskStateVariant
+}
+
+func (v DiskState) State() DiskStateState {
+	switch v.Value.(type) {
+	case DiskStateCreating, *DiskStateCreating:
+		return DiskStateStateCreating
+	case DiskStateDetached, *DiskStateDetached:
+		return DiskStateStateDetached
+	case DiskStateImportReady, *DiskStateImportReady:
+		return DiskStateStateImportReady
+	case DiskStateImportingFromUrl, *DiskStateImportingFromUrl:
+		return DiskStateStateImportingFromUrl
+	case DiskStateImportingFromBulkWrites, *DiskStateImportingFromBulkWrites:
+		return DiskStateStateImportingFromBulkWrites
+	case DiskStateFinalizing, *DiskStateFinalizing:
+		return DiskStateStateFinalizing
+	case DiskStateMaintenance, *DiskStateMaintenance:
+		return DiskStateStateMaintenance
+	case DiskStateAttaching, *DiskStateAttaching:
+		return DiskStateStateAttaching
+	case DiskStateAttached, *DiskStateAttached:
+		return DiskStateStateAttached
+	case DiskStateDetaching, *DiskStateDetaching:
+		return DiskStateStateDetaching
+	case DiskStateDestroyed, *DiskStateDestroyed:
+		return DiskStateStateDestroyed
+	case DiskStateFaulted, *DiskStateFaulted:
+		return DiskStateStateFaulted
+	default:
+		return ""
+	}
+}
+
+func (v *DiskState) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"state"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value diskStateVariant
+	switch d.Type {
+	case "creating":
+		value = &DiskStateCreating{}
+	case "detached":
+		value = &DiskStateDetached{}
+	case "import_ready":
+		value = &DiskStateImportReady{}
+	case "importing_from_url":
+		value = &DiskStateImportingFromUrl{}
+	case "importing_from_bulk_writes":
+		value = &DiskStateImportingFromBulkWrites{}
+	case "finalizing":
+		value = &DiskStateFinalizing{}
+	case "maintenance":
+		value = &DiskStateMaintenance{}
+	case "attaching":
+		value = &DiskStateAttaching{}
+	case "attached":
+		value = &DiskStateAttached{}
+	case "detaching":
+		value = &DiskStateDetaching{}
+	case "destroyed":
+		value = &DiskStateDestroyed{}
+	case "faulted":
+		value = &DiskStateFaulted{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'creating' or 'detached' or 'import_ready' or 'importing_from_url' or 'importing_from_bulk_writes' or 'finalizing' or 'maintenance' or 'attaching' or 'attached' or 'detaching' or 'destroyed' or 'faulted'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v DiskState) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["state"] = v.State()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsCreating attempts to convert the DiskState to a DiskStateCreating.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v DiskState) AsCreating() (*DiskStateCreating, bool) {
+	val, ok := v.Value.(*DiskStateCreating)
+	return val, ok
+}
+
+// AsDetached attempts to convert the DiskState to a DiskStateDetached.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v DiskState) AsDetached() (*DiskStateDetached, bool) {
+	val, ok := v.Value.(*DiskStateDetached)
+	return val, ok
+}
+
+// AsImportReady attempts to convert the DiskState to a DiskStateImportReady.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v DiskState) AsImportReady() (*DiskStateImportReady, bool) {
+	val, ok := v.Value.(*DiskStateImportReady)
+	return val, ok
+}
+
+// AsImportingFromUrl attempts to convert the DiskState to a DiskStateImportingFromUrl.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v DiskState) AsImportingFromUrl() (*DiskStateImportingFromUrl, bool) {
+	val, ok := v.Value.(*DiskStateImportingFromUrl)
+	return val, ok
+}
+
+// AsImportingFromBulkWrites attempts to convert the DiskState to a DiskStateImportingFromBulkWrites.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v DiskState) AsImportingFromBulkWrites() (*DiskStateImportingFromBulkWrites, bool) {
+	val, ok := v.Value.(*DiskStateImportingFromBulkWrites)
+	return val, ok
+}
+
+// AsFinalizing attempts to convert the DiskState to a DiskStateFinalizing.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v DiskState) AsFinalizing() (*DiskStateFinalizing, bool) {
+	val, ok := v.Value.(*DiskStateFinalizing)
+	return val, ok
+}
+
+// AsMaintenance attempts to convert the DiskState to a DiskStateMaintenance.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v DiskState) AsMaintenance() (*DiskStateMaintenance, bool) {
+	val, ok := v.Value.(*DiskStateMaintenance)
+	return val, ok
+}
+
+// AsAttaching attempts to convert the DiskState to a DiskStateAttaching.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v DiskState) AsAttaching() (*DiskStateAttaching, bool) {
+	val, ok := v.Value.(*DiskStateAttaching)
+	return val, ok
+}
+
+// AsAttached attempts to convert the DiskState to a DiskStateAttached.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v DiskState) AsAttached() (*DiskStateAttached, bool) {
+	val, ok := v.Value.(*DiskStateAttached)
+	return val, ok
+}
+
+// AsDetaching attempts to convert the DiskState to a DiskStateDetaching.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v DiskState) AsDetaching() (*DiskStateDetaching, bool) {
+	val, ok := v.Value.(*DiskStateDetaching)
+	return val, ok
+}
+
+// AsDestroyed attempts to convert the DiskState to a DiskStateDestroyed.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v DiskState) AsDestroyed() (*DiskStateDestroyed, bool) {
+	val, ok := v.Value.(*DiskStateDestroyed)
+	return val, ok
+}
+
+// AsFaulted attempts to convert the DiskState to a DiskStateFaulted.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v DiskState) AsFaulted() (*DiskStateFaulted, bool) {
+	val, ok := v.Value.(*DiskStateFaulted)
+	return val, ok
 }
 
 // DiskType is the type definition for a DiskType.
@@ -3077,56 +4648,37 @@ type Error struct {
 	RequestId string `json:"request_id" yaml:"request_id"`
 }
 
+// externalIpVariant is implemented by ExternalIp variants.
+type externalIpVariant interface {
+	isExternalIpVariant()
+}
+
 // ExternalIpKind is the type definition for a ExternalIpKind.
 type ExternalIpKind string
 
-// ExternalIpSnat is a source NAT IP address.
-//
-// SNAT addresses are ephemeral addresses used only for outbound connectivity.
-//
-// Required fields:
-// - FirstPort
-// - Ip
-// - IpPoolId
-// - Kind
-// - LastPort
+// ExternalIpSnat is a variant of ExternalIp.
 type ExternalIpSnat struct {
 	// FirstPort is the first usable port within the IP address.
 	FirstPort *int `json:"first_port" yaml:"first_port"`
 	// Ip is the IP address.
 	Ip string `json:"ip" yaml:"ip"`
 	// IpPoolId is iD of the IP Pool from which the address is taken.
-	IpPoolId string         `json:"ip_pool_id" yaml:"ip_pool_id"`
-	Kind     ExternalIpKind `json:"kind" yaml:"kind"`
+	IpPoolId string `json:"ip_pool_id" yaml:"ip_pool_id"`
 	// LastPort is the last usable port within the IP address.
 	LastPort *int `json:"last_port" yaml:"last_port"`
 }
 
-// ExternalIpEphemeral is the type definition for a ExternalIpEphemeral.
-//
-// Required fields:
-// - Ip
-// - IpPoolId
-// - Kind
+func (ExternalIpSnat) isExternalIpVariant() {}
+
+// ExternalIpEphemeral is a variant of ExternalIp.
 type ExternalIpEphemeral struct {
-	Ip       string         `json:"ip" yaml:"ip"`
-	IpPoolId string         `json:"ip_pool_id" yaml:"ip_pool_id"`
-	Kind     ExternalIpKind `json:"kind" yaml:"kind"`
+	Ip       string `json:"ip" yaml:"ip"`
+	IpPoolId string `json:"ip_pool_id" yaml:"ip_pool_id"`
 }
 
-// ExternalIpFloating is a Floating IP is a well-known IP address which can be attached and detached from
-// instances.
-//
-// Required fields:
-// - Description
-// - Id
-// - Ip
-// - IpPoolId
-// - Kind
-// - Name
-// - ProjectId
-// - TimeCreated
-// - TimeModified
+func (ExternalIpEphemeral) isExternalIpVariant() {}
+
+// ExternalIpFloating is a variant of ExternalIp.
 type ExternalIpFloating struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description" yaml:"description"`
@@ -3137,8 +4689,7 @@ type ExternalIpFloating struct {
 	// Ip is the IP address held by this resource.
 	Ip string `json:"ip" yaml:"ip"`
 	// IpPoolId is the ID of the IP pool this resource belongs to.
-	IpPoolId string         `json:"ip_pool_id" yaml:"ip_pool_id"`
-	Kind     ExternalIpKind `json:"kind" yaml:"kind"`
+	IpPoolId string `json:"ip_pool_id" yaml:"ip_pool_id"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name" yaml:"name"`
 	// ProjectId is the project this resource exists within.
@@ -3149,69 +4700,196 @@ type ExternalIpFloating struct {
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
 
+func (ExternalIpFloating) isExternalIpVariant() {}
+
 // ExternalIp is the type definition for a ExternalIp.
 type ExternalIp struct {
-	// FirstPort is the first usable port within the IP address.
-	FirstPort *int `json:"first_port,omitempty" yaml:"first_port,omitempty"`
-	// Ip is the IP address.
-	Ip string `json:"ip,omitempty" yaml:"ip,omitempty"`
-	// IpPoolId is iD of the IP Pool from which the address is taken.
-	IpPoolId string `json:"ip_pool_id,omitempty" yaml:"ip_pool_id,omitempty"`
-	// Kind is the type definition for a Kind.
-	Kind ExternalIpKind `json:"kind,omitempty" yaml:"kind,omitempty"`
-	// LastPort is the last usable port within the IP address.
-	LastPort *int `json:"last_port,omitempty" yaml:"last_port,omitempty"`
-	// Description is human-readable free-form text about a resource
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// Id is unique, immutable, system-controlled identifier for each resource
-	Id string `json:"id,omitempty" yaml:"id,omitempty"`
-	// InstanceId is the ID of the instance that this Floating IP is attached to, if it is presently in use.
-	InstanceId string `json:"instance_id,omitzero" yaml:"instance_id,omitzero"`
-	// Name is unique, mutable, user-controlled identifier for each resource
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
-	// ProjectId is the project this resource exists within.
-	ProjectId string `json:"project_id,omitempty" yaml:"project_id,omitempty"`
-	// TimeCreated is timestamp when this resource was created
-	TimeCreated *time.Time `json:"time_created,omitempty" yaml:"time_created,omitempty"`
-	// TimeModified is timestamp when this resource was last modified
-	TimeModified *time.Time `json:"time_modified,omitempty" yaml:"time_modified,omitempty"`
+	Value externalIpVariant
+}
+
+func (v ExternalIp) Kind() ExternalIpKind {
+	switch v.Value.(type) {
+	case ExternalIpSnat, *ExternalIpSnat:
+		return ExternalIpKindSnat
+	case ExternalIpEphemeral, *ExternalIpEphemeral:
+		return ExternalIpKindEphemeral
+	case ExternalIpFloating, *ExternalIpFloating:
+		return ExternalIpKindFloating
+	default:
+		return ""
+	}
+}
+
+func (v *ExternalIp) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"kind"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value externalIpVariant
+	switch d.Type {
+	case "snat":
+		value = &ExternalIpSnat{}
+	case "ephemeral":
+		value = &ExternalIpEphemeral{}
+	case "floating":
+		value = &ExternalIpFloating{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'snat' or 'ephemeral' or 'floating'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v ExternalIp) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["kind"] = v.Kind()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsSnat attempts to convert the ExternalIp to a ExternalIpSnat.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v ExternalIp) AsSnat() (*ExternalIpSnat, bool) {
+	val, ok := v.Value.(*ExternalIpSnat)
+	return val, ok
+}
+
+// AsEphemeral attempts to convert the ExternalIp to a ExternalIpEphemeral.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v ExternalIp) AsEphemeral() (*ExternalIpEphemeral, bool) {
+	val, ok := v.Value.(*ExternalIpEphemeral)
+	return val, ok
+}
+
+// AsFloating attempts to convert the ExternalIp to a ExternalIpFloating.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v ExternalIp) AsFloating() (*ExternalIpFloating, bool) {
+	val, ok := v.Value.(*ExternalIpFloating)
+	return val, ok
+}
+
+// externalIpCreateVariant is implemented by ExternalIpCreate variants.
+type externalIpCreateVariant interface {
+	isExternalIpCreateVariant()
 }
 
 // ExternalIpCreateType is the type definition for a ExternalIpCreateType.
 type ExternalIpCreateType string
 
-// ExternalIpCreateEphemeral is an IP address providing both inbound and outbound access. The address is
-// automatically assigned from a pool.
-//
-// Required fields:
-// - Type
+// ExternalIpCreateEphemeral is a variant of ExternalIpCreate.
 type ExternalIpCreateEphemeral struct {
 	// PoolSelector is pool to allocate from.
-	PoolSelector PoolSelector         `json:"pool_selector,omitempty" yaml:"pool_selector,omitempty"`
-	Type         ExternalIpCreateType `json:"type" yaml:"type"`
+	PoolSelector PoolSelector `json:"pool_selector,omitempty" yaml:"pool_selector,omitempty"`
 }
 
-// ExternalIpCreateFloating is an IP address providing both inbound and outbound access. The address is
-// an existing floating IP object assigned to the current project.
-//
-// The floating IP must not be in use by another instance or service.
-//
-// Required fields:
-// - FloatingIp
-// - Type
+func (ExternalIpCreateEphemeral) isExternalIpCreateVariant() {}
+
+// ExternalIpCreateFloating is a variant of ExternalIpCreate.
 type ExternalIpCreateFloating struct {
-	FloatingIp NameOrId             `json:"floating_ip" yaml:"floating_ip"`
-	Type       ExternalIpCreateType `json:"type" yaml:"type"`
+	FloatingIp NameOrId `json:"floating_ip" yaml:"floating_ip"`
 }
+
+func (ExternalIpCreateFloating) isExternalIpCreateVariant() {}
 
 // ExternalIpCreate is parameters for creating an external IP address for instances.
 type ExternalIpCreate struct {
-	// PoolSelector is pool to allocate from.
-	PoolSelector PoolSelector `json:"pool_selector,omitempty" yaml:"pool_selector,omitempty"`
-	// Type is the type definition for a Type.
-	Type ExternalIpCreateType `json:"type,omitempty" yaml:"type,omitempty"`
-	// FloatingIp is the type definition for a FloatingIp.
-	FloatingIp NameOrId `json:"floating_ip,omitempty" yaml:"floating_ip,omitempty"`
+	Value externalIpCreateVariant
+}
+
+func (v ExternalIpCreate) Type() ExternalIpCreateType {
+	switch v.Value.(type) {
+	case ExternalIpCreateEphemeral, *ExternalIpCreateEphemeral:
+		return ExternalIpCreateTypeEphemeral
+	case ExternalIpCreateFloating, *ExternalIpCreateFloating:
+		return ExternalIpCreateTypeFloating
+	default:
+		return ""
+	}
+}
+
+func (v *ExternalIpCreate) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"type"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value externalIpCreateVariant
+	switch d.Type {
+	case "ephemeral":
+		value = &ExternalIpCreateEphemeral{}
+	case "floating":
+		value = &ExternalIpCreateFloating{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'ephemeral' or 'floating'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v ExternalIpCreate) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["type"] = v.Type()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsEphemeral attempts to convert the ExternalIpCreate to a ExternalIpCreateEphemeral.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v ExternalIpCreate) AsEphemeral() (*ExternalIpCreateEphemeral, bool) {
+	val, ok := v.Value.(*ExternalIpCreateEphemeral)
+	return val, ok
+}
+
+// AsFloating attempts to convert the ExternalIpCreate to a ExternalIpCreateFloating.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v ExternalIpCreate) AsFloating() (*ExternalIpCreateFloating, bool) {
+	val, ok := v.Value.(*ExternalIpCreateFloating)
+	return val, ok
 }
 
 // ExternalIpResultsPage is a single page of results
@@ -3260,25 +4938,23 @@ type ExternalSubnet struct {
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
 
+// externalSubnetAllocatorVariant is implemented by ExternalSubnetAllocator variants.
+type externalSubnetAllocatorVariant interface {
+	isExternalSubnetAllocatorVariant()
+}
+
 // ExternalSubnetAllocatorType is the type definition for a ExternalSubnetAllocatorType.
 type ExternalSubnetAllocatorType string
 
-// ExternalSubnetAllocatorExplicit is reserve a specific subnet.
-//
-// Required fields:
-// - Subnet
-// - Type
+// ExternalSubnetAllocatorExplicit is a variant of ExternalSubnetAllocator.
 type ExternalSubnetAllocatorExplicit struct {
 	// Subnet is the subnet CIDR to reserve. Must be available in the pool.
-	Subnet IpNet                       `json:"subnet" yaml:"subnet"`
-	Type   ExternalSubnetAllocatorType `json:"type" yaml:"type"`
+	Subnet IpNet `json:"subnet" yaml:"subnet"`
 }
 
-// ExternalSubnetAllocatorAuto is automatically allocate a subnet with the specified prefix length.
-//
-// Required fields:
-// - PrefixLen
-// - Type
+func (ExternalSubnetAllocatorExplicit) isExternalSubnetAllocatorVariant() {}
+
+// ExternalSubnetAllocatorAuto is a variant of ExternalSubnetAllocator.
 type ExternalSubnetAllocatorAuto struct {
 	// PoolSelector is pool selection.
 	//
@@ -3286,23 +4962,87 @@ type ExternalSubnetAllocatorAuto struct {
 	// the request will fail unless `ip_version` is specified in the pool selector.
 	PoolSelector PoolSelector `json:"pool_selector,omitempty" yaml:"pool_selector,omitempty"`
 	// PrefixLen is the prefix length for the allocated subnet (e.g., 24 for a /24).
-	PrefixLen *int                        `json:"prefix_len" yaml:"prefix_len"`
-	Type      ExternalSubnetAllocatorType `json:"type" yaml:"type"`
+	PrefixLen *int `json:"prefix_len" yaml:"prefix_len"`
 }
+
+func (ExternalSubnetAllocatorAuto) isExternalSubnetAllocatorVariant() {}
 
 // ExternalSubnetAllocator is specify how to allocate an external subnet.
 type ExternalSubnetAllocator struct {
-	// Subnet is the subnet CIDR to reserve. Must be available in the pool.
-	Subnet IpNet `json:"subnet,omitempty" yaml:"subnet,omitempty"`
-	// Type is the type definition for a Type.
-	Type ExternalSubnetAllocatorType `json:"type,omitempty" yaml:"type,omitempty"`
-	// PoolSelector is pool selection.
-	//
-	// If omitted, this field uses the silo's default pool. If the silo has default pools for both IPv4 and IPv6,
-	// the request will fail unless `ip_version` is specified in the pool selector.
-	PoolSelector PoolSelector `json:"pool_selector,omitempty" yaml:"pool_selector,omitempty"`
-	// PrefixLen is the prefix length for the allocated subnet (e.g., 24 for a /24).
-	PrefixLen *int `json:"prefix_len,omitempty" yaml:"prefix_len,omitempty"`
+	Value externalSubnetAllocatorVariant
+}
+
+func (v ExternalSubnetAllocator) Type() ExternalSubnetAllocatorType {
+	switch v.Value.(type) {
+	case ExternalSubnetAllocatorExplicit, *ExternalSubnetAllocatorExplicit:
+		return ExternalSubnetAllocatorTypeExplicit
+	case ExternalSubnetAllocatorAuto, *ExternalSubnetAllocatorAuto:
+		return ExternalSubnetAllocatorTypeAuto
+	default:
+		return ""
+	}
+}
+
+func (v *ExternalSubnetAllocator) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"type"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value externalSubnetAllocatorVariant
+	switch d.Type {
+	case "explicit":
+		value = &ExternalSubnetAllocatorExplicit{}
+	case "auto":
+		value = &ExternalSubnetAllocatorAuto{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'explicit' or 'auto'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v ExternalSubnetAllocator) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["type"] = v.Type()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsExplicit attempts to convert the ExternalSubnetAllocator to a ExternalSubnetAllocatorExplicit.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v ExternalSubnetAllocator) AsExplicit() (*ExternalSubnetAllocatorExplicit, bool) {
+	val, ok := v.Value.(*ExternalSubnetAllocatorExplicit)
+	return val, ok
+}
+
+// AsAuto attempts to convert the ExternalSubnetAllocator to a ExternalSubnetAllocatorAuto.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v ExternalSubnetAllocator) AsAuto() (*ExternalSubnetAllocatorAuto, bool) {
+	val, ok := v.Value.(*ExternalSubnetAllocatorAuto)
+	return val, ok
 }
 
 // ExternalSubnetAttach is attach an external subnet to an instance
@@ -3501,6 +5241,9 @@ func (v FieldValue) Type() FieldValueType {
 }
 
 func (v *FieldValue) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
 	type discriminator struct {
 		Type string `json:"type"`
 	}
@@ -3546,20 +5289,21 @@ func (v *FieldValue) UnmarshalJSON(data []byte) error {
 }
 
 func (v FieldValue) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
 	m := make(map[string]any)
 	m["type"] = v.Type()
-	if v.Value != nil {
-		valueBytes, err := json.Marshal(v.Value)
-		if err != nil {
-			return nil, err
-		}
-		var valueMap map[string]any
-		if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
-			return nil, err
-		}
-		for k, val := range valueMap {
-			m[k] = val
-		}
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
 	}
 	return json.Marshal(m)
 }
@@ -4294,37 +6038,104 @@ type IdentityProviderType string
 // IdentityType is describes what kind of identity is described by an id
 type IdentityType string
 
+// idpMetadataSourceVariant is implemented by IdpMetadataSource variants.
+type idpMetadataSourceVariant interface {
+	isIdpMetadataSourceVariant()
+}
+
 // IdpMetadataSourceType is the type definition for a IdpMetadataSourceType.
 type IdpMetadataSourceType string
 
-// IdpMetadataSourceUrl is the type definition for a IdpMetadataSourceUrl.
-//
-// Required fields:
-// - Type
-// - Url
+// IdpMetadataSourceUrl is a variant of IdpMetadataSource.
 type IdpMetadataSourceUrl struct {
-	Type IdpMetadataSourceType `json:"type" yaml:"type"`
-	Url  string                `json:"url" yaml:"url"`
+	Url string `json:"url" yaml:"url"`
 }
 
-// IdpMetadataSourceBase64EncodedXml is the type definition for a IdpMetadataSourceBase64EncodedXml.
-//
-// Required fields:
-// - Data
-// - Type
+func (IdpMetadataSourceUrl) isIdpMetadataSourceVariant() {}
+
+// IdpMetadataSourceBase64EncodedXml is a variant of IdpMetadataSource.
 type IdpMetadataSourceBase64EncodedXml struct {
-	Data string                `json:"data" yaml:"data"`
-	Type IdpMetadataSourceType `json:"type" yaml:"type"`
+	Data string `json:"data" yaml:"data"`
 }
+
+func (IdpMetadataSourceBase64EncodedXml) isIdpMetadataSourceVariant() {}
 
 // IdpMetadataSource is the type definition for a IdpMetadataSource.
 type IdpMetadataSource struct {
-	// Type is the type definition for a Type.
-	Type IdpMetadataSourceType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Url is the type definition for a Url.
-	Url string `json:"url,omitempty" yaml:"url,omitempty"`
-	// Data is the type definition for a Data.
-	Data string `json:"data,omitempty" yaml:"data,omitempty"`
+	Value idpMetadataSourceVariant
+}
+
+func (v IdpMetadataSource) Type() IdpMetadataSourceType {
+	switch v.Value.(type) {
+	case IdpMetadataSourceUrl, *IdpMetadataSourceUrl:
+		return IdpMetadataSourceTypeUrl
+	case IdpMetadataSourceBase64EncodedXml, *IdpMetadataSourceBase64EncodedXml:
+		return IdpMetadataSourceTypeBase64EncodedXml
+	default:
+		return ""
+	}
+}
+
+func (v *IdpMetadataSource) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"type"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value idpMetadataSourceVariant
+	switch d.Type {
+	case "url":
+		value = &IdpMetadataSourceUrl{}
+	case "base64_encoded_xml":
+		value = &IdpMetadataSourceBase64EncodedXml{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'url' or 'base64_encoded_xml'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v IdpMetadataSource) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["type"] = v.Type()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsUrl attempts to convert the IdpMetadataSource to a IdpMetadataSourceUrl.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v IdpMetadataSource) AsUrl() (*IdpMetadataSourceUrl, bool) {
+	val, ok := v.Value.(*IdpMetadataSourceUrl)
+	return val, ok
+}
+
+// AsBase64EncodedXml attempts to convert the IdpMetadataSource to a IdpMetadataSourceBase64EncodedXml.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v IdpMetadataSource) AsBase64EncodedXml() (*IdpMetadataSourceBase64EncodedXml, bool) {
+	val, ok := v.Value.(*IdpMetadataSourceBase64EncodedXml)
+	return val, ok
 }
 
 // Image is view of an image
@@ -4400,25 +6211,86 @@ type ImageResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+// imageSourceVariant is implemented by ImageSource variants.
+type imageSourceVariant interface {
+	isImageSourceVariant()
+}
+
 // ImageSourceType is the type definition for a ImageSourceType.
 type ImageSourceType string
 
-// ImageSourceSnapshot is the type definition for a ImageSourceSnapshot.
-//
-// Required fields:
-// - Id
-// - Type
+// ImageSourceSnapshot is a variant of ImageSource.
 type ImageSourceSnapshot struct {
-	Id   string          `json:"id" yaml:"id"`
-	Type ImageSourceType `json:"type" yaml:"type"`
+	Id string `json:"id" yaml:"id"`
 }
+
+func (ImageSourceSnapshot) isImageSourceVariant() {}
 
 // ImageSource is the source of the underlying image.
 type ImageSource struct {
-	// Id is the type definition for a Id.
-	Id string `json:"id,omitempty" yaml:"id,omitempty"`
-	// Type is the type definition for a Type.
-	Type ImageSourceType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value imageSourceVariant
+}
+
+func (v ImageSource) Type() ImageSourceType {
+	switch v.Value.(type) {
+	case ImageSourceSnapshot, *ImageSourceSnapshot:
+		return ImageSourceTypeSnapshot
+	default:
+		return ""
+	}
+}
+
+func (v *ImageSource) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"type"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value imageSourceVariant
+	switch d.Type {
+	case "snapshot":
+		value = &ImageSourceSnapshot{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'snapshot'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v ImageSource) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["type"] = v.Type()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsSnapshot attempts to convert the ImageSource to a ImageSourceSnapshot.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v ImageSource) AsSnapshot() (*ImageSourceSnapshot, bool) {
+	val, ok := v.Value.(*ImageSourceSnapshot)
+	return val, ok
 }
 
 // ImportBlocksBulkWrite is parameters for importing blocks with a bulk write
@@ -4431,33 +6303,103 @@ type ImportBlocksBulkWrite struct {
 	Offset            *int   `json:"offset" yaml:"offset"`
 }
 
+// importExportPolicyVariant is implemented by ImportExportPolicy variants.
+type importExportPolicyVariant interface {
+	isImportExportPolicyVariant()
+}
+
 // ImportExportPolicyType is the type definition for a ImportExportPolicyType.
 type ImportExportPolicyType string
 
-// ImportExportPolicyNoFiltering is do not perform any filtering.
-//
-// Required fields:
-// - Type
+// ImportExportPolicyNoFiltering is a variant of ImportExportPolicy.
 type ImportExportPolicyNoFiltering struct {
-	Type ImportExportPolicyType `json:"type" yaml:"type"`
 }
 
-// ImportExportPolicyAllow is the type definition for a ImportExportPolicyAllow.
-//
-// Required fields:
-// - Type
-// - Value
+func (ImportExportPolicyNoFiltering) isImportExportPolicyVariant() {}
+
+// ImportExportPolicyAllow is a variant of ImportExportPolicy.
 type ImportExportPolicyAllow struct {
-	Type  ImportExportPolicyType `json:"type" yaml:"type"`
-	Value []IpNet                `json:"value" yaml:"value"`
+	Value []IpNet `json:"value" yaml:"value"`
 }
+
+func (ImportExportPolicyAllow) isImportExportPolicyVariant() {}
 
 // ImportExportPolicy is define policy relating to the import and export of prefixes from a BGP peer.
 type ImportExportPolicy struct {
-	// Type is the type definition for a Type.
-	Type ImportExportPolicyType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is the type definition for a Value.
-	Value []IpNet `json:"value,omitempty" yaml:"value,omitempty"`
+	Value importExportPolicyVariant
+}
+
+func (v ImportExportPolicy) Type() ImportExportPolicyType {
+	switch v.Value.(type) {
+	case ImportExportPolicyNoFiltering, *ImportExportPolicyNoFiltering:
+		return ImportExportPolicyTypeNoFiltering
+	case ImportExportPolicyAllow, *ImportExportPolicyAllow:
+		return ImportExportPolicyTypeAllow
+	default:
+		return ""
+	}
+}
+
+func (v *ImportExportPolicy) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"type"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value importExportPolicyVariant
+	switch d.Type {
+	case "no_filtering":
+		value = &ImportExportPolicyNoFiltering{}
+	case "allow":
+		value = &ImportExportPolicyAllow{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'no_filtering' or 'allow'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v ImportExportPolicy) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["type"] = v.Type()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsNoFiltering attempts to convert the ImportExportPolicy to a ImportExportPolicyNoFiltering.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v ImportExportPolicy) AsNoFiltering() (*ImportExportPolicyNoFiltering, bool) {
+	val, ok := v.Value.(*ImportExportPolicyNoFiltering)
+	return val, ok
+}
+
+// AsAllow attempts to convert the ImportExportPolicy to a ImportExportPolicyAllow.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v ImportExportPolicy) AsAllow() (*ImportExportPolicyAllow, bool) {
+	val, ok := v.Value.(*ImportExportPolicyAllow)
+	return val, ok
 }
 
 // Instance is view of an Instance
@@ -4575,7 +6517,7 @@ type InstanceCreate struct {
 	// are controlled by both the instance's UEFI firmware and the guest operating system. Boot options can change
 	// as disks are attached and detached, which may result in an instance that only boots to the EFI shell until
 	// a boot disk is set.
-	BootDisk *InstanceDiskAttachment `json:"boot_disk,omitempty" yaml:"boot_disk,omitempty"`
+	BootDisk InstanceDiskAttachment `json:"boot_disk,omitempty" yaml:"boot_disk,omitempty"`
 	// CpuPlatform is the CPU platform to be used for this instance. If this is `null`, the instance requires no
 	// particular CPU platform; when it is started the instance will have the most general CPU platform supported by
 	// the sled it is initially placed on.
@@ -4622,17 +6564,15 @@ type InstanceCreate struct {
 	UserData string `json:"user_data,omitempty" yaml:"user_data,omitempty"`
 }
 
+// instanceDiskAttachmentVariant is implemented by InstanceDiskAttachment variants.
+type instanceDiskAttachmentVariant interface {
+	isInstanceDiskAttachmentVariant()
+}
+
 // InstanceDiskAttachmentType is the type definition for a InstanceDiskAttachmentType.
 type InstanceDiskAttachmentType string
 
-// InstanceDiskAttachmentCreate is during instance creation, create and attach disks
-//
-// Required fields:
-// - Description
-// - DiskBackend
-// - Name
-// - Size
-// - Type
+// InstanceDiskAttachmentCreate is a variant of InstanceDiskAttachment.
 type InstanceDiskAttachmentCreate struct {
 	Description string `json:"description" yaml:"description"`
 	// DiskBackend is the source for this `Disk`'s blocks
@@ -4642,35 +6582,95 @@ type InstanceDiskAttachmentCreate struct {
 	// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 	// Size is the total size of the Disk (in bytes)
-	Size ByteCount                  `json:"size" yaml:"size"`
-	Type InstanceDiskAttachmentType `json:"type" yaml:"type"`
+	Size ByteCount `json:"size" yaml:"size"`
 }
 
-// InstanceDiskAttachmentAttach is during instance creation, attach this disk
-//
-// Required fields:
-// - Name
-// - Type
+func (InstanceDiskAttachmentCreate) isInstanceDiskAttachmentVariant() {}
+
+// InstanceDiskAttachmentAttach is a variant of InstanceDiskAttachment.
 type InstanceDiskAttachmentAttach struct {
 	// Name is a disk name to attach
-	Name Name                       `json:"name" yaml:"name"`
-	Type InstanceDiskAttachmentType `json:"type" yaml:"type"`
+	Name Name `json:"name" yaml:"name"`
 }
+
+func (InstanceDiskAttachmentAttach) isInstanceDiskAttachmentVariant() {}
 
 // InstanceDiskAttachment is describe the instance's disks at creation time
 type InstanceDiskAttachment struct {
-	// Description is the type definition for a Description.
-	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	// DiskBackend is the source for this `Disk`'s blocks
-	DiskBackend DiskBackend `json:"disk_backend,omitempty" yaml:"disk_backend,omitempty"`
-	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
-	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
-	// Size is the total size of the Disk (in bytes)
-	Size ByteCount `json:"size,omitempty" yaml:"size,omitempty"`
-	// Type is the type definition for a Type.
-	Type InstanceDiskAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value instanceDiskAttachmentVariant
+}
+
+func (v InstanceDiskAttachment) Type() InstanceDiskAttachmentType {
+	switch v.Value.(type) {
+	case InstanceDiskAttachmentCreate, *InstanceDiskAttachmentCreate:
+		return InstanceDiskAttachmentTypeCreate
+	case InstanceDiskAttachmentAttach, *InstanceDiskAttachmentAttach:
+		return InstanceDiskAttachmentTypeAttach
+	default:
+		return ""
+	}
+}
+
+func (v *InstanceDiskAttachment) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"type"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value instanceDiskAttachmentVariant
+	switch d.Type {
+	case "create":
+		value = &InstanceDiskAttachmentCreate{}
+	case "attach":
+		value = &InstanceDiskAttachmentAttach{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'create' or 'attach'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v InstanceDiskAttachment) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["type"] = v.Type()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsCreate attempts to convert the InstanceDiskAttachment to a InstanceDiskAttachmentCreate.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v InstanceDiskAttachment) AsCreate() (*InstanceDiskAttachmentCreate, bool) {
+	val, ok := v.Value.(*InstanceDiskAttachmentCreate)
+	return val, ok
+}
+
+// AsAttach attempts to convert the InstanceDiskAttachment to a InstanceDiskAttachmentAttach.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v InstanceDiskAttachment) AsAttach() (*InstanceDiskAttachmentAttach, bool) {
+	val, ok := v.Value.(*InstanceDiskAttachmentAttach)
+	return val, ok
 }
 
 // InstanceMulticastGroupJoin is parameters for joining an instance to a multicast group.
@@ -4725,69 +6725,156 @@ type InstanceNetworkInterface struct {
 	VpcId string `json:"vpc_id" yaml:"vpc_id"`
 }
 
+// instanceNetworkInterfaceAttachmentVariant is implemented by InstanceNetworkInterfaceAttachment variants.
+type instanceNetworkInterfaceAttachmentVariant interface {
+	isInstanceNetworkInterfaceAttachmentVariant()
+}
+
 // InstanceNetworkInterfaceAttachmentType is the type definition for a InstanceNetworkInterfaceAttachmentType.
 type InstanceNetworkInterfaceAttachmentType string
 
-// InstanceNetworkInterfaceAttachmentCreate is create one or more `InstanceNetworkInterface`s for the `Instance`.
-//
-// If more than one interface is provided, then the first will be designated the primary interface for the instance.
-//
-// Required fields:
-// - Params
-// - Type
+// InstanceNetworkInterfaceAttachmentCreate is a variant of InstanceNetworkInterfaceAttachment.
 type InstanceNetworkInterfaceAttachmentCreate struct {
-	Params []InstanceNetworkInterfaceCreate       `json:"params" yaml:"params"`
-	Type   InstanceNetworkInterfaceAttachmentType `json:"type" yaml:"type"`
+	Params []InstanceNetworkInterfaceCreate `json:"params" yaml:"params"`
 }
 
-// InstanceNetworkInterfaceAttachmentDefaultIpv4 is create a single primary interface with an automatically-assigned IPv4
-// address.
-//
-// The IP will be pulled from the Project's default VPC / VPC Subnet.
-//
-// Required fields:
-// - Type
+func (InstanceNetworkInterfaceAttachmentCreate) isInstanceNetworkInterfaceAttachmentVariant() {}
+
+// InstanceNetworkInterfaceAttachmentDefaultIpv4 is a variant of InstanceNetworkInterfaceAttachment.
 type InstanceNetworkInterfaceAttachmentDefaultIpv4 struct {
-	Type InstanceNetworkInterfaceAttachmentType `json:"type" yaml:"type"`
 }
 
-// InstanceNetworkInterfaceAttachmentDefaultIpv6 is create a single primary interface with an automatically-assigned IPv6
-// address.
-//
-// The IP will be pulled from the Project's default VPC / VPC Subnet.
-//
-// Required fields:
-// - Type
+func (InstanceNetworkInterfaceAttachmentDefaultIpv4) isInstanceNetworkInterfaceAttachmentVariant() {}
+
+// InstanceNetworkInterfaceAttachmentDefaultIpv6 is a variant of InstanceNetworkInterfaceAttachment.
 type InstanceNetworkInterfaceAttachmentDefaultIpv6 struct {
-	Type InstanceNetworkInterfaceAttachmentType `json:"type" yaml:"type"`
 }
 
-// InstanceNetworkInterfaceAttachmentDefaultDualStack is create a single primary interface with automatically-assigned IPv4
-// and IPv6 addresses.
-//
-// The IPs will be pulled from the Project's default VPC / VPC Subnet.
-//
-// Required fields:
-// - Type
+func (InstanceNetworkInterfaceAttachmentDefaultIpv6) isInstanceNetworkInterfaceAttachmentVariant() {}
+
+// InstanceNetworkInterfaceAttachmentDefaultDualStack is a variant of InstanceNetworkInterfaceAttachment.
 type InstanceNetworkInterfaceAttachmentDefaultDualStack struct {
-	Type InstanceNetworkInterfaceAttachmentType `json:"type" yaml:"type"`
 }
 
-// InstanceNetworkInterfaceAttachmentNone is no network interfaces at all will be created for the instance.
-//
-// Required fields:
-// - Type
-type InstanceNetworkInterfaceAttachmentNone struct {
-	Type InstanceNetworkInterfaceAttachmentType `json:"type" yaml:"type"`
+func (InstanceNetworkInterfaceAttachmentDefaultDualStack) isInstanceNetworkInterfaceAttachmentVariant() {
 }
+
+// InstanceNetworkInterfaceAttachmentNone is a variant of InstanceNetworkInterfaceAttachment.
+type InstanceNetworkInterfaceAttachmentNone struct {
+}
+
+func (InstanceNetworkInterfaceAttachmentNone) isInstanceNetworkInterfaceAttachmentVariant() {}
 
 // InstanceNetworkInterfaceAttachment is describes an attachment of an `InstanceNetworkInterface` to an
 // `Instance`, at the time the instance is created.
 type InstanceNetworkInterfaceAttachment struct {
-	// Params is the type definition for a Params.
-	Params []InstanceNetworkInterfaceCreate `json:"params,omitempty" yaml:"params,omitempty"`
-	// Type is the type definition for a Type.
-	Type InstanceNetworkInterfaceAttachmentType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value instanceNetworkInterfaceAttachmentVariant
+}
+
+func (v InstanceNetworkInterfaceAttachment) Type() InstanceNetworkInterfaceAttachmentType {
+	switch v.Value.(type) {
+	case InstanceNetworkInterfaceAttachmentCreate, *InstanceNetworkInterfaceAttachmentCreate:
+		return InstanceNetworkInterfaceAttachmentTypeCreate
+	case InstanceNetworkInterfaceAttachmentDefaultIpv4, *InstanceNetworkInterfaceAttachmentDefaultIpv4:
+		return InstanceNetworkInterfaceAttachmentTypeDefaultIpv4
+	case InstanceNetworkInterfaceAttachmentDefaultIpv6, *InstanceNetworkInterfaceAttachmentDefaultIpv6:
+		return InstanceNetworkInterfaceAttachmentTypeDefaultIpv6
+	case InstanceNetworkInterfaceAttachmentDefaultDualStack, *InstanceNetworkInterfaceAttachmentDefaultDualStack:
+		return InstanceNetworkInterfaceAttachmentTypeDefaultDualStack
+	case InstanceNetworkInterfaceAttachmentNone, *InstanceNetworkInterfaceAttachmentNone:
+		return InstanceNetworkInterfaceAttachmentTypeNone
+	default:
+		return ""
+	}
+}
+
+func (v *InstanceNetworkInterfaceAttachment) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"type"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value instanceNetworkInterfaceAttachmentVariant
+	switch d.Type {
+	case "create":
+		value = &InstanceNetworkInterfaceAttachmentCreate{}
+	case "default_ipv4":
+		value = &InstanceNetworkInterfaceAttachmentDefaultIpv4{}
+	case "default_ipv6":
+		value = &InstanceNetworkInterfaceAttachmentDefaultIpv6{}
+	case "default_dual_stack":
+		value = &InstanceNetworkInterfaceAttachmentDefaultDualStack{}
+	case "none":
+		value = &InstanceNetworkInterfaceAttachmentNone{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'create' or 'default_ipv4' or 'default_ipv6' or 'default_dual_stack' or 'none'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v InstanceNetworkInterfaceAttachment) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["type"] = v.Type()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsCreate attempts to convert the InstanceNetworkInterfaceAttachment to a InstanceNetworkInterfaceAttachmentCreate.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v InstanceNetworkInterfaceAttachment) AsCreate() (*InstanceNetworkInterfaceAttachmentCreate, bool) {
+	val, ok := v.Value.(*InstanceNetworkInterfaceAttachmentCreate)
+	return val, ok
+}
+
+// AsDefaultIpv4 attempts to convert the InstanceNetworkInterfaceAttachment to a InstanceNetworkInterfaceAttachmentDefaultIpv4.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v InstanceNetworkInterfaceAttachment) AsDefaultIpv4() (*InstanceNetworkInterfaceAttachmentDefaultIpv4, bool) {
+	val, ok := v.Value.(*InstanceNetworkInterfaceAttachmentDefaultIpv4)
+	return val, ok
+}
+
+// AsDefaultIpv6 attempts to convert the InstanceNetworkInterfaceAttachment to a InstanceNetworkInterfaceAttachmentDefaultIpv6.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v InstanceNetworkInterfaceAttachment) AsDefaultIpv6() (*InstanceNetworkInterfaceAttachmentDefaultIpv6, bool) {
+	val, ok := v.Value.(*InstanceNetworkInterfaceAttachmentDefaultIpv6)
+	return val, ok
+}
+
+// AsDefaultDualStack attempts to convert the InstanceNetworkInterfaceAttachment to a InstanceNetworkInterfaceAttachmentDefaultDualStack.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v InstanceNetworkInterfaceAttachment) AsDefaultDualStack() (*InstanceNetworkInterfaceAttachmentDefaultDualStack, bool) {
+	val, ok := v.Value.(*InstanceNetworkInterfaceAttachmentDefaultDualStack)
+	return val, ok
+}
+
+// AsNone attempts to convert the InstanceNetworkInterfaceAttachment to a InstanceNetworkInterfaceAttachmentNone.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v InstanceNetworkInterfaceAttachment) AsNone() (*InstanceNetworkInterfaceAttachmentNone, bool) {
+	val, ok := v.Value.(*InstanceNetworkInterfaceAttachmentNone)
+	return val, ok
 }
 
 // InstanceNetworkInterfaceCreate is create-time parameters for an `InstanceNetworkInterface`
@@ -5424,33 +7511,103 @@ func (v IpRange) AsIpv6Range() (*Ipv6Range, bool) {
 // IpVersion is the IP address version.
 type IpVersion string
 
+// ipv4AssignmentVariant is implemented by Ipv4Assignment variants.
+type ipv4AssignmentVariant interface {
+	isIpv4AssignmentVariant()
+}
+
 // Ipv4AssignmentType is the type definition for a Ipv4AssignmentType.
 type Ipv4AssignmentType string
 
-// Ipv4AssignmentAuto is automatically assign an IP address from the VPC Subnet.
-//
-// Required fields:
-// - Type
+// Ipv4AssignmentAuto is a variant of Ipv4Assignment.
 type Ipv4AssignmentAuto struct {
-	Type Ipv4AssignmentType `json:"type" yaml:"type"`
 }
 
-// Ipv4AssignmentExplicit is explicitly assign a specific address, if available.
-//
-// Required fields:
-// - Type
-// - Value
+func (Ipv4AssignmentAuto) isIpv4AssignmentVariant() {}
+
+// Ipv4AssignmentExplicit is a variant of Ipv4Assignment.
 type Ipv4AssignmentExplicit struct {
-	Type  Ipv4AssignmentType `json:"type" yaml:"type"`
-	Value string             `json:"value" yaml:"value"`
+	Value string `json:"value" yaml:"value"`
 }
+
+func (Ipv4AssignmentExplicit) isIpv4AssignmentVariant() {}
 
 // Ipv4Assignment is how a VPC-private IP address is assigned to a network interface.
 type Ipv4Assignment struct {
-	// Type is the type definition for a Type.
-	Type Ipv4AssignmentType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is the type definition for a Value.
-	Value string `json:"value,omitempty" yaml:"value,omitempty"`
+	Value ipv4AssignmentVariant
+}
+
+func (v Ipv4Assignment) Type() Ipv4AssignmentType {
+	switch v.Value.(type) {
+	case Ipv4AssignmentAuto, *Ipv4AssignmentAuto:
+		return Ipv4AssignmentTypeAuto
+	case Ipv4AssignmentExplicit, *Ipv4AssignmentExplicit:
+		return Ipv4AssignmentTypeExplicit
+	default:
+		return ""
+	}
+}
+
+func (v *Ipv4Assignment) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"type"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value ipv4AssignmentVariant
+	switch d.Type {
+	case "auto":
+		value = &Ipv4AssignmentAuto{}
+	case "explicit":
+		value = &Ipv4AssignmentExplicit{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'auto' or 'explicit'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v Ipv4Assignment) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["type"] = v.Type()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsAuto attempts to convert the Ipv4Assignment to a Ipv4AssignmentAuto.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v Ipv4Assignment) AsAuto() (*Ipv4AssignmentAuto, bool) {
+	val, ok := v.Value.(*Ipv4AssignmentAuto)
+	return val, ok
+}
+
+// AsExplicit attempts to convert the Ipv4Assignment to a Ipv4AssignmentExplicit.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v Ipv4Assignment) AsExplicit() (*Ipv4AssignmentExplicit, bool) {
+	val, ok := v.Value.(*Ipv4AssignmentExplicit)
+	return val, ok
 }
 
 // Ipv4Net is an IPv4 subnet, including prefix and prefix length
@@ -5468,33 +7625,103 @@ type Ipv4Range struct {
 	Last  string `json:"last" yaml:"last"`
 }
 
+// ipv6AssignmentVariant is implemented by Ipv6Assignment variants.
+type ipv6AssignmentVariant interface {
+	isIpv6AssignmentVariant()
+}
+
 // Ipv6AssignmentType is the type definition for a Ipv6AssignmentType.
 type Ipv6AssignmentType string
 
-// Ipv6AssignmentAuto is automatically assign an IP address from the VPC Subnet.
-//
-// Required fields:
-// - Type
+// Ipv6AssignmentAuto is a variant of Ipv6Assignment.
 type Ipv6AssignmentAuto struct {
-	Type Ipv6AssignmentType `json:"type" yaml:"type"`
 }
 
-// Ipv6AssignmentExplicit is explicitly assign a specific address, if available.
-//
-// Required fields:
-// - Type
-// - Value
+func (Ipv6AssignmentAuto) isIpv6AssignmentVariant() {}
+
+// Ipv6AssignmentExplicit is a variant of Ipv6Assignment.
 type Ipv6AssignmentExplicit struct {
-	Type  Ipv6AssignmentType `json:"type" yaml:"type"`
-	Value string             `json:"value" yaml:"value"`
+	Value string `json:"value" yaml:"value"`
 }
+
+func (Ipv6AssignmentExplicit) isIpv6AssignmentVariant() {}
 
 // Ipv6Assignment is how a VPC-private IP address is assigned to a network interface.
 type Ipv6Assignment struct {
-	// Type is the type definition for a Type.
-	Type Ipv6AssignmentType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is the type definition for a Value.
-	Value string `json:"value,omitempty" yaml:"value,omitempty"`
+	Value ipv6AssignmentVariant
+}
+
+func (v Ipv6Assignment) Type() Ipv6AssignmentType {
+	switch v.Value.(type) {
+	case Ipv6AssignmentAuto, *Ipv6AssignmentAuto:
+		return Ipv6AssignmentTypeAuto
+	case Ipv6AssignmentExplicit, *Ipv6AssignmentExplicit:
+		return Ipv6AssignmentTypeExplicit
+	default:
+		return ""
+	}
+}
+
+func (v *Ipv6Assignment) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"type"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value ipv6AssignmentVariant
+	switch d.Type {
+	case "auto":
+		value = &Ipv6AssignmentAuto{}
+	case "explicit":
+		value = &Ipv6AssignmentExplicit{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'auto' or 'explicit'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v Ipv6Assignment) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["type"] = v.Type()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsAuto attempts to convert the Ipv6Assignment to a Ipv6AssignmentAuto.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v Ipv6Assignment) AsAuto() (*Ipv6AssignmentAuto, bool) {
+	val, ok := v.Value.(*Ipv6AssignmentAuto)
+	return val, ok
+}
+
+// AsExplicit attempts to convert the Ipv6Assignment to a Ipv6AssignmentExplicit.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v Ipv6Assignment) AsExplicit() (*Ipv6AssignmentExplicit, bool) {
+	val, ok := v.Value.(*Ipv6AssignmentExplicit)
+	return val, ok
 }
 
 // Ipv6Net is an IPv6 subnet, including prefix and subnet mask
@@ -5935,45 +8162,122 @@ type NetworkInterface struct {
 	Vni Vni `json:"vni" yaml:"vni"`
 }
 
+// networkInterfaceKindVariant is implemented by NetworkInterfaceKind variants.
+type networkInterfaceKindVariant interface {
+	isNetworkInterfaceKindVariant()
+}
+
 // NetworkInterfaceKindType is the type definition for a NetworkInterfaceKindType.
 type NetworkInterfaceKindType string
 
-// NetworkInterfaceKindInstance is a vNIC attached to a guest instance
-//
-// Required fields:
-// - Id
-// - Type
+// NetworkInterfaceKindInstance is a variant of NetworkInterfaceKind.
 type NetworkInterfaceKindInstance struct {
-	Id   string                   `json:"id" yaml:"id"`
-	Type NetworkInterfaceKindType `json:"type" yaml:"type"`
+	Id string `json:"id" yaml:"id"`
 }
 
-// NetworkInterfaceKindService is a vNIC associated with an internal service
-//
-// Required fields:
-// - Id
-// - Type
+func (NetworkInterfaceKindInstance) isNetworkInterfaceKindVariant() {}
+
+// NetworkInterfaceKindService is a variant of NetworkInterfaceKind.
 type NetworkInterfaceKindService struct {
-	Id   string                   `json:"id" yaml:"id"`
-	Type NetworkInterfaceKindType `json:"type" yaml:"type"`
+	Id string `json:"id" yaml:"id"`
 }
 
-// NetworkInterfaceKindProbe is a vNIC associated with a probe
-//
-// Required fields:
-// - Id
-// - Type
+func (NetworkInterfaceKindService) isNetworkInterfaceKindVariant() {}
+
+// NetworkInterfaceKindProbe is a variant of NetworkInterfaceKind.
 type NetworkInterfaceKindProbe struct {
-	Id   string                   `json:"id" yaml:"id"`
-	Type NetworkInterfaceKindType `json:"type" yaml:"type"`
+	Id string `json:"id" yaml:"id"`
 }
+
+func (NetworkInterfaceKindProbe) isNetworkInterfaceKindVariant() {}
 
 // NetworkInterfaceKind is the type of network interface
 type NetworkInterfaceKind struct {
-	// Id is the type definition for a Id.
-	Id string `json:"id,omitempty" yaml:"id,omitempty"`
-	// Type is the type definition for a Type.
-	Type NetworkInterfaceKindType `json:"type,omitempty" yaml:"type,omitempty"`
+	Value networkInterfaceKindVariant
+}
+
+func (v NetworkInterfaceKind) Type() NetworkInterfaceKindType {
+	switch v.Value.(type) {
+	case NetworkInterfaceKindInstance, *NetworkInterfaceKindInstance:
+		return NetworkInterfaceKindTypeInstance
+	case NetworkInterfaceKindService, *NetworkInterfaceKindService:
+		return NetworkInterfaceKindTypeService
+	case NetworkInterfaceKindProbe, *NetworkInterfaceKindProbe:
+		return NetworkInterfaceKindTypeProbe
+	default:
+		return ""
+	}
+}
+
+func (v *NetworkInterfaceKind) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"type"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value networkInterfaceKindVariant
+	switch d.Type {
+	case "instance":
+		value = &NetworkInterfaceKindInstance{}
+	case "service":
+		value = &NetworkInterfaceKindService{}
+	case "probe":
+		value = &NetworkInterfaceKindProbe{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'instance' or 'service' or 'probe'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v NetworkInterfaceKind) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["type"] = v.Type()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsInstance attempts to convert the NetworkInterfaceKind to a NetworkInterfaceKindInstance.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v NetworkInterfaceKind) AsInstance() (*NetworkInterfaceKindInstance, bool) {
+	val, ok := v.Value.(*NetworkInterfaceKindInstance)
+	return val, ok
+}
+
+// AsService attempts to convert the NetworkInterfaceKind to a NetworkInterfaceKindService.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v NetworkInterfaceKind) AsService() (*NetworkInterfaceKindService, bool) {
+	val, ok := v.Value.(*NetworkInterfaceKindService)
+	return val, ok
+}
+
+// AsProbe attempts to convert the NetworkInterfaceKind to a NetworkInterfaceKindProbe.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v NetworkInterfaceKind) AsProbe() (*NetworkInterfaceKindProbe, bool) {
+	val, ok := v.Value.(*NetworkInterfaceKindProbe)
+	return val, ok
 }
 
 // OxqlQueryResult is the result of a successful OxQL query.
@@ -6043,35 +8347,102 @@ type PhysicalDisk struct {
 // PhysicalDiskKind is describes the form factor of physical disks.
 type PhysicalDiskKind string
 
+// physicalDiskPolicyVariant is implemented by PhysicalDiskPolicy variants.
+type physicalDiskPolicyVariant interface {
+	isPhysicalDiskPolicyVariant()
+}
+
 // PhysicalDiskPolicyKind is the type definition for a PhysicalDiskPolicyKind.
 type PhysicalDiskPolicyKind string
 
-// PhysicalDiskPolicyInService is the operator has indicated that the disk is in-service.
-//
-// Required fields:
-// - Kind
+// PhysicalDiskPolicyInService is a variant of PhysicalDiskPolicy.
 type PhysicalDiskPolicyInService struct {
-	Kind PhysicalDiskPolicyKind `json:"kind" yaml:"kind"`
 }
 
-// PhysicalDiskPolicyExpunged is the operator has indicated that the disk has been permanently removed from
-// service.
-//
-// This is a terminal state: once a particular disk ID is expunged, it will never return to service. (The actual
-// hardware may be reused, but it will be treated as a brand-new disk.)
-//
-// An expunged disk is always non-provisionable.
-//
-// Required fields:
-// - Kind
+func (PhysicalDiskPolicyInService) isPhysicalDiskPolicyVariant() {}
+
+// PhysicalDiskPolicyExpunged is a variant of PhysicalDiskPolicy.
 type PhysicalDiskPolicyExpunged struct {
-	Kind PhysicalDiskPolicyKind `json:"kind" yaml:"kind"`
 }
+
+func (PhysicalDiskPolicyExpunged) isPhysicalDiskPolicyVariant() {}
 
 // PhysicalDiskPolicy is the operator-defined policy of a physical disk.
 type PhysicalDiskPolicy struct {
-	// Kind is the type definition for a Kind.
-	Kind PhysicalDiskPolicyKind `json:"kind,omitempty" yaml:"kind,omitempty"`
+	Value physicalDiskPolicyVariant
+}
+
+func (v PhysicalDiskPolicy) Kind() PhysicalDiskPolicyKind {
+	switch v.Value.(type) {
+	case PhysicalDiskPolicyInService, *PhysicalDiskPolicyInService:
+		return PhysicalDiskPolicyKindInService
+	case PhysicalDiskPolicyExpunged, *PhysicalDiskPolicyExpunged:
+		return PhysicalDiskPolicyKindExpunged
+	default:
+		return ""
+	}
+}
+
+func (v *PhysicalDiskPolicy) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"kind"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value physicalDiskPolicyVariant
+	switch d.Type {
+	case "in_service":
+		value = &PhysicalDiskPolicyInService{}
+	case "expunged":
+		value = &PhysicalDiskPolicyExpunged{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'in_service' or 'expunged'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v PhysicalDiskPolicy) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["kind"] = v.Kind()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsInService attempts to convert the PhysicalDiskPolicy to a PhysicalDiskPolicyInService.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v PhysicalDiskPolicy) AsInService() (*PhysicalDiskPolicyInService, bool) {
+	val, ok := v.Value.(*PhysicalDiskPolicyInService)
+	return val, ok
+}
+
+// AsExpunged attempts to convert the PhysicalDiskPolicy to a PhysicalDiskPolicyExpunged.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v PhysicalDiskPolicy) AsExpunged() (*PhysicalDiskPolicyExpunged, bool) {
+	val, ok := v.Value.(*PhysicalDiskPolicyExpunged)
+	return val, ok
 }
 
 // PhysicalDiskResultsPage is a single page of results
@@ -6112,40 +8483,107 @@ type Points struct {
 	Values     []Values    `json:"values" yaml:"values"`
 }
 
+// poolSelectorVariant is implemented by PoolSelector variants.
+type poolSelectorVariant interface {
+	isPoolSelectorVariant()
+}
+
 // PoolSelectorType is the type definition for a PoolSelectorType.
 type PoolSelectorType string
 
-// PoolSelectorExplicit is use the specified pool by name or ID.
-//
-// Required fields:
-// - Pool
-// - Type
+// PoolSelectorExplicit is a variant of PoolSelector.
 type PoolSelectorExplicit struct {
 	// Pool is the pool to allocate from.
-	Pool NameOrId         `json:"pool" yaml:"pool"`
-	Type PoolSelectorType `json:"type" yaml:"type"`
+	Pool NameOrId `json:"pool" yaml:"pool"`
 }
 
-// PoolSelectorAuto is use the default pool for the silo.
-//
-// Required fields:
-// - Type
+func (PoolSelectorExplicit) isPoolSelectorVariant() {}
+
+// PoolSelectorAuto is a variant of PoolSelector.
 type PoolSelectorAuto struct {
 	// IpVersion is iP version to use when multiple default pools exist. Required if both IPv4 and IPv6 default pools
 	// are configured.
-	IpVersion IpVersion        `json:"ip_version,omitempty" yaml:"ip_version,omitempty"`
-	Type      PoolSelectorType `json:"type" yaml:"type"`
+	IpVersion IpVersion `json:"ip_version,omitempty" yaml:"ip_version,omitempty"`
 }
+
+func (PoolSelectorAuto) isPoolSelectorVariant() {}
 
 // PoolSelector is specify which IP or external subnet pool to allocate from.
 type PoolSelector struct {
-	// Pool is the pool to allocate from.
-	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
-	// Type is the type definition for a Type.
-	Type PoolSelectorType `json:"type,omitempty" yaml:"type,omitempty"`
-	// IpVersion is iP version to use when multiple default pools exist. Required if both IPv4 and IPv6 default pools
-	// are configured.
-	IpVersion IpVersion `json:"ip_version,omitzero" yaml:"ip_version,omitzero"`
+	Value poolSelectorVariant
+}
+
+func (v PoolSelector) Type() PoolSelectorType {
+	switch v.Value.(type) {
+	case PoolSelectorExplicit, *PoolSelectorExplicit:
+		return PoolSelectorTypeExplicit
+	case PoolSelectorAuto, *PoolSelectorAuto:
+		return PoolSelectorTypeAuto
+	default:
+		return ""
+	}
+}
+
+func (v *PoolSelector) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"type"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value poolSelectorVariant
+	switch d.Type {
+	case "explicit":
+		value = &PoolSelectorExplicit{}
+	case "auto":
+		value = &PoolSelectorAuto{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'explicit' or 'auto'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v PoolSelector) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["type"] = v.Type()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsExplicit attempts to convert the PoolSelector to a PoolSelectorExplicit.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v PoolSelector) AsExplicit() (*PoolSelectorExplicit, bool) {
+	val, ok := v.Value.(*PoolSelectorExplicit)
+	return val, ok
+}
+
+// AsAuto attempts to convert the PoolSelector to a PoolSelectorAuto.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v PoolSelector) AsAuto() (*PoolSelectorAuto, bool) {
+	val, ok := v.Value.(*PoolSelectorAuto)
+	return val, ok
 }
 
 // privateIpConfigVariant is implemented by PrivateIpConfig variants.
@@ -6172,12 +8610,12 @@ type PrivateIpConfigV6 struct {
 
 func (PrivateIpConfigV6) isPrivateIpConfigVariant() {}
 
-// PrivateIpConfigValue is the type definition for a PrivateIpConfigValue.
+// PrivateIpConfigDualStackValue is the type definition for a PrivateIpConfigDualStackValue.
 //
 // Required fields:
 // - V4
 // - V6
-type PrivateIpConfigValue struct {
+type PrivateIpConfigDualStackValue struct {
 	// V4 is the interface's IPv4 configuration.
 	V4 PrivateIpv4Config `json:"v4" yaml:"v4"`
 	// V6 is the interface's IPv6 configuration.
@@ -6186,7 +8624,7 @@ type PrivateIpConfigValue struct {
 
 // PrivateIpConfigDualStack is a variant of PrivateIpConfig.
 type PrivateIpConfigDualStack struct {
-	Value PrivateIpConfigValue `json:"value" yaml:"value"`
+	Value PrivateIpConfigDualStackValue `json:"value" yaml:"value"`
 }
 
 func (PrivateIpConfigDualStack) isPrivateIpConfigVariant() {}
@@ -6210,6 +8648,9 @@ func (v PrivateIpConfig) Type() PrivateIpConfigType {
 }
 
 func (v *PrivateIpConfig) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
 	type discriminator struct {
 		Type string `json:"type"`
 	}
@@ -6237,20 +8678,21 @@ func (v *PrivateIpConfig) UnmarshalJSON(data []byte) error {
 }
 
 func (v PrivateIpConfig) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
 	m := make(map[string]any)
 	m["type"] = v.Type()
-	if v.Value != nil {
-		valueBytes, err := json.Marshal(v.Value)
-		if err != nil {
-			return nil, err
-		}
-		var valueMap map[string]any
-		if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
-			return nil, err
-		}
-		for k, val := range valueMap {
-			m[k] = val
-		}
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
 	}
 	return json.Marshal(m)
 }
@@ -6300,12 +8742,12 @@ type PrivateIpStackV6 struct {
 
 func (PrivateIpStackV6) isPrivateIpStackVariant() {}
 
-// PrivateIpStackValue is the type definition for a PrivateIpStackValue.
+// PrivateIpStackDualStackValue is the type definition for a PrivateIpStackDualStackValue.
 //
 // Required fields:
 // - V4
 // - V6
-type PrivateIpStackValue struct {
+type PrivateIpStackDualStackValue struct {
 	// V4 is the VPC-private IPv4 stack for a network interface
 	V4 PrivateIpv4Stack `json:"v4" yaml:"v4"`
 	// V6 is the VPC-private IPv6 stack for a network interface
@@ -6314,7 +8756,7 @@ type PrivateIpStackValue struct {
 
 // PrivateIpStackDualStack is a variant of PrivateIpStack.
 type PrivateIpStackDualStack struct {
-	Value PrivateIpStackValue `json:"value" yaml:"value"`
+	Value PrivateIpStackDualStackValue `json:"value" yaml:"value"`
 }
 
 func (PrivateIpStackDualStack) isPrivateIpStackVariant() {}
@@ -6338,6 +8780,9 @@ func (v PrivateIpStack) Type() PrivateIpStackType {
 }
 
 func (v *PrivateIpStack) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
 	type discriminator struct {
 		Type string `json:"type"`
 	}
@@ -6365,20 +8810,21 @@ func (v *PrivateIpStack) UnmarshalJSON(data []byte) error {
 }
 
 func (v PrivateIpStack) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
 	m := make(map[string]any)
 	m["type"] = v.Type()
-	if v.Value != nil {
-		valueBytes, err := json.Marshal(v.Value)
-		if err != nil {
-			return nil, err
-		}
-		var valueMap map[string]any
-		if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
-			return nil, err
-		}
-		for k, val := range valueMap {
-			m[k] = val
-		}
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
 	}
 	return json.Marshal(m)
 }
@@ -6428,12 +8874,12 @@ type PrivateIpStackCreateV6 struct {
 
 func (PrivateIpStackCreateV6) isPrivateIpStackCreateVariant() {}
 
-// PrivateIpStackCreateValue is the type definition for a PrivateIpStackCreateValue.
+// PrivateIpStackCreateDualStackValue is the type definition for a PrivateIpStackCreateDualStackValue.
 //
 // Required fields:
 // - V4
 // - V6
-type PrivateIpStackCreateValue struct {
+type PrivateIpStackCreateDualStackValue struct {
 	// V4 is configuration for a network interface's IPv4 addressing.
 	V4 PrivateIpv4StackCreate `json:"v4" yaml:"v4"`
 	// V6 is configuration for a network interface's IPv6 addressing.
@@ -6442,7 +8888,7 @@ type PrivateIpStackCreateValue struct {
 
 // PrivateIpStackCreateDualStack is a variant of PrivateIpStackCreate.
 type PrivateIpStackCreateDualStack struct {
-	Value PrivateIpStackCreateValue `json:"value" yaml:"value"`
+	Value PrivateIpStackCreateDualStackValue `json:"value" yaml:"value"`
 }
 
 func (PrivateIpStackCreateDualStack) isPrivateIpStackCreateVariant() {}
@@ -6466,6 +8912,9 @@ func (v PrivateIpStackCreate) Type() PrivateIpStackCreateType {
 }
 
 func (v *PrivateIpStackCreate) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
 	type discriminator struct {
 		Type string `json:"type"`
 	}
@@ -6493,20 +8942,21 @@ func (v *PrivateIpStackCreate) UnmarshalJSON(data []byte) error {
 }
 
 func (v PrivateIpStackCreate) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
 	m := make(map[string]any)
 	m["type"] = v.Type()
-	if v.Value != nil {
-		valueBytes, err := json.Marshal(v.Value)
-		if err != nil {
-			return nil, err
-		}
-		var valueMap map[string]any
-		if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
-			return nil, err
-		}
-		for k, val := range valueMap {
-			m[k] = val
-		}
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
 	}
 	return json.Marshal(m)
 }
@@ -6965,6 +9415,9 @@ func (v RouteDestination) Type() RouteDestinationType {
 }
 
 func (v *RouteDestination) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
 	type discriminator struct {
 		Type string `json:"type"`
 	}
@@ -6994,20 +9447,21 @@ func (v *RouteDestination) UnmarshalJSON(data []byte) error {
 }
 
 func (v RouteDestination) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
 	m := make(map[string]any)
 	m["type"] = v.Type()
-	if v.Value != nil {
-		valueBytes, err := json.Marshal(v.Value)
-		if err != nil {
-			return nil, err
-		}
-		var valueMap map[string]any
-		if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
-			return nil, err
-		}
-		for k, val := range valueMap {
-			m[k] = val
-		}
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
 	}
 	return json.Marshal(m)
 }
@@ -7127,6 +9581,9 @@ func (v RouteTarget) Type() RouteTargetType {
 }
 
 func (v *RouteTarget) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
 	type discriminator struct {
 		Type string `json:"type"`
 	}
@@ -7160,20 +9617,21 @@ func (v *RouteTarget) UnmarshalJSON(data []byte) error {
 }
 
 func (v RouteTarget) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
 	m := make(map[string]any)
 	m["type"] = v.Type()
-	if v.Value != nil {
-		valueBytes, err := json.Marshal(v.Value)
-		if err != nil {
-			return nil, err
-		}
-		var valueMap map[string]any
-		if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
-			return nil, err
-		}
-		for k, val := range valueMap {
-			m[k] = val
-		}
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
 	}
 	return json.Marshal(m)
 }
@@ -7844,39 +10302,104 @@ type SledInstanceResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+// sledPolicyVariant is implemented by SledPolicy variants.
+type sledPolicyVariant interface {
+	isSledPolicyVariant()
+}
+
 // SledPolicyKind is the type definition for a SledPolicyKind.
 type SledPolicyKind string
 
-// SledPolicyInService is the operator has indicated that the sled is in-service.
-//
-// Required fields:
-// - Kind
-// - ProvisionPolicy
+// SledPolicyInService is a variant of SledPolicy.
 type SledPolicyInService struct {
-	Kind SledPolicyKind `json:"kind" yaml:"kind"`
 	// ProvisionPolicy is determines whether new resources can be provisioned onto the sled.
 	ProvisionPolicy SledProvisionPolicy `json:"provision_policy" yaml:"provision_policy"`
 }
 
-// SledPolicyExpunged is the operator has indicated that the sled has been permanently removed from service.
-//
-// This is a terminal state: once a particular sled ID is expunged, it will never return to service. (The actual
-// hardware may be reused, but it will be treated as a brand-new sled.)
-//
-// An expunged sled is always non-provisionable.
-//
-// Required fields:
-// - Kind
+func (SledPolicyInService) isSledPolicyVariant() {}
+
+// SledPolicyExpunged is a variant of SledPolicy.
 type SledPolicyExpunged struct {
-	Kind SledPolicyKind `json:"kind" yaml:"kind"`
 }
+
+func (SledPolicyExpunged) isSledPolicyVariant() {}
 
 // SledPolicy is the operator-defined policy of a sled.
 type SledPolicy struct {
-	// Kind is the type definition for a Kind.
-	Kind SledPolicyKind `json:"kind,omitempty" yaml:"kind,omitempty"`
-	// ProvisionPolicy is determines whether new resources can be provisioned onto the sled.
-	ProvisionPolicy SledProvisionPolicy `json:"provision_policy,omitempty" yaml:"provision_policy,omitempty"`
+	Value sledPolicyVariant
+}
+
+func (v SledPolicy) Kind() SledPolicyKind {
+	switch v.Value.(type) {
+	case SledPolicyInService, *SledPolicyInService:
+		return SledPolicyKindInService
+	case SledPolicyExpunged, *SledPolicyExpunged:
+		return SledPolicyKindExpunged
+	default:
+		return ""
+	}
+}
+
+func (v *SledPolicy) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"kind"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value sledPolicyVariant
+	switch d.Type {
+	case "in_service":
+		value = &SledPolicyInService{}
+	case "expunged":
+		value = &SledPolicyExpunged{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'in_service' or 'expunged'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v SledPolicy) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["kind"] = v.Kind()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsInService attempts to convert the SledPolicy to a SledPolicyInService.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v SledPolicy) AsInService() (*SledPolicyInService, bool) {
+	val, ok := v.Value.(*SledPolicyInService)
+	return val, ok
+}
+
+// AsExpunged attempts to convert the SledPolicy to a SledPolicyExpunged.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v SledPolicy) AsExpunged() (*SledPolicyExpunged, bool) {
+	val, ok := v.Value.(*SledPolicyExpunged)
+	return val, ok
 }
 
 // SledProvisionPolicy is new resources will be provisioned on this sled.
@@ -8331,47 +10854,122 @@ type SwitchInterfaceConfigCreate struct {
 	V6Enabled *bool `json:"v6_enabled" yaml:"v6_enabled"`
 }
 
+// switchInterfaceKindVariant is implemented by SwitchInterfaceKind variants.
+type switchInterfaceKindVariant interface {
+	isSwitchInterfaceKindVariant()
+}
+
 // SwitchInterfaceKindType is the type definition for a SwitchInterfaceKindType.
 type SwitchInterfaceKindType string
 
-// SwitchInterfaceKindPrimary is primary interfaces are associated with physical links. There is exactly one
-// primary interface per physical link.
-//
-// Required fields:
-// - Type
+// SwitchInterfaceKindPrimary is a variant of SwitchInterfaceKind.
 type SwitchInterfaceKindPrimary struct {
-	Type SwitchInterfaceKindType `json:"type" yaml:"type"`
 }
 
-// SwitchInterfaceKindVlan is vLAN interfaces allow physical interfaces to be multiplexed onto multiple logical
-// links, each distinguished by a 12-bit 802.1Q Ethernet tag.
-//
-// Required fields:
-// - Type
-// - Vid
+func (SwitchInterfaceKindPrimary) isSwitchInterfaceKindVariant() {}
+
+// SwitchInterfaceKindVlan is a variant of SwitchInterfaceKind.
 type SwitchInterfaceKindVlan struct {
-	Type SwitchInterfaceKindType `json:"type" yaml:"type"`
 	// Vid is the virtual network id (VID) that distinguishes this interface and is used for producing and consuming
 	// 802.1Q Ethernet tags. This field has a maximum value of 4095 as 802.1Q tags are twelve bits.
 	Vid *int `json:"vid" yaml:"vid"`
 }
 
-// SwitchInterfaceKindLoopback is loopback interfaces are anchors for IP addresses that are not specific to
-// any particular port.
-//
-// Required fields:
-// - Type
+func (SwitchInterfaceKindVlan) isSwitchInterfaceKindVariant() {}
+
+// SwitchInterfaceKindLoopback is a variant of SwitchInterfaceKind.
 type SwitchInterfaceKindLoopback struct {
-	Type SwitchInterfaceKindType `json:"type" yaml:"type"`
 }
+
+func (SwitchInterfaceKindLoopback) isSwitchInterfaceKindVariant() {}
 
 // SwitchInterfaceKind is indicates the kind for a switch interface.
 type SwitchInterfaceKind struct {
-	// Type is the type definition for a Type.
-	Type SwitchInterfaceKindType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Vid is the virtual network id (VID) that distinguishes this interface and is used for producing and consuming
-	// 802.1Q Ethernet tags. This field has a maximum value of 4095 as 802.1Q tags are twelve bits.
-	Vid *int `json:"vid,omitempty" yaml:"vid,omitempty"`
+	Value switchInterfaceKindVariant
+}
+
+func (v SwitchInterfaceKind) Type() SwitchInterfaceKindType {
+	switch v.Value.(type) {
+	case SwitchInterfaceKindPrimary, *SwitchInterfaceKindPrimary:
+		return SwitchInterfaceKindTypePrimary
+	case SwitchInterfaceKindVlan, *SwitchInterfaceKindVlan:
+		return SwitchInterfaceKindTypeVlan
+	case SwitchInterfaceKindLoopback, *SwitchInterfaceKindLoopback:
+		return SwitchInterfaceKindTypeLoopback
+	default:
+		return ""
+	}
+}
+
+func (v *SwitchInterfaceKind) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"type"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value switchInterfaceKindVariant
+	switch d.Type {
+	case "primary":
+		value = &SwitchInterfaceKindPrimary{}
+	case "vlan":
+		value = &SwitchInterfaceKindVlan{}
+	case "loopback":
+		value = &SwitchInterfaceKindLoopback{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'primary' or 'vlan' or 'loopback'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v SwitchInterfaceKind) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["type"] = v.Type()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsPrimary attempts to convert the SwitchInterfaceKind to a SwitchInterfaceKindPrimary.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v SwitchInterfaceKind) AsPrimary() (*SwitchInterfaceKindPrimary, bool) {
+	val, ok := v.Value.(*SwitchInterfaceKindPrimary)
+	return val, ok
+}
+
+// AsVlan attempts to convert the SwitchInterfaceKind to a SwitchInterfaceKindVlan.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v SwitchInterfaceKind) AsVlan() (*SwitchInterfaceKindVlan, bool) {
+	val, ok := v.Value.(*SwitchInterfaceKindVlan)
+	return val, ok
+}
+
+// AsLoopback attempts to convert the SwitchInterfaceKind to a SwitchInterfaceKindLoopback.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v SwitchInterfaceKind) AsLoopback() (*SwitchInterfaceKindLoopback, bool) {
+	val, ok := v.Value.(*SwitchInterfaceKindLoopback)
+	return val, ok
 }
 
 // SwitchInterfaceKind2 is primary interfaces are associated with physical links. There is exactly one primary
@@ -9023,34 +11621,104 @@ type UserCreate struct {
 // a UUID. They can be at most 63 characters long.
 type UserId string
 
+// userPasswordVariant is implemented by UserPassword variants.
+type userPasswordVariant interface {
+	isUserPasswordVariant()
+}
+
 // UserPasswordMode is the type definition for a UserPasswordMode.
 type UserPasswordMode string
 
-// UserPasswordPassword is sets the user's password to the provided value
-//
-// Required fields:
-// - Mode
-// - Value
+// UserPasswordPassword is a variant of UserPassword.
 type UserPasswordPassword struct {
-	Mode UserPasswordMode `json:"mode" yaml:"mode"`
 	// Value is passwords may be subject to additional constraints.
 	Value Password `json:"value" yaml:"value"`
 }
 
-// UserPasswordLoginDisallowed is invalidates any current password (disabling password authentication)
-//
-// Required fields:
-// - Mode
+func (UserPasswordPassword) isUserPasswordVariant() {}
+
+// UserPasswordLoginDisallowed is a variant of UserPassword.
 type UserPasswordLoginDisallowed struct {
-	Mode UserPasswordMode `json:"mode" yaml:"mode"`
 }
+
+func (UserPasswordLoginDisallowed) isUserPasswordVariant() {}
 
 // UserPassword is parameters for setting a user's password
 type UserPassword struct {
-	// Mode is the type definition for a Mode.
-	Mode UserPasswordMode `json:"mode,omitempty" yaml:"mode,omitempty"`
-	// Value is passwords may be subject to additional constraints.
-	Value Password `json:"value,omitempty" yaml:"value,omitempty"`
+	Value userPasswordVariant
+}
+
+func (v UserPassword) Mode() UserPasswordMode {
+	switch v.Value.(type) {
+	case UserPasswordPassword, *UserPasswordPassword:
+		return UserPasswordModePassword
+	case UserPasswordLoginDisallowed, *UserPasswordLoginDisallowed:
+		return UserPasswordModeLoginDisallowed
+	default:
+		return ""
+	}
+}
+
+func (v *UserPassword) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"mode"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value userPasswordVariant
+	switch d.Type {
+	case "password":
+		value = &UserPasswordPassword{}
+	case "login_disallowed":
+		value = &UserPasswordLoginDisallowed{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'password' or 'login_disallowed'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v UserPassword) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["mode"] = v.Mode()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsPassword attempts to convert the UserPassword to a UserPasswordPassword.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v UserPassword) AsPassword() (*UserPasswordPassword, bool) {
+	val, ok := v.Value.(*UserPasswordPassword)
+	return val, ok
+}
+
+// AsLoginDisallowed attempts to convert the UserPassword to a UserPasswordLoginDisallowed.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v UserPassword) AsLoginDisallowed() (*UserPasswordLoginDisallowed, bool) {
+	val, ok := v.Value.(*UserPasswordLoginDisallowed)
+	return val, ok
 }
 
 // UserResultsPage is a single page of results
@@ -9149,11 +11817,11 @@ func (ValueArrayDoubleDistribution) isValueArrayVariant() {}
 //
 // Each element is an option, where `None` represents a missing sample.
 type ValueArray struct {
-	Values valueArrayVariant
+	Value valueArrayVariant
 }
 
 func (v ValueArray) Type() ValueArrayType {
-	switch v.Values.(type) {
+	switch v.Value.(type) {
 	case ValueArrayInteger, *ValueArrayInteger:
 		return ValueArrayTypeInteger
 	case ValueArrayDouble, *ValueArrayDouble:
@@ -9172,6 +11840,9 @@ func (v ValueArray) Type() ValueArrayType {
 }
 
 func (v *ValueArray) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
 	type discriminator struct {
 		Type string `json:"type"`
 	}
@@ -9200,25 +11871,26 @@ func (v *ValueArray) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, value); err != nil {
 		return err
 	}
-	v.Values = value
+	v.Value = value
 	return nil
 }
 
 func (v ValueArray) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
 	m := make(map[string]any)
 	m["type"] = v.Type()
-	if v.Values != nil {
-		valueBytes, err := json.Marshal(v.Values)
-		if err != nil {
-			return nil, err
-		}
-		var valueMap map[string]any
-		if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
-			return nil, err
-		}
-		for k, val := range valueMap {
-			m[k] = val
-		}
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
 	}
 	return json.Marshal(m)
 }
@@ -9226,42 +11898,42 @@ func (v ValueArray) MarshalJSON() ([]byte, error) {
 // AsInteger attempts to convert the ValueArray to a ValueArrayInteger.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v ValueArray) AsInteger() (*ValueArrayInteger, bool) {
-	val, ok := v.Values.(*ValueArrayInteger)
+	val, ok := v.Value.(*ValueArrayInteger)
 	return val, ok
 }
 
 // AsDouble attempts to convert the ValueArray to a ValueArrayDouble.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v ValueArray) AsDouble() (*ValueArrayDouble, bool) {
-	val, ok := v.Values.(*ValueArrayDouble)
+	val, ok := v.Value.(*ValueArrayDouble)
 	return val, ok
 }
 
 // AsBoolean attempts to convert the ValueArray to a ValueArrayBoolean.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v ValueArray) AsBoolean() (*ValueArrayBoolean, bool) {
-	val, ok := v.Values.(*ValueArrayBoolean)
+	val, ok := v.Value.(*ValueArrayBoolean)
 	return val, ok
 }
 
 // AsString attempts to convert the ValueArray to a ValueArrayString.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v ValueArray) AsString() (*ValueArrayString, bool) {
-	val, ok := v.Values.(*ValueArrayString)
+	val, ok := v.Value.(*ValueArrayString)
 	return val, ok
 }
 
 // AsIntegerDistribution attempts to convert the ValueArray to a ValueArrayIntegerDistribution.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v ValueArray) AsIntegerDistribution() (*ValueArrayIntegerDistribution, bool) {
-	val, ok := v.Values.(*ValueArrayIntegerDistribution)
+	val, ok := v.Value.(*ValueArrayIntegerDistribution)
 	return val, ok
 }
 
 // AsDoubleDistribution attempts to convert the ValueArray to a ValueArrayDoubleDistribution.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v ValueArray) AsDoubleDistribution() (*ValueArrayDoubleDistribution, bool) {
-	val, ok := v.Values.(*ValueArrayDoubleDistribution)
+	val, ok := v.Value.(*ValueArrayDoubleDistribution)
 	return val, ok
 }
 
@@ -9500,6 +12172,9 @@ func (v VpcFirewallRuleHostFilter) Type() VpcFirewallRuleHostFilterType {
 }
 
 func (v *VpcFirewallRuleHostFilter) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
 	type discriminator struct {
 		Type string `json:"type"`
 	}
@@ -9531,20 +12206,21 @@ func (v *VpcFirewallRuleHostFilter) UnmarshalJSON(data []byte) error {
 }
 
 func (v VpcFirewallRuleHostFilter) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
 	m := make(map[string]any)
 	m["type"] = v.Type()
-	if v.Value != nil {
-		valueBytes, err := json.Marshal(v.Value)
-		if err != nil {
-			return nil, err
-		}
-		var valueMap map[string]any
-		if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
-			return nil, err
-		}
-		for k, val := range valueMap {
-			m[k] = val
-		}
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
 	}
 	return json.Marshal(m)
 }
@@ -9584,41 +12260,120 @@ func (v VpcFirewallRuleHostFilter) AsIpNet() (*VpcFirewallRuleHostFilterIpNet, b
 	return val, ok
 }
 
+// vpcFirewallRuleProtocolVariant is implemented by VpcFirewallRuleProtocol variants.
+type vpcFirewallRuleProtocolVariant interface {
+	isVpcFirewallRuleProtocolVariant()
+}
+
 // VpcFirewallRuleProtocolType is the type definition for a VpcFirewallRuleProtocolType.
 type VpcFirewallRuleProtocolType string
 
-// VpcFirewallRuleProtocolTcp is the type definition for a VpcFirewallRuleProtocolTcp.
-//
-// Required fields:
-// - Type
+// VpcFirewallRuleProtocolTcp is a variant of VpcFirewallRuleProtocol.
 type VpcFirewallRuleProtocolTcp struct {
-	Type VpcFirewallRuleProtocolType `json:"type" yaml:"type"`
 }
 
-// VpcFirewallRuleProtocolUdp is the type definition for a VpcFirewallRuleProtocolUdp.
-//
-// Required fields:
-// - Type
+func (VpcFirewallRuleProtocolTcp) isVpcFirewallRuleProtocolVariant() {}
+
+// VpcFirewallRuleProtocolUdp is a variant of VpcFirewallRuleProtocol.
 type VpcFirewallRuleProtocolUdp struct {
-	Type VpcFirewallRuleProtocolType `json:"type" yaml:"type"`
 }
 
-// VpcFirewallRuleProtocolIcmp is the type definition for a VpcFirewallRuleProtocolIcmp.
-//
-// Required fields:
-// - Type
-// - Value
+func (VpcFirewallRuleProtocolUdp) isVpcFirewallRuleProtocolVariant() {}
+
+// VpcFirewallRuleProtocolIcmp is a variant of VpcFirewallRuleProtocol.
 type VpcFirewallRuleProtocolIcmp struct {
-	Type  VpcFirewallRuleProtocolType `json:"type" yaml:"type"`
-	Value *VpcFirewallIcmpFilter      `json:"value" yaml:"value"`
+	Value *VpcFirewallIcmpFilter `json:"value" yaml:"value"`
 }
+
+func (VpcFirewallRuleProtocolIcmp) isVpcFirewallRuleProtocolVariant() {}
 
 // VpcFirewallRuleProtocol is the protocols that may be specified in a firewall rule's filter
 type VpcFirewallRuleProtocol struct {
-	// Type is the type definition for a Type.
-	Type VpcFirewallRuleProtocolType `json:"type,omitempty" yaml:"type,omitempty"`
-	// Value is the type definition for a Value.
-	Value VpcFirewallIcmpFilter `json:"value,omitzero" yaml:"value,omitzero"`
+	Value vpcFirewallRuleProtocolVariant
+}
+
+func (v VpcFirewallRuleProtocol) Type() VpcFirewallRuleProtocolType {
+	switch v.Value.(type) {
+	case VpcFirewallRuleProtocolTcp, *VpcFirewallRuleProtocolTcp:
+		return VpcFirewallRuleProtocolTypeTcp
+	case VpcFirewallRuleProtocolUdp, *VpcFirewallRuleProtocolUdp:
+		return VpcFirewallRuleProtocolTypeUdp
+	case VpcFirewallRuleProtocolIcmp, *VpcFirewallRuleProtocolIcmp:
+		return VpcFirewallRuleProtocolTypeIcmp
+	default:
+		return ""
+	}
+}
+
+func (v *VpcFirewallRuleProtocol) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"type"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value vpcFirewallRuleProtocolVariant
+	switch d.Type {
+	case "tcp":
+		value = &VpcFirewallRuleProtocolTcp{}
+	case "udp":
+		value = &VpcFirewallRuleProtocolUdp{}
+	case "icmp":
+		value = &VpcFirewallRuleProtocolIcmp{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'tcp' or 'udp' or 'icmp'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v VpcFirewallRuleProtocol) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["type"] = v.Type()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsTcp attempts to convert the VpcFirewallRuleProtocol to a VpcFirewallRuleProtocolTcp.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v VpcFirewallRuleProtocol) AsTcp() (*VpcFirewallRuleProtocolTcp, bool) {
+	val, ok := v.Value.(*VpcFirewallRuleProtocolTcp)
+	return val, ok
+}
+
+// AsUdp attempts to convert the VpcFirewallRuleProtocol to a VpcFirewallRuleProtocolUdp.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v VpcFirewallRuleProtocol) AsUdp() (*VpcFirewallRuleProtocolUdp, bool) {
+	val, ok := v.Value.(*VpcFirewallRuleProtocolUdp)
+	return val, ok
+}
+
+// AsIcmp attempts to convert the VpcFirewallRuleProtocol to a VpcFirewallRuleProtocolIcmp.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v VpcFirewallRuleProtocol) AsIcmp() (*VpcFirewallRuleProtocolIcmp, bool) {
+	val, ok := v.Value.(*VpcFirewallRuleProtocolIcmp)
+	return val, ok
 }
 
 // VpcFirewallRuleStatus is the type definition for a VpcFirewallRuleStatus.
@@ -9702,6 +12457,9 @@ func (v VpcFirewallRuleTarget) Type() VpcFirewallRuleTargetType {
 }
 
 func (v *VpcFirewallRuleTarget) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
 	type discriminator struct {
 		Type string `json:"type"`
 	}
@@ -9733,20 +12491,21 @@ func (v *VpcFirewallRuleTarget) UnmarshalJSON(data []byte) error {
 }
 
 func (v VpcFirewallRuleTarget) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
 	m := make(map[string]any)
 	m["type"] = v.Type()
-	if v.Value != nil {
-		valueBytes, err := json.Marshal(v.Value)
-		if err != nil {
-			return nil, err
-		}
-		var valueMap map[string]any
-		if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
-			return nil, err
-		}
-		for k, val := range valueMap {
-			m[k] = val
-		}
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
 	}
 	return json.Marshal(m)
 }

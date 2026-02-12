@@ -23,14 +23,12 @@ to different `serde` tagging strategies, and we handle each of them differently.
 
 ### Tagged union
 
-When a `oneOf` has:
+When a `oneOf` has exactly one discriminator property (a field with a single enum value per
+variant), we generate an **interface with variant types** pattern. This covers both
+`serde(tag = "type", content = "value")` unions (where variants carry data in a `value` field) and
+`serde(tag = "type")` unions (where variant fields are inlined at the top level).
 
-1. Exactly one discriminator property (a field with a single enum value per variant)
-2. Exactly one multi-type property (a field whose type varies across variants)
-
-We generate an **interface with variant wrapper types** pattern.
-
-**Example: `PrivateIpStack`**
+**Example: `PrivateIpStack`** (using serde's `tag` and `content`)
 
 In Rust, `PrivateIpStack` is defined as:
 
@@ -210,13 +208,7 @@ confusing to end users than consistent use of wrappers.
 Note: we can reconsider this choice if we're able to drop the use of `interface{}` types and
 pointers to primitives for variants, and if we're confident that those cases won't emerge again.
 
-### Discriminator with multiple value fields
-
-When a `oneOf` has a discriminator field and _multiple_ value fields, we use a flat struct that
-contains all properties from all variants. Properties that have different types across variants
-become `any`.
-
-**Example: `DiskSource`**
+**Example: `DiskSource`** (using serde's `tag` only)
 
 In Rust, `DiskSource` is defined as:
 
@@ -253,20 +245,65 @@ DiskSource:
         block_size: { $ref: "#/components/schemas/BlockSize" }
 ```
 
-This has a discriminator (`type`) but no multi-type property. Each variant has different fields
-(`block_size`, `snapshot_id`, `image_id`), not different types for the same field. So we generate a
-flat struct:
+This has a discriminator (`type`) and each variant has different fields. Each variant struct contains
+only its own fields (without the discriminator):
 
 ```go
+type diskSourceVariant interface {
+    isDiskSourceVariant()
+}
+
+type DiskSourceBlank struct {
+    BlockSize BlockSize `json:"block_size,omitempty"`
+}
+func (DiskSourceBlank) isDiskSourceVariant() {}
+
+type DiskSourceSnapshot struct {
+    SnapshotId string `json:"snapshot_id,omitempty"`
+}
+func (DiskSourceSnapshot) isDiskSourceVariant() {}
+
+type DiskSourceImage struct {
+    ImageId string `json:"image_id,omitempty"`
+}
+func (DiskSourceImage) isDiskSourceVariant() {}
+
+type DiskSourceImportingBlocks struct {
+    BlockSize BlockSize `json:"block_size,omitempty"`
+}
+func (DiskSourceImportingBlocks) isDiskSourceVariant() {}
+
 type DiskSource struct {
-    BlockSize  BlockSize      `json:"block_size,omitempty"`
-    Type       DiskSourceType `json:"type,omitempty"`
-    SnapshotId string         `json:"snapshot_id,omitempty"`
-    ImageId    string         `json:"image_id,omitempty"`
+    Value diskSourceVariant
 }
 ```
 
-If any property had different types across variants, it would become `any`.
+**Usage examples:**
+
+```go
+// Creating a disk from a snapshot
+params := oxide.DiskCreateParams{
+    Body: &oxide.DiskCreate{
+        Name: "my-disk",
+        DiskSource: oxide.DiskSource{
+            Value: &oxide.DiskSourceSnapshot{
+                SnapshotId: "snapshot-uuid",
+            },
+        },
+    },
+}
+```
+
+```go
+// Reading a disk source from the API
+disk, _ := client.DiskView(ctx, params)
+switch v := disk.DiskSource.Value.(type) {
+case *oxide.DiskSourceSnapshot:
+    fmt.Printf("From snapshot: %s\n", v.SnapshotId)
+case *oxide.DiskSourceImage:
+    fmt.Printf("From image: %s\n", v.ImageId)
+}
+```
 
 ### Untagged union
 

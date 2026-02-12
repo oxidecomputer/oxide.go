@@ -22,10 +22,7 @@ func emptyTypes() []string {
 }
 
 func nullable() []string {
-	// TODO: This type has a nested required "Type" field, which hinders
-	// the usage of this type. Remove when this is fixed in the upstream API
 	return []string{
-		"InstanceDiskAttachment",
 		"LldpLinkConfig",
 		"TxEqConfig",
 		"TxEqConfig2",
