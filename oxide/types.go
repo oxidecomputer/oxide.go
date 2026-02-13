@@ -123,7 +123,7 @@ type AddressLotBlock struct {
 	LastAddress string `json:"last_address" yaml:"last_address"`
 }
 
-// AddressLotBlockCreate is parameters for creating an address lot block. Fist and last addresses are inclusive.
+// AddressLotBlockCreate is parameters for creating an address lot block. First and last addresses are inclusive.
 //
 // Required fields:
 // - FirstAddress
@@ -498,7 +498,8 @@ type AlertReceiverKindWebhook struct {
 	// Endpoint is the URL that webhook notification requests are sent to.
 	Endpoint string                `json:"endpoint" yaml:"endpoint"`
 	Kind     AlertReceiverKindKind `json:"kind" yaml:"kind"`
-	Secrets  []WebhookSecret       `json:"secrets" yaml:"secrets"`
+	// Secrets is a list containing the IDs of the secret keys used to sign payloads sent to this receiver.
+	Secrets []WebhookSecret `json:"secrets" yaml:"secrets"`
 }
 
 // AlertReceiverKind is the possible alert delivery mechanisms for an alert receiver.
@@ -507,7 +508,7 @@ type AlertReceiverKind struct {
 	Endpoint string `json:"endpoint,omitempty" yaml:"endpoint,omitempty"`
 	// Kind is the type definition for a Kind.
 	Kind AlertReceiverKindKind `json:"kind,omitempty" yaml:"kind,omitempty"`
-	// Secrets is the type definition for a Secrets.
+	// Secrets is a list containing the IDs of the secret keys used to sign payloads sent to this receiver.
 	Secrets []WebhookSecret `json:"secrets,omitempty" yaml:"secrets,omitempty"`
 }
 
@@ -1073,7 +1074,7 @@ type BgpConfig struct {
 	Vrf string `json:"vrf,omitempty" yaml:"vrf,omitempty"`
 }
 
-// BgpConfigCreate is parameters for creating a BGP configuration. This includes and autonomous system number
+// BgpConfigCreate is parameters for creating a BGP configuration. This includes an autonomous system number
 // (ASN) and a virtual routing and forwarding (VRF) identifier.
 //
 // Required fields:
@@ -2631,9 +2632,9 @@ func (v Datum) AsMissing() (*DatumMissing, bool) {
 // - PrivateKey
 // - PublicCert
 type DerEncodedKeyPair struct {
-	// PrivateKey is request signing RSA private key in PKCS#1 format (base64 encoded der file)
+	// PrivateKey is request signing RSA private key in PKCS#1 format (base64 encoded DER file)
 	PrivateKey string `json:"private_key" yaml:"private_key"`
-	// PublicCert is request signing public certificate (base64 encoded der file)
+	// PublicCert is request signing public certificate (base64 encoded DER file)
 	PublicCert string `json:"public_cert" yaml:"public_cert"`
 }
 
@@ -2643,8 +2644,9 @@ type DerEncodedKeyPair struct {
 // - Id
 // - TimeCreated
 type DeviceAccessToken struct {
-	// Id is a unique, immutable, system-controlled identifier for the token. Note that this ID is not the bearer
-	// token itself, which starts with "oxide-token-"
+	// Id is a unique, immutable, system-controlled identifier for the token.
+	//
+	// Note that this ID is not the bearer token itself, which starts with "oxide-token-".
 	Id          string     `json:"id" yaml:"id"`
 	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
 	// TimeExpires is expiration timestamp. A null value means the token does not automatically expire.
@@ -2842,7 +2844,7 @@ type DiskSourceType string
 // - BlockSize
 // - Type
 type DiskSourceBlank struct {
-	// BlockSize is size of blocks for this Disk. valid values are: 512, 2048, or 4096
+	// BlockSize is size of blocks for this disk. Valid values are: 512, 2048, or 4096.
 	BlockSize BlockSize      `json:"block_size" yaml:"block_size"`
 	Type      DiskSourceType `json:"type" yaml:"type"`
 }
@@ -2884,7 +2886,7 @@ type DiskSourceImportingBlocks struct {
 
 // DiskSource is different sources for a Distributed Disk
 type DiskSource struct {
-	// BlockSize is size of blocks for this Disk. valid values are: 512, 2048, or 4096
+	// BlockSize is size of blocks for this disk. Valid values are: 512, 2048, or 4096.
 	BlockSize BlockSize `json:"block_size,omitempty" yaml:"block_size,omitempty"`
 	// Type is the type definition for a Type.
 	Type DiskSourceType `json:"type,omitempty" yaml:"type,omitempty"`
@@ -4548,7 +4550,7 @@ type InstanceCpuPlatform string
 // - Name
 // - Ncpus
 type InstanceCreate struct {
-	// AntiAffinityGroups is anti-Affinity groups which this instance should be added.
+	// AntiAffinityGroups is anti-affinity groups to which this instance should be added.
 	AntiAffinityGroups []NameOrId `json:"anti_affinity_groups,omitzero" yaml:"anti_affinity_groups,omitzero"`
 	// AutoRestartPolicy is the auto-restart policy for this instance.
 	//
@@ -5003,13 +5005,13 @@ type InternetGatewayCreate struct {
 // - TimeCreated
 // - TimeModified
 type InternetGatewayIpAddress struct {
-	// Address is the associated IP address,
+	// Address is the associated IP address
 	Address string `json:"address" yaml:"address"`
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description" yaml:"description"`
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id" yaml:"id"`
-	// InternetGatewayId is the associated internet gateway.
+	// InternetGatewayId is the associated internet gateway
 	InternetGatewayId string `json:"internet_gateway_id" yaml:"internet_gateway_id"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name" yaml:"name"`
@@ -5171,7 +5173,7 @@ func (v IpNet) AsIpv6Net() (*Ipv6Net, bool) {
 }
 
 // IpPool is a collection of IP ranges. If a pool is linked to a silo, IP addresses from the pool can be
-// allocated within that silo
+// allocated within that silo.
 //
 // Required fields:
 // - Description
@@ -5671,8 +5673,9 @@ type LoopbackAddressCreate struct {
 	Address string `json:"address" yaml:"address"`
 	// AddressLot is the name or id of the address lot this loopback address will pull an address from.
 	AddressLot NameOrId `json:"address_lot" yaml:"address_lot"`
-	// Anycast is address is an anycast address. This allows the address to be assigned to multiple locations simultaneously.
+	// Anycast is address is an anycast address.
 	//
+	// This allows the address to be assigned to multiple locations simultaneously.
 	Anycast *bool `json:"anycast" yaml:"anycast"`
 	// Mask is the subnet mask to use for the address.
 	Mask *int `json:"mask" yaml:"mask"`
@@ -6802,7 +6805,7 @@ type Quantile struct {
 	P float64 `json:"p" yaml:"p"`
 }
 
-// Rack is view of an Rack
+// Rack is view of a Rack
 //
 // Required fields:
 // - Id
@@ -7359,7 +7362,7 @@ type SamlIdentityProviderCreate struct {
 	// GroupAttributeName is if set, SAML attributes with this name will be considered to denote a user's group
 	// membership, where the attribute value(s) should be a comma-separated list of group names.
 	GroupAttributeName string `json:"group_attribute_name,omitempty" yaml:"group_attribute_name,omitempty"`
-	// IdpEntityId is idp's entity id
+	// IdpEntityId is idP's entity ID
 	IdpEntityId string `json:"idp_entity_id" yaml:"idp_entity_id"`
 	// IdpMetadataSource is the source of an identity provider metadata descriptor
 	IdpMetadataSource IdpMetadataSource `json:"idp_metadata_source" yaml:"idp_metadata_source"`
@@ -7369,11 +7372,11 @@ type SamlIdentityProviderCreate struct {
 	Name Name `json:"name" yaml:"name"`
 	// SigningKeypair is request signing key pair
 	SigningKeypair DerEncodedKeyPair `json:"signing_keypair,omitzero" yaml:"signing_keypair,omitzero"`
-	// SloUrl is service provider endpoint where the idp should send log out requests
+	// SloUrl is service provider endpoint where the IdP should send log out requests
 	SloUrl string `json:"slo_url" yaml:"slo_url"`
-	// SpClientId is sp's client id
+	// SpClientId is sP's client ID
 	SpClientId string `json:"sp_client_id" yaml:"sp_client_id"`
-	// TechnicalContactEmail is customer's technical contact for saml configuration
+	// TechnicalContactEmail is customer's technical contact for SAML configuration
 	TechnicalContactEmail string `json:"technical_contact_email" yaml:"technical_contact_email"`
 }
 
@@ -7721,11 +7724,12 @@ type SiloSubnetPoolResultsPage struct {
 // - SiloId
 // - SiloName
 type SiloUtilization struct {
-	// Allocated is accounts for the total amount of resources reserved for silos via their quotas
+	// Allocated is accounts for the total amount of resources reserved for silos via their quotas.
 	Allocated VirtualResourceCounts `json:"allocated" yaml:"allocated"`
-	// Provisioned is accounts for resources allocated by in silos like CPU or memory for running instances and
-	// storage for disks and snapshots Note that CPU and memory resources associated with a stopped instances are
-	// not counted here
+	// Provisioned is accounts for the total resources allocated by the silo, including CPU and memory for running
+	// instances and storage for disks and snapshots.
+	//
+	// Note that CPU and memory resources associated with stopped instances are not counted here.
 	Provisioned VirtualResourceCounts `json:"provisioned" yaml:"provisioned"`
 	SiloId      string                `json:"silo_id" yaml:"silo_id"`
 	// SiloName is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII,
@@ -9080,12 +9084,14 @@ type UsernamePasswordCredentials struct {
 // - Capacity
 // - Provisioned
 type Utilization struct {
-	// Capacity is the total amount of resources that can be provisioned in this silo Actions that would exceed
-	// this limit will fail
+	// Capacity is the total amount of resources that can be provisioned in this silo. Actions that would exceed
+	// this limit will fail.
 	Capacity VirtualResourceCounts `json:"capacity" yaml:"capacity"`
 	// Provisioned is accounts for resources allocated to running instances or storage allocated via disks or
-	// snapshots Note that CPU and memory resources associated with a stopped instances are not counted here whereas
-	// associated disks will still be counted
+	// snapshots.
+	//
+	// Note that CPU and memory resources associated with stopped instances are not counted here, whereas associated disks
+	// will still be counted.
 	Provisioned VirtualResourceCounts `json:"provisioned" yaml:"provisioned"`
 }
 
@@ -9315,9 +9321,9 @@ type Vpc struct {
 	Ipv6Prefix Ipv6Net `json:"ipv6_prefix" yaml:"ipv6_prefix"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name" yaml:"name"`
-	// ProjectId is id for the project containing this VPC
+	// ProjectId is iD for the project containing this VPC
 	ProjectId string `json:"project_id" yaml:"project_id"`
-	// SystemRouterId is id for the system router where subnet default routes are registered
+	// SystemRouterId is iD for the system router where subnet default routes are registered
 	SystemRouterId string `json:"system_router_id" yaml:"system_router_id"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
@@ -9895,7 +9901,7 @@ type VpcRouterUpdate struct {
 }
 
 // VpcSubnet is a VPC subnet represents a logical grouping for instances that allows network traffic between
-// them, within a IPv4 subnetwork or optionally an IPv6 subnetwork.
+// them, within an IPv4 subnetwork or optionally an IPv6 subnetwork.
 //
 // Required fields:
 // - Description
@@ -10062,7 +10068,8 @@ type WebhookReceiver struct {
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id" yaml:"id"`
 	// Name is unique, mutable, user-controlled identifier for each resource
-	Name    Name            `json:"name" yaml:"name"`
+	Name Name `json:"name" yaml:"name"`
+	// Secrets is a list containing the IDs of the secret keys used to sign payloads sent to this receiver.
 	Secrets []WebhookSecret `json:"secrets" yaml:"secrets"`
 	// Subscriptions is the list of alert classes to which this receiver is subscribed.
 	Subscriptions []AlertSubscription `json:"subscriptions" yaml:"subscriptions"`
