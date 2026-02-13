@@ -18,10 +18,8 @@ VERSION := $(shell cat $(CURDIR)/VERSION)
 generate:
 	@ echo "+ Generating SDK..."
 	@ go generate ./...
-	@ echo "+ Updating imports..."
-	@ go tool -modfile tools/go.mod goimports -w oxide/*.go
 	@ echo "+ Formatting generated SDK..."
-	@ gofmt -s -w oxide/*.go
+	@ $(MAKE) fmt
 	@ echo "+ Tidying up modules..."
 	@ go mod tidy
 
@@ -32,7 +30,7 @@ $(NAME): $(wildcard *.go) $(wildcard */*.go)
 	@echo "+ $@"
 	$(GO) build -tags "$(BUILDTAGS)" ${GO_LDFLAGS} -o $(NAME) ./internal/generate/
 
-all: generate test fmt lint staticcheck vet ## Runs a fmt, lint, test, staticcheck, and vet.
+all: generate test fmt lint ## Runs a fmt, lint, and test.
 
 .PHONY: fmt
 fmt: ## Formats Go code including long line wrapping.
@@ -59,19 +57,6 @@ golden-fixtures: ## Refreshes golden test fixtures. Requires OXIDE_HOST, OXIDE_T
 	@ echo "+ Refreshing golden test fixtures..."
 	@ $(GO) run ./oxide/testdata/main.go
 
-.PHONY: vet
-vet: ## Verifies `go vet` passes.
-	@ echo "+ Verifying go vet passes..."
-	@if [[ ! -z "$(shell $(GO) vet ./... | tee /dev/stderr)" ]]; then \
-		exit 1; \
-	fi
-
-.PHONY: staticcheck
-staticcheck: ## Verifies `staticcheck` passes.
-	@ echo "+ Verifying staticcheck passes..."
-	@if [[ ! -z "$(shell go tool -modfile tools/go.mod staticcheck ./... | tee /dev/stderr)" ]]; then \
-		exit 1; \
-	fi
 
 .PHONY: tag
 tag: ## Create a new git tag to prepare to build a release.
