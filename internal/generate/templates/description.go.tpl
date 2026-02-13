@@ -1,4 +1,6 @@
-{{define "description"}}// {{.FunctionName}}{{if .HasSummary}}: {{.Summary}}{{end}}{{if .HasDescription}}
+{{define "description"}}{{if .IsExperimental}}// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+{{end}}// {{.FunctionName}}{{if .HasSummary}}: {{.Summary}}{{end}}{{if .HasDescription}}
 // {{.Description}}{{end}}{{if .IsListAll}}
 //
 // This method is a wrapper around the `{{.WrappedFunction}}` method.

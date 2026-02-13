@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -36,6 +37,7 @@ type methodTemplate struct {
 	HasBody         bool
 	HasSummary      bool
 	IsAppJSON       bool
+	IsExperimental  bool
 }
 
 type paramsInfo struct {
@@ -141,12 +143,7 @@ func buildMethod(
 		return nil
 	}
 
-	if o.Tags[0] == "experimental" {
-		fmt.Printf("[WARN] TODO: skipping operation %q, since it is experimental\n", o.OperationID)
-		return nil
-	}
-
-	if o.Tags[0] == "console-auth" {
+	if slices.Contains(o.Tags, "console-auth") {
 		fmt.Printf(
 			"[WARN] TODO: skipping operation %q, since it is for console authentication\n",
 			o.OperationID,
@@ -154,8 +151,15 @@ func buildMethod(
 		return nil
 	}
 
+	isExperimental := slices.Contains(o.Tags, "experimental")
+
 	methodName := strcase.ToCamel(o.OperationID)
 	pInfo := buildParams(o, methodName)
+
+	// Prefix experimental operations so callers know the API may change.
+	if isExperimental {
+		methodName = "Experimental" + methodName
+	}
 
 	// Adapt for ListAll methods
 
@@ -206,6 +210,7 @@ func buildMethod(
 		HasParams:       pInfo.paramsString != "",
 		HasSummary:      o.Summary != "",
 		HasDescription:  o.Description != "",
+		IsExperimental:  isExperimental,
 	}
 
 	// TODO: Handle other content types
@@ -426,7 +431,11 @@ func buildPathOrQueryParams(
 					fmt.Sprintf("%q: %s.Format(time.RFC3339),", name, n),
 				)
 			default:
-				pathParams = append(pathParams, fmt.Sprintf("%q: string(%s),", name, n))
+				if p.Schema.Value != nil && p.Schema.Value.Type.Is("integer") {
+					pathParams = append(pathParams, fmt.Sprintf("%q: fmt.Sprint(%s),", name, n))
+				} else {
+					pathParams = append(pathParams, fmt.Sprintf("%q: string(%s),", name, n))
+				}
 			}
 		}
 	}
