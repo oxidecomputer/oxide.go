@@ -8007,7 +8007,6 @@ func (c *Client) SystemIpPoolListAllPages(ctx context.Context, params SystemIpPo
 }
 
 // SystemIpPoolCreate: Create IP pool
-// IPv6 is not yet supported for unicast pools.
 func (c *Client) SystemIpPoolCreate(ctx context.Context, params SystemIpPoolCreateParams) (*IpPool, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -8478,8 +8477,6 @@ func (c *Client) SystemIpPoolRangeListAllPages(ctx context.Context, params Syste
 }
 
 // SystemIpPoolRangeAdd: Add range to IP pool
-// IPv6 ranges are not allowed yet for unicast pools.
-//
 // For multicast pools, all ranges must be either Any-Source Multicast (ASM) or Source-Specific Multicast (SSM),
 // but not both. Mixing ASM and SSM ranges in the same pool is not allowed.
 //
