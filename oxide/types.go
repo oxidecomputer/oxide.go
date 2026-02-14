@@ -6,14 +6,6 @@
 
 package oxide
 
-import (
-	"encoding/json"
-	"fmt"
-	"io"
-	"regexp"
-	"time"
-)
-
 // Address is an address tied to an address lot.
 //
 // Required fields:
@@ -28,10 +20,12 @@ type Address struct {
 	VlanId *int `json:"vlan_id,omitempty" yaml:"vlan_id,omitempty"`
 }
 
+
 // addressAllocatorVariant is implemented by AddressAllocator variants.
 type addressAllocatorVariant interface {
 	isAddressAllocatorVariant()
 }
+
 
 // AddressAllocatorType is the type definition for a AddressAllocatorType.
 type AddressAllocatorType string
@@ -44,20 +38,22 @@ type AddressAllocatorExplicit struct {
 
 func (AddressAllocatorExplicit) isAddressAllocatorVariant() {}
 
+
 // AddressAllocatorAuto is a variant of AddressAllocator.
 type AddressAllocatorAuto struct {
 	// PoolSelector is pool selection.
-	//
-	// If omitted, the silo's default pool is used. If the silo has default pools for both IPv4 and IPv6, the request
-	// will fail unless `ip_version` is specified.
+// 
+// If omitted, the silo's default pool is used. If the silo has default pools for both IPv4 and IPv6, the request
+// will fail unless `ip_version` is specified.
 	PoolSelector PoolSelector `json:"pool_selector,omitempty" yaml:"pool_selector,omitempty"`
 }
 
 func (AddressAllocatorAuto) isAddressAllocatorVariant() {}
 
+
 // AddressAllocator is specify how to allocate a floating IP address.
 type AddressAllocator struct {
-	Value addressAllocatorVariant
+	Value addressAllocatorVariant 
 }
 
 func (v AddressAllocator) Type() AddressAllocatorType {
@@ -119,6 +115,8 @@ func (v AddressAllocator) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsExplicit attempts to convert the AddressAllocator to a AddressAllocatorExplicit.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v AddressAllocator) AsExplicit() (*AddressAllocatorExplicit, bool) {
@@ -133,6 +131,7 @@ func (v AddressAllocator) AsAuto() (*AddressAllocatorAuto, bool) {
 	return val, ok
 }
 
+
 // AddressConfig is a set of addresses associated with a port configuration.
 //
 // Required fields:
@@ -142,9 +141,10 @@ type AddressConfig struct {
 	// Addresses is the set of addresses assigned to the port configuration.
 	Addresses []Address `json:"addresses" yaml:"addresses"`
 	// LinkName is link to assign the addresses to. On ports that are not broken out, this is always phy0. On
-	// a 2x breakout the options are phy0 and phy1, on 4x phy0-phy3, etc.
+// a 2x breakout the options are phy0 and phy1, on 4x phy0-phy3, etc.
 	LinkName Name `json:"link_name" yaml:"link_name"`
 }
+
 
 // AddressLot is represents an address lot object, containing the id of the lot that can be used in other API
 // calls.
@@ -171,6 +171,7 @@ type AddressLot struct {
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
 
+
 // AddressLotBlock is an address lot block is a part of an address lot and contains a range of addresses. The
 // range is inclusive.
 //
@@ -187,7 +188,9 @@ type AddressLotBlock struct {
 	LastAddress string `json:"last_address" yaml:"last_address"`
 }
 
+
 // AddressLotBlockCreate is parameters for creating an address lot block. First and last addresses are inclusive.
+//
 //
 // Required fields:
 // - FirstAddress
@@ -198,6 +201,7 @@ type AddressLotBlockCreate struct {
 	// LastAddress is the last address in the lot (inclusive).
 	LastAddress string `json:"last_address" yaml:"last_address"`
 }
+
 
 // AddressLotBlockResultsPage is a single page of results
 //
@@ -210,6 +214,7 @@ type AddressLotBlockResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // AddressLotCreate is parameters for creating an address lot.
 //
 // Required fields:
@@ -219,17 +224,19 @@ type AddressLotBlockResultsPage struct {
 // - Name
 type AddressLotCreate struct {
 	// Blocks is the blocks to add along with the new address lot.
-	Blocks      []AddressLotBlockCreate `json:"blocks" yaml:"blocks"`
-	Description string                  `json:"description" yaml:"description"`
+	Blocks []AddressLotBlockCreate `json:"blocks" yaml:"blocks"`
+	Description string `json:"description" yaml:"description"`
 	// Kind is the kind of address lot to create.
 	Kind AddressLotKind `json:"kind" yaml:"kind"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 }
 
+
 // AddressLotCreateResponse is an address lot and associated blocks resulting from creating an address lot.
+//
 //
 // Required fields:
 // - Blocks
@@ -240,6 +247,7 @@ type AddressLotCreateResponse struct {
 	// Lot is the address lot that was created.
 	Lot AddressLot `json:"lot" yaml:"lot"`
 }
+
 
 // AddressLotKind is infrastructure address lots are used for network infrastructure like addresses assigned to
 // rack switches.
@@ -256,6 +264,7 @@ type AddressLotResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // AddressLotViewResponse is an address lot and associated blocks resulting from viewing an address lot.
 //
 // Required fields:
@@ -267,6 +276,7 @@ type AddressLotViewResponse struct {
 	// Lot is the address lot.
 	Lot AddressLot `json:"lot" yaml:"lot"`
 }
+
 
 // AffinityGroup is view of an Affinity Group
 //
@@ -289,15 +299,16 @@ type AffinityGroup struct {
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name" yaml:"name"`
 	// Policy is affinity policy used to describe "what to do when a request cannot be satisfied"
-	//
-	// Used for both Affinity and Anti-Affinity Groups
-	Policy    AffinityPolicy `json:"policy" yaml:"policy"`
-	ProjectId string         `json:"project_id" yaml:"project_id"`
+// 
+// Used for both Affinity and Anti-Affinity Groups
+	Policy AffinityPolicy `json:"policy" yaml:"policy"`
+	ProjectId string `json:"project_id" yaml:"project_id"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
+
 
 // AffinityGroupCreate is create-time parameters for an `AffinityGroup`
 //
@@ -311,19 +322,21 @@ type AffinityGroupCreate struct {
 	// FailureDomain is describes the scope of affinity for the purposes of co-location.
 	FailureDomain FailureDomain `json:"failure_domain" yaml:"failure_domain"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 	// Policy is affinity policy used to describe "what to do when a request cannot be satisfied"
-	//
-	// Used for both Affinity and Anti-Affinity Groups
+// 
+// Used for both Affinity and Anti-Affinity Groups
 	Policy AffinityPolicy `json:"policy" yaml:"policy"`
 }
+
 
 // affinityGroupMemberVariant is implemented by AffinityGroupMember variants.
 type affinityGroupMemberVariant interface {
 	isAffinityGroupMemberVariant()
 }
+
 
 // AffinityGroupMemberType is the type definition for a AffinityGroupMemberType.
 type AffinityGroupMemberType string
@@ -337,15 +350,16 @@ type AffinityGroupMemberType string
 type AffinityGroupMemberInstanceValue struct {
 	Id string `json:"id" yaml:"id"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 	// RunState is running state of an Instance (primarily: booted or stopped)
-	//
-	// This typically reflects whether it's starting, running, stopping, or stopped, but also includes states related
-	// to the Instance's lifecycle
+// 
+// This typically reflects whether it's starting, running, stopping, or stopped, but also includes states related
+// to the Instance's lifecycle
 	RunState InstanceState `json:"run_state" yaml:"run_state"`
 }
+
 
 // AffinityGroupMemberInstance is a variant of AffinityGroupMember.
 type AffinityGroupMemberInstance struct {
@@ -354,13 +368,14 @@ type AffinityGroupMemberInstance struct {
 
 func (AffinityGroupMemberInstance) isAffinityGroupMemberVariant() {}
 
+
 // AffinityGroupMember is a member of an Affinity Group
-//
+// 
 // Membership in a group is not exclusive - members may belong to multiple affinity / anti-affinity groups.
-//
+// 
 // Affinity Groups can contain up to 32 members.
 type AffinityGroupMember struct {
-	Value affinityGroupMemberVariant
+	Value affinityGroupMemberVariant 
 }
 
 func (v AffinityGroupMember) Type() AffinityGroupMemberType {
@@ -418,12 +433,15 @@ func (v AffinityGroupMember) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsInstance attempts to convert the AffinityGroupMember to a AffinityGroupMemberInstance.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v AffinityGroupMember) AsInstance() (*AffinityGroupMemberInstance, bool) {
 	val, ok := v.Value.(*AffinityGroupMemberInstance)
 	return val, ok
 }
+
 
 // AffinityGroupMemberResultsPage is a single page of results
 //
@@ -436,6 +454,7 @@ type AffinityGroupMemberResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // AffinityGroupResultsPage is a single page of results
 //
 // Required fields:
@@ -447,14 +466,16 @@ type AffinityGroupResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // AffinityGroupUpdate is updateable properties of an `AffinityGroup`
 type AffinityGroupUpdate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
+
 // AffinityPolicy is if the affinity request cannot be satisfied, allow it anyway.
-//
+// 
 // This enables a "best-effort" attempt to satisfy the affinity policy.
 type AffinityPolicy string
 
@@ -466,6 +487,7 @@ type AggregateBgpMessageHistory struct {
 	// SwitchHistories is bGP history organized by switch.
 	SwitchHistories []SwitchBgpHistory `json:"switch_histories" yaml:"switch_histories"`
 }
+
 
 // AlertClass is an alert class.
 //
@@ -479,6 +501,7 @@ type AlertClass struct {
 	Name string `json:"name" yaml:"name"`
 }
 
+
 // AlertClassResultsPage is a single page of results
 //
 // Required fields:
@@ -489,6 +512,7 @@ type AlertClassResultsPage struct {
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
+
 
 // AlertDelivery is a delivery of a webhook event.
 //
@@ -520,6 +544,7 @@ type AlertDelivery struct {
 	Trigger AlertDeliveryTrigger `json:"trigger" yaml:"trigger"`
 }
 
+
 // AlertDeliveryAttemptsWebhook is a list of attempts to deliver an alert to a webhook receiver.
 //
 // Required fields:
@@ -528,14 +553,17 @@ type AlertDeliveryAttemptsWebhook struct {
 	Webhook []WebhookDeliveryAttempt `json:"webhook" yaml:"webhook"`
 }
 
+
 // AlertDeliveryAttempts is a list of attempts to deliver an alert to a receiver.
-//
+// 
 // The type of the delivery attempt model depends on the receiver type, as it may contain information specific to
 // that delivery mechanism. For example, webhook delivery attempts contain the HTTP status code of the webhook request.
+// 
 type AlertDeliveryAttempts struct {
 	// Webhook is the type definition for a Webhook.
 	Webhook []WebhookDeliveryAttempt `json:"webhook,omitempty" yaml:"webhook,omitempty"`
 }
+
 
 // AlertDeliveryId is the type definition for a AlertDeliveryId.
 //
@@ -544,6 +572,7 @@ type AlertDeliveryAttempts struct {
 type AlertDeliveryId struct {
 	DeliveryId string `json:"delivery_id" yaml:"delivery_id"`
 }
+
 
 // AlertDeliveryResultsPage is a single page of results
 //
@@ -556,8 +585,9 @@ type AlertDeliveryResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // AlertDeliveryState is the webhook event has not yet been delivered successfully.
-//
+// 
 // Either no delivery attempts have yet been performed, or the delivery has failed at least once but has retries
 // remaining.
 type AlertDeliveryState string
@@ -573,13 +603,14 @@ type AlertProbeResult struct {
 	// Probe is the outcome of the probe delivery.
 	Probe AlertDelivery `json:"probe" yaml:"probe"`
 	// ResendsStarted is if the probe request succeeded, and resending failed deliveries on success was requested, the
-	// number of new delivery attempts started. Otherwise, if the probe did not succeed, or resending failed deliveries
-	// was not requested, this is null.
-	//
-	// Note that this may be 0, if there were no events found which had not been delivered successfully to this receiver.
-	//
+// number of new delivery attempts started. Otherwise, if the probe did not succeed, or resending failed deliveries
+// was not requested, this is null.
+// 
+// Note that this may be 0, if there were no events found which had not been delivered successfully to this receiver.
+// 
 	ResendsStarted *int `json:"resends_started,omitempty" yaml:"resends_started,omitempty"`
 }
+
 
 // AlertReceiver is the configuration for an alert receiver.
 //
@@ -608,10 +639,12 @@ type AlertReceiver struct {
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
 
+
 // alertReceiverKindVariant is implemented by AlertReceiverKind variants.
 type alertReceiverKindVariant interface {
 	isAlertReceiverKindVariant()
 }
+
 
 // AlertReceiverKindKind is the type definition for a AlertReceiverKindKind.
 type AlertReceiverKindKind string
@@ -626,9 +659,10 @@ type AlertReceiverKindWebhook struct {
 
 func (AlertReceiverKindWebhook) isAlertReceiverKindVariant() {}
 
+
 // AlertReceiverKind is the possible alert delivery mechanisms for an alert receiver.
 type AlertReceiverKind struct {
-	Value alertReceiverKindVariant
+	Value alertReceiverKindVariant 
 }
 
 func (v AlertReceiverKind) Kind() AlertReceiverKindKind {
@@ -686,12 +720,15 @@ func (v AlertReceiverKind) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsWebhook attempts to convert the AlertReceiverKind to a AlertReceiverKindWebhook.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v AlertReceiverKind) AsWebhook() (*AlertReceiverKindWebhook, bool) {
 	val, ok := v.Value.(*AlertReceiverKindWebhook)
 	return val, ok
 }
+
 
 // AlertReceiverResultsPage is a single page of results
 //
@@ -703,6 +740,7 @@ type AlertReceiverResultsPage struct {
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
+
 
 // AlertSubscription is a webhook event class subscription matches either a single event class exactly, or
 // a glob pattern including wildcards that may match multiple event classes
@@ -717,6 +755,7 @@ type AlertSubscriptionCreate struct {
 	Subscription AlertSubscription `json:"subscription" yaml:"subscription"`
 }
 
+
 // AlertSubscriptionCreated is the type definition for a AlertSubscriptionCreated.
 //
 // Required fields:
@@ -725,6 +764,7 @@ type AlertSubscriptionCreated struct {
 	// Subscription is the new subscription added to the receiver.
 	Subscription AlertSubscription `json:"subscription" yaml:"subscription"`
 }
+
 
 // AllowList is allowlist of IPs or subnets that can make requests to user-facing services.
 //
@@ -741,6 +781,7 @@ type AllowList struct {
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
 
+
 // AllowListUpdate is parameters for updating allowed source IPs
 //
 // Required fields:
@@ -750,10 +791,12 @@ type AllowListUpdate struct {
 	AllowedIps AllowedSourceIps `json:"allowed_ips" yaml:"allowed_ips"`
 }
 
+
 // allowedSourceIpsVariant is implemented by AllowedSourceIps variants.
 type allowedSourceIpsVariant interface {
 	isAllowedSourceIpsVariant()
 }
+
 
 // AllowedSourceIpsAllow is the type definition for a AllowedSourceIpsAllow.
 type AllowedSourceIpsAllow string
@@ -764,6 +807,7 @@ type AllowedSourceIpsAny struct {
 
 func (AllowedSourceIpsAny) isAllowedSourceIpsVariant() {}
 
+
 // AllowedSourceIpsList is a variant of AllowedSourceIps.
 type AllowedSourceIpsList struct {
 	Ips []IpNet `json:"ips" yaml:"ips"`
@@ -771,9 +815,10 @@ type AllowedSourceIpsList struct {
 
 func (AllowedSourceIpsList) isAllowedSourceIpsVariant() {}
 
+
 // AllowedSourceIps is description of source IPs allowed to reach rack services.
 type AllowedSourceIps struct {
-	Value allowedSourceIpsVariant
+	Value allowedSourceIpsVariant 
 }
 
 func (v AllowedSourceIps) Allow() AllowedSourceIpsAllow {
@@ -835,6 +880,8 @@ func (v AllowedSourceIps) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsAny attempts to convert the AllowedSourceIps to a AllowedSourceIpsAny.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v AllowedSourceIps) AsAny() (*AllowedSourceIpsAny, bool) {
@@ -848,6 +895,7 @@ func (v AllowedSourceIps) AsList() (*AllowedSourceIpsList, bool) {
 	val, ok := v.Value.(*AllowedSourceIpsList)
 	return val, ok
 }
+
 
 // AntiAffinityGroup is view of an Anti-Affinity Group
 //
@@ -870,15 +918,16 @@ type AntiAffinityGroup struct {
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name" yaml:"name"`
 	// Policy is affinity policy used to describe "what to do when a request cannot be satisfied"
-	//
-	// Used for both Affinity and Anti-Affinity Groups
-	Policy    AffinityPolicy `json:"policy" yaml:"policy"`
-	ProjectId string         `json:"project_id" yaml:"project_id"`
+// 
+// Used for both Affinity and Anti-Affinity Groups
+	Policy AffinityPolicy `json:"policy" yaml:"policy"`
+	ProjectId string `json:"project_id" yaml:"project_id"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
+
 
 // AntiAffinityGroupCreate is create-time parameters for an `AntiAffinityGroup`
 //
@@ -892,19 +941,21 @@ type AntiAffinityGroupCreate struct {
 	// FailureDomain is describes the scope of affinity for the purposes of co-location.
 	FailureDomain FailureDomain `json:"failure_domain" yaml:"failure_domain"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 	// Policy is affinity policy used to describe "what to do when a request cannot be satisfied"
-	//
-	// Used for both Affinity and Anti-Affinity Groups
+// 
+// Used for both Affinity and Anti-Affinity Groups
 	Policy AffinityPolicy `json:"policy" yaml:"policy"`
 }
+
 
 // antiAffinityGroupMemberVariant is implemented by AntiAffinityGroupMember variants.
 type antiAffinityGroupMemberVariant interface {
 	isAntiAffinityGroupMemberVariant()
 }
+
 
 // AntiAffinityGroupMemberType is the type definition for a AntiAffinityGroupMemberType.
 type AntiAffinityGroupMemberType string
@@ -918,15 +969,16 @@ type AntiAffinityGroupMemberType string
 type AntiAffinityGroupMemberInstanceValue struct {
 	Id string `json:"id" yaml:"id"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 	// RunState is running state of an Instance (primarily: booted or stopped)
-	//
-	// This typically reflects whether it's starting, running, stopping, or stopped, but also includes states related
-	// to the Instance's lifecycle
+// 
+// This typically reflects whether it's starting, running, stopping, or stopped, but also includes states related
+// to the Instance's lifecycle
 	RunState InstanceState `json:"run_state" yaml:"run_state"`
 }
+
 
 // AntiAffinityGroupMemberInstance is a variant of AntiAffinityGroupMember.
 type AntiAffinityGroupMemberInstance struct {
@@ -935,13 +987,14 @@ type AntiAffinityGroupMemberInstance struct {
 
 func (AntiAffinityGroupMemberInstance) isAntiAffinityGroupMemberVariant() {}
 
+
 // AntiAffinityGroupMember is a member of an Anti-Affinity Group
-//
+// 
 // Membership in a group is not exclusive - members may belong to multiple affinity / anti-affinity groups.
-//
+// 
 // Anti-Affinity Groups can contain up to 32 members.
 type AntiAffinityGroupMember struct {
-	Value antiAffinityGroupMemberVariant
+	Value antiAffinityGroupMemberVariant 
 }
 
 func (v AntiAffinityGroupMember) Type() AntiAffinityGroupMemberType {
@@ -999,12 +1052,15 @@ func (v AntiAffinityGroupMember) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsInstance attempts to convert the AntiAffinityGroupMember to a AntiAffinityGroupMemberInstance.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v AntiAffinityGroupMember) AsInstance() (*AntiAffinityGroupMemberInstance, bool) {
 	val, ok := v.Value.(*AntiAffinityGroupMemberInstance)
 	return val, ok
 }
+
 
 // AntiAffinityGroupMemberResultsPage is a single page of results
 //
@@ -1017,6 +1073,7 @@ type AntiAffinityGroupMemberResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // AntiAffinityGroupResultsPage is a single page of results
 //
 // Required fields:
@@ -1028,11 +1085,13 @@ type AntiAffinityGroupResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // AntiAffinityGroupUpdate is updateable properties of an `AntiAffinityGroup`
 type AntiAffinityGroupUpdate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 }
+
 
 // AuditLogEntry is audit log entry
 //
@@ -1049,10 +1108,10 @@ type AntiAffinityGroupUpdate struct {
 type AuditLogEntry struct {
 	Actor AuditLogEntryActor `json:"actor" yaml:"actor"`
 	// AuthMethod is how the user authenticated the request (access token, session, or SCIM token). Null for
-	// unauthenticated requests like login attempts.
+// unauthenticated requests like login attempts.
 	AuthMethod AuthMethod `json:"auth_method,omitempty" yaml:"auth_method,omitempty"`
 	// CredentialId is iD of the credential used for authentication. Null for unauthenticated requests. The value
-	// of `auth_method` indicates what kind of credential it is (access token, session, or SCIM token).
+// of `auth_method` indicates what kind of credential it is (access token, session, or SCIM token).
 	CredentialId string `json:"credential_id,omitempty" yaml:"credential_id,omitempty"`
 	// Id is unique identifier for the audit log entry
 	Id string `json:"id" yaml:"id"`
@@ -1061,7 +1120,7 @@ type AuditLogEntry struct {
 	// RequestId is request ID for tracing requests through the system
 	RequestId string `json:"request_id" yaml:"request_id"`
 	// RequestUri is uRI of the request, truncated to 512 characters. Will only include host and scheme for HTTP/2
-	// requests. For HTTP/1.1, the URI will consist of only the path and query.
+// requests. For HTTP/1.1, the URI will consist of only the path and query.
 	RequestUri string `json:"request_uri" yaml:"request_uri"`
 	// Result is result of the operation
 	Result AuditLogEntryResult `json:"result" yaml:"result"`
@@ -1075,10 +1134,12 @@ type AuditLogEntry struct {
 	UserAgent string `json:"user_agent,omitempty" yaml:"user_agent,omitempty"`
 }
 
+
 // auditLogEntryActorVariant is implemented by AuditLogEntryActor variants.
 type auditLogEntryActorVariant interface {
 	isAuditLogEntryActorVariant()
 }
+
 
 // AuditLogEntryActorKind is the type definition for a AuditLogEntryActorKind.
 type AuditLogEntryActorKind string
@@ -1090,13 +1151,15 @@ type AuditLogEntryActorUserBuiltin struct {
 
 func (AuditLogEntryActorUserBuiltin) isAuditLogEntryActorVariant() {}
 
+
 // AuditLogEntryActorSiloUser is a variant of AuditLogEntryActor.
 type AuditLogEntryActorSiloUser struct {
-	SiloId     string `json:"silo_id" yaml:"silo_id"`
+	SiloId string `json:"silo_id" yaml:"silo_id"`
 	SiloUserId string `json:"silo_user_id" yaml:"silo_user_id"`
 }
 
 func (AuditLogEntryActorSiloUser) isAuditLogEntryActorVariant() {}
+
 
 // AuditLogEntryActorScim is a variant of AuditLogEntryActor.
 type AuditLogEntryActorScim struct {
@@ -1105,15 +1168,17 @@ type AuditLogEntryActorScim struct {
 
 func (AuditLogEntryActorScim) isAuditLogEntryActorVariant() {}
 
+
 // AuditLogEntryActorUnauthenticated is a variant of AuditLogEntryActor.
 type AuditLogEntryActorUnauthenticated struct {
 }
 
 func (AuditLogEntryActorUnauthenticated) isAuditLogEntryActorVariant() {}
 
+
 // AuditLogEntryActor is the type definition for a AuditLogEntryActor.
 type AuditLogEntryActor struct {
-	Value auditLogEntryActorVariant
+	Value auditLogEntryActorVariant 
 }
 
 func (v AuditLogEntryActor) Kind() AuditLogEntryActorKind {
@@ -1183,6 +1248,8 @@ func (v AuditLogEntryActor) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsUserBuiltin attempts to convert the AuditLogEntryActor to a AuditLogEntryActorUserBuiltin.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v AuditLogEntryActor) AsUserBuiltin() (*AuditLogEntryActorUserBuiltin, bool) {
@@ -1211,10 +1278,12 @@ func (v AuditLogEntryActor) AsUnauthenticated() (*AuditLogEntryActorUnauthentica
 	return val, ok
 }
 
+
 // auditLogEntryResultVariant is implemented by AuditLogEntryResult variants.
 type auditLogEntryResultVariant interface {
 	isAuditLogEntryResultVariant()
 }
+
 
 // AuditLogEntryResultKind is the type definition for a AuditLogEntryResultKind.
 type AuditLogEntryResultKind string
@@ -1227,9 +1296,10 @@ type AuditLogEntryResultSuccess struct {
 
 func (AuditLogEntryResultSuccess) isAuditLogEntryResultVariant() {}
 
+
 // AuditLogEntryResultError is a variant of AuditLogEntryResult.
 type AuditLogEntryResultError struct {
-	ErrorCode    string `json:"error_code,omitempty" yaml:"error_code,omitempty"`
+	ErrorCode string `json:"error_code,omitempty" yaml:"error_code,omitempty"`
 	ErrorMessage string `json:"error_message" yaml:"error_message"`
 	// HttpStatusCode is hTTP status code
 	HttpStatusCode *int `json:"http_status_code" yaml:"http_status_code"`
@@ -1237,15 +1307,17 @@ type AuditLogEntryResultError struct {
 
 func (AuditLogEntryResultError) isAuditLogEntryResultVariant() {}
 
+
 // AuditLogEntryResultUnknown is a variant of AuditLogEntryResult.
 type AuditLogEntryResultUnknown struct {
 }
 
 func (AuditLogEntryResultUnknown) isAuditLogEntryResultVariant() {}
 
+
 // AuditLogEntryResult is result of an audit log entry
 type AuditLogEntryResult struct {
-	Value auditLogEntryResultVariant
+	Value auditLogEntryResultVariant 
 }
 
 func (v AuditLogEntryResult) Kind() AuditLogEntryResultKind {
@@ -1311,6 +1383,8 @@ func (v AuditLogEntryResult) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsSuccess attempts to convert the AuditLogEntryResult to a AuditLogEntryResultSuccess.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v AuditLogEntryResult) AsSuccess() (*AuditLogEntryResultSuccess, bool) {
@@ -1332,6 +1406,7 @@ func (v AuditLogEntryResult) AsUnknown() (*AuditLogEntryResultUnknown, bool) {
 	return val, ok
 }
 
+
 // AuditLogEntryResultsPage is a single page of results
 //
 // Required fields:
@@ -1342,6 +1417,7 @@ type AuditLogEntryResultsPage struct {
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
+
 
 // AuthMethod is console session cookie
 type AuthMethod string
@@ -1356,13 +1432,14 @@ type AuthzScope string
 // - Revision
 // - Serial
 type Baseboard struct {
-	Part     string `json:"part" yaml:"part"`
-	Revision *int   `json:"revision" yaml:"revision"`
-	Serial   string `json:"serial" yaml:"serial"`
+	Part string `json:"part" yaml:"part"`
+	Revision *int `json:"revision" yaml:"revision"`
+	Serial string `json:"serial" yaml:"serial"`
 }
 
+
 // BaseboardId is a representation of a Baseboard ID as used in the inventory subsystem.
-//
+// 
 // This type is essentially the same as a `Baseboard` except it doesn't have a revision or HW type (Gimlet, PC,
 // Unknown).
 //
@@ -1375,6 +1452,7 @@ type BaseboardId struct {
 	// SerialNumber is serial number (unique for a given part number)
 	SerialNumber string `json:"serial_number" yaml:"serial_number"`
 }
+
 
 // BfdMode is bFD connection mode.
 type BfdMode string
@@ -1391,6 +1469,7 @@ type BfdSessionDisable struct {
 	Switch Name `json:"switch" yaml:"switch"`
 }
 
+
 // BfdSessionEnable is information about a bidirectional forwarding detection (BFD) session.
 //
 // Required fields:
@@ -1401,21 +1480,22 @@ type BfdSessionDisable struct {
 // - Switch
 type BfdSessionEnable struct {
 	// DetectionThreshold is the negotiated Control packet transmission interval, multiplied by this variable, will
-	// be the Detection Time for this session (as seen by the remote system)
+// be the Detection Time for this session (as seen by the remote system)
 	DetectionThreshold *int `json:"detection_threshold" yaml:"detection_threshold"`
 	// Local is address the Oxide switch will listen on for BFD traffic. If `None` then the unspecified address (0.0.0.0
-	// or ::) is used.
+// or ::) is used.
 	Local string `json:"local,omitempty" yaml:"local,omitempty"`
 	// Mode is select either single-hop (RFC 5881) or multi-hop (RFC 5883)
 	Mode BfdMode `json:"mode" yaml:"mode"`
 	// Remote is address of the remote peer to establish a BFD session with.
 	Remote string `json:"remote" yaml:"remote"`
 	// RequiredRx is the minimum interval, in microseconds, between received BFD Control packets that this system
-	// requires
+// requires
 	RequiredRx *int `json:"required_rx" yaml:"required_rx"`
 	// Switch is the switch to enable this session on. Must be `switch0` or `switch1`.
 	Switch Name `json:"switch" yaml:"switch"`
 }
+
 
 // BfdState is a stable down state. Non-responsive to incoming messages.
 type BfdState string
@@ -1430,18 +1510,19 @@ type BfdState string
 // - State
 // - Switch
 type BfdStatus struct {
-	DetectionThreshold *int   `json:"detection_threshold" yaml:"detection_threshold"`
-	Local              string `json:"local,omitempty" yaml:"local,omitempty"`
+	DetectionThreshold *int `json:"detection_threshold" yaml:"detection_threshold"`
+	Local string `json:"local,omitempty" yaml:"local,omitempty"`
 	// Mode is bFD connection mode.
-	Mode       BfdMode  `json:"mode" yaml:"mode"`
-	Peer       string   `json:"peer" yaml:"peer"`
-	RequiredRx *int     `json:"required_rx" yaml:"required_rx"`
-	State      BfdState `json:"state" yaml:"state"`
+	Mode BfdMode `json:"mode" yaml:"mode"`
+	Peer string `json:"peer" yaml:"peer"`
+	RequiredRx *int `json:"required_rx" yaml:"required_rx"`
+	State BfdState `json:"state" yaml:"state"`
 	// Switch is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Switch Name `json:"switch" yaml:"switch"`
 }
+
 
 // BgpAnnounceSet is represents a BGP announce set by id. The id can be used with other API calls to view
 // and manage the announce set.
@@ -1465,6 +1546,7 @@ type BgpAnnounceSet struct {
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
 
+
 // BgpAnnounceSetCreate is parameters for creating a named set of BGP announcements.
 //
 // Required fields:
@@ -1474,12 +1556,13 @@ type BgpAnnounceSet struct {
 type BgpAnnounceSetCreate struct {
 	// Announcement is the announcements in this set.
 	Announcement []BgpAnnouncementCreate `json:"announcement" yaml:"announcement"`
-	Description  string                  `json:"description" yaml:"description"`
+	Description string `json:"description" yaml:"description"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 }
+
 
 // BgpAnnouncement is a BGP announcement tied to an address lot block.
 //
@@ -1496,6 +1579,7 @@ type BgpAnnouncement struct {
 	Network IpNet `json:"network" yaml:"network"`
 }
 
+
 // BgpAnnouncementCreate is a BGP announcement tied to a particular address lot block.
 //
 // Required fields:
@@ -1507,6 +1591,7 @@ type BgpAnnouncementCreate struct {
 	// Network is the network being announced.
 	Network IpNet `json:"network" yaml:"network"`
 }
+
 
 // BgpConfig is a base BGP configuration.
 //
@@ -1534,6 +1619,7 @@ type BgpConfig struct {
 	Vrf string `json:"vrf,omitempty" yaml:"vrf,omitempty"`
 }
 
+
 // BgpConfigCreate is parameters for creating a BGP configuration. This includes an autonomous system number
 // (ASN) and a virtual routing and forwarding (VRF) identifier.
 //
@@ -1544,16 +1630,17 @@ type BgpConfig struct {
 // - Name
 type BgpConfigCreate struct {
 	// Asn is the autonomous system number of this BGP configuration.
-	Asn              *int     `json:"asn" yaml:"asn"`
+	Asn *int `json:"asn" yaml:"asn"`
 	BgpAnnounceSetId NameOrId `json:"bgp_announce_set_id" yaml:"bgp_announce_set_id"`
-	Description      string   `json:"description" yaml:"description"`
+	Description string `json:"description" yaml:"description"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 	// Vrf is optional virtual routing and forwarding identifier for this BGP configuration.
 	Vrf Name `json:"vrf,omitempty" yaml:"vrf,omitempty"`
 }
+
 
 // BgpConfigResultsPage is a single page of results
 //
@@ -1566,6 +1653,7 @@ type BgpConfigResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // BgpExported is the current status of a BGP peer.
 //
 // Required fields:
@@ -1574,6 +1662,7 @@ type BgpExported struct {
 	// Exports is exported routes indexed by peer address.
 	Exports map[string][]Ipv4Net `json:"exports" yaml:"exports"`
 }
+
 
 // BgpImportedRouteIpv4 is a route imported from a BGP peer.
 //
@@ -1592,6 +1681,7 @@ type BgpImportedRouteIpv4 struct {
 	// Switch is switch the route is imported into.
 	Switch SwitchLocation `json:"switch" yaml:"switch"`
 }
+
 
 // BgpMessageHistory is the type definition for a BgpMessageHistory.
 type BgpMessageHistory string
@@ -1635,8 +1725,8 @@ type BgpPeer struct {
 	// IdleHoldTime is how long to hold a peer in idle before attempting a new session (seconds).
 	IdleHoldTime *int `json:"idle_hold_time" yaml:"idle_hold_time"`
 	// InterfaceName is the name of interface to peer on. This is relative to the port configuration this BGP
-	// peer configuration is a part of. For example this value could be phy0 to refer to a primary physical interface.
-	// Or it could be vlan47 to refer to a VLAN interface.
+// peer configuration is a part of. For example this value could be phy0 to refer to a primary physical interface.
+// Or it could be vlan47 to refer to a VLAN interface.
 	InterfaceName Name `json:"interface_name" yaml:"interface_name"`
 	// Keepalive is how often to send keepalive requests (seconds).
 	Keepalive *int `json:"keepalive" yaml:"keepalive"`
@@ -1654,6 +1744,7 @@ type BgpPeer struct {
 	VlanId *int `json:"vlan_id,omitempty" yaml:"vlan_id,omitempty"`
 }
 
+
 // BgpPeerConfig is the type definition for a BgpPeerConfig.
 //
 // Required fields:
@@ -1661,10 +1752,11 @@ type BgpPeer struct {
 // - Peers
 type BgpPeerConfig struct {
 	// LinkName is link that the peer is reachable on. On ports that are not broken out, this is always phy0. On
-	// a 2x breakout the options are phy0 and phy1, on 4x phy0-phy3, etc.
-	LinkName Name      `json:"link_name" yaml:"link_name"`
-	Peers    []BgpPeer `json:"peers" yaml:"peers"`
+// a 2x breakout the options are phy0 and phy1, on 4x phy0-phy3, etc.
+	LinkName Name `json:"link_name" yaml:"link_name"`
+	Peers []BgpPeer `json:"peers" yaml:"peers"`
 }
+
 
 // BgpPeerState is initial state. Refuse all incoming BGP connections. No resources allocated to peer.
 type BgpPeerState string
@@ -1693,10 +1785,12 @@ type BgpPeerStatus struct {
 	Switch SwitchLocation `json:"switch" yaml:"switch"`
 }
 
+
 // binRangedoubleVariant is implemented by BinRangedouble variants.
 type binRangedoubleVariant interface {
 	isBinRangedoubleVariant()
 }
+
 
 // BinRangedoubleType is the type definition for a BinRangedoubleType.
 type BinRangedoubleType string
@@ -1708,13 +1802,15 @@ type BinRangedoubleRangeTo struct {
 
 func (BinRangedoubleRangeTo) isBinRangedoubleVariant() {}
 
+
 // BinRangedoubleRange is a variant of BinRangedouble.
 type BinRangedoubleRange struct {
-	End   float64 `json:"end" yaml:"end"`
+	End float64 `json:"end" yaml:"end"`
 	Start float64 `json:"start" yaml:"start"`
 }
 
 func (BinRangedoubleRange) isBinRangedoubleVariant() {}
+
 
 // BinRangedoubleRangeFrom is a variant of BinRangedouble.
 type BinRangedoubleRangeFrom struct {
@@ -1723,12 +1819,13 @@ type BinRangedoubleRangeFrom struct {
 
 func (BinRangedoubleRangeFrom) isBinRangedoubleVariant() {}
 
+
 // BinRangedouble is a type storing a range over `T`.
-//
+// 
 // This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangedouble struct {
-	Value binRangedoubleVariant
+	Value binRangedoubleVariant 
 }
 
 func (v BinRangedouble) Type() BinRangedoubleType {
@@ -1794,6 +1891,8 @@ func (v BinRangedouble) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsRangeTo attempts to convert the BinRangedouble to a BinRangedoubleRangeTo.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v BinRangedouble) AsRangeTo() (*BinRangedoubleRangeTo, bool) {
@@ -1815,10 +1914,12 @@ func (v BinRangedouble) AsRangeFrom() (*BinRangedoubleRangeFrom, bool) {
 	return val, ok
 }
 
+
 // binRangefloatVariant is implemented by BinRangefloat variants.
 type binRangefloatVariant interface {
 	isBinRangefloatVariant()
 }
+
 
 // BinRangefloatType is the type definition for a BinRangefloatType.
 type BinRangefloatType string
@@ -1830,13 +1931,15 @@ type BinRangefloatRangeTo struct {
 
 func (BinRangefloatRangeTo) isBinRangefloatVariant() {}
 
+
 // BinRangefloatRange is a variant of BinRangefloat.
 type BinRangefloatRange struct {
-	End   float64 `json:"end" yaml:"end"`
+	End float64 `json:"end" yaml:"end"`
 	Start float64 `json:"start" yaml:"start"`
 }
 
 func (BinRangefloatRange) isBinRangefloatVariant() {}
+
 
 // BinRangefloatRangeFrom is a variant of BinRangefloat.
 type BinRangefloatRangeFrom struct {
@@ -1845,12 +1948,13 @@ type BinRangefloatRangeFrom struct {
 
 func (BinRangefloatRangeFrom) isBinRangefloatVariant() {}
 
+
 // BinRangefloat is a type storing a range over `T`.
-//
+// 
 // This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangefloat struct {
-	Value binRangefloatVariant
+	Value binRangefloatVariant 
 }
 
 func (v BinRangefloat) Type() BinRangefloatType {
@@ -1916,6 +2020,8 @@ func (v BinRangefloat) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsRangeTo attempts to convert the BinRangefloat to a BinRangefloatRangeTo.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v BinRangefloat) AsRangeTo() (*BinRangefloatRangeTo, bool) {
@@ -1937,10 +2043,12 @@ func (v BinRangefloat) AsRangeFrom() (*BinRangefloatRangeFrom, bool) {
 	return val, ok
 }
 
+
 // binRangeint16Variant is implemented by BinRangeint16 variants.
 type binRangeint16Variant interface {
 	isBinRangeint16Variant()
 }
+
 
 // BinRangeint16Type is the type definition for a BinRangeint16Type.
 type BinRangeint16Type string
@@ -1952,13 +2060,15 @@ type BinRangeint16RangeTo struct {
 
 func (BinRangeint16RangeTo) isBinRangeint16Variant() {}
 
+
 // BinRangeint16Range is a variant of BinRangeint16.
 type BinRangeint16Range struct {
-	End   *int `json:"end" yaml:"end"`
+	End *int `json:"end" yaml:"end"`
 	Start *int `json:"start" yaml:"start"`
 }
 
 func (BinRangeint16Range) isBinRangeint16Variant() {}
+
 
 // BinRangeint16RangeFrom is a variant of BinRangeint16.
 type BinRangeint16RangeFrom struct {
@@ -1967,12 +2077,13 @@ type BinRangeint16RangeFrom struct {
 
 func (BinRangeint16RangeFrom) isBinRangeint16Variant() {}
 
+
 // BinRangeint16 is a type storing a range over `T`.
-//
+// 
 // This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeint16 struct {
-	Value binRangeint16Variant
+	Value binRangeint16Variant 
 }
 
 func (v BinRangeint16) Type() BinRangeint16Type {
@@ -2038,6 +2149,8 @@ func (v BinRangeint16) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsRangeTo attempts to convert the BinRangeint16 to a BinRangeint16RangeTo.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v BinRangeint16) AsRangeTo() (*BinRangeint16RangeTo, bool) {
@@ -2059,10 +2172,12 @@ func (v BinRangeint16) AsRangeFrom() (*BinRangeint16RangeFrom, bool) {
 	return val, ok
 }
 
+
 // binRangeint32Variant is implemented by BinRangeint32 variants.
 type binRangeint32Variant interface {
 	isBinRangeint32Variant()
 }
+
 
 // BinRangeint32Type is the type definition for a BinRangeint32Type.
 type BinRangeint32Type string
@@ -2074,13 +2189,15 @@ type BinRangeint32RangeTo struct {
 
 func (BinRangeint32RangeTo) isBinRangeint32Variant() {}
 
+
 // BinRangeint32Range is a variant of BinRangeint32.
 type BinRangeint32Range struct {
-	End   *int `json:"end" yaml:"end"`
+	End *int `json:"end" yaml:"end"`
 	Start *int `json:"start" yaml:"start"`
 }
 
 func (BinRangeint32Range) isBinRangeint32Variant() {}
+
 
 // BinRangeint32RangeFrom is a variant of BinRangeint32.
 type BinRangeint32RangeFrom struct {
@@ -2089,12 +2206,13 @@ type BinRangeint32RangeFrom struct {
 
 func (BinRangeint32RangeFrom) isBinRangeint32Variant() {}
 
+
 // BinRangeint32 is a type storing a range over `T`.
-//
+// 
 // This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeint32 struct {
-	Value binRangeint32Variant
+	Value binRangeint32Variant 
 }
 
 func (v BinRangeint32) Type() BinRangeint32Type {
@@ -2160,6 +2278,8 @@ func (v BinRangeint32) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsRangeTo attempts to convert the BinRangeint32 to a BinRangeint32RangeTo.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v BinRangeint32) AsRangeTo() (*BinRangeint32RangeTo, bool) {
@@ -2181,10 +2301,12 @@ func (v BinRangeint32) AsRangeFrom() (*BinRangeint32RangeFrom, bool) {
 	return val, ok
 }
 
+
 // binRangeint64Variant is implemented by BinRangeint64 variants.
 type binRangeint64Variant interface {
 	isBinRangeint64Variant()
 }
+
 
 // BinRangeint64Type is the type definition for a BinRangeint64Type.
 type BinRangeint64Type string
@@ -2196,13 +2318,15 @@ type BinRangeint64RangeTo struct {
 
 func (BinRangeint64RangeTo) isBinRangeint64Variant() {}
 
+
 // BinRangeint64Range is a variant of BinRangeint64.
 type BinRangeint64Range struct {
-	End   *int `json:"end" yaml:"end"`
+	End *int `json:"end" yaml:"end"`
 	Start *int `json:"start" yaml:"start"`
 }
 
 func (BinRangeint64Range) isBinRangeint64Variant() {}
+
 
 // BinRangeint64RangeFrom is a variant of BinRangeint64.
 type BinRangeint64RangeFrom struct {
@@ -2211,12 +2335,13 @@ type BinRangeint64RangeFrom struct {
 
 func (BinRangeint64RangeFrom) isBinRangeint64Variant() {}
 
+
 // BinRangeint64 is a type storing a range over `T`.
-//
+// 
 // This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeint64 struct {
-	Value binRangeint64Variant
+	Value binRangeint64Variant 
 }
 
 func (v BinRangeint64) Type() BinRangeint64Type {
@@ -2282,6 +2407,8 @@ func (v BinRangeint64) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsRangeTo attempts to convert the BinRangeint64 to a BinRangeint64RangeTo.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v BinRangeint64) AsRangeTo() (*BinRangeint64RangeTo, bool) {
@@ -2303,10 +2430,12 @@ func (v BinRangeint64) AsRangeFrom() (*BinRangeint64RangeFrom, bool) {
 	return val, ok
 }
 
+
 // binRangeint8Variant is implemented by BinRangeint8 variants.
 type binRangeint8Variant interface {
 	isBinRangeint8Variant()
 }
+
 
 // BinRangeint8Type is the type definition for a BinRangeint8Type.
 type BinRangeint8Type string
@@ -2318,13 +2447,15 @@ type BinRangeint8RangeTo struct {
 
 func (BinRangeint8RangeTo) isBinRangeint8Variant() {}
 
+
 // BinRangeint8Range is a variant of BinRangeint8.
 type BinRangeint8Range struct {
-	End   *int `json:"end" yaml:"end"`
+	End *int `json:"end" yaml:"end"`
 	Start *int `json:"start" yaml:"start"`
 }
 
 func (BinRangeint8Range) isBinRangeint8Variant() {}
+
 
 // BinRangeint8RangeFrom is a variant of BinRangeint8.
 type BinRangeint8RangeFrom struct {
@@ -2333,12 +2464,13 @@ type BinRangeint8RangeFrom struct {
 
 func (BinRangeint8RangeFrom) isBinRangeint8Variant() {}
 
+
 // BinRangeint8 is a type storing a range over `T`.
-//
+// 
 // This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeint8 struct {
-	Value binRangeint8Variant
+	Value binRangeint8Variant 
 }
 
 func (v BinRangeint8) Type() BinRangeint8Type {
@@ -2404,6 +2536,8 @@ func (v BinRangeint8) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsRangeTo attempts to convert the BinRangeint8 to a BinRangeint8RangeTo.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v BinRangeint8) AsRangeTo() (*BinRangeint8RangeTo, bool) {
@@ -2425,10 +2559,12 @@ func (v BinRangeint8) AsRangeFrom() (*BinRangeint8RangeFrom, bool) {
 	return val, ok
 }
 
+
 // binRangeuint16Variant is implemented by BinRangeuint16 variants.
 type binRangeuint16Variant interface {
 	isBinRangeuint16Variant()
 }
+
 
 // BinRangeuint16Type is the type definition for a BinRangeuint16Type.
 type BinRangeuint16Type string
@@ -2440,13 +2576,15 @@ type BinRangeuint16RangeTo struct {
 
 func (BinRangeuint16RangeTo) isBinRangeuint16Variant() {}
 
+
 // BinRangeuint16Range is a variant of BinRangeuint16.
 type BinRangeuint16Range struct {
-	End   *int `json:"end" yaml:"end"`
+	End *int `json:"end" yaml:"end"`
 	Start *int `json:"start" yaml:"start"`
 }
 
 func (BinRangeuint16Range) isBinRangeuint16Variant() {}
+
 
 // BinRangeuint16RangeFrom is a variant of BinRangeuint16.
 type BinRangeuint16RangeFrom struct {
@@ -2455,12 +2593,13 @@ type BinRangeuint16RangeFrom struct {
 
 func (BinRangeuint16RangeFrom) isBinRangeuint16Variant() {}
 
+
 // BinRangeuint16 is a type storing a range over `T`.
-//
+// 
 // This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeuint16 struct {
-	Value binRangeuint16Variant
+	Value binRangeuint16Variant 
 }
 
 func (v BinRangeuint16) Type() BinRangeuint16Type {
@@ -2526,6 +2665,8 @@ func (v BinRangeuint16) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsRangeTo attempts to convert the BinRangeuint16 to a BinRangeuint16RangeTo.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v BinRangeuint16) AsRangeTo() (*BinRangeuint16RangeTo, bool) {
@@ -2547,10 +2688,12 @@ func (v BinRangeuint16) AsRangeFrom() (*BinRangeuint16RangeFrom, bool) {
 	return val, ok
 }
 
+
 // binRangeuint32Variant is implemented by BinRangeuint32 variants.
 type binRangeuint32Variant interface {
 	isBinRangeuint32Variant()
 }
+
 
 // BinRangeuint32Type is the type definition for a BinRangeuint32Type.
 type BinRangeuint32Type string
@@ -2562,13 +2705,15 @@ type BinRangeuint32RangeTo struct {
 
 func (BinRangeuint32RangeTo) isBinRangeuint32Variant() {}
 
+
 // BinRangeuint32Range is a variant of BinRangeuint32.
 type BinRangeuint32Range struct {
-	End   *int `json:"end" yaml:"end"`
+	End *int `json:"end" yaml:"end"`
 	Start *int `json:"start" yaml:"start"`
 }
 
 func (BinRangeuint32Range) isBinRangeuint32Variant() {}
+
 
 // BinRangeuint32RangeFrom is a variant of BinRangeuint32.
 type BinRangeuint32RangeFrom struct {
@@ -2577,12 +2722,13 @@ type BinRangeuint32RangeFrom struct {
 
 func (BinRangeuint32RangeFrom) isBinRangeuint32Variant() {}
 
+
 // BinRangeuint32 is a type storing a range over `T`.
-//
+// 
 // This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeuint32 struct {
-	Value binRangeuint32Variant
+	Value binRangeuint32Variant 
 }
 
 func (v BinRangeuint32) Type() BinRangeuint32Type {
@@ -2648,6 +2794,8 @@ func (v BinRangeuint32) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsRangeTo attempts to convert the BinRangeuint32 to a BinRangeuint32RangeTo.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v BinRangeuint32) AsRangeTo() (*BinRangeuint32RangeTo, bool) {
@@ -2669,10 +2817,12 @@ func (v BinRangeuint32) AsRangeFrom() (*BinRangeuint32RangeFrom, bool) {
 	return val, ok
 }
 
+
 // binRangeuint64Variant is implemented by BinRangeuint64 variants.
 type binRangeuint64Variant interface {
 	isBinRangeuint64Variant()
 }
+
 
 // BinRangeuint64Type is the type definition for a BinRangeuint64Type.
 type BinRangeuint64Type string
@@ -2684,13 +2834,15 @@ type BinRangeuint64RangeTo struct {
 
 func (BinRangeuint64RangeTo) isBinRangeuint64Variant() {}
 
+
 // BinRangeuint64Range is a variant of BinRangeuint64.
 type BinRangeuint64Range struct {
-	End   *int `json:"end" yaml:"end"`
+	End *int `json:"end" yaml:"end"`
 	Start *int `json:"start" yaml:"start"`
 }
 
 func (BinRangeuint64Range) isBinRangeuint64Variant() {}
+
 
 // BinRangeuint64RangeFrom is a variant of BinRangeuint64.
 type BinRangeuint64RangeFrom struct {
@@ -2699,12 +2851,13 @@ type BinRangeuint64RangeFrom struct {
 
 func (BinRangeuint64RangeFrom) isBinRangeuint64Variant() {}
 
+
 // BinRangeuint64 is a type storing a range over `T`.
-//
+// 
 // This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeuint64 struct {
-	Value binRangeuint64Variant
+	Value binRangeuint64Variant 
 }
 
 func (v BinRangeuint64) Type() BinRangeuint64Type {
@@ -2770,6 +2923,8 @@ func (v BinRangeuint64) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsRangeTo attempts to convert the BinRangeuint64 to a BinRangeuint64RangeTo.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v BinRangeuint64) AsRangeTo() (*BinRangeuint64RangeTo, bool) {
@@ -2791,10 +2946,12 @@ func (v BinRangeuint64) AsRangeFrom() (*BinRangeuint64RangeFrom, bool) {
 	return val, ok
 }
 
+
 // binRangeuint8Variant is implemented by BinRangeuint8 variants.
 type binRangeuint8Variant interface {
 	isBinRangeuint8Variant()
 }
+
 
 // BinRangeuint8Type is the type definition for a BinRangeuint8Type.
 type BinRangeuint8Type string
@@ -2806,13 +2963,15 @@ type BinRangeuint8RangeTo struct {
 
 func (BinRangeuint8RangeTo) isBinRangeuint8Variant() {}
 
+
 // BinRangeuint8Range is a variant of BinRangeuint8.
 type BinRangeuint8Range struct {
-	End   *int `json:"end" yaml:"end"`
+	End *int `json:"end" yaml:"end"`
 	Start *int `json:"start" yaml:"start"`
 }
 
 func (BinRangeuint8Range) isBinRangeuint8Variant() {}
+
 
 // BinRangeuint8RangeFrom is a variant of BinRangeuint8.
 type BinRangeuint8RangeFrom struct {
@@ -2821,12 +2980,13 @@ type BinRangeuint8RangeFrom struct {
 
 func (BinRangeuint8RangeFrom) isBinRangeuint8Variant() {}
 
+
 // BinRangeuint8 is a type storing a range over `T`.
-//
+// 
 // This type supports ranges similar to the `RangeTo`, `Range` and `RangeFrom` types in the standard library. Those
 // cover `(..end)`, `(start..end)`, and `(start..)` respectively.
 type BinRangeuint8 struct {
-	Value binRangeuint8Variant
+	Value binRangeuint8Variant 
 }
 
 func (v BinRangeuint8) Type() BinRangeuint8Type {
@@ -2892,6 +3052,8 @@ func (v BinRangeuint8) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsRangeTo attempts to convert the BinRangeuint8 to a BinRangeuint8RangeTo.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v BinRangeuint8) AsRangeTo() (*BinRangeuint8RangeTo, bool) {
@@ -2913,6 +3075,7 @@ func (v BinRangeuint8) AsRangeFrom() (*BinRangeuint8RangeFrom, bool) {
 	return val, ok
 }
 
+
 // Bindouble is type storing bin edges and a count of samples within it.
 //
 // Required fields:
@@ -2924,6 +3087,7 @@ type Bindouble struct {
 	// Range is the range of the support covered by this bin.
 	Range BinRangedouble `json:"range" yaml:"range"`
 }
+
 
 // Binfloat is type storing bin edges and a count of samples within it.
 //
@@ -2937,6 +3101,7 @@ type Binfloat struct {
 	Range BinRangefloat `json:"range" yaml:"range"`
 }
 
+
 // Binint16 is type storing bin edges and a count of samples within it.
 //
 // Required fields:
@@ -2948,6 +3113,7 @@ type Binint16 struct {
 	// Range is the range of the support covered by this bin.
 	Range BinRangeint16 `json:"range" yaml:"range"`
 }
+
 
 // Binint32 is type storing bin edges and a count of samples within it.
 //
@@ -2961,6 +3127,7 @@ type Binint32 struct {
 	Range BinRangeint32 `json:"range" yaml:"range"`
 }
 
+
 // Binint64 is type storing bin edges and a count of samples within it.
 //
 // Required fields:
@@ -2972,6 +3139,7 @@ type Binint64 struct {
 	// Range is the range of the support covered by this bin.
 	Range BinRangeint64 `json:"range" yaml:"range"`
 }
+
 
 // Binint8 is type storing bin edges and a count of samples within it.
 //
@@ -2985,6 +3153,7 @@ type Binint8 struct {
 	Range BinRangeint8 `json:"range" yaml:"range"`
 }
 
+
 // Binuint16 is type storing bin edges and a count of samples within it.
 //
 // Required fields:
@@ -2996,6 +3165,7 @@ type Binuint16 struct {
 	// Range is the range of the support covered by this bin.
 	Range BinRangeuint16 `json:"range" yaml:"range"`
 }
+
 
 // Binuint32 is type storing bin edges and a count of samples within it.
 //
@@ -3009,6 +3179,7 @@ type Binuint32 struct {
 	Range BinRangeuint32 `json:"range" yaml:"range"`
 }
 
+
 // Binuint64 is type storing bin edges and a count of samples within it.
 //
 // Required fields:
@@ -3021,6 +3192,7 @@ type Binuint64 struct {
 	Range BinRangeuint64 `json:"range" yaml:"range"`
 }
 
+
 // Binuint8 is type storing bin edges and a count of samples within it.
 //
 // Required fields:
@@ -3032,6 +3204,7 @@ type Binuint8 struct {
 	// Range is the range of the support covered by this bin.
 	Range BinRangeuint8 `json:"range" yaml:"range"`
 }
+
 
 // BlockSize is the type definition for a BlockSize.
 type BlockSize int
@@ -3066,6 +3239,7 @@ type Certificate struct {
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
 
+
 // CertificateCreate is create-time parameters for a `Certificate`
 //
 // Required fields:
@@ -3076,17 +3250,18 @@ type Certificate struct {
 // - Service
 type CertificateCreate struct {
 	// Cert is pEM-formatted string containing public certificate chain
-	Cert        string `json:"cert" yaml:"cert"`
+	Cert string `json:"cert" yaml:"cert"`
 	Description string `json:"description" yaml:"description"`
 	// Key is pEM-formatted string containing private key
 	Key string `json:"key" yaml:"key"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 	// Service is the service using this certificate
 	Service ServiceUsingCertificate `json:"service" yaml:"service"`
 }
+
 
 // CertificateResultsPage is a single page of results
 //
@@ -3099,6 +3274,7 @@ type CertificateResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // ConsoleSession is view of a console session
 //
 // Required fields:
@@ -3107,10 +3283,11 @@ type CertificateResultsPage struct {
 // - TimeLastUsed
 type ConsoleSession struct {
 	// Id is a unique, immutable, system-controlled identifier for the session
-	Id           string     `json:"id" yaml:"id"`
-	TimeCreated  *time.Time `json:"time_created" yaml:"time_created"`
+	Id string `json:"id" yaml:"id"`
+	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
 	TimeLastUsed *time.Time `json:"time_last_used" yaml:"time_last_used"`
 }
+
 
 // ConsoleSessionResultsPage is a single page of results
 //
@@ -3123,6 +3300,7 @@ type ConsoleSessionResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // Cumulativedouble is a cumulative or counter data type.
 //
 // Required fields:
@@ -3130,8 +3308,9 @@ type ConsoleSessionResultsPage struct {
 // - Value
 type Cumulativedouble struct {
 	StartTime *time.Time `json:"start_time" yaml:"start_time"`
-	Value     float64    `json:"value" yaml:"value"`
+	Value float64 `json:"value" yaml:"value"`
 }
+
 
 // Cumulativefloat is a cumulative or counter data type.
 //
@@ -3140,8 +3319,9 @@ type Cumulativedouble struct {
 // - Value
 type Cumulativefloat struct {
 	StartTime *time.Time `json:"start_time" yaml:"start_time"`
-	Value     float64    `json:"value" yaml:"value"`
+	Value float64 `json:"value" yaml:"value"`
 }
+
 
 // Cumulativeint64 is a cumulative or counter data type.
 //
@@ -3150,8 +3330,9 @@ type Cumulativefloat struct {
 // - Value
 type Cumulativeint64 struct {
 	StartTime *time.Time `json:"start_time" yaml:"start_time"`
-	Value     *int       `json:"value" yaml:"value"`
+	Value *int `json:"value" yaml:"value"`
 }
+
 
 // Cumulativeuint64 is a cumulative or counter data type.
 //
@@ -3160,8 +3341,9 @@ type Cumulativeint64 struct {
 // - Value
 type Cumulativeuint64 struct {
 	StartTime *time.Time `json:"start_time" yaml:"start_time"`
-	Value     *int       `json:"value" yaml:"value"`
+	Value *int `json:"value" yaml:"value"`
 }
+
 
 // CurrentUser is info about the current user
 //
@@ -3176,11 +3358,11 @@ type CurrentUser struct {
 	// DisplayName is human-readable name that can identify the user
 	DisplayName string `json:"display_name" yaml:"display_name"`
 	// FleetViewer is whether this user has the viewer role on the fleet. Used by the web console to determine whether
-	// to show system-level UI.
-	FleetViewer *bool  `json:"fleet_viewer" yaml:"fleet_viewer"`
-	Id          string `json:"id" yaml:"id"`
+// to show system-level UI.
+	FleetViewer *bool `json:"fleet_viewer" yaml:"fleet_viewer"`
+	Id string `json:"id" yaml:"id"`
 	// SiloAdmin is whether this user has the admin role on their silo. Used by the web console to determine whether
-	// to show admin-only UI elements.
+// to show admin-only UI elements.
 	SiloAdmin *bool `json:"silo_admin" yaml:"silo_admin"`
 	// SiloId is uuid of the silo to which this user belongs
 	SiloId string `json:"silo_id" yaml:"silo_id"`
@@ -3188,10 +3370,12 @@ type CurrentUser struct {
 	SiloName Name `json:"silo_name" yaml:"silo_name"`
 }
 
+
 // datumVariant is implemented by Datum variants.
 type datumVariant interface {
 	isDatumVariant()
 }
+
 
 // DatumType is the type definition for a DatumType.
 type DatumType string
@@ -3203,12 +3387,14 @@ type DatumBool struct {
 
 func (DatumBool) isDatumVariant() {}
 
+
 // DatumI8 is a variant of Datum.
 type DatumI8 struct {
 	Datum *int `json:"datum" yaml:"datum"`
 }
 
 func (DatumI8) isDatumVariant() {}
+
 
 // DatumU8 is a variant of Datum.
 type DatumU8 struct {
@@ -3217,12 +3403,14 @@ type DatumU8 struct {
 
 func (DatumU8) isDatumVariant() {}
 
+
 // DatumI16 is a variant of Datum.
 type DatumI16 struct {
 	Datum *int `json:"datum" yaml:"datum"`
 }
 
 func (DatumI16) isDatumVariant() {}
+
 
 // DatumU16 is a variant of Datum.
 type DatumU16 struct {
@@ -3231,12 +3419,14 @@ type DatumU16 struct {
 
 func (DatumU16) isDatumVariant() {}
 
+
 // DatumI32 is a variant of Datum.
 type DatumI32 struct {
 	Datum *int `json:"datum" yaml:"datum"`
 }
 
 func (DatumI32) isDatumVariant() {}
+
 
 // DatumU32 is a variant of Datum.
 type DatumU32 struct {
@@ -3245,12 +3435,14 @@ type DatumU32 struct {
 
 func (DatumU32) isDatumVariant() {}
 
+
 // DatumI64 is a variant of Datum.
 type DatumI64 struct {
 	Datum *int `json:"datum" yaml:"datum"`
 }
 
 func (DatumI64) isDatumVariant() {}
+
 
 // DatumU64 is a variant of Datum.
 type DatumU64 struct {
@@ -3259,12 +3451,14 @@ type DatumU64 struct {
 
 func (DatumU64) isDatumVariant() {}
 
+
 // DatumF32 is a variant of Datum.
 type DatumF32 struct {
 	Datum float64 `json:"datum" yaml:"datum"`
 }
 
 func (DatumF32) isDatumVariant() {}
+
 
 // DatumF64 is a variant of Datum.
 type DatumF64 struct {
@@ -3273,6 +3467,7 @@ type DatumF64 struct {
 
 func (DatumF64) isDatumVariant() {}
 
+
 // DatumString is a variant of Datum.
 type DatumString struct {
 	Datum string `json:"datum" yaml:"datum"`
@@ -3280,12 +3475,14 @@ type DatumString struct {
 
 func (DatumString) isDatumVariant() {}
 
+
 // DatumBytes is a variant of Datum.
 type DatumBytes struct {
 	Datum []int `json:"datum" yaml:"datum"`
 }
 
 func (DatumBytes) isDatumVariant() {}
+
 
 // DatumCumulativeI64 is a variant of Datum.
 type DatumCumulativeI64 struct {
@@ -3295,6 +3492,7 @@ type DatumCumulativeI64 struct {
 
 func (DatumCumulativeI64) isDatumVariant() {}
 
+
 // DatumCumulativeU64 is a variant of Datum.
 type DatumCumulativeU64 struct {
 	// Datum is a cumulative or counter data type.
@@ -3302,6 +3500,7 @@ type DatumCumulativeU64 struct {
 }
 
 func (DatumCumulativeU64) isDatumVariant() {}
+
 
 // DatumCumulativeF32 is a variant of Datum.
 type DatumCumulativeF32 struct {
@@ -3311,6 +3510,7 @@ type DatumCumulativeF32 struct {
 
 func (DatumCumulativeF32) isDatumVariant() {}
 
+
 // DatumCumulativeF64 is a variant of Datum.
 type DatumCumulativeF64 struct {
 	// Datum is a cumulative or counter data type.
@@ -3319,145 +3519,156 @@ type DatumCumulativeF64 struct {
 
 func (DatumCumulativeF64) isDatumVariant() {}
 
+
 // DatumHistogramI8 is a variant of Datum.
 type DatumHistogramI8 struct {
 	// Datum is histogram metric
-	//
-	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
-	// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
-	// the left, right, or both so that the bins extend to the entire range of the support.
-	//
-	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
+// 
+// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+// the left, right, or both so that the bins extend to the entire range of the support.
+// 
+// Note that any gaps, unsorted bins, or non-finite values will result in an error.
 	Datum Histogramint8 `json:"datum" yaml:"datum"`
 }
 
 func (DatumHistogramI8) isDatumVariant() {}
 
+
 // DatumHistogramU8 is a variant of Datum.
 type DatumHistogramU8 struct {
 	// Datum is histogram metric
-	//
-	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
-	// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
-	// the left, right, or both so that the bins extend to the entire range of the support.
-	//
-	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
+// 
+// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+// the left, right, or both so that the bins extend to the entire range of the support.
+// 
+// Note that any gaps, unsorted bins, or non-finite values will result in an error.
 	Datum Histogramuint8 `json:"datum" yaml:"datum"`
 }
 
 func (DatumHistogramU8) isDatumVariant() {}
 
+
 // DatumHistogramI16 is a variant of Datum.
 type DatumHistogramI16 struct {
 	// Datum is histogram metric
-	//
-	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
-	// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
-	// the left, right, or both so that the bins extend to the entire range of the support.
-	//
-	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
+// 
+// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+// the left, right, or both so that the bins extend to the entire range of the support.
+// 
+// Note that any gaps, unsorted bins, or non-finite values will result in an error.
 	Datum Histogramint16 `json:"datum" yaml:"datum"`
 }
 
 func (DatumHistogramI16) isDatumVariant() {}
 
+
 // DatumHistogramU16 is a variant of Datum.
 type DatumHistogramU16 struct {
 	// Datum is histogram metric
-	//
-	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
-	// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
-	// the left, right, or both so that the bins extend to the entire range of the support.
-	//
-	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
+// 
+// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+// the left, right, or both so that the bins extend to the entire range of the support.
+// 
+// Note that any gaps, unsorted bins, or non-finite values will result in an error.
 	Datum Histogramuint16 `json:"datum" yaml:"datum"`
 }
 
 func (DatumHistogramU16) isDatumVariant() {}
 
+
 // DatumHistogramI32 is a variant of Datum.
 type DatumHistogramI32 struct {
 	// Datum is histogram metric
-	//
-	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
-	// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
-	// the left, right, or both so that the bins extend to the entire range of the support.
-	//
-	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
+// 
+// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+// the left, right, or both so that the bins extend to the entire range of the support.
+// 
+// Note that any gaps, unsorted bins, or non-finite values will result in an error.
 	Datum Histogramint32 `json:"datum" yaml:"datum"`
 }
 
 func (DatumHistogramI32) isDatumVariant() {}
 
+
 // DatumHistogramU32 is a variant of Datum.
 type DatumHistogramU32 struct {
 	// Datum is histogram metric
-	//
-	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
-	// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
-	// the left, right, or both so that the bins extend to the entire range of the support.
-	//
-	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
+// 
+// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+// the left, right, or both so that the bins extend to the entire range of the support.
+// 
+// Note that any gaps, unsorted bins, or non-finite values will result in an error.
 	Datum Histogramuint32 `json:"datum" yaml:"datum"`
 }
 
 func (DatumHistogramU32) isDatumVariant() {}
 
+
 // DatumHistogramI64 is a variant of Datum.
 type DatumHistogramI64 struct {
 	// Datum is histogram metric
-	//
-	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
-	// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
-	// the left, right, or both so that the bins extend to the entire range of the support.
-	//
-	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
+// 
+// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+// the left, right, or both so that the bins extend to the entire range of the support.
+// 
+// Note that any gaps, unsorted bins, or non-finite values will result in an error.
 	Datum Histogramint64 `json:"datum" yaml:"datum"`
 }
 
 func (DatumHistogramI64) isDatumVariant() {}
 
+
 // DatumHistogramU64 is a variant of Datum.
 type DatumHistogramU64 struct {
 	// Datum is histogram metric
-	//
-	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
-	// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
-	// the left, right, or both so that the bins extend to the entire range of the support.
-	//
-	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
+// 
+// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+// the left, right, or both so that the bins extend to the entire range of the support.
+// 
+// Note that any gaps, unsorted bins, or non-finite values will result in an error.
 	Datum Histogramuint64 `json:"datum" yaml:"datum"`
 }
 
 func (DatumHistogramU64) isDatumVariant() {}
 
+
 // DatumHistogramF32 is a variant of Datum.
 type DatumHistogramF32 struct {
 	// Datum is histogram metric
-	//
-	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
-	// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
-	// the left, right, or both so that the bins extend to the entire range of the support.
-	//
-	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
+// 
+// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+// the left, right, or both so that the bins extend to the entire range of the support.
+// 
+// Note that any gaps, unsorted bins, or non-finite values will result in an error.
 	Datum Histogramfloat `json:"datum" yaml:"datum"`
 }
 
 func (DatumHistogramF32) isDatumVariant() {}
 
+
 // DatumHistogramF64 is a variant of Datum.
 type DatumHistogramF64 struct {
 	// Datum is histogram metric
-	//
-	// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
-	// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
-	// the left, right, or both so that the bins extend to the entire range of the support.
-	//
-	// Note that any gaps, unsorted bins, or non-finite values will result in an error.
+// 
+// A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
+// their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
+// the left, right, or both so that the bins extend to the entire range of the support.
+// 
+// Note that any gaps, unsorted bins, or non-finite values will result in an error.
 	Datum Histogramdouble `json:"datum" yaml:"datum"`
 }
 
 func (DatumHistogramF64) isDatumVariant() {}
+
 
 // DatumMissing is a variant of Datum.
 type DatumMissing struct {
@@ -3466,9 +3677,10 @@ type DatumMissing struct {
 
 func (DatumMissing) isDatumVariant() {}
 
+
 // Datum is a `Datum` is a single sampled data point from a metric.
 type Datum struct {
-	Value datumVariant
+	Value datumVariant 
 }
 
 func (v Datum) Type() DatumType {
@@ -3633,6 +3845,8 @@ func (v Datum) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(m)
 }
+
+
 
 // AsBool attempts to convert the Datum to a DatumBool.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
@@ -3830,6 +4044,7 @@ func (v Datum) AsMissing() (*DatumMissing, bool) {
 	return val, ok
 }
 
+
 // DerEncodedKeyPair is the type definition for a DerEncodedKeyPair.
 //
 // Required fields:
@@ -3842,6 +4057,7 @@ type DerEncodedKeyPair struct {
 	PublicCert string `json:"public_cert" yaml:"public_cert"`
 }
 
+
 // DeviceAccessToken is view of a device access token
 //
 // Required fields:
@@ -3849,13 +4065,14 @@ type DerEncodedKeyPair struct {
 // - TimeCreated
 type DeviceAccessToken struct {
 	// Id is a unique, immutable, system-controlled identifier for the token.
-	//
-	// Note that this ID is not the bearer token itself, which starts with "oxide-token-".
-	Id          string     `json:"id" yaml:"id"`
+// 
+// Note that this ID is not the bearer token itself, which starts with "oxide-token-".
+	Id string `json:"id" yaml:"id"`
 	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
 	// TimeExpires is expiration timestamp. A null value means the token does not automatically expire.
 	TimeExpires *time.Time `json:"time_expires,omitempty" yaml:"time_expires,omitempty"`
 }
+
 
 // DeviceAccessTokenRequest is the type definition for a DeviceAccessTokenRequest.
 //
@@ -3864,10 +4081,11 @@ type DeviceAccessToken struct {
 // - DeviceCode
 // - GrantType
 type DeviceAccessTokenRequest struct {
-	ClientId   string `json:"client_id" yaml:"client_id"`
+	ClientId string `json:"client_id" yaml:"client_id"`
 	DeviceCode string `json:"device_code" yaml:"device_code"`
-	GrantType  string `json:"grant_type" yaml:"grant_type"`
+	GrantType string `json:"grant_type" yaml:"grant_type"`
 }
+
 
 // DeviceAccessTokenResultsPage is a single page of results
 //
@@ -3880,6 +4098,7 @@ type DeviceAccessTokenResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // DeviceAuthRequest is the type definition for a DeviceAuthRequest.
 //
 // Required fields:
@@ -3887,16 +4106,17 @@ type DeviceAccessTokenResultsPage struct {
 type DeviceAuthRequest struct {
 	ClientId string `json:"client_id" yaml:"client_id"`
 	// TtlSeconds is optional lifetime for the access token in seconds.
-	//
-	// This value will be validated during the confirmation step. If not specified, it defaults to the silo's max
-	// TTL, which can be seen at `/v1/auth-settings`.  If specified, must not exceed the silo's max TTL.
-	//
-	// Some special logic applies when authenticating the confirmation request with an existing device token: the
-	// requested TTL must not produce an expiration time later than the authenticating token's expiration. If no
-	// TTL is specified, the expiration will be the lesser of the silo max and the authenticating token's expiration time.
-	// To get the longest allowed lifetime, omit the TTL and authenticate with a web console session.
+// 
+// This value will be validated during the confirmation step. If not specified, it defaults to the silo's max
+// TTL, which can be seen at `/v1/auth-settings`.  If specified, must not exceed the silo's max TTL.
+// 
+// Some special logic applies when authenticating the confirmation request with an existing device token: the
+// requested TTL must not produce an expiration time later than the authenticating token's expiration. If no
+// TTL is specified, the expiration will be the lesser of the silo max and the authenticating token's expiration time.
+// To get the longest allowed lifetime, omit the TTL and authenticate with a web console session.
 	TtlSeconds *int `json:"ttl_seconds,omitempty" yaml:"ttl_seconds,omitempty"`
 }
+
 
 // DeviceAuthVerify is the type definition for a DeviceAuthVerify.
 //
@@ -3906,10 +4126,12 @@ type DeviceAuthVerify struct {
 	UserCode string `json:"user_code" yaml:"user_code"`
 }
 
+
 // digestVariant is implemented by Digest variants.
 type digestVariant interface {
 	isDigestVariant()
 }
+
 
 // DigestType is the type definition for a DigestType.
 type DigestType string
@@ -3921,9 +4143,10 @@ type DigestSha256 struct {
 
 func (DigestSha256) isDigestVariant() {}
 
+
 // Digest is the type definition for a Digest.
 type Digest struct {
-	Value digestVariant
+	Value digestVariant 
 }
 
 func (v Digest) Type() DigestType {
@@ -3981,12 +4204,15 @@ func (v Digest) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsSha256 attempts to convert the Digest to a DigestSha256.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v Digest) AsSha256() (*DigestSha256, bool) {
 	val, ok := v.Value.(*DigestSha256)
 	return val, ok
 }
+
 
 // Disk is view of a Disk
 //
@@ -4007,15 +4233,15 @@ type Disk struct {
 	// BlockSize is byte count to express memory or storage capacity.
 	BlockSize ByteCount `json:"block_size" yaml:"block_size"`
 	// Description is human-readable free-form text about a resource
-	Description string   `json:"description" yaml:"description"`
-	DevicePath  string   `json:"device_path" yaml:"device_path"`
-	DiskType    DiskType `json:"disk_type" yaml:"disk_type"`
+	Description string `json:"description" yaml:"description"`
+	DevicePath string `json:"device_path" yaml:"device_path"`
+	DiskType DiskType `json:"disk_type" yaml:"disk_type"`
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id" yaml:"id"`
 	// ImageId is iD of image from which disk was created, if any
 	ImageId string `json:"image_id,omitempty" yaml:"image_id,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
-	Name      Name   `json:"name" yaml:"name"`
+	Name Name `json:"name" yaml:"name"`
 	ProjectId string `json:"project_id" yaml:"project_id"`
 	// ReadOnly is whether or not this disk is read-only.
 	ReadOnly *bool `json:"read_only" yaml:"read_only"`
@@ -4031,10 +4257,12 @@ type Disk struct {
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
 
+
 // diskBackendVariant is implemented by DiskBackend variants.
 type diskBackendVariant interface {
 	isDiskBackendVariant()
 }
+
 
 // DiskBackendType is the type definition for a DiskBackendType.
 type DiskBackendType string
@@ -4045,6 +4273,7 @@ type DiskBackendLocal struct {
 
 func (DiskBackendLocal) isDiskBackendVariant() {}
 
+
 // DiskBackendDistributed is a variant of DiskBackend.
 type DiskBackendDistributed struct {
 	// DiskSource is the initial source for this disk
@@ -4053,9 +4282,10 @@ type DiskBackendDistributed struct {
 
 func (DiskBackendDistributed) isDiskBackendVariant() {}
 
+
 // DiskBackend is the source of a `Disk`'s blocks
 type DiskBackend struct {
-	Value diskBackendVariant
+	Value diskBackendVariant 
 }
 
 func (v DiskBackend) Type() DiskBackendType {
@@ -4117,6 +4347,8 @@ func (v DiskBackend) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsLocal attempts to convert the DiskBackend to a DiskBackendLocal.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v DiskBackend) AsLocal() (*DiskBackendLocal, bool) {
@@ -4131,6 +4363,7 @@ func (v DiskBackend) AsDistributed() (*DiskBackendDistributed, bool) {
 	return val, ok
 }
 
+
 // DiskCreate is create-time parameters for a `Disk`
 //
 // Required fields:
@@ -4143,12 +4376,13 @@ type DiskCreate struct {
 	// DiskBackend is the source for this `Disk`'s blocks
 	DiskBackend DiskBackend `json:"disk_backend" yaml:"disk_backend"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 	// Size is the total size of the Disk (in bytes)
 	Size ByteCount `json:"size" yaml:"size"`
 }
+
 
 // DiskPath is the type definition for a DiskPath.
 //
@@ -4158,6 +4392,7 @@ type DiskPath struct {
 	// Disk is name or ID of the disk
 	Disk NameOrId `json:"disk" yaml:"disk"`
 }
+
 
 // DiskResultsPage is a single page of results
 //
@@ -4170,10 +4405,12 @@ type DiskResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // diskSourceVariant is implemented by DiskSource variants.
 type diskSourceVariant interface {
 	isDiskSourceVariant()
 }
+
 
 // DiskSourceType is the type definition for a DiskSourceType.
 type DiskSourceType string
@@ -4186,14 +4423,16 @@ type DiskSourceBlank struct {
 
 func (DiskSourceBlank) isDiskSourceVariant() {}
 
+
 // DiskSourceSnapshot is a variant of DiskSource.
 type DiskSourceSnapshot struct {
 	// ReadOnly is if `true`, the disk created from this snapshot will be read-only.
-	ReadOnly   *bool  `json:"read_only,omitempty" yaml:"read_only,omitempty"`
+	ReadOnly *bool `json:"read_only,omitempty" yaml:"read_only,omitempty"`
 	SnapshotId string `json:"snapshot_id" yaml:"snapshot_id"`
 }
 
 func (DiskSourceSnapshot) isDiskSourceVariant() {}
+
 
 // DiskSourceImage is a variant of DiskSource.
 type DiskSourceImage struct {
@@ -4204,6 +4443,7 @@ type DiskSourceImage struct {
 
 func (DiskSourceImage) isDiskSourceVariant() {}
 
+
 // DiskSourceImportingBlocks is a variant of DiskSource.
 type DiskSourceImportingBlocks struct {
 	BlockSize BlockSize `json:"block_size" yaml:"block_size"`
@@ -4211,9 +4451,10 @@ type DiskSourceImportingBlocks struct {
 
 func (DiskSourceImportingBlocks) isDiskSourceVariant() {}
 
+
 // DiskSource is different sources for a Distributed Disk
 type DiskSource struct {
-	Value diskSourceVariant
+	Value diskSourceVariant 
 }
 
 func (v DiskSource) Type() DiskSourceType {
@@ -4283,6 +4524,8 @@ func (v DiskSource) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsBlank attempts to convert the DiskSource to a DiskSourceBlank.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v DiskSource) AsBlank() (*DiskSourceBlank, bool) {
@@ -4311,10 +4554,12 @@ func (v DiskSource) AsImportingBlocks() (*DiskSourceImportingBlocks, bool) {
 	return val, ok
 }
 
+
 // diskStateVariant is implemented by DiskState variants.
 type diskStateVariant interface {
 	isDiskStateVariant()
 }
+
 
 // DiskStateState is the type definition for a DiskStateState.
 type DiskStateState string
@@ -4325,11 +4570,13 @@ type DiskStateCreating struct {
 
 func (DiskStateCreating) isDiskStateVariant() {}
 
+
 // DiskStateDetached is a variant of DiskState.
 type DiskStateDetached struct {
 }
 
 func (DiskStateDetached) isDiskStateVariant() {}
+
 
 // DiskStateImportReady is a variant of DiskState.
 type DiskStateImportReady struct {
@@ -4337,11 +4584,13 @@ type DiskStateImportReady struct {
 
 func (DiskStateImportReady) isDiskStateVariant() {}
 
+
 // DiskStateImportingFromUrl is a variant of DiskState.
 type DiskStateImportingFromUrl struct {
 }
 
 func (DiskStateImportingFromUrl) isDiskStateVariant() {}
+
 
 // DiskStateImportingFromBulkWrites is a variant of DiskState.
 type DiskStateImportingFromBulkWrites struct {
@@ -4349,17 +4598,20 @@ type DiskStateImportingFromBulkWrites struct {
 
 func (DiskStateImportingFromBulkWrites) isDiskStateVariant() {}
 
+
 // DiskStateFinalizing is a variant of DiskState.
 type DiskStateFinalizing struct {
 }
 
 func (DiskStateFinalizing) isDiskStateVariant() {}
 
+
 // DiskStateMaintenance is a variant of DiskState.
 type DiskStateMaintenance struct {
 }
 
 func (DiskStateMaintenance) isDiskStateVariant() {}
+
 
 // DiskStateAttaching is a variant of DiskState.
 type DiskStateAttaching struct {
@@ -4368,12 +4620,14 @@ type DiskStateAttaching struct {
 
 func (DiskStateAttaching) isDiskStateVariant() {}
 
+
 // DiskStateAttached is a variant of DiskState.
 type DiskStateAttached struct {
 	Instance string `json:"instance" yaml:"instance"`
 }
 
 func (DiskStateAttached) isDiskStateVariant() {}
+
 
 // DiskStateDetaching is a variant of DiskState.
 type DiskStateDetaching struct {
@@ -4382,11 +4636,13 @@ type DiskStateDetaching struct {
 
 func (DiskStateDetaching) isDiskStateVariant() {}
 
+
 // DiskStateDestroyed is a variant of DiskState.
 type DiskStateDestroyed struct {
 }
 
 func (DiskStateDestroyed) isDiskStateVariant() {}
+
 
 // DiskStateFaulted is a variant of DiskState.
 type DiskStateFaulted struct {
@@ -4394,9 +4650,10 @@ type DiskStateFaulted struct {
 
 func (DiskStateFaulted) isDiskStateVariant() {}
 
+
 // DiskState is state of a Disk
 type DiskState struct {
-	Value diskStateVariant
+	Value diskStateVariant 
 }
 
 func (v DiskState) State() DiskStateState {
@@ -4498,6 +4755,8 @@ func (v DiskState) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsCreating attempts to convert the DiskState to a DiskStateCreating.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v DiskState) AsCreating() (*DiskStateCreating, bool) {
@@ -4582,12 +4841,13 @@ func (v DiskState) AsFaulted() (*DiskStateFaulted, bool) {
 	return val, ok
 }
 
+
 // DiskType is the type definition for a DiskType.
 type DiskType string
 
 // Distributiondouble is a distribution is a sequence of bins and counts in those bins, and some statistical information
 // tracked to compute the mean, standard deviation, and quantile estimates.
-//
+// 
 // Min, max, and the p-* quantiles are treated as optional due to the possibility of distribution operations, like
 // subtraction.
 //
@@ -4597,20 +4857,21 @@ type DiskType string
 // - SquaredMean
 // - SumOfSamples
 type Distributiondouble struct {
-	Bins         []float64 `json:"bins" yaml:"bins"`
-	Counts       []int     `json:"counts" yaml:"counts"`
-	Max          float64   `json:"max,omitempty" yaml:"max,omitempty"`
-	Min          float64   `json:"min,omitempty" yaml:"min,omitempty"`
-	P50          float64   `json:"p50,omitempty" yaml:"p50,omitempty"`
-	P90          float64   `json:"p90,omitempty" yaml:"p90,omitempty"`
-	P99          float64   `json:"p99,omitempty" yaml:"p99,omitempty"`
-	SquaredMean  float64   `json:"squared_mean" yaml:"squared_mean"`
-	SumOfSamples float64   `json:"sum_of_samples" yaml:"sum_of_samples"`
+	Bins []float64 `json:"bins" yaml:"bins"`
+	Counts []int `json:"counts" yaml:"counts"`
+	Max float64 `json:"max,omitempty" yaml:"max,omitempty"`
+	Min float64 `json:"min,omitempty" yaml:"min,omitempty"`
+	P50 float64 `json:"p50,omitempty" yaml:"p50,omitempty"`
+	P90 float64 `json:"p90,omitempty" yaml:"p90,omitempty"`
+	P99 float64 `json:"p99,omitempty" yaml:"p99,omitempty"`
+	SquaredMean float64 `json:"squared_mean" yaml:"squared_mean"`
+	SumOfSamples float64 `json:"sum_of_samples" yaml:"sum_of_samples"`
 }
+
 
 // Distributionint64 is a distribution is a sequence of bins and counts in those bins, and some statistical information
 // tracked to compute the mean, standard deviation, and quantile estimates.
-//
+// 
 // Min, max, and the p-* quantiles are treated as optional due to the possibility of distribution operations, like
 // subtraction.
 //
@@ -4620,22 +4881,24 @@ type Distributiondouble struct {
 // - SquaredMean
 // - SumOfSamples
 type Distributionint64 struct {
-	Bins         []int   `json:"bins" yaml:"bins"`
-	Counts       []int   `json:"counts" yaml:"counts"`
-	Max          *int    `json:"max,omitempty" yaml:"max,omitempty"`
-	Min          *int    `json:"min,omitempty" yaml:"min,omitempty"`
-	P50          float64 `json:"p50,omitempty" yaml:"p50,omitempty"`
-	P90          float64 `json:"p90,omitempty" yaml:"p90,omitempty"`
-	P99          float64 `json:"p99,omitempty" yaml:"p99,omitempty"`
-	SquaredMean  float64 `json:"squared_mean" yaml:"squared_mean"`
-	SumOfSamples *int    `json:"sum_of_samples" yaml:"sum_of_samples"`
+	Bins []int `json:"bins" yaml:"bins"`
+	Counts []int `json:"counts" yaml:"counts"`
+	Max *int `json:"max,omitempty" yaml:"max,omitempty"`
+	Min *int `json:"min,omitempty" yaml:"min,omitempty"`
+	P50 float64 `json:"p50,omitempty" yaml:"p50,omitempty"`
+	P90 float64 `json:"p90,omitempty" yaml:"p90,omitempty"`
+	P99 float64 `json:"p99,omitempty" yaml:"p99,omitempty"`
+	SquaredMean float64 `json:"squared_mean" yaml:"squared_mean"`
+	SumOfSamples *int `json:"sum_of_samples" yaml:"sum_of_samples"`
 }
+
 
 // EphemeralIpCreate is parameters for creating an ephemeral IP address for an instance.
 type EphemeralIpCreate struct {
 	// PoolSelector is pool to allocate from.
 	PoolSelector PoolSelector `json:"pool_selector,omitempty" yaml:"pool_selector,omitempty"`
 }
+
 
 // Error is error information from a response.
 //
@@ -4644,14 +4907,16 @@ type EphemeralIpCreate struct {
 // - RequestId
 type Error struct {
 	ErrorCode string `json:"error_code,omitempty" yaml:"error_code,omitempty"`
-	Message   string `json:"message" yaml:"message"`
+	Message string `json:"message" yaml:"message"`
 	RequestId string `json:"request_id" yaml:"request_id"`
 }
+
 
 // externalIpVariant is implemented by ExternalIp variants.
 type externalIpVariant interface {
 	isExternalIpVariant()
 }
+
 
 // ExternalIpKind is the type definition for a ExternalIpKind.
 type ExternalIpKind string
@@ -4670,13 +4935,15 @@ type ExternalIpSnat struct {
 
 func (ExternalIpSnat) isExternalIpVariant() {}
 
+
 // ExternalIpEphemeral is a variant of ExternalIp.
 type ExternalIpEphemeral struct {
-	Ip       string `json:"ip" yaml:"ip"`
+	Ip string `json:"ip" yaml:"ip"`
 	IpPoolId string `json:"ip_pool_id" yaml:"ip_pool_id"`
 }
 
 func (ExternalIpEphemeral) isExternalIpVariant() {}
+
 
 // ExternalIpFloating is a variant of ExternalIp.
 type ExternalIpFloating struct {
@@ -4702,9 +4969,10 @@ type ExternalIpFloating struct {
 
 func (ExternalIpFloating) isExternalIpVariant() {}
 
+
 // ExternalIp is the type definition for a ExternalIp.
 type ExternalIp struct {
-	Value externalIpVariant
+	Value externalIpVariant 
 }
 
 func (v ExternalIp) Kind() ExternalIpKind {
@@ -4770,6 +5038,8 @@ func (v ExternalIp) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsSnat attempts to convert the ExternalIp to a ExternalIpSnat.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v ExternalIp) AsSnat() (*ExternalIpSnat, bool) {
@@ -4791,10 +5061,12 @@ func (v ExternalIp) AsFloating() (*ExternalIpFloating, bool) {
 	return val, ok
 }
 
+
 // externalIpCreateVariant is implemented by ExternalIpCreate variants.
 type externalIpCreateVariant interface {
 	isExternalIpCreateVariant()
 }
+
 
 // ExternalIpCreateType is the type definition for a ExternalIpCreateType.
 type ExternalIpCreateType string
@@ -4807,6 +5079,7 @@ type ExternalIpCreateEphemeral struct {
 
 func (ExternalIpCreateEphemeral) isExternalIpCreateVariant() {}
 
+
 // ExternalIpCreateFloating is a variant of ExternalIpCreate.
 type ExternalIpCreateFloating struct {
 	FloatingIp NameOrId `json:"floating_ip" yaml:"floating_ip"`
@@ -4814,9 +5087,10 @@ type ExternalIpCreateFloating struct {
 
 func (ExternalIpCreateFloating) isExternalIpCreateVariant() {}
 
+
 // ExternalIpCreate is parameters for creating an external IP address for instances.
 type ExternalIpCreate struct {
-	Value externalIpCreateVariant
+	Value externalIpCreateVariant 
 }
 
 func (v ExternalIpCreate) Type() ExternalIpCreateType {
@@ -4878,6 +5152,8 @@ func (v ExternalIpCreate) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsEphemeral attempts to convert the ExternalIpCreate to a ExternalIpCreateEphemeral.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v ExternalIpCreate) AsEphemeral() (*ExternalIpCreateEphemeral, bool) {
@@ -4892,6 +5168,7 @@ func (v ExternalIpCreate) AsFloating() (*ExternalIpCreateFloating, bool) {
 	return val, ok
 }
 
+
 // ExternalIpResultsPage is a single page of results
 //
 // Required fields:
@@ -4902,6 +5179,7 @@ type ExternalIpResultsPage struct {
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
+
 
 // ExternalSubnet is an external subnet allocated from a subnet pool
 //
@@ -4938,10 +5216,12 @@ type ExternalSubnet struct {
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
 
+
 // externalSubnetAllocatorVariant is implemented by ExternalSubnetAllocator variants.
 type externalSubnetAllocatorVariant interface {
 	isExternalSubnetAllocatorVariant()
 }
+
 
 // ExternalSubnetAllocatorType is the type definition for a ExternalSubnetAllocatorType.
 type ExternalSubnetAllocatorType string
@@ -4954,12 +5234,13 @@ type ExternalSubnetAllocatorExplicit struct {
 
 func (ExternalSubnetAllocatorExplicit) isExternalSubnetAllocatorVariant() {}
 
+
 // ExternalSubnetAllocatorAuto is a variant of ExternalSubnetAllocator.
 type ExternalSubnetAllocatorAuto struct {
 	// PoolSelector is pool selection.
-	//
-	// If omitted, this field uses the silo's default pool. If the silo has default pools for both IPv4 and IPv6,
-	// the request will fail unless `ip_version` is specified in the pool selector.
+// 
+// If omitted, this field uses the silo's default pool. If the silo has default pools for both IPv4 and IPv6,
+// the request will fail unless `ip_version` is specified in the pool selector.
 	PoolSelector PoolSelector `json:"pool_selector,omitempty" yaml:"pool_selector,omitempty"`
 	// PrefixLen is the prefix length for the allocated subnet (e.g., 24 for a /24).
 	PrefixLen *int `json:"prefix_len" yaml:"prefix_len"`
@@ -4967,9 +5248,10 @@ type ExternalSubnetAllocatorAuto struct {
 
 func (ExternalSubnetAllocatorAuto) isExternalSubnetAllocatorVariant() {}
 
+
 // ExternalSubnetAllocator is specify how to allocate an external subnet.
 type ExternalSubnetAllocator struct {
-	Value externalSubnetAllocatorVariant
+	Value externalSubnetAllocatorVariant 
 }
 
 func (v ExternalSubnetAllocator) Type() ExternalSubnetAllocatorType {
@@ -5031,6 +5313,8 @@ func (v ExternalSubnetAllocator) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsExplicit attempts to convert the ExternalSubnetAllocator to a ExternalSubnetAllocatorExplicit.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v ExternalSubnetAllocator) AsExplicit() (*ExternalSubnetAllocatorExplicit, bool) {
@@ -5045,6 +5329,7 @@ func (v ExternalSubnetAllocator) AsAuto() (*ExternalSubnetAllocatorAuto, bool) {
 	return val, ok
 }
 
+
 // ExternalSubnetAttach is attach an external subnet to an instance
 //
 // Required fields:
@@ -5054,6 +5339,7 @@ type ExternalSubnetAttach struct {
 	Instance NameOrId `json:"instance" yaml:"instance"`
 }
 
+
 // ExternalSubnetCreate is create an external subnet
 //
 // Required fields:
@@ -5062,13 +5348,14 @@ type ExternalSubnetAttach struct {
 // - Name
 type ExternalSubnetCreate struct {
 	// Allocator is subnet allocation method.
-	Allocator   ExternalSubnetAllocator `json:"allocator" yaml:"allocator"`
-	Description string                  `json:"description" yaml:"description"`
+	Allocator ExternalSubnetAllocator `json:"allocator" yaml:"allocator"`
+	Description string `json:"description" yaml:"description"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 }
+
 
 // ExternalSubnetResultsPage is a single page of results
 //
@@ -5081,11 +5368,13 @@ type ExternalSubnetResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // ExternalSubnetUpdate is update an external subnet
 type ExternalSubnetUpdate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 }
+
 
 // FailureDomain is instances are considered co-located if they are on the same sled
 type FailureDomain string
@@ -5101,10 +5390,11 @@ type FieldSchema struct {
 	Description string `json:"description" yaml:"description"`
 	// FieldType is the `FieldType` identifies the data type of a target or metric field.
 	FieldType FieldType `json:"field_type" yaml:"field_type"`
-	Name      string    `json:"name" yaml:"name"`
+	Name string `json:"name" yaml:"name"`
 	// Source is the source from which a field is derived, the target or metric.
 	Source FieldSource `json:"source" yaml:"source"`
 }
+
 
 // FieldSource is the source from which a field is derived, the target or metric.
 type FieldSource string
@@ -5117,6 +5407,7 @@ type fieldValueVariant interface {
 	isFieldValueVariant()
 }
 
+
 // FieldValueType is the type definition for a FieldValueType.
 type FieldValueType string
 
@@ -5127,12 +5418,14 @@ type FieldValueString struct {
 
 func (FieldValueString) isFieldValueVariant() {}
 
+
 // FieldValueI8 is a variant of FieldValue.
 type FieldValueI8 struct {
 	Value *int `json:"value" yaml:"value"`
 }
 
 func (FieldValueI8) isFieldValueVariant() {}
+
 
 // FieldValueU8 is a variant of FieldValue.
 type FieldValueU8 struct {
@@ -5141,12 +5434,14 @@ type FieldValueU8 struct {
 
 func (FieldValueU8) isFieldValueVariant() {}
 
+
 // FieldValueI16 is a variant of FieldValue.
 type FieldValueI16 struct {
 	Value *int `json:"value" yaml:"value"`
 }
 
 func (FieldValueI16) isFieldValueVariant() {}
+
 
 // FieldValueU16 is a variant of FieldValue.
 type FieldValueU16 struct {
@@ -5155,12 +5450,14 @@ type FieldValueU16 struct {
 
 func (FieldValueU16) isFieldValueVariant() {}
 
+
 // FieldValueI32 is a variant of FieldValue.
 type FieldValueI32 struct {
 	Value *int `json:"value" yaml:"value"`
 }
 
 func (FieldValueI32) isFieldValueVariant() {}
+
 
 // FieldValueU32 is a variant of FieldValue.
 type FieldValueU32 struct {
@@ -5169,12 +5466,14 @@ type FieldValueU32 struct {
 
 func (FieldValueU32) isFieldValueVariant() {}
 
+
 // FieldValueI64 is a variant of FieldValue.
 type FieldValueI64 struct {
 	Value *int `json:"value" yaml:"value"`
 }
 
 func (FieldValueI64) isFieldValueVariant() {}
+
 
 // FieldValueU64 is a variant of FieldValue.
 type FieldValueU64 struct {
@@ -5183,12 +5482,14 @@ type FieldValueU64 struct {
 
 func (FieldValueU64) isFieldValueVariant() {}
 
+
 // FieldValueIpAddr is a variant of FieldValue.
 type FieldValueIpAddr struct {
 	Value string `json:"value" yaml:"value"`
 }
 
 func (FieldValueIpAddr) isFieldValueVariant() {}
+
 
 // FieldValueUuid is a variant of FieldValue.
 type FieldValueUuid struct {
@@ -5197,6 +5498,7 @@ type FieldValueUuid struct {
 
 func (FieldValueUuid) isFieldValueVariant() {}
 
+
 // FieldValueBool is a variant of FieldValue.
 type FieldValueBool struct {
 	Value *bool `json:"value" yaml:"value"`
@@ -5204,9 +5506,10 @@ type FieldValueBool struct {
 
 func (FieldValueBool) isFieldValueVariant() {}
 
+
 // FieldValue is the `FieldValue` contains the value of a target or metric field.
 type FieldValue struct {
-	Value fieldValueVariant
+	Value fieldValueVariant 
 }
 
 func (v FieldValue) Type() FieldValueType {
@@ -5308,6 +5611,8 @@ func (v FieldValue) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsString attempts to convert the FieldValue to a FieldValueString.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v FieldValue) AsString() (*FieldValueString, bool) {
@@ -5392,19 +5697,21 @@ func (v FieldValue) AsBool() (*FieldValueBool, bool) {
 	return val, ok
 }
 
+
 // FinalizeDisk is parameters for finalizing a disk
 type FinalizeDisk struct {
 	// SnapshotName is if specified a snapshot of the disk will be created with the given name during finalization. If
-	// not specified, a snapshot for the disk will _not_ be created. A snapshot can be manually created once the
-	// disk transitions into the `Detached` state.
+// not specified, a snapshot for the disk will _not_ be created. A snapshot can be manually created once the
+// disk transitions into the `Detached` state.
 	SnapshotName Name `json:"snapshot_name,omitempty" yaml:"snapshot_name,omitempty"`
 }
+
 
 // FleetRole is the type definition for a FleetRole.
 type FleetRole string
 
 // FleetRolePolicy is policy for a particular resource
-//
+// 
 // Note that the Policy only describes access granted explicitly for this resource.  The policies of parent resources
 // can also cause a user to have access to this resource.
 //
@@ -5415,9 +5722,10 @@ type FleetRolePolicy struct {
 	RoleAssignments []FleetRoleRoleAssignment `json:"role_assignments" yaml:"role_assignments"`
 }
 
+
 // FleetRoleRoleAssignment is describes the assignment of a particular role on a particular resource to
 // a particular identity (user, group, etc.)
-//
+// 
 // The resource is not part of this structure.  Rather, `RoleAssignment`s are put into a `Policy` and that Policy
 // is applied to a particular resource.
 //
@@ -5429,8 +5737,9 @@ type FleetRoleRoleAssignment struct {
 	IdentityId string `json:"identity_id" yaml:"identity_id"`
 	// IdentityType is describes what kind of identity is described by an id
 	IdentityType IdentityType `json:"identity_type" yaml:"identity_type"`
-	RoleName     FleetRole    `json:"role_name" yaml:"role_name"`
+	RoleName FleetRole `json:"role_name" yaml:"role_name"`
 }
+
 
 // FloatingIp is a Floating IP is a well-known IP address which can be attached and detached from instances.
 //
@@ -5464,6 +5773,7 @@ type FloatingIp struct {
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
 
+
 // FloatingIpAttach is parameters for attaching a floating IP address to another resource
 //
 // Required fields:
@@ -5476,6 +5786,7 @@ type FloatingIpAttach struct {
 	Parent NameOrId `json:"parent" yaml:"parent"`
 }
 
+
 // FloatingIpCreate is parameters for creating a new floating IP address for instances.
 //
 // Required fields:
@@ -5484,12 +5795,13 @@ type FloatingIpAttach struct {
 type FloatingIpCreate struct {
 	// AddressAllocator is iP address allocation method.
 	AddressAllocator AddressAllocator `json:"address_allocator,omitempty" yaml:"address_allocator,omitempty"`
-	Description      string           `json:"description" yaml:"description"`
+	Description string `json:"description" yaml:"description"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 }
+
 
 // FloatingIpParentKind is the type of resource that a floating IP is attached to
 type FloatingIpParentKind string
@@ -5505,11 +5817,13 @@ type FloatingIpResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // FloatingIpUpdate is updateable identity-related parameters
 type FloatingIpUpdate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 }
+
 
 // Group is view of a Group
 //
@@ -5520,10 +5834,11 @@ type FloatingIpUpdate struct {
 type Group struct {
 	// DisplayName is human-readable name that can identify the group
 	DisplayName string `json:"display_name" yaml:"display_name"`
-	Id          string `json:"id" yaml:"id"`
+	Id string `json:"id" yaml:"id"`
 	// SiloId is uuid of the silo to which this group belongs
 	SiloId string `json:"silo_id" yaml:"silo_id"`
 }
+
 
 // GroupResultsPage is a single page of results
 //
@@ -5536,12 +5851,13 @@ type GroupResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // Histogramdouble is histogram metric
-//
+// 
 // A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
 // their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
 // the left, right, or both so that the bins extend to the entire range of the support.
-//
+// 
 // Note that any gaps, unsorted bins, or non-finite values will result in an error.
 //
 // Required fields:
@@ -5571,9 +5887,9 @@ type Histogramdouble struct {
 	// P99 is p99 Quantile
 	P99 Quantile `json:"p99" yaml:"p99"`
 	// SquaredMean is m2 for Welford's algorithm for variance calculation.
-	//
-	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for
-	// more information on the algorithm.
+// 
+// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for
+// more information on the algorithm.
 	SquaredMean float64 `json:"squared_mean" yaml:"squared_mean"`
 	// StartTime is the start time of the histogram.
 	StartTime *time.Time `json:"start_time" yaml:"start_time"`
@@ -5581,12 +5897,13 @@ type Histogramdouble struct {
 	SumOfSamples float64 `json:"sum_of_samples" yaml:"sum_of_samples"`
 }
 
+
 // Histogramfloat is histogram metric
-//
+// 
 // A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
 // their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
 // the left, right, or both so that the bins extend to the entire range of the support.
-//
+// 
 // Note that any gaps, unsorted bins, or non-finite values will result in an error.
 //
 // Required fields:
@@ -5616,9 +5933,9 @@ type Histogramfloat struct {
 	// P99 is p99 Quantile
 	P99 Quantile `json:"p99" yaml:"p99"`
 	// SquaredMean is m2 for Welford's algorithm for variance calculation.
-	//
-	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for
-	// more information on the algorithm.
+// 
+// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for
+// more information on the algorithm.
 	SquaredMean float64 `json:"squared_mean" yaml:"squared_mean"`
 	// StartTime is the start time of the histogram.
 	StartTime *time.Time `json:"start_time" yaml:"start_time"`
@@ -5626,12 +5943,13 @@ type Histogramfloat struct {
 	SumOfSamples float64 `json:"sum_of_samples" yaml:"sum_of_samples"`
 }
 
+
 // Histogramint16 is histogram metric
-//
+// 
 // A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
 // their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
 // the left, right, or both so that the bins extend to the entire range of the support.
-//
+// 
 // Note that any gaps, unsorted bins, or non-finite values will result in an error.
 //
 // Required fields:
@@ -5661,9 +5979,9 @@ type Histogramint16 struct {
 	// P99 is p99 Quantile
 	P99 Quantile `json:"p99" yaml:"p99"`
 	// SquaredMean is m2 for Welford's algorithm for variance calculation.
-	//
-	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for
-	// more information on the algorithm.
+// 
+// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for
+// more information on the algorithm.
 	SquaredMean float64 `json:"squared_mean" yaml:"squared_mean"`
 	// StartTime is the start time of the histogram.
 	StartTime *time.Time `json:"start_time" yaml:"start_time"`
@@ -5671,12 +5989,13 @@ type Histogramint16 struct {
 	SumOfSamples *int `json:"sum_of_samples" yaml:"sum_of_samples"`
 }
 
+
 // Histogramint32 is histogram metric
-//
+// 
 // A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
 // their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
 // the left, right, or both so that the bins extend to the entire range of the support.
-//
+// 
 // Note that any gaps, unsorted bins, or non-finite values will result in an error.
 //
 // Required fields:
@@ -5706,9 +6025,9 @@ type Histogramint32 struct {
 	// P99 is p99 Quantile
 	P99 Quantile `json:"p99" yaml:"p99"`
 	// SquaredMean is m2 for Welford's algorithm for variance calculation.
-	//
-	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for
-	// more information on the algorithm.
+// 
+// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for
+// more information on the algorithm.
 	SquaredMean float64 `json:"squared_mean" yaml:"squared_mean"`
 	// StartTime is the start time of the histogram.
 	StartTime *time.Time `json:"start_time" yaml:"start_time"`
@@ -5716,12 +6035,13 @@ type Histogramint32 struct {
 	SumOfSamples *int `json:"sum_of_samples" yaml:"sum_of_samples"`
 }
 
+
 // Histogramint64 is histogram metric
-//
+// 
 // A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
 // their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
 // the left, right, or both so that the bins extend to the entire range of the support.
-//
+// 
 // Note that any gaps, unsorted bins, or non-finite values will result in an error.
 //
 // Required fields:
@@ -5751,9 +6071,9 @@ type Histogramint64 struct {
 	// P99 is p99 Quantile
 	P99 Quantile `json:"p99" yaml:"p99"`
 	// SquaredMean is m2 for Welford's algorithm for variance calculation.
-	//
-	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for
-	// more information on the algorithm.
+// 
+// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for
+// more information on the algorithm.
 	SquaredMean float64 `json:"squared_mean" yaml:"squared_mean"`
 	// StartTime is the start time of the histogram.
 	StartTime *time.Time `json:"start_time" yaml:"start_time"`
@@ -5761,12 +6081,13 @@ type Histogramint64 struct {
 	SumOfSamples *int `json:"sum_of_samples" yaml:"sum_of_samples"`
 }
 
+
 // Histogramint8 is histogram metric
-//
+// 
 // A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
 // their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
 // the left, right, or both so that the bins extend to the entire range of the support.
-//
+// 
 // Note that any gaps, unsorted bins, or non-finite values will result in an error.
 //
 // Required fields:
@@ -5796,9 +6117,9 @@ type Histogramint8 struct {
 	// P99 is p99 Quantile
 	P99 Quantile `json:"p99" yaml:"p99"`
 	// SquaredMean is m2 for Welford's algorithm for variance calculation.
-	//
-	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for
-	// more information on the algorithm.
+// 
+// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for
+// more information on the algorithm.
 	SquaredMean float64 `json:"squared_mean" yaml:"squared_mean"`
 	// StartTime is the start time of the histogram.
 	StartTime *time.Time `json:"start_time" yaml:"start_time"`
@@ -5806,12 +6127,13 @@ type Histogramint8 struct {
 	SumOfSamples *int `json:"sum_of_samples" yaml:"sum_of_samples"`
 }
 
+
 // Histogramuint16 is histogram metric
-//
+// 
 // A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
 // their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
 // the left, right, or both so that the bins extend to the entire range of the support.
-//
+// 
 // Note that any gaps, unsorted bins, or non-finite values will result in an error.
 //
 // Required fields:
@@ -5841,9 +6163,9 @@ type Histogramuint16 struct {
 	// P99 is p99 Quantile
 	P99 Quantile `json:"p99" yaml:"p99"`
 	// SquaredMean is m2 for Welford's algorithm for variance calculation.
-	//
-	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for
-	// more information on the algorithm.
+// 
+// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for
+// more information on the algorithm.
 	SquaredMean float64 `json:"squared_mean" yaml:"squared_mean"`
 	// StartTime is the start time of the histogram.
 	StartTime *time.Time `json:"start_time" yaml:"start_time"`
@@ -5851,12 +6173,13 @@ type Histogramuint16 struct {
 	SumOfSamples *int `json:"sum_of_samples" yaml:"sum_of_samples"`
 }
 
+
 // Histogramuint32 is histogram metric
-//
+// 
 // A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
 // their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
 // the left, right, or both so that the bins extend to the entire range of the support.
-//
+// 
 // Note that any gaps, unsorted bins, or non-finite values will result in an error.
 //
 // Required fields:
@@ -5886,9 +6209,9 @@ type Histogramuint32 struct {
 	// P99 is p99 Quantile
 	P99 Quantile `json:"p99" yaml:"p99"`
 	// SquaredMean is m2 for Welford's algorithm for variance calculation.
-	//
-	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for
-	// more information on the algorithm.
+// 
+// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for
+// more information on the algorithm.
 	SquaredMean float64 `json:"squared_mean" yaml:"squared_mean"`
 	// StartTime is the start time of the histogram.
 	StartTime *time.Time `json:"start_time" yaml:"start_time"`
@@ -5896,12 +6219,13 @@ type Histogramuint32 struct {
 	SumOfSamples *int `json:"sum_of_samples" yaml:"sum_of_samples"`
 }
 
+
 // Histogramuint64 is histogram metric
-//
+// 
 // A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
 // their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
 // the left, right, or both so that the bins extend to the entire range of the support.
-//
+// 
 // Note that any gaps, unsorted bins, or non-finite values will result in an error.
 //
 // Required fields:
@@ -5931,9 +6255,9 @@ type Histogramuint64 struct {
 	// P99 is p99 Quantile
 	P99 Quantile `json:"p99" yaml:"p99"`
 	// SquaredMean is m2 for Welford's algorithm for variance calculation.
-	//
-	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for
-	// more information on the algorithm.
+// 
+// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for
+// more information on the algorithm.
 	SquaredMean float64 `json:"squared_mean" yaml:"squared_mean"`
 	// StartTime is the start time of the histogram.
 	StartTime *time.Time `json:"start_time" yaml:"start_time"`
@@ -5941,12 +6265,13 @@ type Histogramuint64 struct {
 	SumOfSamples *int `json:"sum_of_samples" yaml:"sum_of_samples"`
 }
 
+
 // Histogramuint8 is histogram metric
-//
+// 
 // A histogram maintains the count of any number of samples, over a set of bins. Bins are specified on construction via
 // their _left_ edges, inclusive. There can't be any "gaps" in the bins, and an additional bin may be added to
 // the left, right, or both so that the bins extend to the entire range of the support.
-//
+// 
 // Note that any gaps, unsorted bins, or non-finite values will result in an error.
 //
 // Required fields:
@@ -5976,15 +6301,16 @@ type Histogramuint8 struct {
 	// P99 is p99 Quantile
 	P99 Quantile `json:"p99" yaml:"p99"`
 	// SquaredMean is m2 for Welford's algorithm for variance calculation.
-	//
-	// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for
-	// more information on the algorithm.
+// 
+// Read about [Welford's algorithm](https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm) for
+// more information on the algorithm.
 	SquaredMean float64 `json:"squared_mean" yaml:"squared_mean"`
 	// StartTime is the start time of the histogram.
 	StartTime *time.Time `json:"start_time" yaml:"start_time"`
 	// SumOfSamples is the sum of all samples in the histogram.
 	SumOfSamples *int `json:"sum_of_samples" yaml:"sum_of_samples"`
 }
+
 
 // Hostname is a hostname identifies a host on a network, and is usually a dot-delimited sequence of labels,
 // where each label contains only letters, digits, or the hyphen. See RFCs 1035 and 952 for more details.
@@ -6021,6 +6347,7 @@ type IdentityProvider struct {
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
 
+
 // IdentityProviderResultsPage is a single page of results
 //
 // Required fields:
@@ -6031,6 +6358,7 @@ type IdentityProviderResultsPage struct {
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
+
 
 // IdentityProviderType is sAML identity provider
 type IdentityProviderType string
@@ -6043,6 +6371,7 @@ type idpMetadataSourceVariant interface {
 	isIdpMetadataSourceVariant()
 }
 
+
 // IdpMetadataSourceType is the type definition for a IdpMetadataSourceType.
 type IdpMetadataSourceType string
 
@@ -6053,6 +6382,7 @@ type IdpMetadataSourceUrl struct {
 
 func (IdpMetadataSourceUrl) isIdpMetadataSourceVariant() {}
 
+
 // IdpMetadataSourceBase64EncodedXml is a variant of IdpMetadataSource.
 type IdpMetadataSourceBase64EncodedXml struct {
 	Data string `json:"data" yaml:"data"`
@@ -6060,9 +6390,10 @@ type IdpMetadataSourceBase64EncodedXml struct {
 
 func (IdpMetadataSourceBase64EncodedXml) isIdpMetadataSourceVariant() {}
 
+
 // IdpMetadataSource is the type definition for a IdpMetadataSource.
 type IdpMetadataSource struct {
-	Value idpMetadataSourceVariant
+	Value idpMetadataSourceVariant 
 }
 
 func (v IdpMetadataSource) Type() IdpMetadataSourceType {
@@ -6124,6 +6455,8 @@ func (v IdpMetadataSource) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsUrl attempts to convert the IdpMetadataSource to a IdpMetadataSourceUrl.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v IdpMetadataSource) AsUrl() (*IdpMetadataSourceUrl, bool) {
@@ -6138,8 +6471,9 @@ func (v IdpMetadataSource) AsBase64EncodedXml() (*IdpMetadataSourceBase64Encoded
 	return val, ok
 }
 
+
 // Image is view of an image
-//
+// 
 // If `project_id` is present then the image is only visible inside that project. If it's not present then the
 // image is visible to all projects in the silo.
 //
@@ -6178,6 +6512,7 @@ type Image struct {
 	Version string `json:"version" yaml:"version"`
 }
 
+
 // ImageCreate is create-time parameters for an `Image`
 //
 // Required fields:
@@ -6189,8 +6524,8 @@ type Image struct {
 type ImageCreate struct {
 	Description string `json:"description" yaml:"description"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 	// Os is the family of the operating system (e.g. Debian, Ubuntu, etc.)
 	Os string `json:"os" yaml:"os"`
@@ -6199,6 +6534,7 @@ type ImageCreate struct {
 	// Version is the version of the operating system (e.g. 18.04, 20.04, etc.)
 	Version string `json:"version" yaml:"version"`
 }
+
 
 // ImageResultsPage is a single page of results
 //
@@ -6211,10 +6547,12 @@ type ImageResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // imageSourceVariant is implemented by ImageSource variants.
 type imageSourceVariant interface {
 	isImageSourceVariant()
 }
+
 
 // ImageSourceType is the type definition for a ImageSourceType.
 type ImageSourceType string
@@ -6226,9 +6564,10 @@ type ImageSourceSnapshot struct {
 
 func (ImageSourceSnapshot) isImageSourceVariant() {}
 
+
 // ImageSource is the source of the underlying image.
 type ImageSource struct {
-	Value imageSourceVariant
+	Value imageSourceVariant 
 }
 
 func (v ImageSource) Type() ImageSourceType {
@@ -6286,12 +6625,15 @@ func (v ImageSource) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsSnapshot attempts to convert the ImageSource to a ImageSourceSnapshot.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v ImageSource) AsSnapshot() (*ImageSourceSnapshot, bool) {
 	val, ok := v.Value.(*ImageSourceSnapshot)
 	return val, ok
 }
+
 
 // ImportBlocksBulkWrite is parameters for importing blocks with a bulk write
 //
@@ -6300,13 +6642,15 @@ func (v ImageSource) AsSnapshot() (*ImageSourceSnapshot, bool) {
 // - Offset
 type ImportBlocksBulkWrite struct {
 	Base64EncodedData string `json:"base64_encoded_data" yaml:"base64_encoded_data"`
-	Offset            *int   `json:"offset" yaml:"offset"`
+	Offset *int `json:"offset" yaml:"offset"`
 }
+
 
 // importExportPolicyVariant is implemented by ImportExportPolicy variants.
 type importExportPolicyVariant interface {
 	isImportExportPolicyVariant()
 }
+
 
 // ImportExportPolicyType is the type definition for a ImportExportPolicyType.
 type ImportExportPolicyType string
@@ -6317,6 +6661,7 @@ type ImportExportPolicyNoFiltering struct {
 
 func (ImportExportPolicyNoFiltering) isImportExportPolicyVariant() {}
 
+
 // ImportExportPolicyAllow is a variant of ImportExportPolicy.
 type ImportExportPolicyAllow struct {
 	Value []IpNet `json:"value" yaml:"value"`
@@ -6324,9 +6669,10 @@ type ImportExportPolicyAllow struct {
 
 func (ImportExportPolicyAllow) isImportExportPolicyVariant() {}
 
+
 // ImportExportPolicy is define policy relating to the import and export of prefixes from a BGP peer.
 type ImportExportPolicy struct {
-	Value importExportPolicyVariant
+	Value importExportPolicyVariant 
 }
 
 func (v ImportExportPolicy) Type() ImportExportPolicyType {
@@ -6388,6 +6734,8 @@ func (v ImportExportPolicy) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsNoFiltering attempts to convert the ImportExportPolicy to a ImportExportPolicyNoFiltering.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v ImportExportPolicy) AsNoFiltering() (*ImportExportPolicyNoFiltering, bool) {
@@ -6401,6 +6749,7 @@ func (v ImportExportPolicy) AsAllow() (*ImportExportPolicyAllow, bool) {
 	val, ok := v.Value.(*ImportExportPolicyAllow)
 	return val, ok
 }
+
 
 // Instance is view of an Instance
 //
@@ -6419,28 +6768,28 @@ func (v ImportExportPolicy) AsAllow() (*ImportExportPolicyAllow, bool) {
 // - TimeRunStateUpdated
 type Instance struct {
 	// AutoRestartCooldownExpiration is the time at which the auto-restart cooldown period for this instance completes,
-	// permitting it to be automatically restarted again. If the instance enters the `Failed` state, it will not
-	// be restarted until after this time.
-	//
-	// If this is not present, then either the instance has never been automatically restarted, or the cooldown period
-	// has already expired, allowing the instance to be restarted immediately if it fails.
+// permitting it to be automatically restarted again. If the instance enters the `Failed` state, it will not
+// be restarted until after this time.
+// 
+// If this is not present, then either the instance has never been automatically restarted, or the cooldown period
+// has already expired, allowing the instance to be restarted immediately if it fails.
 	AutoRestartCooldownExpiration *time.Time `json:"auto_restart_cooldown_expiration,omitempty" yaml:"auto_restart_cooldown_expiration,omitempty"`
 	// AutoRestartEnabled is `true` if this instance's auto-restart policy will permit the control plane to
-	// automatically restart it if it enters the `Failed` state.
+// automatically restart it if it enters the `Failed` state.
 	AutoRestartEnabled *bool `json:"auto_restart_enabled" yaml:"auto_restart_enabled"`
 	// AutoRestartPolicy is the auto-restart policy configured for this instance, or `null` if no explicit policy
-	// has been configured.
-	//
-	// This policy determines whether the instance should be automatically restarted by the control plane on failure.
-	// If this is `null`, the control plane will use the default policy when determining whether or not to automatically restart
-	// this instance, which may or may not allow it to be restarted. The value of the `auto_restart_enabled` field
-	// indicates whether the instance will be auto-restarted, based on its current policy or the default if it
-	// has no configured policy.
+// has been configured.
+// 
+// This policy determines whether the instance should be automatically restarted by the control plane on failure.
+// If this is `null`, the control plane will use the default policy when determining whether or not to automatically restart
+// this instance, which may or may not allow it to be restarted. The value of the `auto_restart_enabled` field
+// indicates whether the instance will be auto-restarted, based on its current policy or the default if it
+// has no configured policy.
 	AutoRestartPolicy InstanceAutoRestartPolicy `json:"auto_restart_policy,omitempty" yaml:"auto_restart_policy,omitempty"`
 	// BootDiskId is the ID of the disk used to boot this Instance, if a specific one is assigned.
 	BootDiskId string `json:"boot_disk_id,omitempty" yaml:"boot_disk_id,omitempty"`
 	// CpuPlatform is the CPU platform for this instance. If this is `null`, the instance requires no particular CPU
-	// platform.
+// platform.
 	CpuPlatform InstanceCpuPlatform `json:"cpu_platform,omitempty" yaml:"cpu_platform,omitempty"`
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description" yaml:"description"`
@@ -6457,21 +6806,22 @@ type Instance struct {
 	// ProjectId is id for the project containing this Instance
 	ProjectId string `json:"project_id" yaml:"project_id"`
 	// RunState is running state of an Instance (primarily: booted or stopped)
-	//
-	// This typically reflects whether it's starting, running, stopping, or stopped, but also includes states related
-	// to the Instance's lifecycle
+// 
+// This typically reflects whether it's starting, running, stopping, or stopped, but also includes states related
+// to the Instance's lifecycle
 	RunState InstanceState `json:"run_state" yaml:"run_state"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
 	// TimeLastAutoRestarted is the timestamp of the most recent time this instance was automatically restarted by
-	// the control plane.
-	//
-	// If this is not present, then this instance has not been automatically restarted.
+// the control plane.
+// 
+// If this is not present, then this instance has not been automatically restarted.
 	TimeLastAutoRestarted *time.Time `json:"time_last_auto_restarted,omitempty" yaml:"time_last_auto_restarted,omitempty"`
 	// TimeModified is timestamp when this resource was last modified
-	TimeModified        *time.Time `json:"time_modified" yaml:"time_modified"`
+	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 	TimeRunStateUpdated *time.Time `json:"time_run_state_updated" yaml:"time_run_state_updated"`
 }
+
 
 // InstanceAutoRestartPolicy is the instance should not be automatically restarted by the control plane if
 // it fails.
@@ -6495,79 +6845,81 @@ type InstanceCreate struct {
 	// AntiAffinityGroups is anti-affinity groups to which this instance should be added.
 	AntiAffinityGroups []NameOrId `json:"anti_affinity_groups,omitzero" yaml:"anti_affinity_groups,omitzero"`
 	// AutoRestartPolicy is the auto-restart policy for this instance.
-	//
-	// This policy determines whether the instance should be automatically restarted by the control plane on failure.
-	// If this is `null`, no auto-restart policy will be explicitly configured for this instance, and the control plane
-	// will select the default policy when determining whether the instance can be automatically restarted.
-	//
-	// Currently, the global default auto-restart policy is "best-effort", so instances with `null` auto-restart policies
-	// will be automatically restarted. However, in the future, the default policy may be configurable through other
-	// mechanisms, such as on a per-project basis. In that case, any configured default policy will be used if
-	// this is `null`.
+// 
+// This policy determines whether the instance should be automatically restarted by the control plane on failure.
+// If this is `null`, no auto-restart policy will be explicitly configured for this instance, and the control plane
+// will select the default policy when determining whether the instance can be automatically restarted.
+// 
+// Currently, the global default auto-restart policy is "best-effort", so instances with `null` auto-restart policies
+// will be automatically restarted. However, in the future, the default policy may be configurable through other
+// mechanisms, such as on a per-project basis. In that case, any configured default policy will be used if
+// this is `null`.
 	AutoRestartPolicy InstanceAutoRestartPolicy `json:"auto_restart_policy,omitempty" yaml:"auto_restart_policy,omitempty"`
 	// BootDisk is the disk the instance is configured to boot from.
-	//
-	// This disk can either be attached if it already exists or created along with the instance.
-	//
-	// Specifying a boot disk is optional but recommended to ensure predictable boot behavior. The boot disk can
-	// be set during instance creation or later if the instance is stopped. The boot disk counts against the disk
-	// attachment limit.
-	//
-	// An instance that does not have a boot disk set will use the boot options specified in its UEFI settings, which
-	// are controlled by both the instance's UEFI firmware and the guest operating system. Boot options can change
-	// as disks are attached and detached, which may result in an instance that only boots to the EFI shell until
-	// a boot disk is set.
+// 
+// This disk can either be attached if it already exists or created along with the instance.
+// 
+// Specifying a boot disk is optional but recommended to ensure predictable boot behavior. The boot disk can
+// be set during instance creation or later if the instance is stopped. The boot disk counts against the disk
+// attachment limit.
+// 
+// An instance that does not have a boot disk set will use the boot options specified in its UEFI settings, which
+// are controlled by both the instance's UEFI firmware and the guest operating system. Boot options can change
+// as disks are attached and detached, which may result in an instance that only boots to the EFI shell until
+// a boot disk is set.
 	BootDisk InstanceDiskAttachment `json:"boot_disk,omitempty" yaml:"boot_disk,omitempty"`
 	// CpuPlatform is the CPU platform to be used for this instance. If this is `null`, the instance requires no
-	// particular CPU platform; when it is started the instance will have the most general CPU platform supported by
-	// the sled it is initially placed on.
+// particular CPU platform; when it is started the instance will have the most general CPU platform supported by
+// the sled it is initially placed on.
 	CpuPlatform InstanceCpuPlatform `json:"cpu_platform,omitempty" yaml:"cpu_platform,omitempty"`
-	Description string              `json:"description" yaml:"description"`
+	Description string `json:"description" yaml:"description"`
 	// Disks is a list of disks to be attached to the instance.
-	//
-	// Disk attachments of type "create" will be created, while those of type "attach" must already exist.
-	//
-	// The order of this list does not guarantee a boot order for the instance. Use the boot_disk attribute to
-	// specify a boot disk. When boot_disk is specified it will count against the disk attachment limit.
+// 
+// Disk attachments of type "create" will be created, while those of type "attach" must already exist.
+// 
+// The order of this list does not guarantee a boot order for the instance. Use the boot_disk attribute to
+// specify a boot disk. When boot_disk is specified it will count against the disk attachment limit.
 	Disks []InstanceDiskAttachment `json:"disks,omitempty" yaml:"disks,omitempty"`
 	// ExternalIps is the external IP addresses provided to this instance.
-	//
-	// By default, all instances have outbound connectivity, but no inbound connectivity. These external addresses can
-	// be used to provide a fixed, known IP address for making inbound connections to the instance.
+// 
+// By default, all instances have outbound connectivity, but no inbound connectivity. These external addresses can
+// be used to provide a fixed, known IP address for making inbound connections to the instance.
 	ExternalIps []ExternalIpCreate `json:"external_ips,omitempty" yaml:"external_ips,omitempty"`
 	// Hostname is the hostname to be assigned to the instance
 	Hostname Hostname `json:"hostname" yaml:"hostname"`
 	// Memory is the amount of RAM (in bytes) to be allocated to the instance
 	Memory ByteCount `json:"memory" yaml:"memory"`
 	// MulticastGroups is multicast groups this instance should join at creation.
-	//
-	// Groups can be specified by name, UUID, or IP address. Non-existent groups are created automatically.
+// 
+// Groups can be specified by name, UUID, or IP address. Non-existent groups are created automatically.
 	MulticastGroups []MulticastGroupJoinSpec `json:"multicast_groups,omitempty" yaml:"multicast_groups,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 	// Ncpus is the number of vCPUs to be allocated to the instance
 	Ncpus InstanceCpuCount `json:"ncpus" yaml:"ncpus"`
 	// NetworkInterfaces is the network interfaces to be created for this instance.
 	NetworkInterfaces InstanceNetworkInterfaceAttachment `json:"network_interfaces,omitempty" yaml:"network_interfaces,omitempty"`
 	// SshPublicKeys is an allowlist of SSH public keys to be transferred to the instance via cloud-init during
-	// instance creation.
-	//
-	// If not provided, all SSH public keys from the user's profile will be sent. If an empty list is provided, no
-	// public keys will be transmitted to the instance.
+// instance creation.
+// 
+// If not provided, all SSH public keys from the user's profile will be sent. If an empty list is provided, no
+// public keys will be transmitted to the instance.
 	SshPublicKeys []NameOrId `json:"ssh_public_keys" yaml:"ssh_public_keys"`
 	// Start is should this instance be started upon creation; true by default.
 	Start *bool `json:"start,omitempty" yaml:"start,omitempty"`
 	// UserData is user data for instance initialization systems (such as cloud-init). Must be a Base64-encoded string,
-	// as specified in RFC 4648 § 4 (+ and / characters with padding). Maximum 32 KiB unencoded data.
+// as specified in RFC 4648 § 4 (+ and / characters with padding). Maximum 32 KiB unencoded data.
 	UserData string `json:"user_data,omitempty" yaml:"user_data,omitempty"`
 }
+
 
 // instanceDiskAttachmentVariant is implemented by InstanceDiskAttachment variants.
 type instanceDiskAttachmentVariant interface {
 	isInstanceDiskAttachmentVariant()
 }
+
 
 // InstanceDiskAttachmentType is the type definition for a InstanceDiskAttachmentType.
 type InstanceDiskAttachmentType string
@@ -6578,14 +6930,15 @@ type InstanceDiskAttachmentCreate struct {
 	// DiskBackend is the source for this `Disk`'s blocks
 	DiskBackend DiskBackend `json:"disk_backend" yaml:"disk_backend"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 	// Size is the total size of the Disk (in bytes)
 	Size ByteCount `json:"size" yaml:"size"`
 }
 
 func (InstanceDiskAttachmentCreate) isInstanceDiskAttachmentVariant() {}
+
 
 // InstanceDiskAttachmentAttach is a variant of InstanceDiskAttachment.
 type InstanceDiskAttachmentAttach struct {
@@ -6595,9 +6948,10 @@ type InstanceDiskAttachmentAttach struct {
 
 func (InstanceDiskAttachmentAttach) isInstanceDiskAttachmentVariant() {}
 
+
 // InstanceDiskAttachment is describe the instance's disks at creation time
 type InstanceDiskAttachment struct {
-	Value instanceDiskAttachmentVariant
+	Value instanceDiskAttachmentVariant 
 }
 
 func (v InstanceDiskAttachment) Type() InstanceDiskAttachmentType {
@@ -6659,6 +7013,8 @@ func (v InstanceDiskAttachment) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsCreate attempts to convert the InstanceDiskAttachment to a InstanceDiskAttachmentCreate.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v InstanceDiskAttachment) AsCreate() (*InstanceDiskAttachmentCreate, bool) {
@@ -6673,17 +7029,20 @@ func (v InstanceDiskAttachment) AsAttach() (*InstanceDiskAttachmentAttach, bool)
 	return val, ok
 }
 
+
 // InstanceMulticastGroupJoin is parameters for joining an instance to a multicast group.
-//
+// 
 // When joining by IP address, the pool containing the multicast IP is auto-discovered from all linked multicast pools.
+// 
 type InstanceMulticastGroupJoin struct {
 	// IpVersion is iP version for pool selection when creating a group by name. Required if both IPv4 and IPv6
-	// default multicast pools are linked.
+// default multicast pools are linked.
 	IpVersion IpVersion `json:"ip_version,omitempty" yaml:"ip_version,omitempty"`
 	// SourceIps is source IPs for source-filtered multicast (SSM). Optional for ASM groups, required for SSM
-	// groups (232.0.0.0/8, ff3x::/32).
+// groups (232.0.0.0/8, ff3x::/32).
 	SourceIps []string `json:"source_ips" yaml:"source_ips"`
 }
+
 
 // InstanceNetworkInterface is an `InstanceNetworkInterface` represents a virtual network interface device attached
 // to an instance.
@@ -6725,10 +7084,12 @@ type InstanceNetworkInterface struct {
 	VpcId string `json:"vpc_id" yaml:"vpc_id"`
 }
 
+
 // instanceNetworkInterfaceAttachmentVariant is implemented by InstanceNetworkInterfaceAttachment variants.
 type instanceNetworkInterfaceAttachmentVariant interface {
 	isInstanceNetworkInterfaceAttachmentVariant()
 }
+
 
 // InstanceNetworkInterfaceAttachmentType is the type definition for a InstanceNetworkInterfaceAttachmentType.
 type InstanceNetworkInterfaceAttachmentType string
@@ -6740,11 +7101,13 @@ type InstanceNetworkInterfaceAttachmentCreate struct {
 
 func (InstanceNetworkInterfaceAttachmentCreate) isInstanceNetworkInterfaceAttachmentVariant() {}
 
+
 // InstanceNetworkInterfaceAttachmentDefaultIpv4 is a variant of InstanceNetworkInterfaceAttachment.
 type InstanceNetworkInterfaceAttachmentDefaultIpv4 struct {
 }
 
 func (InstanceNetworkInterfaceAttachmentDefaultIpv4) isInstanceNetworkInterfaceAttachmentVariant() {}
+
 
 // InstanceNetworkInterfaceAttachmentDefaultIpv6 is a variant of InstanceNetworkInterfaceAttachment.
 type InstanceNetworkInterfaceAttachmentDefaultIpv6 struct {
@@ -6752,12 +7115,13 @@ type InstanceNetworkInterfaceAttachmentDefaultIpv6 struct {
 
 func (InstanceNetworkInterfaceAttachmentDefaultIpv6) isInstanceNetworkInterfaceAttachmentVariant() {}
 
+
 // InstanceNetworkInterfaceAttachmentDefaultDualStack is a variant of InstanceNetworkInterfaceAttachment.
 type InstanceNetworkInterfaceAttachmentDefaultDualStack struct {
 }
 
-func (InstanceNetworkInterfaceAttachmentDefaultDualStack) isInstanceNetworkInterfaceAttachmentVariant() {
-}
+func (InstanceNetworkInterfaceAttachmentDefaultDualStack) isInstanceNetworkInterfaceAttachmentVariant() {}
+
 
 // InstanceNetworkInterfaceAttachmentNone is a variant of InstanceNetworkInterfaceAttachment.
 type InstanceNetworkInterfaceAttachmentNone struct {
@@ -6765,10 +7129,11 @@ type InstanceNetworkInterfaceAttachmentNone struct {
 
 func (InstanceNetworkInterfaceAttachmentNone) isInstanceNetworkInterfaceAttachmentVariant() {}
 
+
 // InstanceNetworkInterfaceAttachment is describes an attachment of an `InstanceNetworkInterface` to an
 // `Instance`, at the time the instance is created.
 type InstanceNetworkInterfaceAttachment struct {
-	Value instanceNetworkInterfaceAttachmentVariant
+	Value instanceNetworkInterfaceAttachmentVariant 
 }
 
 func (v InstanceNetworkInterfaceAttachment) Type() InstanceNetworkInterfaceAttachmentType {
@@ -6842,6 +7207,8 @@ func (v InstanceNetworkInterfaceAttachment) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsCreate attempts to convert the InstanceNetworkInterfaceAttachment to a InstanceNetworkInterfaceAttachmentCreate.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v InstanceNetworkInterfaceAttachment) AsCreate() (*InstanceNetworkInterfaceAttachmentCreate, bool) {
@@ -6877,6 +7244,7 @@ func (v InstanceNetworkInterfaceAttachment) AsNone() (*InstanceNetworkInterfaceA
 	return val, ok
 }
 
+
 // InstanceNetworkInterfaceCreate is create-time parameters for an `InstanceNetworkInterface`
 //
 // Required fields:
@@ -6887,18 +7255,19 @@ func (v InstanceNetworkInterfaceAttachment) AsNone() (*InstanceNetworkInterfaceA
 type InstanceNetworkInterfaceCreate struct {
 	Description string `json:"description" yaml:"description"`
 	// IpConfig is the IP stack configuration for this interface.
-	//
-	// If not provided, a default configuration will be used, which creates a dual-stack IPv4 / IPv6 interface.
+// 
+// If not provided, a default configuration will be used, which creates a dual-stack IPv4 / IPv6 interface.
 	IpConfig PrivateIpStackCreate `json:"ip_config,omitempty" yaml:"ip_config,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 	// SubnetName is the VPC Subnet in which to create the interface.
 	SubnetName Name `json:"subnet_name" yaml:"subnet_name"`
 	// VpcName is the VPC in which to create the interface.
 	VpcName Name `json:"vpc_name" yaml:"vpc_name"`
 }
+
 
 // InstanceNetworkInterfaceResultsPage is a single page of results
 //
@@ -6911,24 +7280,27 @@ type InstanceNetworkInterfaceResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // InstanceNetworkInterfaceUpdate is parameters for updating an `InstanceNetworkInterface`
-//
+// 
 // Note that modifying IP addresses for an interface is not yet supported, a new interface must be created instead.
+// 
 type InstanceNetworkInterfaceUpdate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// Primary is make a secondary interface the instance's primary interface.
-	//
-	// If applied to a secondary interface, that interface will become the primary on the next reboot of the instance.
-	// Note that this may have implications for routing between instances, as the new primary interface will be
-	// on a distinct subnet from the previous primary interface.
-	//
-	// Note that this can only be used to select a new primary interface for an instance. Requests to change the
-	// primary interface into a secondary will return an error.
+// 
+// If applied to a secondary interface, that interface will become the primary on the next reboot of the instance.
+// Note that this may have implications for routing between instances, as the new primary interface will be
+// on a distinct subnet from the previous primary interface.
+// 
+// Note that this can only be used to select a new primary interface for an instance. Requests to change the
+// primary interface into a secondary will return an error.
 	Primary *bool `json:"primary,omitempty" yaml:"primary,omitempty"`
 	// TransitIps is a set of additional networks that this interface may send and receive traffic on
 	TransitIps []IpNet `json:"transit_ips,omitempty" yaml:"transit_ips,omitempty"`
 }
+
 
 // InstanceResultsPage is a single page of results
 //
@@ -6941,6 +7313,7 @@ type InstanceResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // InstanceSerialConsoleData is contents of an Instance's serial console buffer.
 //
 // Required fields:
@@ -6948,12 +7321,13 @@ type InstanceResultsPage struct {
 // - LastByteOffset
 type InstanceSerialConsoleData struct {
 	// Data is the bytes starting from the requested offset up to either the end of the buffer or the request's `max_bytes`.
-	// Provided as a u8 array rather than a string, as it may not be UTF-8.
+// Provided as a u8 array rather than a string, as it may not be UTF-8.
 	Data []int `json:"data" yaml:"data"`
 	// LastByteOffset is the absolute offset since boot (suitable for use as `byte_offset` in a subsequent request)
-	// of the last byte returned in `data`.
+// of the last byte returned in `data`.
 	LastByteOffset *int `json:"last_byte_offset" yaml:"last_byte_offset"`
 }
+
 
 // InstanceState is the instance is being created.
 type InstanceState string
@@ -6968,47 +7342,48 @@ type InstanceState string
 // - Ncpus
 type InstanceUpdate struct {
 	// AutoRestartPolicy is the auto-restart policy for this instance.
-	//
-	// This policy determines whether the instance should be automatically restarted by the control plane on failure.
-	// If this is `null`, any explicitly configured auto-restart policy will be unset, and the control plane will
-	// select the default policy when determining whether the instance can be automatically restarted.
-	//
-	// Currently, the global default auto-restart policy is "best-effort", so instances with `null` auto-restart policies
-	// will be automatically restarted. However, in the future, the default policy may be configurable through other
-	// mechanisms, such as on a per-project basis. In that case, any configured default policy will be used if
-	// this is `null`.
+// 
+// This policy determines whether the instance should be automatically restarted by the control plane on failure.
+// If this is `null`, any explicitly configured auto-restart policy will be unset, and the control plane will
+// select the default policy when determining whether the instance can be automatically restarted.
+// 
+// Currently, the global default auto-restart policy is "best-effort", so instances with `null` auto-restart policies
+// will be automatically restarted. However, in the future, the default policy may be configurable through other
+// mechanisms, such as on a per-project basis. In that case, any configured default policy will be used if
+// this is `null`.
 	AutoRestartPolicy *InstanceAutoRestartPolicy `json:"auto_restart_policy" yaml:"auto_restart_policy"`
 	// BootDisk is the disk the instance is configured to boot from.
-	//
-	// Setting a boot disk is optional but recommended to ensure predictable boot behavior. The boot disk can be
-	// set during instance creation or later if the instance is stopped. The boot disk counts against the disk attachment
-	// limit.
-	//
-	// An instance that does not have a boot disk set will use the boot options specified in its UEFI settings, which
-	// are controlled by both the instance's UEFI firmware and the guest operating system. Boot options can change
-	// as disks are attached and detached, which may result in an instance that only boots to the EFI shell until
-	// a boot disk is set.
+// 
+// Setting a boot disk is optional but recommended to ensure predictable boot behavior. The boot disk can be
+// set during instance creation or later if the instance is stopped. The boot disk counts against the disk attachment
+// limit.
+// 
+// An instance that does not have a boot disk set will use the boot options specified in its UEFI settings, which
+// are controlled by both the instance's UEFI firmware and the guest operating system. Boot options can change
+// as disks are attached and detached, which may result in an instance that only boots to the EFI shell until
+// a boot disk is set.
 	BootDisk *NameOrId `json:"boot_disk" yaml:"boot_disk"`
 	// CpuPlatform is the CPU platform to be used for this instance. If this is `null`, the instance requires no
-	// particular CPU platform; when it is started the instance will have the most general CPU platform supported by
-	// the sled it is initially placed on.
+// particular CPU platform; when it is started the instance will have the most general CPU platform supported by
+// the sled it is initially placed on.
 	CpuPlatform *InstanceCpuPlatform `json:"cpu_platform" yaml:"cpu_platform"`
 	// Memory is the amount of RAM (in bytes) to be allocated to the instance
 	Memory ByteCount `json:"memory" yaml:"memory"`
 	// MulticastGroups is multicast groups this instance should join.
-	//
-	// When specified, this replaces the instance's current multicast group membership with the new set of groups. The
-	// instance will leave any groups not listed here and join any new groups that are specified.
-	//
-	// Each entry can specify the group by name, UUID, or IP address, along with optional source IP filtering for
-	// SSM (Source-Specific Multicast). When a group doesn't exist, it will be implicitly created using the default
-	// multicast pool (or you can specify `ip_version` to disambiguate if needed).
-	//
-	// If not provided, the instance's multicast group membership will not be changed.
+// 
+// When specified, this replaces the instance's current multicast group membership with the new set of groups. The
+// instance will leave any groups not listed here and join any new groups that are specified.
+// 
+// Each entry can specify the group by name, UUID, or IP address, along with optional source IP filtering for
+// SSM (Source-Specific Multicast). When a group doesn't exist, it will be implicitly created using the default
+// multicast pool (or you can specify `ip_version` to disambiguate if needed).
+// 
+// If not provided, the instance's multicast group membership will not be changed.
 	MulticastGroups []MulticastGroupJoinSpec `json:"multicast_groups" yaml:"multicast_groups"`
 	// Ncpus is the number of vCPUs to be allocated to the instance
 	Ncpus InstanceCpuCount `json:"ncpus" yaml:"ncpus"`
 }
+
 
 // InterfaceNumUnknown is the type definition for a InterfaceNumUnknown.
 //
@@ -7018,6 +7393,7 @@ type InterfaceNumUnknown struct {
 	Unknown *int `json:"unknown" yaml:"unknown"`
 }
 
+
 // InterfaceNumIfIndex is the type definition for a InterfaceNumIfIndex.
 //
 // Required fields:
@@ -7026,6 +7402,7 @@ type InterfaceNumIfIndex struct {
 	IfIndex *int `json:"if_index" yaml:"if_index"`
 }
 
+
 // InterfaceNumPortNumber is the type definition for a InterfaceNumPortNumber.
 //
 // Required fields:
@@ -7033,6 +7410,7 @@ type InterfaceNumIfIndex struct {
 type InterfaceNumPortNumber struct {
 	PortNumber *int `json:"port_number" yaml:"port_number"`
 }
+
 
 // InterfaceNum is the type definition for a InterfaceNum.
 type InterfaceNum struct {
@@ -7043,6 +7421,7 @@ type InterfaceNum struct {
 	// PortNumber is the type definition for a PortNumber.
 	PortNumber *int `json:"port_number,omitempty" yaml:"port_number,omitempty"`
 }
+
 
 // InternetGateway is an internet gateway provides a path between VPC networks and external networks.
 //
@@ -7068,6 +7447,7 @@ type InternetGateway struct {
 	VpcId string `json:"vpc_id" yaml:"vpc_id"`
 }
 
+
 // InternetGatewayCreate is create-time parameters for an `InternetGateway`
 //
 // Required fields:
@@ -7076,10 +7456,11 @@ type InternetGateway struct {
 type InternetGatewayCreate struct {
 	Description string `json:"description" yaml:"description"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 }
+
 
 // InternetGatewayIpAddress is an IP address that is attached to an internet gateway
 //
@@ -7108,6 +7489,7 @@ type InternetGatewayIpAddress struct {
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
 
+
 // InternetGatewayIpAddressCreate is create-time identity-related parameters
 //
 // Required fields:
@@ -7115,13 +7497,14 @@ type InternetGatewayIpAddress struct {
 // - Description
 // - Name
 type InternetGatewayIpAddressCreate struct {
-	Address     string `json:"address" yaml:"address"`
+	Address string `json:"address" yaml:"address"`
 	Description string `json:"description" yaml:"description"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 }
+
 
 // InternetGatewayIpAddressResultsPage is a single page of results
 //
@@ -7133,6 +7516,7 @@ type InternetGatewayIpAddressResultsPage struct {
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
+
 
 // InternetGatewayIpPool is an IP pool that is attached to an internet gateway
 //
@@ -7161,6 +7545,7 @@ type InternetGatewayIpPool struct {
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
 
+
 // InternetGatewayIpPoolCreate is create-time identity-related parameters
 //
 // Required fields:
@@ -7168,13 +7553,14 @@ type InternetGatewayIpPool struct {
 // - IpPool
 // - Name
 type InternetGatewayIpPoolCreate struct {
-	Description string   `json:"description" yaml:"description"`
-	IpPool      NameOrId `json:"ip_pool" yaml:"ip_pool"`
+	Description string `json:"description" yaml:"description"`
+	IpPool NameOrId `json:"ip_pool" yaml:"ip_pool"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 }
+
 
 // InternetGatewayIpPoolResultsPage is a single page of results
 //
@@ -7187,6 +7573,7 @@ type InternetGatewayIpPoolResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // InternetGatewayResultsPage is a single page of results
 //
 // Required fields:
@@ -7198,15 +7585,18 @@ type InternetGatewayResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // ipNetVariant is implemented by IpNet variants.
 type ipNetVariant interface {
 	isIpNetVariant()
 }
 
+
 // IpNet is the type definition for a IpNet.
 type IpNet struct {
-	Value ipNetVariant
+	Value ipNetVariant 
 }
+
 
 var ipv4netPattern = regexp.MustCompile(`^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])/([0-9]|1[0-9]|2[0-9]|3[0-2])$`)
 var ipv6netPattern = regexp.MustCompile(`^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\/([0-9]|[1-9][0-9]|1[0-1][0-9]|12[0-8])$`)
@@ -7245,6 +7635,7 @@ func detectIpv6Net(s string) bool {
 
 func (Ipv6Net) isIpNetVariant() {}
 
+
 // AsIpv4Net attempts to convert the IpNet to a Ipv4Net.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v IpNet) AsIpv4Net() (*Ipv4Net, bool) {
@@ -7258,6 +7649,7 @@ func (v IpNet) AsIpv6Net() (*Ipv6Net, bool) {
 	val, ok := v.Value.(*Ipv6Net)
 	return val, ok
 }
+
 
 // IpPool is a collection of IP ranges. If a pool is linked to a silo, IP addresses from the pool can be
 // allocated within that silo.
@@ -7287,11 +7679,12 @@ type IpPool struct {
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
 
+
 // IpPoolCreate is create-time parameters for an `IpPool`.
-//
+// 
 // For multicast pools, all ranges must be either Any-Source Multicast (ASM) or Source-Specific Multicast (SSM),
 // but not both. Mixing ASM and SSM ranges in the same pool is not allowed.
-//
+// 
 // ASM: IPv4 addresses outside 232.0.0.0/8, IPv6 addresses with flag field != 3 SSM: IPv4 addresses in 232.0.0.0/8, IPv6
 // addresses with flag field = 3
 //
@@ -7301,16 +7694,17 @@ type IpPool struct {
 type IpPoolCreate struct {
 	Description string `json:"description" yaml:"description"`
 	// IpVersion is the IP version of the pool.
-	//
-	// The default is IPv4.
+// 
+// The default is IPv4.
 	IpVersion IpVersion `json:"ip_version,omitempty" yaml:"ip_version,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 	// PoolType is type of IP pool (defaults to Unicast)
 	PoolType IpPoolType `json:"pool_type,omitempty" yaml:"pool_type,omitempty"`
 }
+
 
 // IpPoolLinkSilo is the type definition for a IpPoolLinkSilo.
 //
@@ -7319,13 +7713,14 @@ type IpPoolCreate struct {
 // - Silo
 type IpPoolLinkSilo struct {
 	// IsDefault is when a pool is the default for a silo, floating IPs and instance ephemeral IPs will come from
-	// that pool when no other pool is specified.
-	//
-	// A silo can have at most one default pool per combination of pool type (unicast or multicast) and IP version (IPv4
-	// or IPv6), allowing up to 4 default pools total.
-	IsDefault *bool    `json:"is_default" yaml:"is_default"`
-	Silo      NameOrId `json:"silo" yaml:"silo"`
+// that pool when no other pool is specified.
+// 
+// A silo can have at most one default pool per combination of pool type (unicast or multicast) and IP version (IPv4
+// or IPv6), allowing up to 4 default pools total.
+	IsDefault *bool `json:"is_default" yaml:"is_default"`
+	Silo NameOrId `json:"silo" yaml:"silo"`
 }
+
 
 // IpPoolRange is the type definition for a IpPoolRange.
 //
@@ -7335,11 +7730,12 @@ type IpPoolLinkSilo struct {
 // - Range
 // - TimeCreated
 type IpPoolRange struct {
-	Id          string     `json:"id" yaml:"id"`
-	IpPoolId    string     `json:"ip_pool_id" yaml:"ip_pool_id"`
-	Range       IpRange    `json:"range" yaml:"range"`
+	Id string `json:"id" yaml:"id"`
+	IpPoolId string `json:"ip_pool_id" yaml:"ip_pool_id"`
+	Range IpRange `json:"range" yaml:"range"`
 	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
 }
+
 
 // IpPoolRangeResultsPage is a single page of results
 //
@@ -7352,6 +7748,7 @@ type IpPoolRangeResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // IpPoolResultsPage is a single page of results
 //
 // Required fields:
@@ -7363,6 +7760,7 @@ type IpPoolResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // IpPoolSiloLink is a link between an IP pool and a silo that allows one to allocate IPs from the pool within
 // the silo
 //
@@ -7373,13 +7771,14 @@ type IpPoolResultsPage struct {
 type IpPoolSiloLink struct {
 	IpPoolId string `json:"ip_pool_id" yaml:"ip_pool_id"`
 	// IsDefault is when a pool is the default for a silo, floating IPs and instance ephemeral IPs will come from
-	// that pool when no other pool is specified.
-	//
-	// A silo can have at most one default pool per combination of pool type (unicast or multicast) and IP version (IPv4
-	// or IPv6), allowing up to 4 default pools total.
-	IsDefault *bool  `json:"is_default" yaml:"is_default"`
-	SiloId    string `json:"silo_id" yaml:"silo_id"`
+// that pool when no other pool is specified.
+// 
+// A silo can have at most one default pool per combination of pool type (unicast or multicast) and IP version (IPv4
+// or IPv6), allowing up to 4 default pools total.
+	IsDefault *bool `json:"is_default" yaml:"is_default"`
+	SiloId string `json:"silo_id" yaml:"silo_id"`
 }
+
 
 // IpPoolSiloLinkResultsPage is a single page of results
 //
@@ -7392,19 +7791,21 @@ type IpPoolSiloLinkResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // IpPoolSiloUpdate is the type definition for a IpPoolSiloUpdate.
 //
 // Required fields:
 // - IsDefault
 type IpPoolSiloUpdate struct {
 	// IsDefault is when a pool is the default for a silo, floating IPs and instance ephemeral IPs will come from
-	// that pool when no other pool is specified.
-	//
-	// A silo can have at most one default pool per combination of pool type (unicast or multicast) and IP version (IPv4
-	// or IPv6), allowing up to 4 default pools total. When a pool is made default, an existing default of the same
-	// type and version will remain linked but will no longer be the default.
+// that pool when no other pool is specified.
+// 
+// A silo can have at most one default pool per combination of pool type (unicast or multicast) and IP version (IPv4
+// or IPv6), allowing up to 4 default pools total. When a pool is made default, an existing default of the same
+// type and version will remain linked but will no longer be the default.
 	IsDefault *bool `json:"is_default" yaml:"is_default"`
 }
+
 
 // IpPoolType is unicast IP pool for standard IP allocations.
 type IpPoolType string
@@ -7412,11 +7813,12 @@ type IpPoolType string
 // IpPoolUpdate is parameters for updating an IP Pool
 type IpPoolUpdate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
+
 // IpPoolUtilization is the utilization of IP addresses in a pool.
-//
+// 
 // Note that both the count of remaining addresses and the total capacity are integers, reported as floating point
 // numbers. This accommodates allocations larger than a 64-bit integer, which is common with IPv6 address spaces.
 // With very large IP Pools (> 2**53 addresses), integer precision will be lost, in exchange for representing the
@@ -7432,15 +7834,19 @@ type IpPoolUtilization struct {
 	Remaining float64 `json:"remaining" yaml:"remaining"`
 }
 
+
 // ipRangeVariant is implemented by IpRange variants.
 type ipRangeVariant interface {
 	isIpRangeVariant()
 }
 
+
 // IpRange is the type definition for a IpRange.
 type IpRange struct {
-	Value ipRangeVariant
+	Value ipRangeVariant 
 }
+
+
 
 func (v *IpRange) UnmarshalJSON(data []byte) error {
 	// Try Ipv4Range
@@ -7494,6 +7900,7 @@ func detectIpv6Range(v *Ipv6Range) bool {
 
 func (Ipv6Range) isIpRangeVariant() {}
 
+
 // AsIpv4Range attempts to convert the IpRange to a Ipv4Range.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v IpRange) AsIpv4Range() (*Ipv4Range, bool) {
@@ -7508,6 +7915,7 @@ func (v IpRange) AsIpv6Range() (*Ipv6Range, bool) {
 	return val, ok
 }
 
+
 // IpVersion is the IP address version.
 type IpVersion string
 
@@ -7515,6 +7923,7 @@ type IpVersion string
 type ipv4AssignmentVariant interface {
 	isIpv4AssignmentVariant()
 }
+
 
 // Ipv4AssignmentType is the type definition for a Ipv4AssignmentType.
 type Ipv4AssignmentType string
@@ -7525,6 +7934,7 @@ type Ipv4AssignmentAuto struct {
 
 func (Ipv4AssignmentAuto) isIpv4AssignmentVariant() {}
 
+
 // Ipv4AssignmentExplicit is a variant of Ipv4Assignment.
 type Ipv4AssignmentExplicit struct {
 	Value string `json:"value" yaml:"value"`
@@ -7532,9 +7942,10 @@ type Ipv4AssignmentExplicit struct {
 
 func (Ipv4AssignmentExplicit) isIpv4AssignmentVariant() {}
 
+
 // Ipv4Assignment is how a VPC-private IP address is assigned to a network interface.
 type Ipv4Assignment struct {
-	Value ipv4AssignmentVariant
+	Value ipv4AssignmentVariant 
 }
 
 func (v Ipv4Assignment) Type() Ipv4AssignmentType {
@@ -7596,6 +8007,8 @@ func (v Ipv4Assignment) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsAuto attempts to convert the Ipv4Assignment to a Ipv4AssignmentAuto.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v Ipv4Assignment) AsAuto() (*Ipv4AssignmentAuto, bool) {
@@ -7610,11 +8023,12 @@ func (v Ipv4Assignment) AsExplicit() (*Ipv4AssignmentExplicit, bool) {
 	return val, ok
 }
 
+
 // Ipv4Net is an IPv4 subnet, including prefix and prefix length
 type Ipv4Net string
 
 // Ipv4Range is a non-decreasing IPv4 address range, inclusive of both ends.
-//
+// 
 // The first address must be less than or equal to the last address.
 //
 // Required fields:
@@ -7622,13 +8036,15 @@ type Ipv4Net string
 // - Last
 type Ipv4Range struct {
 	First string `json:"first" yaml:"first"`
-	Last  string `json:"last" yaml:"last"`
+	Last string `json:"last" yaml:"last"`
 }
+
 
 // ipv6AssignmentVariant is implemented by Ipv6Assignment variants.
 type ipv6AssignmentVariant interface {
 	isIpv6AssignmentVariant()
 }
+
 
 // Ipv6AssignmentType is the type definition for a Ipv6AssignmentType.
 type Ipv6AssignmentType string
@@ -7639,6 +8055,7 @@ type Ipv6AssignmentAuto struct {
 
 func (Ipv6AssignmentAuto) isIpv6AssignmentVariant() {}
 
+
 // Ipv6AssignmentExplicit is a variant of Ipv6Assignment.
 type Ipv6AssignmentExplicit struct {
 	Value string `json:"value" yaml:"value"`
@@ -7646,9 +8063,10 @@ type Ipv6AssignmentExplicit struct {
 
 func (Ipv6AssignmentExplicit) isIpv6AssignmentVariant() {}
 
+
 // Ipv6Assignment is how a VPC-private IP address is assigned to a network interface.
 type Ipv6Assignment struct {
-	Value ipv6AssignmentVariant
+	Value ipv6AssignmentVariant 
 }
 
 func (v Ipv6Assignment) Type() Ipv6AssignmentType {
@@ -7710,6 +8128,8 @@ func (v Ipv6Assignment) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsAuto attempts to convert the Ipv6Assignment to a Ipv6AssignmentAuto.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v Ipv6Assignment) AsAuto() (*Ipv6AssignmentAuto, bool) {
@@ -7724,11 +8144,12 @@ func (v Ipv6Assignment) AsExplicit() (*Ipv6AssignmentExplicit, bool) {
 	return val, ok
 }
 
+
 // Ipv6Net is an IPv6 subnet, including prefix and subnet mask
 type Ipv6Net string
 
 // Ipv6Range is a non-decreasing IPv6 address range, inclusive of both ends.
-//
+// 
 // The first address must be less than or equal to the last address.
 //
 // Required fields:
@@ -7736,8 +8157,9 @@ type Ipv6Net string
 // - Last
 type Ipv6Range struct {
 	First string `json:"first" yaml:"first"`
-	Last  string `json:"last" yaml:"last"`
+	Last string `json:"last" yaml:"last"`
 }
+
 
 // L4PortRange is an inclusive-inclusive range of IP ports. The second port may be omitted to represent a
 // single port.
@@ -7755,10 +8177,10 @@ type LinkConfigCreate struct {
 	// Autoneg is whether or not to set autonegotiation.
 	Autoneg *bool `json:"autoneg" yaml:"autoneg"`
 	// Fec is the requested forward-error correction method.  If this is not specified, the standard FEC for
-	// the underlying media will be applied if it can be determined.
+// the underlying media will be applied if it can be determined.
 	Fec LinkFec `json:"fec,omitempty" yaml:"fec,omitempty"`
 	// LinkName is link name. On ports that are not broken out, this is always phy0. On a 2x breakout the options
-	// are phy0 and phy1, on 4x phy0-phy3, etc.
+// are phy0 and phy1, on 4x phy0-phy3, etc.
 	LinkName Name `json:"link_name" yaml:"link_name"`
 	// Lldp is the link-layer discovery protocol (LLDP) configuration for the link.
 	Lldp LldpLinkConfigCreate `json:"lldp" yaml:"lldp"`
@@ -7769,6 +8191,7 @@ type LinkConfigCreate struct {
 	// TxEq is optional tx_eq settings.
 	TxEq *TxEqConfig `json:"tx_eq,omitempty" yaml:"tx_eq,omitempty"`
 }
+
 
 // LinkFec is firecode forward error correction.
 type LinkFec string
@@ -7800,6 +8223,7 @@ type LldpLinkConfig struct {
 	SystemName string `json:"system_name,omitempty" yaml:"system_name,omitempty"`
 }
 
+
 // LldpLinkConfigCreate is the LLDP configuration associated with a port.
 //
 // Required fields:
@@ -7820,6 +8244,7 @@ type LldpLinkConfigCreate struct {
 	// SystemName is the LLDP system name TLV.
 	SystemName string `json:"system_name,omitempty" yaml:"system_name,omitempty"`
 }
+
 
 // LldpNeighbor is information about LLDP advertisements from other network entities directly connected to
 // a switch port.  This structure contains both metadata about when and where the neighbor was seen, as well
@@ -7853,6 +8278,7 @@ type LldpNeighbor struct {
 	SystemName string `json:"system_name,omitempty" yaml:"system_name,omitempty"`
 }
 
+
 // LldpNeighborResultsPage is a single page of results
 //
 // Required fields:
@@ -7863,6 +8289,7 @@ type LldpNeighborResultsPage struct {
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
+
 
 // LoopbackAddress is a loopback address is an address that is assigned to a rack switch but is not associated with
 // any particular port.
@@ -7886,6 +8313,7 @@ type LoopbackAddress struct {
 	SwitchLocation string `json:"switch_location" yaml:"switch_location"`
 }
 
+
 // LoopbackAddressCreate is parameters for creating a loopback address on a particular rack switch.
 //
 // Required fields:
@@ -7901,17 +8329,18 @@ type LoopbackAddressCreate struct {
 	// AddressLot is the name or id of the address lot this loopback address will pull an address from.
 	AddressLot NameOrId `json:"address_lot" yaml:"address_lot"`
 	// Anycast is address is an anycast address.
-	//
-	// This allows the address to be assigned to multiple locations simultaneously.
+// 
+// This allows the address to be assigned to multiple locations simultaneously.
 	Anycast *bool `json:"anycast" yaml:"anycast"`
 	// Mask is the subnet mask to use for the address.
 	Mask *int `json:"mask" yaml:"mask"`
 	// RackId is the rack containing the switch this loopback address will be configured on.
 	RackId string `json:"rack_id" yaml:"rack_id"`
 	// SwitchLocation is the location of the switch within the rack this loopback address will be configured on.
-	//
+// 
 	SwitchLocation Name `json:"switch_location" yaml:"switch_location"`
 }
+
 
 // LoopbackAddressResultsPage is a single page of results
 //
@@ -7924,6 +8353,7 @@ type LoopbackAddressResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // MacAddr is a Media Access Control address, in EUI-48 format
 type MacAddr string
 
@@ -7933,10 +8363,11 @@ type MacAddr string
 // - Addr
 // - InterfaceNum
 type ManagementAddress struct {
-	Addr         NetworkAddress `json:"addr" yaml:"addr"`
-	InterfaceNum InterfaceNum   `json:"interface_num" yaml:"interface_num"`
-	Oid          []int          `json:"oid" yaml:"oid"`
+	Addr NetworkAddress `json:"addr" yaml:"addr"`
+	InterfaceNum InterfaceNum `json:"interface_num" yaml:"interface_num"`
+	Oid []int `json:"oid" yaml:"oid"`
 }
+
 
 // Measurement is a `Measurement` is a timestamped datum from a single metric
 //
@@ -7945,9 +8376,10 @@ type ManagementAddress struct {
 // - Timestamp
 type Measurement struct {
 	// Datum is a `Datum` is a single sampled data point from a metric.
-	Datum     Datum      `json:"datum" yaml:"datum"`
+	Datum Datum `json:"datum" yaml:"datum"`
 	Timestamp *time.Time `json:"timestamp" yaml:"timestamp"`
 }
+
 
 // MeasurementResultsPage is a single page of results
 //
@@ -7960,6 +8392,7 @@ type MeasurementResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // MetricType is the value represents an instantaneous measurement in time.
 type MetricType string
 
@@ -7969,9 +8402,10 @@ type MetricType string
 // - DatumType
 type MissingDatum struct {
 	// DatumType is the type of an individual datum of a metric.
-	DatumType DatumType  `json:"datum_type" yaml:"datum_type"`
+	DatumType DatumType `json:"datum_type" yaml:"datum_type"`
 	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
 }
+
 
 // MulticastGroup is view of a Multicast Group
 //
@@ -7995,15 +8429,15 @@ type MulticastGroup struct {
 	// MulticastIp is the multicast IP address held by this resource.
 	MulticastIp string `json:"multicast_ip" yaml:"multicast_ip"`
 	// Mvlan is multicast VLAN (MVLAN) for egress multicast traffic to upstream networks. None means no VLAN tagging
-	// on egress.
+// on egress.
 	Mvlan *int `json:"mvlan,omitempty" yaml:"mvlan,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name" yaml:"name"`
 	// SourceIps is union of all member source IP addresses (computed, read-only).
-	//
-	// This field shows the combined source IPs across all group members. Individual members may subscribe to different
-	// sources; this union reflects all sources that any member is subscribed to. Empty array means no members have
-	// source filtering enabled.
+// 
+// This field shows the combined source IPs across all group members. Individual members may subscribe to different
+// sources; this union reflects all sources that any member is subscribed to. Empty array means no members have
+// source filtering enabled.
 	SourceIps []string `json:"source_ips" yaml:"source_ips"`
 	// State is current state of the multicast group.
 	State string `json:"state" yaml:"state"`
@@ -8013,11 +8447,12 @@ type MulticastGroup struct {
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
 
+
 // MulticastGroupIdentifier is can be a UUID, a name, or an IP address
 type MulticastGroupIdentifier string
 
 // MulticastGroupJoinSpec is specification for joining a multicast group with optional source filtering.
-//
+// 
 // Used in `InstanceCreate` and `InstanceUpdate` to specify multicast group membership along with per-member source
 // IP configuration.
 //
@@ -8027,12 +8462,13 @@ type MulticastGroupJoinSpec struct {
 	// Group is the multicast group to join, specified by name, UUID, or IP address.
 	Group MulticastGroupIdentifier `json:"group" yaml:"group"`
 	// IpVersion is iP version for pool selection when creating a group by name. Required if both IPv4 and IPv6
-	// default multicast pools are linked.
+// default multicast pools are linked.
 	IpVersion IpVersion `json:"ip_version,omitempty" yaml:"ip_version,omitempty"`
 	// SourceIps is source IPs for source-filtered multicast (SSM). Optional for ASM groups, required for SSM
-	// groups (232.0.0.0/8, ff3x::/32).
+// groups (232.0.0.0/8, ff3x::/32).
 	SourceIps []string `json:"source_ips" yaml:"source_ips"`
 }
+
 
 // MulticastGroupMember is view of a Multicast Group Member (instance belonging to a multicast group)
 //
@@ -8061,9 +8497,9 @@ type MulticastGroupMember struct {
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name" yaml:"name"`
 	// SourceIps is source IP addresses for this member's multicast subscription.
-	//
-	// - **ASM**: Sources are optional. Empty array means any source is allowed. Non-empty array enables source filtering
-	// (IGMPv3/MLDv2). - **SSM**: Sources are required for SSM addresses (232/8, ff3x::/32).
+// 
+// - **ASM**: Sources are optional. Empty array means any source is allowed. Non-empty array enables source filtering
+// (IGMPv3/MLDv2). - **SSM**: Sources are required for SSM addresses (232/8, ff3x::/32).
 	SourceIps []string `json:"source_ips" yaml:"source_ips"`
 	// State is current state of the multicast group membership.
 	State string `json:"state" yaml:"state"`
@@ -8072,6 +8508,7 @@ type MulticastGroupMember struct {
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
+
 
 // MulticastGroupMemberResultsPage is a single page of results
 //
@@ -8084,6 +8521,7 @@ type MulticastGroupMemberResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // MulticastGroupResultsPage is a single page of results
 //
 // Required fields:
@@ -8094,6 +8532,7 @@ type MulticastGroupResultsPage struct {
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
+
 
 // Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
 // ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
@@ -8117,6 +8556,7 @@ type NetworkAddressIpAddr struct {
 	IpAddr string `json:"ip_addr" yaml:"ip_addr"`
 }
 
+
 // NetworkAddressIeee802 is the type definition for a NetworkAddressIeee802.
 //
 // Required fields:
@@ -8125,6 +8565,7 @@ type NetworkAddressIeee802 struct {
 	IEEE802 []int `json:"i_e_e_e802" yaml:"i_e_e_e802"`
 }
 
+
 // NetworkAddress is the type definition for a NetworkAddress.
 type NetworkAddress struct {
 	// IpAddr is the type definition for a IpAddr.
@@ -8132,6 +8573,7 @@ type NetworkAddress struct {
 	// IEEE802 is the type definition for a IEEE802.
 	IEEE802 []int `json:"i_e_e_e802,omitempty" yaml:"i_e_e_e802,omitempty"`
 }
+
 
 // NetworkInterface is information required to construct a virtual network interface
 //
@@ -8153,19 +8595,21 @@ type NetworkInterface struct {
 	// Mac is a Media Access Control address, in EUI-48 format
 	Mac MacAddr `json:"mac" yaml:"mac"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
-	Name    Name  `json:"name" yaml:"name"`
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
+	Name Name `json:"name" yaml:"name"`
 	Primary *bool `json:"primary" yaml:"primary"`
-	Slot    *int  `json:"slot" yaml:"slot"`
+	Slot *int `json:"slot" yaml:"slot"`
 	// Vni is a Geneve Virtual Network Identifier
 	Vni Vni `json:"vni" yaml:"vni"`
 }
+
 
 // networkInterfaceKindVariant is implemented by NetworkInterfaceKind variants.
 type networkInterfaceKindVariant interface {
 	isNetworkInterfaceKindVariant()
 }
+
 
 // NetworkInterfaceKindType is the type definition for a NetworkInterfaceKindType.
 type NetworkInterfaceKindType string
@@ -8177,12 +8621,14 @@ type NetworkInterfaceKindInstance struct {
 
 func (NetworkInterfaceKindInstance) isNetworkInterfaceKindVariant() {}
 
+
 // NetworkInterfaceKindService is a variant of NetworkInterfaceKind.
 type NetworkInterfaceKindService struct {
 	Id string `json:"id" yaml:"id"`
 }
 
 func (NetworkInterfaceKindService) isNetworkInterfaceKindVariant() {}
+
 
 // NetworkInterfaceKindProbe is a variant of NetworkInterfaceKind.
 type NetworkInterfaceKindProbe struct {
@@ -8191,9 +8637,10 @@ type NetworkInterfaceKindProbe struct {
 
 func (NetworkInterfaceKindProbe) isNetworkInterfaceKindVariant() {}
 
+
 // NetworkInterfaceKind is the type of network interface
 type NetworkInterfaceKind struct {
-	Value networkInterfaceKindVariant
+	Value networkInterfaceKindVariant 
 }
 
 func (v NetworkInterfaceKind) Type() NetworkInterfaceKindType {
@@ -8259,6 +8706,8 @@ func (v NetworkInterfaceKind) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsInstance attempts to convert the NetworkInterfaceKind to a NetworkInterfaceKindInstance.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v NetworkInterfaceKind) AsInstance() (*NetworkInterfaceKindInstance, bool) {
@@ -8280,6 +8729,7 @@ func (v NetworkInterfaceKind) AsProbe() (*NetworkInterfaceKindProbe, bool) {
 	return val, ok
 }
 
+
 // OxqlQueryResult is the result of a successful OxQL query.
 //
 // Required fields:
@@ -8289,8 +8739,9 @@ type OxqlQueryResult struct {
 	Tables []OxqlTable `json:"tables" yaml:"tables"`
 }
 
+
 // OxqlTable is a table represents one or more timeseries with the same schema.
-//
+// 
 // A table is the result of an OxQL query. It contains a name, usually the name of the timeseries schema from
 // which the data is derived, and any number of timeseries, which contain the actual data.
 //
@@ -8304,6 +8755,7 @@ type OxqlTable struct {
 	Timeseries []Timeseries `json:"timeseries" yaml:"timeseries"`
 }
 
+
 // PaginationOrder is the order in which the client wants to page through the requested collection
 type PaginationOrder string
 
@@ -8311,8 +8763,9 @@ type PaginationOrder string
 type Password string
 
 // PhysicalDisk is view of a Physical Disk
-//
+// 
 // Physical disks reside in a particular sled and are used to store both Instance Disk data as well as internal metadata.
+//
 //
 // Required fields:
 // - FormFactor
@@ -8328,11 +8781,11 @@ type PhysicalDisk struct {
 	// FormFactor is describes the form factor of physical disks.
 	FormFactor PhysicalDiskKind `json:"form_factor" yaml:"form_factor"`
 	// Id is unique, immutable, system-controlled identifier for each resource
-	Id    string `json:"id" yaml:"id"`
+	Id string `json:"id" yaml:"id"`
 	Model string `json:"model" yaml:"model"`
 	// Policy is the operator-defined policy for a physical disk.
 	Policy PhysicalDiskPolicy `json:"policy" yaml:"policy"`
-	Serial string             `json:"serial" yaml:"serial"`
+	Serial string `json:"serial" yaml:"serial"`
 	// SledId is the sled to which this disk is attached, if any.
 	SledId string `json:"sled_id,omitempty" yaml:"sled_id,omitempty"`
 	// State is the current state Nexus believes the disk to be in.
@@ -8341,8 +8794,9 @@ type PhysicalDisk struct {
 	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
-	Vendor       string     `json:"vendor" yaml:"vendor"`
+	Vendor string `json:"vendor" yaml:"vendor"`
 }
+
 
 // PhysicalDiskKind is describes the form factor of physical disks.
 type PhysicalDiskKind string
@@ -8351,6 +8805,7 @@ type PhysicalDiskKind string
 type physicalDiskPolicyVariant interface {
 	isPhysicalDiskPolicyVariant()
 }
+
 
 // PhysicalDiskPolicyKind is the type definition for a PhysicalDiskPolicyKind.
 type PhysicalDiskPolicyKind string
@@ -8361,15 +8816,17 @@ type PhysicalDiskPolicyInService struct {
 
 func (PhysicalDiskPolicyInService) isPhysicalDiskPolicyVariant() {}
 
+
 // PhysicalDiskPolicyExpunged is a variant of PhysicalDiskPolicy.
 type PhysicalDiskPolicyExpunged struct {
 }
 
 func (PhysicalDiskPolicyExpunged) isPhysicalDiskPolicyVariant() {}
 
+
 // PhysicalDiskPolicy is the operator-defined policy of a physical disk.
 type PhysicalDiskPolicy struct {
-	Value physicalDiskPolicyVariant
+	Value physicalDiskPolicyVariant 
 }
 
 func (v PhysicalDiskPolicy) Kind() PhysicalDiskPolicyKind {
@@ -8431,6 +8888,8 @@ func (v PhysicalDiskPolicy) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsInService attempts to convert the PhysicalDiskPolicy to a PhysicalDiskPolicyInService.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v PhysicalDiskPolicy) AsInService() (*PhysicalDiskPolicyInService, bool) {
@@ -8445,6 +8904,7 @@ func (v PhysicalDiskPolicy) AsExpunged() (*PhysicalDiskPolicyExpunged, bool) {
 	return val, ok
 }
 
+
 // PhysicalDiskResultsPage is a single page of results
 //
 // Required fields:
@@ -8456,6 +8916,7 @@ type PhysicalDiskResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // PhysicalDiskState is the disk is currently active, and has resources allocated on it.
 type PhysicalDiskState string
 
@@ -8465,9 +8926,10 @@ type PhysicalDiskState string
 // - Status
 type Ping struct {
 	// Status is whether the external API is reachable. Will always be Ok if the endpoint returns anything at
-	// all.
+// all.
 	Status PingStatus `json:"status" yaml:"status"`
 }
+
 
 // PingStatus is the type definition for a PingStatus.
 type PingStatus string
@@ -8480,13 +8942,15 @@ type PingStatus string
 type Points struct {
 	StartTimes []time.Time `json:"start_times" yaml:"start_times"`
 	Timestamps []time.Time `json:"timestamps" yaml:"timestamps"`
-	Values     []Values    `json:"values" yaml:"values"`
+	Values []Values `json:"values" yaml:"values"`
 }
+
 
 // poolSelectorVariant is implemented by PoolSelector variants.
 type poolSelectorVariant interface {
 	isPoolSelectorVariant()
 }
+
 
 // PoolSelectorType is the type definition for a PoolSelectorType.
 type PoolSelectorType string
@@ -8499,18 +8963,20 @@ type PoolSelectorExplicit struct {
 
 func (PoolSelectorExplicit) isPoolSelectorVariant() {}
 
+
 // PoolSelectorAuto is a variant of PoolSelector.
 type PoolSelectorAuto struct {
 	// IpVersion is iP version to use when multiple default pools exist. Required if both IPv4 and IPv6 default pools
-	// are configured.
+// are configured.
 	IpVersion IpVersion `json:"ip_version,omitempty" yaml:"ip_version,omitempty"`
 }
 
 func (PoolSelectorAuto) isPoolSelectorVariant() {}
 
+
 // PoolSelector is specify which IP or external subnet pool to allocate from.
 type PoolSelector struct {
-	Value poolSelectorVariant
+	Value poolSelectorVariant 
 }
 
 func (v PoolSelector) Type() PoolSelectorType {
@@ -8572,6 +9038,8 @@ func (v PoolSelector) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsExplicit attempts to convert the PoolSelector to a PoolSelectorExplicit.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v PoolSelector) AsExplicit() (*PoolSelectorExplicit, bool) {
@@ -8586,10 +9054,12 @@ func (v PoolSelector) AsAuto() (*PoolSelectorAuto, bool) {
 	return val, ok
 }
 
+
 // privateIpConfigVariant is implemented by PrivateIpConfig variants.
 type privateIpConfigVariant interface {
 	isPrivateIpConfigVariant()
 }
+
 
 // PrivateIpConfigType is the type definition for a PrivateIpConfigType.
 type PrivateIpConfigType string
@@ -8602,6 +9072,7 @@ type PrivateIpConfigV4 struct {
 
 func (PrivateIpConfigV4) isPrivateIpConfigVariant() {}
 
+
 // PrivateIpConfigV6 is a variant of PrivateIpConfig.
 type PrivateIpConfigV6 struct {
 	// Value is vPC-private IPv6 configuration for a network interface.
@@ -8609,6 +9080,7 @@ type PrivateIpConfigV6 struct {
 }
 
 func (PrivateIpConfigV6) isPrivateIpConfigVariant() {}
+
 
 // PrivateIpConfigDualStackValue is the type definition for a PrivateIpConfigDualStackValue.
 //
@@ -8622,6 +9094,7 @@ type PrivateIpConfigDualStackValue struct {
 	V6 PrivateIpv6Config `json:"v6" yaml:"v6"`
 }
 
+
 // PrivateIpConfigDualStack is a variant of PrivateIpConfig.
 type PrivateIpConfigDualStack struct {
 	Value PrivateIpConfigDualStackValue `json:"value" yaml:"value"`
@@ -8629,9 +9102,10 @@ type PrivateIpConfigDualStack struct {
 
 func (PrivateIpConfigDualStack) isPrivateIpConfigVariant() {}
 
+
 // PrivateIpConfig is vPC-private IP address configuration for a network interface.
 type PrivateIpConfig struct {
-	Value privateIpConfigVariant
+	Value privateIpConfigVariant 
 }
 
 func (v PrivateIpConfig) Type() PrivateIpConfigType {
@@ -8697,6 +9171,8 @@ func (v PrivateIpConfig) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsV4 attempts to convert the PrivateIpConfig to a PrivateIpConfigV4.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v PrivateIpConfig) AsV4() (*PrivateIpConfigV4, bool) {
@@ -8718,10 +9194,12 @@ func (v PrivateIpConfig) AsDualStack() (*PrivateIpConfigDualStack, bool) {
 	return val, ok
 }
 
+
 // privateIpStackVariant is implemented by PrivateIpStack variants.
 type privateIpStackVariant interface {
 	isPrivateIpStackVariant()
 }
+
 
 // PrivateIpStackType is the type definition for a PrivateIpStackType.
 type PrivateIpStackType string
@@ -8734,6 +9212,7 @@ type PrivateIpStackV4 struct {
 
 func (PrivateIpStackV4) isPrivateIpStackVariant() {}
 
+
 // PrivateIpStackV6 is a variant of PrivateIpStack.
 type PrivateIpStackV6 struct {
 	// Value is the VPC-private IPv6 stack for a network interface
@@ -8741,6 +9220,7 @@ type PrivateIpStackV6 struct {
 }
 
 func (PrivateIpStackV6) isPrivateIpStackVariant() {}
+
 
 // PrivateIpStackDualStackValue is the type definition for a PrivateIpStackDualStackValue.
 //
@@ -8754,6 +9234,7 @@ type PrivateIpStackDualStackValue struct {
 	V6 PrivateIpv6Stack `json:"v6" yaml:"v6"`
 }
 
+
 // PrivateIpStackDualStack is a variant of PrivateIpStack.
 type PrivateIpStackDualStack struct {
 	Value PrivateIpStackDualStackValue `json:"value" yaml:"value"`
@@ -8761,9 +9242,10 @@ type PrivateIpStackDualStack struct {
 
 func (PrivateIpStackDualStack) isPrivateIpStackVariant() {}
 
+
 // PrivateIpStack is the VPC-private IP stack for a network interface.
 type PrivateIpStack struct {
-	Value privateIpStackVariant
+	Value privateIpStackVariant 
 }
 
 func (v PrivateIpStack) Type() PrivateIpStackType {
@@ -8829,6 +9311,8 @@ func (v PrivateIpStack) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsV4 attempts to convert the PrivateIpStack to a PrivateIpStackV4.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v PrivateIpStack) AsV4() (*PrivateIpStackV4, bool) {
@@ -8850,10 +9334,12 @@ func (v PrivateIpStack) AsDualStack() (*PrivateIpStackDualStack, bool) {
 	return val, ok
 }
 
+
 // privateIpStackCreateVariant is implemented by PrivateIpStackCreate variants.
 type privateIpStackCreateVariant interface {
 	isPrivateIpStackCreateVariant()
 }
+
 
 // PrivateIpStackCreateType is the type definition for a PrivateIpStackCreateType.
 type PrivateIpStackCreateType string
@@ -8866,6 +9352,7 @@ type PrivateIpStackCreateV4 struct {
 
 func (PrivateIpStackCreateV4) isPrivateIpStackCreateVariant() {}
 
+
 // PrivateIpStackCreateV6 is a variant of PrivateIpStackCreate.
 type PrivateIpStackCreateV6 struct {
 	// Value is configuration for a network interface's IPv6 addressing.
@@ -8873,6 +9360,7 @@ type PrivateIpStackCreateV6 struct {
 }
 
 func (PrivateIpStackCreateV6) isPrivateIpStackCreateVariant() {}
+
 
 // PrivateIpStackCreateDualStackValue is the type definition for a PrivateIpStackCreateDualStackValue.
 //
@@ -8886,6 +9374,7 @@ type PrivateIpStackCreateDualStackValue struct {
 	V6 PrivateIpv6StackCreate `json:"v6" yaml:"v6"`
 }
 
+
 // PrivateIpStackCreateDualStack is a variant of PrivateIpStackCreate.
 type PrivateIpStackCreateDualStack struct {
 	Value PrivateIpStackCreateDualStackValue `json:"value" yaml:"value"`
@@ -8893,9 +9382,10 @@ type PrivateIpStackCreateDualStack struct {
 
 func (PrivateIpStackCreateDualStack) isPrivateIpStackCreateVariant() {}
 
+
 // PrivateIpStackCreate is create parameters for a network interface's IP stack.
 type PrivateIpStackCreate struct {
-	Value privateIpStackCreateVariant
+	Value privateIpStackCreateVariant 
 }
 
 func (v PrivateIpStackCreate) Type() PrivateIpStackCreateType {
@@ -8961,6 +9451,8 @@ func (v PrivateIpStackCreate) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsV4 attempts to convert the PrivateIpStackCreate to a PrivateIpStackCreateV4.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v PrivateIpStackCreate) AsV4() (*PrivateIpStackCreateV4, bool) {
@@ -8982,6 +9474,7 @@ func (v PrivateIpStackCreate) AsDualStack() (*PrivateIpStackCreateDualStack, boo
 	return val, ok
 }
 
+
 // PrivateIpv4Config is vPC-private IPv4 configuration for a network interface.
 //
 // Required fields:
@@ -8996,6 +9489,7 @@ type PrivateIpv4Config struct {
 	TransitIps []Ipv4Net `json:"transit_ips,omitempty" yaml:"transit_ips,omitempty"`
 }
 
+
 // PrivateIpv4Stack is the VPC-private IPv4 stack for a network interface
 //
 // Required fields:
@@ -9008,6 +9502,7 @@ type PrivateIpv4Stack struct {
 	TransitIps []Ipv4Net `json:"transit_ips" yaml:"transit_ips"`
 }
 
+
 // PrivateIpv4StackCreate is configuration for a network interface's IPv4 addressing.
 //
 // Required fields:
@@ -9018,6 +9513,7 @@ type PrivateIpv4StackCreate struct {
 	// TransitIps is additional IP networks the interface can send / receive on.
 	TransitIps []Ipv4Net `json:"transit_ips,omitempty" yaml:"transit_ips,omitempty"`
 }
+
 
 // PrivateIpv6Config is vPC-private IPv6 configuration for a network interface.
 //
@@ -9034,6 +9530,7 @@ type PrivateIpv6Config struct {
 	TransitIps []Ipv6Net `json:"transit_ips" yaml:"transit_ips"`
 }
 
+
 // PrivateIpv6Stack is the VPC-private IPv6 stack for a network interface
 //
 // Required fields:
@@ -9046,6 +9543,7 @@ type PrivateIpv6Stack struct {
 	TransitIps []Ipv6Net `json:"transit_ips" yaml:"transit_ips"`
 }
 
+
 // PrivateIpv6StackCreate is configuration for a network interface's IPv6 addressing.
 //
 // Required fields:
@@ -9056,6 +9554,7 @@ type PrivateIpv6StackCreate struct {
 	// TransitIps is additional IP networks the interface can send / receive on.
 	TransitIps []Ipv6Net `json:"transit_ips,omitempty" yaml:"transit_ips,omitempty"`
 }
+
 
 // Probe is identity-related metadata that's included in nearly all public API objects
 //
@@ -9072,13 +9571,14 @@ type Probe struct {
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id" yaml:"id"`
 	// Name is unique, mutable, user-controlled identifier for each resource
-	Name Name   `json:"name" yaml:"name"`
+	Name Name `json:"name" yaml:"name"`
 	Sled string `json:"sled" yaml:"sled"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
+
 
 // ProbeCreate is create time parameters for probes.
 //
@@ -9089,13 +9589,14 @@ type Probe struct {
 type ProbeCreate struct {
 	Description string `json:"description" yaml:"description"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 	// PoolSelector is pool to allocate from.
 	PoolSelector PoolSelector `json:"pool_selector,omitempty" yaml:"pool_selector,omitempty"`
-	Sled         string       `json:"sled" yaml:"sled"`
+	Sled string `json:"sled" yaml:"sled"`
 }
+
 
 // ProbeExternalIp is the type definition for a ProbeExternalIp.
 //
@@ -9105,11 +9606,12 @@ type ProbeCreate struct {
 // - Kind
 // - LastPort
 type ProbeExternalIp struct {
-	FirstPort *int                `json:"first_port" yaml:"first_port"`
-	Ip        string              `json:"ip" yaml:"ip"`
-	Kind      ProbeExternalIpKind `json:"kind" yaml:"kind"`
-	LastPort  *int                `json:"last_port" yaml:"last_port"`
+	FirstPort *int `json:"first_port" yaml:"first_port"`
+	Ip string `json:"ip" yaml:"ip"`
+	Kind ProbeExternalIpKind `json:"kind" yaml:"kind"`
+	LastPort *int `json:"last_port" yaml:"last_port"`
 }
+
 
 // ProbeExternalIpKind is the type definition for a ProbeExternalIpKind.
 type ProbeExternalIpKind string
@@ -9124,15 +9626,16 @@ type ProbeExternalIpKind string
 // - Sled
 type ProbeInfo struct {
 	ExternalIps []ProbeExternalIp `json:"external_ips" yaml:"external_ips"`
-	Id          string            `json:"id" yaml:"id"`
+	Id string `json:"id" yaml:"id"`
 	// Interface is information required to construct a virtual network interface
 	Interface NetworkInterface `json:"interface" yaml:"interface"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
-	Name Name   `json:"name" yaml:"name"`
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
+	Name Name `json:"name" yaml:"name"`
 	Sled string `json:"sled" yaml:"sled"`
 }
+
 
 // ProbeInfoResultsPage is a single page of results
 //
@@ -9144,6 +9647,7 @@ type ProbeInfoResultsPage struct {
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
+
 
 // Project is view of a Project
 //
@@ -9166,6 +9670,7 @@ type Project struct {
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
 
+
 // ProjectCreate is create-time parameters for a `Project`
 //
 // Required fields:
@@ -9174,10 +9679,11 @@ type Project struct {
 type ProjectCreate struct {
 	Description string `json:"description" yaml:"description"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 }
+
 
 // ProjectResultsPage is a single page of results
 //
@@ -9190,11 +9696,12 @@ type ProjectResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // ProjectRole is the type definition for a ProjectRole.
 type ProjectRole string
 
 // ProjectRolePolicy is policy for a particular resource
-//
+// 
 // Note that the Policy only describes access granted explicitly for this resource.  The policies of parent resources
 // can also cause a user to have access to this resource.
 //
@@ -9205,9 +9712,10 @@ type ProjectRolePolicy struct {
 	RoleAssignments []ProjectRoleRoleAssignment `json:"role_assignments" yaml:"role_assignments"`
 }
 
+
 // ProjectRoleRoleAssignment is describes the assignment of a particular role on a particular resource to
 // a particular identity (user, group, etc.)
-//
+// 
 // The resource is not part of this structure.  Rather, `RoleAssignment`s are put into a `Policy` and that Policy
 // is applied to a particular resource.
 //
@@ -9219,19 +9727,21 @@ type ProjectRoleRoleAssignment struct {
 	IdentityId string `json:"identity_id" yaml:"identity_id"`
 	// IdentityType is describes what kind of identity is described by an id
 	IdentityType IdentityType `json:"identity_type" yaml:"identity_type"`
-	RoleName     ProjectRole  `json:"role_name" yaml:"role_name"`
+	RoleName ProjectRole `json:"role_name" yaml:"role_name"`
 }
+
 
 // ProjectUpdate is updateable properties of a `Project`
 type ProjectUpdate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
+
 // Quantile is structure for estimating the p-quantile of a population.
-//
+// 
 // This is based on the P² algorithm for estimating quantiles using constant space.
-//
+// 
 // The algorithm consists of maintaining five markers: the minimum, the p/2-, p-, and (1 + p)/2 quantiles, and
 // the maximum.
 //
@@ -9246,14 +9756,15 @@ type Quantile struct {
 	// MarkerHeights is the heights of the markers.
 	MarkerHeights []float64 `json:"marker_heights" yaml:"marker_heights"`
 	// MarkerPositions is the positions of the markers.
-	//
-	// We track sample size in the 5th position, as useful observations won't start until we've filled the heights at
-	// the 6th sample anyway This does deviate from the paper, but it's a more useful representation that works according
-	// to the paper's algorithm.
+// 
+// We track sample size in the 5th position, as useful observations won't start until we've filled the heights at
+// the 6th sample anyway This does deviate from the paper, but it's a more useful representation that works according
+// to the paper's algorithm.
 	MarkerPositions []int `json:"marker_positions" yaml:"marker_positions"`
 	// P is the p value for the quantile.
 	P float64 `json:"p" yaml:"p"`
 }
+
 
 // Rack is view of a Rack
 //
@@ -9270,6 +9781,7 @@ type Rack struct {
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
 
+
 // RackMembershipAddSledsRequest is the type definition for a RackMembershipAddSledsRequest.
 //
 // Required fields:
@@ -9278,10 +9790,12 @@ type RackMembershipAddSledsRequest struct {
 	SledIds []BaseboardId `json:"sled_ids" yaml:"sled_ids"`
 }
 
+
 // RackMembershipChangeState is the type definition for a RackMembershipChangeState.
 type RackMembershipChangeState string
 
 // RackMembershipStatus is status of the rack membership uniquely identified by the (rack_id, version) pair
+//
 //
 // Required fields:
 // - Members
@@ -9292,17 +9806,18 @@ type RackMembershipChangeState string
 // - Version
 type RackMembershipStatus struct {
 	// Members is all members of the rack for this version
-	Members       []BaseboardId             `json:"members" yaml:"members"`
-	RackId        string                    `json:"rack_id" yaml:"rack_id"`
-	State         RackMembershipChangeState `json:"state" yaml:"state"`
-	TimeAborted   *time.Time                `json:"time_aborted,omitempty" yaml:"time_aborted,omitempty"`
-	TimeCommitted *time.Time                `json:"time_committed,omitempty" yaml:"time_committed,omitempty"`
-	TimeCreated   *time.Time                `json:"time_created" yaml:"time_created"`
+	Members []BaseboardId `json:"members" yaml:"members"`
+	RackId string `json:"rack_id" yaml:"rack_id"`
+	State RackMembershipChangeState `json:"state" yaml:"state"`
+	TimeAborted *time.Time `json:"time_aborted,omitempty" yaml:"time_aborted,omitempty"`
+	TimeCommitted *time.Time `json:"time_committed,omitempty" yaml:"time_committed,omitempty"`
+	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
 	// UnacknowledgedMembers is all members that have not yet confirmed this membership version
 	UnacknowledgedMembers []BaseboardId `json:"unacknowledged_members" yaml:"unacknowledged_members"`
 	// Version is version that uniquely identifies the rack membership at a given point in time
 	Version RackMembershipVersion `json:"version" yaml:"version"`
 }
+
 
 // RackMembershipVersion is a unique, monotonically increasing number representing the set of active sleds
 // in a rack at a given point in time.
@@ -9318,6 +9833,7 @@ type RackResultsPage struct {
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
+
 
 // Route is a route to a destination network through a gateway address.
 //
@@ -9335,6 +9851,7 @@ type Route struct {
 	Vid *int `json:"vid,omitempty" yaml:"vid,omitempty"`
 }
 
+
 // RouteConfig is route configuration data associated with a switch port configuration.
 //
 // Required fields:
@@ -9342,16 +9859,18 @@ type Route struct {
 // - Routes
 type RouteConfig struct {
 	// LinkName is link name. On ports that are not broken out, this is always phy0. On a 2x breakout the options
-	// are phy0 and phy1, on 4x phy0-phy3, etc.
+// are phy0 and phy1, on 4x phy0-phy3, etc.
 	LinkName Name `json:"link_name" yaml:"link_name"`
 	// Routes is the set of routes assigned to a switch port.
 	Routes []Route `json:"routes" yaml:"routes"`
 }
 
+
 // routeDestinationVariant is implemented by RouteDestination variants.
 type routeDestinationVariant interface {
 	isRouteDestinationVariant()
 }
+
 
 // RouteDestinationType is the type definition for a RouteDestinationType.
 type RouteDestinationType string
@@ -9363,6 +9882,7 @@ type RouteDestinationIp struct {
 
 func (RouteDestinationIp) isRouteDestinationVariant() {}
 
+
 // RouteDestinationIpNet is a variant of RouteDestination.
 type RouteDestinationIpNet struct {
 	Value IpNet `json:"value" yaml:"value"`
@@ -9370,33 +9890,36 @@ type RouteDestinationIpNet struct {
 
 func (RouteDestinationIpNet) isRouteDestinationVariant() {}
 
+
 // RouteDestinationVpc is a variant of RouteDestination.
 type RouteDestinationVpc struct {
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Value Name `json:"value" yaml:"value"`
 }
 
 func (RouteDestinationVpc) isRouteDestinationVariant() {}
 
+
 // RouteDestinationSubnet is a variant of RouteDestination.
 type RouteDestinationSubnet struct {
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Value Name `json:"value" yaml:"value"`
 }
 
 func (RouteDestinationSubnet) isRouteDestinationVariant() {}
 
+
 // RouteDestination is a `RouteDestination` is used to match traffic with a routing rule based on the destination
 // of that traffic.
-//
+// 
 // When traffic is to be sent to a destination that is within a given `RouteDestination`, the corresponding `RouterRoute`
 // applies, and traffic will be forward to the `RouteTarget` for that rule.
 type RouteDestination struct {
-	Value routeDestinationVariant
+	Value routeDestinationVariant 
 }
 
 func (v RouteDestination) Type() RouteDestinationType {
@@ -9466,6 +9989,8 @@ func (v RouteDestination) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsIp attempts to convert the RouteDestination to a RouteDestinationIp.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v RouteDestination) AsIp() (*RouteDestinationIp, bool) {
@@ -9494,10 +10019,12 @@ func (v RouteDestination) AsSubnet() (*RouteDestinationSubnet, bool) {
 	return val, ok
 }
 
+
 // routeTargetVariant is implemented by RouteTarget variants.
 type routeTargetVariant interface {
 	isRouteTargetVariant()
 }
+
 
 // RouteTargetType is the type definition for a RouteTargetType.
 type RouteTargetType string
@@ -9509,45 +10036,50 @@ type RouteTargetIp struct {
 
 func (RouteTargetIp) isRouteTargetVariant() {}
 
+
 // RouteTargetVpc is a variant of RouteTarget.
 type RouteTargetVpc struct {
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Value Name `json:"value" yaml:"value"`
 }
 
 func (RouteTargetVpc) isRouteTargetVariant() {}
 
+
 // RouteTargetSubnet is a variant of RouteTarget.
 type RouteTargetSubnet struct {
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Value Name `json:"value" yaml:"value"`
 }
 
 func (RouteTargetSubnet) isRouteTargetVariant() {}
 
+
 // RouteTargetInstance is a variant of RouteTarget.
 type RouteTargetInstance struct {
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Value Name `json:"value" yaml:"value"`
 }
 
 func (RouteTargetInstance) isRouteTargetVariant() {}
 
+
 // RouteTargetInternetGateway is a variant of RouteTarget.
 type RouteTargetInternetGateway struct {
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Value Name `json:"value" yaml:"value"`
 }
 
 func (RouteTargetInternetGateway) isRouteTargetVariant() {}
+
 
 // RouteTargetDrop is a variant of RouteTarget.
 type RouteTargetDrop struct {
@@ -9555,10 +10087,11 @@ type RouteTargetDrop struct {
 
 func (RouteTargetDrop) isRouteTargetVariant() {}
 
+
 // RouteTarget is a `RouteTarget` describes the possible locations that traffic matching a route destination can
 // be sent.
 type RouteTarget struct {
-	Value routeTargetVariant
+	Value routeTargetVariant 
 }
 
 func (v RouteTarget) Type() RouteTargetType {
@@ -9636,6 +10169,8 @@ func (v RouteTarget) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsIp attempts to convert the RouteTarget to a RouteTargetIp.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v RouteTarget) AsIp() (*RouteTargetIp, bool) {
@@ -9678,6 +10213,7 @@ func (v RouteTarget) AsDrop() (*RouteTargetDrop, bool) {
 	return val, ok
 }
 
+
 // RouterRoute is a route defines a rule that governs where traffic should be sent based on its destination.
 //
 // Required fields:
@@ -9711,6 +10247,7 @@ type RouterRoute struct {
 	VpcRouterId string `json:"vpc_router_id" yaml:"vpc_router_id"`
 }
 
+
 // RouterRouteCreate is create-time parameters for a `RouterRoute`
 //
 // Required fields:
@@ -9723,16 +10260,17 @@ type RouterRouteCreate struct {
 	// Destination is selects which traffic this routing rule will apply to.
 	Destination RouteDestination `json:"destination" yaml:"destination"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 	// Target is the location that matched packets should be forwarded to.
 	Target RouteTarget `json:"target" yaml:"target"`
 }
 
+
 // RouterRouteKind is determines the default destination of traffic, such as whether it goes to the internet or
 // not.
-//
+// 
 // `Destination: An Internet Gateway` `Modifiable: true`
 type RouterRouteKind string
 
@@ -9747,6 +10285,7 @@ type RouterRouteResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // RouterRouteUpdate is updateable properties of a `RouterRoute`
 //
 // Required fields:
@@ -9756,10 +10295,11 @@ type RouterRouteUpdate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Destination is selects which traffic this routing rule will apply to.
 	Destination RouteDestination `json:"destination" yaml:"destination"`
-	Name        Name             `json:"name,omitempty" yaml:"name,omitempty"`
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 	// Target is the location that matched packets should be forwarded to.
 	Target RouteTarget `json:"target" yaml:"target"`
 }
+
 
 // SamlIdentityProvider is identity-related metadata that's included in nearly all public API objects
 //
@@ -9780,7 +10320,7 @@ type SamlIdentityProvider struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description" yaml:"description"`
 	// GroupAttributeName is if set, attributes with this name will be considered to denote a user's group membership,
-	// where the values will be the group names.
+// where the values will be the group names.
 	GroupAttributeName string `json:"group_attribute_name,omitempty" yaml:"group_attribute_name,omitempty"`
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id" yaml:"id"`
@@ -9802,6 +10342,7 @@ type SamlIdentityProvider struct {
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
 
+
 // SamlIdentityProviderCreate is create-time identity-related parameters
 //
 // Required fields:
@@ -9815,18 +10356,18 @@ type SamlIdentityProvider struct {
 // - TechnicalContactEmail
 type SamlIdentityProviderCreate struct {
 	// AcsUrl is service provider endpoint where the response will be sent
-	AcsUrl      string `json:"acs_url" yaml:"acs_url"`
+	AcsUrl string `json:"acs_url" yaml:"acs_url"`
 	Description string `json:"description" yaml:"description"`
 	// GroupAttributeName is if set, SAML attributes with this name will be considered to denote a user's group
-	// membership, where the attribute value(s) should be a comma-separated list of group names.
+// membership, where the attribute value(s) should be a comma-separated list of group names.
 	GroupAttributeName string `json:"group_attribute_name,omitempty" yaml:"group_attribute_name,omitempty"`
 	// IdpEntityId is idP's entity ID
 	IdpEntityId string `json:"idp_entity_id" yaml:"idp_entity_id"`
 	// IdpMetadataSource is the source of an identity provider metadata descriptor
 	IdpMetadataSource IdpMetadataSource `json:"idp_metadata_source" yaml:"idp_metadata_source"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 	// SigningKeypair is request signing key pair
 	SigningKeypair DerEncodedKeyPair `json:"signing_keypair,omitzero" yaml:"signing_keypair,omitzero"`
@@ -9838,16 +10379,18 @@ type SamlIdentityProviderCreate struct {
 	TechnicalContactEmail string `json:"technical_contact_email" yaml:"technical_contact_email"`
 }
 
+
 // ScimClientBearerToken is the type definition for a ScimClientBearerToken.
 //
 // Required fields:
 // - Id
 // - TimeCreated
 type ScimClientBearerToken struct {
-	Id          string     `json:"id" yaml:"id"`
+	Id string `json:"id" yaml:"id"`
 	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
 	TimeExpires *time.Time `json:"time_expires,omitempty" yaml:"time_expires,omitempty"`
 }
+
 
 // ScimClientBearerTokenValue is the POST response is the only time the generated bearer token is returned to
 // the client.
@@ -9857,11 +10400,12 @@ type ScimClientBearerToken struct {
 // - Id
 // - TimeCreated
 type ScimClientBearerTokenValue struct {
-	BearerToken string     `json:"bearer_token" yaml:"bearer_token"`
-	Id          string     `json:"id" yaml:"id"`
+	BearerToken string `json:"bearer_token" yaml:"bearer_token"`
+	Id string `json:"id" yaml:"id"`
 	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
 	TimeExpires *time.Time `json:"time_expires,omitempty" yaml:"time_expires,omitempty"`
 }
+
 
 // ServiceIcmpConfig is configuration of inbound ICMP allowed by API services.
 //
@@ -9869,10 +10413,11 @@ type ScimClientBearerTokenValue struct {
 // - Enabled
 type ServiceIcmpConfig struct {
 	// Enabled is when enabled, Nexus is able to receive ICMP Destination Unreachable type 3 (port unreachable) and
-	// type 4 (fragmentation needed), Redirect, and Time Exceeded messages. These enable Nexus to perform Path MTU
-	// discovery and better cope with fragmentation issues. Otherwise all inbound ICMP traffic will be dropped.
+// type 4 (fragmentation needed), Redirect, and Time Exceeded messages. These enable Nexus to perform Path MTU
+// discovery and better cope with fragmentation issues. Otherwise all inbound ICMP traffic will be dropped.
 	Enabled *bool `json:"enabled" yaml:"enabled"`
 }
+
 
 // ServiceUsingCertificate is this certificate is intended for access to the external API.
 type ServiceUsingCertificate string
@@ -9886,8 +10431,9 @@ type SetTargetReleaseParams struct {
 	SystemVersion string `json:"system_version" yaml:"system_version"`
 }
 
+
 // Silo is view of a Silo
-//
+// 
 // A Silo is the highest level unit of isolation.
 //
 // Required fields:
@@ -9901,21 +10447,21 @@ type SetTargetReleaseParams struct {
 // - TimeModified
 type Silo struct {
 	// AdminGroupName is optionally, silos can have a group name that is automatically granted the silo admin role.
-	//
+// 
 	AdminGroupName string `json:"admin_group_name,omitempty" yaml:"admin_group_name,omitempty"`
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description" yaml:"description"`
 	// Discoverable is a silo where discoverable is false can be retrieved only by its id - it will not be part
-	// of the "list all silos" output.
+// of the "list all silos" output.
 	Discoverable *bool `json:"discoverable" yaml:"discoverable"`
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id" yaml:"id"`
 	// IdentityMode is how users and groups are managed in this Silo
 	IdentityMode SiloIdentityMode `json:"identity_mode" yaml:"identity_mode"`
 	// MappedFleetRoles is mapping of which Fleet roles are conferred by each Silo role
-	//
-	// The default is that no Fleet roles are conferred by any Silo roles unless there's a corresponding entry in
-	// this map.
+// 
+// The default is that no Fleet roles are conferred by any Silo roles unless there's a corresponding entry in
+// this map.
 	MappedFleetRoles map[string][]FleetRole `json:"mapped_fleet_roles" yaml:"mapped_fleet_roles"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name" yaml:"name"`
@@ -9925,16 +10471,18 @@ type Silo struct {
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
 
+
 // SiloAuthSettings is view of silo authentication settings
 //
 // Required fields:
 // - SiloId
 type SiloAuthSettings struct {
 	// DeviceTokenMaxTtlSeconds is maximum lifetime of a device token in seconds. If set to null, users will be
-	// able to create tokens that do not expire.
-	DeviceTokenMaxTtlSeconds *int   `json:"device_token_max_ttl_seconds,omitempty" yaml:"device_token_max_ttl_seconds,omitempty"`
-	SiloId                   string `json:"silo_id" yaml:"silo_id"`
+// able to create tokens that do not expire.
+	DeviceTokenMaxTtlSeconds *int `json:"device_token_max_ttl_seconds,omitempty" yaml:"device_token_max_ttl_seconds,omitempty"`
+	SiloId string `json:"silo_id" yaml:"silo_id"`
 }
+
 
 // SiloAuthSettingsUpdate is updateable properties of a silo's settings.
 //
@@ -9942,9 +10490,10 @@ type SiloAuthSettings struct {
 // - DeviceTokenMaxTtlSeconds
 type SiloAuthSettingsUpdate struct {
 	// DeviceTokenMaxTtlSeconds is maximum lifetime of a device token in seconds. If set to null, users will be
-	// able to create tokens that do not expire.
+// able to create tokens that do not expire.
 	DeviceTokenMaxTtlSeconds *int `json:"device_token_max_ttl_seconds" yaml:"device_token_max_ttl_seconds"`
 }
+
 
 // SiloCreate is create-time parameters for a `Silo`
 //
@@ -9957,33 +10506,34 @@ type SiloAuthSettingsUpdate struct {
 // - TlsCertificates
 type SiloCreate struct {
 	// AdminGroupName is if set, this group will be created during Silo creation and granted the "Silo Admin" role.
-	// Identity providers can assert that users belong to this group and those users can log in and further initialize
-	// the Silo.
-	//
-	// Note that if configuring a SAML based identity provider, group_attribute_name must be set for users to be
-	// considered part of a group. See `SamlIdentityProviderCreate` for more information.
+// Identity providers can assert that users belong to this group and those users can log in and further initialize
+// the Silo.
+// 
+// Note that if configuring a SAML based identity provider, group_attribute_name must be set for users to be
+// considered part of a group. See `SamlIdentityProviderCreate` for more information.
 	AdminGroupName string `json:"admin_group_name,omitempty" yaml:"admin_group_name,omitempty"`
-	Description    string `json:"description" yaml:"description"`
-	Discoverable   *bool  `json:"discoverable" yaml:"discoverable"`
+	Description string `json:"description" yaml:"description"`
+	Discoverable *bool `json:"discoverable" yaml:"discoverable"`
 	// IdentityMode is describes how identities are managed and users are authenticated in this Silo
 	IdentityMode SiloIdentityMode `json:"identity_mode" yaml:"identity_mode"`
 	// MappedFleetRoles is mapping of which Fleet roles are conferred by each Silo role
-	//
-	// The default is that no Fleet roles are conferred by any Silo roles unless there's a corresponding entry in
-	// this map.
+// 
+// The default is that no Fleet roles are conferred by any Silo roles unless there's a corresponding entry in
+// this map.
 	MappedFleetRoles map[string][]FleetRole `json:"mapped_fleet_roles,omitempty" yaml:"mapped_fleet_roles,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 	// Quotas is limits the amount of provisionable CPU, memory, and storage in the Silo. CPU and memory are
-	// only consumed by running instances, while storage is consumed by any disk or snapshot. A value of 0 means that
-	// resource is *not* provisionable.
+// only consumed by running instances, while storage is consumed by any disk or snapshot. A value of 0 means that
+// resource is *not* provisionable.
 	Quotas SiloQuotasCreate `json:"quotas" yaml:"quotas"`
-	// TlsCertificates is initial TLS certificates to be used for the new Silo's console and API endpoints.
-	// These should be valid for the Silo's DNS name(s).
+	// TlsCertificates is initial TLS certificates to be used for the new Silo's console and API endpoints. 
+// These should be valid for the Silo's DNS name(s).
 	TlsCertificates []CertificateCreate `json:"tls_certificates" yaml:"tls_certificates"`
 }
+
 
 // SiloIdentityMode is users are authenticated with SAML using an external authentication provider.  The
 // system updates information about users and groups only during successful authentication (i.e,. "JIT provisioning" of
@@ -10009,10 +10559,10 @@ type SiloIpPool struct {
 	// IpVersion is the IP version for the pool.
 	IpVersion IpVersion `json:"ip_version" yaml:"ip_version"`
 	// IsDefault is when a pool is the default for a silo, floating IPs and instance ephemeral IPs will come from
-	// that pool when no other pool is specified.
-	//
-	// A silo can have at most one default pool per combination of pool type (unicast or multicast) and IP version (IPv4
-	// or IPv6), allowing up to 4 default pools total.
+// that pool when no other pool is specified.
+// 
+// A silo can have at most one default pool per combination of pool type (unicast or multicast) and IP version (IPv4
+// or IPv6), allowing up to 4 default pools total.
 	IsDefault *bool `json:"is_default" yaml:"is_default"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name" yaml:"name"`
@@ -10024,6 +10574,7 @@ type SiloIpPool struct {
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
 
+
 // SiloIpPoolResultsPage is a single page of results
 //
 // Required fields:
@@ -10034,6 +10585,7 @@ type SiloIpPoolResultsPage struct {
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
+
 
 // SiloQuotas is a collection of resource counts used to set the virtual capacity of a silo
 //
@@ -10047,10 +10599,11 @@ type SiloQuotas struct {
 	Cpus *int `json:"cpus" yaml:"cpus"`
 	// Memory is amount of memory in bytes
 	Memory ByteCount `json:"memory" yaml:"memory"`
-	SiloId string    `json:"silo_id" yaml:"silo_id"`
+	SiloId string `json:"silo_id" yaml:"silo_id"`
 	// Storage is amount of disk storage in bytes
 	Storage ByteCount `json:"storage" yaml:"storage"`
 }
+
 
 // SiloQuotasCreate is the amount of provisionable resources for a Silo
 //
@@ -10067,6 +10620,7 @@ type SiloQuotasCreate struct {
 	Storage ByteCount `json:"storage" yaml:"storage"`
 }
 
+
 // SiloQuotasResultsPage is a single page of results
 //
 // Required fields:
@@ -10077,6 +10631,7 @@ type SiloQuotasResultsPage struct {
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
+
 
 // SiloQuotasUpdate is updateable properties of a Silo's resource limits. If a value is omitted it will not
 // be updated.
@@ -10089,6 +10644,7 @@ type SiloQuotasUpdate struct {
 	Storage ByteCount `json:"storage,omitempty" yaml:"storage,omitempty"`
 }
 
+
 // SiloResultsPage is a single page of results
 //
 // Required fields:
@@ -10100,11 +10656,12 @@ type SiloResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // SiloRole is the type definition for a SiloRole.
 type SiloRole string
 
 // SiloRolePolicy is policy for a particular resource
-//
+// 
 // Note that the Policy only describes access granted explicitly for this resource.  The policies of parent resources
 // can also cause a user to have access to this resource.
 //
@@ -10115,9 +10672,10 @@ type SiloRolePolicy struct {
 	RoleAssignments []SiloRoleRoleAssignment `json:"role_assignments" yaml:"role_assignments"`
 }
 
+
 // SiloRoleRoleAssignment is describes the assignment of a particular role on a particular resource to a
 // particular identity (user, group, etc.)
-//
+// 
 // The resource is not part of this structure.  Rather, `RoleAssignment`s are put into a `Policy` and that Policy
 // is applied to a particular resource.
 //
@@ -10129,8 +10687,9 @@ type SiloRoleRoleAssignment struct {
 	IdentityId string `json:"identity_id" yaml:"identity_id"`
 	// IdentityType is describes what kind of identity is described by an id
 	IdentityType IdentityType `json:"identity_type" yaml:"identity_type"`
-	RoleName     SiloRole     `json:"role_name" yaml:"role_name"`
+	RoleName SiloRole `json:"role_name" yaml:"role_name"`
 }
+
 
 // SiloSubnetPool is a subnet pool in the context of a silo
 //
@@ -10150,10 +10709,10 @@ type SiloSubnetPool struct {
 	// IpVersion is the IP version for the pool.
 	IpVersion IpVersion `json:"ip_version" yaml:"ip_version"`
 	// IsDefault is when a pool is the default for a silo, external subnet allocations will come from that pool
-	// when no other pool is specified.
-	//
-	// A silo can have at most one default pool per IP version (IPv4 or IPv6), allowing up to 2 default pools total.
-	//
+// when no other pool is specified.
+// 
+// A silo can have at most one default pool per IP version (IPv4 or IPv6), allowing up to 2 default pools total.
+// 
 	IsDefault *bool `json:"is_default" yaml:"is_default"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name" yaml:"name"`
@@ -10162,6 +10721,7 @@ type SiloSubnetPool struct {
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
+
 
 // SiloSubnetPoolResultsPage is a single page of results
 //
@@ -10174,6 +10734,7 @@ type SiloSubnetPoolResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // SiloUtilization is view of a silo's resource utilization and capacity
 //
 // Required fields:
@@ -10185,16 +10746,17 @@ type SiloUtilization struct {
 	// Allocated is accounts for the total amount of resources reserved for silos via their quotas.
 	Allocated VirtualResourceCounts `json:"allocated" yaml:"allocated"`
 	// Provisioned is accounts for the total resources allocated by the silo, including CPU and memory for running
-	// instances and storage for disks and snapshots.
-	//
-	// Note that CPU and memory resources associated with stopped instances are not counted here.
+// instances and storage for disks and snapshots.
+// 
+// Note that CPU and memory resources associated with stopped instances are not counted here.
 	Provisioned VirtualResourceCounts `json:"provisioned" yaml:"provisioned"`
-	SiloId      string                `json:"silo_id" yaml:"silo_id"`
+	SiloId string `json:"silo_id" yaml:"silo_id"`
 	// SiloName is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII,
-	// uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a
-	// UUID. They can be at most 63 characters long.
+// uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a
+// UUID. They can be at most 63 characters long.
 	SiloName Name `json:"silo_name" yaml:"silo_name"`
 }
+
 
 // SiloUtilizationResultsPage is a single page of results
 //
@@ -10206,6 +10768,7 @@ type SiloUtilizationResultsPage struct {
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
+
 
 // Sled is an operator's view of a Sled.
 //
@@ -10240,6 +10803,7 @@ type Sled struct {
 	UsablePhysicalRam ByteCount `json:"usable_physical_ram" yaml:"usable_physical_ram"`
 }
 
+
 // SledId is the unique ID of a sled.
 //
 // Required fields:
@@ -10247,6 +10811,7 @@ type Sled struct {
 type SledId struct {
 	Id string `json:"id" yaml:"id"`
 }
+
 
 // SledInstance is an operator's view of an instance running on a given sled
 //
@@ -10264,32 +10829,33 @@ type SledId struct {
 type SledInstance struct {
 	ActiveSledId string `json:"active_sled_id" yaml:"active_sled_id"`
 	// Id is unique, immutable, system-controlled identifier for each resource
-	Id          string `json:"id" yaml:"id"`
-	Memory      *int   `json:"memory" yaml:"memory"`
+	Id string `json:"id" yaml:"id"`
+	Memory *int `json:"memory" yaml:"memory"`
 	MigrationId string `json:"migration_id,omitempty" yaml:"migration_id,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
-	Name  Name `json:"name" yaml:"name"`
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
+	Name Name `json:"name" yaml:"name"`
 	Ncpus *int `json:"ncpus" yaml:"ncpus"`
 	// ProjectName is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII,
-	// uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a
-	// UUID. They can be at most 63 characters long.
+// uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a
+// UUID. They can be at most 63 characters long.
 	ProjectName Name `json:"project_name" yaml:"project_name"`
 	// SiloName is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII,
-	// uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a
-	// UUID. They can be at most 63 characters long.
+// uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a
+// UUID. They can be at most 63 characters long.
 	SiloName Name `json:"silo_name" yaml:"silo_name"`
 	// State is running state of an Instance (primarily: booted or stopped)
-	//
-	// This typically reflects whether it's starting, running, stopping, or stopped, but also includes states related
-	// to the Instance's lifecycle
+// 
+// This typically reflects whether it's starting, running, stopping, or stopped, but also includes states related
+// to the Instance's lifecycle
 	State InstanceState `json:"state" yaml:"state"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
+
 
 // SledInstanceResultsPage is a single page of results
 //
@@ -10302,10 +10868,12 @@ type SledInstanceResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // sledPolicyVariant is implemented by SledPolicy variants.
 type sledPolicyVariant interface {
 	isSledPolicyVariant()
 }
+
 
 // SledPolicyKind is the type definition for a SledPolicyKind.
 type SledPolicyKind string
@@ -10318,15 +10886,17 @@ type SledPolicyInService struct {
 
 func (SledPolicyInService) isSledPolicyVariant() {}
 
+
 // SledPolicyExpunged is a variant of SledPolicy.
 type SledPolicyExpunged struct {
 }
 
 func (SledPolicyExpunged) isSledPolicyVariant() {}
 
+
 // SledPolicy is the operator-defined policy of a sled.
 type SledPolicy struct {
-	Value sledPolicyVariant
+	Value sledPolicyVariant 
 }
 
 func (v SledPolicy) Kind() SledPolicyKind {
@@ -10388,6 +10958,8 @@ func (v SledPolicy) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsInService attempts to convert the SledPolicy to a SledPolicyInService.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v SledPolicy) AsInService() (*SledPolicyInService, bool) {
@@ -10402,6 +10974,7 @@ func (v SledPolicy) AsExpunged() (*SledPolicyExpunged, bool) {
 	return val, ok
 }
 
+
 // SledProvisionPolicy is new resources will be provisioned on this sled.
 type SledProvisionPolicy string
 
@@ -10413,6 +10986,7 @@ type SledProvisionPolicyParams struct {
 	// State is the provision state.
 	State SledProvisionPolicy `json:"state" yaml:"state"`
 }
+
 
 // SledProvisionPolicyResponse is response to `sled_set_provision_policy`.
 //
@@ -10426,6 +11000,7 @@ type SledProvisionPolicyResponse struct {
 	OldState SledProvisionPolicy `json:"old_state" yaml:"old_state"`
 }
 
+
 // SledResultsPage is a single page of results
 //
 // Required fields:
@@ -10436,6 +11011,7 @@ type SledResultsPage struct {
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
+
 
 // SledState is the sled is currently active, and has resources allocated on it.
 type SledState string
@@ -10455,20 +11031,21 @@ type SledState string
 type Snapshot struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description" yaml:"description"`
-	DiskId      string `json:"disk_id" yaml:"disk_id"`
+	DiskId string `json:"disk_id" yaml:"disk_id"`
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id" yaml:"id"`
 	// Name is unique, mutable, user-controlled identifier for each resource
-	Name      Name   `json:"name" yaml:"name"`
+	Name Name `json:"name" yaml:"name"`
 	ProjectId string `json:"project_id" yaml:"project_id"`
 	// Size is byte count to express memory or storage capacity.
-	Size  ByteCount     `json:"size" yaml:"size"`
+	Size ByteCount `json:"size" yaml:"size"`
 	State SnapshotState `json:"state" yaml:"state"`
 	// TimeCreated is timestamp when this resource was created
 	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
+
 
 // SnapshotCreate is create-time parameters for a `Snapshot`
 //
@@ -10481,10 +11058,11 @@ type SnapshotCreate struct {
 	// Disk is the disk to be snapshotted
 	Disk NameOrId `json:"disk" yaml:"disk"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 }
+
 
 // SnapshotResultsPage is a single page of results
 //
@@ -10496,6 +11074,7 @@ type SnapshotResultsPage struct {
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
+
 
 // SnapshotState is the type definition for a SnapshotState.
 type SnapshotState string
@@ -10527,6 +11106,7 @@ type SshKey struct {
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
 
+
 // SshKeyCreate is create-time parameters for an `SshKey`
 //
 // Required fields:
@@ -10536,12 +11116,13 @@ type SshKey struct {
 type SshKeyCreate struct {
 	Description string `json:"description" yaml:"description"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 	// PublicKey is sSH public key, e.g., `"ssh-ed25519 AAAAC3NzaC..."`
 	PublicKey string `json:"public_key" yaml:"public_key"`
 }
+
 
 // SshKeyResultsPage is a single page of results
 //
@@ -10553,6 +11134,7 @@ type SshKeyResultsPage struct {
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
+
 
 // SubnetPool is a pool of subnets for external subnet allocation
 //
@@ -10578,6 +11160,7 @@ type SubnetPool struct {
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
 
+
 // SubnetPoolCreate is create a subnet pool
 //
 // Required fields:
@@ -10587,13 +11170,14 @@ type SubnetPool struct {
 type SubnetPoolCreate struct {
 	Description string `json:"description" yaml:"description"`
 	// IpVersion is the IP version for this pool (IPv4 or IPv6). All subnets in the pool must match this version.
-	//
+// 
 	IpVersion IpVersion `json:"ip_version" yaml:"ip_version"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 }
+
 
 // SubnetPoolLinkSilo is link a subnet pool to a silo
 //
@@ -10602,11 +11186,12 @@ type SubnetPoolCreate struct {
 // - Silo
 type SubnetPoolLinkSilo struct {
 	// IsDefault is whether this is the default subnet pool for the silo. When true, external subnet allocations that
-	// don't specify a pool use this one.
+// don't specify a pool use this one.
 	IsDefault *bool `json:"is_default" yaml:"is_default"`
 	// Silo is the silo to link
 	Silo NameOrId `json:"silo" yaml:"silo"`
 }
+
 
 // SubnetPoolMember is a member (subnet) within a subnet pool
 //
@@ -10621,10 +11206,10 @@ type SubnetPoolMember struct {
 	// Id is iD of the pool member
 	Id string `json:"id" yaml:"id"`
 	// MaxPrefixLength is maximum prefix length for allocations from this subnet; a larger prefix means smaller allocations
-	// are allowed (e.g. a /24 prefix yields smaller subnet allocations than a /16 prefix).
+// are allowed (e.g. a /24 prefix yields smaller subnet allocations than a /16 prefix).
 	MaxPrefixLength *int `json:"max_prefix_length" yaml:"max_prefix_length"`
 	// MinPrefixLength is minimum prefix length for allocations from this subnet; a smaller prefix means larger
-	// allocations are allowed (e.g. a /16 prefix yields larger subnet allocations than a /24 prefix).
+// allocations are allowed (e.g. a /16 prefix yields larger subnet allocations than a /24 prefix).
 	MinPrefixLength *int `json:"min_prefix_length" yaml:"min_prefix_length"`
 	// Subnet is the subnet CIDR
 	Subnet IpNet `json:"subnet" yaml:"subnet"`
@@ -10634,25 +11219,27 @@ type SubnetPoolMember struct {
 	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
 }
 
+
 // SubnetPoolMemberAdd is add a member (subnet) to a subnet pool
 //
 // Required fields:
 // - Subnet
 type SubnetPoolMemberAdd struct {
 	// MaxPrefixLength is maximum prefix length for allocations from this subnet; a larger prefix means smaller allocations
-	// are allowed (e.g. a /24 prefix yields smaller subnet allocations than a /16 prefix).
-	//
-	// Valid values: 0-32 for IPv4, 0-128 for IPv6. Default if not specified is 32 for IPv4 and 128 for IPv6.
+// are allowed (e.g. a /24 prefix yields smaller subnet allocations than a /16 prefix).
+// 
+// Valid values: 0-32 for IPv4, 0-128 for IPv6. Default if not specified is 32 for IPv4 and 128 for IPv6.
 	MaxPrefixLength *int `json:"max_prefix_length,omitempty" yaml:"max_prefix_length,omitempty"`
 	// MinPrefixLength is minimum prefix length for allocations from this subnet; a smaller prefix means larger
-	// allocations are allowed (e.g. a /16 prefix yields larger subnet allocations than a /24 prefix).
-	//
-	// Valid values: 0-32 for IPv4, 0-128 for IPv6. Default if not specified is equal to the subnet's prefix length.
-	//
+// allocations are allowed (e.g. a /16 prefix yields larger subnet allocations than a /24 prefix).
+// 
+// Valid values: 0-32 for IPv4, 0-128 for IPv6. Default if not specified is equal to the subnet's prefix length.
+// 
 	MinPrefixLength *int `json:"min_prefix_length,omitempty" yaml:"min_prefix_length,omitempty"`
 	// Subnet is the subnet to add to the pool
 	Subnet IpNet `json:"subnet" yaml:"subnet"`
 }
+
 
 // SubnetPoolMemberRemove is remove a subnet from a pool
 //
@@ -10662,6 +11249,7 @@ type SubnetPoolMemberRemove struct {
 	// Subnet is the subnet to remove from the pool. Must match an existing entry exactly.
 	Subnet IpNet `json:"subnet" yaml:"subnet"`
 }
+
 
 // SubnetPoolMemberResultsPage is a single page of results
 //
@@ -10674,6 +11262,7 @@ type SubnetPoolMemberResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // SubnetPoolResultsPage is a single page of results
 //
 // Required fields:
@@ -10685,6 +11274,7 @@ type SubnetPoolResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // SubnetPoolSiloLink is a link between a subnet pool and a silo
 //
 // Required fields:
@@ -10692,10 +11282,11 @@ type SubnetPoolResultsPage struct {
 // - SiloId
 // - SubnetPoolId
 type SubnetPoolSiloLink struct {
-	IsDefault    *bool  `json:"is_default" yaml:"is_default"`
-	SiloId       string `json:"silo_id" yaml:"silo_id"`
+	IsDefault *bool `json:"is_default" yaml:"is_default"`
+	SiloId string `json:"silo_id" yaml:"silo_id"`
 	SubnetPoolId string `json:"subnet_pool_id" yaml:"subnet_pool_id"`
 }
+
 
 // SubnetPoolSiloLinkResultsPage is a single page of results
 //
@@ -10708,6 +11299,7 @@ type SubnetPoolSiloLinkResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // SubnetPoolSiloUpdate is update a subnet pool's silo link
 //
 // Required fields:
@@ -10717,11 +11309,13 @@ type SubnetPoolSiloUpdate struct {
 	IsDefault *bool `json:"is_default" yaml:"is_default"`
 }
 
+
 // SubnetPoolUpdate is update a subnet pool
 type SubnetPoolUpdate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 }
+
 
 // SubnetPoolUtilization is utilization information for a subnet pool
 //
@@ -10735,11 +11329,13 @@ type SubnetPoolUtilization struct {
 	Capacity float64 `json:"capacity" yaml:"capacity"`
 }
 
+
 // SupportBundleCreate is the type definition for a SupportBundleCreate.
 type SupportBundleCreate struct {
 	// UserComment is user comment for the support bundle
 	UserComment string `json:"user_comment,omitempty" yaml:"user_comment,omitempty"`
 }
+
 
 // SupportBundleInfo is the type definition for a SupportBundleInfo.
 //
@@ -10749,13 +11345,14 @@ type SupportBundleCreate struct {
 // - State
 // - TimeCreated
 type SupportBundleInfo struct {
-	Id                string             `json:"id" yaml:"id"`
-	ReasonForCreation string             `json:"reason_for_creation" yaml:"reason_for_creation"`
-	ReasonForFailure  string             `json:"reason_for_failure,omitempty" yaml:"reason_for_failure,omitempty"`
-	State             SupportBundleState `json:"state" yaml:"state"`
-	TimeCreated       *time.Time         `json:"time_created" yaml:"time_created"`
-	UserComment       string             `json:"user_comment,omitempty" yaml:"user_comment,omitempty"`
+	Id string `json:"id" yaml:"id"`
+	ReasonForCreation string `json:"reason_for_creation" yaml:"reason_for_creation"`
+	ReasonForFailure string `json:"reason_for_failure,omitempty" yaml:"reason_for_failure,omitempty"`
+	State SupportBundleState `json:"state" yaml:"state"`
+	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
+	UserComment string `json:"user_comment,omitempty" yaml:"user_comment,omitempty"`
 }
+
 
 // SupportBundleInfoResultsPage is a single page of results
 //
@@ -10768,11 +11365,12 @@ type SupportBundleInfoResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // SupportBundleState is support Bundle still actively being collected.
-//
+// 
 // This is the initial state for a Support Bundle, and it will automatically transition to either "Failing" or
 // "Active".
-//
+// 
 // If a user no longer wants to access a Support Bundle, they can request cancellation, which will transition to
 // the "Destroying" state.
 type SupportBundleState string
@@ -10782,6 +11380,7 @@ type SupportBundleUpdate struct {
 	// UserComment is user comment for the support bundle
 	UserComment string `json:"user_comment,omitempty" yaml:"user_comment,omitempty"`
 }
+
 
 // Switch is an operator's view of a Switch.
 //
@@ -10804,6 +11403,7 @@ type Switch struct {
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
 
+
 // SwitchBgpHistory is bGP message history for a particular switch.
 //
 // Required fields:
@@ -10815,6 +11415,7 @@ type SwitchBgpHistory struct {
 	// Switch is switch this message history is associated with.
 	Switch SwitchLocation `json:"switch" yaml:"switch"`
 }
+
 
 // SwitchInterfaceConfig is a switch port interface configuration for a port settings object.
 //
@@ -10837,6 +11438,7 @@ type SwitchInterfaceConfig struct {
 	V6Enabled *bool `json:"v6_enabled" yaml:"v6_enabled"`
 }
 
+
 // SwitchInterfaceConfigCreate is a layer-3 switch interface configuration. When IPv6 is enabled, a link local
 // address will be created for the interface.
 //
@@ -10848,16 +11450,18 @@ type SwitchInterfaceConfigCreate struct {
 	// Kind is what kind of switch interface this configuration represents.
 	Kind SwitchInterfaceKind `json:"kind" yaml:"kind"`
 	// LinkName is link name. On ports that are not broken out, this is always phy0. On a 2x breakout the options
-	// are phy0 and phy1, on 4x phy0-phy3, etc.
+// are phy0 and phy1, on 4x phy0-phy3, etc.
 	LinkName Name `json:"link_name" yaml:"link_name"`
 	// V6Enabled is whether or not IPv6 is enabled.
 	V6Enabled *bool `json:"v6_enabled" yaml:"v6_enabled"`
 }
 
+
 // switchInterfaceKindVariant is implemented by SwitchInterfaceKind variants.
 type switchInterfaceKindVariant interface {
 	isSwitchInterfaceKindVariant()
 }
+
 
 // SwitchInterfaceKindType is the type definition for a SwitchInterfaceKindType.
 type SwitchInterfaceKindType string
@@ -10868,14 +11472,16 @@ type SwitchInterfaceKindPrimary struct {
 
 func (SwitchInterfaceKindPrimary) isSwitchInterfaceKindVariant() {}
 
+
 // SwitchInterfaceKindVlan is a variant of SwitchInterfaceKind.
 type SwitchInterfaceKindVlan struct {
 	// Vid is the virtual network id (VID) that distinguishes this interface and is used for producing and consuming
-	// 802.1Q Ethernet tags. This field has a maximum value of 4095 as 802.1Q tags are twelve bits.
+// 802.1Q Ethernet tags. This field has a maximum value of 4095 as 802.1Q tags are twelve bits.
 	Vid *int `json:"vid" yaml:"vid"`
 }
 
 func (SwitchInterfaceKindVlan) isSwitchInterfaceKindVariant() {}
+
 
 // SwitchInterfaceKindLoopback is a variant of SwitchInterfaceKind.
 type SwitchInterfaceKindLoopback struct {
@@ -10883,9 +11489,10 @@ type SwitchInterfaceKindLoopback struct {
 
 func (SwitchInterfaceKindLoopback) isSwitchInterfaceKindVariant() {}
 
+
 // SwitchInterfaceKind is indicates the kind for a switch interface.
 type SwitchInterfaceKind struct {
-	Value switchInterfaceKindVariant
+	Value switchInterfaceKindVariant 
 }
 
 func (v SwitchInterfaceKind) Type() SwitchInterfaceKindType {
@@ -10951,6 +11558,8 @@ func (v SwitchInterfaceKind) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsPrimary attempts to convert the SwitchInterfaceKind to a SwitchInterfaceKindPrimary.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v SwitchInterfaceKind) AsPrimary() (*SwitchInterfaceKindPrimary, bool) {
@@ -10971,6 +11580,7 @@ func (v SwitchInterfaceKind) AsLoopback() (*SwitchInterfaceKindLoopback, bool) {
 	val, ok := v.Value.(*SwitchInterfaceKindLoopback)
 	return val, ok
 }
+
 
 // SwitchInterfaceKind2 is primary interfaces are associated with physical links. There is exactly one primary
 // interface per physical link.
@@ -10995,13 +11605,14 @@ type SwitchPort struct {
 	// PortName is the name of this switch port.
 	PortName Name `json:"port_name" yaml:"port_name"`
 	// PortSettingsId is the primary settings group of this switch port. Will be `None` until this switch port
-	// is configured.
+// is configured.
 	PortSettingsId string `json:"port_settings_id,omitempty" yaml:"port_settings_id,omitempty"`
 	// RackId is the rack this switch port belongs to.
 	RackId string `json:"rack_id" yaml:"rack_id"`
 	// SwitchLocation is the switch location of this switch port.
 	SwitchLocation string `json:"switch_location" yaml:"switch_location"`
 }
+
 
 // SwitchPortAddressView is an IP address configuration for a port settings object.
 //
@@ -11029,6 +11640,7 @@ type SwitchPortAddressView struct {
 	VlanId *int `json:"vlan_id,omitempty" yaml:"vlan_id,omitempty"`
 }
 
+
 // SwitchPortApplySettings is parameters for applying settings to switch ports.
 //
 // Required fields:
@@ -11037,6 +11649,7 @@ type SwitchPortApplySettings struct {
 	// PortSettings is a name or id to use when applying switch port settings.
 	PortSettings NameOrId `json:"port_settings" yaml:"port_settings"`
 }
+
 
 // SwitchPortConfig is a physical port configuration for a port settings object.
 //
@@ -11050,6 +11663,7 @@ type SwitchPortConfig struct {
 	PortSettingsId string `json:"port_settings_id" yaml:"port_settings_id"`
 }
 
+
 // SwitchPortConfigCreate is physical switch port configuration.
 //
 // Required fields:
@@ -11058,6 +11672,7 @@ type SwitchPortConfigCreate struct {
 	// Geometry is link geometry for the switch port.
 	Geometry SwitchPortGeometry `json:"geometry" yaml:"geometry"`
 }
+
 
 // SwitchPortGeometry is the port contains a single QSFP28 link with four lanes.
 type SwitchPortGeometry string
@@ -11077,7 +11692,7 @@ type SwitchPortLinkConfig struct {
 	// Autoneg is whether or not the link has autonegotiation enabled.
 	Autoneg *bool `json:"autoneg" yaml:"autoneg"`
 	// Fec is the requested forward-error correction method.  If this is not specified, the standard FEC for
-	// the underlying media will be applied if it can be determined.
+// the underlying media will be applied if it can be determined.
 	Fec LinkFec `json:"fec,omitempty" yaml:"fec,omitempty"`
 	// LinkName is the name of this link.
 	LinkName Name `json:"link_name" yaml:"link_name"`
@@ -11093,6 +11708,7 @@ type SwitchPortLinkConfig struct {
 	TxEqConfig *TxEqConfig2 `json:"tx_eq_config,omitempty" yaml:"tx_eq_config,omitempty"`
 }
 
+
 // SwitchPortResultsPage is a single page of results
 //
 // Required fields:
@@ -11103,6 +11719,7 @@ type SwitchPortResultsPage struct {
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
+
 
 // SwitchPortRouteConfig is a route configuration for a port settings object.
 //
@@ -11123,9 +11740,10 @@ type SwitchPortRouteConfig struct {
 	// RibPriority is route RIB priority. Higher priority indicates precedence within and across protocols.
 	RibPriority *int `json:"rib_priority,omitempty" yaml:"rib_priority,omitempty"`
 	// VlanId is the VLAN identifier for the route. Use this if the gateway is reachable over an 802.1Q tagged L2
-	// segment.
+// segment.
 	VlanId *int `json:"vlan_id,omitempty" yaml:"vlan_id,omitempty"`
 }
+
 
 // SwitchPortSettings is this structure contains all port settings information in one place. It's a convenience data
 // structure for getting a complete view of a particular port's settings.
@@ -11173,6 +11791,7 @@ type SwitchPortSettings struct {
 	VlanInterfaces []SwitchVlanInterfaceConfig `json:"vlan_interfaces" yaml:"vlan_interfaces"`
 }
 
+
 // SwitchPortSettingsCreate is parameters for creating switch port settings. Switch port settings are the
 // central data structure for setting up external networking. Switch port settings include link, interface, route,
 // address and dynamic network protocol configuration.
@@ -11187,22 +11806,23 @@ type SwitchPortSettingsCreate struct {
 	// Addresses is address configurations.
 	Addresses []AddressConfig `json:"addresses" yaml:"addresses"`
 	// BgpPeers is bGP peer configurations.
-	BgpPeers    []BgpPeerConfig `json:"bgp_peers,omitempty" yaml:"bgp_peers,omitempty"`
-	Description string          `json:"description" yaml:"description"`
-	Groups      []NameOrId      `json:"groups,omitzero" yaml:"groups,omitzero"`
+	BgpPeers []BgpPeerConfig `json:"bgp_peers,omitempty" yaml:"bgp_peers,omitempty"`
+	Description string `json:"description" yaml:"description"`
+	Groups []NameOrId `json:"groups,omitzero" yaml:"groups,omitzero"`
 	// Interfaces is interface configurations.
 	Interfaces []SwitchInterfaceConfigCreate `json:"interfaces,omitempty" yaml:"interfaces,omitempty"`
 	// Links is link configurations.
 	Links []LinkConfigCreate `json:"links" yaml:"links"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 	// PortConfig is physical switch port configuration.
 	PortConfig SwitchPortConfigCreate `json:"port_config" yaml:"port_config"`
 	// Routes is route configurations.
 	Routes []RouteConfig `json:"routes,omitempty" yaml:"routes,omitempty"`
 }
+
 
 // SwitchPortSettingsGroups is this structure maps a port settings object to a port settings groups. Port
 // settings objects may inherit settings from groups. This mapping defines the relationship between settings objects
@@ -11218,7 +11838,9 @@ type SwitchPortSettingsGroups struct {
 	PortSettingsId string `json:"port_settings_id" yaml:"port_settings_id"`
 }
 
+
 // SwitchPortSettingsIdentity is a switch port settings identity whose id may be used to view additional details.
+//
 //
 // Required fields:
 // - Description
@@ -11239,6 +11861,7 @@ type SwitchPortSettingsIdentity struct {
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
 
+
 // SwitchPortSettingsIdentityResultsPage is a single page of results
 //
 // Required fields:
@@ -11249,6 +11872,7 @@ type SwitchPortSettingsIdentityResultsPage struct {
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
+
 
 // SwitchResultsPage is a single page of results
 //
@@ -11261,6 +11885,7 @@ type SwitchResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // SwitchVlanInterfaceConfig is a switch port VLAN interface configuration for a port settings object.
 //
 // Required fields:
@@ -11268,12 +11893,13 @@ type SwitchResultsPage struct {
 // - VlanId
 type SwitchVlanInterfaceConfig struct {
 	// InterfaceConfigId is the switch interface configuration this VLAN interface configuration belongs to.
-	//
+// 
 	InterfaceConfigId string `json:"interface_config_id" yaml:"interface_config_id"`
 	// VlanId is the virtual network id for this interface that is used for producing and consuming 802.1Q Ethernet
-	// tags. This field has a maximum value of 4095 as 802.1Q tags are twelve bits.
+// tags. This field has a maximum value of 4095 as 802.1Q tags are twelve bits.
 	VlanId *int `json:"vlan_id" yaml:"vlan_id"`
 }
+
 
 // SystemMetricName is the type definition for a SystemMetricName.
 type SystemMetricName string
@@ -11290,11 +11916,12 @@ type TargetRelease struct {
 	Version string `json:"version" yaml:"version"`
 }
 
+
 // TimeAndIdSortMode is sort in increasing order of timestamp and ID, i.e., earliest first
 type TimeAndIdSortMode string
 
 // Timeseries is a timeseries contains a timestamped set of values from one source.
-//
+// 
 // This includes the typed key-value pairs that uniquely identify it, and the set of timestamps and data values
 // from it.
 //
@@ -11307,6 +11934,7 @@ type Timeseries struct {
 	Points Points `json:"points" yaml:"points"`
 }
 
+
 // TimeseriesDescription is text descriptions for the target and metric of a timeseries.
 //
 // Required fields:
@@ -11316,6 +11944,7 @@ type TimeseriesDescription struct {
 	Metric string `json:"metric" yaml:"metric"`
 	Target string `json:"target" yaml:"target"`
 }
+
 
 // TimeseriesName is names are constructed by concatenating the target and metric names with ':'. Target and
 // metric names must be lowercase alphanumeric characters with '_' separating words.
@@ -11330,8 +11959,9 @@ type TimeseriesQuery struct {
 	Query string `json:"query" yaml:"query"`
 }
 
+
 // TimeseriesSchema is the schema for a timeseries.
-//
+// 
 // This includes the name of the timeseries, as well as the datum type of its metric and the schema for each
 // field.
 //
@@ -11346,24 +11976,25 @@ type TimeseriesQuery struct {
 // - Version
 type TimeseriesSchema struct {
 	// AuthzScope is authorization scope for a timeseries.
-	//
-	// This describes the level at which a user must be authorized to read data from a timeseries. For example, fleet-scoping
-	// means the data is only visible to an operator or fleet reader. Project-scoped, on the other hand, indicates that
-	// a user will see data limited to the projects on which they have read permissions.
+// 
+// This describes the level at which a user must be authorized to read data from a timeseries. For example, fleet-scoping
+// means the data is only visible to an operator or fleet reader. Project-scoped, on the other hand, indicates that
+// a user will see data limited to the projects on which they have read permissions.
 	AuthzScope AuthzScope `json:"authz_scope" yaml:"authz_scope"`
-	Created    *time.Time `json:"created" yaml:"created"`
+	Created *time.Time `json:"created" yaml:"created"`
 	// DatumType is the type of an individual datum of a metric.
 	DatumType DatumType `json:"datum_type" yaml:"datum_type"`
 	// Description is text descriptions for the target and metric of a timeseries.
 	Description TimeseriesDescription `json:"description" yaml:"description"`
-	FieldSchema []FieldSchema         `json:"field_schema" yaml:"field_schema"`
+	FieldSchema []FieldSchema `json:"field_schema" yaml:"field_schema"`
 	// TimeseriesName is names are constructed by concatenating the target and metric names with ':'. Target and
-	// metric names must be lowercase alphanumeric characters with '_' separating words.
+// metric names must be lowercase alphanumeric characters with '_' separating words.
 	TimeseriesName TimeseriesName `json:"timeseries_name" yaml:"timeseries_name"`
 	// Units is measurement units for timeseries samples.
-	Units   Units `json:"units" yaml:"units"`
-	Version *int  `json:"version" yaml:"version"`
+	Units Units `json:"units" yaml:"units"`
+	Version *int `json:"version" yaml:"version"`
 }
+
 
 // TimeseriesSchemaResultsPage is a single page of results
 //
@@ -11376,6 +12007,7 @@ type TimeseriesSchemaResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // TufRepo is metadata about a TUF repository
 //
 // Required fields:
@@ -11385,19 +12017,20 @@ type TimeseriesSchemaResultsPage struct {
 // - TimeCreated
 type TufRepo struct {
 	// FileName is the file name of the repository, as reported by the client that uploaded it
-	//
-	// This is intended for debugging. The file name may not match any particular pattern, and even if it does, it
-	// may not be accurate since it's just what the client reported.
+// 
+// This is intended for debugging. The file name may not match any particular pattern, and even if it does, it
+// may not be accurate since it's just what the client reported.
 	FileName string `json:"file_name" yaml:"file_name"`
 	// Hash is the hash of the repository
 	Hash string `json:"hash" yaml:"hash"`
 	// SystemVersion is the system version for this repository
-	//
-	// The system version is a top-level version number applied to all the software in the repository.
+// 
+// The system version is a top-level version number applied to all the software in the repository.
 	SystemVersion string `json:"system_version" yaml:"system_version"`
 	// TimeCreated is time the repository was uploaded
 	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
 }
+
 
 // TufRepoResultsPage is a single page of results
 //
@@ -11410,6 +12043,7 @@ type TufRepoResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // TufRepoUpload is the type definition for a TufRepoUpload.
 //
 // Required fields:
@@ -11419,9 +12053,10 @@ type TufRepoUpload struct {
 	// Repo is metadata about a TUF repository
 	Repo TufRepo `json:"repo" yaml:"repo"`
 	// Status is whether the uploaded TUF repo already existed or was new and had to be inserted. Part of `TufRepoUpload`.
-	//
+// 
 	Status TufRepoUploadStatus `json:"status" yaml:"status"`
 }
+
 
 // TufRepoUploadStatus is the repository already existed in the database
 type TufRepoUploadStatus string
@@ -11441,6 +12076,7 @@ type TxEqConfig struct {
 	Pre2 *int `json:"pre2,omitempty" yaml:"pre2,omitempty"`
 }
 
+
 // TxEqConfig2 is per-port tx-eq overrides.  This can be used to fine-tune the transceiver equalization settings
 // to improve signal integrity.
 type TxEqConfig2 struct {
@@ -11456,6 +12092,7 @@ type TxEqConfig2 struct {
 	Pre2 *int `json:"pre2,omitempty" yaml:"pre2,omitempty"`
 }
 
+
 // UninitializedSled is a sled that has not been added to an initialized rack yet
 //
 // Required fields:
@@ -11465,9 +12102,10 @@ type TxEqConfig2 struct {
 type UninitializedSled struct {
 	// Baseboard is properties that uniquely identify an Oxide hardware component
 	Baseboard Baseboard `json:"baseboard" yaml:"baseboard"`
-	Cubby     *int      `json:"cubby" yaml:"cubby"`
-	RackId    string    `json:"rack_id" yaml:"rack_id"`
+	Cubby *int `json:"cubby" yaml:"cubby"`
+	RackId string `json:"rack_id" yaml:"rack_id"`
 }
+
 
 // UninitializedSledId is the unique hardware ID for a sled
 //
@@ -11475,9 +12113,10 @@ type UninitializedSled struct {
 // - Part
 // - Serial
 type UninitializedSledId struct {
-	Part   string `json:"part" yaml:"part"`
+	Part string `json:"part" yaml:"part"`
 	Serial string `json:"serial" yaml:"serial"`
 }
+
 
 // UninitializedSledResultsPage is a single page of results
 //
@@ -11489,6 +12128,7 @@ type UninitializedSledResultsPage struct {
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
+
 
 // Units is the type definition for a Units.
 type Units string
@@ -11502,33 +12142,34 @@ type Units string
 // - TimeLastStepPlanned
 type UpdateStatus struct {
 	// ComponentsByReleaseVersion is count of components running each release version
-	//
-	// Keys will be either:
-	//
-	// * Semver-like release version strings * "install dataset", representing the initial rack software before any
-	// updates * "unknown", which means there is no TUF repo uploaded that matches the software running on the component)
-	//
+// 
+// Keys will be either:
+// 
+// * Semver-like release version strings * "install dataset", representing the initial rack software before any
+// updates * "unknown", which means there is no TUF repo uploaded that matches the software running on the component)
+// 
 	ComponentsByReleaseVersion map[string]*int `json:"components_by_release_version" yaml:"components_by_release_version"`
 	// Suspended is whether automatic update is suspended due to manual update activity
-	//
-	// After a manual support procedure that changes the system software, automatic update activity is suspended to
-	// avoid undoing the change. To resume automatic update, first upload the TUF repository matching the manually applied
-	// update, then set that as the target release.
+// 
+// After a manual support procedure that changes the system software, automatic update activity is suspended to
+// avoid undoing the change. To resume automatic update, first upload the TUF repository matching the manually applied
+// update, then set that as the target release.
 	Suspended *bool `json:"suspended" yaml:"suspended"`
 	// TargetRelease is current target release of the system software
-	//
-	// This may not correspond to the actual system software running at the time of request; it is instead the release
-	// that the system should be moving towards as a goal state. The system asynchronously updates software to
-	// match this target release.
-	//
-	// Will only be null if a target release has never been set. In that case, the system is not automatically attempting
-	// to manage software versions.
+// 
+// This may not correspond to the actual system software running at the time of request; it is instead the release
+// that the system should be moving towards as a goal state. The system asynchronously updates software to
+// match this target release.
+// 
+// Will only be null if a target release has never been set. In that case, the system is not automatically attempting
+// to manage software versions.
 	TargetRelease *TargetRelease `json:"target_release" yaml:"target_release"`
 	// TimeLastStepPlanned is time of most recent update planning activity
-	//
-	// This is intended as a rough indicator of the last time something happened in the update planner.
+// 
+// This is intended as a rough indicator of the last time something happened in the update planner.
 	TimeLastStepPlanned *time.Time `json:"time_last_step_planned" yaml:"time_last_step_planned"`
 }
+
 
 // UpdatesTrustRoot is trusted root role used by the update system to verify update repositories.
 //
@@ -11545,6 +12186,7 @@ type UpdatesTrustRoot struct {
 	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
 }
 
+
 // UpdatesTrustRootResultsPage is a single page of results
 //
 // Required fields:
@@ -11556,6 +12198,7 @@ type UpdatesTrustRootResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // User is view of a User
 //
 // Required fields:
@@ -11565,14 +12208,15 @@ type UpdatesTrustRootResultsPage struct {
 type User struct {
 	// DisplayName is human-readable name that can identify the user
 	DisplayName string `json:"display_name" yaml:"display_name"`
-	Id          string `json:"id" yaml:"id"`
+	Id string `json:"id" yaml:"id"`
 	// SiloId is uuid of the silo to which this user belongs
 	SiloId string `json:"silo_id" yaml:"silo_id"`
 }
 
+
 // UserBuiltin is view of a Built-in User
-//
-// # Built-in users are identities internal to the system, used when the control plane performs actions autonomously
+// 
+// Built-in users are identities internal to the system, used when the control plane performs actions autonomously
 //
 // Required fields:
 // - Description
@@ -11593,6 +12237,7 @@ type UserBuiltin struct {
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
 
+
 // UserBuiltinResultsPage is a single page of results
 //
 // Required fields:
@@ -11603,6 +12248,7 @@ type UserBuiltinResultsPage struct {
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
+
 
 // UserCreate is create-time parameters for a `User`
 //
@@ -11616,6 +12262,7 @@ type UserCreate struct {
 	Password UserPassword `json:"password" yaml:"password"`
 }
 
+
 // UserId is usernames must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII,
 // uppercase ASCII, numbers, and '-', and may not end with a '-'. Usernames cannot be a UUID, but they may contain
 // a UUID. They can be at most 63 characters long.
@@ -11625,6 +12272,7 @@ type UserId string
 type userPasswordVariant interface {
 	isUserPasswordVariant()
 }
+
 
 // UserPasswordMode is the type definition for a UserPasswordMode.
 type UserPasswordMode string
@@ -11637,15 +12285,17 @@ type UserPasswordPassword struct {
 
 func (UserPasswordPassword) isUserPasswordVariant() {}
 
+
 // UserPasswordLoginDisallowed is a variant of UserPassword.
 type UserPasswordLoginDisallowed struct {
 }
 
 func (UserPasswordLoginDisallowed) isUserPasswordVariant() {}
 
+
 // UserPassword is parameters for setting a user's password
 type UserPassword struct {
-	Value userPasswordVariant
+	Value userPasswordVariant 
 }
 
 func (v UserPassword) Mode() UserPasswordMode {
@@ -11707,6 +12357,8 @@ func (v UserPassword) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsPassword attempts to convert the UserPassword to a UserPasswordPassword.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v UserPassword) AsPassword() (*UserPasswordPassword, bool) {
@@ -11721,6 +12373,7 @@ func (v UserPassword) AsLoginDisallowed() (*UserPasswordLoginDisallowed, bool) {
 	return val, ok
 }
 
+
 // UserResultsPage is a single page of results
 //
 // Required fields:
@@ -11732,6 +12385,7 @@ type UserResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // UsernamePasswordCredentials is credentials for local user login
 //
 // Required fields:
@@ -11741,10 +12395,11 @@ type UsernamePasswordCredentials struct {
 	// Password is passwords may be subject to additional constraints.
 	Password Password `json:"password" yaml:"password"`
 	// Username is usernames must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII,
-	// uppercase ASCII, numbers, and '-', and may not end with a '-'. Usernames cannot be a UUID, but they may contain
-	// a UUID. They can be at most 63 characters long.
+// uppercase ASCII, numbers, and '-', and may not end with a '-'. Usernames cannot be a UUID, but they may contain
+// a UUID. They can be at most 63 characters long.
 	Username UserId `json:"username" yaml:"username"`
 }
+
 
 // Utilization is view of the current silo's resource utilization and capacity
 //
@@ -11753,20 +12408,22 @@ type UsernamePasswordCredentials struct {
 // - Provisioned
 type Utilization struct {
 	// Capacity is the total amount of resources that can be provisioned in this silo. Actions that would exceed
-	// this limit will fail.
+// this limit will fail.
 	Capacity VirtualResourceCounts `json:"capacity" yaml:"capacity"`
 	// Provisioned is accounts for resources allocated to running instances or storage allocated via disks or
-	// snapshots.
-	//
-	// Note that CPU and memory resources associated with stopped instances are not counted here, whereas associated disks
-	// will still be counted.
+// snapshots.
+// 
+// Note that CPU and memory resources associated with stopped instances are not counted here, whereas associated disks
+// will still be counted.
 	Provisioned VirtualResourceCounts `json:"provisioned" yaml:"provisioned"`
 }
+
 
 // valueArrayVariant is implemented by ValueArray variants.
 type valueArrayVariant interface {
 	isValueArrayVariant()
 }
+
 
 // ValueArrayType is the type definition for a ValueArrayType.
 type ValueArrayType string
@@ -11778,12 +12435,14 @@ type ValueArrayInteger struct {
 
 func (ValueArrayInteger) isValueArrayVariant() {}
 
+
 // ValueArrayDouble is a variant of ValueArray.
 type ValueArrayDouble struct {
 	Values []float64 `json:"values" yaml:"values"`
 }
 
 func (ValueArrayDouble) isValueArrayVariant() {}
+
 
 // ValueArrayBoolean is a variant of ValueArray.
 type ValueArrayBoolean struct {
@@ -11792,12 +12451,14 @@ type ValueArrayBoolean struct {
 
 func (ValueArrayBoolean) isValueArrayVariant() {}
 
+
 // ValueArrayString is a variant of ValueArray.
 type ValueArrayString struct {
 	Values []string `json:"values" yaml:"values"`
 }
 
 func (ValueArrayString) isValueArrayVariant() {}
+
 
 // ValueArrayIntegerDistribution is a variant of ValueArray.
 type ValueArrayIntegerDistribution struct {
@@ -11806,6 +12467,7 @@ type ValueArrayIntegerDistribution struct {
 
 func (ValueArrayIntegerDistribution) isValueArrayVariant() {}
 
+
 // ValueArrayDoubleDistribution is a variant of ValueArray.
 type ValueArrayDoubleDistribution struct {
 	Values []Distributiondouble `json:"values" yaml:"values"`
@@ -11813,11 +12475,12 @@ type ValueArrayDoubleDistribution struct {
 
 func (ValueArrayDoubleDistribution) isValueArrayVariant() {}
 
+
 // ValueArray is list of data values for one timeseries.
-//
+// 
 // Each element is an option, where `None` represents a missing sample.
 type ValueArray struct {
-	Value valueArrayVariant
+	Value valueArrayVariant 
 }
 
 func (v ValueArray) Type() ValueArrayType {
@@ -11895,6 +12558,8 @@ func (v ValueArray) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsInteger attempts to convert the ValueArray to a ValueArrayInteger.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v ValueArray) AsInteger() (*ValueArrayInteger, bool) {
@@ -11937,6 +12602,7 @@ func (v ValueArray) AsDoubleDistribution() (*ValueArrayDoubleDistribution, bool)
 	return val, ok
 }
 
+
 // Values is a single list of values, for one dimension of a timeseries.
 //
 // Required fields:
@@ -11948,6 +12614,7 @@ type Values struct {
 	// Values is the data values.
 	Values ValueArray `json:"values" yaml:"values"`
 }
+
 
 // VersionSortMode is sort in increasing semantic version order (oldest first)
 type VersionSortMode string
@@ -11966,6 +12633,7 @@ type VirtualResourceCounts struct {
 	// Storage is amount of disk storage in bytes
 	Storage ByteCount `json:"storage" yaml:"storage"`
 }
+
 
 // Vni is a Geneve Virtual Network Identifier
 type Vni uint32
@@ -12003,6 +12671,7 @@ type Vpc struct {
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
 
+
 // VpcCreate is create-time parameters for a `Vpc`
 //
 // Required fields:
@@ -12012,28 +12681,30 @@ type Vpc struct {
 type VpcCreate struct {
 	Description string `json:"description" yaml:"description"`
 	// DnsName is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	DnsName Name `json:"dns_name" yaml:"dns_name"`
 	// Ipv6Prefix is the IPv6 prefix for this VPC
-	//
-	// All IPv6 subnets created from this VPC must be taken from this range, which should be a Unique Local Address
-	// in the range `fd00::/48`. The default VPC Subnet will have the first `/64` range from this prefix.
+// 
+// All IPv6 subnets created from this VPC must be taken from this range, which should be a Unique Local Address
+// in the range `fd00::/48`. The default VPC Subnet will have the first `/64` range from this prefix.
 	Ipv6Prefix Ipv6Net `json:"ipv6_prefix,omitempty" yaml:"ipv6_prefix,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 }
+
 
 // VpcFirewallIcmpFilter is the type definition for a VpcFirewallIcmpFilter.
 //
 // Required fields:
 // - IcmpType
 type VpcFirewallIcmpFilter struct {
-	Code     IcmpParamRange `json:"code,omitempty" yaml:"code,omitempty"`
-	IcmpType *int           `json:"icmp_type" yaml:"icmp_type"`
+	Code IcmpParamRange `json:"code,omitempty" yaml:"code,omitempty"`
+	IcmpType *int `json:"icmp_type" yaml:"icmp_type"`
 }
+
 
 // VpcFirewallRule is a single rule in a VPC firewall
 //
@@ -12077,6 +12748,7 @@ type VpcFirewallRule struct {
 	VpcId string `json:"vpc_id" yaml:"vpc_id"`
 }
 
+
 // VpcFirewallRuleAction is the type definition for a VpcFirewallRuleAction.
 type VpcFirewallRuleAction string
 
@@ -12088,7 +12760,7 @@ type VpcFirewallRuleDirection string
 // applies only to packets matching ALL filters. The maximum number of each type of filter is 256.
 type VpcFirewallRuleFilter struct {
 	// Hosts is if present, host filters match the "other end" of traffic from the target’s perspective: for
-	// an inbound rule, they match the source of traffic. For an outbound rule, they match the destination.
+// an inbound rule, they match the source of traffic. For an outbound rule, they match the destination.
 	Hosts []VpcFirewallRuleHostFilter `json:"hosts" yaml:"hosts"`
 	// Ports is if present, the destination ports or port ranges this rule applies to.
 	Ports []L4PortRange `json:"ports" yaml:"ports"`
@@ -12096,10 +12768,12 @@ type VpcFirewallRuleFilter struct {
 	Protocols []VpcFirewallRuleProtocol `json:"protocols" yaml:"protocols"`
 }
 
+
 // vpcFirewallRuleHostFilterVariant is implemented by VpcFirewallRuleHostFilter variants.
 type vpcFirewallRuleHostFilterVariant interface {
 	isVpcFirewallRuleHostFilterVariant()
 }
+
 
 // VpcFirewallRuleHostFilterType is the type definition for a VpcFirewallRuleHostFilterType.
 type VpcFirewallRuleHostFilterType string
@@ -12107,32 +12781,35 @@ type VpcFirewallRuleHostFilterType string
 // VpcFirewallRuleHostFilterVpc is a variant of VpcFirewallRuleHostFilter.
 type VpcFirewallRuleHostFilterVpc struct {
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Value Name `json:"value" yaml:"value"`
 }
 
 func (VpcFirewallRuleHostFilterVpc) isVpcFirewallRuleHostFilterVariant() {}
 
+
 // VpcFirewallRuleHostFilterSubnet is a variant of VpcFirewallRuleHostFilter.
 type VpcFirewallRuleHostFilterSubnet struct {
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Value Name `json:"value" yaml:"value"`
 }
 
 func (VpcFirewallRuleHostFilterSubnet) isVpcFirewallRuleHostFilterVariant() {}
 
+
 // VpcFirewallRuleHostFilterInstance is a variant of VpcFirewallRuleHostFilter.
 type VpcFirewallRuleHostFilterInstance struct {
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Value Name `json:"value" yaml:"value"`
 }
 
 func (VpcFirewallRuleHostFilterInstance) isVpcFirewallRuleHostFilterVariant() {}
+
 
 // VpcFirewallRuleHostFilterIp is a variant of VpcFirewallRuleHostFilter.
 type VpcFirewallRuleHostFilterIp struct {
@@ -12141,6 +12818,7 @@ type VpcFirewallRuleHostFilterIp struct {
 
 func (VpcFirewallRuleHostFilterIp) isVpcFirewallRuleHostFilterVariant() {}
 
+
 // VpcFirewallRuleHostFilterIpNet is a variant of VpcFirewallRuleHostFilter.
 type VpcFirewallRuleHostFilterIpNet struct {
 	Value IpNet `json:"value" yaml:"value"`
@@ -12148,10 +12826,11 @@ type VpcFirewallRuleHostFilterIpNet struct {
 
 func (VpcFirewallRuleHostFilterIpNet) isVpcFirewallRuleHostFilterVariant() {}
 
+
 // VpcFirewallRuleHostFilter is the `VpcFirewallRuleHostFilter` is used to filter traffic on the basis of
 // its source or destination host.
 type VpcFirewallRuleHostFilter struct {
-	Value vpcFirewallRuleHostFilterVariant
+	Value vpcFirewallRuleHostFilterVariant 
 }
 
 func (v VpcFirewallRuleHostFilter) Type() VpcFirewallRuleHostFilterType {
@@ -12225,6 +12904,8 @@ func (v VpcFirewallRuleHostFilter) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsVpc attempts to convert the VpcFirewallRuleHostFilter to a VpcFirewallRuleHostFilterVpc.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v VpcFirewallRuleHostFilter) AsVpc() (*VpcFirewallRuleHostFilterVpc, bool) {
@@ -12260,10 +12941,12 @@ func (v VpcFirewallRuleHostFilter) AsIpNet() (*VpcFirewallRuleHostFilterIpNet, b
 	return val, ok
 }
 
+
 // vpcFirewallRuleProtocolVariant is implemented by VpcFirewallRuleProtocol variants.
 type vpcFirewallRuleProtocolVariant interface {
 	isVpcFirewallRuleProtocolVariant()
 }
+
 
 // VpcFirewallRuleProtocolType is the type definition for a VpcFirewallRuleProtocolType.
 type VpcFirewallRuleProtocolType string
@@ -12274,11 +12957,13 @@ type VpcFirewallRuleProtocolTcp struct {
 
 func (VpcFirewallRuleProtocolTcp) isVpcFirewallRuleProtocolVariant() {}
 
+
 // VpcFirewallRuleProtocolUdp is a variant of VpcFirewallRuleProtocol.
 type VpcFirewallRuleProtocolUdp struct {
 }
 
 func (VpcFirewallRuleProtocolUdp) isVpcFirewallRuleProtocolVariant() {}
+
 
 // VpcFirewallRuleProtocolIcmp is a variant of VpcFirewallRuleProtocol.
 type VpcFirewallRuleProtocolIcmp struct {
@@ -12287,9 +12972,10 @@ type VpcFirewallRuleProtocolIcmp struct {
 
 func (VpcFirewallRuleProtocolIcmp) isVpcFirewallRuleProtocolVariant() {}
 
+
 // VpcFirewallRuleProtocol is the protocols that may be specified in a firewall rule's filter
 type VpcFirewallRuleProtocol struct {
-	Value vpcFirewallRuleProtocolVariant
+	Value vpcFirewallRuleProtocolVariant 
 }
 
 func (v VpcFirewallRuleProtocol) Type() VpcFirewallRuleProtocolType {
@@ -12355,6 +13041,8 @@ func (v VpcFirewallRuleProtocol) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsTcp attempts to convert the VpcFirewallRuleProtocol to a VpcFirewallRuleProtocolTcp.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v VpcFirewallRuleProtocol) AsTcp() (*VpcFirewallRuleProtocolTcp, bool) {
@@ -12376,6 +13064,7 @@ func (v VpcFirewallRuleProtocol) AsIcmp() (*VpcFirewallRuleProtocolIcmp, bool) {
 	return val, ok
 }
 
+
 // VpcFirewallRuleStatus is the type definition for a VpcFirewallRuleStatus.
 type VpcFirewallRuleStatus string
 
@@ -12384,38 +13073,42 @@ type vpcFirewallRuleTargetVariant interface {
 	isVpcFirewallRuleTargetVariant()
 }
 
+
 // VpcFirewallRuleTargetType is the type definition for a VpcFirewallRuleTargetType.
 type VpcFirewallRuleTargetType string
 
 // VpcFirewallRuleTargetVpc is a variant of VpcFirewallRuleTarget.
 type VpcFirewallRuleTargetVpc struct {
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Value Name `json:"value" yaml:"value"`
 }
 
 func (VpcFirewallRuleTargetVpc) isVpcFirewallRuleTargetVariant() {}
 
+
 // VpcFirewallRuleTargetSubnet is a variant of VpcFirewallRuleTarget.
 type VpcFirewallRuleTargetSubnet struct {
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Value Name `json:"value" yaml:"value"`
 }
 
 func (VpcFirewallRuleTargetSubnet) isVpcFirewallRuleTargetVariant() {}
 
+
 // VpcFirewallRuleTargetInstance is a variant of VpcFirewallRuleTarget.
 type VpcFirewallRuleTargetInstance struct {
 	// Value is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Value Name `json:"value" yaml:"value"`
 }
 
 func (VpcFirewallRuleTargetInstance) isVpcFirewallRuleTargetVariant() {}
+
 
 // VpcFirewallRuleTargetIp is a variant of VpcFirewallRuleTarget.
 type VpcFirewallRuleTargetIp struct {
@@ -12424,6 +13117,7 @@ type VpcFirewallRuleTargetIp struct {
 
 func (VpcFirewallRuleTargetIp) isVpcFirewallRuleTargetVariant() {}
 
+
 // VpcFirewallRuleTargetIpNet is a variant of VpcFirewallRuleTarget.
 type VpcFirewallRuleTargetIpNet struct {
 	Value IpNet `json:"value" yaml:"value"`
@@ -12431,12 +13125,13 @@ type VpcFirewallRuleTargetIpNet struct {
 
 func (VpcFirewallRuleTargetIpNet) isVpcFirewallRuleTargetVariant() {}
 
+
 // VpcFirewallRuleTarget is a `VpcFirewallRuleTarget` is used to specify the set of instances to which a
 // firewall rule applies. You can target instances directly by name, or specify a VPC, VPC subnet, IP, or IP
 // subnet, which will apply the rule to traffic going to all matching instances. Targets are additive: the rule
 // applies to instances matching ANY target.
 type VpcFirewallRuleTarget struct {
-	Value vpcFirewallRuleTargetVariant
+	Value vpcFirewallRuleTargetVariant 
 }
 
 func (v VpcFirewallRuleTarget) Type() VpcFirewallRuleTargetType {
@@ -12510,6 +13205,8 @@ func (v VpcFirewallRuleTarget) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
+
+
 // AsVpc attempts to convert the VpcFirewallRuleTarget to a VpcFirewallRuleTargetVpc.
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v VpcFirewallRuleTarget) AsVpc() (*VpcFirewallRuleTargetVpc, bool) {
@@ -12545,6 +13242,7 @@ func (v VpcFirewallRuleTarget) AsIpNet() (*VpcFirewallRuleTargetIpNet, bool) {
 	return val, ok
 }
 
+
 // VpcFirewallRuleUpdate is a single rule in a VPC firewall
 //
 // Required fields:
@@ -12575,10 +13273,12 @@ type VpcFirewallRuleUpdate struct {
 	Targets []VpcFirewallRuleTarget `json:"targets" yaml:"targets"`
 }
 
+
 // VpcFirewallRuleUpdateParams is updated list of firewall rules. Will replace all existing rules.
 type VpcFirewallRuleUpdateParams struct {
 	Rules []VpcFirewallRuleUpdate `json:"rules,omitzero" yaml:"rules,omitzero"`
 }
+
 
 // VpcFirewallRules is collection of a Vpc's firewall rules
 //
@@ -12587,6 +13287,7 @@ type VpcFirewallRuleUpdateParams struct {
 type VpcFirewallRules struct {
 	Rules []VpcFirewallRule `json:"rules" yaml:"rules"`
 }
+
 
 // VpcResultsPage is a single page of results
 //
@@ -12598,6 +13299,7 @@ type VpcResultsPage struct {
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
+
 
 // VpcRouter is a VPC router defines a series of rules that indicate where traffic should be sent depending on
 // its destination.
@@ -12614,7 +13316,7 @@ type VpcRouter struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description" yaml:"description"`
 	// Id is unique, immutable, system-controlled identifier for each resource
-	Id   string        `json:"id" yaml:"id"`
+	Id string `json:"id" yaml:"id"`
 	Kind VpcRouterKind `json:"kind" yaml:"kind"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name" yaml:"name"`
@@ -12626,6 +13328,7 @@ type VpcRouter struct {
 	VpcId string `json:"vpc_id" yaml:"vpc_id"`
 }
 
+
 // VpcRouterCreate is create-time parameters for a `VpcRouter`
 //
 // Required fields:
@@ -12634,10 +13337,11 @@ type VpcRouter struct {
 type VpcRouterCreate struct {
 	Description string `json:"description" yaml:"description"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 }
+
 
 // VpcRouterKind is the type definition for a VpcRouterKind.
 type VpcRouterKind string
@@ -12653,11 +13357,13 @@ type VpcRouterResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // VpcRouterUpdate is updateable properties of a `VpcRouter`
 type VpcRouterUpdate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 }
+
 
 // VpcSubnet is a VPC subnet represents a logical grouping for instances that allows network traffic between
 // them, within an IPv4 subnetwork or optionally an IPv6 subnetwork.
@@ -12692,6 +13398,7 @@ type VpcSubnet struct {
 	VpcId string `json:"vpc_id" yaml:"vpc_id"`
 }
 
+
 // VpcSubnetCreate is create-time parameters for a `VpcSubnet`
 //
 // Required fields:
@@ -12700,28 +13407,29 @@ type VpcSubnet struct {
 // - Name
 type VpcSubnetCreate struct {
 	// CustomRouter is an optional router, used to direct packets sent from hosts in this subnet to any destination address.
-	//
-	//
-	// Custom routers apply in addition to the VPC-wide *system* router, and have higher priority than the system router
-	// for an otherwise equal-prefix-length match.
+//
+// 
+// Custom routers apply in addition to the VPC-wide *system* router, and have higher priority than the system router
+// for an otherwise equal-prefix-length match.
 	CustomRouter NameOrId `json:"custom_router,omitempty" yaml:"custom_router,omitempty"`
-	Description  string   `json:"description" yaml:"description"`
+	Description string `json:"description" yaml:"description"`
 	// Ipv4Block is the IPv4 address range for this subnet.
-	//
-	// It must be allocated from an RFC 1918 private address range, and must not overlap with any other existing subnet
-	// in the VPC.
+// 
+// It must be allocated from an RFC 1918 private address range, and must not overlap with any other existing subnet
+// in the VPC.
 	Ipv4Block Ipv4Net `json:"ipv4_block" yaml:"ipv4_block"`
 	// Ipv6Block is the IPv6 address range for this subnet.
-	//
-	// It must be allocated from the RFC 4193 Unique Local Address range, with the prefix equal to the parent VPC's
-	// prefix. A random `/64` block will be assigned if one is not provided. It must not overlap with any existing subnet
-	// in the VPC.
+// 
+// It must be allocated from the RFC 4193 Unique Local Address range, with the prefix equal to the parent VPC's
+// prefix. A random `/64` block will be assigned if one is not provided. It must not overlap with any existing subnet
+// in the VPC.
 	Ipv6Block Ipv6Net `json:"ipv6_block,omitempty" yaml:"ipv6_block,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 }
+
 
 // VpcSubnetResultsPage is a single page of results
 //
@@ -12734,21 +13442,24 @@ type VpcSubnetResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+
 // VpcSubnetUpdate is updateable properties of a `VpcSubnet`
 type VpcSubnetUpdate struct {
 	// CustomRouter is an optional router, used to direct packets sent from hosts in this subnet to any destination address.
-	//
+// 
 	CustomRouter NameOrId `json:"custom_router,omitempty" yaml:"custom_router,omitempty"`
-	Description  string   `json:"description,omitempty" yaml:"description,omitempty"`
-	Name         Name     `json:"name,omitempty" yaml:"name,omitempty"`
+	Description string `json:"description,omitempty" yaml:"description,omitempty"`
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 }
+
 
 // VpcUpdate is updateable properties of a `Vpc`
 type VpcUpdate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
-	DnsName     Name   `json:"dns_name,omitempty" yaml:"dns_name,omitempty"`
-	Name        Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	DnsName Name `json:"dns_name,omitempty" yaml:"dns_name,omitempty"`
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 }
+
 
 // WebhookCreate is create-time identity-related parameters
 //
@@ -12762,20 +13473,21 @@ type WebhookCreate struct {
 	// Endpoint is the URL that webhook notification requests should be sent to
 	Endpoint string `json:"endpoint" yaml:"endpoint"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase ASCII, uppercase
-	// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
+// ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID, but they may contain a UUID. They
+// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 	// Secrets is a non-empty list of secret keys used to sign webhook payloads.
 	Secrets []string `json:"secrets" yaml:"secrets"`
 	// Subscriptions is a list of webhook event class subscriptions.
-	//
-	// If this list is empty or is not included in the request body, the webhook will not be subscribed to any events.
-	//
+// 
+// If this list is empty or is not included in the request body, the webhook will not be subscribed to any events.
+// 
 	Subscriptions []AlertSubscription `json:"subscriptions,omitempty" yaml:"subscriptions,omitempty"`
 }
 
+
 // WebhookDeliveryAttempt is an individual delivery attempt for a webhook event.
-//
+// 
 // This represents a single HTTP request that was sent to the receiver, and its outcome.
 //
 // Required fields:
@@ -12784,14 +13496,15 @@ type WebhookCreate struct {
 // - TimeSent
 type WebhookDeliveryAttempt struct {
 	// Attempt is the attempt number.
-	Attempt  *int                    `json:"attempt" yaml:"attempt"`
+	Attempt *int `json:"attempt" yaml:"attempt"`
 	Response WebhookDeliveryResponse `json:"response,omitempty" yaml:"response,omitempty"`
 	// Result is the outcome of this delivery attempt: either the event was delivered successfully, or the request
-	// failed for one of several reasons.
+// failed for one of several reasons.
 	Result WebhookDeliveryAttemptResult `json:"result" yaml:"result"`
 	// TimeSent is the time at which the webhook delivery was attempted.
 	TimeSent *time.Time `json:"time_sent" yaml:"time_sent"`
 }
+
 
 // WebhookDeliveryAttemptResult is the webhook event has been delivered successfully.
 type WebhookDeliveryAttemptResult string
@@ -12807,6 +13520,7 @@ type WebhookDeliveryResponse struct {
 	// Status is the HTTP status code returned from the webhook endpoint.
 	Status *int `json:"status" yaml:"status"`
 }
+
 
 // WebhookReceiver is the configuration for a webhook alert receiver.
 //
@@ -12838,16 +13552,18 @@ type WebhookReceiver struct {
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
 
+
 // WebhookReceiverUpdate is parameters to update a webhook configuration.
 type WebhookReceiverUpdate struct {
 	Description string `json:"description,omitempty" yaml:"description,omitempty"`
 	// Endpoint is the URL that webhook notification requests should be sent to
 	Endpoint string `json:"endpoint,omitempty" yaml:"endpoint,omitempty"`
-	Name     Name   `json:"name,omitempty" yaml:"name,omitempty"`
+	Name Name `json:"name,omitempty" yaml:"name,omitempty"`
 }
 
+
 // WebhookSecret is a view of a shared secret key assigned to a webhook receiver.
-//
+// 
 // Once a secret is created, the value of the secret is not available in the API, as it must remain secret. Instead,
 // secrets are referenced by their unique IDs assigned when they are created.
 //
@@ -12861,6 +13577,7 @@ type WebhookSecret struct {
 	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
 }
 
+
 // WebhookSecretCreate is the type definition for a WebhookSecretCreate.
 //
 // Required fields:
@@ -12870,6 +13587,7 @@ type WebhookSecretCreate struct {
 	Secret string `json:"secret" yaml:"secret"`
 }
 
+
 // WebhookSecrets is a list of the IDs of secrets associated with a webhook receiver.
 //
 // Required fields:
@@ -12877,6 +13595,7 @@ type WebhookSecretCreate struct {
 type WebhookSecrets struct {
 	Secrets []WebhookSecret `json:"secrets" yaml:"secrets"`
 }
+
 
 // DeviceAuthRequestParams is the request parameters for DeviceAuthRequest
 //
@@ -12886,6 +13605,7 @@ type DeviceAuthRequestParams struct {
 	Body io.Reader `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+
 // DeviceAuthConfirmParams is the request parameters for DeviceAuthConfirm
 //
 // Required fields:
@@ -12893,6 +13613,7 @@ type DeviceAuthRequestParams struct {
 type DeviceAuthConfirmParams struct {
 	Body *DeviceAuthVerify `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // DeviceAccessTokenParams is the request parameters for DeviceAccessToken
 //
@@ -12902,16 +13623,18 @@ type DeviceAccessTokenParams struct {
 	Body io.Reader `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+
 // ProbeListParams is the request parameters for ProbeList
 //
 // Required fields:
 // - Project
 type ProbeListParams struct {
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // ProbeCreateParams is the request parameters for ProbeCreate
 //
@@ -12919,9 +13642,10 @@ type ProbeListParams struct {
 // - Project
 // - Body
 type ProbeCreateParams struct {
-	Project NameOrId     `json:"project,omitempty" yaml:"project,omitempty"`
-	Body    *ProbeCreate `json:"body,omitempty" yaml:"body,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Body *ProbeCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // ProbeDeleteParams is the request parameters for ProbeDelete
 //
@@ -12930,8 +13654,9 @@ type ProbeCreateParams struct {
 // - Probe
 type ProbeDeleteParams struct {
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
-	Probe   NameOrId `json:"probe,omitempty" yaml:"probe,omitempty"`
+	Probe NameOrId `json:"probe,omitempty" yaml:"probe,omitempty"`
 }
+
 
 // ProbeViewParams is the request parameters for ProbeView
 //
@@ -12939,16 +13664,18 @@ type ProbeDeleteParams struct {
 // - Probe
 // - Project
 type ProbeViewParams struct {
-	Probe   NameOrId `json:"probe,omitempty" yaml:"probe,omitempty"`
+	Probe NameOrId `json:"probe,omitempty" yaml:"probe,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
+
 // SupportBundleListParams is the request parameters for SupportBundleList
 type SupportBundleListParams struct {
-	Limit     *int              `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string            `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    TimeAndIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy TimeAndIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // SupportBundleCreateParams is the request parameters for SupportBundleCreate
 //
@@ -12958,6 +13685,7 @@ type SupportBundleCreateParams struct {
 	Body *SupportBundleCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+
 // SupportBundleDeleteParams is the request parameters for SupportBundleDelete
 //
 // Required fields:
@@ -12965,6 +13693,7 @@ type SupportBundleCreateParams struct {
 type SupportBundleDeleteParams struct {
 	BundleId string `json:"bundle_id,omitempty" yaml:"bundle_id,omitempty"`
 }
+
 
 // SupportBundleViewParams is the request parameters for SupportBundleView
 //
@@ -12974,33 +13703,37 @@ type SupportBundleViewParams struct {
 	BundleId string `json:"bundle_id,omitempty" yaml:"bundle_id,omitempty"`
 }
 
+
 // SupportBundleUpdateParams is the request parameters for SupportBundleUpdate
 //
 // Required fields:
 // - BundleId
 // - Body
 type SupportBundleUpdateParams struct {
-	BundleId string               `json:"bundle_id,omitempty" yaml:"bundle_id,omitempty"`
-	Body     *SupportBundleUpdate `json:"body,omitempty" yaml:"body,omitempty"`
+	BundleId string `json:"bundle_id,omitempty" yaml:"bundle_id,omitempty"`
+	Body *SupportBundleUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // SupportBundleDownloadParams is the request parameters for SupportBundleDownload
 //
 // Required fields:
 // - BundleId
 type SupportBundleDownloadParams struct {
-	Range    string `json:"range,omitempty" yaml:"range,omitempty"`
+	Range string `json:"range,omitempty" yaml:"range,omitempty"`
 	BundleId string `json:"bundle_id,omitempty" yaml:"bundle_id,omitempty"`
 }
+
 
 // SupportBundleHeadParams is the request parameters for SupportBundleHead
 //
 // Required fields:
 // - BundleId
 type SupportBundleHeadParams struct {
-	Range    string `json:"range,omitempty" yaml:"range,omitempty"`
+	Range string `json:"range,omitempty" yaml:"range,omitempty"`
 	BundleId string `json:"bundle_id,omitempty" yaml:"bundle_id,omitempty"`
 }
+
 
 // SupportBundleDownloadFileParams is the request parameters for SupportBundleDownloadFile
 //
@@ -13008,10 +13741,11 @@ type SupportBundleHeadParams struct {
 // - BundleId
 // - File
 type SupportBundleDownloadFileParams struct {
-	Range    string `json:"range,omitempty" yaml:"range,omitempty"`
+	Range string `json:"range,omitempty" yaml:"range,omitempty"`
 	BundleId string `json:"bundle_id,omitempty" yaml:"bundle_id,omitempty"`
-	File     string `json:"file,omitempty" yaml:"file,omitempty"`
+	File string `json:"file,omitempty" yaml:"file,omitempty"`
 }
+
 
 // SupportBundleHeadFileParams is the request parameters for SupportBundleHeadFile
 //
@@ -13019,19 +13753,21 @@ type SupportBundleDownloadFileParams struct {
 // - BundleId
 // - File
 type SupportBundleHeadFileParams struct {
-	Range    string `json:"range,omitempty" yaml:"range,omitempty"`
+	Range string `json:"range,omitempty" yaml:"range,omitempty"`
 	BundleId string `json:"bundle_id,omitempty" yaml:"bundle_id,omitempty"`
-	File     string `json:"file,omitempty" yaml:"file,omitempty"`
+	File string `json:"file,omitempty" yaml:"file,omitempty"`
 }
+
 
 // SupportBundleIndexParams is the request parameters for SupportBundleIndex
 //
 // Required fields:
 // - BundleId
 type SupportBundleIndexParams struct {
-	Range    string `json:"range,omitempty" yaml:"range,omitempty"`
+	Range string `json:"range,omitempty" yaml:"range,omitempty"`
 	BundleId string `json:"bundle_id,omitempty" yaml:"bundle_id,omitempty"`
 }
+
 
 // LoginSamlParams is the request parameters for LoginSaml
 //
@@ -13040,21 +13776,23 @@ type SupportBundleIndexParams struct {
 // - SiloName
 // - Body
 type LoginSamlParams struct {
-	ProviderName Name      `json:"provider_name,omitempty" yaml:"provider_name,omitempty"`
-	SiloName     Name      `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
-	Body         io.Reader `json:"body,omitempty" yaml:"body,omitempty"`
+	ProviderName Name `json:"provider_name,omitempty" yaml:"provider_name,omitempty"`
+	SiloName Name `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
+	Body io.Reader `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // AffinityGroupListParams is the request parameters for AffinityGroupList
 //
 // Required fields:
 // - Project
 type AffinityGroupListParams struct {
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // AffinityGroupCreateParams is the request parameters for AffinityGroupCreate
 //
@@ -13062,27 +13800,30 @@ type AffinityGroupListParams struct {
 // - Project
 // - Body
 type AffinityGroupCreateParams struct {
-	Project NameOrId             `json:"project,omitempty" yaml:"project,omitempty"`
-	Body    *AffinityGroupCreate `json:"body,omitempty" yaml:"body,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Body *AffinityGroupCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // AffinityGroupDeleteParams is the request parameters for AffinityGroupDelete
 //
 // Required fields:
 // - AffinityGroup
 type AffinityGroupDeleteParams struct {
-	Project       NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 	AffinityGroup NameOrId `json:"affinity_group,omitempty" yaml:"affinity_group,omitempty"`
 }
+
 
 // AffinityGroupViewParams is the request parameters for AffinityGroupView
 //
 // Required fields:
 // - AffinityGroup
 type AffinityGroupViewParams struct {
-	Project       NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 	AffinityGroup NameOrId `json:"affinity_group,omitempty" yaml:"affinity_group,omitempty"`
 }
+
 
 // AffinityGroupUpdateParams is the request parameters for AffinityGroupUpdate
 //
@@ -13090,22 +13831,24 @@ type AffinityGroupViewParams struct {
 // - AffinityGroup
 // - Body
 type AffinityGroupUpdateParams struct {
-	Project       NameOrId             `json:"project,omitempty" yaml:"project,omitempty"`
-	AffinityGroup NameOrId             `json:"affinity_group,omitempty" yaml:"affinity_group,omitempty"`
-	Body          *AffinityGroupUpdate `json:"body,omitempty" yaml:"body,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	AffinityGroup NameOrId `json:"affinity_group,omitempty" yaml:"affinity_group,omitempty"`
+	Body *AffinityGroupUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // AffinityGroupMemberListParams is the request parameters for AffinityGroupMemberList
 //
 // Required fields:
 // - AffinityGroup
 type AffinityGroupMemberListParams struct {
-	Limit         *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken     string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	Project       NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
-	SortBy        NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
-	AffinityGroup NameOrId         `json:"affinity_group,omitempty" yaml:"affinity_group,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	AffinityGroup NameOrId `json:"affinity_group,omitempty" yaml:"affinity_group,omitempty"`
 }
+
 
 // AffinityGroupMemberInstanceDeleteParams is the request parameters for AffinityGroupMemberInstanceDelete
 //
@@ -13113,10 +13856,11 @@ type AffinityGroupMemberListParams struct {
 // - AffinityGroup
 // - Instance
 type AffinityGroupMemberInstanceDeleteParams struct {
-	Project       NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 	AffinityGroup NameOrId `json:"affinity_group,omitempty" yaml:"affinity_group,omitempty"`
-	Instance      NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
+
 
 // AffinityGroupMemberInstanceViewParams is the request parameters for AffinityGroupMemberInstanceView
 //
@@ -13124,10 +13868,11 @@ type AffinityGroupMemberInstanceDeleteParams struct {
 // - AffinityGroup
 // - Instance
 type AffinityGroupMemberInstanceViewParams struct {
-	Project       NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 	AffinityGroup NameOrId `json:"affinity_group,omitempty" yaml:"affinity_group,omitempty"`
-	Instance      NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
+
 
 // AffinityGroupMemberInstanceAddParams is the request parameters for AffinityGroupMemberInstanceAdd
 //
@@ -13135,24 +13880,27 @@ type AffinityGroupMemberInstanceViewParams struct {
 // - AffinityGroup
 // - Instance
 type AffinityGroupMemberInstanceAddParams struct {
-	Project       NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 	AffinityGroup NameOrId `json:"affinity_group,omitempty" yaml:"affinity_group,omitempty"`
-	Instance      NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
+
 
 // AlertClassListParams is the request parameters for AlertClassList
 type AlertClassListParams struct {
-	Limit     *int              `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string            `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	Filter    AlertSubscription `json:"filter,omitempty" yaml:"filter,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Filter AlertSubscription `json:"filter,omitempty" yaml:"filter,omitempty"`
 }
+
 
 // AlertReceiverListParams is the request parameters for AlertReceiverList
 type AlertReceiverListParams struct {
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // AlertReceiverDeleteParams is the request parameters for AlertReceiverDelete
 //
@@ -13162,6 +13910,7 @@ type AlertReceiverDeleteParams struct {
 	Receiver NameOrId `json:"receiver,omitempty" yaml:"receiver,omitempty"`
 }
 
+
 // AlertReceiverViewParams is the request parameters for AlertReceiverView
 //
 // Required fields:
@@ -13170,19 +13919,21 @@ type AlertReceiverViewParams struct {
 	Receiver NameOrId `json:"receiver,omitempty" yaml:"receiver,omitempty"`
 }
 
+
 // AlertDeliveryListParams is the request parameters for AlertDeliveryList
 //
 // Required fields:
 // - Receiver
 type AlertDeliveryListParams struct {
-	Receiver  NameOrId          `json:"receiver,omitempty" yaml:"receiver,omitempty"`
-	Delivered *bool             `json:"delivered,omitempty" yaml:"delivered,omitempty"`
-	Failed    *bool             `json:"failed,omitempty" yaml:"failed,omitempty"`
-	Pending   *bool             `json:"pending,omitempty" yaml:"pending,omitempty"`
-	Limit     *int              `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string            `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    TimeAndIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Receiver NameOrId `json:"receiver,omitempty" yaml:"receiver,omitempty"`
+	Delivered *bool `json:"delivered,omitempty" yaml:"delivered,omitempty"`
+	Failed *bool `json:"failed,omitempty" yaml:"failed,omitempty"`
+	Pending *bool `json:"pending,omitempty" yaml:"pending,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy TimeAndIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // AlertReceiverProbeParams is the request parameters for AlertReceiverProbe
 //
@@ -13190,8 +13941,9 @@ type AlertDeliveryListParams struct {
 // - Receiver
 type AlertReceiverProbeParams struct {
 	Receiver NameOrId `json:"receiver,omitempty" yaml:"receiver,omitempty"`
-	Resend   *bool    `json:"resend,omitempty" yaml:"resend,omitempty"`
+	Resend *bool `json:"resend,omitempty" yaml:"resend,omitempty"`
 }
+
 
 // AlertReceiverSubscriptionAddParams is the request parameters for AlertReceiverSubscriptionAdd
 //
@@ -13199,9 +13951,10 @@ type AlertReceiverProbeParams struct {
 // - Receiver
 // - Body
 type AlertReceiverSubscriptionAddParams struct {
-	Receiver NameOrId                 `json:"receiver,omitempty" yaml:"receiver,omitempty"`
-	Body     *AlertSubscriptionCreate `json:"body,omitempty" yaml:"body,omitempty"`
+	Receiver NameOrId `json:"receiver,omitempty" yaml:"receiver,omitempty"`
+	Body *AlertSubscriptionCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // AlertReceiverSubscriptionRemoveParams is the request parameters for AlertReceiverSubscriptionRemove
 //
@@ -13209,9 +13962,10 @@ type AlertReceiverSubscriptionAddParams struct {
 // - Receiver
 // - Subscription
 type AlertReceiverSubscriptionRemoveParams struct {
-	Receiver     NameOrId          `json:"receiver,omitempty" yaml:"receiver,omitempty"`
+	Receiver NameOrId `json:"receiver,omitempty" yaml:"receiver,omitempty"`
 	Subscription AlertSubscription `json:"subscription,omitempty" yaml:"subscription,omitempty"`
 }
+
 
 // AlertDeliveryResendParams is the request parameters for AlertDeliveryResend
 //
@@ -13219,20 +13973,22 @@ type AlertReceiverSubscriptionRemoveParams struct {
 // - AlertId
 // - Receiver
 type AlertDeliveryResendParams struct {
-	AlertId  string   `json:"alert_id,omitempty" yaml:"alert_id,omitempty"`
+	AlertId string `json:"alert_id,omitempty" yaml:"alert_id,omitempty"`
 	Receiver NameOrId `json:"receiver,omitempty" yaml:"receiver,omitempty"`
 }
+
 
 // AntiAffinityGroupListParams is the request parameters for AntiAffinityGroupList
 //
 // Required fields:
 // - Project
 type AntiAffinityGroupListParams struct {
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // AntiAffinityGroupCreateParams is the request parameters for AntiAffinityGroupCreate
 //
@@ -13240,27 +13996,30 @@ type AntiAffinityGroupListParams struct {
 // - Project
 // - Body
 type AntiAffinityGroupCreateParams struct {
-	Project NameOrId                 `json:"project,omitempty" yaml:"project,omitempty"`
-	Body    *AntiAffinityGroupCreate `json:"body,omitempty" yaml:"body,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Body *AntiAffinityGroupCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // AntiAffinityGroupDeleteParams is the request parameters for AntiAffinityGroupDelete
 //
 // Required fields:
 // - AntiAffinityGroup
 type AntiAffinityGroupDeleteParams struct {
-	Project           NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 	AntiAffinityGroup NameOrId `json:"anti_affinity_group,omitempty" yaml:"anti_affinity_group,omitempty"`
 }
+
 
 // AntiAffinityGroupViewParams is the request parameters for AntiAffinityGroupView
 //
 // Required fields:
 // - AntiAffinityGroup
 type AntiAffinityGroupViewParams struct {
-	Project           NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 	AntiAffinityGroup NameOrId `json:"anti_affinity_group,omitempty" yaml:"anti_affinity_group,omitempty"`
 }
+
 
 // AntiAffinityGroupUpdateParams is the request parameters for AntiAffinityGroupUpdate
 //
@@ -13268,22 +14027,24 @@ type AntiAffinityGroupViewParams struct {
 // - AntiAffinityGroup
 // - Body
 type AntiAffinityGroupUpdateParams struct {
-	Project           NameOrId                 `json:"project,omitempty" yaml:"project,omitempty"`
-	AntiAffinityGroup NameOrId                 `json:"anti_affinity_group,omitempty" yaml:"anti_affinity_group,omitempty"`
-	Body              *AntiAffinityGroupUpdate `json:"body,omitempty" yaml:"body,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	AntiAffinityGroup NameOrId `json:"anti_affinity_group,omitempty" yaml:"anti_affinity_group,omitempty"`
+	Body *AntiAffinityGroupUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // AntiAffinityGroupMemberListParams is the request parameters for AntiAffinityGroupMemberList
 //
 // Required fields:
 // - AntiAffinityGroup
 type AntiAffinityGroupMemberListParams struct {
-	Limit             *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken         string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	Project           NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
-	SortBy            NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
-	AntiAffinityGroup NameOrId         `json:"anti_affinity_group,omitempty" yaml:"anti_affinity_group,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	AntiAffinityGroup NameOrId `json:"anti_affinity_group,omitempty" yaml:"anti_affinity_group,omitempty"`
 }
+
 
 // AntiAffinityGroupMemberInstanceDeleteParams is the request parameters for AntiAffinityGroupMemberInstanceDelete
 //
@@ -13291,10 +14052,11 @@ type AntiAffinityGroupMemberListParams struct {
 // - AntiAffinityGroup
 // - Instance
 type AntiAffinityGroupMemberInstanceDeleteParams struct {
-	Project           NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 	AntiAffinityGroup NameOrId `json:"anti_affinity_group,omitempty" yaml:"anti_affinity_group,omitempty"`
-	Instance          NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
+
 
 // AntiAffinityGroupMemberInstanceViewParams is the request parameters for AntiAffinityGroupMemberInstanceView
 //
@@ -13302,10 +14064,11 @@ type AntiAffinityGroupMemberInstanceDeleteParams struct {
 // - AntiAffinityGroup
 // - Instance
 type AntiAffinityGroupMemberInstanceViewParams struct {
-	Project           NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 	AntiAffinityGroup NameOrId `json:"anti_affinity_group,omitempty" yaml:"anti_affinity_group,omitempty"`
-	Instance          NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
+
 
 // AntiAffinityGroupMemberInstanceAddParams is the request parameters for AntiAffinityGroupMemberInstanceAdd
 //
@@ -13313,10 +14076,11 @@ type AntiAffinityGroupMemberInstanceViewParams struct {
 // - AntiAffinityGroup
 // - Instance
 type AntiAffinityGroupMemberInstanceAddParams struct {
-	Project           NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 	AntiAffinityGroup NameOrId `json:"anti_affinity_group,omitempty" yaml:"anti_affinity_group,omitempty"`
-	Instance          NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
+
 
 // AuthSettingsUpdateParams is the request parameters for AuthSettingsUpdate
 //
@@ -13326,12 +14090,14 @@ type AuthSettingsUpdateParams struct {
 	Body *SiloAuthSettingsUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+
 // CertificateListParams is the request parameters for CertificateList
 type CertificateListParams struct {
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // CertificateCreateParams is the request parameters for CertificateCreate
 //
@@ -13341,6 +14107,7 @@ type CertificateCreateParams struct {
 	Body *CertificateCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+
 // CertificateDeleteParams is the request parameters for CertificateDelete
 //
 // Required fields:
@@ -13348,6 +14115,7 @@ type CertificateCreateParams struct {
 type CertificateDeleteParams struct {
 	Certificate NameOrId `json:"certificate,omitempty" yaml:"certificate,omitempty"`
 }
+
 
 // CertificateViewParams is the request parameters for CertificateView
 //
@@ -13357,16 +14125,18 @@ type CertificateViewParams struct {
 	Certificate NameOrId `json:"certificate,omitempty" yaml:"certificate,omitempty"`
 }
 
+
 // DiskListParams is the request parameters for DiskList
 //
 // Required fields:
 // - Project
 type DiskListParams struct {
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // DiskCreateParams is the request parameters for DiskCreate
 //
@@ -13374,27 +14144,30 @@ type DiskListParams struct {
 // - Project
 // - Body
 type DiskCreateParams struct {
-	Project NameOrId    `json:"project,omitempty" yaml:"project,omitempty"`
-	Body    *DiskCreate `json:"body,omitempty" yaml:"body,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Body *DiskCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // DiskDeleteParams is the request parameters for DiskDelete
 //
 // Required fields:
 // - Disk
 type DiskDeleteParams struct {
-	Disk    NameOrId `json:"disk,omitempty" yaml:"disk,omitempty"`
+	Disk NameOrId `json:"disk,omitempty" yaml:"disk,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
+
 
 // DiskViewParams is the request parameters for DiskView
 //
 // Required fields:
 // - Disk
 type DiskViewParams struct {
-	Disk    NameOrId `json:"disk,omitempty" yaml:"disk,omitempty"`
+	Disk NameOrId `json:"disk,omitempty" yaml:"disk,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
+
 
 // DiskBulkWriteImportParams is the request parameters for DiskBulkWriteImport
 //
@@ -13402,28 +14175,31 @@ type DiskViewParams struct {
 // - Disk
 // - Body
 type DiskBulkWriteImportParams struct {
-	Disk    NameOrId               `json:"disk,omitempty" yaml:"disk,omitempty"`
-	Project NameOrId               `json:"project,omitempty" yaml:"project,omitempty"`
-	Body    *ImportBlocksBulkWrite `json:"body,omitempty" yaml:"body,omitempty"`
+	Disk NameOrId `json:"disk,omitempty" yaml:"disk,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Body *ImportBlocksBulkWrite `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // DiskBulkWriteImportStartParams is the request parameters for DiskBulkWriteImportStart
 //
 // Required fields:
 // - Disk
 type DiskBulkWriteImportStartParams struct {
-	Disk    NameOrId `json:"disk,omitempty" yaml:"disk,omitempty"`
+	Disk NameOrId `json:"disk,omitempty" yaml:"disk,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
+
 
 // DiskBulkWriteImportStopParams is the request parameters for DiskBulkWriteImportStop
 //
 // Required fields:
 // - Disk
 type DiskBulkWriteImportStopParams struct {
-	Disk    NameOrId `json:"disk,omitempty" yaml:"disk,omitempty"`
+	Disk NameOrId `json:"disk,omitempty" yaml:"disk,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
+
 
 // DiskFinalizeImportParams is the request parameters for DiskFinalizeImport
 //
@@ -13431,21 +14207,23 @@ type DiskBulkWriteImportStopParams struct {
 // - Disk
 // - Body
 type DiskFinalizeImportParams struct {
-	Disk    NameOrId      `json:"disk,omitempty" yaml:"disk,omitempty"`
-	Project NameOrId      `json:"project,omitempty" yaml:"project,omitempty"`
-	Body    *FinalizeDisk `json:"body,omitempty" yaml:"body,omitempty"`
+	Disk NameOrId `json:"disk,omitempty" yaml:"disk,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Body *FinalizeDisk `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // ExternalSubnetListParams is the request parameters for ExternalSubnetList
 //
 // Required fields:
 // - Project
 type ExternalSubnetListParams struct {
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // ExternalSubnetCreateParams is the request parameters for ExternalSubnetCreate
 //
@@ -13453,9 +14231,10 @@ type ExternalSubnetListParams struct {
 // - Project
 // - Body
 type ExternalSubnetCreateParams struct {
-	Project NameOrId              `json:"project,omitempty" yaml:"project,omitempty"`
-	Body    *ExternalSubnetCreate `json:"body,omitempty" yaml:"body,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Body *ExternalSubnetCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // ExternalSubnetDeleteParams is the request parameters for ExternalSubnetDelete
 //
@@ -13463,8 +14242,9 @@ type ExternalSubnetCreateParams struct {
 // - ExternalSubnet
 type ExternalSubnetDeleteParams struct {
 	ExternalSubnet NameOrId `json:"external_subnet,omitempty" yaml:"external_subnet,omitempty"`
-	Project        NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
+
 
 // ExternalSubnetViewParams is the request parameters for ExternalSubnetView
 //
@@ -13472,8 +14252,9 @@ type ExternalSubnetDeleteParams struct {
 // - ExternalSubnet
 type ExternalSubnetViewParams struct {
 	ExternalSubnet NameOrId `json:"external_subnet,omitempty" yaml:"external_subnet,omitempty"`
-	Project        NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
+
 
 // ExternalSubnetUpdateParams is the request parameters for ExternalSubnetUpdate
 //
@@ -13481,10 +14262,11 @@ type ExternalSubnetViewParams struct {
 // - ExternalSubnet
 // - Body
 type ExternalSubnetUpdateParams struct {
-	ExternalSubnet NameOrId              `json:"external_subnet,omitempty" yaml:"external_subnet,omitempty"`
-	Project        NameOrId              `json:"project,omitempty" yaml:"project,omitempty"`
-	Body           *ExternalSubnetUpdate `json:"body,omitempty" yaml:"body,omitempty"`
+	ExternalSubnet NameOrId `json:"external_subnet,omitempty" yaml:"external_subnet,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Body *ExternalSubnetUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // ExternalSubnetAttachParams is the request parameters for ExternalSubnetAttach
 //
@@ -13492,10 +14274,11 @@ type ExternalSubnetUpdateParams struct {
 // - ExternalSubnet
 // - Body
 type ExternalSubnetAttachParams struct {
-	ExternalSubnet NameOrId              `json:"external_subnet,omitempty" yaml:"external_subnet,omitempty"`
-	Project        NameOrId              `json:"project,omitempty" yaml:"project,omitempty"`
-	Body           *ExternalSubnetAttach `json:"body,omitempty" yaml:"body,omitempty"`
+	ExternalSubnet NameOrId `json:"external_subnet,omitempty" yaml:"external_subnet,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Body *ExternalSubnetAttach `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // ExternalSubnetDetachParams is the request parameters for ExternalSubnetDetach
 //
@@ -13503,19 +14286,21 @@ type ExternalSubnetAttachParams struct {
 // - ExternalSubnet
 type ExternalSubnetDetachParams struct {
 	ExternalSubnet NameOrId `json:"external_subnet,omitempty" yaml:"external_subnet,omitempty"`
-	Project        NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
+
 
 // FloatingIpListParams is the request parameters for FloatingIpList
 //
 // Required fields:
 // - Project
 type FloatingIpListParams struct {
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // FloatingIpCreateParams is the request parameters for FloatingIpCreate
 //
@@ -13523,9 +14308,10 @@ type FloatingIpListParams struct {
 // - Project
 // - Body
 type FloatingIpCreateParams struct {
-	Project NameOrId          `json:"project,omitempty" yaml:"project,omitempty"`
-	Body    *FloatingIpCreate `json:"body,omitempty" yaml:"body,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Body *FloatingIpCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // FloatingIpDeleteParams is the request parameters for FloatingIpDelete
 //
@@ -13533,8 +14319,9 @@ type FloatingIpCreateParams struct {
 // - FloatingIp
 type FloatingIpDeleteParams struct {
 	FloatingIp NameOrId `json:"floating_ip,omitempty" yaml:"floating_ip,omitempty"`
-	Project    NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
+
 
 // FloatingIpViewParams is the request parameters for FloatingIpView
 //
@@ -13542,8 +14329,9 @@ type FloatingIpDeleteParams struct {
 // - FloatingIp
 type FloatingIpViewParams struct {
 	FloatingIp NameOrId `json:"floating_ip,omitempty" yaml:"floating_ip,omitempty"`
-	Project    NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
+
 
 // FloatingIpUpdateParams is the request parameters for FloatingIpUpdate
 //
@@ -13551,10 +14339,11 @@ type FloatingIpViewParams struct {
 // - FloatingIp
 // - Body
 type FloatingIpUpdateParams struct {
-	FloatingIp NameOrId          `json:"floating_ip,omitempty" yaml:"floating_ip,omitempty"`
-	Project    NameOrId          `json:"project,omitempty" yaml:"project,omitempty"`
-	Body       *FloatingIpUpdate `json:"body,omitempty" yaml:"body,omitempty"`
+	FloatingIp NameOrId `json:"floating_ip,omitempty" yaml:"floating_ip,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Body *FloatingIpUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // FloatingIpAttachParams is the request parameters for FloatingIpAttach
 //
@@ -13562,10 +14351,11 @@ type FloatingIpUpdateParams struct {
 // - FloatingIp
 // - Body
 type FloatingIpAttachParams struct {
-	FloatingIp NameOrId          `json:"floating_ip,omitempty" yaml:"floating_ip,omitempty"`
-	Project    NameOrId          `json:"project,omitempty" yaml:"project,omitempty"`
-	Body       *FloatingIpAttach `json:"body,omitempty" yaml:"body,omitempty"`
+	FloatingIp NameOrId `json:"floating_ip,omitempty" yaml:"floating_ip,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Body *FloatingIpAttach `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // FloatingIpDetachParams is the request parameters for FloatingIpDetach
 //
@@ -13573,15 +14363,17 @@ type FloatingIpAttachParams struct {
 // - FloatingIp
 type FloatingIpDetachParams struct {
 	FloatingIp NameOrId `json:"floating_ip,omitempty" yaml:"floating_ip,omitempty"`
-	Project    NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
+
 
 // GroupListParams is the request parameters for GroupList
 type GroupListParams struct {
-	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // GroupViewParams is the request parameters for GroupView
 //
@@ -13591,40 +14383,45 @@ type GroupViewParams struct {
 	GroupId string `json:"group_id,omitempty" yaml:"group_id,omitempty"`
 }
 
+
 // ImageListParams is the request parameters for ImageList
 type ImageListParams struct {
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // ImageCreateParams is the request parameters for ImageCreate
 //
 // Required fields:
 // - Body
 type ImageCreateParams struct {
-	Project NameOrId     `json:"project,omitempty" yaml:"project,omitempty"`
-	Body    *ImageCreate `json:"body,omitempty" yaml:"body,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Body *ImageCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // ImageDeleteParams is the request parameters for ImageDelete
 //
 // Required fields:
 // - Image
 type ImageDeleteParams struct {
-	Image   NameOrId `json:"image,omitempty" yaml:"image,omitempty"`
+	Image NameOrId `json:"image,omitempty" yaml:"image,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
+
 
 // ImageViewParams is the request parameters for ImageView
 //
 // Required fields:
 // - Image
 type ImageViewParams struct {
-	Image   NameOrId `json:"image,omitempty" yaml:"image,omitempty"`
+	Image NameOrId `json:"image,omitempty" yaml:"image,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
+
 
 // ImageDemoteParams is the request parameters for ImageDemote
 //
@@ -13632,29 +14429,32 @@ type ImageViewParams struct {
 // - Image
 // - Project
 type ImageDemoteParams struct {
-	Image   NameOrId `json:"image,omitempty" yaml:"image,omitempty"`
+	Image NameOrId `json:"image,omitempty" yaml:"image,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
+
 
 // ImagePromoteParams is the request parameters for ImagePromote
 //
 // Required fields:
 // - Image
 type ImagePromoteParams struct {
-	Image   NameOrId `json:"image,omitempty" yaml:"image,omitempty"`
+	Image NameOrId `json:"image,omitempty" yaml:"image,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
+
 
 // InstanceListParams is the request parameters for InstanceList
 //
 // Required fields:
 // - Project
 type InstanceListParams struct {
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // InstanceCreateParams is the request parameters for InstanceCreate
 //
@@ -13662,27 +14462,30 @@ type InstanceListParams struct {
 // - Project
 // - Body
 type InstanceCreateParams struct {
-	Project NameOrId        `json:"project,omitempty" yaml:"project,omitempty"`
-	Body    *InstanceCreate `json:"body,omitempty" yaml:"body,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Body *InstanceCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // InstanceDeleteParams is the request parameters for InstanceDelete
 //
 // Required fields:
 // - Instance
 type InstanceDeleteParams struct {
-	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
+
 
 // InstanceViewParams is the request parameters for InstanceView
 //
 // Required fields:
 // - Instance
 type InstanceViewParams struct {
-	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
+
 
 // InstanceUpdateParams is the request parameters for InstanceUpdate
 //
@@ -13690,46 +14493,50 @@ type InstanceViewParams struct {
 // - Instance
 // - Body
 type InstanceUpdateParams struct {
-	Project  NameOrId        `json:"project,omitempty" yaml:"project,omitempty"`
-	Instance NameOrId        `json:"instance,omitempty" yaml:"instance,omitempty"`
-	Body     *InstanceUpdate `json:"body,omitempty" yaml:"body,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Body *InstanceUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // InstanceAffinityGroupListParams is the request parameters for InstanceAffinityGroupList
 //
 // Required fields:
 // - Instance
 type InstanceAffinityGroupListParams struct {
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
-	Instance  NameOrId         `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
+
 
 // InstanceAntiAffinityGroupListParams is the request parameters for InstanceAntiAffinityGroupList
 //
 // Required fields:
 // - Instance
 type InstanceAntiAffinityGroupListParams struct {
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
-	Instance  NameOrId         `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
+
 
 // InstanceDiskListParams is the request parameters for InstanceDiskList
 //
 // Required fields:
 // - Instance
 type InstanceDiskListParams struct {
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
-	Instance  NameOrId         `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
+
 
 // InstanceDiskAttachParams is the request parameters for InstanceDiskAttach
 //
@@ -13737,10 +14544,11 @@ type InstanceDiskListParams struct {
 // - Instance
 // - Body
 type InstanceDiskAttachParams struct {
-	Instance NameOrId  `json:"instance,omitempty" yaml:"instance,omitempty"`
-	Project  NameOrId  `json:"project,omitempty" yaml:"project,omitempty"`
-	Body     *DiskPath `json:"body,omitempty" yaml:"body,omitempty"`
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Body *DiskPath `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // InstanceDiskDetachParams is the request parameters for InstanceDiskDetach
 //
@@ -13748,29 +14556,32 @@ type InstanceDiskAttachParams struct {
 // - Instance
 // - Body
 type InstanceDiskDetachParams struct {
-	Instance NameOrId  `json:"instance,omitempty" yaml:"instance,omitempty"`
-	Project  NameOrId  `json:"project,omitempty" yaml:"project,omitempty"`
-	Body     *DiskPath `json:"body,omitempty" yaml:"body,omitempty"`
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Body *DiskPath `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // InstanceExternalIpListParams is the request parameters for InstanceExternalIpList
 //
 // Required fields:
 // - Instance
 type InstanceExternalIpListParams struct {
-	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
+
 
 // InstanceEphemeralIpDetachParams is the request parameters for InstanceEphemeralIpDetach
 //
 // Required fields:
 // - Instance
 type InstanceEphemeralIpDetachParams struct {
-	Instance  NameOrId  `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
 	IpVersion IpVersion `json:"ip_version,omitempty" yaml:"ip_version,omitempty"`
-	Project   NameOrId  `json:"project,omitempty" yaml:"project,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
+
 
 // InstanceEphemeralIpAttachParams is the request parameters for InstanceEphemeralIpAttach
 //
@@ -13778,31 +14589,34 @@ type InstanceEphemeralIpDetachParams struct {
 // - Instance
 // - Body
 type InstanceEphemeralIpAttachParams struct {
-	Instance NameOrId           `json:"instance,omitempty" yaml:"instance,omitempty"`
-	Project  NameOrId           `json:"project,omitempty" yaml:"project,omitempty"`
-	Body     *EphemeralIpCreate `json:"body,omitempty" yaml:"body,omitempty"`
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Body *EphemeralIpCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // InstanceExternalSubnetListParams is the request parameters for InstanceExternalSubnetList
 //
 // Required fields:
 // - Instance
 type InstanceExternalSubnetListParams struct {
-	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
+
 
 // InstanceMulticastGroupListParams is the request parameters for InstanceMulticastGroupList
 //
 // Required fields:
 // - Instance
 type InstanceMulticastGroupListParams struct {
-	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	Project   NameOrId   `json:"project,omitempty" yaml:"project,omitempty"`
-	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
-	Instance  NameOrId   `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
+
 
 // InstanceMulticastGroupLeaveParams is the request parameters for InstanceMulticastGroupLeave
 //
@@ -13810,10 +14624,11 @@ type InstanceMulticastGroupListParams struct {
 // - Instance
 // - MulticastGroup
 type InstanceMulticastGroupLeaveParams struct {
-	Instance       NameOrId                 `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
 	MulticastGroup MulticastGroupIdentifier `json:"multicast_group,omitempty" yaml:"multicast_group,omitempty"`
-	Project        NameOrId                 `json:"project,omitempty" yaml:"project,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
+
 
 // InstanceMulticastGroupJoinParams is the request parameters for InstanceMulticastGroupJoin
 //
@@ -13822,85 +14637,93 @@ type InstanceMulticastGroupLeaveParams struct {
 // - MulticastGroup
 // - Body
 type InstanceMulticastGroupJoinParams struct {
-	Instance       NameOrId                    `json:"instance,omitempty" yaml:"instance,omitempty"`
-	MulticastGroup MulticastGroupIdentifier    `json:"multicast_group,omitempty" yaml:"multicast_group,omitempty"`
-	Project        NameOrId                    `json:"project,omitempty" yaml:"project,omitempty"`
-	Body           *InstanceMulticastGroupJoin `json:"body,omitempty" yaml:"body,omitempty"`
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+	MulticastGroup MulticastGroupIdentifier `json:"multicast_group,omitempty" yaml:"multicast_group,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Body *InstanceMulticastGroupJoin `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // InstanceRebootParams is the request parameters for InstanceReboot
 //
 // Required fields:
 // - Instance
 type InstanceRebootParams struct {
-	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
+
 
 // InstanceSerialConsoleParams is the request parameters for InstanceSerialConsole
 //
 // Required fields:
 // - Instance
 type InstanceSerialConsoleParams struct {
-	Instance   NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
-	FromStart  *int     `json:"from_start,omitempty" yaml:"from_start,omitempty"`
-	MaxBytes   *int     `json:"max_bytes,omitempty" yaml:"max_bytes,omitempty"`
-	MostRecent *int     `json:"most_recent,omitempty" yaml:"most_recent,omitempty"`
-	Project    NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+	FromStart *int `json:"from_start,omitempty" yaml:"from_start,omitempty"`
+	MaxBytes *int `json:"max_bytes,omitempty" yaml:"max_bytes,omitempty"`
+	MostRecent *int `json:"most_recent,omitempty" yaml:"most_recent,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
+
 
 // InstanceSerialConsoleStreamParams is the request parameters for InstanceSerialConsoleStream
 //
 // Required fields:
 // - Instance
 type InstanceSerialConsoleStreamParams struct {
-	Instance   NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
-	MostRecent *int     `json:"most_recent,omitempty" yaml:"most_recent,omitempty"`
-	Project    NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+	MostRecent *int `json:"most_recent,omitempty" yaml:"most_recent,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
+
 
 // InstanceSshPublicKeyListParams is the request parameters for InstanceSshPublicKeyList
 //
 // Required fields:
 // - Instance
 type InstanceSshPublicKeyListParams struct {
-	Instance  NameOrId         `json:"instance,omitempty" yaml:"instance,omitempty"`
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // InstanceStartParams is the request parameters for InstanceStart
 //
 // Required fields:
 // - Instance
 type InstanceStartParams struct {
-	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
+
 
 // InstanceStopParams is the request parameters for InstanceStop
 //
 // Required fields:
 // - Instance
 type InstanceStopParams struct {
-	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
 }
+
 
 // InternetGatewayIpAddressListParams is the request parameters for InternetGatewayIpAddressList
 //
 // Required fields:
 // - Gateway
 type InternetGatewayIpAddressListParams struct {
-	Gateway   NameOrId         `json:"gateway,omitempty" yaml:"gateway,omitempty"`
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
-	Vpc       NameOrId         `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Gateway NameOrId `json:"gateway,omitempty" yaml:"gateway,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Vpc NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
 }
+
 
 // InternetGatewayIpAddressCreateParams is the request parameters for InternetGatewayIpAddressCreate
 //
@@ -13908,11 +14731,12 @@ type InternetGatewayIpAddressListParams struct {
 // - Gateway
 // - Body
 type InternetGatewayIpAddressCreateParams struct {
-	Gateway NameOrId                        `json:"gateway,omitempty" yaml:"gateway,omitempty"`
-	Project NameOrId                        `json:"project,omitempty" yaml:"project,omitempty"`
-	Vpc     NameOrId                        `json:"vpc,omitempty" yaml:"vpc,omitempty"`
-	Body    *InternetGatewayIpAddressCreate `json:"body,omitempty" yaml:"body,omitempty"`
+	Gateway NameOrId `json:"gateway,omitempty" yaml:"gateway,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Vpc NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Body *InternetGatewayIpAddressCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // InternetGatewayIpAddressDeleteParams is the request parameters for InternetGatewayIpAddressDelete
 //
@@ -13920,24 +14744,26 @@ type InternetGatewayIpAddressCreateParams struct {
 // - Address
 type InternetGatewayIpAddressDeleteParams struct {
 	Address NameOrId `json:"address,omitempty" yaml:"address,omitempty"`
-	Cascade *bool    `json:"cascade,omitempty" yaml:"cascade,omitempty"`
+	Cascade *bool `json:"cascade,omitempty" yaml:"cascade,omitempty"`
 	Gateway NameOrId `json:"gateway,omitempty" yaml:"gateway,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
-	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Vpc NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
 }
+
 
 // InternetGatewayIpPoolListParams is the request parameters for InternetGatewayIpPoolList
 //
 // Required fields:
 // - Gateway
 type InternetGatewayIpPoolListParams struct {
-	Gateway   NameOrId         `json:"gateway,omitempty" yaml:"gateway,omitempty"`
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
-	Vpc       NameOrId         `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Gateway NameOrId `json:"gateway,omitempty" yaml:"gateway,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Vpc NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
 }
+
 
 // InternetGatewayIpPoolCreateParams is the request parameters for InternetGatewayIpPoolCreate
 //
@@ -13945,35 +14771,38 @@ type InternetGatewayIpPoolListParams struct {
 // - Gateway
 // - Body
 type InternetGatewayIpPoolCreateParams struct {
-	Gateway NameOrId                     `json:"gateway,omitempty" yaml:"gateway,omitempty"`
-	Project NameOrId                     `json:"project,omitempty" yaml:"project,omitempty"`
-	Vpc     NameOrId                     `json:"vpc,omitempty" yaml:"vpc,omitempty"`
-	Body    *InternetGatewayIpPoolCreate `json:"body,omitempty" yaml:"body,omitempty"`
+	Gateway NameOrId `json:"gateway,omitempty" yaml:"gateway,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Vpc NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Body *InternetGatewayIpPoolCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // InternetGatewayIpPoolDeleteParams is the request parameters for InternetGatewayIpPoolDelete
 //
 // Required fields:
 // - Pool
 type InternetGatewayIpPoolDeleteParams struct {
-	Pool    NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
-	Cascade *bool    `json:"cascade,omitempty" yaml:"cascade,omitempty"`
+	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Cascade *bool `json:"cascade,omitempty" yaml:"cascade,omitempty"`
 	Gateway NameOrId `json:"gateway,omitempty" yaml:"gateway,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
-	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Vpc NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
 }
+
 
 // InternetGatewayListParams is the request parameters for InternetGatewayList
 //
 // Required fields:
 // - Vpc
 type InternetGatewayListParams struct {
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
-	Vpc       NameOrId         `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Vpc NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
 }
+
 
 // InternetGatewayCreateParams is the request parameters for InternetGatewayCreate
 //
@@ -13981,10 +14810,11 @@ type InternetGatewayListParams struct {
 // - Vpc
 // - Body
 type InternetGatewayCreateParams struct {
-	Project NameOrId               `json:"project,omitempty" yaml:"project,omitempty"`
-	Vpc     NameOrId               `json:"vpc,omitempty" yaml:"vpc,omitempty"`
-	Body    *InternetGatewayCreate `json:"body,omitempty" yaml:"body,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Vpc NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Body *InternetGatewayCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // InternetGatewayDeleteParams is the request parameters for InternetGatewayDelete
 //
@@ -13992,10 +14822,11 @@ type InternetGatewayCreateParams struct {
 // - Gateway
 type InternetGatewayDeleteParams struct {
 	Gateway NameOrId `json:"gateway,omitempty" yaml:"gateway,omitempty"`
-	Cascade *bool    `json:"cascade,omitempty" yaml:"cascade,omitempty"`
+	Cascade *bool `json:"cascade,omitempty" yaml:"cascade,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
-	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Vpc NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
 }
+
 
 // InternetGatewayViewParams is the request parameters for InternetGatewayView
 //
@@ -14004,15 +14835,17 @@ type InternetGatewayDeleteParams struct {
 type InternetGatewayViewParams struct {
 	Gateway NameOrId `json:"gateway,omitempty" yaml:"gateway,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
-	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Vpc NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
 }
+
 
 // IpPoolListParams is the request parameters for IpPoolList
 type IpPoolListParams struct {
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // IpPoolViewParams is the request parameters for IpPoolView
 //
@@ -14022,22 +14855,25 @@ type IpPoolViewParams struct {
 	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 }
 
+
 // LoginLocalParams is the request parameters for LoginLocal
 //
 // Required fields:
 // - SiloName
 // - Body
 type LoginLocalParams struct {
-	SiloName Name                         `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
-	Body     *UsernamePasswordCredentials `json:"body,omitempty" yaml:"body,omitempty"`
+	SiloName Name `json:"silo_name,omitempty" yaml:"silo_name,omitempty"`
+	Body *UsernamePasswordCredentials `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // CurrentUserAccessTokenListParams is the request parameters for CurrentUserAccessTokenList
 type CurrentUserAccessTokenListParams struct {
-	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // CurrentUserAccessTokenDeleteParams is the request parameters for CurrentUserAccessTokenDelete
 //
@@ -14047,19 +14883,22 @@ type CurrentUserAccessTokenDeleteParams struct {
 	TokenId string `json:"token_id,omitempty" yaml:"token_id,omitempty"`
 }
 
+
 // CurrentUserGroupsParams is the request parameters for CurrentUserGroups
 type CurrentUserGroupsParams struct {
-	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // CurrentUserSshKeyListParams is the request parameters for CurrentUserSshKeyList
 type CurrentUserSshKeyListParams struct {
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // CurrentUserSshKeyCreateParams is the request parameters for CurrentUserSshKeyCreate
 //
@@ -14069,6 +14908,7 @@ type CurrentUserSshKeyCreateParams struct {
 	Body *SshKeyCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+
 // CurrentUserSshKeyDeleteParams is the request parameters for CurrentUserSshKeyDelete
 //
 // Required fields:
@@ -14076,6 +14916,7 @@ type CurrentUserSshKeyCreateParams struct {
 type CurrentUserSshKeyDeleteParams struct {
 	SshKey NameOrId `json:"ssh_key,omitempty" yaml:"ssh_key,omitempty"`
 }
+
 
 // CurrentUserSshKeyViewParams is the request parameters for CurrentUserSshKeyView
 //
@@ -14085,6 +14926,7 @@ type CurrentUserSshKeyViewParams struct {
 	SshKey NameOrId `json:"ssh_key,omitempty" yaml:"ssh_key,omitempty"`
 }
 
+
 // SiloMetricParams is the request parameters for SiloMetric
 //
 // Required fields:
@@ -14093,20 +14935,22 @@ type CurrentUserSshKeyViewParams struct {
 // - MetricName
 type SiloMetricParams struct {
 	MetricName SystemMetricName `json:"metric_name,omitempty" yaml:"metric_name,omitempty"`
-	EndTime    *time.Time       `json:"end_time,omitempty" yaml:"end_time,omitempty"`
-	Limit      *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	Order      PaginationOrder  `json:"order,omitempty" yaml:"order,omitempty"`
-	PageToken  string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	StartTime  *time.Time       `json:"start_time,omitempty" yaml:"start_time,omitempty"`
-	Project    NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
+	EndTime *time.Time `json:"end_time,omitempty" yaml:"end_time,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Order PaginationOrder `json:"order,omitempty" yaml:"order,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
+
 
 // MulticastGroupListParams is the request parameters for MulticastGroupList
 type MulticastGroupListParams struct {
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // MulticastGroupViewParams is the request parameters for MulticastGroupView
 //
@@ -14116,28 +14960,31 @@ type MulticastGroupViewParams struct {
 	MulticastGroup MulticastGroupIdentifier `json:"multicast_group,omitempty" yaml:"multicast_group,omitempty"`
 }
 
+
 // MulticastGroupMemberListParams is the request parameters for MulticastGroupMemberList
 //
 // Required fields:
 // - MulticastGroup
 type MulticastGroupMemberListParams struct {
 	MulticastGroup MulticastGroupIdentifier `json:"multicast_group,omitempty" yaml:"multicast_group,omitempty"`
-	Limit          *int                     `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken      string                   `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy         IdSortMode               `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // InstanceNetworkInterfaceListParams is the request parameters for InstanceNetworkInterfaceList
 //
 // Required fields:
 // - Instance
 type InstanceNetworkInterfaceListParams struct {
-	Instance  NameOrId         `json:"instance,omitempty" yaml:"instance,omitempty"`
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // InstanceNetworkInterfaceCreateParams is the request parameters for InstanceNetworkInterfaceCreate
 //
@@ -14145,10 +14992,11 @@ type InstanceNetworkInterfaceListParams struct {
 // - Instance
 // - Body
 type InstanceNetworkInterfaceCreateParams struct {
-	Instance NameOrId                        `json:"instance,omitempty" yaml:"instance,omitempty"`
-	Project  NameOrId                        `json:"project,omitempty" yaml:"project,omitempty"`
-	Body     *InstanceNetworkInterfaceCreate `json:"body,omitempty" yaml:"body,omitempty"`
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Body *InstanceNetworkInterfaceCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // InstanceNetworkInterfaceDeleteParams is the request parameters for InstanceNetworkInterfaceDelete
 //
@@ -14156,9 +15004,10 @@ type InstanceNetworkInterfaceCreateParams struct {
 // - Interface
 type InstanceNetworkInterfaceDeleteParams struct {
 	Interface NameOrId `json:"interface,omitempty" yaml:"interface,omitempty"`
-	Instance  NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
-	Project   NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
+
 
 // InstanceNetworkInterfaceViewParams is the request parameters for InstanceNetworkInterfaceView
 //
@@ -14166,9 +15015,10 @@ type InstanceNetworkInterfaceDeleteParams struct {
 // - Interface
 type InstanceNetworkInterfaceViewParams struct {
 	Interface NameOrId `json:"interface,omitempty" yaml:"interface,omitempty"`
-	Instance  NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
-	Project   NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
+
 
 // InstanceNetworkInterfaceUpdateParams is the request parameters for InstanceNetworkInterfaceUpdate
 //
@@ -14176,11 +15026,12 @@ type InstanceNetworkInterfaceViewParams struct {
 // - Interface
 // - Body
 type InstanceNetworkInterfaceUpdateParams struct {
-	Interface NameOrId                        `json:"interface,omitempty" yaml:"interface,omitempty"`
-	Instance  NameOrId                        `json:"instance,omitempty" yaml:"instance,omitempty"`
-	Project   NameOrId                        `json:"project,omitempty" yaml:"project,omitempty"`
-	Body      *InstanceNetworkInterfaceUpdate `json:"body,omitempty" yaml:"body,omitempty"`
+	Interface NameOrId `json:"interface,omitempty" yaml:"interface,omitempty"`
+	Instance NameOrId `json:"instance,omitempty" yaml:"instance,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Body *InstanceNetworkInterfaceUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // PolicyUpdateParams is the request parameters for PolicyUpdate
 //
@@ -14190,12 +15041,14 @@ type PolicyUpdateParams struct {
 	Body *SiloRolePolicy `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+
 // ProjectListParams is the request parameters for ProjectList
 type ProjectListParams struct {
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // ProjectCreateParams is the request parameters for ProjectCreate
 //
@@ -14205,6 +15058,7 @@ type ProjectCreateParams struct {
 	Body *ProjectCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+
 // ProjectDeleteParams is the request parameters for ProjectDelete
 //
 // Required fields:
@@ -14212,6 +15066,7 @@ type ProjectCreateParams struct {
 type ProjectDeleteParams struct {
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
+
 
 // ProjectViewParams is the request parameters for ProjectView
 //
@@ -14221,15 +15076,17 @@ type ProjectViewParams struct {
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
+
 // ProjectUpdateParams is the request parameters for ProjectUpdate
 //
 // Required fields:
 // - Project
 // - Body
 type ProjectUpdateParams struct {
-	Project NameOrId       `json:"project,omitempty" yaml:"project,omitempty"`
-	Body    *ProjectUpdate `json:"body,omitempty" yaml:"body,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Body *ProjectUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // ProjectPolicyViewParams is the request parameters for ProjectPolicyView
 //
@@ -14239,26 +15096,29 @@ type ProjectPolicyViewParams struct {
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
+
 // ProjectPolicyUpdateParams is the request parameters for ProjectPolicyUpdate
 //
 // Required fields:
 // - Project
 // - Body
 type ProjectPolicyUpdateParams struct {
-	Project NameOrId           `json:"project,omitempty" yaml:"project,omitempty"`
-	Body    *ProjectRolePolicy `json:"body,omitempty" yaml:"body,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Body *ProjectRolePolicy `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // SnapshotListParams is the request parameters for SnapshotList
 //
 // Required fields:
 // - Project
 type SnapshotListParams struct {
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // SnapshotCreateParams is the request parameters for SnapshotCreate
 //
@@ -14266,9 +15126,10 @@ type SnapshotListParams struct {
 // - Project
 // - Body
 type SnapshotCreateParams struct {
-	Project NameOrId        `json:"project,omitempty" yaml:"project,omitempty"`
-	Body    *SnapshotCreate `json:"body,omitempty" yaml:"body,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Body *SnapshotCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // SnapshotDeleteParams is the request parameters for SnapshotDelete
 //
@@ -14276,8 +15137,9 @@ type SnapshotCreateParams struct {
 // - Snapshot
 type SnapshotDeleteParams struct {
 	Snapshot NameOrId `json:"snapshot,omitempty" yaml:"snapshot,omitempty"`
-	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
+
 
 // SnapshotViewParams is the request parameters for SnapshotView
 //
@@ -14285,15 +15147,17 @@ type SnapshotDeleteParams struct {
 // - Snapshot
 type SnapshotViewParams struct {
 	Snapshot NameOrId `json:"snapshot,omitempty" yaml:"snapshot,omitempty"`
-	Project  NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
+
 
 // SubnetPoolListParams is the request parameters for SubnetPoolList
 type SubnetPoolListParams struct {
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // SubnetPoolViewParams is the request parameters for SubnetPoolView
 //
@@ -14303,24 +15167,27 @@ type SubnetPoolViewParams struct {
 	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 }
 
+
 // AuditLogListParams is the request parameters for AuditLogList
 //
 // Required fields:
 // - StartTime
 type AuditLogListParams struct {
-	EndTime   *time.Time        `json:"end_time,omitempty" yaml:"end_time,omitempty"`
-	Limit     *int              `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string            `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    TimeAndIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
-	StartTime *time.Time        `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+	EndTime *time.Time `json:"end_time,omitempty" yaml:"end_time,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy TimeAndIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
 }
+
 
 // PhysicalDiskListParams is the request parameters for PhysicalDiskList
 type PhysicalDiskListParams struct {
-	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // PhysicalDiskViewParams is the request parameters for PhysicalDiskView
 //
@@ -14330,6 +15197,7 @@ type PhysicalDiskViewParams struct {
 	DiskId string `json:"disk_id,omitempty" yaml:"disk_id,omitempty"`
 }
 
+
 // NetworkingSwitchPortLldpNeighborsParams is the request parameters for NetworkingSwitchPortLldpNeighbors
 //
 // Required fields:
@@ -14337,20 +15205,22 @@ type PhysicalDiskViewParams struct {
 // - RackId
 // - SwitchLocation
 type NetworkingSwitchPortLldpNeighborsParams struct {
-	Port           Name       `json:"port,omitempty" yaml:"port,omitempty"`
-	RackId         string     `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
-	SwitchLocation Name       `json:"switch_location,omitempty" yaml:"switch_location,omitempty"`
-	Limit          *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken      string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy         IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Port Name `json:"port,omitempty" yaml:"port,omitempty"`
+	RackId string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
+	SwitchLocation Name `json:"switch_location,omitempty" yaml:"switch_location,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // RackListParams is the request parameters for RackList
 type RackListParams struct {
-	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // RackViewParams is the request parameters for RackView
 //
@@ -14360,14 +15230,16 @@ type RackViewParams struct {
 	RackId string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
 }
 
+
 // RackMembershipStatusParams is the request parameters for RackMembershipStatus
 //
 // Required fields:
 // - RackId
 type RackMembershipStatusParams struct {
-	RackId  string                `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
+	RackId string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
 	Version RackMembershipVersion `json:"version,omitempty" yaml:"version,omitempty"`
 }
+
 
 // RackMembershipAbortParams is the request parameters for RackMembershipAbort
 //
@@ -14377,22 +15249,25 @@ type RackMembershipAbortParams struct {
 	RackId string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
 }
 
+
 // RackMembershipAddSledsParams is the request parameters for RackMembershipAddSleds
 //
 // Required fields:
 // - RackId
 // - Body
 type RackMembershipAddSledsParams struct {
-	RackId string                         `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
-	Body   *RackMembershipAddSledsRequest `json:"body,omitempty" yaml:"body,omitempty"`
+	RackId string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
+	Body *RackMembershipAddSledsRequest `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // SledListParams is the request parameters for SledList
 type SledListParams struct {
-	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // SledAddParams is the request parameters for SledAdd
 //
@@ -14402,11 +15277,13 @@ type SledAddParams struct {
 	Body *UninitializedSledId `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+
 // SledListUninitializedParams is the request parameters for SledListUninitialized
 type SledListUninitializedParams struct {
-	Limit     *int   `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 }
+
 
 // SledViewParams is the request parameters for SledView
 //
@@ -14416,27 +15293,30 @@ type SledViewParams struct {
 	SledId string `json:"sled_id,omitempty" yaml:"sled_id,omitempty"`
 }
 
+
 // SledPhysicalDiskListParams is the request parameters for SledPhysicalDiskList
 //
 // Required fields:
 // - SledId
 type SledPhysicalDiskListParams struct {
-	SledId    string     `json:"sled_id,omitempty" yaml:"sled_id,omitempty"`
-	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	SledId string `json:"sled_id,omitempty" yaml:"sled_id,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // SledInstanceListParams is the request parameters for SledInstanceList
 //
 // Required fields:
 // - SledId
 type SledInstanceListParams struct {
-	SledId    string     `json:"sled_id,omitempty" yaml:"sled_id,omitempty"`
-	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	SledId string `json:"sled_id,omitempty" yaml:"sled_id,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // SledSetProvisionPolicyParams is the request parameters for SledSetProvisionPolicy
 //
@@ -14444,17 +15324,19 @@ type SledInstanceListParams struct {
 // - SledId
 // - Body
 type SledSetProvisionPolicyParams struct {
-	SledId string                     `json:"sled_id,omitempty" yaml:"sled_id,omitempty"`
-	Body   *SledProvisionPolicyParams `json:"body,omitempty" yaml:"body,omitempty"`
+	SledId string `json:"sled_id,omitempty" yaml:"sled_id,omitempty"`
+	Body *SledProvisionPolicyParams `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // NetworkingSwitchPortListParams is the request parameters for NetworkingSwitchPortList
 type NetworkingSwitchPortListParams struct {
-	Limit        *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken    string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy       IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
-	SwitchPortId string     `json:"switch_port_id,omitempty" yaml:"switch_port_id,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	SwitchPortId string `json:"switch_port_id,omitempty" yaml:"switch_port_id,omitempty"`
 }
+
 
 // NetworkingSwitchPortLldpConfigViewParams is the request parameters for NetworkingSwitchPortLldpConfigView
 //
@@ -14463,10 +15345,11 @@ type NetworkingSwitchPortListParams struct {
 // - RackId
 // - SwitchLocation
 type NetworkingSwitchPortLldpConfigViewParams struct {
-	Port           Name   `json:"port,omitempty" yaml:"port,omitempty"`
-	RackId         string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
-	SwitchLocation Name   `json:"switch_location,omitempty" yaml:"switch_location,omitempty"`
+	Port Name `json:"port,omitempty" yaml:"port,omitempty"`
+	RackId string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
+	SwitchLocation Name `json:"switch_location,omitempty" yaml:"switch_location,omitempty"`
 }
+
 
 // NetworkingSwitchPortLldpConfigUpdateParams is the request parameters for NetworkingSwitchPortLldpConfigUpdate
 //
@@ -14476,11 +15359,12 @@ type NetworkingSwitchPortLldpConfigViewParams struct {
 // - SwitchLocation
 // - Body
 type NetworkingSwitchPortLldpConfigUpdateParams struct {
-	Port           Name            `json:"port,omitempty" yaml:"port,omitempty"`
-	RackId         string          `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
-	SwitchLocation Name            `json:"switch_location,omitempty" yaml:"switch_location,omitempty"`
-	Body           *LldpLinkConfig `json:"body,omitempty" yaml:"body,omitempty"`
+	Port Name `json:"port,omitempty" yaml:"port,omitempty"`
+	RackId string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
+	SwitchLocation Name `json:"switch_location,omitempty" yaml:"switch_location,omitempty"`
+	Body *LldpLinkConfig `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // NetworkingSwitchPortClearSettingsParams is the request parameters for NetworkingSwitchPortClearSettings
 //
@@ -14489,10 +15373,11 @@ type NetworkingSwitchPortLldpConfigUpdateParams struct {
 // - RackId
 // - SwitchLocation
 type NetworkingSwitchPortClearSettingsParams struct {
-	Port           Name   `json:"port,omitempty" yaml:"port,omitempty"`
-	RackId         string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
-	SwitchLocation Name   `json:"switch_location,omitempty" yaml:"switch_location,omitempty"`
+	Port Name `json:"port,omitempty" yaml:"port,omitempty"`
+	RackId string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
+	SwitchLocation Name `json:"switch_location,omitempty" yaml:"switch_location,omitempty"`
 }
+
 
 // NetworkingSwitchPortApplySettingsParams is the request parameters for NetworkingSwitchPortApplySettings
 //
@@ -14502,11 +15387,12 @@ type NetworkingSwitchPortClearSettingsParams struct {
 // - SwitchLocation
 // - Body
 type NetworkingSwitchPortApplySettingsParams struct {
-	Port           Name                     `json:"port,omitempty" yaml:"port,omitempty"`
-	RackId         string                   `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
-	SwitchLocation Name                     `json:"switch_location,omitempty" yaml:"switch_location,omitempty"`
-	Body           *SwitchPortApplySettings `json:"body,omitempty" yaml:"body,omitempty"`
+	Port Name `json:"port,omitempty" yaml:"port,omitempty"`
+	RackId string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
+	SwitchLocation Name `json:"switch_location,omitempty" yaml:"switch_location,omitempty"`
+	Body *SwitchPortApplySettings `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // NetworkingSwitchPortStatusParams is the request parameters for NetworkingSwitchPortStatus
 //
@@ -14515,17 +15401,19 @@ type NetworkingSwitchPortApplySettingsParams struct {
 // - RackId
 // - SwitchLocation
 type NetworkingSwitchPortStatusParams struct {
-	Port           Name   `json:"port,omitempty" yaml:"port,omitempty"`
-	RackId         string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
-	SwitchLocation Name   `json:"switch_location,omitempty" yaml:"switch_location,omitempty"`
+	Port Name `json:"port,omitempty" yaml:"port,omitempty"`
+	RackId string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
+	SwitchLocation Name `json:"switch_location,omitempty" yaml:"switch_location,omitempty"`
 }
+
 
 // SwitchListParams is the request parameters for SwitchList
 type SwitchListParams struct {
-	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // SwitchViewParams is the request parameters for SwitchView
 //
@@ -14535,16 +15423,18 @@ type SwitchViewParams struct {
 	SwitchId string `json:"switch_id,omitempty" yaml:"switch_id,omitempty"`
 }
 
+
 // SiloIdentityProviderListParams is the request parameters for SiloIdentityProviderList
 //
 // Required fields:
 // - Silo
 type SiloIdentityProviderListParams struct {
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	Silo      NameOrId         `json:"silo,omitempty" yaml:"silo,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // LocalIdpUserCreateParams is the request parameters for LocalIdpUserCreate
 //
@@ -14552,9 +15442,10 @@ type SiloIdentityProviderListParams struct {
 // - Silo
 // - Body
 type LocalIdpUserCreateParams struct {
-	Silo NameOrId    `json:"silo,omitempty" yaml:"silo,omitempty"`
+	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 	Body *UserCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // LocalIdpUserDeleteParams is the request parameters for LocalIdpUserDelete
 //
@@ -14562,9 +15453,10 @@ type LocalIdpUserCreateParams struct {
 // - UserId
 // - Silo
 type LocalIdpUserDeleteParams struct {
-	UserId string   `json:"user_id,omitempty" yaml:"user_id,omitempty"`
-	Silo   NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
+	UserId string `json:"user_id,omitempty" yaml:"user_id,omitempty"`
+	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 }
+
 
 // LocalIdpUserSetPasswordParams is the request parameters for LocalIdpUserSetPassword
 //
@@ -14573,10 +15465,11 @@ type LocalIdpUserDeleteParams struct {
 // - Silo
 // - Body
 type LocalIdpUserSetPasswordParams struct {
-	UserId string        `json:"user_id,omitempty" yaml:"user_id,omitempty"`
-	Silo   NameOrId      `json:"silo,omitempty" yaml:"silo,omitempty"`
-	Body   *UserPassword `json:"body,omitempty" yaml:"body,omitempty"`
+	UserId string `json:"user_id,omitempty" yaml:"user_id,omitempty"`
+	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
+	Body *UserPassword `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // SamlIdentityProviderCreateParams is the request parameters for SamlIdentityProviderCreate
 //
@@ -14584,9 +15477,10 @@ type LocalIdpUserSetPasswordParams struct {
 // - Silo
 // - Body
 type SamlIdentityProviderCreateParams struct {
-	Silo NameOrId                    `json:"silo,omitempty" yaml:"silo,omitempty"`
+	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 	Body *SamlIdentityProviderCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // SamlIdentityProviderViewParams is the request parameters for SamlIdentityProviderView
 //
@@ -14594,15 +15488,17 @@ type SamlIdentityProviderCreateParams struct {
 // - Provider
 type SamlIdentityProviderViewParams struct {
 	Provider NameOrId `json:"provider,omitempty" yaml:"provider,omitempty"`
-	Silo     NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
+	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 }
+
 
 // SystemIpPoolListParams is the request parameters for SystemIpPoolList
 type SystemIpPoolListParams struct {
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // SystemIpPoolCreateParams is the request parameters for SystemIpPoolCreate
 //
@@ -14612,11 +15508,13 @@ type SystemIpPoolCreateParams struct {
 	Body *IpPoolCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+
 // SystemIpPoolServiceRangeListParams is the request parameters for SystemIpPoolServiceRangeList
 type SystemIpPoolServiceRangeListParams struct {
-	Limit     *int   `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 }
+
 
 // SystemIpPoolServiceRangeAddParams is the request parameters for SystemIpPoolServiceRangeAdd
 //
@@ -14626,6 +15524,7 @@ type SystemIpPoolServiceRangeAddParams struct {
 	Body *IpRange `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+
 // SystemIpPoolServiceRangeRemoveParams is the request parameters for SystemIpPoolServiceRangeRemove
 //
 // Required fields:
@@ -14633,6 +15532,7 @@ type SystemIpPoolServiceRangeAddParams struct {
 type SystemIpPoolServiceRangeRemoveParams struct {
 	Body *IpRange `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // SystemIpPoolDeleteParams is the request parameters for SystemIpPoolDelete
 //
@@ -14642,6 +15542,7 @@ type SystemIpPoolDeleteParams struct {
 	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 }
 
+
 // SystemIpPoolViewParams is the request parameters for SystemIpPoolView
 //
 // Required fields:
@@ -14650,25 +15551,28 @@ type SystemIpPoolViewParams struct {
 	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 }
 
+
 // SystemIpPoolUpdateParams is the request parameters for SystemIpPoolUpdate
 //
 // Required fields:
 // - Pool
 // - Body
 type SystemIpPoolUpdateParams struct {
-	Pool NameOrId      `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 	Body *IpPoolUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // SystemIpPoolRangeListParams is the request parameters for SystemIpPoolRangeList
 //
 // Required fields:
 // - Pool
 type SystemIpPoolRangeListParams struct {
-	Pool      NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
-	Limit     *int     `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string   `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 }
+
 
 // SystemIpPoolRangeAddParams is the request parameters for SystemIpPoolRangeAdd
 //
@@ -14680,6 +15584,7 @@ type SystemIpPoolRangeAddParams struct {
 	Body *IpRange `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+
 // SystemIpPoolRangeRemoveParams is the request parameters for SystemIpPoolRangeRemove
 //
 // Required fields:
@@ -14690,16 +15595,18 @@ type SystemIpPoolRangeRemoveParams struct {
 	Body *IpRange `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+
 // SystemIpPoolSiloListParams is the request parameters for SystemIpPoolSiloList
 //
 // Required fields:
 // - Pool
 type SystemIpPoolSiloListParams struct {
-	Pool      NameOrId   `json:"pool,omitempty" yaml:"pool,omitempty"`
-	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // SystemIpPoolSiloLinkParams is the request parameters for SystemIpPoolSiloLink
 //
@@ -14707,9 +15614,10 @@ type SystemIpPoolSiloListParams struct {
 // - Pool
 // - Body
 type SystemIpPoolSiloLinkParams struct {
-	Pool NameOrId        `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 	Body *IpPoolLinkSilo `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // SystemIpPoolSiloUnlinkParams is the request parameters for SystemIpPoolSiloUnlink
 //
@@ -14721,6 +15629,7 @@ type SystemIpPoolSiloUnlinkParams struct {
 	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 }
 
+
 // SystemIpPoolSiloUpdateParams is the request parameters for SystemIpPoolSiloUpdate
 //
 // Required fields:
@@ -14728,10 +15637,11 @@ type SystemIpPoolSiloUnlinkParams struct {
 // - Silo
 // - Body
 type SystemIpPoolSiloUpdateParams struct {
-	Pool NameOrId          `json:"pool,omitempty" yaml:"pool,omitempty"`
-	Silo NameOrId          `json:"silo,omitempty" yaml:"silo,omitempty"`
+	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 	Body *IpPoolSiloUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // SystemIpPoolUtilizationViewParams is the request parameters for SystemIpPoolUtilizationView
 //
@@ -14741,6 +15651,7 @@ type SystemIpPoolUtilizationViewParams struct {
 	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 }
 
+
 // SystemMetricParams is the request parameters for SystemMetric
 //
 // Required fields:
@@ -14749,20 +15660,22 @@ type SystemIpPoolUtilizationViewParams struct {
 // - MetricName
 type SystemMetricParams struct {
 	MetricName SystemMetricName `json:"metric_name,omitempty" yaml:"metric_name,omitempty"`
-	EndTime    *time.Time       `json:"end_time,omitempty" yaml:"end_time,omitempty"`
-	Limit      *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	Order      PaginationOrder  `json:"order,omitempty" yaml:"order,omitempty"`
-	PageToken  string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	StartTime  *time.Time       `json:"start_time,omitempty" yaml:"start_time,omitempty"`
-	Silo       NameOrId         `json:"silo,omitempty" yaml:"silo,omitempty"`
+	EndTime *time.Time `json:"end_time,omitempty" yaml:"end_time,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Order PaginationOrder `json:"order,omitempty" yaml:"order,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	StartTime *time.Time `json:"start_time,omitempty" yaml:"start_time,omitempty"`
+	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 }
+
 
 // NetworkingAddressLotListParams is the request parameters for NetworkingAddressLotList
 type NetworkingAddressLotListParams struct {
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // NetworkingAddressLotCreateParams is the request parameters for NetworkingAddressLotCreate
 //
@@ -14772,6 +15685,7 @@ type NetworkingAddressLotCreateParams struct {
 	Body *AddressLotCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+
 // NetworkingAddressLotDeleteParams is the request parameters for NetworkingAddressLotDelete
 //
 // Required fields:
@@ -14779,6 +15693,7 @@ type NetworkingAddressLotCreateParams struct {
 type NetworkingAddressLotDeleteParams struct {
 	AddressLot NameOrId `json:"address_lot,omitempty" yaml:"address_lot,omitempty"`
 }
+
 
 // NetworkingAddressLotViewParams is the request parameters for NetworkingAddressLotView
 //
@@ -14788,16 +15703,18 @@ type NetworkingAddressLotViewParams struct {
 	AddressLot NameOrId `json:"address_lot,omitempty" yaml:"address_lot,omitempty"`
 }
 
+
 // NetworkingAddressLotBlockListParams is the request parameters for NetworkingAddressLotBlockList
 //
 // Required fields:
 // - AddressLot
 type NetworkingAddressLotBlockListParams struct {
-	AddressLot NameOrId   `json:"address_lot,omitempty" yaml:"address_lot,omitempty"`
-	Limit      *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken  string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy     IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	AddressLot NameOrId `json:"address_lot,omitempty" yaml:"address_lot,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // NetworkingAllowListUpdateParams is the request parameters for NetworkingAllowListUpdate
 //
@@ -14807,6 +15724,7 @@ type NetworkingAllowListUpdateParams struct {
 	Body *AllowListUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+
 // NetworkingBfdDisableParams is the request parameters for NetworkingBfdDisable
 //
 // Required fields:
@@ -14814,6 +15732,7 @@ type NetworkingAllowListUpdateParams struct {
 type NetworkingBfdDisableParams struct {
 	Body *BfdSessionDisable `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // NetworkingBfdEnableParams is the request parameters for NetworkingBfdEnable
 //
@@ -14823,6 +15742,7 @@ type NetworkingBfdEnableParams struct {
 	Body *BfdSessionEnable `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+
 // NetworkingBgpConfigDeleteParams is the request parameters for NetworkingBgpConfigDelete
 //
 // Required fields:
@@ -14831,12 +15751,14 @@ type NetworkingBgpConfigDeleteParams struct {
 	NameOrId NameOrId `json:"name_or_id,omitempty" yaml:"name_or_id,omitempty"`
 }
 
+
 // NetworkingBgpConfigListParams is the request parameters for NetworkingBgpConfigList
 type NetworkingBgpConfigListParams struct {
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // NetworkingBgpConfigCreateParams is the request parameters for NetworkingBgpConfigCreate
 //
@@ -14846,12 +15768,14 @@ type NetworkingBgpConfigCreateParams struct {
 	Body *BgpConfigCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+
 // NetworkingBgpAnnounceSetListParams is the request parameters for NetworkingBgpAnnounceSetList
 type NetworkingBgpAnnounceSetListParams struct {
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // NetworkingBgpAnnounceSetUpdateParams is the request parameters for NetworkingBgpAnnounceSetUpdate
 //
@@ -14861,6 +15785,7 @@ type NetworkingBgpAnnounceSetUpdateParams struct {
 	Body *BgpAnnounceSetCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+
 // NetworkingBgpAnnounceSetDeleteParams is the request parameters for NetworkingBgpAnnounceSetDelete
 //
 // Required fields:
@@ -14868,6 +15793,7 @@ type NetworkingBgpAnnounceSetUpdateParams struct {
 type NetworkingBgpAnnounceSetDeleteParams struct {
 	AnnounceSet NameOrId `json:"announce_set,omitempty" yaml:"announce_set,omitempty"`
 }
+
 
 // NetworkingBgpAnnouncementListParams is the request parameters for NetworkingBgpAnnouncementList
 //
@@ -14877,6 +15803,7 @@ type NetworkingBgpAnnouncementListParams struct {
 	AnnounceSet NameOrId `json:"announce_set,omitempty" yaml:"announce_set,omitempty"`
 }
 
+
 // NetworkingBgpMessageHistoryParams is the request parameters for NetworkingBgpMessageHistory
 //
 // Required fields:
@@ -14884,6 +15811,7 @@ type NetworkingBgpAnnouncementListParams struct {
 type NetworkingBgpMessageHistoryParams struct {
 	Asn *int `json:"asn,omitempty" yaml:"asn,omitempty"`
 }
+
 
 // NetworkingBgpImportedRoutesIpv4Params is the request parameters for NetworkingBgpImportedRoutesIpv4
 //
@@ -14893,6 +15821,7 @@ type NetworkingBgpImportedRoutesIpv4Params struct {
 	Asn *int `json:"asn,omitempty" yaml:"asn,omitempty"`
 }
 
+
 // NetworkingInboundIcmpUpdateParams is the request parameters for NetworkingInboundIcmpUpdate
 //
 // Required fields:
@@ -14901,12 +15830,14 @@ type NetworkingInboundIcmpUpdateParams struct {
 	Body *ServiceIcmpConfig `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+
 // NetworkingLoopbackAddressListParams is the request parameters for NetworkingLoopbackAddressList
 type NetworkingLoopbackAddressListParams struct {
-	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // NetworkingLoopbackAddressCreateParams is the request parameters for NetworkingLoopbackAddressCreate
 //
@@ -14916,6 +15847,7 @@ type NetworkingLoopbackAddressCreateParams struct {
 	Body *LoopbackAddressCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+
 // NetworkingLoopbackAddressDeleteParams is the request parameters for NetworkingLoopbackAddressDelete
 //
 // Required fields:
@@ -14924,24 +15856,27 @@ type NetworkingLoopbackAddressCreateParams struct {
 // - SubnetMask
 // - SwitchLocation
 type NetworkingLoopbackAddressDeleteParams struct {
-	Address        string `json:"address,omitempty" yaml:"address,omitempty"`
-	RackId         string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
-	SubnetMask     *int   `json:"subnet_mask,omitempty" yaml:"subnet_mask,omitempty"`
-	SwitchLocation Name   `json:"switch_location,omitempty" yaml:"switch_location,omitempty"`
+	Address string `json:"address,omitempty" yaml:"address,omitempty"`
+	RackId string `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
+	SubnetMask *int `json:"subnet_mask,omitempty" yaml:"subnet_mask,omitempty"`
+	SwitchLocation Name `json:"switch_location,omitempty" yaml:"switch_location,omitempty"`
 }
+
 
 // NetworkingSwitchPortSettingsDeleteParams is the request parameters for NetworkingSwitchPortSettingsDelete
 type NetworkingSwitchPortSettingsDeleteParams struct {
 	PortSettings NameOrId `json:"port_settings,omitempty" yaml:"port_settings,omitempty"`
 }
 
+
 // NetworkingSwitchPortSettingsListParams is the request parameters for NetworkingSwitchPortSettingsList
 type NetworkingSwitchPortSettingsListParams struct {
-	Limit        *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken    string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	PortSettings NameOrId         `json:"port_settings,omitempty" yaml:"port_settings,omitempty"`
-	SortBy       NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	PortSettings NameOrId `json:"port_settings,omitempty" yaml:"port_settings,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // NetworkingSwitchPortSettingsCreateParams is the request parameters for NetworkingSwitchPortSettingsCreate
 //
@@ -14951,6 +15886,7 @@ type NetworkingSwitchPortSettingsCreateParams struct {
 	Body *SwitchPortSettingsCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+
 // NetworkingSwitchPortSettingsViewParams is the request parameters for NetworkingSwitchPortSettingsView
 //
 // Required fields:
@@ -14958,6 +15894,7 @@ type NetworkingSwitchPortSettingsCreateParams struct {
 type NetworkingSwitchPortSettingsViewParams struct {
 	Port NameOrId `json:"port,omitempty" yaml:"port,omitempty"`
 }
+
 
 // SystemPolicyUpdateParams is the request parameters for SystemPolicyUpdate
 //
@@ -14967,6 +15904,7 @@ type SystemPolicyUpdateParams struct {
 	Body *FleetRolePolicy `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+
 // ScimTokenListParams is the request parameters for ScimTokenList
 //
 // Required fields:
@@ -14974,6 +15912,7 @@ type SystemPolicyUpdateParams struct {
 type ScimTokenListParams struct {
 	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 }
+
 
 // ScimTokenCreateParams is the request parameters for ScimTokenCreate
 //
@@ -14983,15 +15922,17 @@ type ScimTokenCreateParams struct {
 	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 }
 
+
 // ScimTokenDeleteParams is the request parameters for ScimTokenDelete
 //
 // Required fields:
 // - TokenId
 // - Silo
 type ScimTokenDeleteParams struct {
-	TokenId string   `json:"token_id,omitempty" yaml:"token_id,omitempty"`
-	Silo    NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
+	TokenId string `json:"token_id,omitempty" yaml:"token_id,omitempty"`
+	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 }
+
 
 // ScimTokenViewParams is the request parameters for ScimTokenView
 //
@@ -14999,23 +15940,26 @@ type ScimTokenDeleteParams struct {
 // - TokenId
 // - Silo
 type ScimTokenViewParams struct {
-	TokenId string   `json:"token_id,omitempty" yaml:"token_id,omitempty"`
-	Silo    NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
+	TokenId string `json:"token_id,omitempty" yaml:"token_id,omitempty"`
+	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 }
+
 
 // SystemQuotasListParams is the request parameters for SystemQuotasList
 type SystemQuotasListParams struct {
-	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // SiloListParams is the request parameters for SiloList
 type SiloListParams struct {
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // SiloCreateParams is the request parameters for SiloCreate
 //
@@ -15025,6 +15969,7 @@ type SiloCreateParams struct {
 	Body *SiloCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+
 // SiloDeleteParams is the request parameters for SiloDelete
 //
 // Required fields:
@@ -15032,6 +15977,7 @@ type SiloCreateParams struct {
 type SiloDeleteParams struct {
 	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 }
+
 
 // SiloViewParams is the request parameters for SiloView
 //
@@ -15041,16 +15987,18 @@ type SiloViewParams struct {
 	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 }
 
+
 // SiloIpPoolListParams is the request parameters for SiloIpPoolList
 //
 // Required fields:
 // - Silo
 type SiloIpPoolListParams struct {
-	Silo      NameOrId         `json:"silo,omitempty" yaml:"silo,omitempty"`
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // SiloPolicyViewParams is the request parameters for SiloPolicyView
 //
@@ -15060,15 +16008,17 @@ type SiloPolicyViewParams struct {
 	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 }
 
+
 // SiloPolicyUpdateParams is the request parameters for SiloPolicyUpdate
 //
 // Required fields:
 // - Silo
 // - Body
 type SiloPolicyUpdateParams struct {
-	Silo NameOrId        `json:"silo,omitempty" yaml:"silo,omitempty"`
+	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 	Body *SiloRolePolicy `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // SiloQuotasViewParams is the request parameters for SiloQuotasView
 //
@@ -15078,33 +16028,37 @@ type SiloQuotasViewParams struct {
 	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 }
 
+
 // SiloQuotasUpdateParams is the request parameters for SiloQuotasUpdate
 //
 // Required fields:
 // - Silo
 // - Body
 type SiloQuotasUpdateParams struct {
-	Silo NameOrId          `json:"silo,omitempty" yaml:"silo,omitempty"`
+	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 	Body *SiloQuotasUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // SiloSubnetPoolListParams is the request parameters for SiloSubnetPoolList
 //
 // Required fields:
 // - Silo
 type SiloSubnetPoolListParams struct {
-	Silo      NameOrId         `json:"silo,omitempty" yaml:"silo,omitempty"`
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // SystemSubnetPoolListParams is the request parameters for SystemSubnetPoolList
 type SystemSubnetPoolListParams struct {
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // SystemSubnetPoolCreateParams is the request parameters for SystemSubnetPoolCreate
 //
@@ -15114,6 +16068,7 @@ type SystemSubnetPoolCreateParams struct {
 	Body *SubnetPoolCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+
 // SystemSubnetPoolDeleteParams is the request parameters for SystemSubnetPoolDelete
 //
 // Required fields:
@@ -15121,6 +16076,7 @@ type SystemSubnetPoolCreateParams struct {
 type SystemSubnetPoolDeleteParams struct {
 	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 }
+
 
 // SystemSubnetPoolViewParams is the request parameters for SystemSubnetPoolView
 //
@@ -15130,25 +16086,28 @@ type SystemSubnetPoolViewParams struct {
 	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 }
 
+
 // SystemSubnetPoolUpdateParams is the request parameters for SystemSubnetPoolUpdate
 //
 // Required fields:
 // - Pool
 // - Body
 type SystemSubnetPoolUpdateParams struct {
-	Pool NameOrId          `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 	Body *SubnetPoolUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // SystemSubnetPoolMemberListParams is the request parameters for SystemSubnetPoolMemberList
 //
 // Required fields:
 // - Pool
 type SystemSubnetPoolMemberListParams struct {
-	Pool      NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
-	Limit     *int     `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string   `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 }
+
 
 // SystemSubnetPoolMemberAddParams is the request parameters for SystemSubnetPoolMemberAdd
 //
@@ -15156,9 +16115,10 @@ type SystemSubnetPoolMemberListParams struct {
 // - Pool
 // - Body
 type SystemSubnetPoolMemberAddParams struct {
-	Pool NameOrId             `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 	Body *SubnetPoolMemberAdd `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // SystemSubnetPoolMemberRemoveParams is the request parameters for SystemSubnetPoolMemberRemove
 //
@@ -15166,20 +16126,22 @@ type SystemSubnetPoolMemberAddParams struct {
 // - Pool
 // - Body
 type SystemSubnetPoolMemberRemoveParams struct {
-	Pool NameOrId                `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 	Body *SubnetPoolMemberRemove `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // SystemSubnetPoolSiloListParams is the request parameters for SystemSubnetPoolSiloList
 //
 // Required fields:
 // - Pool
 type SystemSubnetPoolSiloListParams struct {
-	Pool      NameOrId   `json:"pool,omitempty" yaml:"pool,omitempty"`
-	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // SystemSubnetPoolSiloLinkParams is the request parameters for SystemSubnetPoolSiloLink
 //
@@ -15187,9 +16149,10 @@ type SystemSubnetPoolSiloListParams struct {
 // - Pool
 // - Body
 type SystemSubnetPoolSiloLinkParams struct {
-	Pool NameOrId            `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 	Body *SubnetPoolLinkSilo `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // SystemSubnetPoolSiloUnlinkParams is the request parameters for SystemSubnetPoolSiloUnlink
 //
@@ -15201,6 +16164,7 @@ type SystemSubnetPoolSiloUnlinkParams struct {
 	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 }
 
+
 // SystemSubnetPoolSiloUpdateParams is the request parameters for SystemSubnetPoolSiloUpdate
 //
 // Required fields:
@@ -15208,10 +16172,11 @@ type SystemSubnetPoolSiloUnlinkParams struct {
 // - Silo
 // - Body
 type SystemSubnetPoolSiloUpdateParams struct {
-	Pool NameOrId              `json:"pool,omitempty" yaml:"pool,omitempty"`
-	Silo NameOrId              `json:"silo,omitempty" yaml:"silo,omitempty"`
+	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 	Body *SubnetPoolSiloUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // SystemSubnetPoolUtilizationViewParams is the request parameters for SystemSubnetPoolUtilizationView
 //
@@ -15221,6 +16186,7 @@ type SystemSubnetPoolUtilizationViewParams struct {
 	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 }
 
+
 // SystemTimeseriesQueryParams is the request parameters for SystemTimeseriesQuery
 //
 // Required fields:
@@ -15229,18 +16195,21 @@ type SystemTimeseriesQueryParams struct {
 	Body *TimeseriesQuery `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+
 // SystemTimeseriesSchemaListParams is the request parameters for SystemTimeseriesSchemaList
 type SystemTimeseriesSchemaListParams struct {
-	Limit     *int   `json:"limit,omitempty" yaml:"limit,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
 	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 }
 
+
 // SystemUpdateRepositoryListParams is the request parameters for SystemUpdateRepositoryList
 type SystemUpdateRepositoryListParams struct {
-	Limit     *int            `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string          `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    VersionSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy VersionSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // SystemUpdateRepositoryUploadParams is the request parameters for SystemUpdateRepositoryUpload
 //
@@ -15248,9 +16217,10 @@ type SystemUpdateRepositoryListParams struct {
 // - FileName
 // - Body
 type SystemUpdateRepositoryUploadParams struct {
-	FileName string    `json:"file_name,omitempty" yaml:"file_name,omitempty"`
-	Body     io.Reader `json:"body,omitempty" yaml:"body,omitempty"`
+	FileName string `json:"file_name,omitempty" yaml:"file_name,omitempty"`
+	Body io.Reader `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // SystemUpdateRepositoryViewParams is the request parameters for SystemUpdateRepositoryView
 //
@@ -15260,6 +16230,7 @@ type SystemUpdateRepositoryViewParams struct {
 	SystemVersion string `json:"system_version,omitempty" yaml:"system_version,omitempty"`
 }
 
+
 // TargetReleaseUpdateParams is the request parameters for TargetReleaseUpdate
 //
 // Required fields:
@@ -15268,12 +16239,14 @@ type TargetReleaseUpdateParams struct {
 	Body *SetTargetReleaseParams `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+
 // SystemUpdateTrustRootListParams is the request parameters for SystemUpdateTrustRootList
 type SystemUpdateTrustRootListParams struct {
-	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // SystemUpdateTrustRootCreateParams is the request parameters for SystemUpdateTrustRootCreate
 //
@@ -15283,6 +16256,7 @@ type SystemUpdateTrustRootCreateParams struct {
 	Body *any `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+
 // SystemUpdateTrustRootDeleteParams is the request parameters for SystemUpdateTrustRootDelete
 //
 // Required fields:
@@ -15290,6 +16264,7 @@ type SystemUpdateTrustRootCreateParams struct {
 type SystemUpdateTrustRootDeleteParams struct {
 	TrustRootId string `json:"trust_root_id,omitempty" yaml:"trust_root_id,omitempty"`
 }
+
 
 // SystemUpdateTrustRootViewParams is the request parameters for SystemUpdateTrustRootView
 //
@@ -15299,23 +16274,26 @@ type SystemUpdateTrustRootViewParams struct {
 	TrustRootId string `json:"trust_root_id,omitempty" yaml:"trust_root_id,omitempty"`
 }
 
+
 // SiloUserListParams is the request parameters for SiloUserList
 //
 // Required fields:
 // - Silo
 type SiloUserListParams struct {
-	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	Silo      NameOrId   `json:"silo,omitempty" yaml:"silo,omitempty"`
-	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
+	SortBy IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // UserBuiltinListParams is the request parameters for UserBuiltinList
 type UserBuiltinListParams struct {
-	Limit     *int         `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string       `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    NameSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy NameSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // UserBuiltinViewParams is the request parameters for UserBuiltinView
 //
@@ -15325,22 +16303,25 @@ type UserBuiltinViewParams struct {
 	User NameOrId `json:"user,omitempty" yaml:"user,omitempty"`
 }
 
+
 // SiloUserViewParams is the request parameters for SiloUserView
 //
 // Required fields:
 // - UserId
 // - Silo
 type SiloUserViewParams struct {
-	UserId string   `json:"user_id,omitempty" yaml:"user_id,omitempty"`
-	Silo   NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
+	UserId string `json:"user_id,omitempty" yaml:"user_id,omitempty"`
+	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 }
+
 
 // SiloUtilizationListParams is the request parameters for SiloUtilizationList
 type SiloUtilizationListParams struct {
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // SiloUtilizationViewParams is the request parameters for SiloUtilizationView
 //
@@ -15350,23 +16331,26 @@ type SiloUtilizationViewParams struct {
 	Silo NameOrId `json:"silo,omitempty" yaml:"silo,omitempty"`
 }
 
+
 // TimeseriesQueryParams is the request parameters for TimeseriesQuery
 //
 // Required fields:
 // - Project
 // - Body
 type TimeseriesQueryParams struct {
-	Project NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
-	Body    *TimeseriesQuery `json:"body,omitempty" yaml:"body,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Body *TimeseriesQuery `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // UserListParams is the request parameters for UserList
 type UserListParams struct {
-	Group     string     `json:"group,omitempty" yaml:"group,omitempty"`
-	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Group string `json:"group,omitempty" yaml:"group,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // UserViewParams is the request parameters for UserView
 //
@@ -15376,16 +16360,18 @@ type UserViewParams struct {
 	UserId string `json:"user_id,omitempty" yaml:"user_id,omitempty"`
 }
 
+
 // UserTokenListParams is the request parameters for UserTokenList
 //
 // Required fields:
 // - UserId
 type UserTokenListParams struct {
-	UserId    string     `json:"user_id,omitempty" yaml:"user_id,omitempty"`
-	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	UserId string `json:"user_id,omitempty" yaml:"user_id,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // UserLogoutParams is the request parameters for UserLogout
 //
@@ -15395,16 +16381,18 @@ type UserLogoutParams struct {
 	UserId string `json:"user_id,omitempty" yaml:"user_id,omitempty"`
 }
 
+
 // UserSessionListParams is the request parameters for UserSessionList
 //
 // Required fields:
 // - UserId
 type UserSessionListParams struct {
-	UserId    string     `json:"user_id,omitempty" yaml:"user_id,omitempty"`
-	Limit     *int       `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	UserId string `json:"user_id,omitempty" yaml:"user_id,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy IdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // VpcFirewallRulesViewParams is the request parameters for VpcFirewallRulesView
 //
@@ -15412,8 +16400,9 @@ type UserSessionListParams struct {
 // - Vpc
 type VpcFirewallRulesViewParams struct {
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
-	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Vpc NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
 }
+
 
 // VpcFirewallRulesUpdateParams is the request parameters for VpcFirewallRulesUpdate
 //
@@ -15421,23 +16410,25 @@ type VpcFirewallRulesViewParams struct {
 // - Vpc
 // - Body
 type VpcFirewallRulesUpdateParams struct {
-	Project NameOrId                     `json:"project,omitempty" yaml:"project,omitempty"`
-	Vpc     NameOrId                     `json:"vpc,omitempty" yaml:"vpc,omitempty"`
-	Body    *VpcFirewallRuleUpdateParams `json:"body,omitempty" yaml:"body,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Vpc NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Body *VpcFirewallRuleUpdateParams `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // VpcRouterRouteListParams is the request parameters for VpcRouterRouteList
 //
 // Required fields:
 // - Router
 type VpcRouterRouteListParams struct {
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
-	Router    NameOrId         `json:"router,omitempty" yaml:"router,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
-	Vpc       NameOrId         `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Router NameOrId `json:"router,omitempty" yaml:"router,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Vpc NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
 }
+
 
 // VpcRouterRouteCreateParams is the request parameters for VpcRouterRouteCreate
 //
@@ -15445,33 +16436,36 @@ type VpcRouterRouteListParams struct {
 // - Router
 // - Body
 type VpcRouterRouteCreateParams struct {
-	Project NameOrId           `json:"project,omitempty" yaml:"project,omitempty"`
-	Router  NameOrId           `json:"router,omitempty" yaml:"router,omitempty"`
-	Vpc     NameOrId           `json:"vpc,omitempty" yaml:"vpc,omitempty"`
-	Body    *RouterRouteCreate `json:"body,omitempty" yaml:"body,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Router NameOrId `json:"router,omitempty" yaml:"router,omitempty"`
+	Vpc NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Body *RouterRouteCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // VpcRouterRouteDeleteParams is the request parameters for VpcRouterRouteDelete
 //
 // Required fields:
 // - Route
 type VpcRouterRouteDeleteParams struct {
-	Route   NameOrId `json:"route,omitempty" yaml:"route,omitempty"`
+	Route NameOrId `json:"route,omitempty" yaml:"route,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
-	Router  NameOrId `json:"router,omitempty" yaml:"router,omitempty"`
-	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Router NameOrId `json:"router,omitempty" yaml:"router,omitempty"`
+	Vpc NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
 }
+
 
 // VpcRouterRouteViewParams is the request parameters for VpcRouterRouteView
 //
 // Required fields:
 // - Route
 type VpcRouterRouteViewParams struct {
-	Route   NameOrId `json:"route,omitempty" yaml:"route,omitempty"`
+	Route NameOrId `json:"route,omitempty" yaml:"route,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
-	Router  NameOrId `json:"router,omitempty" yaml:"router,omitempty"`
-	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Router NameOrId `json:"router,omitempty" yaml:"router,omitempty"`
+	Vpc NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
 }
+
 
 // VpcRouterRouteUpdateParams is the request parameters for VpcRouterRouteUpdate
 //
@@ -15479,24 +16473,26 @@ type VpcRouterRouteViewParams struct {
 // - Route
 // - Body
 type VpcRouterRouteUpdateParams struct {
-	Route   NameOrId           `json:"route,omitempty" yaml:"route,omitempty"`
-	Project NameOrId           `json:"project,omitempty" yaml:"project,omitempty"`
-	Router  NameOrId           `json:"router,omitempty" yaml:"router,omitempty"`
-	Vpc     NameOrId           `json:"vpc,omitempty" yaml:"vpc,omitempty"`
-	Body    *RouterRouteUpdate `json:"body,omitempty" yaml:"body,omitempty"`
+	Route NameOrId `json:"route,omitempty" yaml:"route,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Router NameOrId `json:"router,omitempty" yaml:"router,omitempty"`
+	Vpc NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Body *RouterRouteUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // VpcRouterListParams is the request parameters for VpcRouterList
 //
 // Required fields:
 // - Vpc
 type VpcRouterListParams struct {
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
-	Vpc       NameOrId         `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Vpc NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
 }
+
 
 // VpcRouterCreateParams is the request parameters for VpcRouterCreate
 //
@@ -15504,30 +16500,33 @@ type VpcRouterListParams struct {
 // - Vpc
 // - Body
 type VpcRouterCreateParams struct {
-	Project NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
-	Vpc     NameOrId         `json:"vpc,omitempty" yaml:"vpc,omitempty"`
-	Body    *VpcRouterCreate `json:"body,omitempty" yaml:"body,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Vpc NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Body *VpcRouterCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // VpcRouterDeleteParams is the request parameters for VpcRouterDelete
 //
 // Required fields:
 // - Router
 type VpcRouterDeleteParams struct {
-	Router  NameOrId `json:"router,omitempty" yaml:"router,omitempty"`
+	Router NameOrId `json:"router,omitempty" yaml:"router,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
-	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Vpc NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
 }
+
 
 // VpcRouterViewParams is the request parameters for VpcRouterView
 //
 // Required fields:
 // - Router
 type VpcRouterViewParams struct {
-	Router  NameOrId `json:"router,omitempty" yaml:"router,omitempty"`
+	Router NameOrId `json:"router,omitempty" yaml:"router,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
-	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Vpc NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
 }
+
 
 // VpcRouterUpdateParams is the request parameters for VpcRouterUpdate
 //
@@ -15535,23 +16534,25 @@ type VpcRouterViewParams struct {
 // - Router
 // - Body
 type VpcRouterUpdateParams struct {
-	Router  NameOrId         `json:"router,omitempty" yaml:"router,omitempty"`
-	Project NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
-	Vpc     NameOrId         `json:"vpc,omitempty" yaml:"vpc,omitempty"`
-	Body    *VpcRouterUpdate `json:"body,omitempty" yaml:"body,omitempty"`
+	Router NameOrId `json:"router,omitempty" yaml:"router,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Vpc NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Body *VpcRouterUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // VpcSubnetListParams is the request parameters for VpcSubnetList
 //
 // Required fields:
 // - Vpc
 type VpcSubnetListParams struct {
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
-	Vpc       NameOrId         `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Vpc NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
 }
+
 
 // VpcSubnetCreateParams is the request parameters for VpcSubnetCreate
 //
@@ -15559,30 +16560,33 @@ type VpcSubnetListParams struct {
 // - Vpc
 // - Body
 type VpcSubnetCreateParams struct {
-	Project NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
-	Vpc     NameOrId         `json:"vpc,omitempty" yaml:"vpc,omitempty"`
-	Body    *VpcSubnetCreate `json:"body,omitempty" yaml:"body,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Vpc NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Body *VpcSubnetCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // VpcSubnetDeleteParams is the request parameters for VpcSubnetDelete
 //
 // Required fields:
 // - Subnet
 type VpcSubnetDeleteParams struct {
-	Subnet  NameOrId `json:"subnet,omitempty" yaml:"subnet,omitempty"`
+	Subnet NameOrId `json:"subnet,omitempty" yaml:"subnet,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
-	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Vpc NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
 }
+
 
 // VpcSubnetViewParams is the request parameters for VpcSubnetView
 //
 // Required fields:
 // - Subnet
 type VpcSubnetViewParams struct {
-	Subnet  NameOrId `json:"subnet,omitempty" yaml:"subnet,omitempty"`
+	Subnet NameOrId `json:"subnet,omitempty" yaml:"subnet,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
-	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Vpc NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
 }
+
 
 // VpcSubnetUpdateParams is the request parameters for VpcSubnetUpdate
 //
@@ -15590,35 +16594,38 @@ type VpcSubnetViewParams struct {
 // - Subnet
 // - Body
 type VpcSubnetUpdateParams struct {
-	Subnet  NameOrId         `json:"subnet,omitempty" yaml:"subnet,omitempty"`
-	Project NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
-	Vpc     NameOrId         `json:"vpc,omitempty" yaml:"vpc,omitempty"`
-	Body    *VpcSubnetUpdate `json:"body,omitempty" yaml:"body,omitempty"`
+	Subnet NameOrId `json:"subnet,omitempty" yaml:"subnet,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Vpc NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Body *VpcSubnetUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // VpcSubnetListNetworkInterfacesParams is the request parameters for VpcSubnetListNetworkInterfaces
 //
 // Required fields:
 // - Subnet
 type VpcSubnetListNetworkInterfacesParams struct {
-	Subnet    NameOrId         `json:"subnet,omitempty" yaml:"subnet,omitempty"`
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
-	Vpc       NameOrId         `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Subnet NameOrId `json:"subnet,omitempty" yaml:"subnet,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Vpc NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
 }
+
 
 // VpcListParams is the request parameters for VpcList
 //
 // Required fields:
 // - Project
 type VpcListParams struct {
-	Limit     *int             `json:"limit,omitempty" yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	Project   NameOrId         `json:"project,omitempty" yaml:"project,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
+	Limit *int `json:"limit,omitempty" yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	SortBy NameOrIdSortMode `json:"sort_by,omitempty" yaml:"sort_by,omitempty"`
 }
+
 
 // VpcCreateParams is the request parameters for VpcCreate
 //
@@ -15626,27 +16633,30 @@ type VpcListParams struct {
 // - Project
 // - Body
 type VpcCreateParams struct {
-	Project NameOrId   `json:"project,omitempty" yaml:"project,omitempty"`
-	Body    *VpcCreate `json:"body,omitempty" yaml:"body,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Body *VpcCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // VpcDeleteParams is the request parameters for VpcDelete
 //
 // Required fields:
 // - Vpc
 type VpcDeleteParams struct {
-	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Vpc NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
+
 
 // VpcViewParams is the request parameters for VpcView
 //
 // Required fields:
 // - Vpc
 type VpcViewParams struct {
-	Vpc     NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Vpc NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
+
 
 // VpcUpdateParams is the request parameters for VpcUpdate
 //
@@ -15654,10 +16664,11 @@ type VpcViewParams struct {
 // - Vpc
 // - Body
 type VpcUpdateParams struct {
-	Vpc     NameOrId   `json:"vpc,omitempty" yaml:"vpc,omitempty"`
-	Project NameOrId   `json:"project,omitempty" yaml:"project,omitempty"`
-	Body    *VpcUpdate `json:"body,omitempty" yaml:"body,omitempty"`
+	Vpc NameOrId `json:"vpc,omitempty" yaml:"vpc,omitempty"`
+	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
+	Body *VpcUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // WebhookReceiverCreateParams is the request parameters for WebhookReceiverCreate
 //
@@ -15667,15 +16678,17 @@ type WebhookReceiverCreateParams struct {
 	Body *WebhookCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
+
 // WebhookReceiverUpdateParams is the request parameters for WebhookReceiverUpdate
 //
 // Required fields:
 // - Receiver
 // - Body
 type WebhookReceiverUpdateParams struct {
-	Receiver NameOrId               `json:"receiver,omitempty" yaml:"receiver,omitempty"`
-	Body     *WebhookReceiverUpdate `json:"body,omitempty" yaml:"body,omitempty"`
+	Receiver NameOrId `json:"receiver,omitempty" yaml:"receiver,omitempty"`
+	Body *WebhookReceiverUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // WebhookSecretsListParams is the request parameters for WebhookSecretsList
 //
@@ -15685,15 +16698,17 @@ type WebhookSecretsListParams struct {
 	Receiver NameOrId `json:"receiver,omitempty" yaml:"receiver,omitempty"`
 }
 
+
 // WebhookSecretsAddParams is the request parameters for WebhookSecretsAdd
 //
 // Required fields:
 // - Receiver
 // - Body
 type WebhookSecretsAddParams struct {
-	Receiver NameOrId             `json:"receiver,omitempty" yaml:"receiver,omitempty"`
-	Body     *WebhookSecretCreate `json:"body,omitempty" yaml:"body,omitempty"`
+	Receiver NameOrId `json:"receiver,omitempty" yaml:"receiver,omitempty"`
+	Body *WebhookSecretCreate `json:"body,omitempty" yaml:"body,omitempty"`
 }
+
 
 // WebhookSecretsDeleteParams is the request parameters for WebhookSecretsDelete
 //
@@ -15702,6 +16717,7 @@ type WebhookSecretsAddParams struct {
 type WebhookSecretsDeleteParams struct {
 	SecretId string `json:"secret_id,omitempty" yaml:"secret_id,omitempty"`
 }
+
 
 // Validate verifies all required fields for DeviceAuthRequestParams are set
 func (p *DeviceAuthRequestParams) Validate() error {
@@ -15712,7 +16728,6 @@ func (p *DeviceAuthRequestParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for DeviceAuthConfirmParams are set
 func (p *DeviceAuthConfirmParams) Validate() error {
 	v := new(Validator)
@@ -15722,7 +16737,6 @@ func (p *DeviceAuthConfirmParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for DeviceAccessTokenParams are set
 func (p *DeviceAccessTokenParams) Validate() error {
 	v := new(Validator)
@@ -15732,7 +16746,6 @@ func (p *DeviceAccessTokenParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for ProbeListParams are set
 func (p *ProbeListParams) Validate() error {
 	v := new(Validator)
@@ -15741,7 +16754,6 @@ func (p *ProbeListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for ProbeCreateParams are set
 func (p *ProbeCreateParams) Validate() error {
 	v := new(Validator)
@@ -15752,7 +16764,6 @@ func (p *ProbeCreateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for ProbeDeleteParams are set
 func (p *ProbeDeleteParams) Validate() error {
 	v := new(Validator)
@@ -15763,7 +16774,6 @@ func (p *ProbeDeleteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for ProbeViewParams are set
 func (p *ProbeViewParams) Validate() error {
 	v := new(Validator)
@@ -15774,7 +16784,6 @@ func (p *ProbeViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SupportBundleListParams are set
 func (p *SupportBundleListParams) Validate() error {
 	v := new(Validator)
@@ -15783,7 +16792,6 @@ func (p *SupportBundleListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SupportBundleCreateParams are set
 func (p *SupportBundleCreateParams) Validate() error {
 	v := new(Validator)
@@ -15793,7 +16801,6 @@ func (p *SupportBundleCreateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SupportBundleDeleteParams are set
 func (p *SupportBundleDeleteParams) Validate() error {
 	v := new(Validator)
@@ -15803,7 +16810,6 @@ func (p *SupportBundleDeleteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SupportBundleViewParams are set
 func (p *SupportBundleViewParams) Validate() error {
 	v := new(Validator)
@@ -15813,7 +16819,6 @@ func (p *SupportBundleViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SupportBundleUpdateParams are set
 func (p *SupportBundleUpdateParams) Validate() error {
 	v := new(Validator)
@@ -15824,7 +16829,6 @@ func (p *SupportBundleUpdateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SupportBundleDownloadParams are set
 func (p *SupportBundleDownloadParams) Validate() error {
 	v := new(Validator)
@@ -15834,7 +16838,6 @@ func (p *SupportBundleDownloadParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SupportBundleHeadParams are set
 func (p *SupportBundleHeadParams) Validate() error {
 	v := new(Validator)
@@ -15844,7 +16847,6 @@ func (p *SupportBundleHeadParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SupportBundleDownloadFileParams are set
 func (p *SupportBundleDownloadFileParams) Validate() error {
 	v := new(Validator)
@@ -15855,7 +16857,6 @@ func (p *SupportBundleDownloadFileParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SupportBundleHeadFileParams are set
 func (p *SupportBundleHeadFileParams) Validate() error {
 	v := new(Validator)
@@ -15866,7 +16867,6 @@ func (p *SupportBundleHeadFileParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SupportBundleIndexParams are set
 func (p *SupportBundleIndexParams) Validate() error {
 	v := new(Validator)
@@ -15876,7 +16876,6 @@ func (p *SupportBundleIndexParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for LoginSamlParams are set
 func (p *LoginSamlParams) Validate() error {
 	v := new(Validator)
@@ -15888,7 +16887,6 @@ func (p *LoginSamlParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for AffinityGroupListParams are set
 func (p *AffinityGroupListParams) Validate() error {
 	v := new(Validator)
@@ -15897,7 +16895,6 @@ func (p *AffinityGroupListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for AffinityGroupCreateParams are set
 func (p *AffinityGroupCreateParams) Validate() error {
 	v := new(Validator)
@@ -15908,7 +16905,6 @@ func (p *AffinityGroupCreateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for AffinityGroupDeleteParams are set
 func (p *AffinityGroupDeleteParams) Validate() error {
 	v := new(Validator)
@@ -15918,7 +16914,6 @@ func (p *AffinityGroupDeleteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for AffinityGroupViewParams are set
 func (p *AffinityGroupViewParams) Validate() error {
 	v := new(Validator)
@@ -15928,7 +16923,6 @@ func (p *AffinityGroupViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for AffinityGroupUpdateParams are set
 func (p *AffinityGroupUpdateParams) Validate() error {
 	v := new(Validator)
@@ -15939,7 +16933,6 @@ func (p *AffinityGroupUpdateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for AffinityGroupMemberListParams are set
 func (p *AffinityGroupMemberListParams) Validate() error {
 	v := new(Validator)
@@ -15949,7 +16942,6 @@ func (p *AffinityGroupMemberListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for AffinityGroupMemberInstanceDeleteParams are set
 func (p *AffinityGroupMemberInstanceDeleteParams) Validate() error {
 	v := new(Validator)
@@ -15960,7 +16952,6 @@ func (p *AffinityGroupMemberInstanceDeleteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for AffinityGroupMemberInstanceViewParams are set
 func (p *AffinityGroupMemberInstanceViewParams) Validate() error {
 	v := new(Validator)
@@ -15971,7 +16962,6 @@ func (p *AffinityGroupMemberInstanceViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for AffinityGroupMemberInstanceAddParams are set
 func (p *AffinityGroupMemberInstanceAddParams) Validate() error {
 	v := new(Validator)
@@ -15982,7 +16972,6 @@ func (p *AffinityGroupMemberInstanceAddParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for AlertClassListParams are set
 func (p *AlertClassListParams) Validate() error {
 	v := new(Validator)
@@ -15991,7 +16980,6 @@ func (p *AlertClassListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for AlertReceiverListParams are set
 func (p *AlertReceiverListParams) Validate() error {
 	v := new(Validator)
@@ -16000,7 +16988,6 @@ func (p *AlertReceiverListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for AlertReceiverDeleteParams are set
 func (p *AlertReceiverDeleteParams) Validate() error {
 	v := new(Validator)
@@ -16010,7 +16997,6 @@ func (p *AlertReceiverDeleteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for AlertReceiverViewParams are set
 func (p *AlertReceiverViewParams) Validate() error {
 	v := new(Validator)
@@ -16020,7 +17006,6 @@ func (p *AlertReceiverViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for AlertDeliveryListParams are set
 func (p *AlertDeliveryListParams) Validate() error {
 	v := new(Validator)
@@ -16030,7 +17015,6 @@ func (p *AlertDeliveryListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for AlertReceiverProbeParams are set
 func (p *AlertReceiverProbeParams) Validate() error {
 	v := new(Validator)
@@ -16040,7 +17024,6 @@ func (p *AlertReceiverProbeParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for AlertReceiverSubscriptionAddParams are set
 func (p *AlertReceiverSubscriptionAddParams) Validate() error {
 	v := new(Validator)
@@ -16051,7 +17034,6 @@ func (p *AlertReceiverSubscriptionAddParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for AlertReceiverSubscriptionRemoveParams are set
 func (p *AlertReceiverSubscriptionRemoveParams) Validate() error {
 	v := new(Validator)
@@ -16062,7 +17044,6 @@ func (p *AlertReceiverSubscriptionRemoveParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for AlertDeliveryResendParams are set
 func (p *AlertDeliveryResendParams) Validate() error {
 	v := new(Validator)
@@ -16073,7 +17054,6 @@ func (p *AlertDeliveryResendParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for AntiAffinityGroupListParams are set
 func (p *AntiAffinityGroupListParams) Validate() error {
 	v := new(Validator)
@@ -16082,7 +17062,6 @@ func (p *AntiAffinityGroupListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for AntiAffinityGroupCreateParams are set
 func (p *AntiAffinityGroupCreateParams) Validate() error {
 	v := new(Validator)
@@ -16093,7 +17072,6 @@ func (p *AntiAffinityGroupCreateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for AntiAffinityGroupDeleteParams are set
 func (p *AntiAffinityGroupDeleteParams) Validate() error {
 	v := new(Validator)
@@ -16103,7 +17081,6 @@ func (p *AntiAffinityGroupDeleteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for AntiAffinityGroupViewParams are set
 func (p *AntiAffinityGroupViewParams) Validate() error {
 	v := new(Validator)
@@ -16113,7 +17090,6 @@ func (p *AntiAffinityGroupViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for AntiAffinityGroupUpdateParams are set
 func (p *AntiAffinityGroupUpdateParams) Validate() error {
 	v := new(Validator)
@@ -16124,7 +17100,6 @@ func (p *AntiAffinityGroupUpdateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for AntiAffinityGroupMemberListParams are set
 func (p *AntiAffinityGroupMemberListParams) Validate() error {
 	v := new(Validator)
@@ -16134,7 +17109,6 @@ func (p *AntiAffinityGroupMemberListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for AntiAffinityGroupMemberInstanceDeleteParams are set
 func (p *AntiAffinityGroupMemberInstanceDeleteParams) Validate() error {
 	v := new(Validator)
@@ -16145,7 +17119,6 @@ func (p *AntiAffinityGroupMemberInstanceDeleteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for AntiAffinityGroupMemberInstanceViewParams are set
 func (p *AntiAffinityGroupMemberInstanceViewParams) Validate() error {
 	v := new(Validator)
@@ -16156,7 +17129,6 @@ func (p *AntiAffinityGroupMemberInstanceViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for AntiAffinityGroupMemberInstanceAddParams are set
 func (p *AntiAffinityGroupMemberInstanceAddParams) Validate() error {
 	v := new(Validator)
@@ -16167,7 +17139,6 @@ func (p *AntiAffinityGroupMemberInstanceAddParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for AuthSettingsUpdateParams are set
 func (p *AuthSettingsUpdateParams) Validate() error {
 	v := new(Validator)
@@ -16177,7 +17148,6 @@ func (p *AuthSettingsUpdateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for CertificateListParams are set
 func (p *CertificateListParams) Validate() error {
 	v := new(Validator)
@@ -16186,7 +17156,6 @@ func (p *CertificateListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for CertificateCreateParams are set
 func (p *CertificateCreateParams) Validate() error {
 	v := new(Validator)
@@ -16196,7 +17165,6 @@ func (p *CertificateCreateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for CertificateDeleteParams are set
 func (p *CertificateDeleteParams) Validate() error {
 	v := new(Validator)
@@ -16206,7 +17174,6 @@ func (p *CertificateDeleteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for CertificateViewParams are set
 func (p *CertificateViewParams) Validate() error {
 	v := new(Validator)
@@ -16216,7 +17183,6 @@ func (p *CertificateViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for DiskListParams are set
 func (p *DiskListParams) Validate() error {
 	v := new(Validator)
@@ -16225,7 +17191,6 @@ func (p *DiskListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for DiskCreateParams are set
 func (p *DiskCreateParams) Validate() error {
 	v := new(Validator)
@@ -16236,7 +17201,6 @@ func (p *DiskCreateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for DiskDeleteParams are set
 func (p *DiskDeleteParams) Validate() error {
 	v := new(Validator)
@@ -16246,7 +17210,6 @@ func (p *DiskDeleteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for DiskViewParams are set
 func (p *DiskViewParams) Validate() error {
 	v := new(Validator)
@@ -16256,7 +17219,6 @@ func (p *DiskViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for DiskBulkWriteImportParams are set
 func (p *DiskBulkWriteImportParams) Validate() error {
 	v := new(Validator)
@@ -16267,7 +17229,6 @@ func (p *DiskBulkWriteImportParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for DiskBulkWriteImportStartParams are set
 func (p *DiskBulkWriteImportStartParams) Validate() error {
 	v := new(Validator)
@@ -16277,7 +17238,6 @@ func (p *DiskBulkWriteImportStartParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for DiskBulkWriteImportStopParams are set
 func (p *DiskBulkWriteImportStopParams) Validate() error {
 	v := new(Validator)
@@ -16287,7 +17247,6 @@ func (p *DiskBulkWriteImportStopParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for DiskFinalizeImportParams are set
 func (p *DiskFinalizeImportParams) Validate() error {
 	v := new(Validator)
@@ -16298,7 +17257,6 @@ func (p *DiskFinalizeImportParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for ExternalSubnetListParams are set
 func (p *ExternalSubnetListParams) Validate() error {
 	v := new(Validator)
@@ -16307,7 +17265,6 @@ func (p *ExternalSubnetListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for ExternalSubnetCreateParams are set
 func (p *ExternalSubnetCreateParams) Validate() error {
 	v := new(Validator)
@@ -16318,7 +17275,6 @@ func (p *ExternalSubnetCreateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for ExternalSubnetDeleteParams are set
 func (p *ExternalSubnetDeleteParams) Validate() error {
 	v := new(Validator)
@@ -16328,7 +17284,6 @@ func (p *ExternalSubnetDeleteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for ExternalSubnetViewParams are set
 func (p *ExternalSubnetViewParams) Validate() error {
 	v := new(Validator)
@@ -16338,7 +17293,6 @@ func (p *ExternalSubnetViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for ExternalSubnetUpdateParams are set
 func (p *ExternalSubnetUpdateParams) Validate() error {
 	v := new(Validator)
@@ -16349,7 +17303,6 @@ func (p *ExternalSubnetUpdateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for ExternalSubnetAttachParams are set
 func (p *ExternalSubnetAttachParams) Validate() error {
 	v := new(Validator)
@@ -16360,7 +17313,6 @@ func (p *ExternalSubnetAttachParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for ExternalSubnetDetachParams are set
 func (p *ExternalSubnetDetachParams) Validate() error {
 	v := new(Validator)
@@ -16370,7 +17322,6 @@ func (p *ExternalSubnetDetachParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for FloatingIpListParams are set
 func (p *FloatingIpListParams) Validate() error {
 	v := new(Validator)
@@ -16379,7 +17330,6 @@ func (p *FloatingIpListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for FloatingIpCreateParams are set
 func (p *FloatingIpCreateParams) Validate() error {
 	v := new(Validator)
@@ -16390,7 +17340,6 @@ func (p *FloatingIpCreateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for FloatingIpDeleteParams are set
 func (p *FloatingIpDeleteParams) Validate() error {
 	v := new(Validator)
@@ -16400,7 +17349,6 @@ func (p *FloatingIpDeleteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for FloatingIpViewParams are set
 func (p *FloatingIpViewParams) Validate() error {
 	v := new(Validator)
@@ -16410,7 +17358,6 @@ func (p *FloatingIpViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for FloatingIpUpdateParams are set
 func (p *FloatingIpUpdateParams) Validate() error {
 	v := new(Validator)
@@ -16421,7 +17368,6 @@ func (p *FloatingIpUpdateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for FloatingIpAttachParams are set
 func (p *FloatingIpAttachParams) Validate() error {
 	v := new(Validator)
@@ -16432,7 +17378,6 @@ func (p *FloatingIpAttachParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for FloatingIpDetachParams are set
 func (p *FloatingIpDetachParams) Validate() error {
 	v := new(Validator)
@@ -16442,7 +17387,6 @@ func (p *FloatingIpDetachParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for GroupListParams are set
 func (p *GroupListParams) Validate() error {
 	v := new(Validator)
@@ -16451,7 +17395,6 @@ func (p *GroupListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for GroupViewParams are set
 func (p *GroupViewParams) Validate() error {
 	v := new(Validator)
@@ -16461,7 +17404,6 @@ func (p *GroupViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for ImageListParams are set
 func (p *ImageListParams) Validate() error {
 	v := new(Validator)
@@ -16470,7 +17412,6 @@ func (p *ImageListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for ImageCreateParams are set
 func (p *ImageCreateParams) Validate() error {
 	v := new(Validator)
@@ -16480,7 +17421,6 @@ func (p *ImageCreateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for ImageDeleteParams are set
 func (p *ImageDeleteParams) Validate() error {
 	v := new(Validator)
@@ -16490,7 +17430,6 @@ func (p *ImageDeleteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for ImageViewParams are set
 func (p *ImageViewParams) Validate() error {
 	v := new(Validator)
@@ -16500,7 +17439,6 @@ func (p *ImageViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for ImageDemoteParams are set
 func (p *ImageDemoteParams) Validate() error {
 	v := new(Validator)
@@ -16511,7 +17449,6 @@ func (p *ImageDemoteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for ImagePromoteParams are set
 func (p *ImagePromoteParams) Validate() error {
 	v := new(Validator)
@@ -16521,7 +17458,6 @@ func (p *ImagePromoteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InstanceListParams are set
 func (p *InstanceListParams) Validate() error {
 	v := new(Validator)
@@ -16530,7 +17466,6 @@ func (p *InstanceListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InstanceCreateParams are set
 func (p *InstanceCreateParams) Validate() error {
 	v := new(Validator)
@@ -16541,7 +17476,6 @@ func (p *InstanceCreateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InstanceDeleteParams are set
 func (p *InstanceDeleteParams) Validate() error {
 	v := new(Validator)
@@ -16551,7 +17485,6 @@ func (p *InstanceDeleteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InstanceViewParams are set
 func (p *InstanceViewParams) Validate() error {
 	v := new(Validator)
@@ -16561,7 +17494,6 @@ func (p *InstanceViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InstanceUpdateParams are set
 func (p *InstanceUpdateParams) Validate() error {
 	v := new(Validator)
@@ -16572,7 +17504,6 @@ func (p *InstanceUpdateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InstanceAffinityGroupListParams are set
 func (p *InstanceAffinityGroupListParams) Validate() error {
 	v := new(Validator)
@@ -16582,7 +17513,6 @@ func (p *InstanceAffinityGroupListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InstanceAntiAffinityGroupListParams are set
 func (p *InstanceAntiAffinityGroupListParams) Validate() error {
 	v := new(Validator)
@@ -16592,7 +17522,6 @@ func (p *InstanceAntiAffinityGroupListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InstanceDiskListParams are set
 func (p *InstanceDiskListParams) Validate() error {
 	v := new(Validator)
@@ -16602,7 +17531,6 @@ func (p *InstanceDiskListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InstanceDiskAttachParams are set
 func (p *InstanceDiskAttachParams) Validate() error {
 	v := new(Validator)
@@ -16613,7 +17541,6 @@ func (p *InstanceDiskAttachParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InstanceDiskDetachParams are set
 func (p *InstanceDiskDetachParams) Validate() error {
 	v := new(Validator)
@@ -16624,7 +17551,6 @@ func (p *InstanceDiskDetachParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InstanceExternalIpListParams are set
 func (p *InstanceExternalIpListParams) Validate() error {
 	v := new(Validator)
@@ -16634,7 +17560,6 @@ func (p *InstanceExternalIpListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InstanceEphemeralIpDetachParams are set
 func (p *InstanceEphemeralIpDetachParams) Validate() error {
 	v := new(Validator)
@@ -16644,7 +17569,6 @@ func (p *InstanceEphemeralIpDetachParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InstanceEphemeralIpAttachParams are set
 func (p *InstanceEphemeralIpAttachParams) Validate() error {
 	v := new(Validator)
@@ -16655,7 +17579,6 @@ func (p *InstanceEphemeralIpAttachParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InstanceExternalSubnetListParams are set
 func (p *InstanceExternalSubnetListParams) Validate() error {
 	v := new(Validator)
@@ -16665,7 +17588,6 @@ func (p *InstanceExternalSubnetListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InstanceMulticastGroupListParams are set
 func (p *InstanceMulticastGroupListParams) Validate() error {
 	v := new(Validator)
@@ -16675,7 +17597,6 @@ func (p *InstanceMulticastGroupListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InstanceMulticastGroupLeaveParams are set
 func (p *InstanceMulticastGroupLeaveParams) Validate() error {
 	v := new(Validator)
@@ -16686,7 +17607,6 @@ func (p *InstanceMulticastGroupLeaveParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InstanceMulticastGroupJoinParams are set
 func (p *InstanceMulticastGroupJoinParams) Validate() error {
 	v := new(Validator)
@@ -16698,7 +17618,6 @@ func (p *InstanceMulticastGroupJoinParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InstanceRebootParams are set
 func (p *InstanceRebootParams) Validate() error {
 	v := new(Validator)
@@ -16708,7 +17627,6 @@ func (p *InstanceRebootParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InstanceSerialConsoleParams are set
 func (p *InstanceSerialConsoleParams) Validate() error {
 	v := new(Validator)
@@ -16718,7 +17636,6 @@ func (p *InstanceSerialConsoleParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InstanceSerialConsoleStreamParams are set
 func (p *InstanceSerialConsoleStreamParams) Validate() error {
 	v := new(Validator)
@@ -16728,7 +17645,6 @@ func (p *InstanceSerialConsoleStreamParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InstanceSshPublicKeyListParams are set
 func (p *InstanceSshPublicKeyListParams) Validate() error {
 	v := new(Validator)
@@ -16738,7 +17654,6 @@ func (p *InstanceSshPublicKeyListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InstanceStartParams are set
 func (p *InstanceStartParams) Validate() error {
 	v := new(Validator)
@@ -16748,7 +17663,6 @@ func (p *InstanceStartParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InstanceStopParams are set
 func (p *InstanceStopParams) Validate() error {
 	v := new(Validator)
@@ -16758,7 +17672,6 @@ func (p *InstanceStopParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InternetGatewayIpAddressListParams are set
 func (p *InternetGatewayIpAddressListParams) Validate() error {
 	v := new(Validator)
@@ -16767,7 +17680,6 @@ func (p *InternetGatewayIpAddressListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InternetGatewayIpAddressCreateParams are set
 func (p *InternetGatewayIpAddressCreateParams) Validate() error {
 	v := new(Validator)
@@ -16778,7 +17690,6 @@ func (p *InternetGatewayIpAddressCreateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InternetGatewayIpAddressDeleteParams are set
 func (p *InternetGatewayIpAddressDeleteParams) Validate() error {
 	v := new(Validator)
@@ -16788,7 +17699,6 @@ func (p *InternetGatewayIpAddressDeleteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InternetGatewayIpPoolListParams are set
 func (p *InternetGatewayIpPoolListParams) Validate() error {
 	v := new(Validator)
@@ -16797,7 +17707,6 @@ func (p *InternetGatewayIpPoolListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InternetGatewayIpPoolCreateParams are set
 func (p *InternetGatewayIpPoolCreateParams) Validate() error {
 	v := new(Validator)
@@ -16808,7 +17717,6 @@ func (p *InternetGatewayIpPoolCreateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InternetGatewayIpPoolDeleteParams are set
 func (p *InternetGatewayIpPoolDeleteParams) Validate() error {
 	v := new(Validator)
@@ -16818,7 +17726,6 @@ func (p *InternetGatewayIpPoolDeleteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InternetGatewayListParams are set
 func (p *InternetGatewayListParams) Validate() error {
 	v := new(Validator)
@@ -16827,7 +17734,6 @@ func (p *InternetGatewayListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InternetGatewayCreateParams are set
 func (p *InternetGatewayCreateParams) Validate() error {
 	v := new(Validator)
@@ -16838,7 +17744,6 @@ func (p *InternetGatewayCreateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InternetGatewayDeleteParams are set
 func (p *InternetGatewayDeleteParams) Validate() error {
 	v := new(Validator)
@@ -16848,7 +17753,6 @@ func (p *InternetGatewayDeleteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InternetGatewayViewParams are set
 func (p *InternetGatewayViewParams) Validate() error {
 	v := new(Validator)
@@ -16858,7 +17762,6 @@ func (p *InternetGatewayViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for IpPoolListParams are set
 func (p *IpPoolListParams) Validate() error {
 	v := new(Validator)
@@ -16867,7 +17770,6 @@ func (p *IpPoolListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for IpPoolViewParams are set
 func (p *IpPoolViewParams) Validate() error {
 	v := new(Validator)
@@ -16877,7 +17779,6 @@ func (p *IpPoolViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for LoginLocalParams are set
 func (p *LoginLocalParams) Validate() error {
 	v := new(Validator)
@@ -16888,7 +17789,6 @@ func (p *LoginLocalParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for CurrentUserAccessTokenListParams are set
 func (p *CurrentUserAccessTokenListParams) Validate() error {
 	v := new(Validator)
@@ -16897,7 +17797,6 @@ func (p *CurrentUserAccessTokenListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for CurrentUserAccessTokenDeleteParams are set
 func (p *CurrentUserAccessTokenDeleteParams) Validate() error {
 	v := new(Validator)
@@ -16907,7 +17806,6 @@ func (p *CurrentUserAccessTokenDeleteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for CurrentUserGroupsParams are set
 func (p *CurrentUserGroupsParams) Validate() error {
 	v := new(Validator)
@@ -16916,7 +17814,6 @@ func (p *CurrentUserGroupsParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for CurrentUserSshKeyListParams are set
 func (p *CurrentUserSshKeyListParams) Validate() error {
 	v := new(Validator)
@@ -16925,7 +17822,6 @@ func (p *CurrentUserSshKeyListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for CurrentUserSshKeyCreateParams are set
 func (p *CurrentUserSshKeyCreateParams) Validate() error {
 	v := new(Validator)
@@ -16935,7 +17831,6 @@ func (p *CurrentUserSshKeyCreateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for CurrentUserSshKeyDeleteParams are set
 func (p *CurrentUserSshKeyDeleteParams) Validate() error {
 	v := new(Validator)
@@ -16945,7 +17840,6 @@ func (p *CurrentUserSshKeyDeleteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for CurrentUserSshKeyViewParams are set
 func (p *CurrentUserSshKeyViewParams) Validate() error {
 	v := new(Validator)
@@ -16955,7 +17849,6 @@ func (p *CurrentUserSshKeyViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SiloMetricParams are set
 func (p *SiloMetricParams) Validate() error {
 	v := new(Validator)
@@ -16965,7 +17858,6 @@ func (p *SiloMetricParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for MulticastGroupListParams are set
 func (p *MulticastGroupListParams) Validate() error {
 	v := new(Validator)
@@ -16974,7 +17866,6 @@ func (p *MulticastGroupListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for MulticastGroupViewParams are set
 func (p *MulticastGroupViewParams) Validate() error {
 	v := new(Validator)
@@ -16984,7 +17875,6 @@ func (p *MulticastGroupViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for MulticastGroupMemberListParams are set
 func (p *MulticastGroupMemberListParams) Validate() error {
 	v := new(Validator)
@@ -16994,7 +17884,6 @@ func (p *MulticastGroupMemberListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InstanceNetworkInterfaceListParams are set
 func (p *InstanceNetworkInterfaceListParams) Validate() error {
 	v := new(Validator)
@@ -17003,7 +17892,6 @@ func (p *InstanceNetworkInterfaceListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InstanceNetworkInterfaceCreateParams are set
 func (p *InstanceNetworkInterfaceCreateParams) Validate() error {
 	v := new(Validator)
@@ -17014,7 +17902,6 @@ func (p *InstanceNetworkInterfaceCreateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InstanceNetworkInterfaceDeleteParams are set
 func (p *InstanceNetworkInterfaceDeleteParams) Validate() error {
 	v := new(Validator)
@@ -17024,7 +17911,6 @@ func (p *InstanceNetworkInterfaceDeleteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InstanceNetworkInterfaceViewParams are set
 func (p *InstanceNetworkInterfaceViewParams) Validate() error {
 	v := new(Validator)
@@ -17034,7 +17920,6 @@ func (p *InstanceNetworkInterfaceViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for InstanceNetworkInterfaceUpdateParams are set
 func (p *InstanceNetworkInterfaceUpdateParams) Validate() error {
 	v := new(Validator)
@@ -17045,7 +17930,6 @@ func (p *InstanceNetworkInterfaceUpdateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for PolicyUpdateParams are set
 func (p *PolicyUpdateParams) Validate() error {
 	v := new(Validator)
@@ -17055,7 +17939,6 @@ func (p *PolicyUpdateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for ProjectListParams are set
 func (p *ProjectListParams) Validate() error {
 	v := new(Validator)
@@ -17064,7 +17947,6 @@ func (p *ProjectListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for ProjectCreateParams are set
 func (p *ProjectCreateParams) Validate() error {
 	v := new(Validator)
@@ -17074,7 +17956,6 @@ func (p *ProjectCreateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for ProjectDeleteParams are set
 func (p *ProjectDeleteParams) Validate() error {
 	v := new(Validator)
@@ -17084,7 +17965,6 @@ func (p *ProjectDeleteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for ProjectViewParams are set
 func (p *ProjectViewParams) Validate() error {
 	v := new(Validator)
@@ -17094,7 +17974,6 @@ func (p *ProjectViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for ProjectUpdateParams are set
 func (p *ProjectUpdateParams) Validate() error {
 	v := new(Validator)
@@ -17105,7 +17984,6 @@ func (p *ProjectUpdateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for ProjectPolicyViewParams are set
 func (p *ProjectPolicyViewParams) Validate() error {
 	v := new(Validator)
@@ -17115,7 +17993,6 @@ func (p *ProjectPolicyViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for ProjectPolicyUpdateParams are set
 func (p *ProjectPolicyUpdateParams) Validate() error {
 	v := new(Validator)
@@ -17126,7 +18003,6 @@ func (p *ProjectPolicyUpdateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SnapshotListParams are set
 func (p *SnapshotListParams) Validate() error {
 	v := new(Validator)
@@ -17135,7 +18011,6 @@ func (p *SnapshotListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SnapshotCreateParams are set
 func (p *SnapshotCreateParams) Validate() error {
 	v := new(Validator)
@@ -17146,7 +18021,6 @@ func (p *SnapshotCreateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SnapshotDeleteParams are set
 func (p *SnapshotDeleteParams) Validate() error {
 	v := new(Validator)
@@ -17156,7 +18030,6 @@ func (p *SnapshotDeleteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SnapshotViewParams are set
 func (p *SnapshotViewParams) Validate() error {
 	v := new(Validator)
@@ -17166,7 +18039,6 @@ func (p *SnapshotViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SubnetPoolListParams are set
 func (p *SubnetPoolListParams) Validate() error {
 	v := new(Validator)
@@ -17175,7 +18047,6 @@ func (p *SubnetPoolListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SubnetPoolViewParams are set
 func (p *SubnetPoolViewParams) Validate() error {
 	v := new(Validator)
@@ -17185,7 +18056,6 @@ func (p *SubnetPoolViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for AuditLogListParams are set
 func (p *AuditLogListParams) Validate() error {
 	v := new(Validator)
@@ -17194,7 +18064,6 @@ func (p *AuditLogListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for PhysicalDiskListParams are set
 func (p *PhysicalDiskListParams) Validate() error {
 	v := new(Validator)
@@ -17203,7 +18072,6 @@ func (p *PhysicalDiskListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for PhysicalDiskViewParams are set
 func (p *PhysicalDiskViewParams) Validate() error {
 	v := new(Validator)
@@ -17213,7 +18081,6 @@ func (p *PhysicalDiskViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for NetworkingSwitchPortLldpNeighborsParams are set
 func (p *NetworkingSwitchPortLldpNeighborsParams) Validate() error {
 	v := new(Validator)
@@ -17225,7 +18092,6 @@ func (p *NetworkingSwitchPortLldpNeighborsParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for RackListParams are set
 func (p *RackListParams) Validate() error {
 	v := new(Validator)
@@ -17234,7 +18100,6 @@ func (p *RackListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for RackViewParams are set
 func (p *RackViewParams) Validate() error {
 	v := new(Validator)
@@ -17244,7 +18109,6 @@ func (p *RackViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for RackMembershipStatusParams are set
 func (p *RackMembershipStatusParams) Validate() error {
 	v := new(Validator)
@@ -17254,7 +18118,6 @@ func (p *RackMembershipStatusParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for RackMembershipAbortParams are set
 func (p *RackMembershipAbortParams) Validate() error {
 	v := new(Validator)
@@ -17264,7 +18127,6 @@ func (p *RackMembershipAbortParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for RackMembershipAddSledsParams are set
 func (p *RackMembershipAddSledsParams) Validate() error {
 	v := new(Validator)
@@ -17275,7 +18137,6 @@ func (p *RackMembershipAddSledsParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SledListParams are set
 func (p *SledListParams) Validate() error {
 	v := new(Validator)
@@ -17284,7 +18145,6 @@ func (p *SledListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SledAddParams are set
 func (p *SledAddParams) Validate() error {
 	v := new(Validator)
@@ -17294,7 +18154,6 @@ func (p *SledAddParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SledListUninitializedParams are set
 func (p *SledListUninitializedParams) Validate() error {
 	v := new(Validator)
@@ -17303,7 +18162,6 @@ func (p *SledListUninitializedParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SledViewParams are set
 func (p *SledViewParams) Validate() error {
 	v := new(Validator)
@@ -17313,7 +18171,6 @@ func (p *SledViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SledPhysicalDiskListParams are set
 func (p *SledPhysicalDiskListParams) Validate() error {
 	v := new(Validator)
@@ -17323,7 +18180,6 @@ func (p *SledPhysicalDiskListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SledInstanceListParams are set
 func (p *SledInstanceListParams) Validate() error {
 	v := new(Validator)
@@ -17333,7 +18189,6 @@ func (p *SledInstanceListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SledSetProvisionPolicyParams are set
 func (p *SledSetProvisionPolicyParams) Validate() error {
 	v := new(Validator)
@@ -17344,7 +18199,6 @@ func (p *SledSetProvisionPolicyParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for NetworkingSwitchPortListParams are set
 func (p *NetworkingSwitchPortListParams) Validate() error {
 	v := new(Validator)
@@ -17353,7 +18207,6 @@ func (p *NetworkingSwitchPortListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for NetworkingSwitchPortLldpConfigViewParams are set
 func (p *NetworkingSwitchPortLldpConfigViewParams) Validate() error {
 	v := new(Validator)
@@ -17365,7 +18218,6 @@ func (p *NetworkingSwitchPortLldpConfigViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for NetworkingSwitchPortLldpConfigUpdateParams are set
 func (p *NetworkingSwitchPortLldpConfigUpdateParams) Validate() error {
 	v := new(Validator)
@@ -17378,7 +18230,6 @@ func (p *NetworkingSwitchPortLldpConfigUpdateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for NetworkingSwitchPortClearSettingsParams are set
 func (p *NetworkingSwitchPortClearSettingsParams) Validate() error {
 	v := new(Validator)
@@ -17390,7 +18241,6 @@ func (p *NetworkingSwitchPortClearSettingsParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for NetworkingSwitchPortApplySettingsParams are set
 func (p *NetworkingSwitchPortApplySettingsParams) Validate() error {
 	v := new(Validator)
@@ -17403,7 +18253,6 @@ func (p *NetworkingSwitchPortApplySettingsParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for NetworkingSwitchPortStatusParams are set
 func (p *NetworkingSwitchPortStatusParams) Validate() error {
 	v := new(Validator)
@@ -17415,7 +18264,6 @@ func (p *NetworkingSwitchPortStatusParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SwitchListParams are set
 func (p *SwitchListParams) Validate() error {
 	v := new(Validator)
@@ -17424,7 +18272,6 @@ func (p *SwitchListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SwitchViewParams are set
 func (p *SwitchViewParams) Validate() error {
 	v := new(Validator)
@@ -17434,7 +18281,6 @@ func (p *SwitchViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SiloIdentityProviderListParams are set
 func (p *SiloIdentityProviderListParams) Validate() error {
 	v := new(Validator)
@@ -17443,7 +18289,6 @@ func (p *SiloIdentityProviderListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for LocalIdpUserCreateParams are set
 func (p *LocalIdpUserCreateParams) Validate() error {
 	v := new(Validator)
@@ -17454,7 +18299,6 @@ func (p *LocalIdpUserCreateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for LocalIdpUserDeleteParams are set
 func (p *LocalIdpUserDeleteParams) Validate() error {
 	v := new(Validator)
@@ -17465,7 +18309,6 @@ func (p *LocalIdpUserDeleteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for LocalIdpUserSetPasswordParams are set
 func (p *LocalIdpUserSetPasswordParams) Validate() error {
 	v := new(Validator)
@@ -17477,7 +18320,6 @@ func (p *LocalIdpUserSetPasswordParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SamlIdentityProviderCreateParams are set
 func (p *SamlIdentityProviderCreateParams) Validate() error {
 	v := new(Validator)
@@ -17488,7 +18330,6 @@ func (p *SamlIdentityProviderCreateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SamlIdentityProviderViewParams are set
 func (p *SamlIdentityProviderViewParams) Validate() error {
 	v := new(Validator)
@@ -17498,7 +18339,6 @@ func (p *SamlIdentityProviderViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemIpPoolListParams are set
 func (p *SystemIpPoolListParams) Validate() error {
 	v := new(Validator)
@@ -17507,7 +18347,6 @@ func (p *SystemIpPoolListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemIpPoolCreateParams are set
 func (p *SystemIpPoolCreateParams) Validate() error {
 	v := new(Validator)
@@ -17517,7 +18356,6 @@ func (p *SystemIpPoolCreateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemIpPoolServiceRangeListParams are set
 func (p *SystemIpPoolServiceRangeListParams) Validate() error {
 	v := new(Validator)
@@ -17526,7 +18364,6 @@ func (p *SystemIpPoolServiceRangeListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemIpPoolServiceRangeAddParams are set
 func (p *SystemIpPoolServiceRangeAddParams) Validate() error {
 	v := new(Validator)
@@ -17536,7 +18373,6 @@ func (p *SystemIpPoolServiceRangeAddParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemIpPoolServiceRangeRemoveParams are set
 func (p *SystemIpPoolServiceRangeRemoveParams) Validate() error {
 	v := new(Validator)
@@ -17546,7 +18382,6 @@ func (p *SystemIpPoolServiceRangeRemoveParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemIpPoolDeleteParams are set
 func (p *SystemIpPoolDeleteParams) Validate() error {
 	v := new(Validator)
@@ -17556,7 +18391,6 @@ func (p *SystemIpPoolDeleteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemIpPoolViewParams are set
 func (p *SystemIpPoolViewParams) Validate() error {
 	v := new(Validator)
@@ -17566,7 +18400,6 @@ func (p *SystemIpPoolViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemIpPoolUpdateParams are set
 func (p *SystemIpPoolUpdateParams) Validate() error {
 	v := new(Validator)
@@ -17577,7 +18410,6 @@ func (p *SystemIpPoolUpdateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemIpPoolRangeListParams are set
 func (p *SystemIpPoolRangeListParams) Validate() error {
 	v := new(Validator)
@@ -17587,7 +18419,6 @@ func (p *SystemIpPoolRangeListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemIpPoolRangeAddParams are set
 func (p *SystemIpPoolRangeAddParams) Validate() error {
 	v := new(Validator)
@@ -17598,7 +18429,6 @@ func (p *SystemIpPoolRangeAddParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemIpPoolRangeRemoveParams are set
 func (p *SystemIpPoolRangeRemoveParams) Validate() error {
 	v := new(Validator)
@@ -17609,7 +18439,6 @@ func (p *SystemIpPoolRangeRemoveParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemIpPoolSiloListParams are set
 func (p *SystemIpPoolSiloListParams) Validate() error {
 	v := new(Validator)
@@ -17619,7 +18448,6 @@ func (p *SystemIpPoolSiloListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemIpPoolSiloLinkParams are set
 func (p *SystemIpPoolSiloLinkParams) Validate() error {
 	v := new(Validator)
@@ -17630,7 +18458,6 @@ func (p *SystemIpPoolSiloLinkParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemIpPoolSiloUnlinkParams are set
 func (p *SystemIpPoolSiloUnlinkParams) Validate() error {
 	v := new(Validator)
@@ -17641,7 +18468,6 @@ func (p *SystemIpPoolSiloUnlinkParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemIpPoolSiloUpdateParams are set
 func (p *SystemIpPoolSiloUpdateParams) Validate() error {
 	v := new(Validator)
@@ -17653,7 +18479,6 @@ func (p *SystemIpPoolSiloUpdateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemIpPoolUtilizationViewParams are set
 func (p *SystemIpPoolUtilizationViewParams) Validate() error {
 	v := new(Validator)
@@ -17663,7 +18488,6 @@ func (p *SystemIpPoolUtilizationViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemMetricParams are set
 func (p *SystemMetricParams) Validate() error {
 	v := new(Validator)
@@ -17673,7 +18497,6 @@ func (p *SystemMetricParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for NetworkingAddressLotListParams are set
 func (p *NetworkingAddressLotListParams) Validate() error {
 	v := new(Validator)
@@ -17682,7 +18505,6 @@ func (p *NetworkingAddressLotListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for NetworkingAddressLotCreateParams are set
 func (p *NetworkingAddressLotCreateParams) Validate() error {
 	v := new(Validator)
@@ -17692,7 +18514,6 @@ func (p *NetworkingAddressLotCreateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for NetworkingAddressLotDeleteParams are set
 func (p *NetworkingAddressLotDeleteParams) Validate() error {
 	v := new(Validator)
@@ -17702,7 +18523,6 @@ func (p *NetworkingAddressLotDeleteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for NetworkingAddressLotViewParams are set
 func (p *NetworkingAddressLotViewParams) Validate() error {
 	v := new(Validator)
@@ -17712,7 +18532,6 @@ func (p *NetworkingAddressLotViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for NetworkingAddressLotBlockListParams are set
 func (p *NetworkingAddressLotBlockListParams) Validate() error {
 	v := new(Validator)
@@ -17722,7 +18541,6 @@ func (p *NetworkingAddressLotBlockListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for NetworkingAllowListUpdateParams are set
 func (p *NetworkingAllowListUpdateParams) Validate() error {
 	v := new(Validator)
@@ -17732,7 +18550,6 @@ func (p *NetworkingAllowListUpdateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for NetworkingBfdDisableParams are set
 func (p *NetworkingBfdDisableParams) Validate() error {
 	v := new(Validator)
@@ -17742,7 +18559,6 @@ func (p *NetworkingBfdDisableParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for NetworkingBfdEnableParams are set
 func (p *NetworkingBfdEnableParams) Validate() error {
 	v := new(Validator)
@@ -17752,7 +18568,6 @@ func (p *NetworkingBfdEnableParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for NetworkingBgpConfigDeleteParams are set
 func (p *NetworkingBgpConfigDeleteParams) Validate() error {
 	v := new(Validator)
@@ -17762,7 +18577,6 @@ func (p *NetworkingBgpConfigDeleteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for NetworkingBgpConfigListParams are set
 func (p *NetworkingBgpConfigListParams) Validate() error {
 	v := new(Validator)
@@ -17771,7 +18585,6 @@ func (p *NetworkingBgpConfigListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for NetworkingBgpConfigCreateParams are set
 func (p *NetworkingBgpConfigCreateParams) Validate() error {
 	v := new(Validator)
@@ -17781,7 +18594,6 @@ func (p *NetworkingBgpConfigCreateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for NetworkingBgpAnnounceSetListParams are set
 func (p *NetworkingBgpAnnounceSetListParams) Validate() error {
 	v := new(Validator)
@@ -17790,7 +18602,6 @@ func (p *NetworkingBgpAnnounceSetListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for NetworkingBgpAnnounceSetUpdateParams are set
 func (p *NetworkingBgpAnnounceSetUpdateParams) Validate() error {
 	v := new(Validator)
@@ -17800,7 +18611,6 @@ func (p *NetworkingBgpAnnounceSetUpdateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for NetworkingBgpAnnounceSetDeleteParams are set
 func (p *NetworkingBgpAnnounceSetDeleteParams) Validate() error {
 	v := new(Validator)
@@ -17810,7 +18620,6 @@ func (p *NetworkingBgpAnnounceSetDeleteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for NetworkingBgpAnnouncementListParams are set
 func (p *NetworkingBgpAnnouncementListParams) Validate() error {
 	v := new(Validator)
@@ -17820,7 +18629,6 @@ func (p *NetworkingBgpAnnouncementListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for NetworkingBgpMessageHistoryParams are set
 func (p *NetworkingBgpMessageHistoryParams) Validate() error {
 	v := new(Validator)
@@ -17830,7 +18638,6 @@ func (p *NetworkingBgpMessageHistoryParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for NetworkingBgpImportedRoutesIpv4Params are set
 func (p *NetworkingBgpImportedRoutesIpv4Params) Validate() error {
 	v := new(Validator)
@@ -17840,7 +18647,6 @@ func (p *NetworkingBgpImportedRoutesIpv4Params) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for NetworkingInboundIcmpUpdateParams are set
 func (p *NetworkingInboundIcmpUpdateParams) Validate() error {
 	v := new(Validator)
@@ -17850,7 +18656,6 @@ func (p *NetworkingInboundIcmpUpdateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for NetworkingLoopbackAddressListParams are set
 func (p *NetworkingLoopbackAddressListParams) Validate() error {
 	v := new(Validator)
@@ -17859,7 +18664,6 @@ func (p *NetworkingLoopbackAddressListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for NetworkingLoopbackAddressCreateParams are set
 func (p *NetworkingLoopbackAddressCreateParams) Validate() error {
 	v := new(Validator)
@@ -17869,7 +18673,6 @@ func (p *NetworkingLoopbackAddressCreateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for NetworkingLoopbackAddressDeleteParams are set
 func (p *NetworkingLoopbackAddressDeleteParams) Validate() error {
 	v := new(Validator)
@@ -17882,7 +18685,6 @@ func (p *NetworkingLoopbackAddressDeleteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for NetworkingSwitchPortSettingsDeleteParams are set
 func (p *NetworkingSwitchPortSettingsDeleteParams) Validate() error {
 	v := new(Validator)
@@ -17891,7 +18693,6 @@ func (p *NetworkingSwitchPortSettingsDeleteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for NetworkingSwitchPortSettingsListParams are set
 func (p *NetworkingSwitchPortSettingsListParams) Validate() error {
 	v := new(Validator)
@@ -17900,7 +18701,6 @@ func (p *NetworkingSwitchPortSettingsListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for NetworkingSwitchPortSettingsCreateParams are set
 func (p *NetworkingSwitchPortSettingsCreateParams) Validate() error {
 	v := new(Validator)
@@ -17910,7 +18710,6 @@ func (p *NetworkingSwitchPortSettingsCreateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for NetworkingSwitchPortSettingsViewParams are set
 func (p *NetworkingSwitchPortSettingsViewParams) Validate() error {
 	v := new(Validator)
@@ -17920,7 +18719,6 @@ func (p *NetworkingSwitchPortSettingsViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemPolicyUpdateParams are set
 func (p *SystemPolicyUpdateParams) Validate() error {
 	v := new(Validator)
@@ -17930,7 +18728,6 @@ func (p *SystemPolicyUpdateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for ScimTokenListParams are set
 func (p *ScimTokenListParams) Validate() error {
 	v := new(Validator)
@@ -17940,7 +18737,6 @@ func (p *ScimTokenListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for ScimTokenCreateParams are set
 func (p *ScimTokenCreateParams) Validate() error {
 	v := new(Validator)
@@ -17950,7 +18746,6 @@ func (p *ScimTokenCreateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for ScimTokenDeleteParams are set
 func (p *ScimTokenDeleteParams) Validate() error {
 	v := new(Validator)
@@ -17961,7 +18756,6 @@ func (p *ScimTokenDeleteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for ScimTokenViewParams are set
 func (p *ScimTokenViewParams) Validate() error {
 	v := new(Validator)
@@ -17972,7 +18766,6 @@ func (p *ScimTokenViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemQuotasListParams are set
 func (p *SystemQuotasListParams) Validate() error {
 	v := new(Validator)
@@ -17981,7 +18774,6 @@ func (p *SystemQuotasListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SiloListParams are set
 func (p *SiloListParams) Validate() error {
 	v := new(Validator)
@@ -17990,7 +18782,6 @@ func (p *SiloListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SiloCreateParams are set
 func (p *SiloCreateParams) Validate() error {
 	v := new(Validator)
@@ -18000,7 +18791,6 @@ func (p *SiloCreateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SiloDeleteParams are set
 func (p *SiloDeleteParams) Validate() error {
 	v := new(Validator)
@@ -18010,7 +18800,6 @@ func (p *SiloDeleteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SiloViewParams are set
 func (p *SiloViewParams) Validate() error {
 	v := new(Validator)
@@ -18020,7 +18809,6 @@ func (p *SiloViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SiloIpPoolListParams are set
 func (p *SiloIpPoolListParams) Validate() error {
 	v := new(Validator)
@@ -18030,7 +18818,6 @@ func (p *SiloIpPoolListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SiloPolicyViewParams are set
 func (p *SiloPolicyViewParams) Validate() error {
 	v := new(Validator)
@@ -18040,7 +18827,6 @@ func (p *SiloPolicyViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SiloPolicyUpdateParams are set
 func (p *SiloPolicyUpdateParams) Validate() error {
 	v := new(Validator)
@@ -18051,7 +18837,6 @@ func (p *SiloPolicyUpdateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SiloQuotasViewParams are set
 func (p *SiloQuotasViewParams) Validate() error {
 	v := new(Validator)
@@ -18061,7 +18846,6 @@ func (p *SiloQuotasViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SiloQuotasUpdateParams are set
 func (p *SiloQuotasUpdateParams) Validate() error {
 	v := new(Validator)
@@ -18072,7 +18856,6 @@ func (p *SiloQuotasUpdateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SiloSubnetPoolListParams are set
 func (p *SiloSubnetPoolListParams) Validate() error {
 	v := new(Validator)
@@ -18082,7 +18865,6 @@ func (p *SiloSubnetPoolListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemSubnetPoolListParams are set
 func (p *SystemSubnetPoolListParams) Validate() error {
 	v := new(Validator)
@@ -18091,7 +18873,6 @@ func (p *SystemSubnetPoolListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemSubnetPoolCreateParams are set
 func (p *SystemSubnetPoolCreateParams) Validate() error {
 	v := new(Validator)
@@ -18101,7 +18882,6 @@ func (p *SystemSubnetPoolCreateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemSubnetPoolDeleteParams are set
 func (p *SystemSubnetPoolDeleteParams) Validate() error {
 	v := new(Validator)
@@ -18111,7 +18891,6 @@ func (p *SystemSubnetPoolDeleteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemSubnetPoolViewParams are set
 func (p *SystemSubnetPoolViewParams) Validate() error {
 	v := new(Validator)
@@ -18121,7 +18900,6 @@ func (p *SystemSubnetPoolViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemSubnetPoolUpdateParams are set
 func (p *SystemSubnetPoolUpdateParams) Validate() error {
 	v := new(Validator)
@@ -18132,7 +18910,6 @@ func (p *SystemSubnetPoolUpdateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemSubnetPoolMemberListParams are set
 func (p *SystemSubnetPoolMemberListParams) Validate() error {
 	v := new(Validator)
@@ -18142,7 +18919,6 @@ func (p *SystemSubnetPoolMemberListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemSubnetPoolMemberAddParams are set
 func (p *SystemSubnetPoolMemberAddParams) Validate() error {
 	v := new(Validator)
@@ -18153,7 +18929,6 @@ func (p *SystemSubnetPoolMemberAddParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemSubnetPoolMemberRemoveParams are set
 func (p *SystemSubnetPoolMemberRemoveParams) Validate() error {
 	v := new(Validator)
@@ -18164,7 +18939,6 @@ func (p *SystemSubnetPoolMemberRemoveParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemSubnetPoolSiloListParams are set
 func (p *SystemSubnetPoolSiloListParams) Validate() error {
 	v := new(Validator)
@@ -18174,7 +18948,6 @@ func (p *SystemSubnetPoolSiloListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemSubnetPoolSiloLinkParams are set
 func (p *SystemSubnetPoolSiloLinkParams) Validate() error {
 	v := new(Validator)
@@ -18185,7 +18958,6 @@ func (p *SystemSubnetPoolSiloLinkParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemSubnetPoolSiloUnlinkParams are set
 func (p *SystemSubnetPoolSiloUnlinkParams) Validate() error {
 	v := new(Validator)
@@ -18196,7 +18968,6 @@ func (p *SystemSubnetPoolSiloUnlinkParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemSubnetPoolSiloUpdateParams are set
 func (p *SystemSubnetPoolSiloUpdateParams) Validate() error {
 	v := new(Validator)
@@ -18208,7 +18979,6 @@ func (p *SystemSubnetPoolSiloUpdateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemSubnetPoolUtilizationViewParams are set
 func (p *SystemSubnetPoolUtilizationViewParams) Validate() error {
 	v := new(Validator)
@@ -18218,7 +18988,6 @@ func (p *SystemSubnetPoolUtilizationViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemTimeseriesQueryParams are set
 func (p *SystemTimeseriesQueryParams) Validate() error {
 	v := new(Validator)
@@ -18228,7 +18997,6 @@ func (p *SystemTimeseriesQueryParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemTimeseriesSchemaListParams are set
 func (p *SystemTimeseriesSchemaListParams) Validate() error {
 	v := new(Validator)
@@ -18237,7 +19005,6 @@ func (p *SystemTimeseriesSchemaListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemUpdateRepositoryListParams are set
 func (p *SystemUpdateRepositoryListParams) Validate() error {
 	v := new(Validator)
@@ -18246,7 +19013,6 @@ func (p *SystemUpdateRepositoryListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemUpdateRepositoryUploadParams are set
 func (p *SystemUpdateRepositoryUploadParams) Validate() error {
 	v := new(Validator)
@@ -18257,7 +19023,6 @@ func (p *SystemUpdateRepositoryUploadParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemUpdateRepositoryViewParams are set
 func (p *SystemUpdateRepositoryViewParams) Validate() error {
 	v := new(Validator)
@@ -18267,7 +19032,6 @@ func (p *SystemUpdateRepositoryViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for TargetReleaseUpdateParams are set
 func (p *TargetReleaseUpdateParams) Validate() error {
 	v := new(Validator)
@@ -18277,7 +19041,6 @@ func (p *TargetReleaseUpdateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemUpdateTrustRootListParams are set
 func (p *SystemUpdateTrustRootListParams) Validate() error {
 	v := new(Validator)
@@ -18286,7 +19049,6 @@ func (p *SystemUpdateTrustRootListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemUpdateTrustRootCreateParams are set
 func (p *SystemUpdateTrustRootCreateParams) Validate() error {
 	v := new(Validator)
@@ -18296,7 +19058,6 @@ func (p *SystemUpdateTrustRootCreateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemUpdateTrustRootDeleteParams are set
 func (p *SystemUpdateTrustRootDeleteParams) Validate() error {
 	v := new(Validator)
@@ -18306,7 +19067,6 @@ func (p *SystemUpdateTrustRootDeleteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SystemUpdateTrustRootViewParams are set
 func (p *SystemUpdateTrustRootViewParams) Validate() error {
 	v := new(Validator)
@@ -18316,7 +19076,6 @@ func (p *SystemUpdateTrustRootViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SiloUserListParams are set
 func (p *SiloUserListParams) Validate() error {
 	v := new(Validator)
@@ -18325,7 +19084,6 @@ func (p *SiloUserListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for UserBuiltinListParams are set
 func (p *UserBuiltinListParams) Validate() error {
 	v := new(Validator)
@@ -18334,7 +19092,6 @@ func (p *UserBuiltinListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for UserBuiltinViewParams are set
 func (p *UserBuiltinViewParams) Validate() error {
 	v := new(Validator)
@@ -18344,7 +19101,6 @@ func (p *UserBuiltinViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SiloUserViewParams are set
 func (p *SiloUserViewParams) Validate() error {
 	v := new(Validator)
@@ -18355,7 +19111,6 @@ func (p *SiloUserViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SiloUtilizationListParams are set
 func (p *SiloUtilizationListParams) Validate() error {
 	v := new(Validator)
@@ -18364,7 +19119,6 @@ func (p *SiloUtilizationListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for SiloUtilizationViewParams are set
 func (p *SiloUtilizationViewParams) Validate() error {
 	v := new(Validator)
@@ -18374,7 +19128,6 @@ func (p *SiloUtilizationViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for TimeseriesQueryParams are set
 func (p *TimeseriesQueryParams) Validate() error {
 	v := new(Validator)
@@ -18385,7 +19138,6 @@ func (p *TimeseriesQueryParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for UserListParams are set
 func (p *UserListParams) Validate() error {
 	v := new(Validator)
@@ -18394,7 +19146,6 @@ func (p *UserListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for UserViewParams are set
 func (p *UserViewParams) Validate() error {
 	v := new(Validator)
@@ -18404,7 +19155,6 @@ func (p *UserViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for UserTokenListParams are set
 func (p *UserTokenListParams) Validate() error {
 	v := new(Validator)
@@ -18414,7 +19164,6 @@ func (p *UserTokenListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for UserLogoutParams are set
 func (p *UserLogoutParams) Validate() error {
 	v := new(Validator)
@@ -18424,7 +19173,6 @@ func (p *UserLogoutParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for UserSessionListParams are set
 func (p *UserSessionListParams) Validate() error {
 	v := new(Validator)
@@ -18434,7 +19182,6 @@ func (p *UserSessionListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for VpcFirewallRulesViewParams are set
 func (p *VpcFirewallRulesViewParams) Validate() error {
 	v := new(Validator)
@@ -18444,7 +19191,6 @@ func (p *VpcFirewallRulesViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for VpcFirewallRulesUpdateParams are set
 func (p *VpcFirewallRulesUpdateParams) Validate() error {
 	v := new(Validator)
@@ -18455,7 +19201,6 @@ func (p *VpcFirewallRulesUpdateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for VpcRouterRouteListParams are set
 func (p *VpcRouterRouteListParams) Validate() error {
 	v := new(Validator)
@@ -18464,7 +19209,6 @@ func (p *VpcRouterRouteListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for VpcRouterRouteCreateParams are set
 func (p *VpcRouterRouteCreateParams) Validate() error {
 	v := new(Validator)
@@ -18475,7 +19219,6 @@ func (p *VpcRouterRouteCreateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for VpcRouterRouteDeleteParams are set
 func (p *VpcRouterRouteDeleteParams) Validate() error {
 	v := new(Validator)
@@ -18485,7 +19228,6 @@ func (p *VpcRouterRouteDeleteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for VpcRouterRouteViewParams are set
 func (p *VpcRouterRouteViewParams) Validate() error {
 	v := new(Validator)
@@ -18495,7 +19237,6 @@ func (p *VpcRouterRouteViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for VpcRouterRouteUpdateParams are set
 func (p *VpcRouterRouteUpdateParams) Validate() error {
 	v := new(Validator)
@@ -18506,7 +19247,6 @@ func (p *VpcRouterRouteUpdateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for VpcRouterListParams are set
 func (p *VpcRouterListParams) Validate() error {
 	v := new(Validator)
@@ -18515,7 +19255,6 @@ func (p *VpcRouterListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for VpcRouterCreateParams are set
 func (p *VpcRouterCreateParams) Validate() error {
 	v := new(Validator)
@@ -18526,7 +19265,6 @@ func (p *VpcRouterCreateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for VpcRouterDeleteParams are set
 func (p *VpcRouterDeleteParams) Validate() error {
 	v := new(Validator)
@@ -18536,7 +19274,6 @@ func (p *VpcRouterDeleteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for VpcRouterViewParams are set
 func (p *VpcRouterViewParams) Validate() error {
 	v := new(Validator)
@@ -18546,7 +19283,6 @@ func (p *VpcRouterViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for VpcRouterUpdateParams are set
 func (p *VpcRouterUpdateParams) Validate() error {
 	v := new(Validator)
@@ -18557,7 +19293,6 @@ func (p *VpcRouterUpdateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for VpcSubnetListParams are set
 func (p *VpcSubnetListParams) Validate() error {
 	v := new(Validator)
@@ -18566,7 +19301,6 @@ func (p *VpcSubnetListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for VpcSubnetCreateParams are set
 func (p *VpcSubnetCreateParams) Validate() error {
 	v := new(Validator)
@@ -18577,7 +19311,6 @@ func (p *VpcSubnetCreateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for VpcSubnetDeleteParams are set
 func (p *VpcSubnetDeleteParams) Validate() error {
 	v := new(Validator)
@@ -18587,7 +19320,6 @@ func (p *VpcSubnetDeleteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for VpcSubnetViewParams are set
 func (p *VpcSubnetViewParams) Validate() error {
 	v := new(Validator)
@@ -18597,7 +19329,6 @@ func (p *VpcSubnetViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for VpcSubnetUpdateParams are set
 func (p *VpcSubnetUpdateParams) Validate() error {
 	v := new(Validator)
@@ -18608,7 +19339,6 @@ func (p *VpcSubnetUpdateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for VpcSubnetListNetworkInterfacesParams are set
 func (p *VpcSubnetListNetworkInterfacesParams) Validate() error {
 	v := new(Validator)
@@ -18618,7 +19348,6 @@ func (p *VpcSubnetListNetworkInterfacesParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for VpcListParams are set
 func (p *VpcListParams) Validate() error {
 	v := new(Validator)
@@ -18627,7 +19356,6 @@ func (p *VpcListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for VpcCreateParams are set
 func (p *VpcCreateParams) Validate() error {
 	v := new(Validator)
@@ -18638,7 +19366,6 @@ func (p *VpcCreateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for VpcDeleteParams are set
 func (p *VpcDeleteParams) Validate() error {
 	v := new(Validator)
@@ -18648,7 +19375,6 @@ func (p *VpcDeleteParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for VpcViewParams are set
 func (p *VpcViewParams) Validate() error {
 	v := new(Validator)
@@ -18658,7 +19384,6 @@ func (p *VpcViewParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for VpcUpdateParams are set
 func (p *VpcUpdateParams) Validate() error {
 	v := new(Validator)
@@ -18669,7 +19394,6 @@ func (p *VpcUpdateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for WebhookReceiverCreateParams are set
 func (p *WebhookReceiverCreateParams) Validate() error {
 	v := new(Validator)
@@ -18679,7 +19403,6 @@ func (p *WebhookReceiverCreateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for WebhookReceiverUpdateParams are set
 func (p *WebhookReceiverUpdateParams) Validate() error {
 	v := new(Validator)
@@ -18690,7 +19413,6 @@ func (p *WebhookReceiverUpdateParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for WebhookSecretsListParams are set
 func (p *WebhookSecretsListParams) Validate() error {
 	v := new(Validator)
@@ -18700,7 +19422,6 @@ func (p *WebhookSecretsListParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for WebhookSecretsAddParams are set
 func (p *WebhookSecretsAddParams) Validate() error {
 	v := new(Validator)
@@ -18711,7 +19432,6 @@ func (p *WebhookSecretsAddParams) Validate() error {
 	}
 	return nil
 }
-
 // Validate verifies all required fields for WebhookSecretsDeleteParams are set
 func (p *WebhookSecretsDeleteParams) Validate() error {
 	v := new(Validator)
@@ -18721,7 +19441,6 @@ func (p *WebhookSecretsDeleteParams) Validate() error {
 	}
 	return nil
 }
-
 // AddressAllocatorTypeExplicit represents the AddressAllocatorType `"explicit"`.
 const AddressAllocatorTypeExplicit AddressAllocatorType = "explicit"
 
@@ -19254,15 +19973,19 @@ const InstanceDiskAttachmentTypeCreate InstanceDiskAttachmentType = "create"
 const InstanceDiskAttachmentTypeAttach InstanceDiskAttachmentType = "attach"
 
 // InstanceNetworkInterfaceAttachmentTypeCreate represents the InstanceNetworkInterfaceAttachmentType `"create"`.
+// 
 const InstanceNetworkInterfaceAttachmentTypeCreate InstanceNetworkInterfaceAttachmentType = "create"
 
 // InstanceNetworkInterfaceAttachmentTypeDefaultIpv4 represents the InstanceNetworkInterfaceAttachmentType `"default_ipv4"`.
+// 
 const InstanceNetworkInterfaceAttachmentTypeDefaultIpv4 InstanceNetworkInterfaceAttachmentType = "default_ipv4"
 
 // InstanceNetworkInterfaceAttachmentTypeDefaultIpv6 represents the InstanceNetworkInterfaceAttachmentType `"default_ipv6"`.
+// 
 const InstanceNetworkInterfaceAttachmentTypeDefaultIpv6 InstanceNetworkInterfaceAttachmentType = "default_ipv6"
 
 // InstanceNetworkInterfaceAttachmentTypeDefaultDualStack represents the InstanceNetworkInterfaceAttachmentType `"default_dual_stack"`.
+// 
 const InstanceNetworkInterfaceAttachmentTypeDefaultDualStack InstanceNetworkInterfaceAttachmentType = "default_dual_stack"
 
 // InstanceNetworkInterfaceAttachmentTypeNone represents the InstanceNetworkInterfaceAttachmentType `"none"`.
@@ -20162,6 +20885,7 @@ var InstanceDiskAttachmentTypeCollection = []InstanceDiskAttachmentType{
 }
 
 // InstanceNetworkInterfaceAttachmentTypeCollection is the collection of all InstanceNetworkInterfaceAttachmentType values.
+// 
 var InstanceNetworkInterfaceAttachmentTypeCollection = []InstanceNetworkInterfaceAttachmentType{
 	InstanceNetworkInterfaceAttachmentTypeCreate,
 	InstanceNetworkInterfaceAttachmentTypeDefaultDualStack,
@@ -20557,3 +21281,4 @@ var WebhookDeliveryAttemptResultCollection = []WebhookDeliveryAttemptResult{
 	WebhookDeliveryAttemptResultFailedUnreachable,
 	WebhookDeliveryAttemptResultSucceeded,
 }
+

@@ -6,67 +6,58 @@
 
 package oxide
 
-import (
-	"bytes"
-	"context"
-	"encoding/json"
-	"errors"
-	"fmt"
-	"strconv"
-	"time"
-)
-
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
 //
 // ExperimentalProbeList: List instrumentation probes
 //
 // To iterate over all pages, use the `ExperimentalProbeListAllPages` method, instead.
-func (c *Client) ExperimentalProbeList(ctx context.Context, params ProbeListParams) (*ProbeInfoResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExperimentalProbeList(ctx context.Context, params ProbeListParams, ) (*ProbeInfoResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/experimental/v1/probes"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"project":    string(params.Project),
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/experimental/v1/probes"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "project": string(params.Project),
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body ProbeInfoResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body ProbeInfoResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
@@ -75,7 +66,7 @@ func (c *Client) ExperimentalProbeList(ctx context.Context, params ProbeListPara
 //
 // This method is a wrapper around the `ExperimentalProbeList` method.
 // This method returns all the pages at once.
-func (c *Client) ExperimentalProbeListAllPages(ctx context.Context, params ProbeListParams) ([]ProbeInfo, error) {
+func (c *Client) ExperimentalProbeListAllPages(ctx context.Context, params ProbeListParams, ) ([]ProbeInfo, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -100,144 +91,145 @@ func (c *Client) ExperimentalProbeListAllPages(ctx context.Context, params Probe
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
 //
 // ExperimentalProbeCreate: Create instrumentation probe
-func (c *Client) ExperimentalProbeCreate(ctx context.Context, params ProbeCreateParams) (*Probe, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExperimentalProbeCreate(ctx context.Context, params ProbeCreateParams, ) (*Probe, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/experimental/v1/probes"),
-		map[string]string{},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/experimental/v1/probes"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body Probe
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body Probe
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
 //
 // ExperimentalProbeView: View instrumentation probe
-func (c *Client) ExperimentalProbeView(ctx context.Context, params ProbeViewParams) (*ProbeInfo, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExperimentalProbeView(ctx context.Context, params ProbeViewParams, ) (*ProbeInfo, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/experimental/v1/probes/{{.probe}}"),
-		map[string]string{
-			"probe": string(params.Probe),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/experimental/v1/probes/{{.probe}}"), 
+        map[string]string{ 
+            "probe": string(params.Probe),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body ProbeInfo
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body ProbeInfo
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
 //
 // ExperimentalProbeDelete: Delete instrumentation probe
-func (c *Client) ExperimentalProbeDelete(ctx context.Context, params ProbeDeleteParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExperimentalProbeDelete(ctx context.Context, params ProbeDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/experimental/v1/probes/{{.probe}}"),
-		map[string]string{
-			"probe": string(params.Probe),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/experimental/v1/probes/{{.probe}}"), 
+        map[string]string{ 
+            "probe": string(params.Probe),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
@@ -245,51 +237,52 @@ func (c *Client) ExperimentalProbeDelete(ctx context.Context, params ProbeDelete
 // ExperimentalSupportBundleList: List all support bundles
 //
 // To iterate over all pages, use the `ExperimentalSupportBundleListAllPages` method, instead.
-func (c *Client) ExperimentalSupportBundleList(ctx context.Context, params SupportBundleListParams) (*SupportBundleInfoResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExperimentalSupportBundleList(ctx context.Context, params SupportBundleListParams, ) (*SupportBundleInfoResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/experimental/v1/system/support-bundles"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/experimental/v1/system/support-bundles"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SupportBundleInfoResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SupportBundleInfoResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
@@ -298,7 +291,7 @@ func (c *Client) ExperimentalSupportBundleList(ctx context.Context, params Suppo
 //
 // This method is a wrapper around the `ExperimentalSupportBundleList` method.
 // This method returns all the pages at once.
-func (c *Client) ExperimentalSupportBundleListAllPages(ctx context.Context, params SupportBundleListParams) ([]SupportBundleInfo, error) {
+func (c *Client) ExperimentalSupportBundleListAllPages(ctx context.Context, params SupportBundleListParams, ) ([]SupportBundleInfo, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -323,155 +316,159 @@ func (c *Client) ExperimentalSupportBundleListAllPages(ctx context.Context, para
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
 //
 // ExperimentalSupportBundleCreate: Create a new support bundle
-func (c *Client) ExperimentalSupportBundleCreate(ctx context.Context, params SupportBundleCreateParams) (*SupportBundleInfo, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExperimentalSupportBundleCreate(ctx context.Context, params SupportBundleCreateParams, ) (*SupportBundleInfo, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/experimental/v1/system/support-bundles"),
-		map[string]string{},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/experimental/v1/system/support-bundles"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SupportBundleInfo
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SupportBundleInfo
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
 //
 // ExperimentalSupportBundleView: View support bundle
-func (c *Client) ExperimentalSupportBundleView(ctx context.Context, params SupportBundleViewParams) (*SupportBundleInfo, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExperimentalSupportBundleView(ctx context.Context, params SupportBundleViewParams, ) (*SupportBundleInfo, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/experimental/v1/system/support-bundles/{{.bundle_id}}"),
-		map[string]string{
-			"bundle_id": params.BundleId,
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/experimental/v1/system/support-bundles/{{.bundle_id}}"), 
+        map[string]string{ 
+            "bundle_id": params.BundleId,
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SupportBundleInfo
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SupportBundleInfo
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
 //
 // ExperimentalSupportBundleUpdate: Update a support bundle
-func (c *Client) ExperimentalSupportBundleUpdate(ctx context.Context, params SupportBundleUpdateParams) (*SupportBundleInfo, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExperimentalSupportBundleUpdate(ctx context.Context, params SupportBundleUpdateParams, ) (*SupportBundleInfo, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"PUT",
-		resolveRelative(c.host, "/experimental/v1/system/support-bundles/{{.bundle_id}}"),
-		map[string]string{
-			"bundle_id": params.BundleId,
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "PUT", 
+        resolveRelative(c.host, "/experimental/v1/system/support-bundles/{{.bundle_id}}"), 
+        map[string]string{ 
+            "bundle_id": params.BundleId,
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SupportBundleInfo
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SupportBundleInfo
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
@@ -479,263 +476,270 @@ func (c *Client) ExperimentalSupportBundleUpdate(ctx context.Context, params Sup
 // ExperimentalSupportBundleDelete: Delete an existing support bundle
 // May also be used to cancel a support bundle which is currently being collected, or to remove metadata for
 // a support bundle that has failed.
-func (c *Client) ExperimentalSupportBundleDelete(ctx context.Context, params SupportBundleDeleteParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExperimentalSupportBundleDelete(ctx context.Context, params SupportBundleDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/experimental/v1/system/support-bundles/{{.bundle_id}}"),
-		map[string]string{
-			"bundle_id": params.BundleId,
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/experimental/v1/system/support-bundles/{{.bundle_id}}"), 
+        map[string]string{ 
+            "bundle_id": params.BundleId,
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
 //
 // ExperimentalSupportBundleDownload: Download the contents of a support bundle
-func (c *Client) ExperimentalSupportBundleDownload(ctx context.Context, params SupportBundleDownloadParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExperimentalSupportBundleDownload(ctx context.Context, params SupportBundleDownloadParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/experimental/v1/system/support-bundles/{{.bundle_id}}/download"),
-		map[string]string{
-			"bundle_id": params.BundleId,
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/experimental/v1/system/support-bundles/{{.bundle_id}}/download"), 
+        map[string]string{ 
+            "bundle_id": params.BundleId,
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
 //
 // ExperimentalSupportBundleHead: Download the metadata of a support bundle
-func (c *Client) ExperimentalSupportBundleHead(ctx context.Context, params SupportBundleHeadParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExperimentalSupportBundleHead(ctx context.Context, params SupportBundleHeadParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"HEAD",
-		resolveRelative(c.host, "/experimental/v1/system/support-bundles/{{.bundle_id}}/download"),
-		map[string]string{
-			"bundle_id": params.BundleId,
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "HEAD", 
+        resolveRelative(c.host, "/experimental/v1/system/support-bundles/{{.bundle_id}}/download"), 
+        map[string]string{ 
+            "bundle_id": params.BundleId,
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
 //
 // ExperimentalSupportBundleDownloadFile: Download a file within a support bundle
-func (c *Client) ExperimentalSupportBundleDownloadFile(ctx context.Context, params SupportBundleDownloadFileParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExperimentalSupportBundleDownloadFile(ctx context.Context, params SupportBundleDownloadFileParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/experimental/v1/system/support-bundles/{{.bundle_id}}/download/{{.file}}"),
-		map[string]string{
-			"bundle_id": params.BundleId,
-			"file":      params.File,
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/experimental/v1/system/support-bundles/{{.bundle_id}}/download/{{.file}}"), 
+        map[string]string{ 
+            "bundle_id": params.BundleId,
+            "file": params.File,
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
 //
 // ExperimentalSupportBundleHeadFile: Download the metadata of a file within the support bundle
-func (c *Client) ExperimentalSupportBundleHeadFile(ctx context.Context, params SupportBundleHeadFileParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExperimentalSupportBundleHeadFile(ctx context.Context, params SupportBundleHeadFileParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"HEAD",
-		resolveRelative(c.host, "/experimental/v1/system/support-bundles/{{.bundle_id}}/download/{{.file}}"),
-		map[string]string{
-			"bundle_id": params.BundleId,
-			"file":      params.File,
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "HEAD", 
+        resolveRelative(c.host, "/experimental/v1/system/support-bundles/{{.bundle_id}}/download/{{.file}}"), 
+        map[string]string{ 
+            "bundle_id": params.BundleId,
+            "file": params.File,
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
 //
 // ExperimentalSupportBundleIndex: Download the index of a support bundle
-func (c *Client) ExperimentalSupportBundleIndex(ctx context.Context, params SupportBundleIndexParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExperimentalSupportBundleIndex(ctx context.Context, params SupportBundleIndexParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/experimental/v1/system/support-bundles/{{.bundle_id}}/index"),
-		map[string]string{
-			"bundle_id": params.BundleId,
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/experimental/v1/system/support-bundles/{{.bundle_id}}/index"), 
+        map[string]string{ 
+            "bundle_id": params.BundleId,
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // LoginSaml: Authenticate a user via SAML
-func (c *Client) LoginSaml(ctx context.Context, params LoginSamlParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) LoginSaml(ctx context.Context, params LoginSamlParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	b := params.Body
+    b := params.Body
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/login/{{.silo_name}}/saml/{{.provider_name}}"),
-		map[string]string{
-			"provider_name": string(params.ProviderName),
-			"silo_name":     string(params.SiloName),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/login/{{.silo_name}}/saml/{{.provider_name}}"), 
+        map[string]string{ 
+            "provider_name": string(params.ProviderName),
+            "silo_name": string(params.SiloName),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
@@ -743,52 +747,53 @@ func (c *Client) LoginSaml(ctx context.Context, params LoginSamlParams) error {
 // ExperimentalAffinityGroupList: List affinity groups
 //
 // To iterate over all pages, use the `ExperimentalAffinityGroupListAllPages` method, instead.
-func (c *Client) ExperimentalAffinityGroupList(ctx context.Context, params AffinityGroupListParams) (*AffinityGroupResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExperimentalAffinityGroupList(ctx context.Context, params AffinityGroupListParams, ) (*AffinityGroupResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/affinity-groups"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"project":    string(params.Project),
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/affinity-groups"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "project": string(params.Project),
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body AffinityGroupResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body AffinityGroupResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
@@ -797,7 +802,7 @@ func (c *Client) ExperimentalAffinityGroupList(ctx context.Context, params Affin
 //
 // This method is a wrapper around the `ExperimentalAffinityGroupList` method.
 // This method returns all the pages at once.
-func (c *Client) ExperimentalAffinityGroupListAllPages(ctx context.Context, params AffinityGroupListParams) ([]AffinityGroup, error) {
+func (c *Client) ExperimentalAffinityGroupListAllPages(ctx context.Context, params AffinityGroupListParams, ) ([]AffinityGroup, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -822,200 +827,201 @@ func (c *Client) ExperimentalAffinityGroupListAllPages(ctx context.Context, para
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
 //
 // ExperimentalAffinityGroupCreate: Create affinity group
-func (c *Client) ExperimentalAffinityGroupCreate(ctx context.Context, params AffinityGroupCreateParams) (*AffinityGroup, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExperimentalAffinityGroupCreate(ctx context.Context, params AffinityGroupCreateParams, ) (*AffinityGroup, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/affinity-groups"),
-		map[string]string{},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/affinity-groups"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body AffinityGroup
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body AffinityGroup
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
 //
 // ExperimentalAffinityGroupView: Fetch affinity group
-func (c *Client) ExperimentalAffinityGroupView(ctx context.Context, params AffinityGroupViewParams) (*AffinityGroup, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExperimentalAffinityGroupView(ctx context.Context, params AffinityGroupViewParams, ) (*AffinityGroup, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/affinity-groups/{{.affinity_group}}"),
-		map[string]string{
-			"affinity_group": string(params.AffinityGroup),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/affinity-groups/{{.affinity_group}}"), 
+        map[string]string{ 
+            "affinity_group": string(params.AffinityGroup),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body AffinityGroup
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body AffinityGroup
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
 //
 // ExperimentalAffinityGroupUpdate: Update affinity group
-func (c *Client) ExperimentalAffinityGroupUpdate(ctx context.Context, params AffinityGroupUpdateParams) (*AffinityGroup, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExperimentalAffinityGroupUpdate(ctx context.Context, params AffinityGroupUpdateParams, ) (*AffinityGroup, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"PUT",
-		resolveRelative(c.host, "/v1/affinity-groups/{{.affinity_group}}"),
-		map[string]string{
-			"affinity_group": string(params.AffinityGroup),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "PUT", 
+        resolveRelative(c.host, "/v1/affinity-groups/{{.affinity_group}}"), 
+        map[string]string{ 
+            "affinity_group": string(params.AffinityGroup),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body AffinityGroup
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body AffinityGroup
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
 //
 // ExperimentalAffinityGroupDelete: Delete affinity group
-func (c *Client) ExperimentalAffinityGroupDelete(ctx context.Context, params AffinityGroupDeleteParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExperimentalAffinityGroupDelete(ctx context.Context, params AffinityGroupDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/affinity-groups/{{.affinity_group}}"),
-		map[string]string{
-			"affinity_group": string(params.AffinityGroup),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/affinity-groups/{{.affinity_group}}"), 
+        map[string]string{ 
+            "affinity_group": string(params.AffinityGroup),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
@@ -1023,54 +1029,54 @@ func (c *Client) ExperimentalAffinityGroupDelete(ctx context.Context, params Aff
 // ExperimentalAffinityGroupMemberList: List affinity group members
 //
 // To iterate over all pages, use the `ExperimentalAffinityGroupMemberListAllPages` method, instead.
-func (c *Client) ExperimentalAffinityGroupMemberList(ctx context.Context, params AffinityGroupMemberListParams) (*AffinityGroupMemberResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExperimentalAffinityGroupMemberList(ctx context.Context, params AffinityGroupMemberListParams, ) (*AffinityGroupMemberResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/affinity-groups/{{.affinity_group}}/members"),
-		map[string]string{
-			"affinity_group": string(params.AffinityGroup),
-		},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"project":    string(params.Project),
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/affinity-groups/{{.affinity_group}}/members"), 
+        map[string]string{ 
+            "affinity_group": string(params.AffinityGroup),
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "project": string(params.Project),
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body AffinityGroupMemberResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body AffinityGroupMemberResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
@@ -1079,7 +1085,7 @@ func (c *Client) ExperimentalAffinityGroupMemberList(ctx context.Context, params
 //
 // This method is a wrapper around the `ExperimentalAffinityGroupMemberList` method.
 // This method returns all the pages at once.
-func (c *Client) ExperimentalAffinityGroupMemberListAllPages(ctx context.Context, params AffinityGroupMemberListParams) ([]AffinityGroupMember, error) {
+func (c *Client) ExperimentalAffinityGroupMemberListAllPages(ctx context.Context, params AffinityGroupMemberListParams, ) ([]AffinityGroupMember, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -1104,200 +1110,201 @@ func (c *Client) ExperimentalAffinityGroupMemberListAllPages(ctx context.Context
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
 //
 // ExperimentalAffinityGroupMemberInstanceView: Fetch affinity group member
-func (c *Client) ExperimentalAffinityGroupMemberInstanceView(ctx context.Context, params AffinityGroupMemberInstanceViewParams) (*AffinityGroupMember, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExperimentalAffinityGroupMemberInstanceView(ctx context.Context, params AffinityGroupMemberInstanceViewParams, ) (*AffinityGroupMember, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/affinity-groups/{{.affinity_group}}/members/instance/{{.instance}}"),
-		map[string]string{
-			"affinity_group": string(params.AffinityGroup),
-			"instance":       string(params.Instance),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/affinity-groups/{{.affinity_group}}/members/instance/{{.instance}}"), 
+        map[string]string{ 
+            "affinity_group": string(params.AffinityGroup),
+            "instance": string(params.Instance),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body AffinityGroupMember
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body AffinityGroupMember
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
 //
 // ExperimentalAffinityGroupMemberInstanceAdd: Add member to affinity group
-func (c *Client) ExperimentalAffinityGroupMemberInstanceAdd(ctx context.Context, params AffinityGroupMemberInstanceAddParams) (*AffinityGroupMember, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExperimentalAffinityGroupMemberInstanceAdd(ctx context.Context, params AffinityGroupMemberInstanceAddParams, ) (*AffinityGroupMember, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"POST",
-		resolveRelative(c.host, "/v1/affinity-groups/{{.affinity_group}}/members/instance/{{.instance}}"),
-		map[string]string{
-			"affinity_group": string(params.AffinityGroup),
-			"instance":       string(params.Instance),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "POST", 
+        resolveRelative(c.host, "/v1/affinity-groups/{{.affinity_group}}/members/instance/{{.instance}}"), 
+        map[string]string{ 
+            "affinity_group": string(params.AffinityGroup),
+            "instance": string(params.Instance),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body AffinityGroupMember
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body AffinityGroupMember
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
 //
 // ExperimentalAffinityGroupMemberInstanceDelete: Remove member from affinity group
-func (c *Client) ExperimentalAffinityGroupMemberInstanceDelete(ctx context.Context, params AffinityGroupMemberInstanceDeleteParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExperimentalAffinityGroupMemberInstanceDelete(ctx context.Context, params AffinityGroupMemberInstanceDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/affinity-groups/{{.affinity_group}}/members/instance/{{.instance}}"),
-		map[string]string{
-			"affinity_group": string(params.AffinityGroup),
-			"instance":       string(params.Instance),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/affinity-groups/{{.affinity_group}}/members/instance/{{.instance}}"), 
+        map[string]string{ 
+            "affinity_group": string(params.AffinityGroup),
+            "instance": string(params.Instance),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // AlertClassList: List alert classes
 //
 // To iterate over all pages, use the `AlertClassListAllPages` method, instead.
-func (c *Client) AlertClassList(ctx context.Context, params AlertClassListParams) (*AlertClassResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) AlertClassList(ctx context.Context, params AlertClassListParams, ) (*AlertClassResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/alert-classes"),
-		map[string]string{},
-		map[string]string{
-			"filter":     string(params.Filter),
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/alert-classes"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "filter": string(params.Filter),
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body AlertClassResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body AlertClassResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // AlertClassListAllPages: List alert classes
 //
 // This method is a wrapper around the `AlertClassList` method.
 // This method returns all the pages at once.
-func (c *Client) AlertClassListAllPages(ctx context.Context, params AlertClassListParams) ([]AlertClass, error) {
+func (c *Client) AlertClassListAllPages(ctx context.Context, params AlertClassListParams, ) ([]AlertClass, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -1322,58 +1329,59 @@ func (c *Client) AlertClassListAllPages(ctx context.Context, params AlertClassLi
 // AlertReceiverList: List alert receivers
 //
 // To iterate over all pages, use the `AlertReceiverListAllPages` method, instead.
-func (c *Client) AlertReceiverList(ctx context.Context, params AlertReceiverListParams) (*AlertReceiverResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) AlertReceiverList(ctx context.Context, params AlertReceiverListParams, ) (*AlertReceiverResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/alert-receivers"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/alert-receivers"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body AlertReceiverResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body AlertReceiverResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // AlertReceiverListAllPages: List alert receivers
 //
 // This method is a wrapper around the `AlertReceiverList` method.
 // This method returns all the pages at once.
-func (c *Client) AlertReceiverListAllPages(ctx context.Context, params AlertReceiverListParams) ([]AlertReceiver, error) {
+func (c *Client) AlertReceiverListAllPages(ctx context.Context, params AlertReceiverListParams, ) ([]AlertReceiver, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -1396,84 +1404,86 @@ func (c *Client) AlertReceiverListAllPages(ctx context.Context, params AlertRece
 }
 
 // AlertReceiverView: Fetch alert receiver
-func (c *Client) AlertReceiverView(ctx context.Context, params AlertReceiverViewParams) (*AlertReceiver, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) AlertReceiverView(ctx context.Context, params AlertReceiverViewParams, ) (*AlertReceiver, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/alert-receivers/{{.receiver}}"),
-		map[string]string{
-			"receiver": string(params.Receiver),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/alert-receivers/{{.receiver}}"), 
+        map[string]string{ 
+            "receiver": string(params.Receiver),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body AlertReceiver
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body AlertReceiver
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // AlertReceiverDelete: Delete alert receiver
-func (c *Client) AlertReceiverDelete(ctx context.Context, params AlertReceiverDeleteParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) AlertReceiverDelete(ctx context.Context, params AlertReceiverDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/alert-receivers/{{.receiver}}"),
-		map[string]string{
-			"receiver": string(params.Receiver),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/alert-receivers/{{.receiver}}"), 
+        map[string]string{ 
+            "receiver": string(params.Receiver),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // AlertDeliveryList: List delivery attempts to alert receiver
@@ -1482,56 +1492,56 @@ func (c *Client) AlertReceiverDelete(ctx context.Context, params AlertReceiverDe
 // parameters are provided, only those which are set to "true" are included in the response.
 //
 // To iterate over all pages, use the `AlertDeliveryListAllPages` method, instead.
-func (c *Client) AlertDeliveryList(ctx context.Context, params AlertDeliveryListParams) (*AlertDeliveryResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) AlertDeliveryList(ctx context.Context, params AlertDeliveryListParams, ) (*AlertDeliveryResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/alert-receivers/{{.receiver}}/deliveries"),
-		map[string]string{
-			"receiver": string(params.Receiver),
-		},
-		map[string]string{
-			"delivered":  strconv.FormatBool(*params.Delivered),
-			"failed":     strconv.FormatBool(*params.Failed),
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"pending":    strconv.FormatBool(*params.Pending),
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/alert-receivers/{{.receiver}}/deliveries"), 
+        map[string]string{ 
+            "receiver": string(params.Receiver),
+        }, 
+        map[string]string{ 
+            "delivered": strconv.FormatBool(*params.Delivered),
+            "failed": strconv.FormatBool(*params.Failed),
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "pending": strconv.FormatBool(*params.Pending),
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body AlertDeliveryResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body AlertDeliveryResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // AlertDeliveryListAllPages: List delivery attempts to alert receiver
@@ -1541,7 +1551,7 @@ func (c *Client) AlertDeliveryList(ctx context.Context, params AlertDeliveryList
 //
 // This method is a wrapper around the `AlertDeliveryList` method.
 // This method returns all the pages at once.
-func (c *Client) AlertDeliveryListAllPages(ctx context.Context, params AlertDeliveryListParams) ([]AlertDelivery, error) {
+func (c *Client) AlertDeliveryListAllPages(ctx context.Context, params AlertDeliveryListParams, ) ([]AlertDelivery, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -1567,256 +1577,260 @@ func (c *Client) AlertDeliveryListAllPages(ctx context.Context, params AlertDeli
 // This endpoint synchronously sends a liveness probe to the selected alert receiver. The response message describes
 // the outcome of the probe: either the successful response (as appropriate), or indication of why the probe failed.
 //
+// 
 // The result of the probe is represented as an `AlertDelivery` model. Details relating to the status of the
 // probe depend on the alert delivery mechanism, and are included in the `AlertDeliveryAttempts` model. For
 // example, webhook receiver liveness probes include the HTTP status code returned by the receiver endpoint.
-//
+// 
 // Note that the response status is `200 OK` as long as a probe request was able to be sent to the receiver endpoint.
 // If an HTTP-based receiver, such as a webhook, responds to the another status code, including an error, this
 // will be indicated by the response body, *not* the status of the response.
-//
+// 
 // The `resend` query parameter can be used to request re-delivery of failed events if the liveness probe succeeds.
 // If it is set to true and the liveness probe succeeds, any alerts for which delivery to this receiver has
 // failed will be queued for re-delivery.
-func (c *Client) AlertReceiverProbe(ctx context.Context, params AlertReceiverProbeParams) (*AlertProbeResult, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) AlertReceiverProbe(ctx context.Context, params AlertReceiverProbeParams, ) (*AlertProbeResult, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"POST",
-		resolveRelative(c.host, "/v1/alert-receivers/{{.receiver}}/probe"),
-		map[string]string{
-			"receiver": string(params.Receiver),
-		},
-		map[string]string{
-			"resend": strconv.FormatBool(*params.Resend),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "POST", 
+        resolveRelative(c.host, "/v1/alert-receivers/{{.receiver}}/probe"), 
+        map[string]string{ 
+            "receiver": string(params.Receiver),
+        }, 
+        map[string]string{ 
+            "resend": strconv.FormatBool(*params.Resend),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body AlertProbeResult
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body AlertProbeResult
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // AlertReceiverSubscriptionAdd: Add alert receiver subscription
-func (c *Client) AlertReceiverSubscriptionAdd(ctx context.Context, params AlertReceiverSubscriptionAddParams) (*AlertSubscriptionCreated, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) AlertReceiverSubscriptionAdd(ctx context.Context, params AlertReceiverSubscriptionAddParams, ) (*AlertSubscriptionCreated, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/alert-receivers/{{.receiver}}/subscriptions"),
-		map[string]string{
-			"receiver": string(params.Receiver),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/alert-receivers/{{.receiver}}/subscriptions"), 
+        map[string]string{ 
+            "receiver": string(params.Receiver),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body AlertSubscriptionCreated
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body AlertSubscriptionCreated
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // AlertReceiverSubscriptionRemove: Remove alert receiver subscription
-func (c *Client) AlertReceiverSubscriptionRemove(ctx context.Context, params AlertReceiverSubscriptionRemoveParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) AlertReceiverSubscriptionRemove(ctx context.Context, params AlertReceiverSubscriptionRemoveParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/alert-receivers/{{.receiver}}/subscriptions/{{.subscription}}"),
-		map[string]string{
-			"receiver":     string(params.Receiver),
-			"subscription": string(params.Subscription),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/alert-receivers/{{.receiver}}/subscriptions/{{.subscription}}"), 
+        map[string]string{ 
+            "receiver": string(params.Receiver),
+            "subscription": string(params.Subscription),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // AlertDeliveryResend: Request re-delivery of alert
-func (c *Client) AlertDeliveryResend(ctx context.Context, params AlertDeliveryResendParams) (*AlertDeliveryId, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) AlertDeliveryResend(ctx context.Context, params AlertDeliveryResendParams, ) (*AlertDeliveryId, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"POST",
-		resolveRelative(c.host, "/v1/alerts/{{.alert_id}}/resend"),
-		map[string]string{
-			"alert_id": params.AlertId,
-		},
-		map[string]string{
-			"receiver": string(params.Receiver),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "POST", 
+        resolveRelative(c.host, "/v1/alerts/{{.alert_id}}/resend"), 
+        map[string]string{ 
+            "alert_id": params.AlertId,
+        }, 
+        map[string]string{ 
+            "receiver": string(params.Receiver),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body AlertDeliveryId
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body AlertDeliveryId
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // AntiAffinityGroupList: List anti-affinity groups
 //
 // To iterate over all pages, use the `AntiAffinityGroupListAllPages` method, instead.
-func (c *Client) AntiAffinityGroupList(ctx context.Context, params AntiAffinityGroupListParams) (*AntiAffinityGroupResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) AntiAffinityGroupList(ctx context.Context, params AntiAffinityGroupListParams, ) (*AntiAffinityGroupResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/anti-affinity-groups"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"project":    string(params.Project),
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/anti-affinity-groups"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "project": string(params.Project),
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body AntiAffinityGroupResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body AntiAffinityGroupResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // AntiAffinityGroupListAllPages: List anti-affinity groups
 //
 // This method is a wrapper around the `AntiAffinityGroupList` method.
 // This method returns all the pages at once.
-func (c *Client) AntiAffinityGroupListAllPages(ctx context.Context, params AntiAffinityGroupListParams) ([]AntiAffinityGroup, error) {
+func (c *Client) AntiAffinityGroupListAllPages(ctx context.Context, params AntiAffinityGroupListParams, ) ([]AntiAffinityGroup, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -1839,254 +1853,255 @@ func (c *Client) AntiAffinityGroupListAllPages(ctx context.Context, params AntiA
 }
 
 // AntiAffinityGroupCreate: Create anti-affinity group
-func (c *Client) AntiAffinityGroupCreate(ctx context.Context, params AntiAffinityGroupCreateParams) (*AntiAffinityGroup, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) AntiAffinityGroupCreate(ctx context.Context, params AntiAffinityGroupCreateParams, ) (*AntiAffinityGroup, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/anti-affinity-groups"),
-		map[string]string{},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/anti-affinity-groups"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body AntiAffinityGroup
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body AntiAffinityGroup
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // AntiAffinityGroupView: Fetch anti-affinity group
-func (c *Client) AntiAffinityGroupView(ctx context.Context, params AntiAffinityGroupViewParams) (*AntiAffinityGroup, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) AntiAffinityGroupView(ctx context.Context, params AntiAffinityGroupViewParams, ) (*AntiAffinityGroup, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/anti-affinity-groups/{{.anti_affinity_group}}"),
-		map[string]string{
-			"anti_affinity_group": string(params.AntiAffinityGroup),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/anti-affinity-groups/{{.anti_affinity_group}}"), 
+        map[string]string{ 
+            "anti_affinity_group": string(params.AntiAffinityGroup),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body AntiAffinityGroup
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body AntiAffinityGroup
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // AntiAffinityGroupUpdate: Update anti-affinity group
-func (c *Client) AntiAffinityGroupUpdate(ctx context.Context, params AntiAffinityGroupUpdateParams) (*AntiAffinityGroup, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) AntiAffinityGroupUpdate(ctx context.Context, params AntiAffinityGroupUpdateParams, ) (*AntiAffinityGroup, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"PUT",
-		resolveRelative(c.host, "/v1/anti-affinity-groups/{{.anti_affinity_group}}"),
-		map[string]string{
-			"anti_affinity_group": string(params.AntiAffinityGroup),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "PUT", 
+        resolveRelative(c.host, "/v1/anti-affinity-groups/{{.anti_affinity_group}}"), 
+        map[string]string{ 
+            "anti_affinity_group": string(params.AntiAffinityGroup),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body AntiAffinityGroup
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body AntiAffinityGroup
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // AntiAffinityGroupDelete: Delete anti-affinity group
-func (c *Client) AntiAffinityGroupDelete(ctx context.Context, params AntiAffinityGroupDeleteParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) AntiAffinityGroupDelete(ctx context.Context, params AntiAffinityGroupDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/anti-affinity-groups/{{.anti_affinity_group}}"),
-		map[string]string{
-			"anti_affinity_group": string(params.AntiAffinityGroup),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/anti-affinity-groups/{{.anti_affinity_group}}"), 
+        map[string]string{ 
+            "anti_affinity_group": string(params.AntiAffinityGroup),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // AntiAffinityGroupMemberList: List anti-affinity group members
 //
 // To iterate over all pages, use the `AntiAffinityGroupMemberListAllPages` method, instead.
-func (c *Client) AntiAffinityGroupMemberList(ctx context.Context, params AntiAffinityGroupMemberListParams) (*AntiAffinityGroupMemberResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) AntiAffinityGroupMemberList(ctx context.Context, params AntiAffinityGroupMemberListParams, ) (*AntiAffinityGroupMemberResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/anti-affinity-groups/{{.anti_affinity_group}}/members"),
-		map[string]string{
-			"anti_affinity_group": string(params.AntiAffinityGroup),
-		},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"project":    string(params.Project),
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/anti-affinity-groups/{{.anti_affinity_group}}/members"), 
+        map[string]string{ 
+            "anti_affinity_group": string(params.AntiAffinityGroup),
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "project": string(params.Project),
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body AntiAffinityGroupMemberResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body AntiAffinityGroupMemberResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // AntiAffinityGroupMemberListAllPages: List anti-affinity group members
 //
 // This method is a wrapper around the `AntiAffinityGroupMemberList` method.
 // This method returns all the pages at once.
-func (c *Client) AntiAffinityGroupMemberListAllPages(ctx context.Context, params AntiAffinityGroupMemberListParams) ([]AntiAffinityGroupMember, error) {
+func (c *Client) AntiAffinityGroupMemberListAllPages(ctx context.Context, params AntiAffinityGroupMemberListParams, ) ([]AntiAffinityGroupMember, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2109,230 +2124,234 @@ func (c *Client) AntiAffinityGroupMemberListAllPages(ctx context.Context, params
 }
 
 // AntiAffinityGroupMemberInstanceView: Fetch anti-affinity group member
-func (c *Client) AntiAffinityGroupMemberInstanceView(ctx context.Context, params AntiAffinityGroupMemberInstanceViewParams) (*AntiAffinityGroupMember, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) AntiAffinityGroupMemberInstanceView(ctx context.Context, params AntiAffinityGroupMemberInstanceViewParams, ) (*AntiAffinityGroupMember, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/anti-affinity-groups/{{.anti_affinity_group}}/members/instance/{{.instance}}"),
-		map[string]string{
-			"anti_affinity_group": string(params.AntiAffinityGroup),
-			"instance":            string(params.Instance),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/anti-affinity-groups/{{.anti_affinity_group}}/members/instance/{{.instance}}"), 
+        map[string]string{ 
+            "anti_affinity_group": string(params.AntiAffinityGroup),
+            "instance": string(params.Instance),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body AntiAffinityGroupMember
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body AntiAffinityGroupMember
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // AntiAffinityGroupMemberInstanceAdd: Add member to anti-affinity group
-func (c *Client) AntiAffinityGroupMemberInstanceAdd(ctx context.Context, params AntiAffinityGroupMemberInstanceAddParams) (*AntiAffinityGroupMember, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) AntiAffinityGroupMemberInstanceAdd(ctx context.Context, params AntiAffinityGroupMemberInstanceAddParams, ) (*AntiAffinityGroupMember, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"POST",
-		resolveRelative(c.host, "/v1/anti-affinity-groups/{{.anti_affinity_group}}/members/instance/{{.instance}}"),
-		map[string]string{
-			"anti_affinity_group": string(params.AntiAffinityGroup),
-			"instance":            string(params.Instance),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "POST", 
+        resolveRelative(c.host, "/v1/anti-affinity-groups/{{.anti_affinity_group}}/members/instance/{{.instance}}"), 
+        map[string]string{ 
+            "anti_affinity_group": string(params.AntiAffinityGroup),
+            "instance": string(params.Instance),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body AntiAffinityGroupMember
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body AntiAffinityGroupMember
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // AntiAffinityGroupMemberInstanceDelete: Remove member from anti-affinity group
-func (c *Client) AntiAffinityGroupMemberInstanceDelete(ctx context.Context, params AntiAffinityGroupMemberInstanceDeleteParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) AntiAffinityGroupMemberInstanceDelete(ctx context.Context, params AntiAffinityGroupMemberInstanceDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/anti-affinity-groups/{{.anti_affinity_group}}/members/instance/{{.instance}}"),
-		map[string]string{
-			"anti_affinity_group": string(params.AntiAffinityGroup),
-			"instance":            string(params.Instance),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/anti-affinity-groups/{{.anti_affinity_group}}/members/instance/{{.instance}}"), 
+        map[string]string{ 
+            "anti_affinity_group": string(params.AntiAffinityGroup),
+            "instance": string(params.Instance),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // AuthSettingsView: Fetch current silo's auth settings
-func (c *Client) AuthSettingsView(ctx context.Context) (*SiloAuthSettings, error) {
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/auth-settings"),
-		map[string]string{},
-		map[string]string{},
-	)
+func (c *Client) AuthSettingsView(ctx context.Context, ) (*SiloAuthSettings, error) { 
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/auth-settings"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SiloAuthSettings
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SiloAuthSettings
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // AuthSettingsUpdate: Update current silo's auth settings
-func (c *Client) AuthSettingsUpdate(ctx context.Context, params AuthSettingsUpdateParams) (*SiloAuthSettings, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) AuthSettingsUpdate(ctx context.Context, params AuthSettingsUpdateParams, ) (*SiloAuthSettings, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"PUT",
-		resolveRelative(c.host, "/v1/auth-settings"),
-		map[string]string{},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "PUT", 
+        resolveRelative(c.host, "/v1/auth-settings"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SiloAuthSettings
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SiloAuthSettings
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // CertificateList: List certificates for external endpoints
@@ -2340,51 +2359,52 @@ func (c *Client) AuthSettingsUpdate(ctx context.Context, params AuthSettingsUpda
 // creation date, with the most recent certificates appearing first.
 //
 // To iterate over all pages, use the `CertificateListAllPages` method, instead.
-func (c *Client) CertificateList(ctx context.Context, params CertificateListParams) (*CertificateResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) CertificateList(ctx context.Context, params CertificateListParams, ) (*CertificateResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/certificates"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/certificates"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body CertificateResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body CertificateResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // CertificateListAllPages: List certificates for external endpoints
@@ -2393,7 +2413,7 @@ func (c *Client) CertificateList(ctx context.Context, params CertificateListPara
 //
 // This method is a wrapper around the `CertificateList` method.
 // This method returns all the pages at once.
-func (c *Client) CertificateListAllPages(ctx context.Context, params CertificateListParams) ([]Certificate, error) {
+func (c *Client) CertificateListAllPages(ctx context.Context, params CertificateListParams, ) ([]Certificate, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2417,194 +2437,199 @@ func (c *Client) CertificateListAllPages(ctx context.Context, params Certificate
 
 // CertificateCreate: Create new system-wide x.509 certificate
 // This certificate is automatically used by the Oxide Control plane to serve external connections.
-func (c *Client) CertificateCreate(ctx context.Context, params CertificateCreateParams) (*Certificate, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) CertificateCreate(ctx context.Context, params CertificateCreateParams, ) (*Certificate, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/certificates"),
-		map[string]string{},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/certificates"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body Certificate
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body Certificate
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // CertificateView: Fetch certificate
 // Returns the details of a specific certificate
-func (c *Client) CertificateView(ctx context.Context, params CertificateViewParams) (*Certificate, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) CertificateView(ctx context.Context, params CertificateViewParams, ) (*Certificate, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/certificates/{{.certificate}}"),
-		map[string]string{
-			"certificate": string(params.Certificate),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/certificates/{{.certificate}}"), 
+        map[string]string{ 
+            "certificate": string(params.Certificate),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body Certificate
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body Certificate
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // CertificateDelete: Delete certificate
 // Permanently delete a certificate. This operation cannot be undone.
-func (c *Client) CertificateDelete(ctx context.Context, params CertificateDeleteParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) CertificateDelete(ctx context.Context, params CertificateDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/certificates/{{.certificate}}"),
-		map[string]string{
-			"certificate": string(params.Certificate),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/certificates/{{.certificate}}"), 
+        map[string]string{ 
+            "certificate": string(params.Certificate),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // DiskList: List disks
 //
 // To iterate over all pages, use the `DiskListAllPages` method, instead.
-func (c *Client) DiskList(ctx context.Context, params DiskListParams) (*DiskResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) DiskList(ctx context.Context, params DiskListParams, ) (*DiskResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/disks"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"project":    string(params.Project),
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/disks"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "project": string(params.Project),
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body DiskResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body DiskResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // DiskListAllPages: List disks
 //
 // This method is a wrapper around the `DiskList` method.
 // This method returns all the pages at once.
-func (c *Client) DiskListAllPages(ctx context.Context, params DiskListParams) ([]Disk, error) {
+func (c *Client) DiskListAllPages(ctx context.Context, params DiskListParams, ) ([]Disk, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -2627,360 +2652,362 @@ func (c *Client) DiskListAllPages(ctx context.Context, params DiskListParams) ([
 }
 
 // DiskCreate: Create disk
-func (c *Client) DiskCreate(ctx context.Context, params DiskCreateParams) (*Disk, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) DiskCreate(ctx context.Context, params DiskCreateParams, ) (*Disk, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/disks"),
-		map[string]string{},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/disks"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body Disk
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body Disk
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // DiskView: Fetch disk
-func (c *Client) DiskView(ctx context.Context, params DiskViewParams) (*Disk, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) DiskView(ctx context.Context, params DiskViewParams, ) (*Disk, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/disks/{{.disk}}"),
-		map[string]string{
-			"disk": string(params.Disk),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/disks/{{.disk}}"), 
+        map[string]string{ 
+            "disk": string(params.Disk),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body Disk
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body Disk
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // DiskDelete: Delete disk
-func (c *Client) DiskDelete(ctx context.Context, params DiskDeleteParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) DiskDelete(ctx context.Context, params DiskDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/disks/{{.disk}}"),
-		map[string]string{
-			"disk": string(params.Disk),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/disks/{{.disk}}"), 
+        map[string]string{ 
+            "disk": string(params.Disk),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // DiskBulkWriteImport: Import blocks into disk
-func (c *Client) DiskBulkWriteImport(ctx context.Context, params DiskBulkWriteImportParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) DiskBulkWriteImport(ctx context.Context, params DiskBulkWriteImportParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/disks/{{.disk}}/bulk-write"),
-		map[string]string{
-			"disk": string(params.Disk),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/disks/{{.disk}}/bulk-write"), 
+        map[string]string{ 
+            "disk": string(params.Disk),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // DiskBulkWriteImportStart: Start importing blocks into disk
 // Start the process of importing blocks into a disk
-func (c *Client) DiskBulkWriteImportStart(ctx context.Context, params DiskBulkWriteImportStartParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) DiskBulkWriteImportStart(ctx context.Context, params DiskBulkWriteImportStartParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"POST",
-		resolveRelative(c.host, "/v1/disks/{{.disk}}/bulk-write-start"),
-		map[string]string{
-			"disk": string(params.Disk),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "POST", 
+        resolveRelative(c.host, "/v1/disks/{{.disk}}/bulk-write-start"), 
+        map[string]string{ 
+            "disk": string(params.Disk),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // DiskBulkWriteImportStop: Stop importing blocks into disk
 // Stop the process of importing blocks into a disk
-func (c *Client) DiskBulkWriteImportStop(ctx context.Context, params DiskBulkWriteImportStopParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) DiskBulkWriteImportStop(ctx context.Context, params DiskBulkWriteImportStopParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"POST",
-		resolveRelative(c.host, "/v1/disks/{{.disk}}/bulk-write-stop"),
-		map[string]string{
-			"disk": string(params.Disk),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "POST", 
+        resolveRelative(c.host, "/v1/disks/{{.disk}}/bulk-write-stop"), 
+        map[string]string{ 
+            "disk": string(params.Disk),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // DiskFinalizeImport: Confirm disk block import completion
-func (c *Client) DiskFinalizeImport(ctx context.Context, params DiskFinalizeImportParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) DiskFinalizeImport(ctx context.Context, params DiskFinalizeImportParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/disks/{{.disk}}/finalize"),
-		map[string]string{
-			"disk": string(params.Disk),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/disks/{{.disk}}/finalize"), 
+        map[string]string{ 
+            "disk": string(params.Disk),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // ExternalSubnetList: List external subnets in a project
 //
 // To iterate over all pages, use the `ExternalSubnetListAllPages` method, instead.
-func (c *Client) ExternalSubnetList(ctx context.Context, params ExternalSubnetListParams) (*ExternalSubnetResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExternalSubnetList(ctx context.Context, params ExternalSubnetListParams, ) (*ExternalSubnetResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/external-subnets"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"project":    string(params.Project),
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/external-subnets"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "project": string(params.Project),
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body ExternalSubnetResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body ExternalSubnetResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // ExternalSubnetListAllPages: List external subnets in a project
 //
 // This method is a wrapper around the `ExternalSubnetList` method.
 // This method returns all the pages at once.
-func (c *Client) ExternalSubnetListAllPages(ctx context.Context, params ExternalSubnetListParams) ([]ExternalSubnet, error) {
+func (c *Client) ExternalSubnetListAllPages(ctx context.Context, params ExternalSubnetListParams, ) ([]ExternalSubnet, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3003,354 +3030,356 @@ func (c *Client) ExternalSubnetListAllPages(ctx context.Context, params External
 }
 
 // ExternalSubnetCreate: Create an external subnet
-func (c *Client) ExternalSubnetCreate(ctx context.Context, params ExternalSubnetCreateParams) (*ExternalSubnet, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExternalSubnetCreate(ctx context.Context, params ExternalSubnetCreateParams, ) (*ExternalSubnet, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/external-subnets"),
-		map[string]string{},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/external-subnets"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body ExternalSubnet
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body ExternalSubnet
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // ExternalSubnetView: Fetch an external subnet
-func (c *Client) ExternalSubnetView(ctx context.Context, params ExternalSubnetViewParams) (*ExternalSubnet, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExternalSubnetView(ctx context.Context, params ExternalSubnetViewParams, ) (*ExternalSubnet, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/external-subnets/{{.external_subnet}}"),
-		map[string]string{
-			"external_subnet": string(params.ExternalSubnet),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/external-subnets/{{.external_subnet}}"), 
+        map[string]string{ 
+            "external_subnet": string(params.ExternalSubnet),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body ExternalSubnet
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body ExternalSubnet
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // ExternalSubnetUpdate: Update an external subnet
-func (c *Client) ExternalSubnetUpdate(ctx context.Context, params ExternalSubnetUpdateParams) (*ExternalSubnet, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExternalSubnetUpdate(ctx context.Context, params ExternalSubnetUpdateParams, ) (*ExternalSubnet, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"PUT",
-		resolveRelative(c.host, "/v1/external-subnets/{{.external_subnet}}"),
-		map[string]string{
-			"external_subnet": string(params.ExternalSubnet),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "PUT", 
+        resolveRelative(c.host, "/v1/external-subnets/{{.external_subnet}}"), 
+        map[string]string{ 
+            "external_subnet": string(params.ExternalSubnet),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body ExternalSubnet
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body ExternalSubnet
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // ExternalSubnetDelete: Delete an external subnet
-func (c *Client) ExternalSubnetDelete(ctx context.Context, params ExternalSubnetDeleteParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExternalSubnetDelete(ctx context.Context, params ExternalSubnetDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/external-subnets/{{.external_subnet}}"),
-		map[string]string{
-			"external_subnet": string(params.ExternalSubnet),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/external-subnets/{{.external_subnet}}"), 
+        map[string]string{ 
+            "external_subnet": string(params.ExternalSubnet),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // ExternalSubnetAttach: Attach an external subnet to an instance
-func (c *Client) ExternalSubnetAttach(ctx context.Context, params ExternalSubnetAttachParams) (*ExternalSubnet, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExternalSubnetAttach(ctx context.Context, params ExternalSubnetAttachParams, ) (*ExternalSubnet, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/external-subnets/{{.external_subnet}}/attach"),
-		map[string]string{
-			"external_subnet": string(params.ExternalSubnet),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/external-subnets/{{.external_subnet}}/attach"), 
+        map[string]string{ 
+            "external_subnet": string(params.ExternalSubnet),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body ExternalSubnet
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body ExternalSubnet
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // ExternalSubnetDetach: Detach an external subnet from an instance
-func (c *Client) ExternalSubnetDetach(ctx context.Context, params ExternalSubnetDetachParams) (*ExternalSubnet, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExternalSubnetDetach(ctx context.Context, params ExternalSubnetDetachParams, ) (*ExternalSubnet, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"POST",
-		resolveRelative(c.host, "/v1/external-subnets/{{.external_subnet}}/detach"),
-		map[string]string{
-			"external_subnet": string(params.ExternalSubnet),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "POST", 
+        resolveRelative(c.host, "/v1/external-subnets/{{.external_subnet}}/detach"), 
+        map[string]string{ 
+            "external_subnet": string(params.ExternalSubnet),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body ExternalSubnet
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body ExternalSubnet
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // FloatingIpList: List floating IPs
 //
 // To iterate over all pages, use the `FloatingIpListAllPages` method, instead.
-func (c *Client) FloatingIpList(ctx context.Context, params FloatingIpListParams) (*FloatingIpResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) FloatingIpList(ctx context.Context, params FloatingIpListParams, ) (*FloatingIpResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/floating-ips"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"project":    string(params.Project),
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/floating-ips"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "project": string(params.Project),
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body FloatingIpResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body FloatingIpResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // FloatingIpListAllPages: List floating IPs
 //
 // This method is a wrapper around the `FloatingIpList` method.
 // This method returns all the pages at once.
-func (c *Client) FloatingIpListAllPages(ctx context.Context, params FloatingIpListParams) ([]FloatingIp, error) {
+func (c *Client) FloatingIpListAllPages(ctx context.Context, params FloatingIpListParams, ) ([]FloatingIp, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3375,354 +3404,356 @@ func (c *Client) FloatingIpListAllPages(ctx context.Context, params FloatingIpLi
 // FloatingIpCreate: Create a floating IP
 // A specific IP address can be reserved, or an IP can be auto-allocated from a specific pool or the silo's default
 // pool.
-func (c *Client) FloatingIpCreate(ctx context.Context, params FloatingIpCreateParams) (*FloatingIp, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) FloatingIpCreate(ctx context.Context, params FloatingIpCreateParams, ) (*FloatingIp, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/floating-ips"),
-		map[string]string{},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/floating-ips"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body FloatingIp
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body FloatingIp
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // FloatingIpView: Fetch floating IP
-func (c *Client) FloatingIpView(ctx context.Context, params FloatingIpViewParams) (*FloatingIp, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) FloatingIpView(ctx context.Context, params FloatingIpViewParams, ) (*FloatingIp, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/floating-ips/{{.floating_ip}}"),
-		map[string]string{
-			"floating_ip": string(params.FloatingIp),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/floating-ips/{{.floating_ip}}"), 
+        map[string]string{ 
+            "floating_ip": string(params.FloatingIp),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body FloatingIp
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body FloatingIp
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // FloatingIpUpdate: Update floating IP
-func (c *Client) FloatingIpUpdate(ctx context.Context, params FloatingIpUpdateParams) (*FloatingIp, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) FloatingIpUpdate(ctx context.Context, params FloatingIpUpdateParams, ) (*FloatingIp, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"PUT",
-		resolveRelative(c.host, "/v1/floating-ips/{{.floating_ip}}"),
-		map[string]string{
-			"floating_ip": string(params.FloatingIp),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "PUT", 
+        resolveRelative(c.host, "/v1/floating-ips/{{.floating_ip}}"), 
+        map[string]string{ 
+            "floating_ip": string(params.FloatingIp),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body FloatingIp
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body FloatingIp
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // FloatingIpDelete: Delete floating IP
-func (c *Client) FloatingIpDelete(ctx context.Context, params FloatingIpDeleteParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) FloatingIpDelete(ctx context.Context, params FloatingIpDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/floating-ips/{{.floating_ip}}"),
-		map[string]string{
-			"floating_ip": string(params.FloatingIp),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/floating-ips/{{.floating_ip}}"), 
+        map[string]string{ 
+            "floating_ip": string(params.FloatingIp),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // FloatingIpAttach: Attach floating IP
 // Attach floating IP to an instance or other resource.
-func (c *Client) FloatingIpAttach(ctx context.Context, params FloatingIpAttachParams) (*FloatingIp, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) FloatingIpAttach(ctx context.Context, params FloatingIpAttachParams, ) (*FloatingIp, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/floating-ips/{{.floating_ip}}/attach"),
-		map[string]string{
-			"floating_ip": string(params.FloatingIp),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/floating-ips/{{.floating_ip}}/attach"), 
+        map[string]string{ 
+            "floating_ip": string(params.FloatingIp),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body FloatingIp
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body FloatingIp
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // FloatingIpDetach: Detach floating IP
-func (c *Client) FloatingIpDetach(ctx context.Context, params FloatingIpDetachParams) (*FloatingIp, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) FloatingIpDetach(ctx context.Context, params FloatingIpDetachParams, ) (*FloatingIp, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"POST",
-		resolveRelative(c.host, "/v1/floating-ips/{{.floating_ip}}/detach"),
-		map[string]string{
-			"floating_ip": string(params.FloatingIp),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "POST", 
+        resolveRelative(c.host, "/v1/floating-ips/{{.floating_ip}}/detach"), 
+        map[string]string{ 
+            "floating_ip": string(params.FloatingIp),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body FloatingIp
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body FloatingIp
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // GroupList: List groups
 //
 // To iterate over all pages, use the `GroupListAllPages` method, instead.
-func (c *Client) GroupList(ctx context.Context, params GroupListParams) (*GroupResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) GroupList(ctx context.Context, params GroupListParams, ) (*GroupResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/groups"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/groups"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body GroupResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body GroupResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // GroupListAllPages: List groups
 //
 // This method is a wrapper around the `GroupList` method.
 // This method returns all the pages at once.
-func (c *Client) GroupListAllPages(ctx context.Context, params GroupListParams) ([]Group, error) {
+func (c *Client) GroupListAllPages(ctx context.Context, params GroupListParams, ) ([]Group, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3745,49 +3776,50 @@ func (c *Client) GroupListAllPages(ctx context.Context, params GroupListParams) 
 }
 
 // GroupView: Fetch group
-func (c *Client) GroupView(ctx context.Context, params GroupViewParams) (*Group, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) GroupView(ctx context.Context, params GroupViewParams, ) (*Group, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/groups/{{.group_id}}"),
-		map[string]string{
-			"group_id": params.GroupId,
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/groups/{{.group_id}}"), 
+        map[string]string{ 
+            "group_id": params.GroupId,
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body Group
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body Group
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // ImageList: List images
@@ -3795,52 +3827,53 @@ func (c *Client) GroupView(ctx context.Context, params GroupViewParams) (*Group,
 // with the most recent images appearing first.
 //
 // To iterate over all pages, use the `ImageListAllPages` method, instead.
-func (c *Client) ImageList(ctx context.Context, params ImageListParams) (*ImageResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ImageList(ctx context.Context, params ImageListParams, ) (*ImageResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/images"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"project":    string(params.Project),
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/images"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "project": string(params.Project),
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body ImageResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body ImageResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // ImageListAllPages: List images
@@ -3849,7 +3882,7 @@ func (c *Client) ImageList(ctx context.Context, params ImageListParams) (*ImageR
 //
 // This method is a wrapper around the `ImageList` method.
 // This method returns all the pages at once.
-func (c *Client) ImageListAllPages(ctx context.Context, params ImageListParams) ([]Image, error) {
+func (c *Client) ImageListAllPages(ctx context.Context, params ImageListParams, ) ([]Image, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -3873,299 +3906,301 @@ func (c *Client) ImageListAllPages(ctx context.Context, params ImageListParams) 
 
 // ImageCreate: Create image
 // Create a new image in a project.
-func (c *Client) ImageCreate(ctx context.Context, params ImageCreateParams) (*Image, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ImageCreate(ctx context.Context, params ImageCreateParams, ) (*Image, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/images"),
-		map[string]string{},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/images"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body Image
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body Image
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // ImageView: Fetch image
 // Fetch the details for a specific image in a project.
-func (c *Client) ImageView(ctx context.Context, params ImageViewParams) (*Image, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ImageView(ctx context.Context, params ImageViewParams, ) (*Image, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/images/{{.image}}"),
-		map[string]string{
-			"image": string(params.Image),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/images/{{.image}}"), 
+        map[string]string{ 
+            "image": string(params.Image),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body Image
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body Image
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // ImageDelete: Delete image
 // Permanently delete an image from a project. This operation cannot be undone. Any instances in the project using
 // the image will continue to run, however new instances can not be created with this image.
-func (c *Client) ImageDelete(ctx context.Context, params ImageDeleteParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) ImageDelete(ctx context.Context, params ImageDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/images/{{.image}}"),
-		map[string]string{
-			"image": string(params.Image),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/images/{{.image}}"), 
+        map[string]string{ 
+            "image": string(params.Image),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // ImageDemote: Demote silo image
 // Demote silo image to be visible only to a specified project
-func (c *Client) ImageDemote(ctx context.Context, params ImageDemoteParams) (*Image, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ImageDemote(ctx context.Context, params ImageDemoteParams, ) (*Image, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"POST",
-		resolveRelative(c.host, "/v1/images/{{.image}}/demote"),
-		map[string]string{
-			"image": string(params.Image),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "POST", 
+        resolveRelative(c.host, "/v1/images/{{.image}}/demote"), 
+        map[string]string{ 
+            "image": string(params.Image),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body Image
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body Image
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // ImagePromote: Promote project image
 // Promote project image to be visible to all projects in the silo
-func (c *Client) ImagePromote(ctx context.Context, params ImagePromoteParams) (*Image, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ImagePromote(ctx context.Context, params ImagePromoteParams, ) (*Image, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"POST",
-		resolveRelative(c.host, "/v1/images/{{.image}}/promote"),
-		map[string]string{
-			"image": string(params.Image),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "POST", 
+        resolveRelative(c.host, "/v1/images/{{.image}}/promote"), 
+        map[string]string{ 
+            "image": string(params.Image),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body Image
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body Image
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // InstanceList: List instances
 //
 // To iterate over all pages, use the `InstanceListAllPages` method, instead.
-func (c *Client) InstanceList(ctx context.Context, params InstanceListParams) (*InstanceResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) InstanceList(ctx context.Context, params InstanceListParams, ) (*InstanceResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/instances"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"project":    string(params.Project),
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/instances"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "project": string(params.Project),
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body InstanceResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body InstanceResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // InstanceListAllPages: List instances
 //
 // This method is a wrapper around the `InstanceList` method.
 // This method returns all the pages at once.
-func (c *Client) InstanceListAllPages(ctx context.Context, params InstanceListParams) ([]Instance, error) {
+func (c *Client) InstanceListAllPages(ctx context.Context, params InstanceListParams, ) ([]Instance, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4188,194 +4223,195 @@ func (c *Client) InstanceListAllPages(ctx context.Context, params InstanceListPa
 }
 
 // InstanceCreate: Create instance
-func (c *Client) InstanceCreate(ctx context.Context, params InstanceCreateParams) (*Instance, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) InstanceCreate(ctx context.Context, params InstanceCreateParams, ) (*Instance, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/instances"),
-		map[string]string{},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/instances"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body Instance
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body Instance
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // InstanceView: Fetch instance
-func (c *Client) InstanceView(ctx context.Context, params InstanceViewParams) (*Instance, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) InstanceView(ctx context.Context, params InstanceViewParams, ) (*Instance, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/instances/{{.instance}}"),
-		map[string]string{
-			"instance": string(params.Instance),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/instances/{{.instance}}"), 
+        map[string]string{ 
+            "instance": string(params.Instance),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body Instance
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body Instance
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // InstanceUpdate: Update instance
-func (c *Client) InstanceUpdate(ctx context.Context, params InstanceUpdateParams) (*Instance, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) InstanceUpdate(ctx context.Context, params InstanceUpdateParams, ) (*Instance, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"PUT",
-		resolveRelative(c.host, "/v1/instances/{{.instance}}"),
-		map[string]string{
-			"instance": string(params.Instance),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "PUT", 
+        resolveRelative(c.host, "/v1/instances/{{.instance}}"), 
+        map[string]string{ 
+            "instance": string(params.Instance),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body Instance
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body Instance
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // InstanceDelete: Delete instance
-func (c *Client) InstanceDelete(ctx context.Context, params InstanceDeleteParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) InstanceDelete(ctx context.Context, params InstanceDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/instances/{{.instance}}"),
-		map[string]string{
-			"instance": string(params.Instance),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/instances/{{.instance}}"), 
+        map[string]string{ 
+            "instance": string(params.Instance),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
@@ -4383,54 +4419,54 @@ func (c *Client) InstanceDelete(ctx context.Context, params InstanceDeleteParams
 // ExperimentalInstanceAffinityGroupList: List affinity groups containing instance
 //
 // To iterate over all pages, use the `ExperimentalInstanceAffinityGroupListAllPages` method, instead.
-func (c *Client) ExperimentalInstanceAffinityGroupList(ctx context.Context, params InstanceAffinityGroupListParams) (*AffinityGroupResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExperimentalInstanceAffinityGroupList(ctx context.Context, params InstanceAffinityGroupListParams, ) (*AffinityGroupResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/instances/{{.instance}}/affinity-groups"),
-		map[string]string{
-			"instance": string(params.Instance),
-		},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"project":    string(params.Project),
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/instances/{{.instance}}/affinity-groups"), 
+        map[string]string{ 
+            "instance": string(params.Instance),
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "project": string(params.Project),
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body AffinityGroupResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body AffinityGroupResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
@@ -4439,7 +4475,7 @@ func (c *Client) ExperimentalInstanceAffinityGroupList(ctx context.Context, para
 //
 // This method is a wrapper around the `ExperimentalInstanceAffinityGroupList` method.
 // This method returns all the pages at once.
-func (c *Client) ExperimentalInstanceAffinityGroupListAllPages(ctx context.Context, params InstanceAffinityGroupListParams) ([]AffinityGroup, error) {
+func (c *Client) ExperimentalInstanceAffinityGroupListAllPages(ctx context.Context, params InstanceAffinityGroupListParams, ) ([]AffinityGroup, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4464,61 +4500,61 @@ func (c *Client) ExperimentalInstanceAffinityGroupListAllPages(ctx context.Conte
 // InstanceAntiAffinityGroupList: List anti-affinity groups containing instance
 //
 // To iterate over all pages, use the `InstanceAntiAffinityGroupListAllPages` method, instead.
-func (c *Client) InstanceAntiAffinityGroupList(ctx context.Context, params InstanceAntiAffinityGroupListParams) (*AntiAffinityGroupResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) InstanceAntiAffinityGroupList(ctx context.Context, params InstanceAntiAffinityGroupListParams, ) (*AntiAffinityGroupResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/instances/{{.instance}}/anti-affinity-groups"),
-		map[string]string{
-			"instance": string(params.Instance),
-		},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"project":    string(params.Project),
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/instances/{{.instance}}/anti-affinity-groups"), 
+        map[string]string{ 
+            "instance": string(params.Instance),
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "project": string(params.Project),
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body AntiAffinityGroupResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body AntiAffinityGroupResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // InstanceAntiAffinityGroupListAllPages: List anti-affinity groups containing instance
 //
 // This method is a wrapper around the `InstanceAntiAffinityGroupList` method.
 // This method returns all the pages at once.
-func (c *Client) InstanceAntiAffinityGroupListAllPages(ctx context.Context, params InstanceAntiAffinityGroupListParams) ([]AntiAffinityGroup, error) {
+func (c *Client) InstanceAntiAffinityGroupListAllPages(ctx context.Context, params InstanceAntiAffinityGroupListParams, ) ([]AntiAffinityGroup, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4543,61 +4579,61 @@ func (c *Client) InstanceAntiAffinityGroupListAllPages(ctx context.Context, para
 // InstanceDiskList: List disks for instance
 //
 // To iterate over all pages, use the `InstanceDiskListAllPages` method, instead.
-func (c *Client) InstanceDiskList(ctx context.Context, params InstanceDiskListParams) (*DiskResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) InstanceDiskList(ctx context.Context, params InstanceDiskListParams, ) (*DiskResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/instances/{{.instance}}/disks"),
-		map[string]string{
-			"instance": string(params.Instance),
-		},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"project":    string(params.Project),
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/instances/{{.instance}}/disks"), 
+        map[string]string{ 
+            "instance": string(params.Instance),
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "project": string(params.Project),
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body DiskResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body DiskResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // InstanceDiskListAllPages: List disks for instance
 //
 // This method is a wrapper around the `InstanceDiskList` method.
 // This method returns all the pages at once.
-func (c *Client) InstanceDiskListAllPages(ctx context.Context, params InstanceDiskListParams) ([]Disk, error) {
+func (c *Client) InstanceDiskListAllPages(ctx context.Context, params InstanceDiskListParams, ) ([]Disk, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -4620,301 +4656,301 @@ func (c *Client) InstanceDiskListAllPages(ctx context.Context, params InstanceDi
 }
 
 // InstanceDiskAttach: Attach disk to instance
-func (c *Client) InstanceDiskAttach(ctx context.Context, params InstanceDiskAttachParams) (*Disk, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) InstanceDiskAttach(ctx context.Context, params InstanceDiskAttachParams, ) (*Disk, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/instances/{{.instance}}/disks/attach"),
-		map[string]string{
-			"instance": string(params.Instance),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/instances/{{.instance}}/disks/attach"), 
+        map[string]string{ 
+            "instance": string(params.Instance),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body Disk
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body Disk
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // InstanceDiskDetach: Detach disk from instance
-func (c *Client) InstanceDiskDetach(ctx context.Context, params InstanceDiskDetachParams) (*Disk, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) InstanceDiskDetach(ctx context.Context, params InstanceDiskDetachParams, ) (*Disk, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/instances/{{.instance}}/disks/detach"),
-		map[string]string{
-			"instance": string(params.Instance),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/instances/{{.instance}}/disks/detach"), 
+        map[string]string{ 
+            "instance": string(params.Instance),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body Disk
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body Disk
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // InstanceExternalIpList: List external IP addresses
-func (c *Client) InstanceExternalIpList(ctx context.Context, params InstanceExternalIpListParams) (*ExternalIpResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) InstanceExternalIpList(ctx context.Context, params InstanceExternalIpListParams, ) (*ExternalIpResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/instances/{{.instance}}/external-ips"),
-		map[string]string{
-			"instance": string(params.Instance),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/instances/{{.instance}}/external-ips"), 
+        map[string]string{ 
+            "instance": string(params.Instance),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body ExternalIpResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body ExternalIpResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // InstanceEphemeralIpAttach: Allocate and attach ephemeral IP to instance
-func (c *Client) InstanceEphemeralIpAttach(ctx context.Context, params InstanceEphemeralIpAttachParams) (*ExternalIp, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) InstanceEphemeralIpAttach(ctx context.Context, params InstanceEphemeralIpAttachParams, ) (*ExternalIp, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/instances/{{.instance}}/external-ips/ephemeral"),
-		map[string]string{
-			"instance": string(params.Instance),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/instances/{{.instance}}/external-ips/ephemeral"), 
+        map[string]string{ 
+            "instance": string(params.Instance),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body ExternalIp
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body ExternalIp
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // InstanceEphemeralIpDetach: Detach and deallocate ephemeral IP from instance
 // When an instance has both IPv4 and IPv6 ephemeral IPs, the `ip_version` query parameter must be specified to
 // identify which IP to detach.
-func (c *Client) InstanceEphemeralIpDetach(ctx context.Context, params InstanceEphemeralIpDetachParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) InstanceEphemeralIpDetach(ctx context.Context, params InstanceEphemeralIpDetachParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/instances/{{.instance}}/external-ips/ephemeral"),
-		map[string]string{
-			"instance": string(params.Instance),
-		},
-		map[string]string{
-			"ip_version": string(params.IpVersion),
-			"project":    string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/instances/{{.instance}}/external-ips/ephemeral"), 
+        map[string]string{ 
+            "instance": string(params.Instance),
+        }, 
+        map[string]string{ 
+            "ip_version": string(params.IpVersion),
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // InstanceExternalSubnetList: List external subnets attached to instance
-func (c *Client) InstanceExternalSubnetList(ctx context.Context, params InstanceExternalSubnetListParams) (*ExternalSubnetResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) InstanceExternalSubnetList(ctx context.Context, params InstanceExternalSubnetListParams, ) (*ExternalSubnetResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/instances/{{.instance}}/external-subnets"),
-		map[string]string{
-			"instance": string(params.Instance),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/instances/{{.instance}}/external-subnets"), 
+        map[string]string{ 
+            "instance": string(params.Instance),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body ExternalSubnetResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body ExternalSubnetResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
@@ -4922,54 +4958,54 @@ func (c *Client) InstanceExternalSubnetList(ctx context.Context, params Instance
 // ExperimentalInstanceMulticastGroupList: List multicast groups for an instance
 //
 // To iterate over all pages, use the `ExperimentalInstanceMulticastGroupListAllPages` method, instead.
-func (c *Client) ExperimentalInstanceMulticastGroupList(ctx context.Context, params InstanceMulticastGroupListParams) (*MulticastGroupMemberResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExperimentalInstanceMulticastGroupList(ctx context.Context, params InstanceMulticastGroupListParams, ) (*MulticastGroupMemberResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/instances/{{.instance}}/multicast-groups"),
-		map[string]string{
-			"instance": string(params.Instance),
-		},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"project":    string(params.Project),
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/instances/{{.instance}}/multicast-groups"), 
+        map[string]string{ 
+            "instance": string(params.Instance),
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "project": string(params.Project),
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body MulticastGroupMemberResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body MulticastGroupMemberResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
@@ -4978,7 +5014,7 @@ func (c *Client) ExperimentalInstanceMulticastGroupList(ctx context.Context, par
 //
 // This method is a wrapper around the `ExperimentalInstanceMulticastGroupList` method.
 // This method returns all the pages at once.
-func (c *Client) ExperimentalInstanceMulticastGroupListAllPages(ctx context.Context, params InstanceMulticastGroupListParams) ([]MulticastGroupMember, error) {
+func (c *Client) ExperimentalInstanceMulticastGroupListAllPages(ctx context.Context, params InstanceMulticastGroupListParams, ) ([]MulticastGroupMember, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5006,238 +5042,238 @@ func (c *Client) ExperimentalInstanceMulticastGroupListAllPages(ctx context.Cont
 // Groups can be referenced by name, IP address, or UUID. If the group doesn't exist, it's implicitly created with
 // an auto-allocated IP from a multicast pool linked to the caller's silo. When referencing by UUID, the group
 // must already exist.
-//
+// 
 // Source IPs are optional for ASM addresses but required for SSM addresses (232.0.0.0/8 for IPv4, ff3x::/32 for
 // IPv6). Duplicate IPs in the request are automatically deduplicated, with a maximum of 64 source IPs allowed.
-func (c *Client) ExperimentalInstanceMulticastGroupJoin(ctx context.Context, params InstanceMulticastGroupJoinParams) (*MulticastGroupMember, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExperimentalInstanceMulticastGroupJoin(ctx context.Context, params InstanceMulticastGroupJoinParams, ) (*MulticastGroupMember, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"PUT",
-		resolveRelative(c.host, "/v1/instances/{{.instance}}/multicast-groups/{{.multicast_group}}"),
-		map[string]string{
-			"instance":        string(params.Instance),
-			"multicast_group": string(params.MulticastGroup),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "PUT", 
+        resolveRelative(c.host, "/v1/instances/{{.instance}}/multicast-groups/{{.multicast_group}}"), 
+        map[string]string{ 
+            "instance": string(params.Instance),
+            "multicast_group": string(params.MulticastGroup),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body MulticastGroupMember
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body MulticastGroupMember
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
 //
 // ExperimentalInstanceMulticastGroupLeave: Leave multicast group by name, IP address, or UUID
-func (c *Client) ExperimentalInstanceMulticastGroupLeave(ctx context.Context, params InstanceMulticastGroupLeaveParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExperimentalInstanceMulticastGroupLeave(ctx context.Context, params InstanceMulticastGroupLeaveParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/instances/{{.instance}}/multicast-groups/{{.multicast_group}}"),
-		map[string]string{
-			"instance":        string(params.Instance),
-			"multicast_group": string(params.MulticastGroup),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/instances/{{.instance}}/multicast-groups/{{.multicast_group}}"), 
+        map[string]string{ 
+            "instance": string(params.Instance),
+            "multicast_group": string(params.MulticastGroup),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // InstanceReboot: Reboot instance
-func (c *Client) InstanceReboot(ctx context.Context, params InstanceRebootParams) (*Instance, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) InstanceReboot(ctx context.Context, params InstanceRebootParams, ) (*Instance, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"POST",
-		resolveRelative(c.host, "/v1/instances/{{.instance}}/reboot"),
-		map[string]string{
-			"instance": string(params.Instance),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "POST", 
+        resolveRelative(c.host, "/v1/instances/{{.instance}}/reboot"), 
+        map[string]string{ 
+            "instance": string(params.Instance),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body Instance
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body Instance
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // InstanceSerialConsole: Fetch instance serial console
-func (c *Client) InstanceSerialConsole(ctx context.Context, params InstanceSerialConsoleParams) (*InstanceSerialConsoleData, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) InstanceSerialConsole(ctx context.Context, params InstanceSerialConsoleParams, ) (*InstanceSerialConsoleData, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/instances/{{.instance}}/serial-console"),
-		map[string]string{
-			"instance": string(params.Instance),
-		},
-		map[string]string{
-			"from_start":  PointerIntToStr(params.FromStart),
-			"max_bytes":   PointerIntToStr(params.MaxBytes),
-			"most_recent": PointerIntToStr(params.MostRecent),
-			"project":     string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/instances/{{.instance}}/serial-console"), 
+        map[string]string{ 
+            "instance": string(params.Instance),
+        }, 
+        map[string]string{ 
+            "from_start": PointerIntToStr(params.FromStart),
+            "max_bytes": PointerIntToStr(params.MaxBytes),
+            "most_recent": PointerIntToStr(params.MostRecent),
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body InstanceSerialConsoleData
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body InstanceSerialConsoleData
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // InstanceSerialConsoleStream: Stream instance serial console
-func (c *Client) InstanceSerialConsoleStream(ctx context.Context, params InstanceSerialConsoleStreamParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) InstanceSerialConsoleStream(ctx context.Context, params InstanceSerialConsoleStreamParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/instances/{{.instance}}/serial-console/stream"),
-		map[string]string{
-			"instance": string(params.Instance),
-		},
-		map[string]string{
-			"most_recent": PointerIntToStr(params.MostRecent),
-			"project":     string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/instances/{{.instance}}/serial-console/stream"), 
+        map[string]string{ 
+            "instance": string(params.Instance),
+        }, 
+        map[string]string{ 
+            "most_recent": PointerIntToStr(params.MostRecent),
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // InstanceSshPublicKeyList: List SSH public keys for instance
@@ -5245,54 +5281,54 @@ func (c *Client) InstanceSerialConsoleStream(ctx context.Context, params Instanc
 // time and will not reflect updates made after the instance is created.
 //
 // To iterate over all pages, use the `InstanceSshPublicKeyListAllPages` method, instead.
-func (c *Client) InstanceSshPublicKeyList(ctx context.Context, params InstanceSshPublicKeyListParams) (*SshKeyResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) InstanceSshPublicKeyList(ctx context.Context, params InstanceSshPublicKeyListParams, ) (*SshKeyResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/instances/{{.instance}}/ssh-public-keys"),
-		map[string]string{
-			"instance": string(params.Instance),
-		},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"project":    string(params.Project),
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/instances/{{.instance}}/ssh-public-keys"), 
+        map[string]string{ 
+            "instance": string(params.Instance),
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "project": string(params.Project),
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SshKeyResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SshKeyResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // InstanceSshPublicKeyListAllPages: List SSH public keys for instance
@@ -5301,7 +5337,7 @@ func (c *Client) InstanceSshPublicKeyList(ctx context.Context, params InstanceSs
 //
 // This method is a wrapper around the `InstanceSshPublicKeyList` method.
 // This method returns all the pages at once.
-func (c *Client) InstanceSshPublicKeyListAllPages(ctx context.Context, params InstanceSshPublicKeyListParams) ([]SshKey, error) {
+func (c *Client) InstanceSshPublicKeyListAllPages(ctx context.Context, params InstanceSshPublicKeyListParams, ) ([]SshKey, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5324,159 +5360,160 @@ func (c *Client) InstanceSshPublicKeyListAllPages(ctx context.Context, params In
 }
 
 // InstanceStart: Boot instance
-func (c *Client) InstanceStart(ctx context.Context, params InstanceStartParams) (*Instance, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) InstanceStart(ctx context.Context, params InstanceStartParams, ) (*Instance, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"POST",
-		resolveRelative(c.host, "/v1/instances/{{.instance}}/start"),
-		map[string]string{
-			"instance": string(params.Instance),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "POST", 
+        resolveRelative(c.host, "/v1/instances/{{.instance}}/start"), 
+        map[string]string{ 
+            "instance": string(params.Instance),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body Instance
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body Instance
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // InstanceStop: Stop instance
-func (c *Client) InstanceStop(ctx context.Context, params InstanceStopParams) (*Instance, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) InstanceStop(ctx context.Context, params InstanceStopParams, ) (*Instance, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"POST",
-		resolveRelative(c.host, "/v1/instances/{{.instance}}/stop"),
-		map[string]string{
-			"instance": string(params.Instance),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "POST", 
+        resolveRelative(c.host, "/v1/instances/{{.instance}}/stop"), 
+        map[string]string{ 
+            "instance": string(params.Instance),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body Instance
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body Instance
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // InternetGatewayIpAddressList: List IP addresses attached to internet gateway
 //
 // To iterate over all pages, use the `InternetGatewayIpAddressListAllPages` method, instead.
-func (c *Client) InternetGatewayIpAddressList(ctx context.Context, params InternetGatewayIpAddressListParams) (*InternetGatewayIpAddressResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) InternetGatewayIpAddressList(ctx context.Context, params InternetGatewayIpAddressListParams, ) (*InternetGatewayIpAddressResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/internet-gateway-ip-addresses"),
-		map[string]string{},
-		map[string]string{
-			"gateway":    string(params.Gateway),
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"project":    string(params.Project),
-			"sort_by":    string(params.SortBy),
-			"vpc":        string(params.Vpc),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/internet-gateway-ip-addresses"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "gateway": string(params.Gateway),
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "project": string(params.Project),
+            "sort_by": string(params.SortBy),
+            "vpc": string(params.Vpc),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body InternetGatewayIpAddressResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body InternetGatewayIpAddressResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // InternetGatewayIpAddressListAllPages: List IP addresses attached to internet gateway
 //
 // This method is a wrapper around the `InternetGatewayIpAddressList` method.
 // This method returns all the pages at once.
-func (c *Client) InternetGatewayIpAddressListAllPages(ctx context.Context, params InternetGatewayIpAddressListParams) ([]InternetGatewayIpAddress, error) {
+func (c *Client) InternetGatewayIpAddressListAllPages(ctx context.Context, params InternetGatewayIpAddressListParams, ) ([]InternetGatewayIpAddress, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5499,157 +5536,159 @@ func (c *Client) InternetGatewayIpAddressListAllPages(ctx context.Context, param
 }
 
 // InternetGatewayIpAddressCreate: Attach IP address to internet gateway
-func (c *Client) InternetGatewayIpAddressCreate(ctx context.Context, params InternetGatewayIpAddressCreateParams) (*InternetGatewayIpAddress, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) InternetGatewayIpAddressCreate(ctx context.Context, params InternetGatewayIpAddressCreateParams, ) (*InternetGatewayIpAddress, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/internet-gateway-ip-addresses"),
-		map[string]string{},
-		map[string]string{
-			"gateway": string(params.Gateway),
-			"project": string(params.Project),
-			"vpc":     string(params.Vpc),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/internet-gateway-ip-addresses"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "gateway": string(params.Gateway),
+            "project": string(params.Project),
+            "vpc": string(params.Vpc),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body InternetGatewayIpAddress
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body InternetGatewayIpAddress
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // InternetGatewayIpAddressDelete: Detach IP address from internet gateway
-func (c *Client) InternetGatewayIpAddressDelete(ctx context.Context, params InternetGatewayIpAddressDeleteParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) InternetGatewayIpAddressDelete(ctx context.Context, params InternetGatewayIpAddressDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/internet-gateway-ip-addresses/{{.address}}"),
-		map[string]string{
-			"address": string(params.Address),
-		},
-		map[string]string{
-			"cascade": strconv.FormatBool(*params.Cascade),
-			"gateway": string(params.Gateway),
-			"project": string(params.Project),
-			"vpc":     string(params.Vpc),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/internet-gateway-ip-addresses/{{.address}}"), 
+        map[string]string{ 
+            "address": string(params.Address),
+        }, 
+        map[string]string{ 
+            "cascade": strconv.FormatBool(*params.Cascade),
+            "gateway": string(params.Gateway),
+            "project": string(params.Project),
+            "vpc": string(params.Vpc),
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // InternetGatewayIpPoolList: List IP pools attached to internet gateway
 //
 // To iterate over all pages, use the `InternetGatewayIpPoolListAllPages` method, instead.
-func (c *Client) InternetGatewayIpPoolList(ctx context.Context, params InternetGatewayIpPoolListParams) (*InternetGatewayIpPoolResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) InternetGatewayIpPoolList(ctx context.Context, params InternetGatewayIpPoolListParams, ) (*InternetGatewayIpPoolResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/internet-gateway-ip-pools"),
-		map[string]string{},
-		map[string]string{
-			"gateway":    string(params.Gateway),
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"project":    string(params.Project),
-			"sort_by":    string(params.SortBy),
-			"vpc":        string(params.Vpc),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/internet-gateway-ip-pools"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "gateway": string(params.Gateway),
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "project": string(params.Project),
+            "sort_by": string(params.SortBy),
+            "vpc": string(params.Vpc),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body InternetGatewayIpPoolResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body InternetGatewayIpPoolResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // InternetGatewayIpPoolListAllPages: List IP pools attached to internet gateway
 //
 // This method is a wrapper around the `InternetGatewayIpPoolList` method.
 // This method returns all the pages at once.
-func (c *Client) InternetGatewayIpPoolListAllPages(ctx context.Context, params InternetGatewayIpPoolListParams) ([]InternetGatewayIpPool, error) {
+func (c *Client) InternetGatewayIpPoolListAllPages(ctx context.Context, params InternetGatewayIpPoolListParams, ) ([]InternetGatewayIpPool, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5672,156 +5711,158 @@ func (c *Client) InternetGatewayIpPoolListAllPages(ctx context.Context, params I
 }
 
 // InternetGatewayIpPoolCreate: Attach IP pool to internet gateway
-func (c *Client) InternetGatewayIpPoolCreate(ctx context.Context, params InternetGatewayIpPoolCreateParams) (*InternetGatewayIpPool, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) InternetGatewayIpPoolCreate(ctx context.Context, params InternetGatewayIpPoolCreateParams, ) (*InternetGatewayIpPool, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/internet-gateway-ip-pools"),
-		map[string]string{},
-		map[string]string{
-			"gateway": string(params.Gateway),
-			"project": string(params.Project),
-			"vpc":     string(params.Vpc),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/internet-gateway-ip-pools"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "gateway": string(params.Gateway),
+            "project": string(params.Project),
+            "vpc": string(params.Vpc),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body InternetGatewayIpPool
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body InternetGatewayIpPool
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // InternetGatewayIpPoolDelete: Detach IP pool from internet gateway
-func (c *Client) InternetGatewayIpPoolDelete(ctx context.Context, params InternetGatewayIpPoolDeleteParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) InternetGatewayIpPoolDelete(ctx context.Context, params InternetGatewayIpPoolDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/internet-gateway-ip-pools/{{.pool}}"),
-		map[string]string{
-			"pool": string(params.Pool),
-		},
-		map[string]string{
-			"cascade": strconv.FormatBool(*params.Cascade),
-			"gateway": string(params.Gateway),
-			"project": string(params.Project),
-			"vpc":     string(params.Vpc),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/internet-gateway-ip-pools/{{.pool}}"), 
+        map[string]string{ 
+            "pool": string(params.Pool),
+        }, 
+        map[string]string{ 
+            "cascade": strconv.FormatBool(*params.Cascade),
+            "gateway": string(params.Gateway),
+            "project": string(params.Project),
+            "vpc": string(params.Vpc),
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // InternetGatewayList: List internet gateways
 //
 // To iterate over all pages, use the `InternetGatewayListAllPages` method, instead.
-func (c *Client) InternetGatewayList(ctx context.Context, params InternetGatewayListParams) (*InternetGatewayResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) InternetGatewayList(ctx context.Context, params InternetGatewayListParams, ) (*InternetGatewayResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/internet-gateways"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"project":    string(params.Project),
-			"sort_by":    string(params.SortBy),
-			"vpc":        string(params.Vpc),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/internet-gateways"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "project": string(params.Project),
+            "sort_by": string(params.SortBy),
+            "vpc": string(params.Vpc),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body InternetGatewayResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body InternetGatewayResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // InternetGatewayListAllPages: List internet gateways
 //
 // This method is a wrapper around the `InternetGatewayList` method.
 // This method returns all the pages at once.
-func (c *Client) InternetGatewayListAllPages(ctx context.Context, params InternetGatewayListParams) ([]InternetGateway, error) {
+func (c *Client) InternetGatewayListAllPages(ctx context.Context, params InternetGatewayListParams, ) ([]InternetGateway, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -5844,201 +5885,203 @@ func (c *Client) InternetGatewayListAllPages(ctx context.Context, params Interne
 }
 
 // InternetGatewayCreate: Create VPC internet gateway
-func (c *Client) InternetGatewayCreate(ctx context.Context, params InternetGatewayCreateParams) (*InternetGateway, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) InternetGatewayCreate(ctx context.Context, params InternetGatewayCreateParams, ) (*InternetGateway, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/internet-gateways"),
-		map[string]string{},
-		map[string]string{
-			"project": string(params.Project),
-			"vpc":     string(params.Vpc),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/internet-gateways"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+            "vpc": string(params.Vpc),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body InternetGateway
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body InternetGateway
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // InternetGatewayView: Fetch internet gateway
-func (c *Client) InternetGatewayView(ctx context.Context, params InternetGatewayViewParams) (*InternetGateway, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) InternetGatewayView(ctx context.Context, params InternetGatewayViewParams, ) (*InternetGateway, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/internet-gateways/{{.gateway}}"),
-		map[string]string{
-			"gateway": string(params.Gateway),
-		},
-		map[string]string{
-			"project": string(params.Project),
-			"vpc":     string(params.Vpc),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/internet-gateways/{{.gateway}}"), 
+        map[string]string{ 
+            "gateway": string(params.Gateway),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+            "vpc": string(params.Vpc),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body InternetGateway
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body InternetGateway
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // InternetGatewayDelete: Delete internet gateway
-func (c *Client) InternetGatewayDelete(ctx context.Context, params InternetGatewayDeleteParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) InternetGatewayDelete(ctx context.Context, params InternetGatewayDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/internet-gateways/{{.gateway}}"),
-		map[string]string{
-			"gateway": string(params.Gateway),
-		},
-		map[string]string{
-			"cascade": strconv.FormatBool(*params.Cascade),
-			"project": string(params.Project),
-			"vpc":     string(params.Vpc),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/internet-gateways/{{.gateway}}"), 
+        map[string]string{ 
+            "gateway": string(params.Gateway),
+        }, 
+        map[string]string{ 
+            "cascade": strconv.FormatBool(*params.Cascade),
+            "project": string(params.Project),
+            "vpc": string(params.Vpc),
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // IpPoolList: List IP pools
 //
 // To iterate over all pages, use the `IpPoolListAllPages` method, instead.
-func (c *Client) IpPoolList(ctx context.Context, params IpPoolListParams) (*SiloIpPoolResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) IpPoolList(ctx context.Context, params IpPoolListParams, ) (*SiloIpPoolResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/ip-pools"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/ip-pools"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SiloIpPoolResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SiloIpPoolResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // IpPoolListAllPages: List IP pools
 //
 // This method is a wrapper around the `IpPoolList` method.
 // This method returns all the pages at once.
-func (c *Client) IpPoolListAllPages(ctx context.Context, params IpPoolListParams) ([]SiloIpPool, error) {
+func (c *Client) IpPoolListAllPages(ctx context.Context, params IpPoolListParams, ) ([]SiloIpPool, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6061,182 +6104,187 @@ func (c *Client) IpPoolListAllPages(ctx context.Context, params IpPoolListParams
 }
 
 // IpPoolView: Fetch IP pool
-func (c *Client) IpPoolView(ctx context.Context, params IpPoolViewParams) (*SiloIpPool, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) IpPoolView(ctx context.Context, params IpPoolViewParams, ) (*SiloIpPool, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/ip-pools/{{.pool}}"),
-		map[string]string{
-			"pool": string(params.Pool),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/ip-pools/{{.pool}}"), 
+        map[string]string{ 
+            "pool": string(params.Pool),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SiloIpPool
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SiloIpPool
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // LoginLocal: Authenticate a user via username and password
-func (c *Client) LoginLocal(ctx context.Context, params LoginLocalParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) LoginLocal(ctx context.Context, params LoginLocalParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/login/{{.silo_name}}/local"),
-		map[string]string{
-			"silo_name": string(params.SiloName),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/login/{{.silo_name}}/local"), 
+        map[string]string{ 
+            "silo_name": string(params.SiloName),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // CurrentUserView: Fetch user for current session
-func (c *Client) CurrentUserView(ctx context.Context) (*CurrentUser, error) {
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/me"),
-		map[string]string{},
-		map[string]string{},
-	)
+func (c *Client) CurrentUserView(ctx context.Context, ) (*CurrentUser, error) { 
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/me"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body CurrentUser
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body CurrentUser
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // CurrentUserAccessTokenList: List access tokens
 // List device access tokens for the currently authenticated user.
 //
 // To iterate over all pages, use the `CurrentUserAccessTokenListAllPages` method, instead.
-func (c *Client) CurrentUserAccessTokenList(ctx context.Context, params CurrentUserAccessTokenListParams) (*DeviceAccessTokenResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) CurrentUserAccessTokenList(ctx context.Context, params CurrentUserAccessTokenListParams, ) (*DeviceAccessTokenResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/me/access-tokens"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/me/access-tokens"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body DeviceAccessTokenResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body DeviceAccessTokenResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // CurrentUserAccessTokenListAllPages: List access tokens
@@ -6244,7 +6292,7 @@ func (c *Client) CurrentUserAccessTokenList(ctx context.Context, params CurrentU
 //
 // This method is a wrapper around the `CurrentUserAccessTokenList` method.
 // This method returns all the pages at once.
-func (c *Client) CurrentUserAccessTokenListAllPages(ctx context.Context, params CurrentUserAccessTokenListParams) ([]DeviceAccessToken, error) {
+func (c *Client) CurrentUserAccessTokenListAllPages(ctx context.Context, params CurrentUserAccessTokenListParams, ) ([]DeviceAccessToken, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6268,95 +6316,97 @@ func (c *Client) CurrentUserAccessTokenListAllPages(ctx context.Context, params 
 
 // CurrentUserAccessTokenDelete: Delete access token
 // Delete a device access token for the currently authenticated user.
-func (c *Client) CurrentUserAccessTokenDelete(ctx context.Context, params CurrentUserAccessTokenDeleteParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) CurrentUserAccessTokenDelete(ctx context.Context, params CurrentUserAccessTokenDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/me/access-tokens/{{.token_id}}"),
-		map[string]string{
-			"token_id": params.TokenId,
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/me/access-tokens/{{.token_id}}"), 
+        map[string]string{ 
+            "token_id": params.TokenId,
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // CurrentUserGroups: Fetch current user's groups
 //
 // To iterate over all pages, use the `CurrentUserGroupsAllPages` method, instead.
-func (c *Client) CurrentUserGroups(ctx context.Context, params CurrentUserGroupsParams) (*GroupResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) CurrentUserGroups(ctx context.Context, params CurrentUserGroupsParams, ) (*GroupResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/me/groups"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/me/groups"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body GroupResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body GroupResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // CurrentUserGroupsAllPages: Fetch current user's groups
 //
 // This method is a wrapper around the `CurrentUserGroups` method.
 // This method returns all the pages at once.
-func (c *Client) CurrentUserGroupsAllPages(ctx context.Context, params CurrentUserGroupsParams) ([]Group, error) {
+func (c *Client) CurrentUserGroupsAllPages(ctx context.Context, params CurrentUserGroupsParams, ) ([]Group, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6382,51 +6432,52 @@ func (c *Client) CurrentUserGroupsAllPages(ctx context.Context, params CurrentUs
 // Lists SSH public keys for the currently authenticated user.
 //
 // To iterate over all pages, use the `CurrentUserSshKeyListAllPages` method, instead.
-func (c *Client) CurrentUserSshKeyList(ctx context.Context, params CurrentUserSshKeyListParams) (*SshKeyResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) CurrentUserSshKeyList(ctx context.Context, params CurrentUserSshKeyListParams, ) (*SshKeyResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/me/ssh-keys"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/me/ssh-keys"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SshKeyResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SshKeyResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // CurrentUserSshKeyListAllPages: List SSH public keys
@@ -6434,7 +6485,7 @@ func (c *Client) CurrentUserSshKeyList(ctx context.Context, params CurrentUserSs
 //
 // This method is a wrapper around the `CurrentUserSshKeyList` method.
 // This method returns all the pages at once.
-func (c *Client) CurrentUserSshKeyListAllPages(ctx context.Context, params CurrentUserSshKeyListParams) ([]SshKey, error) {
+func (c *Client) CurrentUserSshKeyListAllPages(ctx context.Context, params CurrentUserSshKeyListParams, ) ([]SshKey, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6458,192 +6509,196 @@ func (c *Client) CurrentUserSshKeyListAllPages(ctx context.Context, params Curre
 
 // CurrentUserSshKeyCreate: Create SSH public key
 // Create an SSH public key for the currently authenticated user.
-func (c *Client) CurrentUserSshKeyCreate(ctx context.Context, params CurrentUserSshKeyCreateParams) (*SshKey, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) CurrentUserSshKeyCreate(ctx context.Context, params CurrentUserSshKeyCreateParams, ) (*SshKey, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/me/ssh-keys"),
-		map[string]string{},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/me/ssh-keys"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SshKey
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SshKey
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // CurrentUserSshKeyView: Fetch SSH public key
 // Fetch SSH public key associated with the currently authenticated user.
-func (c *Client) CurrentUserSshKeyView(ctx context.Context, params CurrentUserSshKeyViewParams) (*SshKey, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) CurrentUserSshKeyView(ctx context.Context, params CurrentUserSshKeyViewParams, ) (*SshKey, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/me/ssh-keys/{{.ssh_key}}"),
-		map[string]string{
-			"ssh_key": string(params.SshKey),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/me/ssh-keys/{{.ssh_key}}"), 
+        map[string]string{ 
+            "ssh_key": string(params.SshKey),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SshKey
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SshKey
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // CurrentUserSshKeyDelete: Delete SSH public key
 // Delete an SSH public key associated with the currently authenticated user.
-func (c *Client) CurrentUserSshKeyDelete(ctx context.Context, params CurrentUserSshKeyDeleteParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) CurrentUserSshKeyDelete(ctx context.Context, params CurrentUserSshKeyDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/me/ssh-keys/{{.ssh_key}}"),
-		map[string]string{
-			"ssh_key": string(params.SshKey),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/me/ssh-keys/{{.ssh_key}}"), 
+        map[string]string{ 
+            "ssh_key": string(params.SshKey),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // SiloMetric: View metrics
 // View CPU, memory, or storage utilization metrics at the silo or project level.
 //
 // To iterate over all pages, use the `SiloMetricAllPages` method, instead.
-func (c *Client) SiloMetric(ctx context.Context, params SiloMetricParams) (*MeasurementResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SiloMetric(ctx context.Context, params SiloMetricParams, ) (*MeasurementResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/metrics/{{.metric_name}}"),
-		map[string]string{
-			"metric_name": string(params.MetricName),
-		},
-		map[string]string{
-			"end_time":   params.EndTime.Format(time.RFC3339),
-			"limit":      PointerIntToStr(params.Limit),
-			"order":      string(params.Order),
-			"page_token": params.PageToken,
-			"project":    string(params.Project),
-			"start_time": params.StartTime.Format(time.RFC3339),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/metrics/{{.metric_name}}"), 
+        map[string]string{ 
+            "metric_name": string(params.MetricName),
+        }, 
+        map[string]string{ 
+            "end_time": params.EndTime.Format(time.RFC3339),
+            "limit": PointerIntToStr(params.Limit),
+            "order": string(params.Order),
+            "page_token": params.PageToken,
+            "project": string(params.Project),
+            "start_time": params.StartTime.Format(time.RFC3339),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body MeasurementResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body MeasurementResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SiloMetricAllPages: View metrics
@@ -6651,7 +6706,7 @@ func (c *Client) SiloMetric(ctx context.Context, params SiloMetricParams) (*Meas
 //
 // This method is a wrapper around the `SiloMetric` method.
 // This method returns all the pages at once.
-func (c *Client) SiloMetricAllPages(ctx context.Context, params SiloMetricParams) ([]Measurement, error) {
+func (c *Client) SiloMetricAllPages(ctx context.Context, params SiloMetricParams, ) ([]Measurement, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6678,51 +6733,52 @@ func (c *Client) SiloMetricAllPages(ctx context.Context, params SiloMetricParams
 // ExperimentalMulticastGroupList: List multicast groups
 //
 // To iterate over all pages, use the `ExperimentalMulticastGroupListAllPages` method, instead.
-func (c *Client) ExperimentalMulticastGroupList(ctx context.Context, params MulticastGroupListParams) (*MulticastGroupResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExperimentalMulticastGroupList(ctx context.Context, params MulticastGroupListParams, ) (*MulticastGroupResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/multicast-groups"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/multicast-groups"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body MulticastGroupResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body MulticastGroupResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
@@ -6731,7 +6787,7 @@ func (c *Client) ExperimentalMulticastGroupList(ctx context.Context, params Mult
 //
 // This method is a wrapper around the `ExperimentalMulticastGroupList` method.
 // This method returns all the pages at once.
-func (c *Client) ExperimentalMulticastGroupListAllPages(ctx context.Context, params MulticastGroupListParams) ([]MulticastGroup, error) {
+func (c *Client) ExperimentalMulticastGroupListAllPages(ctx context.Context, params MulticastGroupListParams, ) ([]MulticastGroup, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6757,49 +6813,50 @@ func (c *Client) ExperimentalMulticastGroupListAllPages(ctx context.Context, par
 //
 // ExperimentalMulticastGroupView: Fetch multicast group
 // The group can be specified by name, UUID, or multicast IP address. (e.g., "224.1.2.3" or "ff38::1").
-func (c *Client) ExperimentalMulticastGroupView(ctx context.Context, params MulticastGroupViewParams) (*MulticastGroup, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExperimentalMulticastGroupView(ctx context.Context, params MulticastGroupViewParams, ) (*MulticastGroup, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/multicast-groups/{{.multicast_group}}"),
-		map[string]string{
-			"multicast_group": string(params.MulticastGroup),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/multicast-groups/{{.multicast_group}}"), 
+        map[string]string{ 
+            "multicast_group": string(params.MulticastGroup),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body MulticastGroup
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body MulticastGroup
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
@@ -6808,53 +6865,53 @@ func (c *Client) ExperimentalMulticastGroupView(ctx context.Context, params Mult
 // The group can be specified by name, UUID, or multicast IP address.
 //
 // To iterate over all pages, use the `ExperimentalMulticastGroupMemberListAllPages` method, instead.
-func (c *Client) ExperimentalMulticastGroupMemberList(ctx context.Context, params MulticastGroupMemberListParams) (*MulticastGroupMemberResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExperimentalMulticastGroupMemberList(ctx context.Context, params MulticastGroupMemberListParams, ) (*MulticastGroupMemberResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/multicast-groups/{{.multicast_group}}/members"),
-		map[string]string{
-			"multicast_group": string(params.MulticastGroup),
-		},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/multicast-groups/{{.multicast_group}}/members"), 
+        map[string]string{ 
+            "multicast_group": string(params.MulticastGroup),
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body MulticastGroupMemberResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body MulticastGroupMemberResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
@@ -6864,7 +6921,7 @@ func (c *Client) ExperimentalMulticastGroupMemberList(ctx context.Context, param
 //
 // This method is a wrapper around the `ExperimentalMulticastGroupMemberList` method.
 // This method returns all the pages at once.
-func (c *Client) ExperimentalMulticastGroupMemberListAllPages(ctx context.Context, params MulticastGroupMemberListParams) ([]MulticastGroupMember, error) {
+func (c *Client) ExperimentalMulticastGroupMemberListAllPages(ctx context.Context, params MulticastGroupMemberListParams, ) ([]MulticastGroupMember, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6889,60 +6946,61 @@ func (c *Client) ExperimentalMulticastGroupMemberListAllPages(ctx context.Contex
 // InstanceNetworkInterfaceList: List network interfaces
 //
 // To iterate over all pages, use the `InstanceNetworkInterfaceListAllPages` method, instead.
-func (c *Client) InstanceNetworkInterfaceList(ctx context.Context, params InstanceNetworkInterfaceListParams) (*InstanceNetworkInterfaceResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) InstanceNetworkInterfaceList(ctx context.Context, params InstanceNetworkInterfaceListParams, ) (*InstanceNetworkInterfaceResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/network-interfaces"),
-		map[string]string{},
-		map[string]string{
-			"instance":   string(params.Instance),
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"project":    string(params.Project),
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/network-interfaces"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "instance": string(params.Instance),
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "project": string(params.Project),
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body InstanceNetworkInterfaceResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body InstanceNetworkInterfaceResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // InstanceNetworkInterfaceListAllPages: List network interfaces
 //
 // This method is a wrapper around the `InstanceNetworkInterfaceList` method.
 // This method returns all the pages at once.
-func (c *Client) InstanceNetworkInterfaceListAllPages(ctx context.Context, params InstanceNetworkInterfaceListParams) ([]InstanceNetworkInterface, error) {
+func (c *Client) InstanceNetworkInterfaceListAllPages(ctx context.Context, params InstanceNetworkInterfaceListParams, ) ([]InstanceNetworkInterface, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -6965,391 +7023,399 @@ func (c *Client) InstanceNetworkInterfaceListAllPages(ctx context.Context, param
 }
 
 // InstanceNetworkInterfaceCreate: Create network interface
-func (c *Client) InstanceNetworkInterfaceCreate(ctx context.Context, params InstanceNetworkInterfaceCreateParams) (*InstanceNetworkInterface, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) InstanceNetworkInterfaceCreate(ctx context.Context, params InstanceNetworkInterfaceCreateParams, ) (*InstanceNetworkInterface, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/network-interfaces"),
-		map[string]string{},
-		map[string]string{
-			"instance": string(params.Instance),
-			"project":  string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/network-interfaces"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "instance": string(params.Instance),
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body InstanceNetworkInterface
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body InstanceNetworkInterface
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // InstanceNetworkInterfaceView: Fetch network interface
-func (c *Client) InstanceNetworkInterfaceView(ctx context.Context, params InstanceNetworkInterfaceViewParams) (*InstanceNetworkInterface, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) InstanceNetworkInterfaceView(ctx context.Context, params InstanceNetworkInterfaceViewParams, ) (*InstanceNetworkInterface, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/network-interfaces/{{.interface}}"),
-		map[string]string{
-			"interface": string(params.Interface),
-		},
-		map[string]string{
-			"instance": string(params.Instance),
-			"project":  string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/network-interfaces/{{.interface}}"), 
+        map[string]string{ 
+            "interface": string(params.Interface),
+        }, 
+        map[string]string{ 
+            "instance": string(params.Instance),
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body InstanceNetworkInterface
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body InstanceNetworkInterface
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // InstanceNetworkInterfaceUpdate: Update network interface
-func (c *Client) InstanceNetworkInterfaceUpdate(ctx context.Context, params InstanceNetworkInterfaceUpdateParams) (*InstanceNetworkInterface, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) InstanceNetworkInterfaceUpdate(ctx context.Context, params InstanceNetworkInterfaceUpdateParams, ) (*InstanceNetworkInterface, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"PUT",
-		resolveRelative(c.host, "/v1/network-interfaces/{{.interface}}"),
-		map[string]string{
-			"interface": string(params.Interface),
-		},
-		map[string]string{
-			"instance": string(params.Instance),
-			"project":  string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "PUT", 
+        resolveRelative(c.host, "/v1/network-interfaces/{{.interface}}"), 
+        map[string]string{ 
+            "interface": string(params.Interface),
+        }, 
+        map[string]string{ 
+            "instance": string(params.Instance),
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body InstanceNetworkInterface
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body InstanceNetworkInterface
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // InstanceNetworkInterfaceDelete: Delete network interface
 // Note that the primary interface for an instance cannot be deleted if there are any secondary interfaces. A
 // new primary interface must be designated first. The primary interface can be deleted if there are no secondary
 // interfaces.
-func (c *Client) InstanceNetworkInterfaceDelete(ctx context.Context, params InstanceNetworkInterfaceDeleteParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) InstanceNetworkInterfaceDelete(ctx context.Context, params InstanceNetworkInterfaceDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/network-interfaces/{{.interface}}"),
-		map[string]string{
-			"interface": string(params.Interface),
-		},
-		map[string]string{
-			"instance": string(params.Instance),
-			"project":  string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/network-interfaces/{{.interface}}"), 
+        map[string]string{ 
+            "interface": string(params.Interface),
+        }, 
+        map[string]string{ 
+            "instance": string(params.Instance),
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // Ping: Ping API
 // Always responds with Ok if it responds at all.
-func (c *Client) Ping(ctx context.Context) (*Ping, error) {
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/ping"),
-		map[string]string{},
-		map[string]string{},
-	)
+func (c *Client) Ping(ctx context.Context, ) (*Ping, error) { 
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/ping"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body Ping
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body Ping
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // PolicyView: Fetch current silo's IAM policy
-func (c *Client) PolicyView(ctx context.Context) (*SiloRolePolicy, error) {
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/policy"),
-		map[string]string{},
-		map[string]string{},
-	)
+func (c *Client) PolicyView(ctx context.Context, ) (*SiloRolePolicy, error) { 
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/policy"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SiloRolePolicy
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SiloRolePolicy
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // PolicyUpdate: Update current silo's IAM policy
-func (c *Client) PolicyUpdate(ctx context.Context, params PolicyUpdateParams) (*SiloRolePolicy, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) PolicyUpdate(ctx context.Context, params PolicyUpdateParams, ) (*SiloRolePolicy, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"PUT",
-		resolveRelative(c.host, "/v1/policy"),
-		map[string]string{},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "PUT", 
+        resolveRelative(c.host, "/v1/policy"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SiloRolePolicy
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SiloRolePolicy
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // ProjectList: List projects
 //
 // To iterate over all pages, use the `ProjectListAllPages` method, instead.
-func (c *Client) ProjectList(ctx context.Context, params ProjectListParams) (*ProjectResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ProjectList(ctx context.Context, params ProjectListParams, ) (*ProjectResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/projects"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/projects"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body ProjectResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body ProjectResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // ProjectListAllPages: List projects
 //
 // This method is a wrapper around the `ProjectList` method.
 // This method returns all the pages at once.
-func (c *Client) ProjectListAllPages(ctx context.Context, params ProjectListParams) ([]Project, error) {
+func (c *Client) ProjectListAllPages(ctx context.Context, params ProjectListParams, ) ([]Project, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7372,342 +7438,350 @@ func (c *Client) ProjectListAllPages(ctx context.Context, params ProjectListPara
 }
 
 // ProjectCreate: Create project
-func (c *Client) ProjectCreate(ctx context.Context, params ProjectCreateParams) (*Project, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ProjectCreate(ctx context.Context, params ProjectCreateParams, ) (*Project, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/projects"),
-		map[string]string{},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/projects"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body Project
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body Project
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // ProjectView: Fetch project
-func (c *Client) ProjectView(ctx context.Context, params ProjectViewParams) (*Project, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ProjectView(ctx context.Context, params ProjectViewParams, ) (*Project, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/projects/{{.project}}"),
-		map[string]string{
-			"project": string(params.Project),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/projects/{{.project}}"), 
+        map[string]string{ 
+            "project": string(params.Project),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body Project
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body Project
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // ProjectUpdate: Update project
-func (c *Client) ProjectUpdate(ctx context.Context, params ProjectUpdateParams) (*Project, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ProjectUpdate(ctx context.Context, params ProjectUpdateParams, ) (*Project, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"PUT",
-		resolveRelative(c.host, "/v1/projects/{{.project}}"),
-		map[string]string{
-			"project": string(params.Project),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "PUT", 
+        resolveRelative(c.host, "/v1/projects/{{.project}}"), 
+        map[string]string{ 
+            "project": string(params.Project),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body Project
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body Project
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // ProjectDelete: Delete project
-func (c *Client) ProjectDelete(ctx context.Context, params ProjectDeleteParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) ProjectDelete(ctx context.Context, params ProjectDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/projects/{{.project}}"),
-		map[string]string{
-			"project": string(params.Project),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/projects/{{.project}}"), 
+        map[string]string{ 
+            "project": string(params.Project),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // ProjectPolicyView: Fetch project's IAM policy
-func (c *Client) ProjectPolicyView(ctx context.Context, params ProjectPolicyViewParams) (*ProjectRolePolicy, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ProjectPolicyView(ctx context.Context, params ProjectPolicyViewParams, ) (*ProjectRolePolicy, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/projects/{{.project}}/policy"),
-		map[string]string{
-			"project": string(params.Project),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/projects/{{.project}}/policy"), 
+        map[string]string{ 
+            "project": string(params.Project),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body ProjectRolePolicy
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body ProjectRolePolicy
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // ProjectPolicyUpdate: Update project's IAM policy
-func (c *Client) ProjectPolicyUpdate(ctx context.Context, params ProjectPolicyUpdateParams) (*ProjectRolePolicy, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ProjectPolicyUpdate(ctx context.Context, params ProjectPolicyUpdateParams, ) (*ProjectRolePolicy, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"PUT",
-		resolveRelative(c.host, "/v1/projects/{{.project}}/policy"),
-		map[string]string{
-			"project": string(params.Project),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "PUT", 
+        resolveRelative(c.host, "/v1/projects/{{.project}}/policy"), 
+        map[string]string{ 
+            "project": string(params.Project),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body ProjectRolePolicy
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body ProjectRolePolicy
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SnapshotList: List snapshots
 //
 // To iterate over all pages, use the `SnapshotListAllPages` method, instead.
-func (c *Client) SnapshotList(ctx context.Context, params SnapshotListParams) (*SnapshotResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SnapshotList(ctx context.Context, params SnapshotListParams, ) (*SnapshotResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/snapshots"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"project":    string(params.Project),
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/snapshots"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "project": string(params.Project),
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SnapshotResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SnapshotResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SnapshotListAllPages: List snapshots
 //
 // This method is a wrapper around the `SnapshotList` method.
 // This method returns all the pages at once.
-func (c *Client) SnapshotListAllPages(ctx context.Context, params SnapshotListParams) ([]Snapshot, error) {
+func (c *Client) SnapshotListAllPages(ctx context.Context, params SnapshotListParams, ) ([]Snapshot, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7731,197 +7805,199 @@ func (c *Client) SnapshotListAllPages(ctx context.Context, params SnapshotListPa
 
 // SnapshotCreate: Create snapshot
 // Creates a point-in-time snapshot from a disk.
-func (c *Client) SnapshotCreate(ctx context.Context, params SnapshotCreateParams) (*Snapshot, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SnapshotCreate(ctx context.Context, params SnapshotCreateParams, ) (*Snapshot, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/snapshots"),
-		map[string]string{},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/snapshots"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body Snapshot
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body Snapshot
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SnapshotView: Fetch snapshot
-func (c *Client) SnapshotView(ctx context.Context, params SnapshotViewParams) (*Snapshot, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SnapshotView(ctx context.Context, params SnapshotViewParams, ) (*Snapshot, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/snapshots/{{.snapshot}}"),
-		map[string]string{
-			"snapshot": string(params.Snapshot),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/snapshots/{{.snapshot}}"), 
+        map[string]string{ 
+            "snapshot": string(params.Snapshot),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body Snapshot
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body Snapshot
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SnapshotDelete: Delete snapshot
-func (c *Client) SnapshotDelete(ctx context.Context, params SnapshotDeleteParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) SnapshotDelete(ctx context.Context, params SnapshotDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/snapshots/{{.snapshot}}"),
-		map[string]string{
-			"snapshot": string(params.Snapshot),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/snapshots/{{.snapshot}}"), 
+        map[string]string{ 
+            "snapshot": string(params.Snapshot),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // SubnetPoolList: List subnet pools
 //
 // To iterate over all pages, use the `SubnetPoolListAllPages` method, instead.
-func (c *Client) SubnetPoolList(ctx context.Context, params SubnetPoolListParams) (*SiloSubnetPoolResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SubnetPoolList(ctx context.Context, params SubnetPoolListParams, ) (*SiloSubnetPoolResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/subnet-pools"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/subnet-pools"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SiloSubnetPoolResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SiloSubnetPoolResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SubnetPoolListAllPages: List subnet pools
 //
 // This method is a wrapper around the `SubnetPoolList` method.
 // This method returns all the pages at once.
-func (c *Client) SubnetPoolListAllPages(ctx context.Context, params SubnetPoolListParams) ([]SiloSubnetPool, error) {
+func (c *Client) SubnetPoolListAllPages(ctx context.Context, params SubnetPoolListParams, ) ([]SiloSubnetPool, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -7944,49 +8020,50 @@ func (c *Client) SubnetPoolListAllPages(ctx context.Context, params SubnetPoolLi
 }
 
 // SubnetPoolView: Fetch subnet pool
-func (c *Client) SubnetPoolView(ctx context.Context, params SubnetPoolViewParams) (*SiloSubnetPool, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SubnetPoolView(ctx context.Context, params SubnetPoolViewParams, ) (*SiloSubnetPool, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/subnet-pools/{{.pool}}"),
-		map[string]string{
-			"pool": string(params.Pool),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/subnet-pools/{{.pool}}"), 
+        map[string]string{ 
+            "pool": string(params.Pool),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SiloSubnetPool
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SiloSubnetPool
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // AuditLogList: View audit log
@@ -7994,60 +8071,61 @@ func (c *Client) SubnetPoolView(ctx context.Context, params SubnetPoolViewParams
 // `time_started` and `time_completed`) so that clients do not have to find multiple entries and match them up
 // by request ID to get the full picture of an operation. Because timestamps may not be unique, entries have
 // also have a unique `id` that can be used to deduplicate items fetched from overlapping time intervals.
-//
+// 
 // Audit log entries are designed to be immutable: once you see an entry, fetching it again will never get you
 // a different result. The list is ordered by `time_completed`, not `time_started`. If you fetch the audit log
 // for a time range that is fully in the past, the resulting list is guaranteed to be complete, i.e., fetching the
 // same timespan again later will always produce the same set of entries.
 //
 // To iterate over all pages, use the `AuditLogListAllPages` method, instead.
-func (c *Client) AuditLogList(ctx context.Context, params AuditLogListParams) (*AuditLogEntryResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) AuditLogList(ctx context.Context, params AuditLogListParams, ) (*AuditLogEntryResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/audit-log"),
-		map[string]string{},
-		map[string]string{
-			"end_time":   params.EndTime.Format(time.RFC3339),
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-			"start_time": params.StartTime.Format(time.RFC3339),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/audit-log"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "end_time": params.EndTime.Format(time.RFC3339),
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+            "start_time": params.StartTime.Format(time.RFC3339),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body AuditLogEntryResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body AuditLogEntryResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // AuditLogListAllPages: View audit log
@@ -8055,7 +8133,7 @@ func (c *Client) AuditLogList(ctx context.Context, params AuditLogListParams) (*
 // `time_started` and `time_completed`) so that clients do not have to find multiple entries and match them up
 // by request ID to get the full picture of an operation. Because timestamps may not be unique, entries have
 // also have a unique `id` that can be used to deduplicate items fetched from overlapping time intervals.
-//
+// 
 // Audit log entries are designed to be immutable: once you see an entry, fetching it again will never get you
 // a different result. The list is ordered by `time_completed`, not `time_started`. If you fetch the audit log
 // for a time range that is fully in the past, the resulting list is guaranteed to be complete, i.e., fetching the
@@ -8063,7 +8141,7 @@ func (c *Client) AuditLogList(ctx context.Context, params AuditLogListParams) (*
 //
 // This method is a wrapper around the `AuditLogList` method.
 // This method returns all the pages at once.
-func (c *Client) AuditLogListAllPages(ctx context.Context, params AuditLogListParams) ([]AuditLogEntry, error) {
+func (c *Client) AuditLogListAllPages(ctx context.Context, params AuditLogListParams, ) ([]AuditLogEntry, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8088,58 +8166,59 @@ func (c *Client) AuditLogListAllPages(ctx context.Context, params AuditLogListPa
 // PhysicalDiskList: List physical disks
 //
 // To iterate over all pages, use the `PhysicalDiskListAllPages` method, instead.
-func (c *Client) PhysicalDiskList(ctx context.Context, params PhysicalDiskListParams) (*PhysicalDiskResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) PhysicalDiskList(ctx context.Context, params PhysicalDiskListParams, ) (*PhysicalDiskResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/hardware/disks"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/hardware/disks"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body PhysicalDiskResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body PhysicalDiskResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // PhysicalDiskListAllPages: List physical disks
 //
 // This method is a wrapper around the `PhysicalDiskList` method.
 // This method returns all the pages at once.
-func (c *Client) PhysicalDiskListAllPages(ctx context.Context, params PhysicalDiskListParams) ([]PhysicalDisk, error) {
+func (c *Client) PhysicalDiskListAllPages(ctx context.Context, params PhysicalDiskListParams, ) ([]PhysicalDisk, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8162,110 +8241,111 @@ func (c *Client) PhysicalDiskListAllPages(ctx context.Context, params PhysicalDi
 }
 
 // PhysicalDiskView: Get physical disk
-func (c *Client) PhysicalDiskView(ctx context.Context, params PhysicalDiskViewParams) (*PhysicalDisk, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) PhysicalDiskView(ctx context.Context, params PhysicalDiskViewParams, ) (*PhysicalDisk, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/hardware/disks/{{.disk_id}}"),
-		map[string]string{
-			"disk_id": params.DiskId,
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/hardware/disks/{{.disk_id}}"), 
+        map[string]string{ 
+            "disk_id": params.DiskId,
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body PhysicalDisk
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body PhysicalDisk
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // NetworkingSwitchPortLldpNeighbors: Fetch the LLDP neighbors seen on a switch port
 //
 // To iterate over all pages, use the `NetworkingSwitchPortLldpNeighborsAllPages` method, instead.
-func (c *Client) NetworkingSwitchPortLldpNeighbors(ctx context.Context, params NetworkingSwitchPortLldpNeighborsParams) (*LldpNeighborResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) NetworkingSwitchPortLldpNeighbors(ctx context.Context, params NetworkingSwitchPortLldpNeighborsParams, ) (*LldpNeighborResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/hardware/rack-switch-port/{{.rack_id}}/{{.switch_location}}/{{.port}}/lldp/neighbors"),
-		map[string]string{
-			"port":            string(params.Port),
-			"rack_id":         params.RackId,
-			"switch_location": string(params.SwitchLocation),
-		},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/hardware/rack-switch-port/{{.rack_id}}/{{.switch_location}}/{{.port}}/lldp/neighbors"), 
+        map[string]string{ 
+            "port": string(params.Port),
+            "rack_id": params.RackId,
+            "switch_location": string(params.SwitchLocation),
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body LldpNeighborResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body LldpNeighborResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // NetworkingSwitchPortLldpNeighborsAllPages: Fetch the LLDP neighbors seen on a switch port
 //
 // This method is a wrapper around the `NetworkingSwitchPortLldpNeighbors` method.
 // This method returns all the pages at once.
-func (c *Client) NetworkingSwitchPortLldpNeighborsAllPages(ctx context.Context, params NetworkingSwitchPortLldpNeighborsParams) ([]LldpNeighbor, error) {
+func (c *Client) NetworkingSwitchPortLldpNeighborsAllPages(ctx context.Context, params NetworkingSwitchPortLldpNeighborsParams, ) ([]LldpNeighbor, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8290,58 +8370,59 @@ func (c *Client) NetworkingSwitchPortLldpNeighborsAllPages(ctx context.Context, 
 // RackList: List racks
 //
 // To iterate over all pages, use the `RackListAllPages` method, instead.
-func (c *Client) RackList(ctx context.Context, params RackListParams) (*RackResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) RackList(ctx context.Context, params RackListParams, ) (*RackResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/hardware/racks"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/hardware/racks"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body RackResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body RackResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // RackListAllPages: List racks
 //
 // This method is a wrapper around the `RackList` method.
 // This method returns all the pages at once.
-func (c *Client) RackListAllPages(ctx context.Context, params RackListParams) ([]Rack, error) {
+func (c *Client) RackListAllPages(ctx context.Context, params RackListParams, ) ([]Rack, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8364,100 +8445,101 @@ func (c *Client) RackListAllPages(ctx context.Context, params RackListParams) ([
 }
 
 // RackView: Fetch rack
-func (c *Client) RackView(ctx context.Context, params RackViewParams) (*Rack, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) RackView(ctx context.Context, params RackViewParams, ) (*Rack, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/hardware/racks/{{.rack_id}}"),
-		map[string]string{
-			"rack_id": params.RackId,
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/hardware/racks/{{.rack_id}}"), 
+        map[string]string{ 
+            "rack_id": params.RackId,
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body Rack
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body Rack
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
 //
 // ExperimentalRackMembershipStatus: Retrieve the rack cluster membership status
 // Returns the status for the most recent change, or a specific version if one is specified.
-func (c *Client) ExperimentalRackMembershipStatus(ctx context.Context, params RackMembershipStatusParams) (*RackMembershipStatus, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExperimentalRackMembershipStatus(ctx context.Context, params RackMembershipStatusParams, ) (*RackMembershipStatus, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/hardware/racks/{{.rack_id}}/membership"),
-		map[string]string{
-			"rack_id": params.RackId,
-		},
-		map[string]string{
-			"version": fmt.Sprint(params.Version),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/hardware/racks/{{.rack_id}}/membership"), 
+        map[string]string{ 
+            "rack_id": params.RackId,
+        }, 
+        map[string]string{ 
+            "version": fmt.Sprint(params.Version),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body RackMembershipStatus
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body RackMembershipStatus
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
@@ -8466,160 +8548,163 @@ func (c *Client) ExperimentalRackMembershipStatus(ctx context.Context, params Ra
 // This operation is synchronous. Upon returning from the API call, a success response indicates that the prior
 // membership change was aborted. An error response indicates that there is no active membership change in
 // progress (previous changes have completed) or that the current membership change could not be aborted.
-func (c *Client) ExperimentalRackMembershipAbort(ctx context.Context, params RackMembershipAbortParams) (*RackMembershipStatus, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExperimentalRackMembershipAbort(ctx context.Context, params RackMembershipAbortParams, ) (*RackMembershipStatus, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"POST",
-		resolveRelative(c.host, "/v1/system/hardware/racks/{{.rack_id}}/membership/abort"),
-		map[string]string{
-			"rack_id": params.RackId,
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "POST", 
+        resolveRelative(c.host, "/v1/system/hardware/racks/{{.rack_id}}/membership/abort"), 
+        map[string]string{ 
+            "rack_id": params.RackId,
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body RackMembershipStatus
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body RackMembershipStatus
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
 //
 // ExperimentalRackMembershipAddSleds: Add new sleds to rack membership
-func (c *Client) ExperimentalRackMembershipAddSleds(ctx context.Context, params RackMembershipAddSledsParams) (*RackMembershipStatus, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExperimentalRackMembershipAddSleds(ctx context.Context, params RackMembershipAddSledsParams, ) (*RackMembershipStatus, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/system/hardware/racks/{{.rack_id}}/membership/add"),
-		map[string]string{
-			"rack_id": params.RackId,
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/system/hardware/racks/{{.rack_id}}/membership/add"), 
+        map[string]string{ 
+            "rack_id": params.RackId,
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body RackMembershipStatus
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body RackMembershipStatus
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SledList: List sleds
 //
 // To iterate over all pages, use the `SledListAllPages` method, instead.
-func (c *Client) SledList(ctx context.Context, params SledListParams) (*SledResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SledList(ctx context.Context, params SledListParams, ) (*SledResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/hardware/sleds"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/hardware/sleds"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SledResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SledResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SledListAllPages: List sleds
 //
 // This method is a wrapper around the `SledList` method.
 // This method returns all the pages at once.
-func (c *Client) SledListAllPages(ctx context.Context, params SledListParams) ([]Sled, error) {
+func (c *Client) SledListAllPages(ctx context.Context, params SledListParams, ) ([]Sled, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8642,109 +8727,112 @@ func (c *Client) SledListAllPages(ctx context.Context, params SledListParams) ([
 }
 
 // SledAdd: Add sled to initialized rack
-func (c *Client) SledAdd(ctx context.Context, params SledAddParams) (*SledId, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SledAdd(ctx context.Context, params SledAddParams, ) (*SledId, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/system/hardware/sleds"),
-		map[string]string{},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/system/hardware/sleds"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SledId
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SledId
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SledListUninitialized: List uninitialized sleds
 //
 // To iterate over all pages, use the `SledListUninitializedAllPages` method, instead.
-func (c *Client) SledListUninitialized(ctx context.Context, params SledListUninitializedParams) (*UninitializedSledResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SledListUninitialized(ctx context.Context, params SledListUninitializedParams, ) (*UninitializedSledResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/hardware/sleds-uninitialized"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/hardware/sleds-uninitialized"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body UninitializedSledResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body UninitializedSledResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SledListUninitializedAllPages: List uninitialized sleds
 //
 // This method is a wrapper around the `SledListUninitialized` method.
 // This method returns all the pages at once.
-func (c *Client) SledListUninitializedAllPages(ctx context.Context, params SledListUninitializedParams) ([]UninitializedSled, error) {
+func (c *Client) SledListUninitializedAllPages(ctx context.Context, params SledListUninitializedParams, ) ([]UninitializedSled, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8767,108 +8855,109 @@ func (c *Client) SledListUninitializedAllPages(ctx context.Context, params SledL
 }
 
 // SledView: Fetch sled
-func (c *Client) SledView(ctx context.Context, params SledViewParams) (*Sled, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SledView(ctx context.Context, params SledViewParams, ) (*Sled, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/hardware/sleds/{{.sled_id}}"),
-		map[string]string{
-			"sled_id": params.SledId,
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/hardware/sleds/{{.sled_id}}"), 
+        map[string]string{ 
+            "sled_id": params.SledId,
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body Sled
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body Sled
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SledPhysicalDiskList: List physical disks attached to sleds
 //
 // To iterate over all pages, use the `SledPhysicalDiskListAllPages` method, instead.
-func (c *Client) SledPhysicalDiskList(ctx context.Context, params SledPhysicalDiskListParams) (*PhysicalDiskResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SledPhysicalDiskList(ctx context.Context, params SledPhysicalDiskListParams, ) (*PhysicalDiskResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/hardware/sleds/{{.sled_id}}/disks"),
-		map[string]string{
-			"sled_id": params.SledId,
-		},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/hardware/sleds/{{.sled_id}}/disks"), 
+        map[string]string{ 
+            "sled_id": params.SledId,
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body PhysicalDiskResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body PhysicalDiskResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SledPhysicalDiskListAllPages: List physical disks attached to sleds
 //
 // This method is a wrapper around the `SledPhysicalDiskList` method.
 // This method returns all the pages at once.
-func (c *Client) SledPhysicalDiskListAllPages(ctx context.Context, params SledPhysicalDiskListParams) ([]PhysicalDisk, error) {
+func (c *Client) SledPhysicalDiskListAllPages(ctx context.Context, params SledPhysicalDiskListParams, ) ([]PhysicalDisk, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8893,60 +8982,60 @@ func (c *Client) SledPhysicalDiskListAllPages(ctx context.Context, params SledPh
 // SledInstanceList: List instances running on given sled
 //
 // To iterate over all pages, use the `SledInstanceListAllPages` method, instead.
-func (c *Client) SledInstanceList(ctx context.Context, params SledInstanceListParams) (*SledInstanceResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SledInstanceList(ctx context.Context, params SledInstanceListParams, ) (*SledInstanceResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/hardware/sleds/{{.sled_id}}/instances"),
-		map[string]string{
-			"sled_id": params.SledId,
-		},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/hardware/sleds/{{.sled_id}}/instances"), 
+        map[string]string{ 
+            "sled_id": params.SledId,
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SledInstanceResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SledInstanceResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SledInstanceListAllPages: List instances running on given sled
 //
 // This method is a wrapper around the `SledInstanceList` method.
 // This method returns all the pages at once.
-func (c *Client) SledInstanceListAllPages(ctx context.Context, params SledInstanceListParams) ([]SledInstance, error) {
+func (c *Client) SledInstanceListAllPages(ctx context.Context, params SledInstanceListParams, ) ([]SledInstance, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -8969,113 +9058,115 @@ func (c *Client) SledInstanceListAllPages(ctx context.Context, params SledInstan
 }
 
 // SledSetProvisionPolicy: Set sled provision policy
-func (c *Client) SledSetProvisionPolicy(ctx context.Context, params SledSetProvisionPolicyParams) (*SledProvisionPolicyResponse, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SledSetProvisionPolicy(ctx context.Context, params SledSetProvisionPolicyParams, ) (*SledProvisionPolicyResponse, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"PUT",
-		resolveRelative(c.host, "/v1/system/hardware/sleds/{{.sled_id}}/provision-policy"),
-		map[string]string{
-			"sled_id": params.SledId,
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "PUT", 
+        resolveRelative(c.host, "/v1/system/hardware/sleds/{{.sled_id}}/provision-policy"), 
+        map[string]string{ 
+            "sled_id": params.SledId,
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SledProvisionPolicyResponse
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SledProvisionPolicyResponse
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // NetworkingSwitchPortList: List switch ports
 //
 // To iterate over all pages, use the `NetworkingSwitchPortListAllPages` method, instead.
-func (c *Client) NetworkingSwitchPortList(ctx context.Context, params NetworkingSwitchPortListParams) (*SwitchPortResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) NetworkingSwitchPortList(ctx context.Context, params NetworkingSwitchPortListParams, ) (*SwitchPortResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/hardware/switch-port"),
-		map[string]string{},
-		map[string]string{
-			"limit":          PointerIntToStr(params.Limit),
-			"page_token":     params.PageToken,
-			"sort_by":        string(params.SortBy),
-			"switch_port_id": params.SwitchPortId,
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/hardware/switch-port"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+            "switch_port_id": params.SwitchPortId,
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SwitchPortResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SwitchPortResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // NetworkingSwitchPortListAllPages: List switch ports
 //
 // This method is a wrapper around the `NetworkingSwitchPortList` method.
 // This method returns all the pages at once.
-func (c *Client) NetworkingSwitchPortListAllPages(ctx context.Context, params NetworkingSwitchPortListParams) ([]SwitchPort, error) {
+func (c *Client) NetworkingSwitchPortListAllPages(ctx context.Context, params NetworkingSwitchPortListParams, ) ([]SwitchPort, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -9098,284 +9189,285 @@ func (c *Client) NetworkingSwitchPortListAllPages(ctx context.Context, params Ne
 }
 
 // NetworkingSwitchPortLldpConfigView: Fetch the LLDP configuration for a switch port
-func (c *Client) NetworkingSwitchPortLldpConfigView(ctx context.Context, params NetworkingSwitchPortLldpConfigViewParams) (*LldpLinkConfig, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) NetworkingSwitchPortLldpConfigView(ctx context.Context, params NetworkingSwitchPortLldpConfigViewParams, ) (*LldpLinkConfig, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/hardware/switch-port/{{.port}}/lldp/config"),
-		map[string]string{
-			"port": string(params.Port),
-		},
-		map[string]string{
-			"rack_id":         params.RackId,
-			"switch_location": string(params.SwitchLocation),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/hardware/switch-port/{{.port}}/lldp/config"), 
+        map[string]string{ 
+            "port": string(params.Port),
+        }, 
+        map[string]string{ 
+            "rack_id": params.RackId,
+            "switch_location": string(params.SwitchLocation),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body LldpLinkConfig
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body LldpLinkConfig
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // NetworkingSwitchPortLldpConfigUpdate: Update the LLDP configuration for a switch port
-func (c *Client) NetworkingSwitchPortLldpConfigUpdate(ctx context.Context, params NetworkingSwitchPortLldpConfigUpdateParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) NetworkingSwitchPortLldpConfigUpdate(ctx context.Context, params NetworkingSwitchPortLldpConfigUpdateParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/system/hardware/switch-port/{{.port}}/lldp/config"),
-		map[string]string{
-			"port": string(params.Port),
-		},
-		map[string]string{
-			"rack_id":         params.RackId,
-			"switch_location": string(params.SwitchLocation),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/system/hardware/switch-port/{{.port}}/lldp/config"), 
+        map[string]string{ 
+            "port": string(params.Port),
+        }, 
+        map[string]string{ 
+            "rack_id": params.RackId,
+            "switch_location": string(params.SwitchLocation),
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // NetworkingSwitchPortApplySettings: Apply switch port settings
-func (c *Client) NetworkingSwitchPortApplySettings(ctx context.Context, params NetworkingSwitchPortApplySettingsParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) NetworkingSwitchPortApplySettings(ctx context.Context, params NetworkingSwitchPortApplySettingsParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/system/hardware/switch-port/{{.port}}/settings"),
-		map[string]string{
-			"port": string(params.Port),
-		},
-		map[string]string{
-			"rack_id":         params.RackId,
-			"switch_location": string(params.SwitchLocation),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/system/hardware/switch-port/{{.port}}/settings"), 
+        map[string]string{ 
+            "port": string(params.Port),
+        }, 
+        map[string]string{ 
+            "rack_id": params.RackId,
+            "switch_location": string(params.SwitchLocation),
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // NetworkingSwitchPortClearSettings: Clear switch port settings
-func (c *Client) NetworkingSwitchPortClearSettings(ctx context.Context, params NetworkingSwitchPortClearSettingsParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) NetworkingSwitchPortClearSettings(ctx context.Context, params NetworkingSwitchPortClearSettingsParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/system/hardware/switch-port/{{.port}}/settings"),
-		map[string]string{
-			"port": string(params.Port),
-		},
-		map[string]string{
-			"rack_id":         params.RackId,
-			"switch_location": string(params.SwitchLocation),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/system/hardware/switch-port/{{.port}}/settings"), 
+        map[string]string{ 
+            "port": string(params.Port),
+        }, 
+        map[string]string{ 
+            "rack_id": params.RackId,
+            "switch_location": string(params.SwitchLocation),
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // NetworkingSwitchPortStatus: Get switch port status
-func (c *Client) NetworkingSwitchPortStatus(ctx context.Context, params NetworkingSwitchPortStatusParams) (*SwitchLinkState, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) NetworkingSwitchPortStatus(ctx context.Context, params NetworkingSwitchPortStatusParams, ) (*SwitchLinkState, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/hardware/switch-port/{{.port}}/status"),
-		map[string]string{
-			"port": string(params.Port),
-		},
-		map[string]string{
-			"rack_id":         params.RackId,
-			"switch_location": string(params.SwitchLocation),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/hardware/switch-port/{{.port}}/status"), 
+        map[string]string{ 
+            "port": string(params.Port),
+        }, 
+        map[string]string{ 
+            "rack_id": params.RackId,
+            "switch_location": string(params.SwitchLocation),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SwitchLinkState
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SwitchLinkState
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SwitchList: List switches
 //
 // To iterate over all pages, use the `SwitchListAllPages` method, instead.
-func (c *Client) SwitchList(ctx context.Context, params SwitchListParams) (*SwitchResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SwitchList(ctx context.Context, params SwitchListParams, ) (*SwitchResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/hardware/switches"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/hardware/switches"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SwitchResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SwitchResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SwitchListAllPages: List switches
 //
 // This method is a wrapper around the `SwitchList` method.
 // This method returns all the pages at once.
-func (c *Client) SwitchListAllPages(ctx context.Context, params SwitchListParams) ([]Switch, error) {
+func (c *Client) SwitchListAllPages(ctx context.Context, params SwitchListParams, ) ([]Switch, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -9398,101 +9490,103 @@ func (c *Client) SwitchListAllPages(ctx context.Context, params SwitchListParams
 }
 
 // SwitchView: Fetch switch
-func (c *Client) SwitchView(ctx context.Context, params SwitchViewParams) (*Switch, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SwitchView(ctx context.Context, params SwitchViewParams, ) (*Switch, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/hardware/switches/{{.switch_id}}"),
-		map[string]string{
-			"switch_id": params.SwitchId,
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/hardware/switches/{{.switch_id}}"), 
+        map[string]string{ 
+            "switch_id": params.SwitchId,
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body Switch
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body Switch
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SiloIdentityProviderList: List identity providers for silo
 // List identity providers for silo by silo name or ID.
 //
 // To iterate over all pages, use the `SiloIdentityProviderListAllPages` method, instead.
-func (c *Client) SiloIdentityProviderList(ctx context.Context, params SiloIdentityProviderListParams) (*IdentityProviderResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SiloIdentityProviderList(ctx context.Context, params SiloIdentityProviderListParams, ) (*IdentityProviderResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/identity-providers"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"silo":       string(params.Silo),
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/identity-providers"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "silo": string(params.Silo),
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body IdentityProviderResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body IdentityProviderResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SiloIdentityProviderListAllPages: List identity providers for silo
@@ -9500,7 +9594,7 @@ func (c *Client) SiloIdentityProviderList(ctx context.Context, params SiloIdenti
 //
 // This method is a wrapper around the `SiloIdentityProviderList` method.
 // This method returns all the pages at once.
-func (c *Client) SiloIdentityProviderListAllPages(ctx context.Context, params SiloIdentityProviderListParams) ([]IdentityProvider, error) {
+func (c *Client) SiloIdentityProviderListAllPages(ctx context.Context, params SiloIdentityProviderListParams, ) ([]IdentityProvider, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -9525,293 +9619,296 @@ func (c *Client) SiloIdentityProviderListAllPages(ctx context.Context, params Si
 // LocalIdpUserCreate: Create user
 // Users can only be created in Silos with `provision_type` == `Fixed`. Otherwise, Silo users are just-in-time (JIT)
 // provisioned when a user first logs in using an external Identity Provider.
-func (c *Client) LocalIdpUserCreate(ctx context.Context, params LocalIdpUserCreateParams) (*User, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) LocalIdpUserCreate(ctx context.Context, params LocalIdpUserCreateParams, ) (*User, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/system/identity-providers/local/users"),
-		map[string]string{},
-		map[string]string{
-			"silo": string(params.Silo),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/system/identity-providers/local/users"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "silo": string(params.Silo),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body User
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body User
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // LocalIdpUserDelete: Delete user
-func (c *Client) LocalIdpUserDelete(ctx context.Context, params LocalIdpUserDeleteParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) LocalIdpUserDelete(ctx context.Context, params LocalIdpUserDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/system/identity-providers/local/users/{{.user_id}}"),
-		map[string]string{
-			"user_id": params.UserId,
-		},
-		map[string]string{
-			"silo": string(params.Silo),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/system/identity-providers/local/users/{{.user_id}}"), 
+        map[string]string{ 
+            "user_id": params.UserId,
+        }, 
+        map[string]string{ 
+            "silo": string(params.Silo),
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // LocalIdpUserSetPassword: Set or invalidate user's password
 // Passwords can only be updated for users in Silos with identity mode `LocalOnly`.
-func (c *Client) LocalIdpUserSetPassword(ctx context.Context, params LocalIdpUserSetPasswordParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) LocalIdpUserSetPassword(ctx context.Context, params LocalIdpUserSetPasswordParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/system/identity-providers/local/users/{{.user_id}}/set-password"),
-		map[string]string{
-			"user_id": params.UserId,
-		},
-		map[string]string{
-			"silo": string(params.Silo),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/system/identity-providers/local/users/{{.user_id}}/set-password"), 
+        map[string]string{ 
+            "user_id": params.UserId,
+        }, 
+        map[string]string{ 
+            "silo": string(params.Silo),
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // SamlIdentityProviderCreate: Create SAML identity provider
-func (c *Client) SamlIdentityProviderCreate(ctx context.Context, params SamlIdentityProviderCreateParams) (*SamlIdentityProvider, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SamlIdentityProviderCreate(ctx context.Context, params SamlIdentityProviderCreateParams, ) (*SamlIdentityProvider, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/system/identity-providers/saml"),
-		map[string]string{},
-		map[string]string{
-			"silo": string(params.Silo),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/system/identity-providers/saml"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "silo": string(params.Silo),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SamlIdentityProvider
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SamlIdentityProvider
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SamlIdentityProviderView: Fetch SAML identity provider
-func (c *Client) SamlIdentityProviderView(ctx context.Context, params SamlIdentityProviderViewParams) (*SamlIdentityProvider, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SamlIdentityProviderView(ctx context.Context, params SamlIdentityProviderViewParams, ) (*SamlIdentityProvider, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/identity-providers/saml/{{.provider}}"),
-		map[string]string{
-			"provider": string(params.Provider),
-		},
-		map[string]string{
-			"silo": string(params.Silo),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/identity-providers/saml/{{.provider}}"), 
+        map[string]string{ 
+            "provider": string(params.Provider),
+        }, 
+        map[string]string{ 
+            "silo": string(params.Silo),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SamlIdentityProvider
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SamlIdentityProvider
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SystemIpPoolList: List IP pools
 //
 // To iterate over all pages, use the `SystemIpPoolListAllPages` method, instead.
-func (c *Client) SystemIpPoolList(ctx context.Context, params SystemIpPoolListParams) (*IpPoolResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemIpPoolList(ctx context.Context, params SystemIpPoolListParams, ) (*IpPoolResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/ip-pools"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/ip-pools"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body IpPoolResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body IpPoolResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SystemIpPoolListAllPages: List IP pools
 //
 // This method is a wrapper around the `SystemIpPoolList` method.
 // This method returns all the pages at once.
-func (c *Client) SystemIpPoolListAllPages(ctx context.Context, params SystemIpPoolListParams) ([]IpPool, error) {
+func (c *Client) SystemIpPoolListAllPages(ctx context.Context, params SystemIpPoolListParams, ) ([]IpPool, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -9834,144 +9931,149 @@ func (c *Client) SystemIpPoolListAllPages(ctx context.Context, params SystemIpPo
 }
 
 // SystemIpPoolCreate: Create IP pool
-func (c *Client) SystemIpPoolCreate(ctx context.Context, params SystemIpPoolCreateParams) (*IpPool, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemIpPoolCreate(ctx context.Context, params SystemIpPoolCreateParams, ) (*IpPool, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/system/ip-pools"),
-		map[string]string{},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/system/ip-pools"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body IpPool
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body IpPool
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SystemIpPoolServiceView: Fetch Oxide service IP pool
-func (c *Client) SystemIpPoolServiceView(ctx context.Context) (*IpPool, error) {
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/ip-pools-service"),
-		map[string]string{},
-		map[string]string{},
-	)
+func (c *Client) SystemIpPoolServiceView(ctx context.Context, ) (*IpPool, error) { 
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/ip-pools-service"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body IpPool
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body IpPool
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SystemIpPoolServiceRangeList: List IP ranges for the Oxide service pool
 // Ranges are ordered by their first address.
 //
 // To iterate over all pages, use the `SystemIpPoolServiceRangeListAllPages` method, instead.
-func (c *Client) SystemIpPoolServiceRangeList(ctx context.Context, params SystemIpPoolServiceRangeListParams) (*IpPoolRangeResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemIpPoolServiceRangeList(ctx context.Context, params SystemIpPoolServiceRangeListParams, ) (*IpPoolRangeResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/ip-pools-service/ranges"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/ip-pools-service/ranges"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body IpPoolRangeResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body IpPoolRangeResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SystemIpPoolServiceRangeListAllPages: List IP ranges for the Oxide service pool
@@ -9979,7 +10081,7 @@ func (c *Client) SystemIpPoolServiceRangeList(ctx context.Context, params System
 //
 // This method is a wrapper around the `SystemIpPoolServiceRangeList` method.
 // This method returns all the pages at once.
-func (c *Client) SystemIpPoolServiceRangeListAllPages(ctx context.Context, params SystemIpPoolServiceRangeListParams) ([]IpPoolRange, error) {
+func (c *Client) SystemIpPoolServiceRangeListAllPages(ctx context.Context, params SystemIpPoolServiceRangeListParams, ) ([]IpPoolRange, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -10003,277 +10105,284 @@ func (c *Client) SystemIpPoolServiceRangeListAllPages(ctx context.Context, param
 
 // SystemIpPoolServiceRangeAdd: Add IP range to Oxide service pool
 // IPv6 ranges are not allowed yet.
-func (c *Client) SystemIpPoolServiceRangeAdd(ctx context.Context, params SystemIpPoolServiceRangeAddParams) (*IpPoolRange, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemIpPoolServiceRangeAdd(ctx context.Context, params SystemIpPoolServiceRangeAddParams, ) (*IpPoolRange, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/system/ip-pools-service/ranges/add"),
-		map[string]string{},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/system/ip-pools-service/ranges/add"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body IpPoolRange
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body IpPoolRange
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SystemIpPoolServiceRangeRemove: Remove IP range from Oxide service pool
-func (c *Client) SystemIpPoolServiceRangeRemove(ctx context.Context, params SystemIpPoolServiceRangeRemoveParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemIpPoolServiceRangeRemove(ctx context.Context, params SystemIpPoolServiceRangeRemoveParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/system/ip-pools-service/ranges/remove"),
-		map[string]string{},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/system/ip-pools-service/ranges/remove"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // SystemIpPoolView: Fetch IP pool
-func (c *Client) SystemIpPoolView(ctx context.Context, params SystemIpPoolViewParams) (*IpPool, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemIpPoolView(ctx context.Context, params SystemIpPoolViewParams, ) (*IpPool, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/ip-pools/{{.pool}}"),
-		map[string]string{
-			"pool": string(params.Pool),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/ip-pools/{{.pool}}"), 
+        map[string]string{ 
+            "pool": string(params.Pool),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body IpPool
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body IpPool
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SystemIpPoolUpdate: Update IP pool
-func (c *Client) SystemIpPoolUpdate(ctx context.Context, params SystemIpPoolUpdateParams) (*IpPool, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemIpPoolUpdate(ctx context.Context, params SystemIpPoolUpdateParams, ) (*IpPool, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"PUT",
-		resolveRelative(c.host, "/v1/system/ip-pools/{{.pool}}"),
-		map[string]string{
-			"pool": string(params.Pool),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "PUT", 
+        resolveRelative(c.host, "/v1/system/ip-pools/{{.pool}}"), 
+        map[string]string{ 
+            "pool": string(params.Pool),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body IpPool
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body IpPool
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SystemIpPoolDelete: Delete IP pool
-func (c *Client) SystemIpPoolDelete(ctx context.Context, params SystemIpPoolDeleteParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemIpPoolDelete(ctx context.Context, params SystemIpPoolDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/system/ip-pools/{{.pool}}"),
-		map[string]string{
-			"pool": string(params.Pool),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/system/ip-pools/{{.pool}}"), 
+        map[string]string{ 
+            "pool": string(params.Pool),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // SystemIpPoolRangeList: List ranges for IP pool
 // Ranges are ordered by their first address.
 //
 // To iterate over all pages, use the `SystemIpPoolRangeListAllPages` method, instead.
-func (c *Client) SystemIpPoolRangeList(ctx context.Context, params SystemIpPoolRangeListParams) (*IpPoolRangeResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemIpPoolRangeList(ctx context.Context, params SystemIpPoolRangeListParams, ) (*IpPoolRangeResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/ip-pools/{{.pool}}/ranges"),
-		map[string]string{
-			"pool": string(params.Pool),
-		},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/ip-pools/{{.pool}}/ranges"), 
+        map[string]string{ 
+            "pool": string(params.Pool),
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body IpPoolRangeResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body IpPoolRangeResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SystemIpPoolRangeListAllPages: List ranges for IP pool
@@ -10281,7 +10390,7 @@ func (c *Client) SystemIpPoolRangeList(ctx context.Context, params SystemIpPoolR
 //
 // This method is a wrapper around the `SystemIpPoolRangeList` method.
 // This method returns all the pages at once.
-func (c *Client) SystemIpPoolRangeListAllPages(ctx context.Context, params SystemIpPoolRangeListParams) ([]IpPoolRange, error) {
+func (c *Client) SystemIpPoolRangeListAllPages(ctx context.Context, params SystemIpPoolRangeListParams, ) ([]IpPoolRange, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -10306,158 +10415,160 @@ func (c *Client) SystemIpPoolRangeListAllPages(ctx context.Context, params Syste
 // SystemIpPoolRangeAdd: Add range to IP pool
 // For multicast pools, all ranges must be either Any-Source Multicast (ASM) or Source-Specific Multicast (SSM),
 // but not both. Mixing ASM and SSM ranges in the same pool is not allowed.
-//
+// 
 // ASM: IPv4 addresses outside 232.0.0.0/8, IPv6 addresses with flag field != 3 SSM: IPv4 addresses in 232.0.0.0/8, IPv6
 // addresses with flag field = 3
-func (c *Client) SystemIpPoolRangeAdd(ctx context.Context, params SystemIpPoolRangeAddParams) (*IpPoolRange, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemIpPoolRangeAdd(ctx context.Context, params SystemIpPoolRangeAddParams, ) (*IpPoolRange, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/system/ip-pools/{{.pool}}/ranges/add"),
-		map[string]string{
-			"pool": string(params.Pool),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/system/ip-pools/{{.pool}}/ranges/add"), 
+        map[string]string{ 
+            "pool": string(params.Pool),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body IpPoolRange
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body IpPoolRange
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SystemIpPoolRangeRemove: Remove range from IP pool
-func (c *Client) SystemIpPoolRangeRemove(ctx context.Context, params SystemIpPoolRangeRemoveParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemIpPoolRangeRemove(ctx context.Context, params SystemIpPoolRangeRemoveParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/system/ip-pools/{{.pool}}/ranges/remove"),
-		map[string]string{
-			"pool": string(params.Pool),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/system/ip-pools/{{.pool}}/ranges/remove"), 
+        map[string]string{ 
+            "pool": string(params.Pool),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // SystemIpPoolSiloList: List IP pool's linked silos
 //
 // To iterate over all pages, use the `SystemIpPoolSiloListAllPages` method, instead.
-func (c *Client) SystemIpPoolSiloList(ctx context.Context, params SystemIpPoolSiloListParams) (*IpPoolSiloLinkResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemIpPoolSiloList(ctx context.Context, params SystemIpPoolSiloListParams, ) (*IpPoolSiloLinkResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/ip-pools/{{.pool}}/silos"),
-		map[string]string{
-			"pool": string(params.Pool),
-		},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/ip-pools/{{.pool}}/silos"), 
+        map[string]string{ 
+            "pool": string(params.Pool),
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body IpPoolSiloLinkResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body IpPoolSiloLinkResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SystemIpPoolSiloListAllPages: List IP pool's linked silos
 //
 // This method is a wrapper around the `SystemIpPoolSiloList` method.
 // This method returns all the pages at once.
-func (c *Client) SystemIpPoolSiloListAllPages(ctx context.Context, params SystemIpPoolSiloListParams) ([]IpPoolSiloLink, error) {
+func (c *Client) SystemIpPoolSiloListAllPages(ctx context.Context, params SystemIpPoolSiloListParams, ) ([]IpPoolSiloLink, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -10482,250 +10593,255 @@ func (c *Client) SystemIpPoolSiloListAllPages(ctx context.Context, params System
 // SystemIpPoolSiloLink: Link IP pool to silo
 // Users in linked silos can allocate external IPs from this pool for their instances. A silo can have at most
 // one default pool. IPs are allocated from the default pool when users ask for one without specifying a pool.
-func (c *Client) SystemIpPoolSiloLink(ctx context.Context, params SystemIpPoolSiloLinkParams) (*IpPoolSiloLink, error) {
-	if err := params.Validate(); err != nil {
+// 
+func (c *Client) SystemIpPoolSiloLink(ctx context.Context, params SystemIpPoolSiloLinkParams, ) (*IpPoolSiloLink, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/system/ip-pools/{{.pool}}/silos"),
-		map[string]string{
-			"pool": string(params.Pool),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/system/ip-pools/{{.pool}}/silos"), 
+        map[string]string{ 
+            "pool": string(params.Pool),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body IpPoolSiloLink
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body IpPoolSiloLink
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SystemIpPoolSiloUpdate: Make IP pool default for silo
 // When a user asks for an IP (e.g., at instance create time) without specifying a pool, the IP comes from the
 // default pool if a default is configured. When a pool is made the default for a silo, any existing default will
 // remain linked to the silo, but will no longer be the default.
-func (c *Client) SystemIpPoolSiloUpdate(ctx context.Context, params SystemIpPoolSiloUpdateParams) (*IpPoolSiloLink, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemIpPoolSiloUpdate(ctx context.Context, params SystemIpPoolSiloUpdateParams, ) (*IpPoolSiloLink, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"PUT",
-		resolveRelative(c.host, "/v1/system/ip-pools/{{.pool}}/silos/{{.silo}}"),
-		map[string]string{
-			"pool": string(params.Pool),
-			"silo": string(params.Silo),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "PUT", 
+        resolveRelative(c.host, "/v1/system/ip-pools/{{.pool}}/silos/{{.silo}}"), 
+        map[string]string{ 
+            "pool": string(params.Pool),
+            "silo": string(params.Silo),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body IpPoolSiloLink
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body IpPoolSiloLink
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SystemIpPoolSiloUnlink: Unlink IP pool from silo
 // Will fail if there are any outstanding IPs allocated in the silo.
-func (c *Client) SystemIpPoolSiloUnlink(ctx context.Context, params SystemIpPoolSiloUnlinkParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemIpPoolSiloUnlink(ctx context.Context, params SystemIpPoolSiloUnlinkParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/system/ip-pools/{{.pool}}/silos/{{.silo}}"),
-		map[string]string{
-			"pool": string(params.Pool),
-			"silo": string(params.Silo),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/system/ip-pools/{{.pool}}/silos/{{.silo}}"), 
+        map[string]string{ 
+            "pool": string(params.Pool),
+            "silo": string(params.Silo),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // SystemIpPoolUtilizationView: Fetch IP pool utilization
-func (c *Client) SystemIpPoolUtilizationView(ctx context.Context, params SystemIpPoolUtilizationViewParams) (*IpPoolUtilization, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemIpPoolUtilizationView(ctx context.Context, params SystemIpPoolUtilizationViewParams, ) (*IpPoolUtilization, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/ip-pools/{{.pool}}/utilization"),
-		map[string]string{
-			"pool": string(params.Pool),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/ip-pools/{{.pool}}/utilization"), 
+        map[string]string{ 
+            "pool": string(params.Pool),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body IpPoolUtilization
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body IpPoolUtilization
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SystemMetric: View metrics
 // View CPU, memory, or storage utilization metrics at the fleet or silo level.
 //
 // To iterate over all pages, use the `SystemMetricAllPages` method, instead.
-func (c *Client) SystemMetric(ctx context.Context, params SystemMetricParams) (*MeasurementResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemMetric(ctx context.Context, params SystemMetricParams, ) (*MeasurementResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/metrics/{{.metric_name}}"),
-		map[string]string{
-			"metric_name": string(params.MetricName),
-		},
-		map[string]string{
-			"end_time":   params.EndTime.Format(time.RFC3339),
-			"limit":      PointerIntToStr(params.Limit),
-			"order":      string(params.Order),
-			"page_token": params.PageToken,
-			"silo":       string(params.Silo),
-			"start_time": params.StartTime.Format(time.RFC3339),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/metrics/{{.metric_name}}"), 
+        map[string]string{ 
+            "metric_name": string(params.MetricName),
+        }, 
+        map[string]string{ 
+            "end_time": params.EndTime.Format(time.RFC3339),
+            "limit": PointerIntToStr(params.Limit),
+            "order": string(params.Order),
+            "page_token": params.PageToken,
+            "silo": string(params.Silo),
+            "start_time": params.StartTime.Format(time.RFC3339),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body MeasurementResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body MeasurementResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SystemMetricAllPages: View metrics
@@ -10733,7 +10849,7 @@ func (c *Client) SystemMetric(ctx context.Context, params SystemMetricParams) (*
 //
 // This method is a wrapper around the `SystemMetric` method.
 // This method returns all the pages at once.
-func (c *Client) SystemMetricAllPages(ctx context.Context, params SystemMetricParams) ([]Measurement, error) {
+func (c *Client) SystemMetricAllPages(ctx context.Context, params SystemMetricParams, ) ([]Measurement, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -10758,58 +10874,59 @@ func (c *Client) SystemMetricAllPages(ctx context.Context, params SystemMetricPa
 // NetworkingAddressLotList: List address lots
 //
 // To iterate over all pages, use the `NetworkingAddressLotListAllPages` method, instead.
-func (c *Client) NetworkingAddressLotList(ctx context.Context, params NetworkingAddressLotListParams) (*AddressLotResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) NetworkingAddressLotList(ctx context.Context, params NetworkingAddressLotListParams, ) (*AddressLotResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/networking/address-lot"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/networking/address-lot"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body AddressLotResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body AddressLotResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // NetworkingAddressLotListAllPages: List address lots
 //
 // This method is a wrapper around the `NetworkingAddressLotList` method.
 // This method returns all the pages at once.
-func (c *Client) NetworkingAddressLotListAllPages(ctx context.Context, params NetworkingAddressLotListParams) ([]AddressLot, error) {
+func (c *Client) NetworkingAddressLotListAllPages(ctx context.Context, params NetworkingAddressLotListParams, ) ([]AddressLot, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -10832,193 +10949,197 @@ func (c *Client) NetworkingAddressLotListAllPages(ctx context.Context, params Ne
 }
 
 // NetworkingAddressLotCreate: Create address lot
-func (c *Client) NetworkingAddressLotCreate(ctx context.Context, params NetworkingAddressLotCreateParams) (*AddressLotCreateResponse, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) NetworkingAddressLotCreate(ctx context.Context, params NetworkingAddressLotCreateParams, ) (*AddressLotCreateResponse, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/system/networking/address-lot"),
-		map[string]string{},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/system/networking/address-lot"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body AddressLotCreateResponse
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body AddressLotCreateResponse
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // NetworkingAddressLotView: Fetch address lot
-func (c *Client) NetworkingAddressLotView(ctx context.Context, params NetworkingAddressLotViewParams) (*AddressLotViewResponse, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) NetworkingAddressLotView(ctx context.Context, params NetworkingAddressLotViewParams, ) (*AddressLotViewResponse, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/networking/address-lot/{{.address_lot}}"),
-		map[string]string{
-			"address_lot": string(params.AddressLot),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/networking/address-lot/{{.address_lot}}"), 
+        map[string]string{ 
+            "address_lot": string(params.AddressLot),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body AddressLotViewResponse
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body AddressLotViewResponse
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // NetworkingAddressLotDelete: Delete address lot
-func (c *Client) NetworkingAddressLotDelete(ctx context.Context, params NetworkingAddressLotDeleteParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) NetworkingAddressLotDelete(ctx context.Context, params NetworkingAddressLotDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/system/networking/address-lot/{{.address_lot}}"),
-		map[string]string{
-			"address_lot": string(params.AddressLot),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/system/networking/address-lot/{{.address_lot}}"), 
+        map[string]string{ 
+            "address_lot": string(params.AddressLot),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // NetworkingAddressLotBlockList: List blocks in address lot
 //
 // To iterate over all pages, use the `NetworkingAddressLotBlockListAllPages` method, instead.
-func (c *Client) NetworkingAddressLotBlockList(ctx context.Context, params NetworkingAddressLotBlockListParams) (*AddressLotBlockResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) NetworkingAddressLotBlockList(ctx context.Context, params NetworkingAddressLotBlockListParams, ) (*AddressLotBlockResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/networking/address-lot/{{.address_lot}}/blocks"),
-		map[string]string{
-			"address_lot": string(params.AddressLot),
-		},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/networking/address-lot/{{.address_lot}}/blocks"), 
+        map[string]string{ 
+            "address_lot": string(params.AddressLot),
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body AddressLotBlockResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body AddressLotBlockResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // NetworkingAddressLotBlockListAllPages: List blocks in address lot
 //
 // This method is a wrapper around the `NetworkingAddressLotBlockList` method.
 // This method returns all the pages at once.
-func (c *Client) NetworkingAddressLotBlockListAllPages(ctx context.Context, params NetworkingAddressLotBlockListParams) ([]AddressLotBlock, error) {
+func (c *Client) NetworkingAddressLotBlockListAllPages(ctx context.Context, params NetworkingAddressLotBlockListParams, ) ([]AddressLotBlock, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -11041,270 +11162,281 @@ func (c *Client) NetworkingAddressLotBlockListAllPages(ctx context.Context, para
 }
 
 // NetworkingAllowListView: Get user-facing services IP allowlist
-func (c *Client) NetworkingAllowListView(ctx context.Context) (*AllowList, error) {
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/networking/allow-list"),
-		map[string]string{},
-		map[string]string{},
-	)
+func (c *Client) NetworkingAllowListView(ctx context.Context, ) (*AllowList, error) { 
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/networking/allow-list"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body AllowList
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body AllowList
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // NetworkingAllowListUpdate: Update user-facing services IP allowlist
-func (c *Client) NetworkingAllowListUpdate(ctx context.Context, params NetworkingAllowListUpdateParams) (*AllowList, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) NetworkingAllowListUpdate(ctx context.Context, params NetworkingAllowListUpdateParams, ) (*AllowList, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"PUT",
-		resolveRelative(c.host, "/v1/system/networking/allow-list"),
-		map[string]string{},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "PUT", 
+        resolveRelative(c.host, "/v1/system/networking/allow-list"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body AllowList
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body AllowList
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // NetworkingBfdDisable: Disable BFD session
-func (c *Client) NetworkingBfdDisable(ctx context.Context, params NetworkingBfdDisableParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) NetworkingBfdDisable(ctx context.Context, params NetworkingBfdDisableParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/system/networking/bfd-disable"),
-		map[string]string{},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/system/networking/bfd-disable"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // NetworkingBfdEnable: Enable BFD session
-func (c *Client) NetworkingBfdEnable(ctx context.Context, params NetworkingBfdEnableParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) NetworkingBfdEnable(ctx context.Context, params NetworkingBfdEnableParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/system/networking/bfd-enable"),
-		map[string]string{},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/system/networking/bfd-enable"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // NetworkingBfdStatus: Get BFD status
-func (c *Client) NetworkingBfdStatus(ctx context.Context) (*[]BfdStatus, error) {
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/networking/bfd-status"),
-		map[string]string{},
-		map[string]string{},
-	)
+func (c *Client) NetworkingBfdStatus(ctx context.Context, ) (*[]BfdStatus, error) { 
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/networking/bfd-status"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body []BfdStatus
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body []BfdStatus
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // NetworkingBgpConfigList: List BGP configurations
 //
 // To iterate over all pages, use the `NetworkingBgpConfigListAllPages` method, instead.
-func (c *Client) NetworkingBgpConfigList(ctx context.Context, params NetworkingBgpConfigListParams) (*BgpConfigResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) NetworkingBgpConfigList(ctx context.Context, params NetworkingBgpConfigListParams, ) (*BgpConfigResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/networking/bgp"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/networking/bgp"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body BgpConfigResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body BgpConfigResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // NetworkingBgpConfigListAllPages: List BGP configurations
 //
 // This method is a wrapper around the `NetworkingBgpConfigList` method.
 // This method returns all the pages at once.
-func (c *Client) NetworkingBgpConfigListAllPages(ctx context.Context, params NetworkingBgpConfigListParams) ([]BgpConfig, error) {
+func (c *Client) NetworkingBgpConfigListAllPages(ctx context.Context, params NetworkingBgpConfigListParams, ) ([]BgpConfig, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -11327,581 +11459,600 @@ func (c *Client) NetworkingBgpConfigListAllPages(ctx context.Context, params Net
 }
 
 // NetworkingBgpConfigCreate: Create new BGP configuration
-func (c *Client) NetworkingBgpConfigCreate(ctx context.Context, params NetworkingBgpConfigCreateParams) (*BgpConfig, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) NetworkingBgpConfigCreate(ctx context.Context, params NetworkingBgpConfigCreateParams, ) (*BgpConfig, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/system/networking/bgp"),
-		map[string]string{},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/system/networking/bgp"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body BgpConfig
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body BgpConfig
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // NetworkingBgpConfigDelete: Delete BGP configuration
-func (c *Client) NetworkingBgpConfigDelete(ctx context.Context, params NetworkingBgpConfigDeleteParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) NetworkingBgpConfigDelete(ctx context.Context, params NetworkingBgpConfigDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/system/networking/bgp"),
-		map[string]string{},
-		map[string]string{
-			"name_or_id": string(params.NameOrId),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/system/networking/bgp"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "name_or_id": string(params.NameOrId),
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // NetworkingBgpAnnounceSetList: List BGP announce sets
 //
 // To iterate over all pages, use the `NetworkingBgpAnnounceSetListAllPages` method, instead.
-func (c *Client) NetworkingBgpAnnounceSetList(ctx context.Context, params NetworkingBgpAnnounceSetListParams) (*[]BgpAnnounceSet, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) NetworkingBgpAnnounceSetList(ctx context.Context, params NetworkingBgpAnnounceSetListParams, ) (*[]BgpAnnounceSet, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/networking/bgp-announce-set"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/networking/bgp-announce-set"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body []BgpAnnounceSet
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body []BgpAnnounceSet
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // NetworkingBgpAnnounceSetUpdate: Update BGP announce set
 // If the announce set exists, this endpoint replaces the existing announce set with the one specified.
-func (c *Client) NetworkingBgpAnnounceSetUpdate(ctx context.Context, params NetworkingBgpAnnounceSetUpdateParams) (*BgpAnnounceSet, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) NetworkingBgpAnnounceSetUpdate(ctx context.Context, params NetworkingBgpAnnounceSetUpdateParams, ) (*BgpAnnounceSet, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"PUT",
-		resolveRelative(c.host, "/v1/system/networking/bgp-announce-set"),
-		map[string]string{},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "PUT", 
+        resolveRelative(c.host, "/v1/system/networking/bgp-announce-set"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body BgpAnnounceSet
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body BgpAnnounceSet
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // NetworkingBgpAnnounceSetDelete: Delete BGP announce set
-func (c *Client) NetworkingBgpAnnounceSetDelete(ctx context.Context, params NetworkingBgpAnnounceSetDeleteParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) NetworkingBgpAnnounceSetDelete(ctx context.Context, params NetworkingBgpAnnounceSetDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/system/networking/bgp-announce-set/{{.announce_set}}"),
-		map[string]string{
-			"announce_set": string(params.AnnounceSet),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/system/networking/bgp-announce-set/{{.announce_set}}"), 
+        map[string]string{ 
+            "announce_set": string(params.AnnounceSet),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // NetworkingBgpAnnouncementList: Get originated routes for a specified BGP announce set
-func (c *Client) NetworkingBgpAnnouncementList(ctx context.Context, params NetworkingBgpAnnouncementListParams) (*[]BgpAnnouncement, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) NetworkingBgpAnnouncementList(ctx context.Context, params NetworkingBgpAnnouncementListParams, ) (*[]BgpAnnouncement, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/networking/bgp-announce-set/{{.announce_set}}/announcement"),
-		map[string]string{
-			"announce_set": string(params.AnnounceSet),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/networking/bgp-announce-set/{{.announce_set}}/announcement"), 
+        map[string]string{ 
+            "announce_set": string(params.AnnounceSet),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body []BgpAnnouncement
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body []BgpAnnouncement
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // NetworkingBgpExported: Get BGP exported routes
-func (c *Client) NetworkingBgpExported(ctx context.Context) (*BgpExported, error) {
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/networking/bgp-exported"),
-		map[string]string{},
-		map[string]string{},
-	)
+func (c *Client) NetworkingBgpExported(ctx context.Context, ) (*BgpExported, error) { 
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/networking/bgp-exported"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body BgpExported
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body BgpExported
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // NetworkingBgpMessageHistory: Get BGP router message history
-func (c *Client) NetworkingBgpMessageHistory(ctx context.Context, params NetworkingBgpMessageHistoryParams) (*AggregateBgpMessageHistory, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) NetworkingBgpMessageHistory(ctx context.Context, params NetworkingBgpMessageHistoryParams, ) (*AggregateBgpMessageHistory, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/networking/bgp-message-history"),
-		map[string]string{},
-		map[string]string{
-			"asn": PointerIntToStr(params.Asn),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/networking/bgp-message-history"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "asn": PointerIntToStr(params.Asn),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body AggregateBgpMessageHistory
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body AggregateBgpMessageHistory
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // NetworkingBgpImportedRoutesIpv4: Get imported IPv4 BGP routes
-func (c *Client) NetworkingBgpImportedRoutesIpv4(ctx context.Context, params NetworkingBgpImportedRoutesIpv4Params) (*[]BgpImportedRouteIpv4, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) NetworkingBgpImportedRoutesIpv4(ctx context.Context, params NetworkingBgpImportedRoutesIpv4Params, ) (*[]BgpImportedRouteIpv4, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/networking/bgp-routes-ipv4"),
-		map[string]string{},
-		map[string]string{
-			"asn": PointerIntToStr(params.Asn),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/networking/bgp-routes-ipv4"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "asn": PointerIntToStr(params.Asn),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body []BgpImportedRouteIpv4
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body []BgpImportedRouteIpv4
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // NetworkingBgpStatus: Get BGP peer status
-func (c *Client) NetworkingBgpStatus(ctx context.Context) (*[]BgpPeerStatus, error) {
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/networking/bgp-status"),
-		map[string]string{},
-		map[string]string{},
-	)
+func (c *Client) NetworkingBgpStatus(ctx context.Context, ) (*[]BgpPeerStatus, error) { 
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/networking/bgp-status"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body []BgpPeerStatus
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body []BgpPeerStatus
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // NetworkingInboundIcmpView: Return whether API services can receive limited ICMP traffic
-func (c *Client) NetworkingInboundIcmpView(ctx context.Context) (*ServiceIcmpConfig, error) {
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/networking/inbound-icmp"),
-		map[string]string{},
-		map[string]string{},
-	)
+func (c *Client) NetworkingInboundIcmpView(ctx context.Context, ) (*ServiceIcmpConfig, error) { 
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/networking/inbound-icmp"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body ServiceIcmpConfig
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body ServiceIcmpConfig
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // NetworkingInboundIcmpUpdate: Set whether API services can receive limited ICMP traffic
-func (c *Client) NetworkingInboundIcmpUpdate(ctx context.Context, params NetworkingInboundIcmpUpdateParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) NetworkingInboundIcmpUpdate(ctx context.Context, params NetworkingInboundIcmpUpdateParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"PUT",
-		resolveRelative(c.host, "/v1/system/networking/inbound-icmp"),
-		map[string]string{},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "PUT", 
+        resolveRelative(c.host, "/v1/system/networking/inbound-icmp"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // NetworkingLoopbackAddressList: List loopback addresses
 //
 // To iterate over all pages, use the `NetworkingLoopbackAddressListAllPages` method, instead.
-func (c *Client) NetworkingLoopbackAddressList(ctx context.Context, params NetworkingLoopbackAddressListParams) (*LoopbackAddressResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) NetworkingLoopbackAddressList(ctx context.Context, params NetworkingLoopbackAddressListParams, ) (*LoopbackAddressResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/networking/loopback-address"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/networking/loopback-address"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body LoopbackAddressResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body LoopbackAddressResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // NetworkingLoopbackAddressListAllPages: List loopback addresses
 //
 // This method is a wrapper around the `NetworkingLoopbackAddressList` method.
 // This method returns all the pages at once.
-func (c *Client) NetworkingLoopbackAddressListAllPages(ctx context.Context, params NetworkingLoopbackAddressListParams) ([]LoopbackAddress, error) {
+func (c *Client) NetworkingLoopbackAddressListAllPages(ctx context.Context, params NetworkingLoopbackAddressListParams, ) ([]LoopbackAddress, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -11924,149 +12075,153 @@ func (c *Client) NetworkingLoopbackAddressListAllPages(ctx context.Context, para
 }
 
 // NetworkingLoopbackAddressCreate: Create loopback address
-func (c *Client) NetworkingLoopbackAddressCreate(ctx context.Context, params NetworkingLoopbackAddressCreateParams) (*LoopbackAddress, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) NetworkingLoopbackAddressCreate(ctx context.Context, params NetworkingLoopbackAddressCreateParams, ) (*LoopbackAddress, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/system/networking/loopback-address"),
-		map[string]string{},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/system/networking/loopback-address"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body LoopbackAddress
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body LoopbackAddress
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // NetworkingLoopbackAddressDelete: Delete loopback address
-func (c *Client) NetworkingLoopbackAddressDelete(ctx context.Context, params NetworkingLoopbackAddressDeleteParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) NetworkingLoopbackAddressDelete(ctx context.Context, params NetworkingLoopbackAddressDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/system/networking/loopback-address/{{.rack_id}}/{{.switch_location}}/{{.address}}/{{.subnet_mask}}"),
-		map[string]string{
-			"address":         params.Address,
-			"rack_id":         params.RackId,
-			"subnet_mask":     PointerIntToStr(params.SubnetMask),
-			"switch_location": string(params.SwitchLocation),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/system/networking/loopback-address/{{.rack_id}}/{{.switch_location}}/{{.address}}/{{.subnet_mask}}"), 
+        map[string]string{ 
+            "address": params.Address,
+            "rack_id": params.RackId,
+            "subnet_mask": PointerIntToStr(params.SubnetMask),
+            "switch_location": string(params.SwitchLocation),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // NetworkingSwitchPortSettingsList: List switch port settings
 //
 // To iterate over all pages, use the `NetworkingSwitchPortSettingsListAllPages` method, instead.
-func (c *Client) NetworkingSwitchPortSettingsList(ctx context.Context, params NetworkingSwitchPortSettingsListParams) (*SwitchPortSettingsIdentityResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) NetworkingSwitchPortSettingsList(ctx context.Context, params NetworkingSwitchPortSettingsListParams, ) (*SwitchPortSettingsIdentityResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/networking/switch-port-settings"),
-		map[string]string{},
-		map[string]string{
-			"limit":         PointerIntToStr(params.Limit),
-			"page_token":    params.PageToken,
-			"port_settings": string(params.PortSettings),
-			"sort_by":       string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/networking/switch-port-settings"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "port_settings": string(params.PortSettings),
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SwitchPortSettingsIdentityResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SwitchPortSettingsIdentityResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // NetworkingSwitchPortSettingsListAllPages: List switch port settings
 //
 // This method is a wrapper around the `NetworkingSwitchPortSettingsList` method.
 // This method returns all the pages at once.
-func (c *Client) NetworkingSwitchPortSettingsListAllPages(ctx context.Context, params NetworkingSwitchPortSettingsListParams) ([]SwitchPortSettingsIdentity, error) {
+func (c *Client) NetworkingSwitchPortSettingsListAllPages(ctx context.Context, params NetworkingSwitchPortSettingsListParams, ) ([]SwitchPortSettingsIdentity, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -12089,464 +12244,475 @@ func (c *Client) NetworkingSwitchPortSettingsListAllPages(ctx context.Context, p
 }
 
 // NetworkingSwitchPortSettingsCreate: Create switch port settings
-func (c *Client) NetworkingSwitchPortSettingsCreate(ctx context.Context, params NetworkingSwitchPortSettingsCreateParams) (*SwitchPortSettings, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) NetworkingSwitchPortSettingsCreate(ctx context.Context, params NetworkingSwitchPortSettingsCreateParams, ) (*SwitchPortSettings, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/system/networking/switch-port-settings"),
-		map[string]string{},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/system/networking/switch-port-settings"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SwitchPortSettings
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SwitchPortSettings
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // NetworkingSwitchPortSettingsDelete: Delete switch port settings
-func (c *Client) NetworkingSwitchPortSettingsDelete(ctx context.Context, params NetworkingSwitchPortSettingsDeleteParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) NetworkingSwitchPortSettingsDelete(ctx context.Context, params NetworkingSwitchPortSettingsDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/system/networking/switch-port-settings"),
-		map[string]string{},
-		map[string]string{
-			"port_settings": string(params.PortSettings),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/system/networking/switch-port-settings"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "port_settings": string(params.PortSettings),
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // NetworkingSwitchPortSettingsView: Get information about switch port
-func (c *Client) NetworkingSwitchPortSettingsView(ctx context.Context, params NetworkingSwitchPortSettingsViewParams) (*SwitchPortSettings, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) NetworkingSwitchPortSettingsView(ctx context.Context, params NetworkingSwitchPortSettingsViewParams, ) (*SwitchPortSettings, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/networking/switch-port-settings/{{.port}}"),
-		map[string]string{
-			"port": string(params.Port),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/networking/switch-port-settings/{{.port}}"), 
+        map[string]string{ 
+            "port": string(params.Port),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SwitchPortSettings
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SwitchPortSettings
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SystemPolicyView: Fetch top-level IAM policy
-func (c *Client) SystemPolicyView(ctx context.Context) (*FleetRolePolicy, error) {
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/policy"),
-		map[string]string{},
-		map[string]string{},
-	)
+func (c *Client) SystemPolicyView(ctx context.Context, ) (*FleetRolePolicy, error) { 
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/policy"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body FleetRolePolicy
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body FleetRolePolicy
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SystemPolicyUpdate: Update top-level IAM policy
-func (c *Client) SystemPolicyUpdate(ctx context.Context, params SystemPolicyUpdateParams) (*FleetRolePolicy, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemPolicyUpdate(ctx context.Context, params SystemPolicyUpdateParams, ) (*FleetRolePolicy, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"PUT",
-		resolveRelative(c.host, "/v1/system/policy"),
-		map[string]string{},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "PUT", 
+        resolveRelative(c.host, "/v1/system/policy"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body FleetRolePolicy
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body FleetRolePolicy
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // ScimTokenList: List SCIM tokens
 // Specify the silo by name or ID using the `silo` query parameter.
-func (c *Client) ScimTokenList(ctx context.Context, params ScimTokenListParams) (*[]ScimClientBearerToken, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ScimTokenList(ctx context.Context, params ScimTokenListParams, ) (*[]ScimClientBearerToken, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/scim/tokens"),
-		map[string]string{},
-		map[string]string{
-			"silo": string(params.Silo),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/scim/tokens"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "silo": string(params.Silo),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body []ScimClientBearerToken
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body []ScimClientBearerToken
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // ScimTokenCreate: Create SCIM token
 // Specify the silo by name or ID using the `silo` query parameter. Be sure to save the bearer token in the
 // response. It will not be retrievable later through the token view and list endpoints.
-func (c *Client) ScimTokenCreate(ctx context.Context, params ScimTokenCreateParams) (*ScimClientBearerTokenValue, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ScimTokenCreate(ctx context.Context, params ScimTokenCreateParams, ) (*ScimClientBearerTokenValue, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"POST",
-		resolveRelative(c.host, "/v1/system/scim/tokens"),
-		map[string]string{},
-		map[string]string{
-			"silo": string(params.Silo),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "POST", 
+        resolveRelative(c.host, "/v1/system/scim/tokens"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "silo": string(params.Silo),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body ScimClientBearerTokenValue
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body ScimClientBearerTokenValue
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // ScimTokenView: Fetch SCIM token
 // Specify the silo by name or ID using the `silo` query parameter.
-func (c *Client) ScimTokenView(ctx context.Context, params ScimTokenViewParams) (*ScimClientBearerToken, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ScimTokenView(ctx context.Context, params ScimTokenViewParams, ) (*ScimClientBearerToken, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/scim/tokens/{{.token_id}}"),
-		map[string]string{
-			"token_id": params.TokenId,
-		},
-		map[string]string{
-			"silo": string(params.Silo),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/scim/tokens/{{.token_id}}"), 
+        map[string]string{ 
+            "token_id": params.TokenId,
+        }, 
+        map[string]string{ 
+            "silo": string(params.Silo),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body ScimClientBearerToken
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body ScimClientBearerToken
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // ScimTokenDelete: Delete SCIM token
 // Specify the silo by name or ID using the `silo` query parameter.
-func (c *Client) ScimTokenDelete(ctx context.Context, params ScimTokenDeleteParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) ScimTokenDelete(ctx context.Context, params ScimTokenDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/system/scim/tokens/{{.token_id}}"),
-		map[string]string{
-			"token_id": params.TokenId,
-		},
-		map[string]string{
-			"silo": string(params.Silo),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/system/scim/tokens/{{.token_id}}"), 
+        map[string]string{ 
+            "token_id": params.TokenId,
+        }, 
+        map[string]string{ 
+            "silo": string(params.Silo),
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // SystemQuotasList: Lists resource quotas for all silos
 //
 // To iterate over all pages, use the `SystemQuotasListAllPages` method, instead.
-func (c *Client) SystemQuotasList(ctx context.Context, params SystemQuotasListParams) (*SiloQuotasResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemQuotasList(ctx context.Context, params SystemQuotasListParams, ) (*SiloQuotasResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/silo-quotas"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/silo-quotas"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SiloQuotasResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SiloQuotasResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SystemQuotasListAllPages: Lists resource quotas for all silos
 //
 // This method is a wrapper around the `SystemQuotasList` method.
 // This method returns all the pages at once.
-func (c *Client) SystemQuotasListAllPages(ctx context.Context, params SystemQuotasListParams) ([]SiloQuotas, error) {
+func (c *Client) SystemQuotasListAllPages(ctx context.Context, params SystemQuotasListParams, ) ([]SiloQuotas, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -12572,51 +12738,52 @@ func (c *Client) SystemQuotasListAllPages(ctx context.Context, params SystemQuot
 // Lists silos that are discoverable based on the current permissions.
 //
 // To iterate over all pages, use the `SiloListAllPages` method, instead.
-func (c *Client) SiloList(ctx context.Context, params SiloListParams) (*SiloResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SiloList(ctx context.Context, params SiloListParams, ) (*SiloResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/silos"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/silos"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SiloResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SiloResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SiloListAllPages: List silos
@@ -12624,7 +12791,7 @@ func (c *Client) SiloList(ctx context.Context, params SiloListParams) (*SiloResu
 //
 // This method is a wrapper around the `SiloList` method.
 // This method returns all the pages at once.
-func (c *Client) SiloListAllPages(ctx context.Context, params SiloListParams) ([]Silo, error) {
+func (c *Client) SiloListAllPages(ctx context.Context, params SiloListParams, ) ([]Silo, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -12647,136 +12814,140 @@ func (c *Client) SiloListAllPages(ctx context.Context, params SiloListParams) ([
 }
 
 // SiloCreate: Create silo
-func (c *Client) SiloCreate(ctx context.Context, params SiloCreateParams) (*Silo, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SiloCreate(ctx context.Context, params SiloCreateParams, ) (*Silo, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/system/silos"),
-		map[string]string{},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/system/silos"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body Silo
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body Silo
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SiloView: Fetch silo
 // Fetch silo by name or ID.
-func (c *Client) SiloView(ctx context.Context, params SiloViewParams) (*Silo, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SiloView(ctx context.Context, params SiloViewParams, ) (*Silo, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/silos/{{.silo}}"),
-		map[string]string{
-			"silo": string(params.Silo),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/silos/{{.silo}}"), 
+        map[string]string{ 
+            "silo": string(params.Silo),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body Silo
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body Silo
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SiloDelete: Delete silo
 // Delete a silo by name or ID.
-func (c *Client) SiloDelete(ctx context.Context, params SiloDeleteParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) SiloDelete(ctx context.Context, params SiloDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/system/silos/{{.silo}}"),
-		map[string]string{
-			"silo": string(params.Silo),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/system/silos/{{.silo}}"), 
+        map[string]string{ 
+            "silo": string(params.Silo),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // SiloIpPoolList: List IP pools linked to silo
@@ -12784,53 +12955,53 @@ func (c *Client) SiloDelete(ctx context.Context, params SiloDeleteParams) error 
 // are allocated from the default pool when users ask for one without specifying a pool.
 //
 // To iterate over all pages, use the `SiloIpPoolListAllPages` method, instead.
-func (c *Client) SiloIpPoolList(ctx context.Context, params SiloIpPoolListParams) (*SiloIpPoolResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SiloIpPoolList(ctx context.Context, params SiloIpPoolListParams, ) (*SiloIpPoolResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/silos/{{.silo}}/ip-pools"),
-		map[string]string{
-			"silo": string(params.Silo),
-		},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/silos/{{.silo}}/ip-pools"), 
+        map[string]string{ 
+            "silo": string(params.Silo),
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SiloIpPoolResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SiloIpPoolResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SiloIpPoolListAllPages: List IP pools linked to silo
@@ -12839,7 +13010,7 @@ func (c *Client) SiloIpPoolList(ctx context.Context, params SiloIpPoolListParams
 //
 // This method is a wrapper around the `SiloIpPoolList` method.
 // This method returns all the pages at once.
-func (c *Client) SiloIpPoolListAllPages(ctx context.Context, params SiloIpPoolListParams) ([]SiloIpPool, error) {
+func (c *Client) SiloIpPoolListAllPages(ctx context.Context, params SiloIpPoolListParams, ) ([]SiloIpPool, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -12862,259 +13033,263 @@ func (c *Client) SiloIpPoolListAllPages(ctx context.Context, params SiloIpPoolLi
 }
 
 // SiloPolicyView: Fetch silo IAM policy
-func (c *Client) SiloPolicyView(ctx context.Context, params SiloPolicyViewParams) (*SiloRolePolicy, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SiloPolicyView(ctx context.Context, params SiloPolicyViewParams, ) (*SiloRolePolicy, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/silos/{{.silo}}/policy"),
-		map[string]string{
-			"silo": string(params.Silo),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/silos/{{.silo}}/policy"), 
+        map[string]string{ 
+            "silo": string(params.Silo),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SiloRolePolicy
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SiloRolePolicy
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SiloPolicyUpdate: Update silo IAM policy
-func (c *Client) SiloPolicyUpdate(ctx context.Context, params SiloPolicyUpdateParams) (*SiloRolePolicy, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SiloPolicyUpdate(ctx context.Context, params SiloPolicyUpdateParams, ) (*SiloRolePolicy, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"PUT",
-		resolveRelative(c.host, "/v1/system/silos/{{.silo}}/policy"),
-		map[string]string{
-			"silo": string(params.Silo),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "PUT", 
+        resolveRelative(c.host, "/v1/system/silos/{{.silo}}/policy"), 
+        map[string]string{ 
+            "silo": string(params.Silo),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SiloRolePolicy
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SiloRolePolicy
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SiloQuotasView: Fetch resource quotas for silo
-func (c *Client) SiloQuotasView(ctx context.Context, params SiloQuotasViewParams) (*SiloQuotas, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SiloQuotasView(ctx context.Context, params SiloQuotasViewParams, ) (*SiloQuotas, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/silos/{{.silo}}/quotas"),
-		map[string]string{
-			"silo": string(params.Silo),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/silos/{{.silo}}/quotas"), 
+        map[string]string{ 
+            "silo": string(params.Silo),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SiloQuotas
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SiloQuotas
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SiloQuotasUpdate: Update resource quotas for silo
 // If a quota value is not specified, it will remain unchanged.
-func (c *Client) SiloQuotasUpdate(ctx context.Context, params SiloQuotasUpdateParams) (*SiloQuotas, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SiloQuotasUpdate(ctx context.Context, params SiloQuotasUpdateParams, ) (*SiloQuotas, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"PUT",
-		resolveRelative(c.host, "/v1/system/silos/{{.silo}}/quotas"),
-		map[string]string{
-			"silo": string(params.Silo),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "PUT", 
+        resolveRelative(c.host, "/v1/system/silos/{{.silo}}/quotas"), 
+        map[string]string{ 
+            "silo": string(params.Silo),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SiloQuotas
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SiloQuotas
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SiloSubnetPoolList: List subnet pools linked to a silo
 //
 // To iterate over all pages, use the `SiloSubnetPoolListAllPages` method, instead.
-func (c *Client) SiloSubnetPoolList(ctx context.Context, params SiloSubnetPoolListParams) (*SiloSubnetPoolResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SiloSubnetPoolList(ctx context.Context, params SiloSubnetPoolListParams, ) (*SiloSubnetPoolResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/silos/{{.silo}}/subnet-pools"),
-		map[string]string{
-			"silo": string(params.Silo),
-		},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/silos/{{.silo}}/subnet-pools"), 
+        map[string]string{ 
+            "silo": string(params.Silo),
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SiloSubnetPoolResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SiloSubnetPoolResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SiloSubnetPoolListAllPages: List subnet pools linked to a silo
 //
 // This method is a wrapper around the `SiloSubnetPoolList` method.
 // This method returns all the pages at once.
-func (c *Client) SiloSubnetPoolListAllPages(ctx context.Context, params SiloSubnetPoolListParams) ([]SiloSubnetPool, error) {
+func (c *Client) SiloSubnetPoolListAllPages(ctx context.Context, params SiloSubnetPoolListParams, ) ([]SiloSubnetPool, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -13139,58 +13314,59 @@ func (c *Client) SiloSubnetPoolListAllPages(ctx context.Context, params SiloSubn
 // SystemSubnetPoolList: List subnet pools
 //
 // To iterate over all pages, use the `SystemSubnetPoolListAllPages` method, instead.
-func (c *Client) SystemSubnetPoolList(ctx context.Context, params SystemSubnetPoolListParams) (*SubnetPoolResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemSubnetPoolList(ctx context.Context, params SystemSubnetPoolListParams, ) (*SubnetPoolResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/subnet-pools"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/subnet-pools"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SubnetPoolResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SubnetPoolResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SystemSubnetPoolListAllPages: List subnet pools
 //
 // This method is a wrapper around the `SystemSubnetPoolList` method.
 // This method returns all the pages at once.
-func (c *Client) SystemSubnetPoolListAllPages(ctx context.Context, params SystemSubnetPoolListParams) ([]SubnetPool, error) {
+func (c *Client) SystemSubnetPoolListAllPages(ctx context.Context, params SystemSubnetPoolListParams, ) ([]SubnetPool, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -13213,244 +13389,249 @@ func (c *Client) SystemSubnetPoolListAllPages(ctx context.Context, params System
 }
 
 // SystemSubnetPoolCreate: Create subnet pool
-func (c *Client) SystemSubnetPoolCreate(ctx context.Context, params SystemSubnetPoolCreateParams) (*SubnetPool, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemSubnetPoolCreate(ctx context.Context, params SystemSubnetPoolCreateParams, ) (*SubnetPool, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/system/subnet-pools"),
-		map[string]string{},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/system/subnet-pools"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SubnetPool
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SubnetPool
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SystemSubnetPoolView: Fetch subnet pool
-func (c *Client) SystemSubnetPoolView(ctx context.Context, params SystemSubnetPoolViewParams) (*SubnetPool, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemSubnetPoolView(ctx context.Context, params SystemSubnetPoolViewParams, ) (*SubnetPool, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/subnet-pools/{{.pool}}"),
-		map[string]string{
-			"pool": string(params.Pool),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/subnet-pools/{{.pool}}"), 
+        map[string]string{ 
+            "pool": string(params.Pool),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SubnetPool
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SubnetPool
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SystemSubnetPoolUpdate: Update subnet pool
-func (c *Client) SystemSubnetPoolUpdate(ctx context.Context, params SystemSubnetPoolUpdateParams) (*SubnetPool, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemSubnetPoolUpdate(ctx context.Context, params SystemSubnetPoolUpdateParams, ) (*SubnetPool, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"PUT",
-		resolveRelative(c.host, "/v1/system/subnet-pools/{{.pool}}"),
-		map[string]string{
-			"pool": string(params.Pool),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "PUT", 
+        resolveRelative(c.host, "/v1/system/subnet-pools/{{.pool}}"), 
+        map[string]string{ 
+            "pool": string(params.Pool),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SubnetPool
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SubnetPool
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SystemSubnetPoolDelete: Delete subnet pool
-func (c *Client) SystemSubnetPoolDelete(ctx context.Context, params SystemSubnetPoolDeleteParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemSubnetPoolDelete(ctx context.Context, params SystemSubnetPoolDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/system/subnet-pools/{{.pool}}"),
-		map[string]string{
-			"pool": string(params.Pool),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/system/subnet-pools/{{.pool}}"), 
+        map[string]string{ 
+            "pool": string(params.Pool),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // SystemSubnetPoolMemberList: List members in subnet pool
 //
 // To iterate over all pages, use the `SystemSubnetPoolMemberListAllPages` method, instead.
-func (c *Client) SystemSubnetPoolMemberList(ctx context.Context, params SystemSubnetPoolMemberListParams) (*SubnetPoolMemberResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemSubnetPoolMemberList(ctx context.Context, params SystemSubnetPoolMemberListParams, ) (*SubnetPoolMemberResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/subnet-pools/{{.pool}}/members"),
-		map[string]string{
-			"pool": string(params.Pool),
-		},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/subnet-pools/{{.pool}}/members"), 
+        map[string]string{ 
+            "pool": string(params.Pool),
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SubnetPoolMemberResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SubnetPoolMemberResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SystemSubnetPoolMemberListAllPages: List members in subnet pool
 //
 // This method is a wrapper around the `SystemSubnetPoolMemberList` method.
 // This method returns all the pages at once.
-func (c *Client) SystemSubnetPoolMemberListAllPages(ctx context.Context, params SystemSubnetPoolMemberListParams) ([]SubnetPoolMember, error) {
+func (c *Client) SystemSubnetPoolMemberListAllPages(ctx context.Context, params SystemSubnetPoolMemberListParams, ) ([]SubnetPoolMember, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -13473,155 +13654,157 @@ func (c *Client) SystemSubnetPoolMemberListAllPages(ctx context.Context, params 
 }
 
 // SystemSubnetPoolMemberAdd: Add member to subnet pool
-func (c *Client) SystemSubnetPoolMemberAdd(ctx context.Context, params SystemSubnetPoolMemberAddParams) (*SubnetPoolMember, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemSubnetPoolMemberAdd(ctx context.Context, params SystemSubnetPoolMemberAddParams, ) (*SubnetPoolMember, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/system/subnet-pools/{{.pool}}/members/add"),
-		map[string]string{
-			"pool": string(params.Pool),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/system/subnet-pools/{{.pool}}/members/add"), 
+        map[string]string{ 
+            "pool": string(params.Pool),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SubnetPoolMember
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SubnetPoolMember
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SystemSubnetPoolMemberRemove: Remove member from subnet pool
-func (c *Client) SystemSubnetPoolMemberRemove(ctx context.Context, params SystemSubnetPoolMemberRemoveParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemSubnetPoolMemberRemove(ctx context.Context, params SystemSubnetPoolMemberRemoveParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/system/subnet-pools/{{.pool}}/members/remove"),
-		map[string]string{
-			"pool": string(params.Pool),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/system/subnet-pools/{{.pool}}/members/remove"), 
+        map[string]string{ 
+            "pool": string(params.Pool),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // SystemSubnetPoolSiloList: List silos linked to subnet pool
 //
 // To iterate over all pages, use the `SystemSubnetPoolSiloListAllPages` method, instead.
-func (c *Client) SystemSubnetPoolSiloList(ctx context.Context, params SystemSubnetPoolSiloListParams) (*SubnetPoolSiloLinkResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemSubnetPoolSiloList(ctx context.Context, params SystemSubnetPoolSiloListParams, ) (*SubnetPoolSiloLinkResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/subnet-pools/{{.pool}}/silos"),
-		map[string]string{
-			"pool": string(params.Pool),
-		},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/subnet-pools/{{.pool}}/silos"), 
+        map[string]string{ 
+            "pool": string(params.Pool),
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SubnetPoolSiloLinkResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SubnetPoolSiloLinkResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SystemSubnetPoolSiloListAllPages: List silos linked to subnet pool
 //
 // This method is a wrapper around the `SystemSubnetPoolSiloList` method.
 // This method returns all the pages at once.
-func (c *Client) SystemSubnetPoolSiloListAllPages(ctx context.Context, params SystemSubnetPoolSiloListParams) ([]SubnetPoolSiloLink, error) {
+func (c *Client) SystemSubnetPoolSiloListAllPages(ctx context.Context, params SystemSubnetPoolSiloListParams, ) ([]SubnetPoolSiloLink, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -13644,297 +13827,304 @@ func (c *Client) SystemSubnetPoolSiloListAllPages(ctx context.Context, params Sy
 }
 
 // SystemSubnetPoolSiloLink: Link subnet pool to silo
-func (c *Client) SystemSubnetPoolSiloLink(ctx context.Context, params SystemSubnetPoolSiloLinkParams) (*SubnetPoolSiloLink, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemSubnetPoolSiloLink(ctx context.Context, params SystemSubnetPoolSiloLinkParams, ) (*SubnetPoolSiloLink, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/system/subnet-pools/{{.pool}}/silos"),
-		map[string]string{
-			"pool": string(params.Pool),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/system/subnet-pools/{{.pool}}/silos"), 
+        map[string]string{ 
+            "pool": string(params.Pool),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SubnetPoolSiloLink
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SubnetPoolSiloLink
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SystemSubnetPoolSiloUpdate: Update subnet pool's link to silo
-func (c *Client) SystemSubnetPoolSiloUpdate(ctx context.Context, params SystemSubnetPoolSiloUpdateParams) (*SubnetPoolSiloLink, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemSubnetPoolSiloUpdate(ctx context.Context, params SystemSubnetPoolSiloUpdateParams, ) (*SubnetPoolSiloLink, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"PUT",
-		resolveRelative(c.host, "/v1/system/subnet-pools/{{.pool}}/silos/{{.silo}}"),
-		map[string]string{
-			"pool": string(params.Pool),
-			"silo": string(params.Silo),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "PUT", 
+        resolveRelative(c.host, "/v1/system/subnet-pools/{{.pool}}/silos/{{.silo}}"), 
+        map[string]string{ 
+            "pool": string(params.Pool),
+            "silo": string(params.Silo),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SubnetPoolSiloLink
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SubnetPoolSiloLink
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SystemSubnetPoolSiloUnlink: Unlink subnet pool from silo
-func (c *Client) SystemSubnetPoolSiloUnlink(ctx context.Context, params SystemSubnetPoolSiloUnlinkParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemSubnetPoolSiloUnlink(ctx context.Context, params SystemSubnetPoolSiloUnlinkParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/system/subnet-pools/{{.pool}}/silos/{{.silo}}"),
-		map[string]string{
-			"pool": string(params.Pool),
-			"silo": string(params.Silo),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/system/subnet-pools/{{.pool}}/silos/{{.silo}}"), 
+        map[string]string{ 
+            "pool": string(params.Pool),
+            "silo": string(params.Silo),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // SystemSubnetPoolUtilizationView: Fetch subnet pool utilization
-func (c *Client) SystemSubnetPoolUtilizationView(ctx context.Context, params SystemSubnetPoolUtilizationViewParams) (*SubnetPoolUtilization, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemSubnetPoolUtilizationView(ctx context.Context, params SystemSubnetPoolUtilizationViewParams, ) (*SubnetPoolUtilization, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/subnet-pools/{{.pool}}/utilization"),
-		map[string]string{
-			"pool": string(params.Pool),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/subnet-pools/{{.pool}}/utilization"), 
+        map[string]string{ 
+            "pool": string(params.Pool),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SubnetPoolUtilization
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SubnetPoolUtilization
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SystemTimeseriesQuery: Run timeseries query
 // Queries are written in OxQL.
-func (c *Client) SystemTimeseriesQuery(ctx context.Context, params SystemTimeseriesQueryParams) (*OxqlQueryResult, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemTimeseriesQuery(ctx context.Context, params SystemTimeseriesQueryParams, ) (*OxqlQueryResult, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/system/timeseries/query"),
-		map[string]string{},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/system/timeseries/query"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body OxqlQueryResult
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body OxqlQueryResult
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SystemTimeseriesSchemaList: List timeseries schemas
 //
 // To iterate over all pages, use the `SystemTimeseriesSchemaListAllPages` method, instead.
-func (c *Client) SystemTimeseriesSchemaList(ctx context.Context, params SystemTimeseriesSchemaListParams) (*TimeseriesSchemaResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemTimeseriesSchemaList(ctx context.Context, params SystemTimeseriesSchemaListParams, ) (*TimeseriesSchemaResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/timeseries/schemas"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/timeseries/schemas"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body TimeseriesSchemaResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body TimeseriesSchemaResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SystemTimeseriesSchemaListAllPages: List timeseries schemas
 //
 // This method is a wrapper around the `SystemTimeseriesSchemaList` method.
 // This method returns all the pages at once.
-func (c *Client) SystemTimeseriesSchemaListAllPages(ctx context.Context, params SystemTimeseriesSchemaListParams) ([]TimeseriesSchema, error) {
+func (c *Client) SystemTimeseriesSchemaListAllPages(ctx context.Context, params SystemTimeseriesSchemaListParams, ) ([]TimeseriesSchema, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -13960,51 +14150,52 @@ func (c *Client) SystemTimeseriesSchemaListAllPages(ctx context.Context, params 
 // Returns a paginated list of all TUF repositories ordered by system version (newest first by default).
 //
 // To iterate over all pages, use the `SystemUpdateRepositoryListAllPages` method, instead.
-func (c *Client) SystemUpdateRepositoryList(ctx context.Context, params SystemUpdateRepositoryListParams) (*TufRepoResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemUpdateRepositoryList(ctx context.Context, params SystemUpdateRepositoryListParams, ) (*TufRepoResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/update/repositories"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/update/repositories"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body TufRepoResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body TufRepoResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SystemUpdateRepositoryListAllPages: List all TUF repositories
@@ -14012,7 +14203,7 @@ func (c *Client) SystemUpdateRepositoryList(ctx context.Context, params SystemUp
 //
 // This method is a wrapper around the `SystemUpdateRepositoryList` method.
 // This method returns all the pages at once.
-func (c *Client) SystemUpdateRepositoryListAllPages(ctx context.Context, params SystemUpdateRepositoryListParams) ([]TufRepo, error) {
+func (c *Client) SystemUpdateRepositoryListAllPages(ctx context.Context, params SystemUpdateRepositoryListParams, ) ([]TufRepo, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -14036,181 +14227,187 @@ func (c *Client) SystemUpdateRepositoryListAllPages(ctx context.Context, params 
 
 // SystemUpdateRepositoryUpload: Upload system release repository
 // System release repositories are verified by the updates trust store.
-func (c *Client) SystemUpdateRepositoryUpload(ctx context.Context, params SystemUpdateRepositoryUploadParams) (*TufRepoUpload, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemUpdateRepositoryUpload(ctx context.Context, params SystemUpdateRepositoryUploadParams, ) (*TufRepoUpload, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	b := params.Body
+    b := params.Body
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"PUT",
-		resolveRelative(c.host, "/v1/system/update/repositories"),
-		map[string]string{},
-		map[string]string{
-			"file_name": params.FileName,
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "PUT", 
+        resolveRelative(c.host, "/v1/system/update/repositories"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "file_name": params.FileName,
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body TufRepoUpload
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body TufRepoUpload
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SystemUpdateRepositoryView: Fetch system release repository by version
-func (c *Client) SystemUpdateRepositoryView(ctx context.Context, params SystemUpdateRepositoryViewParams) (*TufRepo, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemUpdateRepositoryView(ctx context.Context, params SystemUpdateRepositoryViewParams, ) (*TufRepo, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/update/repositories/{{.system_version}}"),
-		map[string]string{
-			"system_version": params.SystemVersion,
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/update/repositories/{{.system_version}}"), 
+        map[string]string{ 
+            "system_version": params.SystemVersion,
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body TufRepo
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body TufRepo
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SystemUpdateStatus: Fetch system update status
 // Returns information about the current target release and the progress of system software updates.
-func (c *Client) SystemUpdateStatus(ctx context.Context) (*UpdateStatus, error) {
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/update/status"),
-		map[string]string{},
-		map[string]string{},
-	)
+func (c *Client) SystemUpdateStatus(ctx context.Context, ) (*UpdateStatus, error) { 
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/update/status"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body UpdateStatus
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body UpdateStatus
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // TargetReleaseUpdate: Set target release
 // Set the current target release of the rack's system software. The rack reconfigurator will treat the software
 // specified here as a goal state for the rack's software, and attempt to asynchronously update to that release.
 // Use the update status endpoint to view the current target release.
-func (c *Client) TargetReleaseUpdate(ctx context.Context, params TargetReleaseUpdateParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) TargetReleaseUpdate(ctx context.Context, params TargetReleaseUpdateParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"PUT",
-		resolveRelative(c.host, "/v1/system/update/target-release"),
-		map[string]string{},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "PUT", 
+        resolveRelative(c.host, "/v1/system/update/target-release"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // SystemUpdateTrustRootList: List root roles in the updates trust store
@@ -14219,51 +14416,52 @@ func (c *Client) TargetReleaseUpdate(ctx context.Context, params TargetReleaseUp
 // by the trust store.
 //
 // To iterate over all pages, use the `SystemUpdateTrustRootListAllPages` method, instead.
-func (c *Client) SystemUpdateTrustRootList(ctx context.Context, params SystemUpdateTrustRootListParams) (*UpdatesTrustRootResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemUpdateTrustRootList(ctx context.Context, params SystemUpdateTrustRootListParams, ) (*UpdatesTrustRootResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/update/trust-roots"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/update/trust-roots"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body UpdatesTrustRootResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body UpdatesTrustRootResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SystemUpdateTrustRootListAllPages: List root roles in the updates trust store
@@ -14273,7 +14471,7 @@ func (c *Client) SystemUpdateTrustRootList(ctx context.Context, params SystemUpd
 //
 // This method is a wrapper around the `SystemUpdateTrustRootList` method.
 // This method returns all the pages at once.
-func (c *Client) SystemUpdateTrustRootListAllPages(ctx context.Context, params SystemUpdateTrustRootListParams) ([]UpdatesTrustRoot, error) {
+func (c *Client) SystemUpdateTrustRootListAllPages(ctx context.Context, params SystemUpdateTrustRootListParams, ) ([]UpdatesTrustRoot, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -14296,194 +14494,199 @@ func (c *Client) SystemUpdateTrustRootListAllPages(ctx context.Context, params S
 }
 
 // SystemUpdateTrustRootCreate: Add trusted root role to updates trust store
-func (c *Client) SystemUpdateTrustRootCreate(ctx context.Context, params SystemUpdateTrustRootCreateParams) (*UpdatesTrustRoot, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemUpdateTrustRootCreate(ctx context.Context, params SystemUpdateTrustRootCreateParams, ) (*UpdatesTrustRoot, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/system/update/trust-roots"),
-		map[string]string{},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/system/update/trust-roots"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body UpdatesTrustRoot
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body UpdatesTrustRoot
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SystemUpdateTrustRootView: Fetch trusted root role
-func (c *Client) SystemUpdateTrustRootView(ctx context.Context, params SystemUpdateTrustRootViewParams) (*UpdatesTrustRoot, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemUpdateTrustRootView(ctx context.Context, params SystemUpdateTrustRootViewParams, ) (*UpdatesTrustRoot, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/update/trust-roots/{{.trust_root_id}}"),
-		map[string]string{
-			"trust_root_id": params.TrustRootId,
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/update/trust-roots/{{.trust_root_id}}"), 
+        map[string]string{ 
+            "trust_root_id": params.TrustRootId,
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body UpdatesTrustRoot
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body UpdatesTrustRoot
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SystemUpdateTrustRootDelete: Delete trusted root role
 // Note that this method does not currently check for any uploaded system release repositories that would become
 // untrusted after deleting the root role.
-func (c *Client) SystemUpdateTrustRootDelete(ctx context.Context, params SystemUpdateTrustRootDeleteParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) SystemUpdateTrustRootDelete(ctx context.Context, params SystemUpdateTrustRootDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/system/update/trust-roots/{{.trust_root_id}}"),
-		map[string]string{
-			"trust_root_id": params.TrustRootId,
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/system/update/trust-roots/{{.trust_root_id}}"), 
+        map[string]string{ 
+            "trust_root_id": params.TrustRootId,
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // SiloUserList: List built-in (system) users in silo
 //
 // To iterate over all pages, use the `SiloUserListAllPages` method, instead.
-func (c *Client) SiloUserList(ctx context.Context, params SiloUserListParams) (*UserResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SiloUserList(ctx context.Context, params SiloUserListParams, ) (*UserResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/users"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"silo":       string(params.Silo),
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/users"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "silo": string(params.Silo),
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body UserResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body UserResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SiloUserListAllPages: List built-in (system) users in silo
 //
 // This method is a wrapper around the `SiloUserList` method.
 // This method returns all the pages at once.
-func (c *Client) SiloUserListAllPages(ctx context.Context, params SiloUserListParams) ([]User, error) {
+func (c *Client) SiloUserListAllPages(ctx context.Context, params SiloUserListParams, ) ([]User, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -14508,58 +14711,59 @@ func (c *Client) SiloUserListAllPages(ctx context.Context, params SiloUserListPa
 // UserBuiltinList: List built-in users
 //
 // To iterate over all pages, use the `UserBuiltinListAllPages` method, instead.
-func (c *Client) UserBuiltinList(ctx context.Context, params UserBuiltinListParams) (*UserBuiltinResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) UserBuiltinList(ctx context.Context, params UserBuiltinListParams, ) (*UserBuiltinResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/users-builtin"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/users-builtin"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body UserBuiltinResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body UserBuiltinResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // UserBuiltinListAllPages: List built-in users
 //
 // This method is a wrapper around the `UserBuiltinList` method.
 // This method returns all the pages at once.
-func (c *Client) UserBuiltinListAllPages(ctx context.Context, params UserBuiltinListParams) ([]UserBuiltin, error) {
+func (c *Client) UserBuiltinListAllPages(ctx context.Context, params UserBuiltinListParams, ) ([]UserBuiltin, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -14582,154 +14786,156 @@ func (c *Client) UserBuiltinListAllPages(ctx context.Context, params UserBuiltin
 }
 
 // UserBuiltinView: Fetch built-in user
-func (c *Client) UserBuiltinView(ctx context.Context, params UserBuiltinViewParams) (*UserBuiltin, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) UserBuiltinView(ctx context.Context, params UserBuiltinViewParams, ) (*UserBuiltin, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/users-builtin/{{.user}}"),
-		map[string]string{
-			"user": string(params.User),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/users-builtin/{{.user}}"), 
+        map[string]string{ 
+            "user": string(params.User),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body UserBuiltin
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body UserBuiltin
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SiloUserView: Fetch built-in (system) user
-func (c *Client) SiloUserView(ctx context.Context, params SiloUserViewParams) (*User, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SiloUserView(ctx context.Context, params SiloUserViewParams, ) (*User, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/users/{{.user_id}}"),
-		map[string]string{
-			"user_id": params.UserId,
-		},
-		map[string]string{
-			"silo": string(params.Silo),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/users/{{.user_id}}"), 
+        map[string]string{ 
+            "user_id": params.UserId,
+        }, 
+        map[string]string{ 
+            "silo": string(params.Silo),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body User
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body User
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SiloUtilizationList: List current utilization state for all silos
 //
 // To iterate over all pages, use the `SiloUtilizationListAllPages` method, instead.
-func (c *Client) SiloUtilizationList(ctx context.Context, params SiloUtilizationListParams) (*SiloUtilizationResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SiloUtilizationList(ctx context.Context, params SiloUtilizationListParams, ) (*SiloUtilizationResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/utilization/silos"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/utilization/silos"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SiloUtilizationResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SiloUtilizationResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // SiloUtilizationListAllPages: List current utilization state for all silos
 //
 // This method is a wrapper around the `SiloUtilizationList` method.
 // This method returns all the pages at once.
-func (c *Client) SiloUtilizationListAllPages(ctx context.Context, params SiloUtilizationListParams) ([]SiloUtilization, error) {
+func (c *Client) SiloUtilizationListAllPages(ctx context.Context, params SiloUtilizationListParams, ) ([]SiloUtilization, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -14752,49 +14958,50 @@ func (c *Client) SiloUtilizationListAllPages(ctx context.Context, params SiloUti
 }
 
 // SiloUtilizationView: Fetch current utilization for given silo
-func (c *Client) SiloUtilizationView(ctx context.Context, params SiloUtilizationViewParams) (*SiloUtilization, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) SiloUtilizationView(ctx context.Context, params SiloUtilizationViewParams, ) (*SiloUtilization, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/utilization/silos/{{.silo}}"),
-		map[string]string{
-			"silo": string(params.Silo),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/system/utilization/silos/{{.silo}}"), 
+        map[string]string{ 
+            "silo": string(params.Silo),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body SiloUtilization
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body SiloUtilization
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
@@ -14802,113 +15009,115 @@ func (c *Client) SiloUtilizationView(ctx context.Context, params SiloUtilization
 // ExperimentalTimeseriesQuery: Run project-scoped timeseries query
 // Queries are written in OxQL. Project must be specified by name or ID in URL query parameter. The OxQL query
 // will only return timeseries data from the specified project.
-func (c *Client) ExperimentalTimeseriesQuery(ctx context.Context, params TimeseriesQueryParams) (*OxqlQueryResult, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) ExperimentalTimeseriesQuery(ctx context.Context, params TimeseriesQueryParams, ) (*OxqlQueryResult, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/timeseries/query"),
-		map[string]string{},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/timeseries/query"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body OxqlQueryResult
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body OxqlQueryResult
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // UserList: List users
 //
 // To iterate over all pages, use the `UserListAllPages` method, instead.
-func (c *Client) UserList(ctx context.Context, params UserListParams) (*UserResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) UserList(ctx context.Context, params UserListParams, ) (*UserResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/users"),
-		map[string]string{},
-		map[string]string{
-			"group":      params.Group,
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/users"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "group": params.Group,
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body UserResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body UserResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // UserListAllPages: List users
 //
 // This method is a wrapper around the `UserList` method.
 // This method returns all the pages at once.
-func (c *Client) UserListAllPages(ctx context.Context, params UserListParams) ([]User, error) {
+func (c *Client) UserListAllPages(ctx context.Context, params UserListParams, ) ([]User, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -14931,108 +15140,109 @@ func (c *Client) UserListAllPages(ctx context.Context, params UserListParams) ([
 }
 
 // UserView: Fetch user
-func (c *Client) UserView(ctx context.Context, params UserViewParams) (*User, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) UserView(ctx context.Context, params UserViewParams, ) (*User, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/users/{{.user_id}}"),
-		map[string]string{
-			"user_id": params.UserId,
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/users/{{.user_id}}"), 
+        map[string]string{ 
+            "user_id": params.UserId,
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body User
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body User
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // UserTokenList: List user's access tokens
 //
 // To iterate over all pages, use the `UserTokenListAllPages` method, instead.
-func (c *Client) UserTokenList(ctx context.Context, params UserTokenListParams) (*DeviceAccessTokenResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) UserTokenList(ctx context.Context, params UserTokenListParams, ) (*DeviceAccessTokenResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/users/{{.user_id}}/access-tokens"),
-		map[string]string{
-			"user_id": params.UserId,
-		},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/users/{{.user_id}}/access-tokens"), 
+        map[string]string{ 
+            "user_id": params.UserId,
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body DeviceAccessTokenResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body DeviceAccessTokenResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // UserTokenListAllPages: List user's access tokens
 //
 // This method is a wrapper around the `UserTokenList` method.
 // This method returns all the pages at once.
-func (c *Client) UserTokenListAllPages(ctx context.Context, params UserTokenListParams) ([]DeviceAccessToken, error) {
+func (c *Client) UserTokenListAllPages(ctx context.Context, params UserTokenListParams, ) ([]DeviceAccessToken, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -15057,97 +15267,98 @@ func (c *Client) UserTokenListAllPages(ctx context.Context, params UserTokenList
 // UserLogout: Log user out
 // Silo admins can use this endpoint to log the specified user out by deleting all of their tokens AND sessions. This
 // cannot be undone.
-func (c *Client) UserLogout(ctx context.Context, params UserLogoutParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) UserLogout(ctx context.Context, params UserLogoutParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"POST",
-		resolveRelative(c.host, "/v1/users/{{.user_id}}/logout"),
-		map[string]string{
-			"user_id": params.UserId,
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "POST", 
+        resolveRelative(c.host, "/v1/users/{{.user_id}}/logout"), 
+        map[string]string{ 
+            "user_id": params.UserId,
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // UserSessionList: List user's console sessions
 //
 // To iterate over all pages, use the `UserSessionListAllPages` method, instead.
-func (c *Client) UserSessionList(ctx context.Context, params UserSessionListParams) (*ConsoleSessionResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) UserSessionList(ctx context.Context, params UserSessionListParams, ) (*ConsoleSessionResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/users/{{.user_id}}/sessions"),
-		map[string]string{
-			"user_id": params.UserId,
-		},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/users/{{.user_id}}/sessions"), 
+        map[string]string{ 
+            "user_id": params.UserId,
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body ConsoleSessionResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body ConsoleSessionResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // UserSessionListAllPages: List user's console sessions
 //
 // This method is a wrapper around the `UserSessionList` method.
 // This method returns all the pages at once.
-func (c *Client) UserSessionListAllPages(ctx context.Context, params UserSessionListParams) ([]ConsoleSession, error) {
+func (c *Client) UserSessionListAllPages(ctx context.Context, params UserSessionListParams, ) ([]ConsoleSession, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -15170,208 +15381,213 @@ func (c *Client) UserSessionListAllPages(ctx context.Context, params UserSession
 }
 
 // UtilizationView: Fetch resource utilization for user's current silo
-func (c *Client) UtilizationView(ctx context.Context) (*Utilization, error) {
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/utilization"),
-		map[string]string{},
-		map[string]string{},
-	)
+func (c *Client) UtilizationView(ctx context.Context, ) (*Utilization, error) { 
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/utilization"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body Utilization
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body Utilization
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // VpcFirewallRulesView: List firewall rules
-func (c *Client) VpcFirewallRulesView(ctx context.Context, params VpcFirewallRulesViewParams) (*VpcFirewallRules, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) VpcFirewallRulesView(ctx context.Context, params VpcFirewallRulesViewParams, ) (*VpcFirewallRules, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/vpc-firewall-rules"),
-		map[string]string{},
-		map[string]string{
-			"project": string(params.Project),
-			"vpc":     string(params.Vpc),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/vpc-firewall-rules"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+            "vpc": string(params.Vpc),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body VpcFirewallRules
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body VpcFirewallRules
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // VpcFirewallRulesUpdate: Replace firewall rules
 // The maximum number of rules per VPC is 1024.
-//
+// 
 // Targets are used to specify the set of instances to which a firewall rule applies. You can target instances directly
 // by name, or specify a VPC, VPC subnet, IP, or IP subnet, which will apply the rule to traffic going to all
 // matching instances. Targets are additive: the rule applies to instances matching ANY target. The maximum number
 // of targets is 256.
-//
+// 
 // Filters reduce the scope of a firewall rule. Without filters, the rule applies to all packets to the targets
 // (or from the targets, if it's an outbound rule). With multiple filters, the rule applies only to packets matching
 // ALL filters. The maximum number of each type of filter is 256.
-func (c *Client) VpcFirewallRulesUpdate(ctx context.Context, params VpcFirewallRulesUpdateParams) (*VpcFirewallRules, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) VpcFirewallRulesUpdate(ctx context.Context, params VpcFirewallRulesUpdateParams, ) (*VpcFirewallRules, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"PUT",
-		resolveRelative(c.host, "/v1/vpc-firewall-rules"),
-		map[string]string{},
-		map[string]string{
-			"project": string(params.Project),
-			"vpc":     string(params.Vpc),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "PUT", 
+        resolveRelative(c.host, "/v1/vpc-firewall-rules"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+            "vpc": string(params.Vpc),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body VpcFirewallRules
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body VpcFirewallRules
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // VpcRouterRouteList: List routes
 // List the routes associated with a router in a particular VPC.
 //
 // To iterate over all pages, use the `VpcRouterRouteListAllPages` method, instead.
-func (c *Client) VpcRouterRouteList(ctx context.Context, params VpcRouterRouteListParams) (*RouterRouteResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) VpcRouterRouteList(ctx context.Context, params VpcRouterRouteListParams, ) (*RouterRouteResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/vpc-router-routes"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"project":    string(params.Project),
-			"router":     string(params.Router),
-			"sort_by":    string(params.SortBy),
-			"vpc":        string(params.Vpc),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/vpc-router-routes"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "project": string(params.Project),
+            "router": string(params.Router),
+            "sort_by": string(params.SortBy),
+            "vpc": string(params.Vpc),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body RouterRouteResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body RouterRouteResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // VpcRouterRouteListAllPages: List routes
@@ -15379,7 +15595,7 @@ func (c *Client) VpcRouterRouteList(ctx context.Context, params VpcRouterRouteLi
 //
 // This method is a wrapper around the `VpcRouterRouteList` method.
 // This method returns all the pages at once.
-func (c *Client) VpcRouterRouteListAllPages(ctx context.Context, params VpcRouterRouteListParams) ([]RouterRoute, error) {
+func (c *Client) VpcRouterRouteListAllPages(ctx context.Context, params VpcRouterRouteListParams, ) ([]RouterRoute, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -15402,261 +15618,263 @@ func (c *Client) VpcRouterRouteListAllPages(ctx context.Context, params VpcRoute
 }
 
 // VpcRouterRouteCreate: Create route
-func (c *Client) VpcRouterRouteCreate(ctx context.Context, params VpcRouterRouteCreateParams) (*RouterRoute, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) VpcRouterRouteCreate(ctx context.Context, params VpcRouterRouteCreateParams, ) (*RouterRoute, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/vpc-router-routes"),
-		map[string]string{},
-		map[string]string{
-			"project": string(params.Project),
-			"router":  string(params.Router),
-			"vpc":     string(params.Vpc),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/vpc-router-routes"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+            "router": string(params.Router),
+            "vpc": string(params.Vpc),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body RouterRoute
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body RouterRoute
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // VpcRouterRouteView: Fetch route
-func (c *Client) VpcRouterRouteView(ctx context.Context, params VpcRouterRouteViewParams) (*RouterRoute, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) VpcRouterRouteView(ctx context.Context, params VpcRouterRouteViewParams, ) (*RouterRoute, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/vpc-router-routes/{{.route}}"),
-		map[string]string{
-			"route": string(params.Route),
-		},
-		map[string]string{
-			"project": string(params.Project),
-			"router":  string(params.Router),
-			"vpc":     string(params.Vpc),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/vpc-router-routes/{{.route}}"), 
+        map[string]string{ 
+            "route": string(params.Route),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+            "router": string(params.Router),
+            "vpc": string(params.Vpc),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body RouterRoute
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body RouterRoute
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // VpcRouterRouteUpdate: Update route
-func (c *Client) VpcRouterRouteUpdate(ctx context.Context, params VpcRouterRouteUpdateParams) (*RouterRoute, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) VpcRouterRouteUpdate(ctx context.Context, params VpcRouterRouteUpdateParams, ) (*RouterRoute, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"PUT",
-		resolveRelative(c.host, "/v1/vpc-router-routes/{{.route}}"),
-		map[string]string{
-			"route": string(params.Route),
-		},
-		map[string]string{
-			"project": string(params.Project),
-			"router":  string(params.Router),
-			"vpc":     string(params.Vpc),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "PUT", 
+        resolveRelative(c.host, "/v1/vpc-router-routes/{{.route}}"), 
+        map[string]string{ 
+            "route": string(params.Route),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+            "router": string(params.Router),
+            "vpc": string(params.Vpc),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body RouterRoute
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body RouterRoute
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // VpcRouterRouteDelete: Delete route
-func (c *Client) VpcRouterRouteDelete(ctx context.Context, params VpcRouterRouteDeleteParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) VpcRouterRouteDelete(ctx context.Context, params VpcRouterRouteDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/vpc-router-routes/{{.route}}"),
-		map[string]string{
-			"route": string(params.Route),
-		},
-		map[string]string{
-			"project": string(params.Project),
-			"router":  string(params.Router),
-			"vpc":     string(params.Vpc),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/vpc-router-routes/{{.route}}"), 
+        map[string]string{ 
+            "route": string(params.Route),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+            "router": string(params.Router),
+            "vpc": string(params.Vpc),
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // VpcRouterList: List routers
 //
 // To iterate over all pages, use the `VpcRouterListAllPages` method, instead.
-func (c *Client) VpcRouterList(ctx context.Context, params VpcRouterListParams) (*VpcRouterResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) VpcRouterList(ctx context.Context, params VpcRouterListParams, ) (*VpcRouterResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/vpc-routers"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"project":    string(params.Project),
-			"sort_by":    string(params.SortBy),
-			"vpc":        string(params.Vpc),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/vpc-routers"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "project": string(params.Project),
+            "sort_by": string(params.SortBy),
+            "vpc": string(params.Vpc),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body VpcRouterResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body VpcRouterResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // VpcRouterListAllPages: List routers
 //
 // This method is a wrapper around the `VpcRouterList` method.
 // This method returns all the pages at once.
-func (c *Client) VpcRouterListAllPages(ctx context.Context, params VpcRouterListParams) ([]VpcRouter, error) {
+func (c *Client) VpcRouterListAllPages(ctx context.Context, params VpcRouterListParams, ) ([]VpcRouter, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -15679,257 +15897,259 @@ func (c *Client) VpcRouterListAllPages(ctx context.Context, params VpcRouterList
 }
 
 // VpcRouterCreate: Create VPC router
-func (c *Client) VpcRouterCreate(ctx context.Context, params VpcRouterCreateParams) (*VpcRouter, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) VpcRouterCreate(ctx context.Context, params VpcRouterCreateParams, ) (*VpcRouter, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/vpc-routers"),
-		map[string]string{},
-		map[string]string{
-			"project": string(params.Project),
-			"vpc":     string(params.Vpc),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/vpc-routers"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+            "vpc": string(params.Vpc),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body VpcRouter
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body VpcRouter
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // VpcRouterView: Fetch router
-func (c *Client) VpcRouterView(ctx context.Context, params VpcRouterViewParams) (*VpcRouter, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) VpcRouterView(ctx context.Context, params VpcRouterViewParams, ) (*VpcRouter, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/vpc-routers/{{.router}}"),
-		map[string]string{
-			"router": string(params.Router),
-		},
-		map[string]string{
-			"project": string(params.Project),
-			"vpc":     string(params.Vpc),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/vpc-routers/{{.router}}"), 
+        map[string]string{ 
+            "router": string(params.Router),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+            "vpc": string(params.Vpc),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body VpcRouter
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body VpcRouter
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // VpcRouterUpdate: Update router
-func (c *Client) VpcRouterUpdate(ctx context.Context, params VpcRouterUpdateParams) (*VpcRouter, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) VpcRouterUpdate(ctx context.Context, params VpcRouterUpdateParams, ) (*VpcRouter, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"PUT",
-		resolveRelative(c.host, "/v1/vpc-routers/{{.router}}"),
-		map[string]string{
-			"router": string(params.Router),
-		},
-		map[string]string{
-			"project": string(params.Project),
-			"vpc":     string(params.Vpc),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "PUT", 
+        resolveRelative(c.host, "/v1/vpc-routers/{{.router}}"), 
+        map[string]string{ 
+            "router": string(params.Router),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+            "vpc": string(params.Vpc),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body VpcRouter
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body VpcRouter
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // VpcRouterDelete: Delete router
-func (c *Client) VpcRouterDelete(ctx context.Context, params VpcRouterDeleteParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) VpcRouterDelete(ctx context.Context, params VpcRouterDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/vpc-routers/{{.router}}"),
-		map[string]string{
-			"router": string(params.Router),
-		},
-		map[string]string{
-			"project": string(params.Project),
-			"vpc":     string(params.Vpc),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/vpc-routers/{{.router}}"), 
+        map[string]string{ 
+            "router": string(params.Router),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+            "vpc": string(params.Vpc),
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // VpcSubnetList: List subnets
 //
 // To iterate over all pages, use the `VpcSubnetListAllPages` method, instead.
-func (c *Client) VpcSubnetList(ctx context.Context, params VpcSubnetListParams) (*VpcSubnetResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) VpcSubnetList(ctx context.Context, params VpcSubnetListParams, ) (*VpcSubnetResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/vpc-subnets"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"project":    string(params.Project),
-			"sort_by":    string(params.SortBy),
-			"vpc":        string(params.Vpc),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/vpc-subnets"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "project": string(params.Project),
+            "sort_by": string(params.SortBy),
+            "vpc": string(params.Vpc),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body VpcSubnetResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body VpcSubnetResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // VpcSubnetListAllPages: List subnets
 //
 // This method is a wrapper around the `VpcSubnetList` method.
 // This method returns all the pages at once.
-func (c *Client) VpcSubnetListAllPages(ctx context.Context, params VpcSubnetListParams) ([]VpcSubnet, error) {
+func (c *Client) VpcSubnetListAllPages(ctx context.Context, params VpcSubnetListParams, ) ([]VpcSubnet, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -15952,259 +16172,260 @@ func (c *Client) VpcSubnetListAllPages(ctx context.Context, params VpcSubnetList
 }
 
 // VpcSubnetCreate: Create subnet
-func (c *Client) VpcSubnetCreate(ctx context.Context, params VpcSubnetCreateParams) (*VpcSubnet, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) VpcSubnetCreate(ctx context.Context, params VpcSubnetCreateParams, ) (*VpcSubnet, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/vpc-subnets"),
-		map[string]string{},
-		map[string]string{
-			"project": string(params.Project),
-			"vpc":     string(params.Vpc),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/vpc-subnets"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+            "vpc": string(params.Vpc),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body VpcSubnet
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body VpcSubnet
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // VpcSubnetView: Fetch subnet
-func (c *Client) VpcSubnetView(ctx context.Context, params VpcSubnetViewParams) (*VpcSubnet, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) VpcSubnetView(ctx context.Context, params VpcSubnetViewParams, ) (*VpcSubnet, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/vpc-subnets/{{.subnet}}"),
-		map[string]string{
-			"subnet": string(params.Subnet),
-		},
-		map[string]string{
-			"project": string(params.Project),
-			"vpc":     string(params.Vpc),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/vpc-subnets/{{.subnet}}"), 
+        map[string]string{ 
+            "subnet": string(params.Subnet),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+            "vpc": string(params.Vpc),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body VpcSubnet
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body VpcSubnet
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // VpcSubnetUpdate: Update subnet
-func (c *Client) VpcSubnetUpdate(ctx context.Context, params VpcSubnetUpdateParams) (*VpcSubnet, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) VpcSubnetUpdate(ctx context.Context, params VpcSubnetUpdateParams, ) (*VpcSubnet, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"PUT",
-		resolveRelative(c.host, "/v1/vpc-subnets/{{.subnet}}"),
-		map[string]string{
-			"subnet": string(params.Subnet),
-		},
-		map[string]string{
-			"project": string(params.Project),
-			"vpc":     string(params.Vpc),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "PUT", 
+        resolveRelative(c.host, "/v1/vpc-subnets/{{.subnet}}"), 
+        map[string]string{ 
+            "subnet": string(params.Subnet),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+            "vpc": string(params.Vpc),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body VpcSubnet
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body VpcSubnet
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // VpcSubnetDelete: Delete subnet
-func (c *Client) VpcSubnetDelete(ctx context.Context, params VpcSubnetDeleteParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) VpcSubnetDelete(ctx context.Context, params VpcSubnetDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/vpc-subnets/{{.subnet}}"),
-		map[string]string{
-			"subnet": string(params.Subnet),
-		},
-		map[string]string{
-			"project": string(params.Project),
-			"vpc":     string(params.Vpc),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/vpc-subnets/{{.subnet}}"), 
+        map[string]string{ 
+            "subnet": string(params.Subnet),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+            "vpc": string(params.Vpc),
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // VpcSubnetListNetworkInterfaces: List network interfaces
 //
 // To iterate over all pages, use the `VpcSubnetListNetworkInterfacesAllPages` method, instead.
-func (c *Client) VpcSubnetListNetworkInterfaces(ctx context.Context, params VpcSubnetListNetworkInterfacesParams) (*InstanceNetworkInterfaceResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) VpcSubnetListNetworkInterfaces(ctx context.Context, params VpcSubnetListNetworkInterfacesParams, ) (*InstanceNetworkInterfaceResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/vpc-subnets/{{.subnet}}/network-interfaces"),
-		map[string]string{
-			"subnet": string(params.Subnet),
-		},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"project":    string(params.Project),
-			"sort_by":    string(params.SortBy),
-			"vpc":        string(params.Vpc),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/vpc-subnets/{{.subnet}}/network-interfaces"), 
+        map[string]string{ 
+            "subnet": string(params.Subnet),
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "project": string(params.Project),
+            "sort_by": string(params.SortBy),
+            "vpc": string(params.Vpc),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body InstanceNetworkInterfaceResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body InstanceNetworkInterfaceResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // VpcSubnetListNetworkInterfacesAllPages: List network interfaces
 //
 // This method is a wrapper around the `VpcSubnetListNetworkInterfaces` method.
 // This method returns all the pages at once.
-func (c *Client) VpcSubnetListNetworkInterfacesAllPages(ctx context.Context, params VpcSubnetListNetworkInterfacesParams) ([]InstanceNetworkInterface, error) {
+func (c *Client) VpcSubnetListNetworkInterfacesAllPages(ctx context.Context, params VpcSubnetListNetworkInterfacesParams, ) ([]InstanceNetworkInterface, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -16229,59 +16450,60 @@ func (c *Client) VpcSubnetListNetworkInterfacesAllPages(ctx context.Context, par
 // VpcList: List VPCs
 //
 // To iterate over all pages, use the `VpcListAllPages` method, instead.
-func (c *Client) VpcList(ctx context.Context, params VpcListParams) (*VpcResultsPage, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) VpcList(ctx context.Context, params VpcListParams, ) (*VpcResultsPage, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/vpcs"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"project":    string(params.Project),
-			"sort_by":    string(params.SortBy),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/vpcs"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "limit": PointerIntToStr(params.Limit),
+            "page_token": params.PageToken,
+            "project": string(params.Project),
+            "sort_by": string(params.SortBy),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body VpcResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body VpcResultsPage
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // VpcListAllPages: List VPCs
 //
 // This method is a wrapper around the `VpcList` method.
 // This method returns all the pages at once.
-func (c *Client) VpcListAllPages(ctx context.Context, params VpcListParams) ([]Vpc, error) {
+func (c *Client) VpcListAllPages(ctx context.Context, params VpcListParams, ) ([]Vpc, error) { 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
@@ -16304,418 +16526,426 @@ func (c *Client) VpcListAllPages(ctx context.Context, params VpcListParams) ([]V
 }
 
 // VpcCreate: Create VPC
-func (c *Client) VpcCreate(ctx context.Context, params VpcCreateParams) (*Vpc, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) VpcCreate(ctx context.Context, params VpcCreateParams, ) (*Vpc, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/vpcs"),
-		map[string]string{},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/vpcs"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body Vpc
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body Vpc
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // VpcView: Fetch VPC
-func (c *Client) VpcView(ctx context.Context, params VpcViewParams) (*Vpc, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) VpcView(ctx context.Context, params VpcViewParams, ) (*Vpc, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/vpcs/{{.vpc}}"),
-		map[string]string{
-			"vpc": string(params.Vpc),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/vpcs/{{.vpc}}"), 
+        map[string]string{ 
+            "vpc": string(params.Vpc),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body Vpc
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body Vpc
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // VpcUpdate: Update VPC
-func (c *Client) VpcUpdate(ctx context.Context, params VpcUpdateParams) (*Vpc, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) VpcUpdate(ctx context.Context, params VpcUpdateParams, ) (*Vpc, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"PUT",
-		resolveRelative(c.host, "/v1/vpcs/{{.vpc}}"),
-		map[string]string{
-			"vpc": string(params.Vpc),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "PUT", 
+        resolveRelative(c.host, "/v1/vpcs/{{.vpc}}"), 
+        map[string]string{ 
+            "vpc": string(params.Vpc),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body Vpc
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body Vpc
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // VpcDelete: Delete VPC
-func (c *Client) VpcDelete(ctx context.Context, params VpcDeleteParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) VpcDelete(ctx context.Context, params VpcDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/vpcs/{{.vpc}}"),
-		map[string]string{
-			"vpc": string(params.Vpc),
-		},
-		map[string]string{
-			"project": string(params.Project),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/vpcs/{{.vpc}}"), 
+        map[string]string{ 
+            "vpc": string(params.Vpc),
+        }, 
+        map[string]string{ 
+            "project": string(params.Project),
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // WebhookReceiverCreate: Create webhook receiver
-func (c *Client) WebhookReceiverCreate(ctx context.Context, params WebhookReceiverCreateParams) (*WebhookReceiver, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) WebhookReceiverCreate(ctx context.Context, params WebhookReceiverCreateParams, ) (*WebhookReceiver, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/webhook-receivers"),
-		map[string]string{},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/webhook-receivers"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body WebhookReceiver
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body WebhookReceiver
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // WebhookReceiverUpdate: Update webhook receiver
 // Note that receiver secrets are NOT added or removed using this endpoint. Instead, use the `/v1/webhooks/{secrets}/?receiver={receiver}` endpoint
 // to add and remove secrets.
-func (c *Client) WebhookReceiverUpdate(ctx context.Context, params WebhookReceiverUpdateParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) WebhookReceiverUpdate(ctx context.Context, params WebhookReceiverUpdateParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"PUT",
-		resolveRelative(c.host, "/v1/webhook-receivers/{{.receiver}}"),
-		map[string]string{
-			"receiver": string(params.Receiver),
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "PUT", 
+        resolveRelative(c.host, "/v1/webhook-receivers/{{.receiver}}"), 
+        map[string]string{ 
+            "receiver": string(params.Receiver),
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
 
 // WebhookSecretsList: List webhook receiver secret IDs
-func (c *Client) WebhookSecretsList(ctx context.Context, params WebhookSecretsListParams) (*WebhookSecrets, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) WebhookSecretsList(ctx context.Context, params WebhookSecretsListParams, ) (*WebhookSecrets, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/webhook-secrets"),
-		map[string]string{},
-		map[string]string{
-			"receiver": string(params.Receiver),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "GET", 
+        resolveRelative(c.host, "/v1/webhook-secrets"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "receiver": string(params.Receiver),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body WebhookSecrets
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body WebhookSecrets
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // WebhookSecretsAdd: Add secret to webhook receiver
-func (c *Client) WebhookSecretsAdd(ctx context.Context, params WebhookSecretsAddParams) (*WebhookSecret, error) {
-	if err := params.Validate(); err != nil {
+func (c *Client) WebhookSecretsAdd(ctx context.Context, params WebhookSecretsAddParams, ) (*WebhookSecret, error) { 
+    if err := params.Validate(); err != nil {
 		return nil, err
 	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
+    // Encode the request body as json.
+    b := new(bytes.Buffer)
+    if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+        return nil, fmt.Errorf("encoding json body request failed: %v", err)
+    }
 
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/webhook-secrets"),
-		map[string]string{},
-		map[string]string{
-			"receiver": string(params.Receiver),
-		},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        b, 
+        "POST", 
+        resolveRelative(c.host, "/v1/webhook-secrets"), 
+        map[string]string{ 
+        }, 
+        map[string]string{ 
+            "receiver": string(params.Receiver),
+        },
+    )
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return nil, fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return nil, err
+    }
 
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
+    // Decode the body from the response.
+    if resp.Body == nil {
+        return nil, errors.New("request returned an empty body in the response")
+    }
 
-	var body WebhookSecret
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
+    var body WebhookSecret
+    if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+        return nil, fmt.Errorf("error decoding response body: %v", err)
+    }
 
-	// Return the response.
-	return &body, nil
+    // Return the response.
+    return &body, nil
 }
 
 // WebhookSecretsDelete: Remove secret from webhook receiver
-func (c *Client) WebhookSecretsDelete(ctx context.Context, params WebhookSecretsDeleteParams) error {
-	if err := params.Validate(); err != nil {
+func (c *Client) WebhookSecretsDelete(ctx context.Context, params WebhookSecretsDeleteParams, ) error { 
+    if err := params.Validate(); err != nil {
 		return err
 	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/v1/webhook-secrets/{{.secret_id}}"),
-		map[string]string{
-			"secret_id": params.SecretId,
-		},
-		map[string]string{},
-	)
+    // Create the request
+    req, err := c.buildRequest(
+        ctx,
+        nil, 
+        "DELETE", 
+        resolveRelative(c.host, "/v1/webhook-secrets/{{.secret_id}}"), 
+        map[string]string{ 
+            "secret_id": params.SecretId,
+        }, 
+        map[string]string{ 
+        },
+    )
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
 	}
 
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
+    // Send the request.
+    resp, err := c.client.Do(req)
+    if err != nil {
+        return fmt.Errorf("error sending request: %v", err)
+    }
+    defer resp.Body.Close()
 
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
+    // Create and return an HTTPError when an error response code is received.
+    if err := NewHTTPError(resp); err != nil {
+        return err
+    }
 
-	return nil
+    return nil
 }
+
