@@ -1553,6 +1553,7 @@ type BgpAnnouncementCreate struct {
 // - Asn
 // - Description
 // - Id
+// - MaxPaths
 // - Name
 // - TimeCreated
 // - TimeModified
@@ -1563,6 +1564,8 @@ type BgpConfig struct {
 	Description string `json:"description" yaml:"description"`
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id" yaml:"id"`
+	// MaxPaths is maximum number of paths to use when multiple "best paths" exist
+	MaxPaths MaxPathConfig `json:"max_paths" yaml:"max_paths"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name" yaml:"name"`
 	// TimeCreated is timestamp when this resource was created
@@ -1587,6 +1590,8 @@ type BgpConfigCreate struct {
 	Asn              *int     `json:"asn"                 yaml:"asn"`
 	BgpAnnounceSetId NameOrId `json:"bgp_announce_set_id" yaml:"bgp_announce_set_id"`
 	Description      string   `json:"description"         yaml:"description"`
+	// MaxPaths is maximum number of paths to use when multiple "best paths" exist
+	MaxPaths MaxPathConfig `json:"max_paths,omitempty" yaml:"max_paths,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase
 	// ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID,
 	// but they may contain a UUID. They
@@ -1607,29 +1612,35 @@ type BgpConfigResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
-// BgpExported is the current status of a BGP peer.
+// BgpExported is route exported to a peer.
 //
 // Required fields:
-// - Exports
+// - PeerId
+// - Prefix
+// - Switch
 type BgpExported struct {
-	// Exports is exported routes indexed by peer address.
-	Exports map[string][]Ipv4Net `json:"exports" yaml:"exports"`
+	// PeerId is identifier for the BGP peer.
+	PeerId string `json:"peer_id" yaml:"peer_id"`
+	// Prefix is the destination network prefix.
+	Prefix IpNet `json:"prefix" yaml:"prefix"`
+	// Switch is switch the route is exported from.
+	Switch SwitchLocation `json:"switch" yaml:"switch"`
 }
 
-// BgpImportedRouteIpv4 is a route imported from a BGP peer.
+// BgpImported is a route imported from a BGP peer.
 //
 // Required fields:
 // - Id
 // - Nexthop
 // - Prefix
 // - Switch
-type BgpImportedRouteIpv4 struct {
+type BgpImported struct {
 	// Id is bGP identifier of the originating router.
 	Id *int `json:"id" yaml:"id"`
 	// Nexthop is the nexthop the prefix is reachable through.
 	Nexthop string `json:"nexthop" yaml:"nexthop"`
 	// Prefix is the destination network prefix.
-	Prefix Ipv4Net `json:"prefix" yaml:"prefix"`
+	Prefix IpNet `json:"prefix" yaml:"prefix"`
 	// Switch is switch the route is imported into.
 	Switch SwitchLocation `json:"switch" yaml:"switch"`
 }
@@ -1643,7 +1654,6 @@ type BgpMessageHistory string
 // The `interface_name` indicates what interface the peer should be contacted on.
 //
 // Required fields:
-// - Addr
 // - AllowedExport
 // - AllowedImport
 // - BgpConfig
@@ -1655,9 +1665,12 @@ type BgpMessageHistory string
 // - IdleHoldTime
 // - InterfaceName
 // - Keepalive
+// - RouterLifetime
 type BgpPeer struct {
-	// Addr is the address of the host to peer with.
-	Addr string `json:"addr" yaml:"addr"`
+	// Addr is the address of the host to peer with. If not provided, this is an unnumbered BGP
+	// session that will
+	// be established over the interface specified by `interface_name`.
+	Addr string `json:"addr,omitempty" yaml:"addr,omitempty"`
 	// AllowedExport is define export policy for a peer.
 	AllowedExport ImportExportPolicy `json:"allowed_export" yaml:"allowed_export"`
 	// AllowedImport is define import policy for a peer.
@@ -1696,6 +1709,8 @@ type BgpPeer struct {
 	MultiExitDiscriminator *int `json:"multi_exit_discriminator,omitempty" yaml:"multi_exit_discriminator,omitempty"`
 	// RemoteAsn is require that a peer has a specified ASN.
 	RemoteAsn *int `json:"remote_asn,omitempty" yaml:"remote_asn,omitempty"`
+	// RouterLifetime is router lifetime in seconds for unnumbered BGP peers.
+	RouterLifetime *int `json:"router_lifetime" yaml:"router_lifetime"`
 	// VlanId is associate a VLAN ID with a peer.
 	VlanId *int `json:"vlan_id,omitempty" yaml:"vlan_id,omitempty"`
 }
@@ -1722,6 +1737,7 @@ type BgpPeerState string
 // Required fields:
 // - Addr
 // - LocalAsn
+// - PeerId
 // - RemoteAsn
 // - State
 // - StateDurationMillis
@@ -1731,6 +1747,8 @@ type BgpPeerStatus struct {
 	Addr string `json:"addr" yaml:"addr"`
 	// LocalAsn is local autonomous system number.
 	LocalAsn *int `json:"local_asn" yaml:"local_asn"`
+	// PeerId is interface name
+	PeerId string `json:"peer_id" yaml:"peer_id"`
 	// RemoteAsn is remote autonomous system number.
 	RemoteAsn *int `json:"remote_asn" yaml:"remote_asn"`
 	// State is state of the peer.
@@ -8193,6 +8211,9 @@ type ManagementAddress struct {
 	InterfaceNum InterfaceNum   `json:"interface_num" yaml:"interface_num"`
 	Oid          []int          `json:"oid"           yaml:"oid"`
 }
+
+// MaxPathConfig is the type definition for a MaxPathConfig.
+type MaxPathConfig uint8
 
 // Measurement is a `Measurement` is a timestamped datum from a single metric
 //
@@ -15313,20 +15334,19 @@ type NetworkingBgpAnnouncementListParams struct {
 	AnnounceSet NameOrId `json:"announce_set,omitempty" yaml:"announce_set,omitempty"`
 }
 
+// NetworkingBgpImportedParams is the request parameters for NetworkingBgpImported
+//
+// Required fields:
+// - Asn
+type NetworkingBgpImportedParams struct {
+	Asn *int `json:"asn,omitempty" yaml:"asn,omitempty"`
+}
+
 // NetworkingBgpMessageHistoryParams is the request parameters for NetworkingBgpMessageHistory
 //
 // Required fields:
 // - Asn
 type NetworkingBgpMessageHistoryParams struct {
-	Asn *int `json:"asn,omitempty" yaml:"asn,omitempty"`
-}
-
-// NetworkingBgpImportedRoutesIpv4Params is the request parameters for
-// NetworkingBgpImportedRoutesIpv4
-//
-// Required fields:
-// - Asn
-type NetworkingBgpImportedRoutesIpv4Params struct {
 	Asn *int `json:"asn,omitempty" yaml:"asn,omitempty"`
 }
 
@@ -18265,8 +18285,8 @@ func (p *NetworkingBgpAnnouncementListParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for NetworkingBgpMessageHistoryParams are set
-func (p *NetworkingBgpMessageHistoryParams) Validate() error {
+// Validate verifies all required fields for NetworkingBgpImportedParams are set
+func (p *NetworkingBgpImportedParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredNum(p.Asn, "Asn")
 	if !v.IsValid() {
@@ -18275,8 +18295,8 @@ func (p *NetworkingBgpMessageHistoryParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for NetworkingBgpImportedRoutesIpv4Params are set
-func (p *NetworkingBgpImportedRoutesIpv4Params) Validate() error {
+// Validate verifies all required fields for NetworkingBgpMessageHistoryParams are set
+func (p *NetworkingBgpMessageHistoryParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredNum(p.Asn, "Asn")
 	if !v.IsValid() {

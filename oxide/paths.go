@@ -12311,8 +12311,8 @@ func (c *Client) NetworkingBgpAnnouncementList(
 	return &body, nil
 }
 
-// NetworkingBgpExported: Get BGP exported routes
-func (c *Client) NetworkingBgpExported(ctx context.Context) (*BgpExported, error) {
+// NetworkingBgpExported: List BGP exported routes
+func (c *Client) NetworkingBgpExported(ctx context.Context) (*[]BgpExported, error) {
 	// Create the request
 	req, err := c.buildRequest(
 		ctx,
@@ -12343,7 +12343,56 @@ func (c *Client) NetworkingBgpExported(ctx context.Context) (*BgpExported, error
 		return nil, errors.New("request returned an empty body in the response")
 	}
 
-	var body BgpExported
+	var body []BgpExported
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// NetworkingBgpImported: Get imported IPv4 BGP routes
+func (c *Client) NetworkingBgpImported(
+	ctx context.Context,
+	params NetworkingBgpImportedParams,
+) (*[]BgpImported, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/networking/bgp-imported"),
+		map[string]string{},
+		map[string]string{
+			"asn": PointerIntToStr(params.Asn),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body []BgpImported
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -12393,55 +12442,6 @@ func (c *Client) NetworkingBgpMessageHistory(
 	}
 
 	var body AggregateBgpMessageHistory
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// NetworkingBgpImportedRoutesIpv4: Get imported IPv4 BGP routes
-func (c *Client) NetworkingBgpImportedRoutesIpv4(
-	ctx context.Context,
-	params NetworkingBgpImportedRoutesIpv4Params,
-) (*[]BgpImportedRouteIpv4, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/networking/bgp-routes-ipv4"),
-		map[string]string{},
-		map[string]string{
-			"asn": PointerIntToStr(params.Asn),
-		},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body []BgpImportedRouteIpv4
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
