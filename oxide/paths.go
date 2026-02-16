@@ -16,6 +16,690 @@ import (
 	"time"
 )
 
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalProbeList: List instrumentation probes
+//
+// To iterate over all pages, use the `ExperimentalProbeListAllPages` method, instead.
+func (c *Client) ExperimentalProbeList(ctx context.Context, params ProbeListParams) (*ProbeInfoResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/experimental/v1/probes"),
+		map[string]string{},
+		map[string]string{
+			"limit":      PointerIntToStr(params.Limit),
+			"page_token": params.PageToken,
+			"project":    string(params.Project),
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body ProbeInfoResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalProbeListAllPages: List instrumentation probes
+//
+// This method is a wrapper around the `ExperimentalProbeList` method.
+// This method returns all the pages at once.
+func (c *Client) ExperimentalProbeListAllPages(ctx context.Context, params ProbeListParams) ([]ProbeInfo, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []ProbeInfo
+	params.PageToken = ""
+	params.Limit = NewPointer(100)
+	for {
+		page, err := c.ExperimentalProbeList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalProbeCreate: Create instrumentation probe
+func (c *Client) ExperimentalProbeCreate(ctx context.Context, params ProbeCreateParams) (*Probe, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"POST",
+		resolveRelative(c.host, "/experimental/v1/probes"),
+		map[string]string{},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body Probe
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalProbeView: View instrumentation probe
+func (c *Client) ExperimentalProbeView(ctx context.Context, params ProbeViewParams) (*ProbeInfo, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/experimental/v1/probes/{{.probe}}"),
+		map[string]string{
+			"probe": string(params.Probe),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body ProbeInfo
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalProbeDelete: Delete instrumentation probe
+func (c *Client) ExperimentalProbeDelete(ctx context.Context, params ProbeDeleteParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"DELETE",
+		resolveRelative(c.host, "/experimental/v1/probes/{{.probe}}"),
+		map[string]string{
+			"probe": string(params.Probe),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalSupportBundleList: List all support bundles
+//
+// To iterate over all pages, use the `ExperimentalSupportBundleListAllPages` method, instead.
+func (c *Client) ExperimentalSupportBundleList(ctx context.Context, params SupportBundleListParams) (*SupportBundleInfoResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/experimental/v1/system/support-bundles"),
+		map[string]string{},
+		map[string]string{
+			"limit":      PointerIntToStr(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SupportBundleInfoResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalSupportBundleListAllPages: List all support bundles
+//
+// This method is a wrapper around the `ExperimentalSupportBundleList` method.
+// This method returns all the pages at once.
+func (c *Client) ExperimentalSupportBundleListAllPages(ctx context.Context, params SupportBundleListParams) ([]SupportBundleInfo, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []SupportBundleInfo
+	params.PageToken = ""
+	params.Limit = NewPointer(100)
+	for {
+		page, err := c.ExperimentalSupportBundleList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalSupportBundleCreate: Create a new support bundle
+func (c *Client) ExperimentalSupportBundleCreate(ctx context.Context, params SupportBundleCreateParams) (*SupportBundleInfo, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"POST",
+		resolveRelative(c.host, "/experimental/v1/system/support-bundles"),
+		map[string]string{},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SupportBundleInfo
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalSupportBundleView: View support bundle
+func (c *Client) ExperimentalSupportBundleView(ctx context.Context, params SupportBundleViewParams) (*SupportBundleInfo, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/experimental/v1/system/support-bundles/{{.bundle_id}}"),
+		map[string]string{
+			"bundle_id": params.BundleId,
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SupportBundleInfo
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalSupportBundleUpdate: Update a support bundle
+func (c *Client) ExperimentalSupportBundleUpdate(ctx context.Context, params SupportBundleUpdateParams) (*SupportBundleInfo, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"PUT",
+		resolveRelative(c.host, "/experimental/v1/system/support-bundles/{{.bundle_id}}"),
+		map[string]string{
+			"bundle_id": params.BundleId,
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SupportBundleInfo
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalSupportBundleDelete: Delete an existing support bundle
+// May also be used to cancel a support bundle which is currently being collected, or to remove metadata for
+// a support bundle that has failed.
+func (c *Client) ExperimentalSupportBundleDelete(ctx context.Context, params SupportBundleDeleteParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"DELETE",
+		resolveRelative(c.host, "/experimental/v1/system/support-bundles/{{.bundle_id}}"),
+		map[string]string{
+			"bundle_id": params.BundleId,
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalSupportBundleDownload: Download the contents of a support bundle
+func (c *Client) ExperimentalSupportBundleDownload(ctx context.Context, params SupportBundleDownloadParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/experimental/v1/system/support-bundles/{{.bundle_id}}/download"),
+		map[string]string{
+			"bundle_id": params.BundleId,
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalSupportBundleHead: Download the metadata of a support bundle
+func (c *Client) ExperimentalSupportBundleHead(ctx context.Context, params SupportBundleHeadParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"HEAD",
+		resolveRelative(c.host, "/experimental/v1/system/support-bundles/{{.bundle_id}}/download"),
+		map[string]string{
+			"bundle_id": params.BundleId,
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalSupportBundleDownloadFile: Download a file within a support bundle
+func (c *Client) ExperimentalSupportBundleDownloadFile(ctx context.Context, params SupportBundleDownloadFileParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/experimental/v1/system/support-bundles/{{.bundle_id}}/download/{{.file}}"),
+		map[string]string{
+			"bundle_id": params.BundleId,
+			"file":      params.File,
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalSupportBundleHeadFile: Download the metadata of a file within the support bundle
+func (c *Client) ExperimentalSupportBundleHeadFile(ctx context.Context, params SupportBundleHeadFileParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"HEAD",
+		resolveRelative(c.host, "/experimental/v1/system/support-bundles/{{.bundle_id}}/download/{{.file}}"),
+		map[string]string{
+			"bundle_id": params.BundleId,
+			"file":      params.File,
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalSupportBundleIndex: Download the index of a support bundle
+func (c *Client) ExperimentalSupportBundleIndex(ctx context.Context, params SupportBundleIndexParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/experimental/v1/system/support-bundles/{{.bundle_id}}/index"),
+		map[string]string{
+			"bundle_id": params.BundleId,
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // LoginSaml: Authenticate a user via SAML
 func (c *Client) LoginSaml(ctx context.Context, params LoginSamlParams) error {
 	if err := params.Validate(); err != nil {
@@ -34,6 +718,511 @@ func (c *Client) LoginSaml(ctx context.Context, params LoginSamlParams) error {
 			"silo_name":     string(params.SiloName),
 		},
 		map[string]string{},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalAffinityGroupList: List affinity groups
+//
+// To iterate over all pages, use the `ExperimentalAffinityGroupListAllPages` method, instead.
+func (c *Client) ExperimentalAffinityGroupList(ctx context.Context, params AffinityGroupListParams) (*AffinityGroupResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/affinity-groups"),
+		map[string]string{},
+		map[string]string{
+			"limit":      PointerIntToStr(params.Limit),
+			"page_token": params.PageToken,
+			"project":    string(params.Project),
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body AffinityGroupResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalAffinityGroupListAllPages: List affinity groups
+//
+// This method is a wrapper around the `ExperimentalAffinityGroupList` method.
+// This method returns all the pages at once.
+func (c *Client) ExperimentalAffinityGroupListAllPages(ctx context.Context, params AffinityGroupListParams) ([]AffinityGroup, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []AffinityGroup
+	params.PageToken = ""
+	params.Limit = NewPointer(100)
+	for {
+		page, err := c.ExperimentalAffinityGroupList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalAffinityGroupCreate: Create affinity group
+func (c *Client) ExperimentalAffinityGroupCreate(ctx context.Context, params AffinityGroupCreateParams) (*AffinityGroup, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"POST",
+		resolveRelative(c.host, "/v1/affinity-groups"),
+		map[string]string{},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body AffinityGroup
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalAffinityGroupView: Fetch affinity group
+func (c *Client) ExperimentalAffinityGroupView(ctx context.Context, params AffinityGroupViewParams) (*AffinityGroup, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/affinity-groups/{{.affinity_group}}"),
+		map[string]string{
+			"affinity_group": string(params.AffinityGroup),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body AffinityGroup
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalAffinityGroupUpdate: Update affinity group
+func (c *Client) ExperimentalAffinityGroupUpdate(ctx context.Context, params AffinityGroupUpdateParams) (*AffinityGroup, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"PUT",
+		resolveRelative(c.host, "/v1/affinity-groups/{{.affinity_group}}"),
+		map[string]string{
+			"affinity_group": string(params.AffinityGroup),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body AffinityGroup
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalAffinityGroupDelete: Delete affinity group
+func (c *Client) ExperimentalAffinityGroupDelete(ctx context.Context, params AffinityGroupDeleteParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"DELETE",
+		resolveRelative(c.host, "/v1/affinity-groups/{{.affinity_group}}"),
+		map[string]string{
+			"affinity_group": string(params.AffinityGroup),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalAffinityGroupMemberList: List affinity group members
+//
+// To iterate over all pages, use the `ExperimentalAffinityGroupMemberListAllPages` method, instead.
+func (c *Client) ExperimentalAffinityGroupMemberList(ctx context.Context, params AffinityGroupMemberListParams) (*AffinityGroupMemberResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/affinity-groups/{{.affinity_group}}/members"),
+		map[string]string{
+			"affinity_group": string(params.AffinityGroup),
+		},
+		map[string]string{
+			"limit":      PointerIntToStr(params.Limit),
+			"page_token": params.PageToken,
+			"project":    string(params.Project),
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body AffinityGroupMemberResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalAffinityGroupMemberListAllPages: List affinity group members
+//
+// This method is a wrapper around the `ExperimentalAffinityGroupMemberList` method.
+// This method returns all the pages at once.
+func (c *Client) ExperimentalAffinityGroupMemberListAllPages(ctx context.Context, params AffinityGroupMemberListParams) ([]AffinityGroupMember, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []AffinityGroupMember
+	params.PageToken = ""
+	params.Limit = NewPointer(100)
+	for {
+		page, err := c.ExperimentalAffinityGroupMemberList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalAffinityGroupMemberInstanceView: Fetch affinity group member
+func (c *Client) ExperimentalAffinityGroupMemberInstanceView(ctx context.Context, params AffinityGroupMemberInstanceViewParams) (*AffinityGroupMember, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/affinity-groups/{{.affinity_group}}/members/instance/{{.instance}}"),
+		map[string]string{
+			"affinity_group": string(params.AffinityGroup),
+			"instance":       string(params.Instance),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body AffinityGroupMember
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalAffinityGroupMemberInstanceAdd: Add member to affinity group
+func (c *Client) ExperimentalAffinityGroupMemberInstanceAdd(ctx context.Context, params AffinityGroupMemberInstanceAddParams) (*AffinityGroupMember, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"POST",
+		resolveRelative(c.host, "/v1/affinity-groups/{{.affinity_group}}/members/instance/{{.instance}}"),
+		map[string]string{
+			"affinity_group": string(params.AffinityGroup),
+			"instance":       string(params.Instance),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body AffinityGroupMember
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalAffinityGroupMemberInstanceDelete: Remove member from affinity group
+func (c *Client) ExperimentalAffinityGroupMemberInstanceDelete(ctx context.Context, params AffinityGroupMemberInstanceDeleteParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"DELETE",
+		resolveRelative(c.host, "/v1/affinity-groups/{{.affinity_group}}/members/instance/{{.instance}}"),
+		map[string]string{
+			"affinity_group": string(params.AffinityGroup),
+			"instance":       string(params.Instance),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
 	)
 	if err != nil {
 		return fmt.Errorf("error building request: %v", err)
@@ -3189,6 +4378,89 @@ func (c *Client) InstanceDelete(ctx context.Context, params InstanceDeleteParams
 	return nil
 }
 
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalInstanceAffinityGroupList: List affinity groups containing instance
+//
+// To iterate over all pages, use the `ExperimentalInstanceAffinityGroupListAllPages` method, instead.
+func (c *Client) ExperimentalInstanceAffinityGroupList(ctx context.Context, params InstanceAffinityGroupListParams) (*AffinityGroupResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/instances/{{.instance}}/affinity-groups"),
+		map[string]string{
+			"instance": string(params.Instance),
+		},
+		map[string]string{
+			"limit":      PointerIntToStr(params.Limit),
+			"page_token": params.PageToken,
+			"project":    string(params.Project),
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body AffinityGroupResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalInstanceAffinityGroupListAllPages: List affinity groups containing instance
+//
+// This method is a wrapper around the `ExperimentalInstanceAffinityGroupList` method.
+// This method returns all the pages at once.
+func (c *Client) ExperimentalInstanceAffinityGroupListAllPages(ctx context.Context, params InstanceAffinityGroupListParams) ([]AffinityGroup, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []AffinityGroup
+	params.PageToken = ""
+	params.Limit = NewPointer(100)
+	for {
+		page, err := c.ExperimentalInstanceAffinityGroupList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
+}
+
 // InstanceAntiAffinityGroupList: List anti-affinity groups containing instance
 //
 // To iterate over all pages, use the `InstanceAntiAffinityGroupListAllPages` method, instead.
@@ -3643,6 +4915,192 @@ func (c *Client) InstanceExternalSubnetList(ctx context.Context, params Instance
 
 	// Return the response.
 	return &body, nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalInstanceMulticastGroupList: List multicast groups for an instance
+//
+// To iterate over all pages, use the `ExperimentalInstanceMulticastGroupListAllPages` method, instead.
+func (c *Client) ExperimentalInstanceMulticastGroupList(ctx context.Context, params InstanceMulticastGroupListParams) (*MulticastGroupMemberResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/instances/{{.instance}}/multicast-groups"),
+		map[string]string{
+			"instance": string(params.Instance),
+		},
+		map[string]string{
+			"limit":      PointerIntToStr(params.Limit),
+			"page_token": params.PageToken,
+			"project":    string(params.Project),
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body MulticastGroupMemberResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalInstanceMulticastGroupListAllPages: List multicast groups for an instance
+//
+// This method is a wrapper around the `ExperimentalInstanceMulticastGroupList` method.
+// This method returns all the pages at once.
+func (c *Client) ExperimentalInstanceMulticastGroupListAllPages(ctx context.Context, params InstanceMulticastGroupListParams) ([]MulticastGroupMember, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []MulticastGroupMember
+	params.PageToken = ""
+	params.Limit = NewPointer(100)
+	for {
+		page, err := c.ExperimentalInstanceMulticastGroupList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalInstanceMulticastGroupJoin: Join multicast group by name, IP address, or UUID
+// Groups can be referenced by name, IP address, or UUID. If the group doesn't exist, it's implicitly created with
+// an auto-allocated IP from a multicast pool linked to the caller's silo. When referencing by UUID, the group
+// must already exist.
+//
+// Source IPs are optional for ASM addresses but required for SSM addresses (232.0.0.0/8 for IPv4, ff3x::/32 for
+// IPv6). Duplicate IPs in the request are automatically deduplicated, with a maximum of 64 source IPs allowed.
+func (c *Client) ExperimentalInstanceMulticastGroupJoin(ctx context.Context, params InstanceMulticastGroupJoinParams) (*MulticastGroupMember, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"PUT",
+		resolveRelative(c.host, "/v1/instances/{{.instance}}/multicast-groups/{{.multicast_group}}"),
+		map[string]string{
+			"instance":        string(params.Instance),
+			"multicast_group": string(params.MulticastGroup),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body MulticastGroupMember
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalInstanceMulticastGroupLeave: Leave multicast group by name, IP address, or UUID
+func (c *Client) ExperimentalInstanceMulticastGroupLeave(ctx context.Context, params InstanceMulticastGroupLeaveParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"DELETE",
+		resolveRelative(c.host, "/v1/instances/{{.instance}}/multicast-groups/{{.multicast_group}}"),
+		map[string]string{
+			"instance":        string(params.Instance),
+			"multicast_group": string(params.MulticastGroup),
+		},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // InstanceReboot: Reboot instance
@@ -5215,6 +6673,219 @@ func (c *Client) SiloMetricAllPages(ctx context.Context, params SiloMetricParams
 	return allPages, nil
 }
 
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalMulticastGroupList: List multicast groups
+//
+// To iterate over all pages, use the `ExperimentalMulticastGroupListAllPages` method, instead.
+func (c *Client) ExperimentalMulticastGroupList(ctx context.Context, params MulticastGroupListParams) (*MulticastGroupResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/multicast-groups"),
+		map[string]string{},
+		map[string]string{
+			"limit":      PointerIntToStr(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body MulticastGroupResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalMulticastGroupListAllPages: List multicast groups
+//
+// This method is a wrapper around the `ExperimentalMulticastGroupList` method.
+// This method returns all the pages at once.
+func (c *Client) ExperimentalMulticastGroupListAllPages(ctx context.Context, params MulticastGroupListParams) ([]MulticastGroup, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []MulticastGroup
+	params.PageToken = ""
+	params.Limit = NewPointer(100)
+	for {
+		page, err := c.ExperimentalMulticastGroupList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalMulticastGroupView: Fetch multicast group
+// The group can be specified by name, UUID, or multicast IP address. (e.g., "224.1.2.3" or "ff38::1").
+func (c *Client) ExperimentalMulticastGroupView(ctx context.Context, params MulticastGroupViewParams) (*MulticastGroup, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/multicast-groups/{{.multicast_group}}"),
+		map[string]string{
+			"multicast_group": string(params.MulticastGroup),
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body MulticastGroup
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalMulticastGroupMemberList: List members of multicast group
+// The group can be specified by name, UUID, or multicast IP address.
+//
+// To iterate over all pages, use the `ExperimentalMulticastGroupMemberListAllPages` method, instead.
+func (c *Client) ExperimentalMulticastGroupMemberList(ctx context.Context, params MulticastGroupMemberListParams) (*MulticastGroupMemberResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/multicast-groups/{{.multicast_group}}/members"),
+		map[string]string{
+			"multicast_group": string(params.MulticastGroup),
+		},
+		map[string]string{
+			"limit":      PointerIntToStr(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body MulticastGroupMemberResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalMulticastGroupMemberListAllPages: List members of multicast group
+// The group can be specified by name, UUID, or multicast IP address.
+//
+// This method is a wrapper around the `ExperimentalMulticastGroupMemberList` method.
+// This method returns all the pages at once.
+func (c *Client) ExperimentalMulticastGroupMemberListAllPages(ctx context.Context, params MulticastGroupMemberListParams) ([]MulticastGroupMember, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []MulticastGroupMember
+	params.PageToken = ""
+	params.Limit = NewPointer(100)
+	for {
+		page, err := c.ExperimentalMulticastGroupMemberList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
+}
+
 // InstanceNetworkInterfaceList: List network interfaces
 //
 // To iterate over all pages, use the `InstanceNetworkInterfaceListAllPages` method, instead.
@@ -6730,6 +8401,162 @@ func (c *Client) RackView(ctx context.Context, params RackViewParams) (*Rack, er
 	}
 
 	var body Rack
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalRackMembershipStatus: Retrieve the rack cluster membership status
+// Returns the status for the most recent change, or a specific version if one is specified.
+func (c *Client) ExperimentalRackMembershipStatus(ctx context.Context, params RackMembershipStatusParams) (*RackMembershipStatus, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/hardware/racks/{{.rack_id}}/membership"),
+		map[string]string{
+			"rack_id": params.RackId,
+		},
+		map[string]string{
+			"version": fmt.Sprint(params.Version),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body RackMembershipStatus
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalRackMembershipAbort: Abort the latest rack membership change
+// This operation is synchronous. Upon returning from the API call, a success response indicates that the prior
+// membership change was aborted. An error response indicates that there is no active membership change in
+// progress (previous changes have completed) or that the current membership change could not be aborted.
+func (c *Client) ExperimentalRackMembershipAbort(ctx context.Context, params RackMembershipAbortParams) (*RackMembershipStatus, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"POST",
+		resolveRelative(c.host, "/v1/system/hardware/racks/{{.rack_id}}/membership/abort"),
+		map[string]string{
+			"rack_id": params.RackId,
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body RackMembershipStatus
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalRackMembershipAddSleds: Add new sleds to rack membership
+func (c *Client) ExperimentalRackMembershipAddSleds(ctx context.Context, params RackMembershipAddSledsParams) (*RackMembershipStatus, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"POST",
+		resolveRelative(c.host, "/v1/system/hardware/racks/{{.rack_id}}/membership/add"),
+		map[string]string{
+			"rack_id": params.RackId,
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body RackMembershipStatus
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
@@ -12962,6 +14789,62 @@ func (c *Client) SiloUtilizationView(ctx context.Context, params SiloUtilization
 	}
 
 	var body SiloUtilization
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
+//
+// ExperimentalTimeseriesQuery: Run project-scoped timeseries query
+// Queries are written in OxQL. Project must be specified by name or ID in URL query parameter. The OxQL query
+// will only return timeseries data from the specified project.
+func (c *Client) ExperimentalTimeseriesQuery(ctx context.Context, params TimeseriesQueryParams) (*OxqlQueryResult, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"POST",
+		resolveRelative(c.host, "/v1/timeseries/query"),
+		map[string]string{},
+		map[string]string{
+			"project": string(params.Project),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body OxqlQueryResult
 	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, fmt.Errorf("error decoding response body: %v", err)
 	}
