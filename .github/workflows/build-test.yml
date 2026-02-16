@@ -21,16 +21,3 @@ jobs:
         shell: bash
         run: |
           make lint
-      - name: staticcheck
-        shell: bash
-        run: |
-          make staticcheck
-      - name: vet
-        shell: bash
-        run: |
-          make vet
-      - name: fmt
-        shell: bash
-        run: |
-          make fmt
-
