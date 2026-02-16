@@ -24,6 +24,8 @@ formatters:
     golines:
       max-len: 100
       shorten-comments: true
+  exclusions:
+    generated: disable
 
 run:
   timeout: 5m
