@@ -19,31 +19,109 @@ type DiskIdentifier struct {
 }
 
 
+// diskSourceVariant is implemented by DiskSource variants.
+type diskSourceVariant interface {
+	isDiskSourceVariant()
+}
+
+
 // DiskSourceType is the type definition for a DiskSourceType.
 type DiskSourceType string
 
-// DiskSourceSnapshot is create a disk from a disk snapshot
+// DiskSourceSnapshot is a variant of DiskSource.
 type DiskSourceSnapshot struct {
 	SnapshotId string `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
-	Type DiskSourceType `json:"type,omitempty" yaml:"type,omitempty"`
 }
 
+func (DiskSourceSnapshot) isDiskSourceVariant() {}
 
-// DiskSourceImage is create a disk from a project image
+
+// DiskSourceImage is a variant of DiskSource.
 type DiskSourceImage struct {
 	ImageId string `json:"image_id,omitempty" yaml:"image_id,omitempty"`
-	Type DiskSourceType `json:"type,omitempty" yaml:"type,omitempty"`
 }
+
+func (DiskSourceImage) isDiskSourceVariant() {}
 
 
 // DiskSource is the type definition for a DiskSource.
 type DiskSource struct {
-	// SnapshotId is the type definition for a SnapshotId.
-	SnapshotId string `json:"snapshot_id,omitempty" yaml:"snapshot_id,omitempty"`
-	// Type is the type definition for a Type.
-	Type DiskSourceType `json:"type,omitempty" yaml:"type,omitempty"`
-	// ImageId is the type definition for a ImageId.
-	ImageId string `json:"image_id,omitempty" yaml:"image_id,omitempty"`
+	Value diskSourceVariant 
+}
+
+func (v DiskSource) Type() DiskSourceType {
+	switch v.Value.(type) {
+	case DiskSourceSnapshot, *DiskSourceSnapshot:
+		return DiskSourceTypeSnapshot
+	case DiskSourceImage, *DiskSourceImage:
+		return DiskSourceTypeImage
+	default:
+		return ""
+	}
+}
+
+func (v *DiskSource) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"type"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value diskSourceVariant
+	switch d.Type {
+	case "snapshot":
+		value = &DiskSourceSnapshot{}
+	case "image":
+		value = &DiskSourceImage{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'snapshot' or 'image'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v DiskSource) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["type"] = v.Type()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+
+
+// AsSnapshot attempts to convert the DiskSource to a DiskSourceSnapshot.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v DiskSource) AsSnapshot() (*DiskSourceSnapshot, bool) {
+	val, ok := v.Value.(*DiskSourceSnapshot)
+	return val, ok
+}
+
+// AsImage attempts to convert the DiskSource to a DiskSourceImage.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v DiskSource) AsImage() (*DiskSourceImage, bool) {
+	val, ok := v.Value.(*DiskSourceImage)
+	return val, ok
 }
 
 

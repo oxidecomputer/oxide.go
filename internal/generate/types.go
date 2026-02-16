@@ -92,6 +92,9 @@ type TypeTemplate struct {
 	Union *UnionConfig
 }
 
+// valueFieldName is the Go field name for the interface-typed value in union wrapper structs.
+const valueFieldName = "Value"
+
 // UnionConfig holds configuration for tagged union types
 type UnionConfig struct {
 	// UnionType indicates how variants are distinguished (tagged, format, pattern).
@@ -939,17 +942,13 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 		}
 	}
 
-	// If we have a discriminator and a multi-type property, use interface + variants pattern.
-	// This gives us type safety instead of using `any`.
-	if len(discriminatorKeys) == 1 && len(multiTypeProps) == 1 {
-		var discriminatorKey, valuePropertyName string
+	// If we have a single discriminator field, we're looking at a tagged union.
+	if len(discriminatorKeys) == 1 {
+		var discriminatorKey string
 		for k := range discriminatorKeys {
 			discriminatorKey = k
 		}
-		for k := range multiTypeProps {
-			valuePropertyName = k
-		}
-		return createInterfaceOneOf(s, typeName, discriminatorKey, valuePropertyName)
+		return createInterfaceOneOf(s, typeName, discriminatorKey)
 	}
 
 	// Otherwise, use flat struct pattern.
@@ -961,7 +960,7 @@ func createOneOf(s *openapi3.Schema, name, typeName string) ([]TypeTemplate, []E
 // with a single field of the interface type.
 func createInterfaceOneOf(
 	s *openapi3.Schema,
-	typeName, discriminatorKey, valuePropertyName string,
+	typeName, discriminatorKey string,
 ) ([]TypeTemplate, []EnumTemplate) {
 	enumTpls := make([]EnumTemplate, 0)
 	typeTpls := make([]TypeTemplate, 0)
@@ -1007,33 +1006,39 @@ func createInterfaceOneOf(
 			TypeName:           variantTypeName,
 		})
 
-		// Find the value property in this variant. `ok` is false for "unit" variants
-		// that carry no data: e.g., RouteTarget's "drop" variant is just {"type": "drop"}.
-		valueRef, ok := variantRef.Value.Properties[valuePropertyName]
-
+		// Build fields from all non-discriminator properties.
 		var fields []TypeField
-		if ok {
-			valueType := convertToValidGoType(valuePropertyName, typeName, valueRef)
+		for _, propName := range sortedKeys(variantRef.Value.Properties) {
+			if propName == discriminatorKey {
+				continue
+			}
+			propRef := variantRef.Value.Properties[propName]
+			propType := convertToValidGoType(propName, variantTypeName, propRef)
 
-			// If the value is an inline object (not a $ref), generate its type.
-			if valueRef.Ref == "" && valueRef.Value != nil && valueRef.Value.Type != nil &&
-				valueRef.Value.Type.Is("object") {
-				inlineTypeName := typeName + strcase.ToCamel(valuePropertyName)
-				tt, et := populateTypeTemplates(inlineTypeName, valueRef.Value, "")
+			// Add types for inline fields.
+			if isLocalEnum(propRef) {
+				inlineTypeName := variantTypeName + strcase.ToCamel(propName)
+				tt, et := populateTypeTemplates(inlineTypeName, propRef.Value, "")
+				typeTpls = append(typeTpls, tt...)
+				enumTpls = append(enumTpls, et...)
+				propType = inlineTypeName
+			}
+
+			if isLocalObject(propRef) {
+				inlineTypeName := variantTypeName + strcase.ToCamel(propName)
+				tt, et := populateTypeTemplates(inlineTypeName, propRef.Value, "")
 				typeTpls = append(typeTpls, tt...)
 				enumTpls = append(enumTpls, et...)
 			}
 
-			isRequired := slices.Contains(variantRef.Value.Required, valuePropertyName)
-			fields = []TypeField{
-				{
-					Name:       strcase.ToCamel(valuePropertyName),
-					Type:       valueType,
-					MarshalKey: valuePropertyName,
-					Schema:     valueRef,
-					Required:   isRequired,
-				},
-			}
+			isRequired := slices.Contains(variantRef.Value.Required, propName)
+			fields = append(fields, TypeField{
+				Name:       strcase.ToCamel(propName),
+				Type:       propType,
+				MarshalKey: propName,
+				Schema:     propRef,
+				Required:   isRequired,
+			})
 		}
 
 		variantTpl := TypeTemplate{
@@ -1050,7 +1055,7 @@ func createInterfaceOneOf(
 	// MarshalKey is omitted because the wrapper has custom marshal/unmarshal methods.
 	wrapperFields := []TypeField{
 		{
-			Name: strcase.ToCamel(valuePropertyName),
+			Name: valueFieldName,
 			Type: interfaceName,
 		},
 	}
@@ -1065,8 +1070,7 @@ func createInterfaceOneOf(
 			Discriminator:       discriminatorKey,
 			DiscriminatorMethod: strcase.ToCamel(discriminatorKey),
 			DiscriminatorType:   discriminatorType,
-			ValueField:          valuePropertyName,
-			ValueFieldName:      strcase.ToCamel(valuePropertyName),
+			ValueFieldName:      valueFieldName,
 			VariantType:         interfaceName,
 			Variants:            variants,
 		},
@@ -1335,7 +1339,7 @@ func createUntaggedOneOf(
 	// MarshalKey is omitted because the wrapper has custom marshal/unmarshal methods.
 	wrapperFields := []TypeField{
 		{
-			Name: "Value",
+			Name: valueFieldName,
 			Type: interfaceName,
 		},
 	}
@@ -1347,7 +1351,7 @@ func createUntaggedOneOf(
 		Fields:      wrapperFields,
 		Union: &UnionConfig{
 			UnionType:      analysis.Type,
-			ValueFieldName: "Value",
+			ValueFieldName: valueFieldName,
 			VariantType:    interfaceName,
 			Variants:       variants,
 		},

@@ -425,42 +425,62 @@ func Test_createOneOf(t *testing.T) {
 			},
 			typeName: "ImageSource",
 			wantTypes: []TypeTemplate{
+				// Interface for variant types
+				{
+					Description:   "// imageSourceVariant is implemented by ImageSource variants.",
+					Name:          "imageSourceVariant",
+					Type:          "interface",
+					VariantMarker: "isImageSourceVariant",
+				},
 				{
 					Description: "// ImageSourceType is the type definition for a ImageSourceType.",
 					Name:        "ImageSourceType",
 					Type:        "string",
 				},
 				{
-					Description: "// ImageSourceUrl is the type definition for a ImageSourceUrl.\n//\n// Required fields:\n// - Type\n// - Url",
+					Description: "// ImageSourceUrl is a variant of ImageSource.",
 					Name:        "ImageSourceUrl",
 					Type:        "struct",
 					Fields: []TypeField{
-						{Name: "Type", Type: "ImageSourceType", MarshalKey: "type", Required: true},
 						{Name: "Url", Type: "string", MarshalKey: "url", Required: true},
 					},
+					VariantMarker: "isImageSourceVariant",
 				},
 				{
-					Description: "// ImageSourceSnapshot is the type definition for a ImageSourceSnapshot.\n//\n// Required fields:\n// - Id\n// - Type",
+					Description: "// ImageSourceSnapshot is a variant of ImageSource.",
 					Name:        "ImageSourceSnapshot",
 					Type:        "struct",
 					Fields: []TypeField{
 						{Name: "Id", Type: "string", MarshalKey: "id", Required: true},
-						{Name: "Type", Type: "ImageSourceType", MarshalKey: "type", Required: true},
 					},
+					VariantMarker: "isImageSourceVariant",
 				},
 				{
 					Description: "// ImageSource is the source of the underlying image.",
 					Name:        "ImageSource",
 					Type:        "struct",
 					Fields: []TypeField{
-						{
-							Name:                "Type",
-							Type:                "ImageSourceType",
-							MarshalKey:          "type",
-							FallbackDescription: true,
+						{Name: "Value", Type: "imageSourceVariant"},
+					},
+					Union: &UnionConfig{
+						UnionType:           UnionTagged,
+						Discriminator:       "type",
+						DiscriminatorMethod: "Type",
+						DiscriminatorType:   "ImageSourceType",
+						ValueFieldName:      "Value",
+						VariantType:         "imageSourceVariant",
+						Variants: []Variant{
+							{
+								DiscriminatorValue: "url",
+								TypeSuffix:         "Url",
+								TypeName:           "ImageSourceUrl",
+							},
+							{
+								DiscriminatorValue: "snapshot",
+								TypeSuffix:         "Snapshot",
+								TypeName:           "ImageSourceSnapshot",
+							},
 						},
-						{Name: "Url", Type: "string", MarshalKey: "url", FallbackDescription: true},
-						{Name: "Id", Type: "string", MarshalKey: "id", FallbackDescription: true},
 					},
 				},
 			},
@@ -562,7 +582,6 @@ func Test_createOneOf(t *testing.T) {
 						Discriminator:       "type",
 						DiscriminatorMethod: "Type",
 						DiscriminatorType:   "IntOrStringType",
-						ValueField:          "value",
 						ValueFieldName:      "Value",
 						VariantType:         "intOrStringVariant",
 						Variants: []Variant{
