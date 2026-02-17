@@ -10,7 +10,7 @@ package oxide
 // populate the user agent for [Client]. It is purposefully unexported to
 // prevent external users from reading it. The value of this comes from the
 // VERSION file in the root of this repository.
-const sdkVersion = "v0.8.0"
+const sdkVersion = "v0.9.0"
 
 // openAPIVersion is the OpenAPI specification version the Oxide Go SDK was
 // generated from. This is used to dynamically populate the 'API-Version' header
