@@ -21,3 +21,11 @@ jobs:
         shell: bash
         run: |
           make lint
+      - name: generate
+        shell: bash
+        run: |
+          make generate
+          if ! git diff --exit-code; then
+            echo 'Generated files are out of date. Run `make generate` and commit the result.'
+            exit 1
+          fi
