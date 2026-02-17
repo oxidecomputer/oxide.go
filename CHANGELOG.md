@@ -1,3 +1,64 @@
+# v0.8.0
+
+Generated from Oxide API version
+[2026021301.0.0](https://github.com/oxidecomputer/omicron/blob/rel/v18/rc1/openapi/nexus/nexus-2026021301.0.0-6e51ab.json)
+
+### Breaking changes
+
+- **Improve handling of union types.:** Use typed structs instead of `any` values to represent `oneOf` union types. [#359](https://github.com/oxidecomputer/oxide.go/pull/359) [#368](https://github.com/oxidecomputer/oxide.go/pull/368) [#376](https://github.com/oxidecomputer/oxide.go/pull/376)
+- **Use functional options to construct clients.:** The `oxide.NewClient()` function now takes functional options instead of a configuration struct. [#356](https://github.com/oxidecomputer/oxide.go/pull/356)
+
+### New features
+
+- **Add option to disable TLS certificate verification.:** Allow the Go SDK client to skip TLS certificate verification. This is insecure and should only be used for testing or in controlled environments. [#356](https://github.com/oxidecomputer/oxide.go/pull/356)
+
+### Enhancements
+
+- **Expose experimental methods.:** Add methods to allow calling API endpoints that are marked as experimental. Please note that experimental endpoits are not stable and may be changed or removed without notice. [#379](https://github.com/oxidecomputer/oxide.go/pull/379)
+- **Add API version header.:** Set the `API-Version` header when making API requests. [#345](https://github.com/oxidecomputer/oxide.go/pull/345)
+
+### Bug fixes
+
+- **:**
+
+### List of commits
+
+- [03aeeb2](https://github.com/oxidecomputer/oxide.go/commit/03aeeb2) changelog: add entries for v0.8.0 (#383)
+- [b9d21a9](https://github.com/oxidecomputer/oxide.go/commit/b9d21a9) misc: update release checklist issue template (#384)
+- [65fcc66](https://github.com/oxidecomputer/oxide.go/commit/65fcc66) Check generated code is current from ci. (#382)
+- [3a77496](https://github.com/oxidecomputer/oxide.go/commit/3a77496) misc: bump omicron to `rel/v18/rc1` (#381)
+- [f6fa9ab](https://github.com/oxidecomputer/oxide.go/commit/f6fa9ab) Drop redundant linters. (#378)
+- [905343c](https://github.com/oxidecomputer/oxide.go/commit/905343c) Expose experimental methods. (#379)
+- [30fa749](https://github.com/oxidecomputer/oxide.go/commit/30fa749) Drop flat structs for complex union types. (#376)
+- [b1a40f9](https://github.com/oxidecomputer/oxide.go/commit/b1a40f9) Bump omicron version to aa12b67b. (#380)
+- [10f1e97](https://github.com/oxidecomputer/oxide.go/commit/10f1e97) misc: use a separate `tools/go.mod` for `go tool` (#377)
+- [44dc2f2](https://github.com/oxidecomputer/oxide.go/commit/44dc2f2) misc: bump omicron to `183a261` (#375)
+- [1401cd9](https://github.com/oxidecomputer/oxide.go/commit/1401cd9) misc: bump omicron to 339fc71f (#374)
+- [06dacbe](https://github.com/oxidecomputer/oxide.go/commit/06dacbe) Bump omicron to 524f11e. (#373)
+- [b20dca0](https://github.com/oxidecomputer/oxide.go/commit/b20dca0) Generate proper types for untagged unions. (#368)
+- [b8910e7](https://github.com/oxidecomputer/oxide.go/commit/b8910e7) chore: enable `unparam` linter and fix warnings. (#370)
+- [34e197a](https://github.com/oxidecomputer/oxide.go/commit/34e197a) chore: clarify docstrings in oxide/lib.go. (#371)
+- [381d09c](https://github.com/oxidecomputer/oxide.go/commit/381d09c) fix: serialize value and pointer literal enum variants the same way (#369)
+- [e1ba7ef](https://github.com/oxidecomputer/oxide.go/commit/e1ba7ef) misc: bump omicron (#366)
+- [a6e4781](https://github.com/oxidecomputer/oxide.go/commit/a6e4781) Use `go tool` rather than building/installing binaries. (#365)
+- [ded8773](https://github.com/oxidecomputer/oxide.go/commit/ded8773) Add more helpers for oneOf types with string-like variants. (#364)
+- [6cab334](https://github.com/oxidecomputer/oxide.go/commit/6cab334) Model single-discriminator, single-value enums as interfaces. (#359)
+- [2f67dbc](https://github.com/oxidecomputer/oxide.go/commit/2f67dbc) Add golden tests. (#362)
+- [199901c](https://github.com/oxidecomputer/oxide.go/commit/199901c) Bump golangci. (#363)
+- [43715d5](https://github.com/oxidecomputer/oxide.go/commit/43715d5) Add initial agents/claude tooling. (#360)
+- [e4cdc9e](https://github.com/oxidecomputer/oxide.go/commit/e4cdc9e) deps: bump omicron version (#361)
+- [4c9921f](https://github.com/oxidecomputer/oxide.go/commit/4c9921f) feat: refactor client construction to use functional options (#356)
+- [43d0dfc](https://github.com/oxidecomputer/oxide.go/commit/43d0dfc) feat: bump omicron version (#355)
+- [71fff1f](https://github.com/oxidecomputer/oxide.go/commit/71fff1f) Refactor and test enum type creation (#347)
+- [d418991](https://github.com/oxidecomputer/oxide.go/commit/d418991) Refactor: consolidate field logic in struct. (#349)
+- [04fa236](https://github.com/oxidecomputer/oxide.go/commit/04fa236) fix: support versioned nexus openapi specification files (#354)
+- [97a2a75](https://github.com/oxidecomputer/oxide.go/commit/97a2a75) Teach struct types to render themselves to go code. (#348)
+- [24ae859](https://github.com/oxidecomputer/oxide.go/commit/24ae859) docs: add authentication section to readme. (#346)
+- [00a7448](https://github.com/oxidecomputer/oxide.go/commit/00a7448) feat: support nexus api-version header (#345)
+- [5196849](https://github.com/oxidecomputer/oxide.go/commit/5196849) build(deps): bump actions/checkout from 5 to 6 (#344)
+- [aed681a](https://github.com/oxidecomputer/oxide.go/commit/aed681a) Handle nullable array items. (#341)
+- [1866144](https://github.com/oxidecomputer/oxide.go/commit/1866144) chore: bump version (#337)
+
 # v0.7.0 (2025/Nov/11)
 
 Generated from Oxide API version
