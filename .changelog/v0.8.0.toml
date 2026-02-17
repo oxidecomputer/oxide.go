@@ -1,15 +1,23 @@
 [[breaking]]
-title = ""
-description = ""
+title = "Improve handling of union types."
+description = "Use typed structs instead of `any` values to represent `oneOf` union types. [#359](https://github.com/oxidecomputer/oxide.go/pull/359) [#368](https://github.com/oxidecomputer/oxide.go/pull/368) [#376](https://github.com/oxidecomputer/oxide.go/pull/376)"
+
+[[breaking]]
+title = "Use functional options to construct clients."
+description = "The `oxide.NewClient()` function now takes functional options instead of a configuration struct. [#356](https://github.com/oxidecomputer/oxide.go/pull/356)"
 
 [[features]]
-title = ""
-description = ""
+title = "Add option to disable TLS certificate verification."
+description = "Allow the Go SDK client to skip TLS certificate verification. This is insecure and should only be used for testing or in controlled environments. [#356](https://github.com/oxidecomputer/oxide.go/pull/356)"
 
 [[bugs]]
 title = ""
 description = ""
 
 [[enhancements]]
-title = ""
-description = ""
+title = "Expose experimental methods."
+description = "Add methods to allow calling API endpoints that are marked as experimental. Please note that experimental endpoits are not stable and may be changed or removed without notice. [#379](https://github.com/oxidecomputer/oxide.go/pull/379)"
+
+[[enhancements]]
+title = "Add API version header."
+description = "Set the `API-Version` header when making API requests. [#345](https://github.com/oxidecomputer/oxide.go/pull/345)"
