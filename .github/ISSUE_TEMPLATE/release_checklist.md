@@ -1,29 +1,27 @@
 ---
-name: Release checklist
-about: Steps to take when releasing a new version (only for Oxide release team).
-labels: release
+name: Release Checklist
+about: Tracking issue for releasing a new version of the Go SDK.
+title: Release for RXX
 ---
 
-## Release checklist
+It's time to release a new version of the Go SDK. Use the checklist below to
+perform the release.
 
-<!--
- Please follow all of these steps in the order below.
- After completing each task put an `x` in the corresponding box,
- and paste the link to the relevant PR.
--->
+## Release Checklist
 
-- [ ] Make sure the [VERSION](https://github.com/oxidecomputer/oxide.go/blob/main/VERSION) file has
-      the new version you want to release.
-- [ ] Make sure the changelog file in the `.changelog/` directory is set to the new version you want
-      to release.
-- [ ] Make sure all examples and docs reference the new version.
-- [ ] Make sure you've pulled the latest tag on main, and generate changelog by running
-      `make changelog`. Add the date of the release to the title, and update associated Oxide API
+- [ ] Ensure the `VERSION` file has the version to be released.
+- [ ] Ensure the `.changelog/<VERSION>.toml` file has the changelog entries for
+      the release.
+- [ ] Update the examples and documentation to reference the new version.
+- [ ] Fetch the latest tags from remote and generate the changelog using `make
+      changelog`. Update the generated file with the release date and associated
+      Oxide API version.
+- [ ] Create the release tag using `make tag`.
+- [ ] Update the GitHub release description with the release content generated
+      from `make changelog`.
+- [ ] Create and push a release branch from the commit of the release tag (e.g.,
+      `X.Y` for release `vX.Y.Z`).
+- [ ] Update the `VERSION` file with the next development version and run `make
+      generate` to update generated files.
+- [ ] Create a new `.changelog/<VERSION>.toml` file with the next development
       version.
-- [ ] Release the new version by running `make tag`.
-- [ ] Update GitHub release description with release notes generated from `make changelog`.
-- [ ] Create a release branch from the commit of the release tag.
-- [ ] Bump the version in [VERSION](https://github.com/oxidecomputer/oxide.go/blob/main/VERSION) and
-      run `make generate` to update the generated files.
-- [ ] Create a new file for the next release in
-      [.changelog/](https://github.com/oxidecomputer/oxide.go/blob/main/.changelog/).
