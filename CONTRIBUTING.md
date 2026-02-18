@@ -17,19 +17,10 @@ $ make all
 ## Releasing a new SDK version
 
 The release process requires you to sign the release tag. Before starting the
-release, ensure you have Git configured with a signing key.
-
-Git 2.34 or later can use SSH keys for signing, which can be easier to
-configure then GPG. Here is an example of what to add to your `.gitconfig`
-file.
-
-```
-[user]
-signingkey = <PATH TO SSH PUBLIC KEY>
-
-[gpg]
-format = ssh
-```
+release process, ensure you have Git and GitHub configured with a GPG key to
+sign commits and tags. Refer to
+[GPG commit signature verification](https://docs.github.com/en/authentication/managing-commit-signature-verification/about-commit-signature-verification#gpg-commit-signature-verification)
+for more information.
 
 - [ ] Create a release branch
   ```
