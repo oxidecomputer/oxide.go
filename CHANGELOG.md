@@ -1,4 +1,4 @@
-# v0.8.0
+# v0.8.0 (2026/Feb/17)
 
 Generated from Oxide API version
 [2026021301.0.0](https://github.com/oxidecomputer/omicron/blob/rel/v18/rc1/openapi/nexus/nexus-2026021301.0.0-6e51ab.json)
