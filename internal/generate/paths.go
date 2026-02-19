@@ -426,10 +426,7 @@ func buildPathOrQueryParams(
 			case "*int":
 				pathParams = append(pathParams, fmt.Sprintf("%q: PointerIntToStr(%s),", name, n))
 			case "*time.Time":
-				pathParams = append(
-					pathParams,
-					fmt.Sprintf("%q: %s.Format(time.RFC3339),", name, n),
-				)
+				pathParams = append(pathParams, fmt.Sprintf("%q: PointerTimeToStr(%s),", name, n))
 			default:
 				if p.Schema.Value != nil && p.Schema.Value.Type.Is("integer") {
 					pathParams = append(pathParams, fmt.Sprintf("%q: fmt.Sprint(%s),", name, n))

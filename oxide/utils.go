@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 	"text/template"
+	"time"
 )
 
 // NewPointer returns a pointer to a given value.
@@ -22,6 +23,16 @@ func PointerIntToStr(i *int) string {
 	}
 
 	return strconv.Itoa(*i)
+}
+
+// PointerTimeToStr converts a *time.Time into an RFC3339 string.
+// If nil, an empty string is returned.
+func PointerTimeToStr(t *time.Time) string {
+	if t == nil {
+		return ""
+	}
+
+	return t.Format(time.RFC3339)
 }
 
 // resolveRelative combines a url base with a relative path.
