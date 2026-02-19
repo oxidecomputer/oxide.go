@@ -13,7 +13,6 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
-	"time"
 )
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
@@ -7024,12 +7023,12 @@ func (c *Client) SiloMetric(
 			"metric_name": string(params.MetricName),
 		},
 		map[string]string{
-			"end_time":   params.EndTime.Format(time.RFC3339),
+			"end_time":   PointerTimeToStr(params.EndTime),
 			"limit":      PointerIntToStr(params.Limit),
 			"order":      string(params.Order),
 			"page_token": params.PageToken,
 			"project":    string(params.Project),
-			"start_time": params.StartTime.Format(time.RFC3339),
+			"start_time": PointerTimeToStr(params.StartTime),
 		},
 	)
 	if err != nil {
@@ -8506,11 +8505,11 @@ func (c *Client) AuditLogList(
 		resolveRelative(c.host, "/v1/system/audit-log"),
 		map[string]string{},
 		map[string]string{
-			"end_time":   params.EndTime.Format(time.RFC3339),
+			"end_time":   PointerTimeToStr(params.EndTime),
 			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
 			"sort_by":    string(params.SortBy),
-			"start_time": params.StartTime.Format(time.RFC3339),
+			"start_time": PointerTimeToStr(params.StartTime),
 		},
 	)
 	if err != nil {
@@ -11350,12 +11349,12 @@ func (c *Client) SystemMetric(
 			"metric_name": string(params.MetricName),
 		},
 		map[string]string{
-			"end_time":   params.EndTime.Format(time.RFC3339),
+			"end_time":   PointerTimeToStr(params.EndTime),
 			"limit":      PointerIntToStr(params.Limit),
 			"order":      string(params.Order),
 			"page_token": params.PageToken,
 			"silo":       string(params.Silo),
-			"start_time": params.StartTime.Format(time.RFC3339),
+			"start_time": PointerTimeToStr(params.StartTime),
 		},
 	)
 	if err != nil {
