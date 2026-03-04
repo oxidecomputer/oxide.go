@@ -151,6 +151,11 @@ func schemaValueToGoType(schemaValue *openapi3.Schema, property string) string {
 	}
 
 	if schemaValue.Type.Is("integer") {
+		// uint64 values can overflow Go's int type, so we use *uint64 for
+		// properties with format "uint64".
+		if schemaValue.Format == "uint64" {
+			return "*uint64"
+		}
 		// It is necessary to use pointers for integer types as we need
 		// to differentiate between an empty value and a 0.
 		return "*int"

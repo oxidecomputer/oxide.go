@@ -25,6 +25,16 @@ func PointerIntToStr(i *int) string {
 	return strconv.Itoa(*i)
 }
 
+// PointerUint64ToStr converts a *uint64 into a string.
+// If nil, an empty string is returned.
+func PointerUint64ToStr(i *uint64) string {
+	if i == nil {
+		return ""
+	}
+
+	return strconv.FormatUint(*i, 10)
+}
+
 // PointerTimeToStr converts a *time.Time into an RFC3339 string.
 // If nil, an empty string is returned.
 func PointerTimeToStr(t *time.Time) string {
