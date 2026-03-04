@@ -425,6 +425,8 @@ func buildPathOrQueryParams(
 				)
 			case "*int":
 				pathParams = append(pathParams, fmt.Sprintf("%q: PointerIntToStr(%s),", name, n))
+			case "*uint64":
+				pathParams = append(pathParams, fmt.Sprintf("%q: PointerUint64ToStr(%s),", name, n))
 			case "*time.Time":
 				pathParams = append(pathParams, fmt.Sprintf("%q: PointerTimeToStr(%s),", name, n))
 			default:

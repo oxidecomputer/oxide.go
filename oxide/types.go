@@ -1448,7 +1448,7 @@ type BfdSessionEnable struct {
 	// RequiredRx is the minimum interval, in microseconds, between received BFD Control packets
 	// that this system
 	// requires
-	RequiredRx *int `json:"required_rx" yaml:"required_rx"`
+	RequiredRx *uint64 `json:"required_rx" yaml:"required_rx"`
 	// Switch is the switch to enable this session on. Must be `switch0` or `switch1`.
 	Switch Name `json:"switch" yaml:"switch"`
 }
@@ -1471,7 +1471,7 @@ type BfdStatus struct {
 	// Mode is bFD connection mode.
 	Mode       BfdMode  `json:"mode"        yaml:"mode"`
 	Peer       string   `json:"peer"        yaml:"peer"`
-	RequiredRx *int     `json:"required_rx" yaml:"required_rx"`
+	RequiredRx *uint64  `json:"required_rx" yaml:"required_rx"`
 	State      BfdState `json:"state"       yaml:"state"`
 	// Switch is names must begin with a lower case ASCII letter, be composed exclusively of
 	// lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot
@@ -1754,7 +1754,7 @@ type BgpPeerStatus struct {
 	// State is state of the peer.
 	State BgpPeerState `json:"state" yaml:"state"`
 	// StateDurationMillis is time of last state change.
-	StateDurationMillis *int `json:"state_duration_millis" yaml:"state_duration_millis"`
+	StateDurationMillis *uint64 `json:"state_duration_millis" yaml:"state_duration_millis"`
 	// Switch is switch with the peer session.
 	Switch SwitchLocation `json:"switch" yaml:"switch"`
 }
@@ -2777,22 +2777,22 @@ type BinRangeuint64Type string
 
 // BinRangeuint64RangeTo is a variant of BinRangeuint64.
 type BinRangeuint64RangeTo struct {
-	End *int `json:"end" yaml:"end"`
+	End *uint64 `json:"end" yaml:"end"`
 }
 
 func (BinRangeuint64RangeTo) isBinRangeuint64Variant() {}
 
 // BinRangeuint64Range is a variant of BinRangeuint64.
 type BinRangeuint64Range struct {
-	End   *int `json:"end"   yaml:"end"`
-	Start *int `json:"start" yaml:"start"`
+	End   *uint64 `json:"end"   yaml:"end"`
+	Start *uint64 `json:"start" yaml:"start"`
 }
 
 func (BinRangeuint64Range) isBinRangeuint64Variant() {}
 
 // BinRangeuint64RangeFrom is a variant of BinRangeuint64.
 type BinRangeuint64RangeFrom struct {
-	Start *int `json:"start" yaml:"start"`
+	Start *uint64 `json:"start" yaml:"start"`
 }
 
 func (BinRangeuint64RangeFrom) isBinRangeuint64Variant() {}
@@ -3026,7 +3026,7 @@ func (v BinRangeuint8) AsRangeFrom() (*BinRangeuint8RangeFrom, bool) {
 // - Range
 type Bindouble struct {
 	// Count is the total count of samples in this bin.
-	Count *int `json:"count" yaml:"count"`
+	Count *uint64 `json:"count" yaml:"count"`
 	// Range is the range of the support covered by this bin.
 	Range BinRangedouble `json:"range" yaml:"range"`
 }
@@ -3038,7 +3038,7 @@ type Bindouble struct {
 // - Range
 type Binfloat struct {
 	// Count is the total count of samples in this bin.
-	Count *int `json:"count" yaml:"count"`
+	Count *uint64 `json:"count" yaml:"count"`
 	// Range is the range of the support covered by this bin.
 	Range BinRangefloat `json:"range" yaml:"range"`
 }
@@ -3050,7 +3050,7 @@ type Binfloat struct {
 // - Range
 type Binint16 struct {
 	// Count is the total count of samples in this bin.
-	Count *int `json:"count" yaml:"count"`
+	Count *uint64 `json:"count" yaml:"count"`
 	// Range is the range of the support covered by this bin.
 	Range BinRangeint16 `json:"range" yaml:"range"`
 }
@@ -3062,7 +3062,7 @@ type Binint16 struct {
 // - Range
 type Binint32 struct {
 	// Count is the total count of samples in this bin.
-	Count *int `json:"count" yaml:"count"`
+	Count *uint64 `json:"count" yaml:"count"`
 	// Range is the range of the support covered by this bin.
 	Range BinRangeint32 `json:"range" yaml:"range"`
 }
@@ -3074,7 +3074,7 @@ type Binint32 struct {
 // - Range
 type Binint64 struct {
 	// Count is the total count of samples in this bin.
-	Count *int `json:"count" yaml:"count"`
+	Count *uint64 `json:"count" yaml:"count"`
 	// Range is the range of the support covered by this bin.
 	Range BinRangeint64 `json:"range" yaml:"range"`
 }
@@ -3086,7 +3086,7 @@ type Binint64 struct {
 // - Range
 type Binint8 struct {
 	// Count is the total count of samples in this bin.
-	Count *int `json:"count" yaml:"count"`
+	Count *uint64 `json:"count" yaml:"count"`
 	// Range is the range of the support covered by this bin.
 	Range BinRangeint8 `json:"range" yaml:"range"`
 }
@@ -3098,7 +3098,7 @@ type Binint8 struct {
 // - Range
 type Binuint16 struct {
 	// Count is the total count of samples in this bin.
-	Count *int `json:"count" yaml:"count"`
+	Count *uint64 `json:"count" yaml:"count"`
 	// Range is the range of the support covered by this bin.
 	Range BinRangeuint16 `json:"range" yaml:"range"`
 }
@@ -3110,7 +3110,7 @@ type Binuint16 struct {
 // - Range
 type Binuint32 struct {
 	// Count is the total count of samples in this bin.
-	Count *int `json:"count" yaml:"count"`
+	Count *uint64 `json:"count" yaml:"count"`
 	// Range is the range of the support covered by this bin.
 	Range BinRangeuint32 `json:"range" yaml:"range"`
 }
@@ -3122,7 +3122,7 @@ type Binuint32 struct {
 // - Range
 type Binuint64 struct {
 	// Count is the total count of samples in this bin.
-	Count *int `json:"count" yaml:"count"`
+	Count *uint64 `json:"count" yaml:"count"`
 	// Range is the range of the support covered by this bin.
 	Range BinRangeuint64 `json:"range" yaml:"range"`
 }
@@ -3134,7 +3134,7 @@ type Binuint64 struct {
 // - Range
 type Binuint8 struct {
 	// Count is the total count of samples in this bin.
-	Count *int `json:"count" yaml:"count"`
+	Count *uint64 `json:"count" yaml:"count"`
 	// Range is the range of the support covered by this bin.
 	Range BinRangeuint8 `json:"range" yaml:"range"`
 }
@@ -3267,7 +3267,7 @@ type Cumulativeint64 struct {
 // - Value
 type Cumulativeuint64 struct {
 	StartTime *time.Time `json:"start_time" yaml:"start_time"`
-	Value     *int       `json:"value"      yaml:"value"`
+	Value     *uint64    `json:"value"      yaml:"value"`
 }
 
 // CurrentUser is info about the current user
@@ -3363,7 +3363,7 @@ func (DatumI64) isDatumVariant() {}
 
 // DatumU64 is a variant of Datum.
 type DatumU64 struct {
-	Datum *int `json:"datum" yaml:"datum"`
+	Datum *uint64 `json:"datum" yaml:"datum"`
 }
 
 func (DatumU64) isDatumVariant() {}
@@ -4733,7 +4733,7 @@ type DiskType string
 // - SumOfSamples
 type Distributiondouble struct {
 	Bins         []float64 `json:"bins"           yaml:"bins"`
-	Counts       []int     `json:"counts"         yaml:"counts"`
+	Counts       []uint64  `json:"counts"         yaml:"counts"`
 	Max          float64   `json:"max,omitempty"  yaml:"max,omitempty"`
 	Min          float64   `json:"min,omitempty"  yaml:"min,omitempty"`
 	P50          float64   `json:"p50,omitempty"  yaml:"p50,omitempty"`
@@ -4757,15 +4757,15 @@ type Distributiondouble struct {
 // - SquaredMean
 // - SumOfSamples
 type Distributionint64 struct {
-	Bins         []int   `json:"bins"           yaml:"bins"`
-	Counts       []int   `json:"counts"         yaml:"counts"`
-	Max          *int    `json:"max,omitempty"  yaml:"max,omitempty"`
-	Min          *int    `json:"min,omitempty"  yaml:"min,omitempty"`
-	P50          float64 `json:"p50,omitempty"  yaml:"p50,omitempty"`
-	P90          float64 `json:"p90,omitempty"  yaml:"p90,omitempty"`
-	P99          float64 `json:"p99,omitempty"  yaml:"p99,omitempty"`
-	SquaredMean  float64 `json:"squared_mean"   yaml:"squared_mean"`
-	SumOfSamples *int    `json:"sum_of_samples" yaml:"sum_of_samples"`
+	Bins         []int    `json:"bins"           yaml:"bins"`
+	Counts       []uint64 `json:"counts"         yaml:"counts"`
+	Max          *int     `json:"max,omitempty"  yaml:"max,omitempty"`
+	Min          *int     `json:"min,omitempty"  yaml:"min,omitempty"`
+	P50          float64  `json:"p50,omitempty"  yaml:"p50,omitempty"`
+	P90          float64  `json:"p90,omitempty"  yaml:"p90,omitempty"`
+	P99          float64  `json:"p99,omitempty"  yaml:"p99,omitempty"`
+	SquaredMean  float64  `json:"squared_mean"   yaml:"squared_mean"`
+	SumOfSamples *int     `json:"sum_of_samples" yaml:"sum_of_samples"`
 }
 
 // EphemeralIpCreate is parameters for creating an ephemeral IP address for an instance.
@@ -5321,7 +5321,7 @@ func (FieldValueI64) isFieldValueVariant() {}
 
 // FieldValueU64 is a variant of FieldValue.
 type FieldValueU64 struct {
-	Value *int `json:"value" yaml:"value"`
+	Value *uint64 `json:"value" yaml:"value"`
 }
 
 func (FieldValueU64) isFieldValueVariant() {}
@@ -5717,7 +5717,7 @@ type Histogramdouble struct {
 	// Min is the minimum value of all samples in the histogram.
 	Min float64 `json:"min" yaml:"min"`
 	// NSamples is the total number of samples in the histogram.
-	NSamples *int `json:"n_samples" yaml:"n_samples"`
+	NSamples *uint64 `json:"n_samples" yaml:"n_samples"`
 	// P50 is p50 Quantile
 	P50 Quantile `json:"p50" yaml:"p50"`
 	// P90 is p95 Quantile
@@ -5765,7 +5765,7 @@ type Histogramfloat struct {
 	// Min is the minimum value of all samples in the histogram.
 	Min float64 `json:"min" yaml:"min"`
 	// NSamples is the total number of samples in the histogram.
-	NSamples *int `json:"n_samples" yaml:"n_samples"`
+	NSamples *uint64 `json:"n_samples" yaml:"n_samples"`
 	// P50 is p50 Quantile
 	P50 Quantile `json:"p50" yaml:"p50"`
 	// P90 is p95 Quantile
@@ -5813,7 +5813,7 @@ type Histogramint16 struct {
 	// Min is the minimum value of all samples in the histogram.
 	Min *int `json:"min" yaml:"min"`
 	// NSamples is the total number of samples in the histogram.
-	NSamples *int `json:"n_samples" yaml:"n_samples"`
+	NSamples *uint64 `json:"n_samples" yaml:"n_samples"`
 	// P50 is p50 Quantile
 	P50 Quantile `json:"p50" yaml:"p50"`
 	// P90 is p95 Quantile
@@ -5861,7 +5861,7 @@ type Histogramint32 struct {
 	// Min is the minimum value of all samples in the histogram.
 	Min *int `json:"min" yaml:"min"`
 	// NSamples is the total number of samples in the histogram.
-	NSamples *int `json:"n_samples" yaml:"n_samples"`
+	NSamples *uint64 `json:"n_samples" yaml:"n_samples"`
 	// P50 is p50 Quantile
 	P50 Quantile `json:"p50" yaml:"p50"`
 	// P90 is p95 Quantile
@@ -5909,7 +5909,7 @@ type Histogramint64 struct {
 	// Min is the minimum value of all samples in the histogram.
 	Min *int `json:"min" yaml:"min"`
 	// NSamples is the total number of samples in the histogram.
-	NSamples *int `json:"n_samples" yaml:"n_samples"`
+	NSamples *uint64 `json:"n_samples" yaml:"n_samples"`
 	// P50 is p50 Quantile
 	P50 Quantile `json:"p50" yaml:"p50"`
 	// P90 is p95 Quantile
@@ -5957,7 +5957,7 @@ type Histogramint8 struct {
 	// Min is the minimum value of all samples in the histogram.
 	Min *int `json:"min" yaml:"min"`
 	// NSamples is the total number of samples in the histogram.
-	NSamples *int `json:"n_samples" yaml:"n_samples"`
+	NSamples *uint64 `json:"n_samples" yaml:"n_samples"`
 	// P50 is p50 Quantile
 	P50 Quantile `json:"p50" yaml:"p50"`
 	// P90 is p95 Quantile
@@ -6005,7 +6005,7 @@ type Histogramuint16 struct {
 	// Min is the minimum value of all samples in the histogram.
 	Min *int `json:"min" yaml:"min"`
 	// NSamples is the total number of samples in the histogram.
-	NSamples *int `json:"n_samples" yaml:"n_samples"`
+	NSamples *uint64 `json:"n_samples" yaml:"n_samples"`
 	// P50 is p50 Quantile
 	P50 Quantile `json:"p50" yaml:"p50"`
 	// P90 is p95 Quantile
@@ -6053,7 +6053,7 @@ type Histogramuint32 struct {
 	// Min is the minimum value of all samples in the histogram.
 	Min *int `json:"min" yaml:"min"`
 	// NSamples is the total number of samples in the histogram.
-	NSamples *int `json:"n_samples" yaml:"n_samples"`
+	NSamples *uint64 `json:"n_samples" yaml:"n_samples"`
 	// P50 is p50 Quantile
 	P50 Quantile `json:"p50" yaml:"p50"`
 	// P90 is p95 Quantile
@@ -6097,11 +6097,11 @@ type Histogramuint64 struct {
 	// Bins is the bins of the histogram.
 	Bins []Binuint64 `json:"bins" yaml:"bins"`
 	// Max is the maximum value of all samples in the histogram.
-	Max *int `json:"max" yaml:"max"`
+	Max *uint64 `json:"max" yaml:"max"`
 	// Min is the minimum value of all samples in the histogram.
-	Min *int `json:"min" yaml:"min"`
+	Min *uint64 `json:"min" yaml:"min"`
 	// NSamples is the total number of samples in the histogram.
-	NSamples *int `json:"n_samples" yaml:"n_samples"`
+	NSamples *uint64 `json:"n_samples" yaml:"n_samples"`
 	// P50 is p50 Quantile
 	P50 Quantile `json:"p50" yaml:"p50"`
 	// P90 is p95 Quantile
@@ -6149,7 +6149,7 @@ type Histogramuint8 struct {
 	// Min is the minimum value of all samples in the histogram.
 	Min *int `json:"min" yaml:"min"`
 	// NSamples is the total number of samples in the histogram.
-	NSamples *int `json:"n_samples" yaml:"n_samples"`
+	NSamples *uint64 `json:"n_samples" yaml:"n_samples"`
 	// P50 is p50 Quantile
 	P50 Quantile `json:"p50" yaml:"p50"`
 	// P90 is p95 Quantile
@@ -6487,8 +6487,8 @@ func (v ImageSource) AsSnapshot() (*ImageSourceSnapshot, bool) {
 // - Base64EncodedData
 // - Offset
 type ImportBlocksBulkWrite struct {
-	Base64EncodedData string `json:"base64_encoded_data" yaml:"base64_encoded_data"`
-	Offset            *int   `json:"offset"              yaml:"offset"`
+	Base64EncodedData string  `json:"base64_encoded_data" yaml:"base64_encoded_data"`
+	Offset            *uint64 `json:"offset"              yaml:"offset"`
 }
 
 // importExportPolicyVariant is implemented by ImportExportPolicy variants.
@@ -7191,7 +7191,7 @@ type InstanceSerialConsoleData struct {
 	// LastByteOffset is the absolute offset since boot (suitable for use as `byte_offset` in a
 	// subsequent request)
 	// of the last byte returned in `data`.
-	LastByteOffset *int `json:"last_byte_offset" yaml:"last_byte_offset"`
+	LastByteOffset *uint64 `json:"last_byte_offset" yaml:"last_byte_offset"`
 }
 
 // InstanceState is the instance is being created.
@@ -9552,7 +9552,7 @@ type Quantile struct {
 	// filled the heights at the 6th sample anyway This does deviate from the paper, but it's a more
 	// useful representation that works according
 	// to the paper's algorithm.
-	MarkerPositions []int `json:"marker_positions" yaml:"marker_positions"`
+	MarkerPositions []uint64 `json:"marker_positions" yaml:"marker_positions"`
 	// P is the p value for the quantile.
 	P float64 `json:"p" yaml:"p"`
 }
@@ -14295,9 +14295,9 @@ type InstanceRebootParams struct {
 // - Instance
 type InstanceSerialConsoleParams struct {
 	Instance   NameOrId `json:"instance,omitempty"    yaml:"instance,omitempty"`
-	FromStart  *int     `json:"from_start,omitempty"  yaml:"from_start,omitempty"`
-	MaxBytes   *int     `json:"max_bytes,omitempty"   yaml:"max_bytes,omitempty"`
-	MostRecent *int     `json:"most_recent,omitempty" yaml:"most_recent,omitempty"`
+	FromStart  *uint64  `json:"from_start,omitempty"  yaml:"from_start,omitempty"`
+	MaxBytes   *uint64  `json:"max_bytes,omitempty"   yaml:"max_bytes,omitempty"`
+	MostRecent *uint64  `json:"most_recent,omitempty" yaml:"most_recent,omitempty"`
 	Project    NameOrId `json:"project,omitempty"     yaml:"project,omitempty"`
 }
 
@@ -14307,7 +14307,7 @@ type InstanceSerialConsoleParams struct {
 // - Instance
 type InstanceSerialConsoleStreamParams struct {
 	Instance   NameOrId `json:"instance,omitempty"    yaml:"instance,omitempty"`
-	MostRecent *int     `json:"most_recent,omitempty" yaml:"most_recent,omitempty"`
+	MostRecent *uint64  `json:"most_recent,omitempty" yaml:"most_recent,omitempty"`
 	Project    NameOrId `json:"project,omitempty"     yaml:"project,omitempty"`
 }
 

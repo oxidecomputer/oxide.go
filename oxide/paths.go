@@ -5492,9 +5492,9 @@ func (c *Client) InstanceSerialConsole(
 			"instance": string(params.Instance),
 		},
 		map[string]string{
-			"from_start":  PointerIntToStr(params.FromStart),
-			"max_bytes":   PointerIntToStr(params.MaxBytes),
-			"most_recent": PointerIntToStr(params.MostRecent),
+			"from_start":  PointerUint64ToStr(params.FromStart),
+			"max_bytes":   PointerUint64ToStr(params.MaxBytes),
+			"most_recent": PointerUint64ToStr(params.MostRecent),
 			"project":     string(params.Project),
 		},
 	)
@@ -5546,7 +5546,7 @@ func (c *Client) InstanceSerialConsoleStream(
 			"instance": string(params.Instance),
 		},
 		map[string]string{
-			"most_recent": PointerIntToStr(params.MostRecent),
+			"most_recent": PointerUint64ToStr(params.MostRecent),
 			"project":     string(params.Project),
 		},
 	)
