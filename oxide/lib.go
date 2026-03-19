@@ -186,6 +186,11 @@ type Client struct {
 	userAgent string
 }
 
+// Host returns the base URL of the Oxide API.
+func (c *Client) Host() string {
+	return c.host
+}
+
 type authCredentials struct {
 	host  string
 	token string
