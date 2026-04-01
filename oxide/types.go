@@ -1416,12 +1416,12 @@ type BfdMode string
 //
 // Required fields:
 // - Remote
-// - Switch
+// - SwitchSlot
 type BfdSessionDisable struct {
 	// Remote is address of the remote peer to disable a BFD session for.
 	Remote string `json:"remote" yaml:"remote"`
-	// Switch is the switch to enable this session on. Must be `switch0` or `switch1`.
-	Switch Name `json:"switch" yaml:"switch"`
+	// SwitchSlot is the slot of the switch within the rack to disable this session on.
+	SwitchSlot SwitchSlot `json:"switch_slot" yaml:"switch_slot"`
 }
 
 // BfdSessionEnable is information about a bidirectional forwarding detection (BFD) session.
@@ -1431,7 +1431,7 @@ type BfdSessionDisable struct {
 // - Mode
 // - Remote
 // - RequiredRx
-// - Switch
+// - SwitchSlot
 type BfdSessionEnable struct {
 	// DetectionThreshold is the negotiated Control packet transmission interval, multiplied by this
 	// variable, will
@@ -1449,8 +1449,8 @@ type BfdSessionEnable struct {
 	// that this system
 	// requires
 	RequiredRx *uint64 `json:"required_rx" yaml:"required_rx"`
-	// Switch is the switch to enable this session on. Must be `switch0` or `switch1`.
-	Switch Name `json:"switch" yaml:"switch"`
+	// SwitchSlot is the slot of the switch within the rack to enable this session on.
+	SwitchSlot SwitchSlot `json:"switch_slot" yaml:"switch_slot"`
 }
 
 // BfdState is a stable down state. Non-responsive to incoming messages.
@@ -1464,7 +1464,7 @@ type BfdState string
 // - Peer
 // - RequiredRx
 // - State
-// - Switch
+// - SwitchSlot
 type BfdStatus struct {
 	DetectionThreshold *int   `json:"detection_threshold" yaml:"detection_threshold"`
 	Local              string `json:"local,omitempty"     yaml:"local,omitempty"`
@@ -1473,11 +1473,8 @@ type BfdStatus struct {
 	Peer       string   `json:"peer"        yaml:"peer"`
 	RequiredRx *uint64  `json:"required_rx" yaml:"required_rx"`
 	State      BfdState `json:"state"       yaml:"state"`
-	// Switch is names must begin with a lower case ASCII letter, be composed exclusively of
-	// lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot
-	// be a UUID, but they may contain a UUID. They
-	// can be at most 63 characters long.
-	Switch Name `json:"switch" yaml:"switch"`
+	// SwitchSlot is identifies switch physical location
+	SwitchSlot SwitchSlot `json:"switch_slot" yaml:"switch_slot"`
 }
 
 // BgpAnnounceSet is represents a BGP announce set by id. The id can be used with other API calls to
@@ -1624,7 +1621,7 @@ type BgpExported struct {
 	// Prefix is the destination network prefix.
 	Prefix IpNet `json:"prefix" yaml:"prefix"`
 	// Switch is switch the route is exported from.
-	Switch SwitchLocation `json:"switch" yaml:"switch"`
+	Switch SwitchSlot `json:"switch" yaml:"switch"`
 }
 
 // BgpImported is a route imported from a BGP peer.
@@ -1642,7 +1639,7 @@ type BgpImported struct {
 	// Prefix is the destination network prefix.
 	Prefix IpNet `json:"prefix" yaml:"prefix"`
 	// Switch is switch the route is imported into.
-	Switch SwitchLocation `json:"switch" yaml:"switch"`
+	Switch SwitchSlot `json:"switch" yaml:"switch"`
 }
 
 // BgpMessageHistory is the type definition for a BgpMessageHistory.
@@ -1756,7 +1753,7 @@ type BgpPeerStatus struct {
 	// StateDurationMillis is time of last state change.
 	StateDurationMillis *uint64 `json:"state_duration_millis" yaml:"state_duration_millis"`
 	// Switch is switch with the peer session.
-	Switch SwitchLocation `json:"switch" yaml:"switch"`
+	Switch SwitchSlot `json:"switch" yaml:"switch"`
 }
 
 // binRangedoubleVariant is implemented by BinRangedouble variants.
@@ -3279,6 +3276,8 @@ type Cumulativeuint64 struct {
 // - SiloAdmin
 // - SiloId
 // - SiloName
+// - TimeCreated
+// - TimeModified
 type CurrentUser struct {
 	// DisplayName is human-readable name that can identify the user
 	DisplayName string `json:"display_name" yaml:"display_name"`
@@ -3295,6 +3294,10 @@ type CurrentUser struct {
 	SiloId string `json:"silo_id" yaml:"silo_id"`
 	// SiloName is name of the silo to which this user belongs.
 	SiloName Name `json:"silo_name" yaml:"silo_name"`
+	// TimeCreated is timestamp when this user was created
+	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
+	// TimeModified is timestamp when this user was last modified
+	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
 
 // datumVariant is implemented by Datum variants.
@@ -5103,8 +5106,8 @@ type ExternalSubnetAllocatorAuto struct {
 	// IPv4 and IPv6,
 	// the request will fail unless `ip_version` is specified in the pool selector.
 	PoolSelector PoolSelector `json:"pool_selector,omitempty" yaml:"pool_selector,omitempty"`
-	// PrefixLen is the prefix length for the allocated subnet (e.g., 24 for a /24).
-	PrefixLen *int `json:"prefix_len" yaml:"prefix_len"`
+	// PrefixLength is the prefix length for the allocated subnet (e.g., 24 for a /24).
+	PrefixLength *int `json:"prefix_length" yaml:"prefix_length"`
 }
 
 func (ExternalSubnetAllocatorAuto) isExternalSubnetAllocatorVariant() {}
@@ -5670,12 +5673,18 @@ type FloatingIpUpdate struct {
 // - DisplayName
 // - Id
 // - SiloId
+// - TimeCreated
+// - TimeModified
 type Group struct {
 	// DisplayName is human-readable name that can identify the group
 	DisplayName string `json:"display_name" yaml:"display_name"`
 	Id          string `json:"id"           yaml:"id"`
 	// SiloId is uuid of the silo to which this group belongs
 	SiloId string `json:"silo_id" yaml:"silo_id"`
+	// TimeCreated is timestamp when this group was created
+	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
+	// TimeModified is timestamp when this group was last modified
+	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
 
 // GroupResultsPage is a single page of results
@@ -6631,7 +6640,7 @@ type Instance struct {
 	// instance will be auto-restarted, based on its current policy or the default if it
 	// has no configured policy.
 	AutoRestartPolicy InstanceAutoRestartPolicy `json:"auto_restart_policy,omitempty" yaml:"auto_restart_policy,omitempty"`
-	// BootDiskId is the ID of the disk used to boot this Instance, if a specific one is assigned.
+	// BootDiskId is the ID of the disk used to boot this instance, if a specific one is assigned
 	BootDiskId string `json:"boot_disk_id,omitempty" yaml:"boot_disk_id,omitempty"`
 	// CpuPlatform is the CPU platform for this instance. If this is `null`, the instance requires
 	// no particular CPU
@@ -6639,17 +6648,17 @@ type Instance struct {
 	CpuPlatform InstanceCpuPlatform `json:"cpu_platform,omitempty" yaml:"cpu_platform,omitempty"`
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description" yaml:"description"`
-	// Hostname is rFC1035-compliant hostname for the Instance.
+	// Hostname is rFC1035-compliant hostname for the instance
 	Hostname string `json:"hostname" yaml:"hostname"`
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id" yaml:"id"`
-	// Memory is memory allocated for this Instance
+	// Memory is memory allocated for this instance
 	Memory ByteCount `json:"memory" yaml:"memory"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name" yaml:"name"`
-	// Ncpus is number of CPUs allocated for this Instance
+	// Ncpus is number of CPUs allocated for this instance
 	Ncpus InstanceCpuCount `json:"ncpus" yaml:"ncpus"`
-	// ProjectId is id for the project containing this Instance
+	// ProjectId is iD for the project containing this instance
 	ProjectId string `json:"project_id" yaml:"project_id"`
 	// RunState is running state of an Instance (primarily: booted or stopped)
 	//
@@ -8144,7 +8153,7 @@ type LldpNeighborResultsPage struct {
 // - AddressLotBlockId
 // - Id
 // - RackId
-// - SwitchLocation
+// - SwitchSlot
 type LoopbackAddress struct {
 	// Address is the loopback IP address and prefix length.
 	Address IpNet `json:"address" yaml:"address"`
@@ -8154,8 +8163,8 @@ type LoopbackAddress struct {
 	Id string `json:"id" yaml:"id"`
 	// RackId is the id of the rack where this loopback address is assigned.
 	RackId string `json:"rack_id" yaml:"rack_id"`
-	// SwitchLocation is switch location where this loopback address is assigned.
-	SwitchLocation string `json:"switch_location" yaml:"switch_location"`
+	// SwitchSlot is the slot of the switch within the rack where this loopback address is assigned.
+	SwitchSlot SwitchSlot `json:"switch_slot" yaml:"switch_slot"`
 }
 
 // LoopbackAddressCreate is parameters for creating a loopback address on a particular rack switch.
@@ -8166,7 +8175,7 @@ type LoopbackAddress struct {
 // - Anycast
 // - Mask
 // - RackId
-// - SwitchLocation
+// - SwitchSlot
 type LoopbackAddressCreate struct {
 	// Address is the address to create.
 	Address string `json:"address" yaml:"address"`
@@ -8181,10 +8190,9 @@ type LoopbackAddressCreate struct {
 	Mask *int `json:"mask" yaml:"mask"`
 	// RackId is the rack containing the switch this loopback address will be configured on.
 	RackId string `json:"rack_id" yaml:"rack_id"`
-	// SwitchLocation is the location of the switch within the rack this loopback address will be
-	// configured on.
-	//
-	SwitchLocation Name `json:"switch_location" yaml:"switch_location"`
+	// SwitchSlot is the slot of the switch within the rack this loopback address will be configured
+	// on.
+	SwitchSlot SwitchSlot `json:"switch_slot" yaml:"switch_slot"`
 }
 
 // LoopbackAddressResultsPage is a single page of results
@@ -8254,6 +8262,7 @@ type MissingDatum struct {
 //
 // Required fields:
 // - Description
+// - HasAnySourceMember
 // - Id
 // - IpPoolId
 // - MulticastIp
@@ -8265,24 +8274,25 @@ type MissingDatum struct {
 type MulticastGroup struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description" yaml:"description"`
+	// HasAnySourceMember is true if any member joined without specifying source IPs (any-source).
+	//
+	// When true, at least one member receives traffic from any source rather than filtering to
+	// specific sources.
+	HasAnySourceMember *bool `json:"has_any_source_member" yaml:"has_any_source_member"`
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id" yaml:"id"`
 	// IpPoolId is the ID of the IP pool this resource belongs to.
 	IpPoolId string `json:"ip_pool_id" yaml:"ip_pool_id"`
 	// MulticastIp is the multicast IP address held by this resource.
 	MulticastIp string `json:"multicast_ip" yaml:"multicast_ip"`
-	// Mvlan is multicast VLAN (MVLAN) for egress multicast traffic to upstream networks. None means
-	// no VLAN tagging
-	// on egress.
-	Mvlan *int `json:"mvlan,omitempty" yaml:"mvlan,omitempty"`
 	// Name is unique, mutable, user-controlled identifier for each resource
 	Name Name `json:"name" yaml:"name"`
-	// SourceIps is union of all member source IP addresses (computed, read-only).
+	// SourceIps is deduplicated union of source IPs specified by members.
 	//
-	// This field shows the combined source IPs across all group members. Individual members may
-	// subscribe to different sources; this union reflects all sources that any member is subscribed
-	// to. Empty array means no members have
-	// source filtering enabled.
+	// Contains only sources from members that joined with explicit `source_ips`. Members using
+	// any-source multicast (empty `source_ips`) do not contribute, so a non-empty value does not
+	// imply all members use source filtering. For
+	// SSM addresses (232/8, ff3x::/32), this is always non-empty.
 	SourceIps []string `json:"source_ips" yaml:"source_ips"`
 	// State is current state of the multicast group.
 	State string `json:"state" yaml:"state"`
@@ -10592,14 +10602,6 @@ type Sled struct {
 	UsablePhysicalRam ByteCount `json:"usable_physical_ram" yaml:"usable_physical_ram"`
 }
 
-// SledId is the unique ID of a sled.
-//
-// Required fields:
-// - Id
-type SledId struct {
-	Id string `json:"id" yaml:"id"`
-}
-
 // SledInstance is an operator's view of an instance running on a given sled
 //
 // Required fields:
@@ -11182,7 +11184,7 @@ type SwitchBgpHistory struct {
 	// History is message history indexed by peer address.
 	History map[string]BgpMessageHistory `json:"history" yaml:"history"`
 	// Switch is switch this message history is associated with.
-	Switch SwitchLocation `json:"switch" yaml:"switch"`
+	Switch SwitchSlot `json:"switch" yaml:"switch"`
 }
 
 // SwitchInterfaceConfig is a switch port interface configuration for a port settings object.
@@ -11352,16 +11354,13 @@ type SwitchInterfaceKind2 string
 // SwitchLinkState is the type definition for a SwitchLinkState.
 type SwitchLinkState string
 
-// SwitchLocation is switch in upper slot
-type SwitchLocation string
-
 // SwitchPort is a switch port represents a physical external port on a rack switch.
 //
 // Required fields:
 // - Id
 // - PortName
 // - RackId
-// - SwitchLocation
+// - SwitchSlot
 type SwitchPort struct {
 	// Id is the id of the switch port.
 	Id string `json:"id" yaml:"id"`
@@ -11373,8 +11372,8 @@ type SwitchPort struct {
 	PortSettingsId string `json:"port_settings_id,omitempty" yaml:"port_settings_id,omitempty"`
 	// RackId is the rack this switch port belongs to.
 	RackId string `json:"rack_id" yaml:"rack_id"`
-	// SwitchLocation is the switch location of this switch port.
-	SwitchLocation string `json:"switch_location" yaml:"switch_location"`
+	// SwitchSlot is the slot of the switch within the rack of this switch port.
+	SwitchSlot SwitchSlot `json:"switch_slot" yaml:"switch_slot"`
 }
 
 // SwitchPortAddressView is an IP address configuration for a port settings object.
@@ -11644,6 +11643,9 @@ type SwitchResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+// SwitchSlot is switch in upper slot
+type SwitchSlot string
+
 // SwitchVlanInterfaceConfig is a switch port VLAN interface configuration for a port settings
 // object.
 //
@@ -11865,16 +11867,6 @@ type UninitializedSled struct {
 	RackId    string    `json:"rack_id"   yaml:"rack_id"`
 }
 
-// UninitializedSledId is the unique hardware ID for a sled
-//
-// Required fields:
-// - Part
-// - Serial
-type UninitializedSledId struct {
-	Part   string `json:"part"   yaml:"part"`
-	Serial string `json:"serial" yaml:"serial"`
-}
-
 // UninitializedSledResultsPage is a single page of results
 //
 // Required fields:
@@ -11964,12 +11956,18 @@ type UpdatesTrustRootResultsPage struct {
 // - DisplayName
 // - Id
 // - SiloId
+// - TimeCreated
+// - TimeModified
 type User struct {
 	// DisplayName is human-readable name that can identify the user
 	DisplayName string `json:"display_name" yaml:"display_name"`
 	Id          string `json:"id"           yaml:"id"`
 	// SiloId is uuid of the silo to which this user belongs
 	SiloId string `json:"silo_id" yaml:"silo_id"`
+	// TimeCreated is timestamp when this user was created
+	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
+	// TimeModified is timestamp when this user was last modified
+	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
 
 // UserBuiltin is view of a Built-in User
@@ -12712,6 +12710,13 @@ type VpcFirewallRuleProtocolIcmp struct {
 
 func (VpcFirewallRuleProtocolIcmp) isVpcFirewallRuleProtocolVariant() {}
 
+// VpcFirewallRuleProtocolIcmp6 is a variant of VpcFirewallRuleProtocol.
+type VpcFirewallRuleProtocolIcmp6 struct {
+	Value *VpcFirewallIcmpFilter `json:"value" yaml:"value"`
+}
+
+func (VpcFirewallRuleProtocolIcmp6) isVpcFirewallRuleProtocolVariant() {}
+
 // VpcFirewallRuleProtocol is the protocols that may be specified in a firewall rule's filter
 type VpcFirewallRuleProtocol struct {
 	Value vpcFirewallRuleProtocolVariant
@@ -12725,6 +12730,8 @@ func (v VpcFirewallRuleProtocol) Type() VpcFirewallRuleProtocolType {
 		return VpcFirewallRuleProtocolTypeUdp
 	case VpcFirewallRuleProtocolIcmp, *VpcFirewallRuleProtocolIcmp:
 		return VpcFirewallRuleProtocolTypeIcmp
+	case VpcFirewallRuleProtocolIcmp6, *VpcFirewallRuleProtocolIcmp6:
+		return VpcFirewallRuleProtocolTypeIcmp6
 	default:
 		return ""
 	}
@@ -12750,8 +12757,13 @@ func (v *VpcFirewallRuleProtocol) UnmarshalJSON(data []byte) error {
 		value = &VpcFirewallRuleProtocolUdp{}
 	case "icmp":
 		value = &VpcFirewallRuleProtocolIcmp{}
+	case "icmp6":
+		value = &VpcFirewallRuleProtocolIcmp6{}
 	default:
-		return fmt.Errorf("unknown variant %q, expected 'tcp' or 'udp' or 'icmp'", d.Type)
+		return fmt.Errorf(
+			"unknown variant %q, expected 'tcp' or 'udp' or 'icmp' or 'icmp6'",
+			d.Type,
+		)
 	}
 	if err := json.Unmarshal(data, value); err != nil {
 		return err
@@ -12798,6 +12810,13 @@ func (v VpcFirewallRuleProtocol) AsUdp() (*VpcFirewallRuleProtocolUdp, bool) {
 // Returns the variant and true if the conversion succeeded, nil and false otherwise.
 func (v VpcFirewallRuleProtocol) AsIcmp() (*VpcFirewallRuleProtocolIcmp, bool) {
 	val, ok := v.Value.(*VpcFirewallRuleProtocolIcmp)
+	return val, ok
+}
+
+// AsIcmp6 attempts to convert the VpcFirewallRuleProtocol to a VpcFirewallRuleProtocolIcmp6.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v VpcFirewallRuleProtocol) AsIcmp6() (*VpcFirewallRuleProtocolIcmp6, bool) {
+	val, ok := v.Value.(*VpcFirewallRuleProtocolIcmp6)
 	return val, ok
 }
 
@@ -14788,14 +14807,14 @@ type PhysicalDiskViewParams struct {
 // Required fields:
 // - Port
 // - RackId
-// - SwitchLocation
+// - SwitchSlot
 type NetworkingSwitchPortLldpNeighborsParams struct {
-	Port           Name       `json:"port,omitempty"            yaml:"port,omitempty"`
-	RackId         string     `json:"rack_id,omitempty"         yaml:"rack_id,omitempty"`
-	SwitchLocation Name       `json:"switch_location,omitempty" yaml:"switch_location,omitempty"`
-	Limit          *int       `json:"limit,omitempty"           yaml:"limit,omitempty"`
-	PageToken      string     `json:"page_token,omitempty"      yaml:"page_token,omitempty"`
-	SortBy         IdSortMode `json:"sort_by,omitempty"         yaml:"sort_by,omitempty"`
+	Port       Name       `json:"port,omitempty"        yaml:"port,omitempty"`
+	RackId     string     `json:"rack_id,omitempty"     yaml:"rack_id,omitempty"`
+	SwitchSlot SwitchSlot `json:"switch_slot,omitempty" yaml:"switch_slot,omitempty"`
+	Limit      *int       `json:"limit,omitempty"       yaml:"limit,omitempty"`
+	PageToken  string     `json:"page_token,omitempty"  yaml:"page_token,omitempty"`
+	SortBy     IdSortMode `json:"sort_by,omitempty"     yaml:"sort_by,omitempty"`
 }
 
 // RackListParams is the request parameters for RackList
@@ -14845,14 +14864,6 @@ type SledListParams struct {
 	Limit     *int       `json:"limit,omitempty"      yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    IdSortMode `json:"sort_by,omitempty"    yaml:"sort_by,omitempty"`
-}
-
-// SledAddParams is the request parameters for SledAdd
-//
-// Required fields:
-// - Body
-type SledAddParams struct {
-	Body *UninitializedSledId `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // SledListUninitializedParams is the request parameters for SledListUninitialized
@@ -14915,11 +14926,11 @@ type NetworkingSwitchPortListParams struct {
 // Required fields:
 // - Port
 // - RackId
-// - SwitchLocation
+// - SwitchSlot
 type NetworkingSwitchPortLldpConfigViewParams struct {
-	Port           Name   `json:"port,omitempty"            yaml:"port,omitempty"`
-	RackId         string `json:"rack_id,omitempty"         yaml:"rack_id,omitempty"`
-	SwitchLocation Name   `json:"switch_location,omitempty" yaml:"switch_location,omitempty"`
+	Port       Name       `json:"port,omitempty"        yaml:"port,omitempty"`
+	RackId     string     `json:"rack_id,omitempty"     yaml:"rack_id,omitempty"`
+	SwitchSlot SwitchSlot `json:"switch_slot,omitempty" yaml:"switch_slot,omitempty"`
 }
 
 // NetworkingSwitchPortLldpConfigUpdateParams is the request parameters for
@@ -14928,13 +14939,13 @@ type NetworkingSwitchPortLldpConfigViewParams struct {
 // Required fields:
 // - Port
 // - RackId
-// - SwitchLocation
+// - SwitchSlot
 // - Body
 type NetworkingSwitchPortLldpConfigUpdateParams struct {
-	Port           Name            `json:"port,omitempty"            yaml:"port,omitempty"`
-	RackId         string          `json:"rack_id,omitempty"         yaml:"rack_id,omitempty"`
-	SwitchLocation Name            `json:"switch_location,omitempty" yaml:"switch_location,omitempty"`
-	Body           *LldpLinkConfig `json:"body,omitempty"            yaml:"body,omitempty"`
+	Port       Name            `json:"port,omitempty"        yaml:"port,omitempty"`
+	RackId     string          `json:"rack_id,omitempty"     yaml:"rack_id,omitempty"`
+	SwitchSlot SwitchSlot      `json:"switch_slot,omitempty" yaml:"switch_slot,omitempty"`
+	Body       *LldpLinkConfig `json:"body,omitempty"        yaml:"body,omitempty"`
 }
 
 // NetworkingSwitchPortClearSettingsParams is the request parameters for
@@ -14943,11 +14954,11 @@ type NetworkingSwitchPortLldpConfigUpdateParams struct {
 // Required fields:
 // - Port
 // - RackId
-// - SwitchLocation
+// - SwitchSlot
 type NetworkingSwitchPortClearSettingsParams struct {
-	Port           Name   `json:"port,omitempty"            yaml:"port,omitempty"`
-	RackId         string `json:"rack_id,omitempty"         yaml:"rack_id,omitempty"`
-	SwitchLocation Name   `json:"switch_location,omitempty" yaml:"switch_location,omitempty"`
+	Port       Name       `json:"port,omitempty"        yaml:"port,omitempty"`
+	RackId     string     `json:"rack_id,omitempty"     yaml:"rack_id,omitempty"`
+	SwitchSlot SwitchSlot `json:"switch_slot,omitempty" yaml:"switch_slot,omitempty"`
 }
 
 // NetworkingSwitchPortApplySettingsParams is the request parameters for
@@ -14956,13 +14967,13 @@ type NetworkingSwitchPortClearSettingsParams struct {
 // Required fields:
 // - Port
 // - RackId
-// - SwitchLocation
+// - SwitchSlot
 // - Body
 type NetworkingSwitchPortApplySettingsParams struct {
-	Port           Name                     `json:"port,omitempty"            yaml:"port,omitempty"`
-	RackId         string                   `json:"rack_id,omitempty"         yaml:"rack_id,omitempty"`
-	SwitchLocation Name                     `json:"switch_location,omitempty" yaml:"switch_location,omitempty"`
-	Body           *SwitchPortApplySettings `json:"body,omitempty"            yaml:"body,omitempty"`
+	Port       Name                     `json:"port,omitempty"        yaml:"port,omitempty"`
+	RackId     string                   `json:"rack_id,omitempty"     yaml:"rack_id,omitempty"`
+	SwitchSlot SwitchSlot               `json:"switch_slot,omitempty" yaml:"switch_slot,omitempty"`
+	Body       *SwitchPortApplySettings `json:"body,omitempty"        yaml:"body,omitempty"`
 }
 
 // NetworkingSwitchPortStatusParams is the request parameters for NetworkingSwitchPortStatus
@@ -14970,11 +14981,11 @@ type NetworkingSwitchPortApplySettingsParams struct {
 // Required fields:
 // - Port
 // - RackId
-// - SwitchLocation
+// - SwitchSlot
 type NetworkingSwitchPortStatusParams struct {
-	Port           Name   `json:"port,omitempty"            yaml:"port,omitempty"`
-	RackId         string `json:"rack_id,omitempty"         yaml:"rack_id,omitempty"`
-	SwitchLocation Name   `json:"switch_location,omitempty" yaml:"switch_location,omitempty"`
+	Port       Name       `json:"port,omitempty"        yaml:"port,omitempty"`
+	RackId     string     `json:"rack_id,omitempty"     yaml:"rack_id,omitempty"`
+	SwitchSlot SwitchSlot `json:"switch_slot,omitempty" yaml:"switch_slot,omitempty"`
 }
 
 // SwitchListParams is the request parameters for SwitchList
@@ -15381,12 +15392,12 @@ type NetworkingLoopbackAddressCreateParams struct {
 // - Address
 // - RackId
 // - SubnetMask
-// - SwitchLocation
+// - SwitchSlot
 type NetworkingLoopbackAddressDeleteParams struct {
-	Address        string `json:"address,omitempty"         yaml:"address,omitempty"`
-	RackId         string `json:"rack_id,omitempty"         yaml:"rack_id,omitempty"`
-	SubnetMask     *int   `json:"subnet_mask,omitempty"     yaml:"subnet_mask,omitempty"`
-	SwitchLocation Name   `json:"switch_location,omitempty" yaml:"switch_location,omitempty"`
+	Address    string     `json:"address,omitempty"     yaml:"address,omitempty"`
+	RackId     string     `json:"rack_id,omitempty"     yaml:"rack_id,omitempty"`
+	SubnetMask *int       `json:"subnet_mask,omitempty" yaml:"subnet_mask,omitempty"`
+	SwitchSlot SwitchSlot `json:"switch_slot,omitempty" yaml:"switch_slot,omitempty"`
 }
 
 // NetworkingSwitchPortSettingsDeleteParams is the request parameters for
@@ -15697,6 +15708,14 @@ type SystemTimeseriesQueryParams struct {
 type SystemTimeseriesSchemaListParams struct {
 	Limit     *int   `json:"limit,omitempty"      yaml:"limit,omitempty"`
 	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+}
+
+// SystemUpdateRecoveryFinishParams is the request parameters for SystemUpdateRecoveryFinish
+//
+// Required fields:
+// - Body
+type SystemUpdateRecoveryFinishParams struct {
+	Body *SetTargetReleaseParams `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // SystemUpdateRepositoryListParams is the request parameters for SystemUpdateRepositoryList
@@ -17683,7 +17702,7 @@ func (p *NetworkingSwitchPortLldpNeighborsParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.Port), "Port")
 	v.HasRequiredStr(string(p.RackId), "RackId")
-	v.HasRequiredStr(string(p.SwitchLocation), "SwitchLocation")
+	v.HasRequiredStr(string(p.SwitchSlot), "SwitchSlot")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -17743,16 +17762,6 @@ func (p *RackMembershipAddSledsParams) Validate() error {
 // Validate verifies all required fields for SledListParams are set
 func (p *SledListParams) Validate() error {
 	v := new(Validator)
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for SledAddParams are set
-func (p *SledAddParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -17823,7 +17832,7 @@ func (p *NetworkingSwitchPortLldpConfigViewParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.Port), "Port")
 	v.HasRequiredStr(string(p.RackId), "RackId")
-	v.HasRequiredStr(string(p.SwitchLocation), "SwitchLocation")
+	v.HasRequiredStr(string(p.SwitchSlot), "SwitchSlot")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -17836,7 +17845,7 @@ func (p *NetworkingSwitchPortLldpConfigUpdateParams) Validate() error {
 	v.HasRequiredObj(p.Body, "Body")
 	v.HasRequiredStr(string(p.Port), "Port")
 	v.HasRequiredStr(string(p.RackId), "RackId")
-	v.HasRequiredStr(string(p.SwitchLocation), "SwitchLocation")
+	v.HasRequiredStr(string(p.SwitchSlot), "SwitchSlot")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -17848,7 +17857,7 @@ func (p *NetworkingSwitchPortClearSettingsParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.Port), "Port")
 	v.HasRequiredStr(string(p.RackId), "RackId")
-	v.HasRequiredStr(string(p.SwitchLocation), "SwitchLocation")
+	v.HasRequiredStr(string(p.SwitchSlot), "SwitchSlot")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -17861,7 +17870,7 @@ func (p *NetworkingSwitchPortApplySettingsParams) Validate() error {
 	v.HasRequiredObj(p.Body, "Body")
 	v.HasRequiredStr(string(p.Port), "Port")
 	v.HasRequiredStr(string(p.RackId), "RackId")
-	v.HasRequiredStr(string(p.SwitchLocation), "SwitchLocation")
+	v.HasRequiredStr(string(p.SwitchSlot), "SwitchSlot")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -17873,7 +17882,7 @@ func (p *NetworkingSwitchPortStatusParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.Port), "Port")
 	v.HasRequiredStr(string(p.RackId), "RackId")
-	v.HasRequiredStr(string(p.SwitchLocation), "SwitchLocation")
+	v.HasRequiredStr(string(p.SwitchSlot), "SwitchSlot")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -18339,7 +18348,7 @@ func (p *NetworkingLoopbackAddressDeleteParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.Address), "Address")
 	v.HasRequiredStr(string(p.RackId), "RackId")
-	v.HasRequiredStr(string(p.SwitchLocation), "SwitchLocation")
+	v.HasRequiredStr(string(p.SwitchSlot), "SwitchSlot")
 	v.HasRequiredNum(p.SubnetMask, "SubnetMask")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
@@ -18696,6 +18705,16 @@ func (p *SystemTimeseriesQueryParams) Validate() error {
 // Validate verifies all required fields for SystemTimeseriesSchemaListParams are set
 func (p *SystemTimeseriesSchemaListParams) Validate() error {
 	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SystemUpdateRecoveryFinishParams are set
+func (p *SystemUpdateRecoveryFinishParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -20075,12 +20094,6 @@ const SwitchInterfaceKind2Vlan SwitchInterfaceKind2 = "vlan"
 // SwitchInterfaceKind2Loopback represents the SwitchInterfaceKind2 `"loopback"`.
 const SwitchInterfaceKind2Loopback SwitchInterfaceKind2 = "loopback"
 
-// SwitchLocationSwitch0 represents the SwitchLocation `"switch0"`.
-const SwitchLocationSwitch0 SwitchLocation = "switch0"
-
-// SwitchLocationSwitch1 represents the SwitchLocation `"switch1"`.
-const SwitchLocationSwitch1 SwitchLocation = "switch1"
-
 // SwitchPortGeometryQsfp28X1 represents the SwitchPortGeometry `"qsfp28x1"`.
 const SwitchPortGeometryQsfp28X1 SwitchPortGeometry = "qsfp28x1"
 
@@ -20098,6 +20111,12 @@ const SwitchPortGeometry2Qsfp28X2 SwitchPortGeometry2 = "qsfp28x2"
 
 // SwitchPortGeometry2Sfp28X4 represents the SwitchPortGeometry2 `"sfp28x4"`.
 const SwitchPortGeometry2Sfp28X4 SwitchPortGeometry2 = "sfp28x4"
+
+// SwitchSlotSwitch0 represents the SwitchSlot `"switch0"`.
+const SwitchSlotSwitch0 SwitchSlot = "switch0"
+
+// SwitchSlotSwitch1 represents the SwitchSlot `"switch1"`.
+const SwitchSlotSwitch1 SwitchSlot = "switch1"
 
 // SystemMetricNameVirtualDiskSpaceProvisioned represents the SystemMetricName
 // `"virtual_disk_space_provisioned"`.
@@ -20216,6 +20235,9 @@ const VpcFirewallRuleProtocolTypeUdp VpcFirewallRuleProtocolType = "udp"
 
 // VpcFirewallRuleProtocolTypeIcmp represents the VpcFirewallRuleProtocolType `"icmp"`.
 const VpcFirewallRuleProtocolTypeIcmp VpcFirewallRuleProtocolType = "icmp"
+
+// VpcFirewallRuleProtocolTypeIcmp6 represents the VpcFirewallRuleProtocolType `"icmp6"`.
+const VpcFirewallRuleProtocolTypeIcmp6 VpcFirewallRuleProtocolType = "icmp6"
 
 // VpcFirewallRuleStatusDisabled represents the VpcFirewallRuleStatus `"disabled"`.
 const VpcFirewallRuleStatusDisabled VpcFirewallRuleStatus = "disabled"
@@ -20904,12 +20926,6 @@ var SwitchInterfaceKindTypeCollection = []SwitchInterfaceKindType{
 	SwitchInterfaceKindTypeVlan,
 }
 
-// SwitchLocationCollection is the collection of all SwitchLocation values.
-var SwitchLocationCollection = []SwitchLocation{
-	SwitchLocationSwitch0,
-	SwitchLocationSwitch1,
-}
-
 // SwitchPortGeometryCollection is the collection of all SwitchPortGeometry values.
 var SwitchPortGeometryCollection = []SwitchPortGeometry{
 	SwitchPortGeometryQsfp28X1,
@@ -20922,6 +20938,12 @@ var SwitchPortGeometry2Collection = []SwitchPortGeometry2{
 	SwitchPortGeometry2Qsfp28X1,
 	SwitchPortGeometry2Qsfp28X2,
 	SwitchPortGeometry2Sfp28X4,
+}
+
+// SwitchSlotCollection is the collection of all SwitchSlot values.
+var SwitchSlotCollection = []SwitchSlot{
+	SwitchSlotSwitch0,
+	SwitchSlotSwitch1,
 }
 
 // SystemMetricNameCollection is the collection of all SystemMetricName values.
@@ -21005,6 +21027,7 @@ var VpcFirewallRuleHostFilterTypeCollection = []VpcFirewallRuleHostFilterType{
 // values.
 var VpcFirewallRuleProtocolTypeCollection = []VpcFirewallRuleProtocolType{
 	VpcFirewallRuleProtocolTypeIcmp,
+	VpcFirewallRuleProtocolTypeIcmp6,
 	VpcFirewallRuleProtocolTypeTcp,
 	VpcFirewallRuleProtocolTypeUdp,
 }

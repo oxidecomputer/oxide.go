@@ -339,7 +339,7 @@ func (c *Client) ExperimentalSupportBundleListAllPages(
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
 //
-// ExperimentalSupportBundleCreate: Create a new support bundle
+// ExperimentalSupportBundleCreate: Create support bundle
 func (c *Client) ExperimentalSupportBundleCreate(
 	ctx context.Context,
 	params SupportBundleCreateParams,
@@ -445,7 +445,7 @@ func (c *Client) ExperimentalSupportBundleView(
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
 //
-// ExperimentalSupportBundleUpdate: Update a support bundle
+// ExperimentalSupportBundleUpdate: Update support bundle
 func (c *Client) ExperimentalSupportBundleUpdate(
 	ctx context.Context,
 	params SupportBundleUpdateParams,
@@ -502,7 +502,7 @@ func (c *Client) ExperimentalSupportBundleUpdate(
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
 //
-// ExperimentalSupportBundleDelete: Delete an existing support bundle
+// ExperimentalSupportBundleDelete: Delete support bundle
 // May also be used to cancel a support bundle which is currently being collected, or to remove
 // metadata for
 // a support bundle that has failed.
@@ -545,7 +545,7 @@ func (c *Client) ExperimentalSupportBundleDelete(
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
 //
-// ExperimentalSupportBundleDownload: Download the contents of a support bundle
+// ExperimentalSupportBundleDownload: Download support bundle contents
 func (c *Client) ExperimentalSupportBundleDownload(
 	ctx context.Context,
 	params SupportBundleDownloadParams,
@@ -585,7 +585,7 @@ func (c *Client) ExperimentalSupportBundleDownload(
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
 //
-// ExperimentalSupportBundleHead: Download the metadata of a support bundle
+// ExperimentalSupportBundleHead: Download support bundle metadata
 func (c *Client) ExperimentalSupportBundleHead(
 	ctx context.Context,
 	params SupportBundleHeadParams,
@@ -625,7 +625,7 @@ func (c *Client) ExperimentalSupportBundleHead(
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
 //
-// ExperimentalSupportBundleDownloadFile: Download a file within a support bundle
+// ExperimentalSupportBundleDownloadFile: Download file from support bundle
 func (c *Client) ExperimentalSupportBundleDownloadFile(
 	ctx context.Context,
 	params SupportBundleDownloadFileParams,
@@ -669,7 +669,7 @@ func (c *Client) ExperimentalSupportBundleDownloadFile(
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
 //
-// ExperimentalSupportBundleHeadFile: Download the metadata of a file within the support bundle
+// ExperimentalSupportBundleHeadFile: Download metadata of file in support bundle
 func (c *Client) ExperimentalSupportBundleHeadFile(
 	ctx context.Context,
 	params SupportBundleHeadFileParams,
@@ -713,7 +713,7 @@ func (c *Client) ExperimentalSupportBundleHeadFile(
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
 //
-// ExperimentalSupportBundleIndex: Download the index of a support bundle
+// ExperimentalSupportBundleIndex: Download support bundle index
 func (c *Client) ExperimentalSupportBundleIndex(
 	ctx context.Context,
 	params SupportBundleIndexParams,
@@ -751,7 +751,7 @@ func (c *Client) ExperimentalSupportBundleIndex(
 	return nil
 }
 
-// LoginSaml: Authenticate a user via SAML
+// LoginSaml: Authenticate user via SAML
 func (c *Client) LoginSaml(ctx context.Context, params LoginSamlParams) error {
 	if err := params.Validate(); err != nil {
 		return err
@@ -2603,7 +2603,7 @@ func (c *Client) CertificateListAllPages(
 	return allPages, nil
 }
 
-// CertificateCreate: Create new system-wide x.509 certificate
+// CertificateCreate: Create system-wide x.509 certificate
 // This certificate is automatically used by the Oxide Control plane to serve external connections.
 func (c *Client) CertificateCreate(
 	ctx context.Context,
@@ -3125,7 +3125,7 @@ func (c *Client) DiskFinalizeImport(ctx context.Context, params DiskFinalizeImpo
 	return nil
 }
 
-// ExternalSubnetList: List external subnets in a project
+// ExternalSubnetList: List external subnets
 //
 // To iterate over all pages, use the `ExternalSubnetListAllPages` method, instead.
 func (c *Client) ExternalSubnetList(
@@ -3179,7 +3179,7 @@ func (c *Client) ExternalSubnetList(
 	return &body, nil
 }
 
-// ExternalSubnetListAllPages: List external subnets in a project
+// ExternalSubnetListAllPages: List external subnets
 //
 // This method is a wrapper around the `ExternalSubnetList` method.
 // This method returns all the pages at once.
@@ -3208,7 +3208,7 @@ func (c *Client) ExternalSubnetListAllPages(
 	return allPages, nil
 }
 
-// ExternalSubnetCreate: Create an external subnet
+// ExternalSubnetCreate: Create external subnet
 func (c *Client) ExternalSubnetCreate(
 	ctx context.Context,
 	params ExternalSubnetCreateParams,
@@ -3263,7 +3263,7 @@ func (c *Client) ExternalSubnetCreate(
 	return &body, nil
 }
 
-// ExternalSubnetView: Fetch an external subnet
+// ExternalSubnetView: Fetch external subnet
 func (c *Client) ExternalSubnetView(
 	ctx context.Context,
 	params ExternalSubnetViewParams,
@@ -3314,7 +3314,7 @@ func (c *Client) ExternalSubnetView(
 	return &body, nil
 }
 
-// ExternalSubnetUpdate: Update an external subnet
+// ExternalSubnetUpdate: Update external subnet
 func (c *Client) ExternalSubnetUpdate(
 	ctx context.Context,
 	params ExternalSubnetUpdateParams,
@@ -3371,7 +3371,7 @@ func (c *Client) ExternalSubnetUpdate(
 	return &body, nil
 }
 
-// ExternalSubnetDelete: Delete an external subnet
+// ExternalSubnetDelete: Delete external subnet
 func (c *Client) ExternalSubnetDelete(
 	ctx context.Context,
 	params ExternalSubnetDeleteParams,
@@ -3411,7 +3411,7 @@ func (c *Client) ExternalSubnetDelete(
 	return nil
 }
 
-// ExternalSubnetAttach: Attach an external subnet to an instance
+// ExternalSubnetAttach: Attach external subnet to instance
 func (c *Client) ExternalSubnetAttach(
 	ctx context.Context,
 	params ExternalSubnetAttachParams,
@@ -3468,7 +3468,7 @@ func (c *Client) ExternalSubnetAttach(
 	return &body, nil
 }
 
-// ExternalSubnetDetach: Detach an external subnet from an instance
+// ExternalSubnetDetach: Detach external subnet from instance
 func (c *Client) ExternalSubnetDetach(
 	ctx context.Context,
 	params ExternalSubnetDetachParams,
@@ -3602,7 +3602,7 @@ func (c *Client) FloatingIpListAllPages(
 	return allPages, nil
 }
 
-// FloatingIpCreate: Create a floating IP
+// FloatingIpCreate: Create floating IP
 // A specific IP address can be reserved, or an IP can be auto-allocated from a specific pool or the
 // silo's default
 // pool.
@@ -6488,7 +6488,7 @@ func (c *Client) IpPoolView(ctx context.Context, params IpPoolViewParams) (*Silo
 	return &body, nil
 }
 
-// LoginLocal: Authenticate a user via username and password
+// LoginLocal: Authenticate user via username and password
 func (c *Client) LoginLocal(ctx context.Context, params LoginLocalParams) error {
 	if err := params.Validate(); err != nil {
 		return err
@@ -8713,7 +8713,7 @@ func (c *Client) PhysicalDiskView(
 	return &body, nil
 }
 
-// NetworkingSwitchPortLldpNeighbors: Fetch the LLDP neighbors seen on a switch port
+// NetworkingSwitchPortLldpNeighbors: Fetch LLDP neighbors for switch port
 //
 // To iterate over all pages, use the `NetworkingSwitchPortLldpNeighborsAllPages` method, instead.
 func (c *Client) NetworkingSwitchPortLldpNeighbors(
@@ -8730,12 +8730,12 @@ func (c *Client) NetworkingSwitchPortLldpNeighbors(
 		"GET",
 		resolveRelative(
 			c.host,
-			"/v1/system/hardware/rack-switch-port/{{.rack_id}}/{{.switch_location}}/{{.port}}/lldp/neighbors",
+			"/v1/system/hardware/rack-switch-port/{{.rack_id}}/{{.switch_slot}}/{{.port}}/lldp/neighbors",
 		),
 		map[string]string{
-			"port":            string(params.Port),
-			"rack_id":         params.RackId,
-			"switch_location": string(params.SwitchLocation),
+			"port":        string(params.Port),
+			"rack_id":     params.RackId,
+			"switch_slot": string(params.SwitchSlot),
 		},
 		map[string]string{
 			"limit":      PointerIntToStr(params.Limit),
@@ -8773,7 +8773,7 @@ func (c *Client) NetworkingSwitchPortLldpNeighbors(
 	return &body, nil
 }
 
-// NetworkingSwitchPortLldpNeighborsAllPages: Fetch the LLDP neighbors seen on a switch port
+// NetworkingSwitchPortLldpNeighborsAllPages: Fetch LLDP neighbors for switch port
 //
 // This method is a wrapper around the `NetworkingSwitchPortLldpNeighbors` method.
 // This method returns all the pages at once.
@@ -8926,7 +8926,7 @@ func (c *Client) RackView(ctx context.Context, params RackViewParams) (*Rack, er
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
 //
-// ExperimentalRackMembershipStatus: Retrieve the rack cluster membership status
+// ExperimentalRackMembershipStatus: Fetch rack cluster membership status
 // Returns the status for the most recent change, or a specific version if one is specified.
 func (c *Client) ExperimentalRackMembershipStatus(
 	ctx context.Context,
@@ -9164,56 +9164,6 @@ func (c *Client) SledListAllPages(ctx context.Context, params SledListParams) ([
 	}
 
 	return allPages, nil
-}
-
-// SledAdd: Add sled to initialized rack
-func (c *Client) SledAdd(ctx context.Context, params SledAddParams) (*SledId, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
-
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/system/hardware/sleds"),
-		map[string]string{},
-		map[string]string{},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body SledId
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
 }
 
 // SledListUninitialized: List uninitialized sleds
@@ -9649,7 +9599,7 @@ func (c *Client) NetworkingSwitchPortListAllPages(
 	return allPages, nil
 }
 
-// NetworkingSwitchPortLldpConfigView: Fetch the LLDP configuration for a switch port
+// NetworkingSwitchPortLldpConfigView: Fetch LLDP configuration for switch port
 func (c *Client) NetworkingSwitchPortLldpConfigView(
 	ctx context.Context,
 	params NetworkingSwitchPortLldpConfigViewParams,
@@ -9667,8 +9617,8 @@ func (c *Client) NetworkingSwitchPortLldpConfigView(
 			"port": string(params.Port),
 		},
 		map[string]string{
-			"rack_id":         params.RackId,
-			"switch_location": string(params.SwitchLocation),
+			"rack_id":     params.RackId,
+			"switch_slot": string(params.SwitchSlot),
 		},
 	)
 	if err != nil {
@@ -9701,7 +9651,7 @@ func (c *Client) NetworkingSwitchPortLldpConfigView(
 	return &body, nil
 }
 
-// NetworkingSwitchPortLldpConfigUpdate: Update the LLDP configuration for a switch port
+// NetworkingSwitchPortLldpConfigUpdate: Update LLDP configuration for switch port
 func (c *Client) NetworkingSwitchPortLldpConfigUpdate(
 	ctx context.Context,
 	params NetworkingSwitchPortLldpConfigUpdateParams,
@@ -9725,8 +9675,8 @@ func (c *Client) NetworkingSwitchPortLldpConfigUpdate(
 			"port": string(params.Port),
 		},
 		map[string]string{
-			"rack_id":         params.RackId,
-			"switch_location": string(params.SwitchLocation),
+			"rack_id":     params.RackId,
+			"switch_slot": string(params.SwitchSlot),
 		},
 	)
 	if err != nil {
@@ -9772,8 +9722,8 @@ func (c *Client) NetworkingSwitchPortApplySettings(
 			"port": string(params.Port),
 		},
 		map[string]string{
-			"rack_id":         params.RackId,
-			"switch_location": string(params.SwitchLocation),
+			"rack_id":     params.RackId,
+			"switch_slot": string(params.SwitchSlot),
 		},
 	)
 	if err != nil {
@@ -9813,8 +9763,8 @@ func (c *Client) NetworkingSwitchPortClearSettings(
 			"port": string(params.Port),
 		},
 		map[string]string{
-			"rack_id":         params.RackId,
-			"switch_location": string(params.SwitchLocation),
+			"rack_id":     params.RackId,
+			"switch_slot": string(params.SwitchSlot),
 		},
 	)
 	if err != nil {
@@ -9854,8 +9804,8 @@ func (c *Client) NetworkingSwitchPortStatus(
 			"port": string(params.Port),
 		},
 		map[string]string{
-			"rack_id":         params.RackId,
-			"switch_location": string(params.SwitchLocation),
+			"rack_id":     params.RackId,
+			"switch_slot": string(params.SwitchSlot),
 		},
 	)
 	if err != nil {
@@ -12021,7 +11971,7 @@ func (c *Client) NetworkingBgpConfigListAllPages(
 	return allPages, nil
 }
 
-// NetworkingBgpConfigCreate: Create new BGP configuration
+// NetworkingBgpConfigCreate: Create BGP configuration
 func (c *Client) NetworkingBgpConfigCreate(
 	ctx context.Context,
 	params NetworkingBgpConfigCreateParams,
@@ -12723,13 +12673,13 @@ func (c *Client) NetworkingLoopbackAddressDelete(
 		"DELETE",
 		resolveRelative(
 			c.host,
-			"/v1/system/networking/loopback-address/{{.rack_id}}/{{.switch_location}}/{{.address}}/{{.subnet_mask}}",
+			"/v1/system/networking/loopback-address/{{.rack_id}}/{{.switch_slot}}/{{.address}}/{{.subnet_mask}}",
 		),
 		map[string]string{
-			"address":         params.Address,
-			"rack_id":         params.RackId,
-			"subnet_mask":     PointerIntToStr(params.SubnetMask),
-			"switch_location": string(params.SwitchLocation),
+			"address":     params.Address,
+			"rack_id":     params.RackId,
+			"subnet_mask": PointerIntToStr(params.SubnetMask),
+			"switch_slot": string(params.SwitchSlot),
 		},
 		map[string]string{},
 	)
@@ -13261,7 +13211,7 @@ func (c *Client) ScimTokenDelete(ctx context.Context, params ScimTokenDeletePara
 	return nil
 }
 
-// SystemQuotasList: Lists resource quotas for all silos
+// SystemQuotasList: List resource quotas for all silos
 //
 // To iterate over all pages, use the `SystemQuotasListAllPages` method, instead.
 func (c *Client) SystemQuotasList(
@@ -13314,7 +13264,7 @@ func (c *Client) SystemQuotasList(
 	return &body, nil
 }
 
-// SystemQuotasListAllPages: Lists resource quotas for all silos
+// SystemQuotasListAllPages: List resource quotas for all silos
 //
 // This method is a wrapper around the `SystemQuotasList` method.
 // This method returns all the pages at once.
@@ -14812,6 +14762,64 @@ func (c *Client) SystemTimeseriesSchemaListAllPages(
 	}
 
 	return allPages, nil
+}
+
+// SystemUpdateRecoveryFinish: Clear system recovery status
+// Instructs the system that a system recovery operation ("mupdate") was completed using the
+// software in the
+// specified release.
+//
+// The system recovery operation is used to bypass the control plane to deploy known-working
+// software when the control plane itself is not functioning or otherwise unable to update itself.
+// When the control plane detects this, it stops making any changes to deployed software to avoid
+// reverting the recovery itself.  This operation puts the control plane back in charge of
+// determining what software should be deployed, instructing it that the specified software (which
+// is also what's currently running) is what's supposed to be deployed.
+//
+// If the provided version does not match what's currently running, the control plane will continue
+// to avoid changing
+// deployed software until this operation is invoked with the correct version.
+//
+// This endpoint should only be called at the direction of Oxide support.
+func (c *Client) SystemUpdateRecoveryFinish(
+	ctx context.Context,
+	params SystemUpdateRecoveryFinishParams,
+) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"PUT",
+		resolveRelative(c.host, "/v1/system/update/recovery-finish"),
+		map[string]string{},
+		map[string]string{},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // SystemUpdateRepositoryList: List all TUF repositories
