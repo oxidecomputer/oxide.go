@@ -11092,16 +11092,22 @@ type SubnetPoolUpdate struct {
 	Name        Name   `json:"name,omitempty"        yaml:"name,omitempty"`
 }
 
-// SubnetPoolUtilization is utilization information for a subnet pool
+// SubnetPoolUtilization is utilization of addresses in a subnet pool.
+//
+// Note that both the count of remaining addresses and the total capacity are integers, reported as
+// floating point numbers. This accommodates allocations larger than a 64-bit integer, which is
+// common with IPv6 address spaces. With very large subnet pools (> 2**53 addresses), integer
+// precision will be lost, in exchange for representing the
+// entire range. In such a case the pool still has many available addresses.
 //
 // Required fields:
-// - Allocated
 // - Capacity
+// - Remaining
 type SubnetPoolUtilization struct {
-	// Allocated is number of addresses allocated from this pool
-	Allocated float64 `json:"allocated" yaml:"allocated"`
-	// Capacity is total capacity of this pool in addresses
+	// Capacity is the total number of addresses in the pool.
 	Capacity float64 `json:"capacity" yaml:"capacity"`
+	// Remaining is the number of remaining addresses in the pool.
+	Remaining float64 `json:"remaining" yaml:"remaining"`
 }
 
 // SupportBundleCreate is the type definition for a SupportBundleCreate.
