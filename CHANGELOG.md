@@ -1,3 +1,29 @@
+# v0.9.0 (2026/Apr/09)
+
+Generated from Oxide API version
+[2026032500.0.0](https://github.com/oxidecomputer/omicron/blob/rel/v19/rc0/openapi/nexus/nexus-2026032500.0.0-cf1221.json)
+
+### Enhancements
+
+- **`Host()` method.:** Added `Client.Host()` method to expose host configure in the client. [#404](https://github.com/oxidecomputer/oxide.go/pull/404).
+
+### Bug fixes
+
+- **Fix `uint64` representation.:** Fixed `uint64` representation to prevent overflows. [#390](https://github.com/oxidecomputer/oxide.go/pull/390).
+- **Handle `nil` timestamps in query parameters.:** Fixed a bug that could cause panics if a `nil` timestamp is passed as a query param. [#389](https://github.com/oxidecomputer/oxide.go/pull/389).
+
+### List of commits
+
+- [05402a7](https://github.com/oxidecomputer/oxide.go/commit/05402a7) misc: bump omicron to `rel/v19/rc0` (#409)
+- [bbe52c0](https://github.com/oxidecomputer/oxide.go/commit/bbe52c0) misc: bump omicron to a32ad4bea83badee6b44a95769bb0ea07da04cee (#406)
+- [8a08d5f](https://github.com/oxidecomputer/oxide.go/commit/8a08d5f) Add a method to expose the host of the client. (#404)
+- [5830570](https://github.com/oxidecomputer/oxide.go/commit/5830570) build(deps): bump github.com/getkin/kin-openapi from 0.133.0 to 0.134.0 (#403)
+- [8f87b86](https://github.com/oxidecomputer/oxide.go/commit/8f87b86) misc: release issue template (#391)
+- [b0f8ba0](https://github.com/oxidecomputer/oxide.go/commit/b0f8ba0) Fix uint64 representation. (#390)
+- [dfdb24e](https://github.com/oxidecomputer/oxide.go/commit/dfdb24e) Handle nil timestamps in query parameters. (#389)
+- [c14d206](https://github.com/oxidecomputer/oxide.go/commit/c14d206) docs: update release checklist (#387)
+- [9012cde](https://github.com/oxidecomputer/oxide.go/commit/9012cde) docs: add v0.8.0 release date (#388)
+
 # v0.8.0 (2026/Feb/17)
 
 Generated from Oxide API version

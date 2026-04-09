@@ -7,9 +7,13 @@ title = ""
 description = ""
 
 [[bugs]]
-title = ""
-description = ""
+title = "Fix `uint64` representation."
+description = "Fixed `uint64` representation to prevent overflows. [#390](https://github.com/oxidecomputer/oxide.go/pull/390)."
+
+[[bugs]]
+title = "Handle `nil` timestamps in query parameters."
+description = "Fixed a bug that could cause panics if a `nil` timestamp is passed as a query param. [#389](https://github.com/oxidecomputer/oxide.go/pull/389)."
 
 [[enhancements]]
-title = ""
-description = ""
+title = "`Host()` method."
+description = "Added `Client.Host()` method to expose host configure in the client. [#404](https://github.com/oxidecomputer/oxide.go/pull/404)."
