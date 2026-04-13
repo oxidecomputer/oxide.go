@@ -51,7 +51,7 @@ type AddressAllocatorAuto struct {
 	// If omitted, the silo's default pool is used. If the silo has default pools for both IPv4 and
 	// IPv6, the request
 	// will fail unless `ip_version` is specified.
-	PoolSelector PoolSelector `json:"pool_selector,omitempty" yaml:"pool_selector,omitempty"`
+	PoolSelector PoolSelector `json:"pool_selector,omitzero" yaml:"pool_selector,omitzero"`
 }
 
 func (AddressAllocatorAuto) isAddressAllocatorVariant() {}
@@ -1076,7 +1076,7 @@ type AuditLogEntry struct {
 	// AuthMethod is how the user authenticated the request (access token, session, or SCIM token).
 	// Null for
 	// unauthenticated requests like login attempts.
-	AuthMethod AuthMethod `json:"auth_method,omitempty" yaml:"auth_method,omitempty"`
+	AuthMethod AuthMethod `json:"auth_method,omitzero" yaml:"auth_method,omitzero"`
 	// CredentialId is iD of the credential used for authentication. Null for unauthenticated
 	// requests. The value of `auth_method` indicates what kind of credential it is (access token,
 	// session, or SCIM token).
@@ -4774,7 +4774,7 @@ type Distributionint64 struct {
 // EphemeralIpCreate is parameters for creating an ephemeral IP address for an instance.
 type EphemeralIpCreate struct {
 	// PoolSelector is pool to allocate from.
-	PoolSelector PoolSelector `json:"pool_selector,omitempty" yaml:"pool_selector,omitempty"`
+	PoolSelector PoolSelector `json:"pool_selector,omitzero" yaml:"pool_selector,omitzero"`
 }
 
 // Error is error information from a response.
@@ -4946,7 +4946,7 @@ type ExternalIpCreateType string
 // ExternalIpCreateEphemeral is a variant of ExternalIpCreate.
 type ExternalIpCreateEphemeral struct {
 	// PoolSelector is pool to allocate from.
-	PoolSelector PoolSelector `json:"pool_selector,omitempty" yaml:"pool_selector,omitempty"`
+	PoolSelector PoolSelector `json:"pool_selector,omitzero" yaml:"pool_selector,omitzero"`
 }
 
 func (ExternalIpCreateEphemeral) isExternalIpCreateVariant() {}
@@ -5105,7 +5105,7 @@ type ExternalSubnetAllocatorAuto struct {
 	// If omitted, this field uses the silo's default pool. If the silo has default pools for both
 	// IPv4 and IPv6,
 	// the request will fail unless `ip_version` is specified in the pool selector.
-	PoolSelector PoolSelector `json:"pool_selector,omitempty" yaml:"pool_selector,omitempty"`
+	PoolSelector PoolSelector `json:"pool_selector,omitzero" yaml:"pool_selector,omitzero"`
 	// PrefixLength is the prefix length for the allocated subnet (e.g., 24 for a /24).
 	PrefixLength *int `json:"prefix_length" yaml:"prefix_length"`
 }
@@ -5638,8 +5638,8 @@ type FloatingIpAttach struct {
 // - Name
 type FloatingIpCreate struct {
 	// AddressAllocator is iP address allocation method.
-	AddressAllocator AddressAllocator `json:"address_allocator,omitempty" yaml:"address_allocator,omitempty"`
-	Description      string           `json:"description"                 yaml:"description"`
+	AddressAllocator AddressAllocator `json:"address_allocator,omitzero" yaml:"address_allocator,omitzero"`
+	Description      string           `json:"description"                yaml:"description"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase
 	// ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID,
 	// but they may contain a UUID. They
@@ -6355,7 +6355,7 @@ type Image struct {
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description" yaml:"description"`
 	// Digest is hash of the image contents, if applicable
-	Digest Digest `json:"digest,omitempty" yaml:"digest,omitempty"`
+	Digest Digest `json:"digest,omitzero" yaml:"digest,omitzero"`
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id" yaml:"id"`
 	// Name is unique, mutable, user-controlled identifier for each resource
@@ -6639,13 +6639,13 @@ type Instance struct {
 	// it to be restarted. The value of the `auto_restart_enabled` field indicates whether the
 	// instance will be auto-restarted, based on its current policy or the default if it
 	// has no configured policy.
-	AutoRestartPolicy InstanceAutoRestartPolicy `json:"auto_restart_policy,omitempty" yaml:"auto_restart_policy,omitempty"`
+	AutoRestartPolicy InstanceAutoRestartPolicy `json:"auto_restart_policy,omitzero" yaml:"auto_restart_policy,omitzero"`
 	// BootDiskId is the ID of the disk used to boot this instance, if a specific one is assigned
 	BootDiskId string `json:"boot_disk_id,omitempty" yaml:"boot_disk_id,omitempty"`
 	// CpuPlatform is the CPU platform for this instance. If this is `null`, the instance requires
 	// no particular CPU
 	// platform.
-	CpuPlatform InstanceCpuPlatform `json:"cpu_platform,omitempty" yaml:"cpu_platform,omitempty"`
+	CpuPlatform InstanceCpuPlatform `json:"cpu_platform,omitzero" yaml:"cpu_platform,omitzero"`
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description" yaml:"description"`
 	// Hostname is rFC1035-compliant hostname for the instance
@@ -6713,7 +6713,7 @@ type InstanceCreate struct {
 	// policy may be configurable through other mechanisms, such as on a per-project basis. In that
 	// case, any configured default policy will be used if
 	// this is `null`.
-	AutoRestartPolicy InstanceAutoRestartPolicy `json:"auto_restart_policy,omitempty" yaml:"auto_restart_policy,omitempty"`
+	AutoRestartPolicy InstanceAutoRestartPolicy `json:"auto_restart_policy,omitzero" yaml:"auto_restart_policy,omitzero"`
 	// BootDisk is the disk the instance is configured to boot from.
 	//
 	// This disk can either be attached if it already exists or created along with the instance.
@@ -6728,13 +6728,13 @@ type InstanceCreate struct {
 	// operating system. Boot options can change as disks are attached and detached, which may
 	// result in an instance that only boots to the EFI shell until
 	// a boot disk is set.
-	BootDisk InstanceDiskAttachment `json:"boot_disk,omitempty" yaml:"boot_disk,omitempty"`
+	BootDisk InstanceDiskAttachment `json:"boot_disk,omitzero" yaml:"boot_disk,omitzero"`
 	// CpuPlatform is the CPU platform to be used for this instance. If this is `null`, the instance
 	// requires no particular CPU platform; when it is started the instance will have the most
 	// general CPU platform supported by
 	// the sled it is initially placed on.
-	CpuPlatform InstanceCpuPlatform `json:"cpu_platform,omitempty" yaml:"cpu_platform,omitempty"`
-	Description string              `json:"description"            yaml:"description"`
+	CpuPlatform InstanceCpuPlatform `json:"cpu_platform,omitzero" yaml:"cpu_platform,omitzero"`
+	Description string              `json:"description"           yaml:"description"`
 	// Disks is a list of disks to be attached to the instance.
 	//
 	// Disk attachments of type "create" will be created, while those of type "attach" must already
@@ -6767,7 +6767,7 @@ type InstanceCreate struct {
 	// Ncpus is the number of vCPUs to be allocated to the instance
 	Ncpus InstanceCpuCount `json:"ncpus" yaml:"ncpus"`
 	// NetworkInterfaces is the network interfaces to be created for this instance.
-	NetworkInterfaces InstanceNetworkInterfaceAttachment `json:"network_interfaces,omitempty" yaml:"network_interfaces,omitempty"`
+	NetworkInterfaces InstanceNetworkInterfaceAttachment `json:"network_interfaces,omitzero" yaml:"network_interfaces,omitzero"`
 	// SshPublicKeys is an allowlist of SSH public keys to be transferred to the instance via
 	// cloud-init during
 	// instance creation.
@@ -7130,7 +7130,7 @@ type InstanceNetworkInterfaceCreate struct {
 	//
 	// If not provided, a default configuration will be used, which creates a dual-stack IPv4 / IPv6
 	// interface.
-	IpConfig PrivateIpStackCreate `json:"ip_config,omitempty" yaml:"ip_config,omitempty"`
+	IpConfig PrivateIpStackCreate `json:"ip_config,omitzero" yaml:"ip_config,omitzero"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase
 	// ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID,
 	// but they may contain a UUID. They
@@ -7577,7 +7577,7 @@ type IpPoolCreate struct {
 	// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 	// PoolType is type of IP pool (defaults to Unicast)
-	PoolType IpPoolType `json:"pool_type,omitempty" yaml:"pool_type,omitempty"`
+	PoolType IpPoolType `json:"pool_type,omitzero" yaml:"pool_type,omitzero"`
 }
 
 // IpPoolLinkSilo is the type definition for a IpPoolLinkSilo.
@@ -8034,7 +8034,7 @@ type LinkConfigCreate struct {
 	// Fec is the requested forward-error correction method.  If this is not specified, the standard
 	// FEC for
 	// the underlying media will be applied if it can be determined.
-	Fec LinkFec `json:"fec,omitempty" yaml:"fec,omitempty"`
+	Fec LinkFec `json:"fec,omitzero" yaml:"fec,omitzero"`
 	// LinkName is link name. On ports that are not broken out, this is always phy0. On a 2x
 	// breakout the options
 	// are phy0 and phy1, on 4x phy0-phy3, etc.
@@ -9398,8 +9398,8 @@ type ProbeCreate struct {
 	// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 	// PoolSelector is pool to allocate from.
-	PoolSelector PoolSelector `json:"pool_selector,omitempty" yaml:"pool_selector,omitempty"`
-	Sled         string       `json:"sled"                    yaml:"sled"`
+	PoolSelector PoolSelector `json:"pool_selector,omitzero" yaml:"pool_selector,omitzero"`
+	Sled         string       `json:"sled"                   yaml:"sled"`
 }
 
 // ProbeExternalIp is the type definition for a ProbeExternalIp.
@@ -11458,7 +11458,7 @@ type SwitchPortLinkConfig struct {
 	// Fec is the requested forward-error correction method.  If this is not specified, the standard
 	// FEC for
 	// the underlying media will be applied if it can be determined.
-	Fec LinkFec `json:"fec,omitempty" yaml:"fec,omitempty"`
+	Fec LinkFec `json:"fec,omitzero" yaml:"fec,omitzero"`
 	// LinkName is the name of this link.
 	LinkName Name `json:"link_name" yaml:"link_name"`
 	// LldpLinkConfig is the link-layer discovery protocol service configuration for this link.
@@ -13166,8 +13166,8 @@ type VpcSubnetCreate struct {
 	// Custom routers apply in addition to the VPC-wide *system* router, and have higher priority
 	// than the system router
 	// for an otherwise equal-prefix-length match.
-	CustomRouter NameOrId `json:"custom_router,omitempty" yaml:"custom_router,omitempty"`
-	Description  string   `json:"description"             yaml:"description"`
+	CustomRouter NameOrId `json:"custom_router,omitzero" yaml:"custom_router,omitzero"`
+	Description  string   `json:"description"            yaml:"description"`
 	// Ipv4Block is the IPv4 address range for this subnet.
 	//
 	// It must be allocated from an RFC 1918 private address range, and must not overlap with any
@@ -13204,9 +13204,9 @@ type VpcSubnetUpdate struct {
 	// CustomRouter is an optional router, used to direct packets sent from hosts in this subnet to
 	// any destination address.
 	//
-	CustomRouter NameOrId `json:"custom_router,omitempty" yaml:"custom_router,omitempty"`
-	Description  string   `json:"description,omitempty"   yaml:"description,omitempty"`
-	Name         Name     `json:"name,omitempty"          yaml:"name,omitempty"`
+	CustomRouter NameOrId `json:"custom_router,omitzero" yaml:"custom_router,omitzero"`
+	Description  string   `json:"description,omitempty"  yaml:"description,omitempty"`
+	Name         Name     `json:"name,omitempty"         yaml:"name,omitempty"`
 }
 
 // VpcUpdate is updateable properties of a `Vpc`

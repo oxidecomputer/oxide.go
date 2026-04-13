@@ -57,6 +57,18 @@ func isNullableArray(v *openapi3.SchemaRef) bool {
 	return v.Value.Type.Is("array") && v.Value.Nullable
 }
 
+// resolveSchema recurses into a ref, following references and collapsing single-item allOf fields,
+// until we find the underlying schema.
+func resolveSchema(r *openapi3.SchemaRef) *openapi3.Schema {
+	if r.Ref != "" {
+		return r.Value
+	}
+	if len(r.Value.AllOf) == 1 {
+		return resolveSchema(r.Value.AllOf[0])
+	}
+	return r.Value
+}
+
 // formatStringType converts a string schema to a valid Go type.
 func formatStringType(t *openapi3.Schema) string {
 	switch t.Format {
@@ -101,11 +113,11 @@ func convertToValidGoType(property, typeName string, r *openapi3.SchemaRef) stri
 		}
 	}
 
-	// TODO: Handle AllOf
+	// Handle single-entry allOf (OpenAPI pattern for wrapping a $ref with extra metadata).
+	// Multi-entry allOf is not yet supported.
 	if r.Value.AllOf != nil {
 		if len(r.Value.AllOf) > 1 {
-			fmt.Printf("[WARN] TODO: allOf for %q has more than 1 item\n", property)
-			return "TODO"
+			panic(fmt.Sprintf("[ERROR] allOf for %q has more than 1 item", property))
 		}
 
 		return convertToValidGoType(property, "", r.Value.AllOf[0])

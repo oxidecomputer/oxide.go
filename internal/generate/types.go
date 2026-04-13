@@ -260,6 +260,8 @@ func (f TypeField) StructTag() string {
 		omitDirective = "omitempty"
 	case f.Required || isNullableArray(f.Schema):
 		omitDirective = ""
+	case !f.Required && getObjectType(resolveSchema(f.Schema)) == "one_of":
+		omitDirective = "omitzero"
 	case slices.Contains(omitzeroTypes(), f.Type):
 		omitDirective = "omitzero"
 	default:
