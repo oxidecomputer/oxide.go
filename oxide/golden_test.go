@@ -93,6 +93,27 @@ func timestampComparer() cmp.Option {
 	})
 }
 
+// TestOptionalEnumOmitted asserts that optional enum fields are omitted, rather than serialized to
+// null.
+//
+// Note: as a golden test, this must be updated if the ip_config field changes type in omicron.
+func TestOptionalEnumOmitted(t *testing.T) {
+	nic := InstanceNetworkInterfaceCreate{
+		Name:        "nic0",
+		SubnetName:  "default",
+		VpcName:     "default",
+		Description: "test",
+	}
+	marshalled, err := json.Marshal(nic)
+	require.NoError(t, err)
+
+	var unmarshalled map[string]any
+	require.NoError(t, json.Unmarshal(marshalled, &unmarshalled))
+
+	_, ok := unmarshalled["ip_config"]
+	require.False(t, ok, "ip_config should be omitted when unset, got: %s", string(marshalled))
+}
+
 // stripNulls recursively removes null values from JSON-unmarshaled data. We use this workaround
 // because the SDK and API don't always handle null fields consistently.
 //
