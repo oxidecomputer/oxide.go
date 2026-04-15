@@ -2,6 +2,7 @@ package oxide
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -71,7 +72,6 @@ Content-Type: [application/json]
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			println(header)
 			err := HTTPError{
 				ErrorResponse: tt.fields.ErrorResponse,
 				RawBody:       tt.fields.RawBody,
@@ -238,6 +238,106 @@ func Test_NewHTTPError_correct_type(t *testing.T) {
 
 			var apiError *HTTPError
 			assert.Equal(t, errors.As(err, &apiError), true)
+		})
+	}
+}
+
+func TestHTTPError_Is(t *testing.T) {
+	url, _ := url.Parse("http://127.0.0.1:12220/v1/disks/my-disk")
+
+	makeHTTPError := func(errorCode string) error {
+		return &HTTPError{
+			ErrorResponse: &ErrorResponse{
+				ErrorCode: errorCode,
+				Message:   "test message",
+				RequestId: "test-request-id",
+			},
+			HTTPResponse: &http.Response{
+				StatusCode: 400,
+				Header:     make(http.Header),
+				Request:    &http.Request{Method: http.MethodGet, URL: url},
+			},
+		}
+	}
+
+	makeStatusError := func(statusCode int) error {
+		return &HTTPError{
+			HTTPResponse: &http.Response{
+				StatusCode: statusCode,
+				Header:     make(http.Header),
+				Request:    &http.Request{Method: http.MethodGet, URL: url},
+			},
+		}
+	}
+
+	tests := []struct {
+		name      string
+		err       error
+		target    error
+		wantMatch bool
+	}{
+		{
+			name:      "matches ObjectNotFound",
+			err:       makeHTTPError("ObjectNotFound"),
+			target:    ErrObjectNotFound,
+			wantMatch: true,
+		},
+		{
+			name:      "matches ObjectAlreadyExists",
+			err:       makeHTTPError("ObjectAlreadyExists"),
+			target:    ErrObjectAlreadyExists,
+			wantMatch: true,
+		},
+		{
+			name:      "does not match different oxide error",
+			err:       makeHTTPError("ObjectNotFound"),
+			target:    ErrObjectAlreadyExists,
+			wantMatch: false,
+		},
+		{
+			name:      "does not match non-oxide error",
+			err:       makeHTTPError("ObjectNotFound"),
+			target:    errors.New("ObjectNotFound"),
+			wantMatch: false,
+		},
+		{
+			name:      "handles fmt.Errorf wrapping",
+			err:       fmt.Errorf("creating disk: %w", makeHTTPError("ObjectNotFound")),
+			target:    ErrObjectNotFound,
+			wantMatch: true,
+		},
+		{
+			name:      "matches status 404",
+			err:       makeStatusError(404),
+			target:    ErrHTTP404,
+			wantMatch: true,
+		},
+		{
+			name:      "matches status 500",
+			err:       makeStatusError(500),
+			target:    ErrHTTP500,
+			wantMatch: true,
+		},
+		{
+			name:      "does not match different status",
+			err:       makeStatusError(404),
+			target:    ErrHTTP500,
+			wantMatch: false,
+		},
+		{
+			name:      "status sentinel matches regardless of error_code",
+			err:       makeHTTPError("ObjectNotFound"),
+			target:    ErrHTTP400,
+			wantMatch: true,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if tc.wantMatch {
+				assert.ErrorIs(t, tc.err, tc.target)
+			} else {
+				assert.NotErrorIs(t, tc.err, tc.target)
+			}
 		})
 	}
 }

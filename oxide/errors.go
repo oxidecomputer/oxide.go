@@ -8,6 +8,79 @@ import (
 	"net/http"
 )
 
+// ErrorCode represents an Oxide API error matched by error_code. Use `errors.Is` to test SDK
+// errors against known error codes.
+//
+// These error codes are derived from the Error enum in omicron:
+// https://github.com/oxidecomputer/omicron/blob/0ef43032/common/src/api/external/error.rs
+//
+// Some upstream variants (e.g. TypeVersionMismatch) are omitted because they serialize
+// to the same error_code as another variant and can't be disambiguated. We also omit the "Not
+// Found" code as described below.
+//
+// TODO: Encode error types in the OpenAPI spec upstream so that we don't have to maintain this
+// mapping in the SDK.
+type ErrorCode struct {
+	code string
+}
+
+func (e *ErrorCode) Error() string {
+	return e.code
+}
+
+var (
+	// ErrObjectNotFound indicates that the requested resource doesn't exist. Note that this doesn't
+	// cover all possible 404 errors from the API. Omicron also uses a generic "Not Found" error
+	// code to represent non-resource not found errors, such as SCIM authz errors and errors from
+	// internal endpoints. The web server also returns a 404 without an error code when the request
+	// path doesn't match any known route. However, these errors are semantically distinct from
+	// ErrObjectNotFound, and represent internal errors that the SDK shouldn't be concerned with.
+	ErrObjectNotFound       error = &ErrorCode{"ObjectNotFound"}
+	ErrObjectAlreadyExists  error = &ErrorCode{"ObjectAlreadyExists"}
+	ErrInvalidRequest       error = &ErrorCode{"InvalidRequest"}
+	ErrInvalidValue         error = &ErrorCode{"InvalidValue"}
+	ErrUnauthenticated      error = &ErrorCode{"Unauthorized"}
+	ErrForbidden            error = &ErrorCode{"Forbidden"}
+	ErrInternalError        error = &ErrorCode{"Internal"}
+	ErrServiceUnavailable   error = &ErrorCode{"ServiceNotAvailable"}
+	ErrInsufficientCapacity error = &ErrorCode{"InsufficientCapacity"}
+	ErrConflict             error = &ErrorCode{"Conflict"}
+	ErrGone                 error = &ErrorCode{"Gone"}
+)
+
+// StatusError represents an Oxide API error matched by HTTP status code. Use `errors.Is` to
+// test SDK errors against known statuses.
+type StatusError struct {
+	status int
+}
+
+func (e *StatusError) Error() string {
+	return fmt.Sprintf("HTTP %d", e.status)
+}
+
+var (
+	ErrHTTP400 error = &StatusError{400}
+	ErrHTTP401 error = &StatusError{401}
+	ErrHTTP403 error = &StatusError{403}
+	ErrHTTP404 error = &StatusError{404}
+	ErrHTTP409 error = &StatusError{409}
+	ErrHTTP410 error = &StatusError{410}
+	ErrHTTP500 error = &StatusError{500}
+	ErrHTTP503 error = &StatusError{503}
+	ErrHTTP507 error = &StatusError{507}
+)
+
+// Is implements errors.Is. We allow testing against both error code and http status errors.
+func (e *HTTPError) Is(target error) bool {
+	switch t := target.(type) {
+	case *ErrorCode:
+		return e.ErrorResponse != nil && e.ErrorResponse.ErrorCode == t.code
+	case *StatusError:
+		return e.HTTPResponse != nil && e.HTTPResponse.StatusCode == t.status
+	}
+	return false
+}
+
 // HTTPError is an error returned by a failed API call.
 type HTTPError struct {
 	// ErrorResponse is the API's Error response type.
