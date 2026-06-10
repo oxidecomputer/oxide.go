@@ -1646,11 +1646,11 @@ type BgpImported struct {
 type BgpMessageHistory string
 
 // BgpPeer is a BGP peer configuration for an interface. Includes the set of announcements that will
-// be advertised to the peer identified by `addr`. The `bgp_config` parameter is a reference to
-// global BGP parameters.
-// The `interface_name` indicates what interface the peer should be contacted on.
+// be
+// advertised to the peer. The `bgp_config` parameter is a reference to global BGP parameters.
 //
 // Required fields:
+// - Addr
 // - AllowedExport
 // - AllowedImport
 // - BgpConfig
@@ -1660,14 +1660,12 @@ type BgpMessageHistory string
 // - EnforceFirstAs
 // - HoldTime
 // - IdleHoldTime
-// - InterfaceName
 // - Keepalive
-// - RouterLifetime
 type BgpPeer struct {
-	// Addr is the address of the host to peer with. If not provided, this is an unnumbered BGP
-	// session that will
-	// be established over the interface specified by `interface_name`.
-	Addr string `json:"addr,omitempty" yaml:"addr,omitempty"`
+	// Addr is the address of the host to peer with, or specifying the configuration of an
+	// unnumbered BGP session.
+	//
+	Addr RouterPeerType `json:"addr" yaml:"addr"`
 	// AllowedExport is define export policy for a peer.
 	AllowedExport ImportExportPolicy `json:"allowed_export" yaml:"allowed_export"`
 	// AllowedImport is define import policy for a peer.
@@ -1676,7 +1674,7 @@ type BgpPeer struct {
 	BgpConfig NameOrId `json:"bgp_config" yaml:"bgp_config"`
 	// Communities is include the provided communities in updates sent to the peer.
 	Communities []int `json:"communities" yaml:"communities"`
-	// ConnectRetry is how long to to wait between TCP connection retries (seconds).
+	// ConnectRetry is how long to wait between TCP connection retries (seconds).
 	ConnectRetry *int `json:"connect_retry" yaml:"connect_retry"`
 	// DelayOpen is how long to delay sending an open request after establishing a TCP session
 	// (seconds).
@@ -1688,11 +1686,6 @@ type BgpPeer struct {
 	HoldTime *int `json:"hold_time" yaml:"hold_time"`
 	// IdleHoldTime is how long to hold a peer in idle before attempting a new session (seconds).
 	IdleHoldTime *int `json:"idle_hold_time" yaml:"idle_hold_time"`
-	// InterfaceName is the name of interface to peer on. This is relative to the port configuration
-	// this BGP peer configuration is a part of. For example this value could be phy0 to refer to a
-	// primary physical interface.
-	// Or it could be vlan47 to refer to a VLAN interface.
-	InterfaceName Name `json:"interface_name" yaml:"interface_name"`
 	// Keepalive is how often to send keepalive requests (seconds).
 	Keepalive *int `json:"keepalive" yaml:"keepalive"`
 	// LocalPref is apply a local preference to routes received from this peer.
@@ -1706,8 +1699,6 @@ type BgpPeer struct {
 	MultiExitDiscriminator *int `json:"multi_exit_discriminator,omitempty" yaml:"multi_exit_discriminator,omitempty"`
 	// RemoteAsn is require that a peer has a specified ASN.
 	RemoteAsn *int `json:"remote_asn,omitempty" yaml:"remote_asn,omitempty"`
-	// RouterLifetime is router lifetime in seconds for unnumbered BGP peers.
-	RouterLifetime *int `json:"router_lifetime" yaml:"router_lifetime"`
 	// VlanId is associate a VLAN ID with a peer.
 	VlanId *int `json:"vlan_id,omitempty" yaml:"vlan_id,omitempty"`
 }
@@ -3136,7 +3127,7 @@ type Binuint8 struct {
 	Range BinRangeuint8 `json:"range" yaml:"range"`
 }
 
-// BlockSize is the type definition for a BlockSize.
+// BlockSize is valid values are: 512, 2048, or 4096.
 type BlockSize int
 
 // ByteCount is byte count to express memory or storage capacity.
@@ -4132,8 +4123,8 @@ func (v Digest) AsSha256() (*DigestSha256, bool) {
 // - TimeCreated
 // - TimeModified
 type Disk struct {
-	// BlockSize is byte count to express memory or storage capacity.
-	BlockSize ByteCount `json:"block_size" yaml:"block_size"`
+	// BlockSize is valid values are: 512, 2048, or 4096.
+	BlockSize BlockSize `json:"block_size" yaml:"block_size"`
 	// Description is human-readable free-form text about a resource
 	Description string   `json:"description" yaml:"description"`
 	DevicePath  string   `json:"device_path" yaml:"device_path"`
@@ -4335,6 +4326,7 @@ func (DiskSourceImage) isDiskSourceVariant() {}
 
 // DiskSourceImportingBlocks is a variant of DiskSource.
 type DiskSourceImportingBlocks struct {
+	// BlockSize is valid values are: 512, 2048, or 4096.
 	BlockSize BlockSize `json:"block_size" yaml:"block_size"`
 }
 
@@ -6351,7 +6343,7 @@ func (v IdpMetadataSource) AsBase64EncodedXml() (*IdpMetadataSourceBase64Encoded
 // - Version
 type Image struct {
 	// BlockSize is size of blocks in bytes
-	BlockSize ByteCount `json:"block_size" yaml:"block_size"`
+	BlockSize BlockSize `json:"block_size" yaml:"block_size"`
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description" yaml:"description"`
 	// Digest is hash of the image contents, if applicable
@@ -6605,6 +6597,7 @@ func (v ImportExportPolicy) AsAllow() (*ImportExportPolicyAllow, bool) {
 // Required fields:
 // - AutoRestartEnabled
 // - Description
+// - EnableJumboFrames
 // - Hostname
 // - Id
 // - Memory
@@ -6648,6 +6641,12 @@ type Instance struct {
 	CpuPlatform InstanceCpuPlatform `json:"cpu_platform,omitzero" yaml:"cpu_platform,omitzero"`
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description" yaml:"description"`
+	// EnableJumboFrames is when true, this instance has opted in to jumbo frames (8500 byte MTU) on
+	// its primary network interface. The effective MTU also depends on the fleet-wide jumbo-frames
+	// opt-in; if that is disabled, the primary interface uses the default MTU regardless of this
+	// value. Changes only take effect on the next instance
+	// restart.
+	EnableJumboFrames *bool `json:"enable_jumbo_frames" yaml:"enable_jumbo_frames"`
 	// Hostname is rFC1035-compliant hostname for the instance
 	Hostname string `json:"hostname" yaml:"hostname"`
 	// Id is unique, immutable, system-controlled identifier for each resource
@@ -6744,6 +6743,11 @@ type InstanceCreate struct {
 	// attribute to specify a boot disk. When boot_disk is specified it will count against the disk
 	// attachment limit.
 	Disks []InstanceDiskAttachment `json:"disks,omitempty" yaml:"disks,omitempty"`
+	// EnableJumboFrames is enable jumbo frames (8500 byte MTU) on the instance's primary OPTE
+	// interface. Requires the fleet-wide jumbo-frames opt-in to be enabled by an operator;
+	// otherwise this field must be `false`. Changes
+	// only take effect on the next instance restart.
+	EnableJumboFrames *bool `json:"enable_jumbo_frames,omitempty" yaml:"enable_jumbo_frames,omitempty"`
 	// ExternalIps is the external IP addresses provided to this instance.
 	//
 	// By default, all instances have outbound connectivity, but no inbound connectivity. These
@@ -7212,6 +7216,7 @@ type InstanceState string
 // - AutoRestartPolicy
 // - BootDisk
 // - CpuPlatform
+// - EnableJumboFrames
 // - Memory
 // - Ncpus
 type InstanceUpdate struct {
@@ -7246,6 +7251,10 @@ type InstanceUpdate struct {
 	// general CPU platform supported by
 	// the sled it is initially placed on.
 	CpuPlatform *InstanceCpuPlatform `json:"cpu_platform" yaml:"cpu_platform"`
+	// EnableJumboFrames is update the per-instance jumbo-frames opt-in. Setting this to `true`
+	// requires the fleet-wide jumbo-frames opt-in to be enabled. Changes only take effect on the
+	// next instance restart.
+	EnableJumboFrames *bool `json:"enable_jumbo_frames" yaml:"enable_jumbo_frames"`
 	// Memory is the amount of RAM (in bytes) to be allocated to the instance
 	Memory ByteCount `json:"memory" yaml:"memory"`
 	// MulticastGroups is multicast groups this instance should join.
@@ -8643,8 +8652,48 @@ type PhysicalDisk struct {
 	Vendor       string     `json:"vendor"        yaml:"vendor"`
 }
 
+// PhysicalDiskAdoptionRequest is a request to adopt a physical disk into the control plane
+//
+// Required fields:
+// - DiskId
+// - Id
+// - TimeCreated
+type PhysicalDiskAdoptionRequest struct {
+	// DiskId is the unique identity of a physical disk provided by the manufacturer
+	DiskId      PhysicalDiskManufacturerIdentity `json:"disk_id"      yaml:"disk_id"`
+	Id          PhysicalDiskAdoptionRequestUuid  `json:"id"           yaml:"id"`
+	TimeCreated *time.Time                       `json:"time_created" yaml:"time_created"`
+}
+
+// PhysicalDiskAdoptionRequestResultsPage is a single page of results
+//
+// Required fields:
+// - Items
+type PhysicalDiskAdoptionRequestResultsPage struct {
+	// Items is list of items on this page of results
+	Items []PhysicalDiskAdoptionRequest `json:"items" yaml:"items"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// PhysicalDiskAdoptionRequestUuid is the type definition for a PhysicalDiskAdoptionRequestUuid.
+type PhysicalDiskAdoptionRequestUuid string
+
 // PhysicalDiskKind is describes the form factor of physical disks.
 type PhysicalDiskKind string
+
+// PhysicalDiskManufacturerIdentity is the unique identity of a physical disk provided by the
+// manufacturer
+//
+// Required fields:
+// - Model
+// - Serial
+// - Vendor
+type PhysicalDiskManufacturerIdentity struct {
+	Model  string `json:"model"  yaml:"model"`
+	Serial string `json:"serial" yaml:"serial"`
+	Vendor string `json:"vendor" yaml:"vendor"`
+}
 
 // physicalDiskPolicyVariant is implemented by PhysicalDiskPolicy variants.
 type physicalDiskPolicyVariant interface {
@@ -9361,7 +9410,7 @@ type PrivateIpv6StackCreate struct {
 	TransitIps []Ipv6Net `json:"transit_ips,omitempty" yaml:"transit_ips,omitempty"`
 }
 
-// Probe is identity-related metadata that's included in nearly all public API objects
+// Probe is a networking probe
 //
 // Required fields:
 // - Description
@@ -10009,6 +10058,111 @@ func (v RouteTarget) AsDrop() (*RouteTargetDrop, bool) {
 	return val, ok
 }
 
+// RouterLifetimeConfig is router lifetime in seconds for unnumbered BGP peers
+type RouterLifetimeConfig uint16
+
+// routerPeerTypeVariant is implemented by RouterPeerType variants.
+type routerPeerTypeVariant interface {
+	isRouterPeerTypeVariant()
+}
+
+// RouterPeerTypeType is the type definition for a RouterPeerTypeType.
+type RouterPeerTypeType string
+
+// RouterPeerTypeUnnumbered is a variant of RouterPeerType.
+type RouterPeerTypeUnnumbered struct {
+	// RouterLifetime is router lifetime in seconds for unnumbered BGP peers.
+	RouterLifetime RouterLifetimeConfig `json:"router_lifetime" yaml:"router_lifetime"`
+}
+
+func (RouterPeerTypeUnnumbered) isRouterPeerTypeVariant() {}
+
+// RouterPeerTypeNumbered is a variant of RouterPeerType.
+type RouterPeerTypeNumbered struct {
+	// Ip is iP address for numbered BGP peers.
+	Ip string `json:"ip" yaml:"ip"`
+}
+
+func (RouterPeerTypeNumbered) isRouterPeerTypeVariant() {}
+
+// RouterPeerType is the type definition for a RouterPeerType.
+type RouterPeerType struct {
+	Value routerPeerTypeVariant
+}
+
+func (v RouterPeerType) Type() RouterPeerTypeType {
+	switch v.Value.(type) {
+	case RouterPeerTypeUnnumbered, *RouterPeerTypeUnnumbered:
+		return RouterPeerTypeTypeUnnumbered
+	case RouterPeerTypeNumbered, *RouterPeerTypeNumbered:
+		return RouterPeerTypeTypeNumbered
+	default:
+		return ""
+	}
+}
+
+func (v *RouterPeerType) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"type"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value routerPeerTypeVariant
+	switch d.Type {
+	case "unnumbered":
+		value = &RouterPeerTypeUnnumbered{}
+	case "numbered":
+		value = &RouterPeerTypeNumbered{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'unnumbered' or 'numbered'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v RouterPeerType) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["type"] = v.Type()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsUnnumbered attempts to convert the RouterPeerType to a RouterPeerTypeUnnumbered.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v RouterPeerType) AsUnnumbered() (*RouterPeerTypeUnnumbered, bool) {
+	val, ok := v.Value.(*RouterPeerTypeUnnumbered)
+	return val, ok
+}
+
+// AsNumbered attempts to convert the RouterPeerType to a RouterPeerTypeNumbered.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v RouterPeerType) AsNumbered() (*RouterPeerTypeNumbered, bool) {
+	val, ok := v.Value.(*RouterPeerTypeNumbered)
+	return val, ok
+}
+
 // RouterRoute is a route defines a rule that governs where traffic should be sent based on its
 // destination.
 //
@@ -10095,8 +10249,7 @@ type RouterRouteUpdate struct {
 	Target RouteTarget `json:"target" yaml:"target"`
 }
 
-// SamlIdentityProvider is identity-related metadata that's included in nearly all public API
-// objects
+// SamlIdentityProvider is a SAML identity provider
 //
 // Required fields:
 // - AcsUrl
@@ -10798,6 +10951,9 @@ type SledResultsPage struct {
 // SledState is the sled is currently active, and has resources allocated on it.
 type SledState string
 
+// SledUuid is the type definition for a SledUuid.
+type SledUuid string
+
 // Snapshot is view of a Snapshot
 //
 // Required fields:
@@ -11207,7 +11363,7 @@ type SwitchInterfaceConfig struct {
 	// InterfaceName is the name of this switch interface.
 	InterfaceName Name `json:"interface_name" yaml:"interface_name"`
 	// Kind is the switch interface kind.
-	Kind SwitchInterfaceKind2 `json:"kind" yaml:"kind"`
+	Kind SwitchInterfaceKind `json:"kind" yaml:"kind"`
 	// PortSettingsId is the port settings object this switch interface configuration belongs to.
 	PortSettingsId string `json:"port_settings_id" yaml:"port_settings_id"`
 	// V6Enabled is whether or not IPv6 is enabled on this interface.
@@ -11352,11 +11508,6 @@ func (v SwitchInterfaceKind) AsLoopback() (*SwitchInterfaceKindLoopback, bool) {
 	return val, ok
 }
 
-// SwitchInterfaceKind2 is primary interfaces are associated with physical links. There is exactly
-// one primary
-// interface per physical link.
-type SwitchInterfaceKind2 string
-
 // SwitchLinkState is the type definition for a SwitchLinkState.
 type SwitchLinkState string
 
@@ -11424,7 +11575,7 @@ type SwitchPortApplySettings struct {
 // - PortSettingsId
 type SwitchPortConfig struct {
 	// Geometry is the physical link geometry of the port.
-	Geometry SwitchPortGeometry2 `json:"geometry" yaml:"geometry"`
+	Geometry SwitchPortGeometry `json:"geometry" yaml:"geometry"`
 	// PortSettingsId is the id of the port settings object this configuration belongs to.
 	PortSettingsId string `json:"port_settings_id" yaml:"port_settings_id"`
 }
@@ -11440,9 +11591,6 @@ type SwitchPortConfigCreate struct {
 
 // SwitchPortGeometry is the port contains a single QSFP28 link with four lanes.
 type SwitchPortGeometry string
-
-// SwitchPortGeometry2 is the port contains a single QSFP28 link with four lanes.
-type SwitchPortGeometry2 string
 
 // SwitchPortLinkConfig is a link configuration for a port settings object.
 //
@@ -11470,7 +11618,7 @@ type SwitchPortLinkConfig struct {
 	// Speed is the configured speed of the link.
 	Speed LinkSpeed `json:"speed" yaml:"speed"`
 	// TxEqConfig is the tx_eq configuration for this link.
-	TxEqConfig *TxEqConfig2 `json:"tx_eq_config,omitempty" yaml:"tx_eq_config,omitempty"`
+	TxEqConfig *TxEqConfig `json:"tx_eq_config,omitempty" yaml:"tx_eq_config,omitempty"`
 }
 
 // SwitchPortResultsPage is a single page of results
@@ -11526,7 +11674,6 @@ type SwitchPortRouteConfig struct {
 // - Routes
 // - TimeCreated
 // - TimeModified
-// - VlanInterfaces
 type SwitchPortSettings struct {
 	// Addresses is layer 3 IP address settings.
 	Addresses []SwitchPortAddressView `json:"addresses" yaml:"addresses"`
@@ -11552,8 +11699,6 @@ type SwitchPortSettings struct {
 	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
 	// TimeModified is timestamp when this resource was last modified
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
-	// VlanInterfaces is vlan interface settings.
-	VlanInterfaces []SwitchVlanInterfaceConfig `json:"vlan_interfaces" yaml:"vlan_interfaces"`
 }
 
 // SwitchPortSettingsCreate is parameters for creating switch port settings. Switch port settings
@@ -11652,25 +11797,28 @@ type SwitchResultsPage struct {
 // SwitchSlot is switch in upper slot
 type SwitchSlot string
 
-// SwitchVlanInterfaceConfig is a switch port VLAN interface configuration for a port settings
-// object.
-//
-// Required fields:
-// - InterfaceConfigId
-// - VlanId
-type SwitchVlanInterfaceConfig struct {
-	// InterfaceConfigId is the switch interface configuration this VLAN interface configuration
-	// belongs to.
-	//
-	InterfaceConfigId string `json:"interface_config_id" yaml:"interface_config_id"`
-	// VlanId is the virtual network id for this interface that is used for producing and consuming
-	// 802.1Q Ethernet
-	// tags. This field has a maximum value of 4095 as 802.1Q tags are twelve bits.
-	VlanId *int `json:"vlan_id" yaml:"vlan_id"`
-}
-
 // SystemMetricName is the type definition for a SystemMetricName.
 type SystemMetricName string
+
+// SystemNetworkingSettings is fleet-wide networking settings. Only fleet viewers may view these
+// settings. Only
+// fleet admins can modify them.
+//
+// Required fields:
+// - ExternalJumboFramesOptInEnabled
+type SystemNetworkingSettings struct {
+	// ExternalJumboFramesOptInEnabled is when true, end users may opt in to jumbo frames (8500 byte
+	// MTU) on the primary interface of an instance. When false, instance-level opt-in is ignored
+	// and OPTE ports are created
+	// with the default MTU.
+	ExternalJumboFramesOptInEnabled *bool `json:"external_jumbo_frames_opt_in_enabled" yaml:"external_jumbo_frames_opt_in_enabled"`
+}
+
+// SystemNetworkingSettingsUpdate is parameters for updating the fleet-wide networking settings.
+type SystemNetworkingSettingsUpdate struct {
+	// ExternalJumboFramesOptInEnabled is toggle the fleet-wide external jumbo-frames opt-in.
+	ExternalJumboFramesOptInEnabled *bool `json:"external_jumbo_frames_opt_in_enabled,omitempty" yaml:"external_jumbo_frames_opt_in_enabled,omitempty"`
+}
 
 // TargetRelease is view of a system software target release
 //
@@ -11844,20 +11992,31 @@ type TxEqConfig struct {
 	Pre2 *int `json:"pre2,omitempty" yaml:"pre2,omitempty"`
 }
 
-// TxEqConfig2 is per-port tx-eq overrides.  This can be used to fine-tune the transceiver
-// equalization settings
-// to improve signal integrity.
-type TxEqConfig2 struct {
-	// Main is main tap
-	Main *int `json:"main,omitempty" yaml:"main,omitempty"`
-	// Post1 is post-cursor tap1
-	Post1 *int `json:"post1,omitempty" yaml:"post1,omitempty"`
-	// Post2 is post-cursor tap2
-	Post2 *int `json:"post2,omitempty" yaml:"post2,omitempty"`
-	// Pre1 is pre-cursor tap1
-	Pre1 *int `json:"pre1,omitempty" yaml:"pre1,omitempty"`
-	// Pre2 is pre-cursor tap2
-	Pre2 *int `json:"pre2,omitempty" yaml:"pre2,omitempty"`
+// UnadoptedPhysicalDisk is a physical disk that has not yet been adopted by the control plane
+//
+// Required fields:
+// - DiskId
+// - SledId
+// - Slot
+// - Variant
+type UnadoptedPhysicalDisk struct {
+	// DiskId is the unique identity of a physical disk provided by the manufacturer
+	DiskId PhysicalDiskManufacturerIdentity `json:"disk_id" yaml:"disk_id"`
+	SledId SledUuid                         `json:"sled_id" yaml:"sled_id"`
+	Slot   *int                             `json:"slot"    yaml:"slot"`
+	// Variant is describes the form factor of physical disks.
+	Variant PhysicalDiskKind `json:"variant" yaml:"variant"`
+}
+
+// UnadoptedPhysicalDiskResultsPage is a single page of results
+//
+// Required fields:
+// - Items
+type UnadoptedPhysicalDiskResultsPage struct {
+	// Items is list of items on this page of results
+	Items []UnadoptedPhysicalDisk `json:"items" yaml:"items"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
 // UninitializedSled is a sled that has not been added to an initialized rack yet
@@ -11891,6 +12050,7 @@ type Units string
 //
 // Required fields:
 // - ComponentsByReleaseVersion
+// - ContactSupport
 // - Suspended
 // - TargetRelease
 // - TimeLastStepPlanned
@@ -11904,6 +12064,15 @@ type UpdateStatus struct {
 	// matches the software running on the component)
 	//
 	ComponentsByReleaseVersion map[string]*int `json:"components_by_release_version" yaml:"components_by_release_version"`
+	// ContactSupport is if true, the system has detected one or more known conditions that require
+	// Oxide support
+	// to resolve
+	//
+	// You should contact support to resolve these issues before proceeding with an update, or after
+	// one has completed. The checks underlying this field are not exhaustive, so this being `false`
+	// does not mean the entire system is
+	// completely healthy.
+	ContactSupport *bool `json:"contact_support" yaml:"contact_support"`
 	// Suspended is whether automatic update is suspended due to manual update activity
 	//
 	// After a manual support procedure that changes the system software, automatic update activity
@@ -14792,11 +14961,41 @@ type AuditLogListParams struct {
 	StartTime *time.Time        `json:"start_time,omitempty" yaml:"start_time,omitempty"`
 }
 
+// PhysicalDiskEnableAdoptionParams is the request parameters for PhysicalDiskEnableAdoption
+//
+// Required fields:
+// - Body
+type PhysicalDiskEnableAdoptionParams struct {
+	Body *PhysicalDiskManufacturerIdentity `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// PhysicalDiskDisableAdoptionParams is the request parameters for PhysicalDiskDisableAdoption
+//
+// Required fields:
+// - PhysicalDiskAdoptionReqId
+type PhysicalDiskDisableAdoptionParams struct {
+	PhysicalDiskAdoptionReqId string `json:"physical_disk_adoption_req_id,omitempty" yaml:"physical_disk_adoption_req_id,omitempty"`
+}
+
+// PhysicalDiskListAdoptionRequestsParams is the request parameters for
+// PhysicalDiskListAdoptionRequests
+type PhysicalDiskListAdoptionRequestsParams struct {
+	Limit     *int       `json:"limit,omitempty"      yaml:"limit,omitempty"`
+	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    IdSortMode `json:"sort_by,omitempty"    yaml:"sort_by,omitempty"`
+}
+
 // PhysicalDiskListParams is the request parameters for PhysicalDiskList
 type PhysicalDiskListParams struct {
 	Limit     *int       `json:"limit,omitempty"      yaml:"limit,omitempty"`
 	PageToken string     `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 	SortBy    IdSortMode `json:"sort_by,omitempty"    yaml:"sort_by,omitempty"`
+}
+
+// PhysicalDiskListUnadoptedParams is the request parameters for PhysicalDiskListUnadopted
+type PhysicalDiskListUnadoptedParams struct {
+	Limit     *int   `json:"limit,omitempty"      yaml:"limit,omitempty"`
+	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
 }
 
 // PhysicalDiskViewParams is the request parameters for PhysicalDiskView
@@ -15404,6 +15603,14 @@ type NetworkingLoopbackAddressDeleteParams struct {
 	RackId     string     `json:"rack_id,omitempty"     yaml:"rack_id,omitempty"`
 	SubnetMask *int       `json:"subnet_mask,omitempty" yaml:"subnet_mask,omitempty"`
 	SwitchSlot SwitchSlot `json:"switch_slot,omitempty" yaml:"switch_slot,omitempty"`
+}
+
+// SystemNetworkingSettingsUpdateParams is the request parameters for SystemNetworkingSettingsUpdate
+//
+// Required fields:
+// - Body
+type SystemNetworkingSettingsUpdateParams struct {
+	Body *SystemNetworkingSettingsUpdate `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // NetworkingSwitchPortSettingsDeleteParams is the request parameters for
@@ -17684,8 +17891,46 @@ func (p *AuditLogListParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for PhysicalDiskEnableAdoptionParams are set
+func (p *PhysicalDiskEnableAdoptionParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for PhysicalDiskDisableAdoptionParams are set
+func (p *PhysicalDiskDisableAdoptionParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.PhysicalDiskAdoptionReqId), "PhysicalDiskAdoptionReqId")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for PhysicalDiskListAdoptionRequestsParams are set
+func (p *PhysicalDiskListAdoptionRequestsParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for PhysicalDiskListParams are set
 func (p *PhysicalDiskListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for PhysicalDiskListUnadoptedParams are set
+func (p *PhysicalDiskListUnadoptedParams) Validate() error {
 	v := new(Validator)
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
@@ -18356,6 +18601,16 @@ func (p *NetworkingLoopbackAddressDeleteParams) Validate() error {
 	v.HasRequiredStr(string(p.RackId), "RackId")
 	v.HasRequiredStr(string(p.SwitchSlot), "SwitchSlot")
 	v.HasRequiredNum(p.SubnetMask, "SubnetMask")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SystemNetworkingSettingsUpdateParams are set
+func (p *SystemNetworkingSettingsUpdateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -19738,6 +19993,9 @@ const InstanceCpuPlatformAmdMilan InstanceCpuPlatform = "amd_milan"
 // InstanceCpuPlatformAmdTurin represents the InstanceCpuPlatform `"amd_turin"`.
 const InstanceCpuPlatformAmdTurin InstanceCpuPlatform = "amd_turin"
 
+// InstanceCpuPlatformAmdTurinV2 represents the InstanceCpuPlatform `"amd_turin_v2"`.
+const InstanceCpuPlatformAmdTurinV2 InstanceCpuPlatform = "amd_turin_v2"
+
 // InstanceDiskAttachmentTypeCreate represents the InstanceDiskAttachmentType `"create"`.
 const InstanceDiskAttachmentTypeCreate InstanceDiskAttachmentType = "create"
 
@@ -20004,6 +20262,12 @@ const RouteTargetTypeInternetGateway RouteTargetType = "internet_gateway"
 // RouteTargetTypeDrop represents the RouteTargetType `"drop"`.
 const RouteTargetTypeDrop RouteTargetType = "drop"
 
+// RouterPeerTypeTypeUnnumbered represents the RouterPeerTypeType `"unnumbered"`.
+const RouterPeerTypeTypeUnnumbered RouterPeerTypeType = "unnumbered"
+
+// RouterPeerTypeTypeNumbered represents the RouterPeerTypeType `"numbered"`.
+const RouterPeerTypeTypeNumbered RouterPeerTypeType = "numbered"
+
 // RouterRouteKindDefault represents the RouterRouteKind `"default"`.
 const RouterRouteKindDefault RouterRouteKind = "default"
 
@@ -20091,15 +20355,6 @@ const SwitchInterfaceKindTypeVlan SwitchInterfaceKindType = "vlan"
 // SwitchInterfaceKindTypeLoopback represents the SwitchInterfaceKindType `"loopback"`.
 const SwitchInterfaceKindTypeLoopback SwitchInterfaceKindType = "loopback"
 
-// SwitchInterfaceKind2Primary represents the SwitchInterfaceKind2 `"primary"`.
-const SwitchInterfaceKind2Primary SwitchInterfaceKind2 = "primary"
-
-// SwitchInterfaceKind2Vlan represents the SwitchInterfaceKind2 `"vlan"`.
-const SwitchInterfaceKind2Vlan SwitchInterfaceKind2 = "vlan"
-
-// SwitchInterfaceKind2Loopback represents the SwitchInterfaceKind2 `"loopback"`.
-const SwitchInterfaceKind2Loopback SwitchInterfaceKind2 = "loopback"
-
 // SwitchPortGeometryQsfp28X1 represents the SwitchPortGeometry `"qsfp28x1"`.
 const SwitchPortGeometryQsfp28X1 SwitchPortGeometry = "qsfp28x1"
 
@@ -20108,15 +20363,6 @@ const SwitchPortGeometryQsfp28X2 SwitchPortGeometry = "qsfp28x2"
 
 // SwitchPortGeometrySfp28X4 represents the SwitchPortGeometry `"sfp28x4"`.
 const SwitchPortGeometrySfp28X4 SwitchPortGeometry = "sfp28x4"
-
-// SwitchPortGeometry2Qsfp28X1 represents the SwitchPortGeometry2 `"qsfp28x1"`.
-const SwitchPortGeometry2Qsfp28X1 SwitchPortGeometry2 = "qsfp28x1"
-
-// SwitchPortGeometry2Qsfp28X2 represents the SwitchPortGeometry2 `"qsfp28x2"`.
-const SwitchPortGeometry2Qsfp28X2 SwitchPortGeometry2 = "qsfp28x2"
-
-// SwitchPortGeometry2Sfp28X4 represents the SwitchPortGeometry2 `"sfp28x4"`.
-const SwitchPortGeometry2Sfp28X4 SwitchPortGeometry2 = "sfp28x4"
 
 // SwitchSlotSwitch0 represents the SwitchSlot `"switch0"`.
 const SwitchSlotSwitch0 SwitchSlot = "switch0"
@@ -20169,6 +20415,9 @@ const UnitsWatts Units = "watts"
 
 // UnitsDegreesCelsius represents the Units `"degrees_celsius"`.
 const UnitsDegreesCelsius Units = "degrees_celsius"
+
+// UnitsJoules represents the Units `"joules"`.
+const UnitsJoules Units = "joules"
 
 // UnitsNone represents the Units `"none"`.
 const UnitsNone Units = "none"
@@ -20658,6 +20907,7 @@ var InstanceAutoRestartPolicyCollection = []InstanceAutoRestartPolicy{
 var InstanceCpuPlatformCollection = []InstanceCpuPlatform{
 	InstanceCpuPlatformAmdMilan,
 	InstanceCpuPlatformAmdTurin,
+	InstanceCpuPlatformAmdTurinV2,
 }
 
 // InstanceDiskAttachmentTypeCollection is the collection of all InstanceDiskAttachmentType values.
@@ -20856,6 +21106,12 @@ var RouteTargetTypeCollection = []RouteTargetType{
 	RouteTargetTypeVpc,
 }
 
+// RouterPeerTypeTypeCollection is the collection of all RouterPeerTypeType values.
+var RouterPeerTypeTypeCollection = []RouterPeerTypeType{
+	RouterPeerTypeTypeNumbered,
+	RouterPeerTypeTypeUnnumbered,
+}
+
 // RouterRouteKindCollection is the collection of all RouterRouteKind values.
 var RouterRouteKindCollection = []RouterRouteKind{
 	RouterRouteKindCustom,
@@ -20918,13 +21174,6 @@ var SupportBundleStateCollection = []SupportBundleState{
 	SupportBundleStateFailed,
 }
 
-// SwitchInterfaceKind2Collection is the collection of all SwitchInterfaceKind2 values.
-var SwitchInterfaceKind2Collection = []SwitchInterfaceKind2{
-	SwitchInterfaceKind2Loopback,
-	SwitchInterfaceKind2Primary,
-	SwitchInterfaceKind2Vlan,
-}
-
 // SwitchInterfaceKindTypeCollection is the collection of all SwitchInterfaceKindType values.
 var SwitchInterfaceKindTypeCollection = []SwitchInterfaceKindType{
 	SwitchInterfaceKindTypeLoopback,
@@ -20937,13 +21186,6 @@ var SwitchPortGeometryCollection = []SwitchPortGeometry{
 	SwitchPortGeometryQsfp28X1,
 	SwitchPortGeometryQsfp28X2,
 	SwitchPortGeometrySfp28X4,
-}
-
-// SwitchPortGeometry2Collection is the collection of all SwitchPortGeometry2 values.
-var SwitchPortGeometry2Collection = []SwitchPortGeometry2{
-	SwitchPortGeometry2Qsfp28X1,
-	SwitchPortGeometry2Qsfp28X2,
-	SwitchPortGeometry2Sfp28X4,
 }
 
 // SwitchSlotCollection is the collection of all SwitchSlot values.
@@ -20977,6 +21219,7 @@ var UnitsCollection = []Units{
 	UnitsBytes,
 	UnitsCount,
 	UnitsDegreesCelsius,
+	UnitsJoules,
 	UnitsNanoseconds,
 	UnitsNone,
 	UnitsRpm,

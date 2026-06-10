@@ -8582,6 +8582,182 @@ func (c *Client) AuditLogListAllPages(
 	return allPages, nil
 }
 
+// PhysicalDiskEnableAdoption: Enable adoption of a physical disk for general use
+func (c *Client) PhysicalDiskEnableAdoption(
+	ctx context.Context,
+	params PhysicalDiskEnableAdoptionParams,
+) (*PhysicalDiskAdoptionRequest, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"PUT",
+		resolveRelative(c.host, "/v1/system/hardware/disk-adoption-request"),
+		map[string]string{},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body PhysicalDiskAdoptionRequest
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// PhysicalDiskDisableAdoption: Disable adoption of a physical disk for general use
+func (c *Client) PhysicalDiskDisableAdoption(
+	ctx context.Context,
+	params PhysicalDiskDisableAdoptionParams,
+) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"DELETE",
+		resolveRelative(
+			c.host,
+			"/v1/system/hardware/disk-adoption-request/{{.physical_disk_adoption_req_id}}",
+		),
+		map[string]string{
+			"physical_disk_adoption_req_id": params.PhysicalDiskAdoptionReqId,
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// PhysicalDiskListAdoptionRequests: List physical disk adoption requests
+//
+// To iterate over all pages, use the `PhysicalDiskListAdoptionRequestsAllPages` method, instead.
+func (c *Client) PhysicalDiskListAdoptionRequests(
+	ctx context.Context,
+	params PhysicalDiskListAdoptionRequestsParams,
+) (*PhysicalDiskAdoptionRequestResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/hardware/disk-adoption-requests"),
+		map[string]string{},
+		map[string]string{
+			"limit":      PointerIntToStr(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body PhysicalDiskAdoptionRequestResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// PhysicalDiskListAdoptionRequestsAllPages: List physical disk adoption requests
+//
+// This method is a wrapper around the `PhysicalDiskListAdoptionRequests` method.
+// This method returns all the pages at once.
+func (c *Client) PhysicalDiskListAdoptionRequestsAllPages(
+	ctx context.Context,
+	params PhysicalDiskListAdoptionRequestsParams,
+) ([]PhysicalDiskAdoptionRequest, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []PhysicalDiskAdoptionRequest
+	params.PageToken = ""
+	params.Limit = NewPointer(100)
+	for {
+		page, err := c.PhysicalDiskListAdoptionRequests(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
+}
+
 // PhysicalDiskList: List physical disks
 //
 // To iterate over all pages, use the `PhysicalDiskListAllPages` method, instead.
@@ -8651,6 +8827,87 @@ func (c *Client) PhysicalDiskListAllPages(
 	params.Limit = NewPointer(100)
 	for {
 		page, err := c.PhysicalDiskList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
+}
+
+// PhysicalDiskListUnadopted: List physical disks that have not yet been adopted for use
+//
+// To iterate over all pages, use the `PhysicalDiskListUnadoptedAllPages` method, instead.
+func (c *Client) PhysicalDiskListUnadopted(
+	ctx context.Context,
+	params PhysicalDiskListUnadoptedParams,
+) (*UnadoptedPhysicalDiskResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/hardware/disks-unadopted"),
+		map[string]string{},
+		map[string]string{
+			"limit":      PointerIntToStr(params.Limit),
+			"page_token": params.PageToken,
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body UnadoptedPhysicalDiskResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// PhysicalDiskListUnadoptedAllPages: List physical disks that have not yet been adopted for use
+//
+// This method is a wrapper around the `PhysicalDiskListUnadopted` method.
+// This method returns all the pages at once.
+func (c *Client) PhysicalDiskListUnadoptedAllPages(
+	ctx context.Context,
+	params PhysicalDiskListUnadoptedParams,
+) ([]UnadoptedPhysicalDisk, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []UnadoptedPhysicalDisk
+	params.PageToken = ""
+	params.Limit = NewPointer(100)
+	for {
+		page, err := c.PhysicalDiskListUnadopted(ctx, params)
 		if err != nil {
 			return nil, err
 		}
@@ -12700,6 +12957,102 @@ func (c *Client) NetworkingLoopbackAddressDelete(
 	}
 
 	return nil
+}
+
+// SystemNetworkingSettingsView: Fetch fleet-wide networking settings
+func (c *Client) SystemNetworkingSettingsView(
+	ctx context.Context,
+) (*SystemNetworkingSettings, error) {
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/networking/settings"),
+		map[string]string{},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SystemNetworkingSettings
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SystemNetworkingSettingsUpdate: Update fleet-wide networking settings
+func (c *Client) SystemNetworkingSettingsUpdate(
+	ctx context.Context,
+	params SystemNetworkingSettingsUpdateParams,
+) (*SystemNetworkingSettings, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"PUT",
+		resolveRelative(c.host, "/v1/system/networking/settings"),
+		map[string]string{},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SystemNetworkingSettings
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
 }
 
 // NetworkingSwitchPortSettingsList: List switch port settings
