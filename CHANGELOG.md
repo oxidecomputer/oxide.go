@@ -1,3 +1,34 @@
+# v0.10.0 (2026/Jun/12)
+
+Generated from Oxide API version
+[2026060800.0.0](https://github.com/oxidecomputer/omicron/blob/rel/v20/rc1/openapi/nexus/nexus-2026060800.0.0-f1db6e.json)
+
+### Breaking changes
+
+- **:** 
+
+### New features
+
+- **:** 
+
+### Enhancements
+
+- **Oxide API errors are now modeled:** API errors can now be checked with errors.Is against typed sentinels like oxide.ErrObjectNotFound or oxide.ErrHTTP404. [#415](https://github.com/oxidecomputer/oxide.go/pull/415)
+
+### Bug fixes
+
+- **Omit zero values for non-required enum types:** The sdk no longer serializes ommitted optional enum values as null, they are instead omitted upon serialization. [#414](https://github.com/oxidecomputer/oxide.go/pull/414)
+
+### List of commits
+
+- [0894ac8](https://github.com/oxidecomputer/oxide.go/commit/0894ac8) misc: generate sdk from omicron `rel/v20/rc0` (#424)
+- [fef57a7](https://github.com/oxidecomputer/oxide.go/commit/fef57a7) build(deps): bump github.com/getkin/kin-openapi from 0.135.0 to 0.140.0 (#422)
+- [93d8204](https://github.com/oxidecomputer/oxide.go/commit/93d8204) build(deps): bump softprops/action-gh-release from 2 to 3 (#413)
+- [b6f489e](https://github.com/oxidecomputer/oxide.go/commit/b6f489e) Add nexus errors. (#415)
+- [ddc66e4](https://github.com/oxidecomputer/oxide.go/commit/ddc66e4) build(deps): bump github.com/getkin/kin-openapi from 0.134.0 to 0.135.0 (#410)
+- [770cc0d](https://github.com/oxidecomputer/oxide.go/commit/770cc0d) Omit zero values for non-required enum types. (#414)
+- [7a8d276](https://github.com/oxidecomputer/oxide.go/commit/7a8d276) misc: prepare v0.10.0 (#412)
+
 # v0.9.0 (2026/Apr/09)
 
 Generated from Oxide API version
