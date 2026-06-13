@@ -1,15 +1,7 @@
 # v0.10.0 (2026/Jun/12)
 
 Generated from Oxide API version
-[2026060800.0.0](https://github.com/oxidecomputer/omicron/blob/rel/v20/rc1/openapi/nexus/nexus-2026060800.0.0-f1db6e.json)
-
-### Breaking changes
-
-- **:** 
-
-### New features
-
-- **:** 
+[2026060800.0.0](https://github.com/oxidecomputer/omicron/blob/rel/v20/rc1/openapi/nexus/nexus-2026060800.0.0-f1db6e.json).
 
 ### Enhancements
 
