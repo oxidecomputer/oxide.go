@@ -3,7 +3,7 @@ module github.com/oxidecomputer/oxide.go
 go 1.25.0
 
 require (
-	github.com/getkin/kin-openapi v0.142.0
+	github.com/getkin/kin-openapi v0.143.0
 	github.com/google/go-cmp v0.7.0
 	github.com/iancoleman/strcase v0.3.0
 	github.com/pelletier/go-toml v1.9.5
