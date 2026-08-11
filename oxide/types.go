@@ -1609,6 +1609,18 @@ type BgpConfigResultsPage struct {
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
 
+// BgpConfigUpdate is parameters for updating a BGP configuration
+//
+// If a value is not specified, it will remain unchanged.
+type BgpConfigUpdate struct {
+	// BgpAnnounceSetId is update the BGP announce set associated with this configuration.
+	BgpAnnounceSetId NameOrId `json:"bgp_announce_set_id,omitzero" yaml:"bgp_announce_set_id,omitzero"`
+	Description      string   `json:"description,omitempty"        yaml:"description,omitempty"`
+	// MaxPaths is update the maximum number of equal-cost paths.
+	MaxPaths MaxPathConfig `json:"max_paths,omitempty" yaml:"max_paths,omitempty"`
+	Name     Name          `json:"name,omitempty"      yaml:"name,omitempty"`
+}
+
 // BgpExported is route exported to a peer.
 //
 // Required fields:
@@ -7532,11 +7544,10 @@ func (v IpNet) AsIpv6Net() (*Ipv6Net, bool) {
 	return val, ok
 }
 
-// IpPool is a collection of IP ranges. If a pool is linked to a silo, IP addresses from the pool
-// can be
-// allocated within that silo.
+// IpPool is a collection of IP ranges.
 //
 // Required fields:
+// - Assignment
 // - Description
 // - Id
 // - IpVersion
@@ -7545,6 +7556,8 @@ func (v IpNet) AsIpv6Net() (*Ipv6Net, bool) {
 // - TimeCreated
 // - TimeModified
 type IpPool struct {
+	// Assignment is what this pool is currently assigned to.
+	Assignment IpPoolAssignment `json:"assignment" yaml:"assignment"`
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description" yaml:"description"`
 	// Id is unique, immutable, system-controlled identifier for each resource
@@ -7561,6 +7574,18 @@ type IpPool struct {
 	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
 }
 
+// IpPoolAssignParam is body parameters for reassigning an IP pool.
+//
+// Required fields:
+// - Assignment
+type IpPoolAssignParam struct {
+	// Assignment is assignment of an IP pool to resources and services.
+	Assignment IpPoolAssignment `json:"assignment" yaml:"assignment"`
+}
+
+// IpPoolAssignment is pool is available to be linked to customer silos.
+type IpPoolAssignment string
+
 // IpPoolCreate is create-time parameters for an `IpPool`.
 //
 // For multicast pools, all ranges must be either Any-Source Multicast (ASM) or Source-Specific
@@ -7575,7 +7600,9 @@ type IpPool struct {
 // - Description
 // - Name
 type IpPoolCreate struct {
-	Description string `json:"description" yaml:"description"`
+	// Assignment is what this pool is assigned to (defaults to Silos).
+	Assignment  IpPoolAssignment `json:"assignment,omitzero" yaml:"assignment,omitzero"`
+	Description string           `json:"description"         yaml:"description"`
 	// IpVersion is the IP version of the pool.
 	//
 	// The default is IPv4.
@@ -14655,8 +14682,10 @@ type InternetGatewayViewParams struct {
 
 // IpPoolListParams is the request parameters for IpPoolList
 type IpPoolListParams struct {
+	IpVersion IpVersion        `json:"ip_version,omitempty" yaml:"ip_version,omitempty"`
 	Limit     *int             `json:"limit,omitempty"      yaml:"limit,omitempty"`
 	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	PoolType  IpPoolType       `json:"pool_type,omitempty"  yaml:"pool_type,omitempty"`
 	SortBy    NameOrIdSortMode `json:"sort_by,omitempty"    yaml:"sort_by,omitempty"`
 }
 
@@ -15272,9 +15301,12 @@ type SamlIdentityProviderViewParams struct {
 
 // SystemIpPoolListParams is the request parameters for SystemIpPoolList
 type SystemIpPoolListParams struct {
-	Limit     *int             `json:"limit,omitempty"      yaml:"limit,omitempty"`
-	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    NameOrIdSortMode `json:"sort_by,omitempty"    yaml:"sort_by,omitempty"`
+	Assignment IpPoolAssignment `json:"assignment,omitempty" yaml:"assignment,omitempty"`
+	IpVersion  IpVersion        `json:"ip_version,omitempty" yaml:"ip_version,omitempty"`
+	Limit      *int             `json:"limit,omitempty"      yaml:"limit,omitempty"`
+	PageToken  string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	PoolType   IpPoolType       `json:"pool_type,omitempty"  yaml:"pool_type,omitempty"`
+	SortBy     NameOrIdSortMode `json:"sort_by,omitempty"    yaml:"sort_by,omitempty"`
 }
 
 // SystemIpPoolCreateParams is the request parameters for SystemIpPoolCreate
@@ -15283,28 +15315,6 @@ type SystemIpPoolListParams struct {
 // - Body
 type SystemIpPoolCreateParams struct {
 	Body *IpPoolCreate `json:"body,omitempty" yaml:"body,omitempty"`
-}
-
-// SystemIpPoolServiceRangeListParams is the request parameters for SystemIpPoolServiceRangeList
-type SystemIpPoolServiceRangeListParams struct {
-	Limit     *int   `json:"limit,omitempty"      yaml:"limit,omitempty"`
-	PageToken string `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-}
-
-// SystemIpPoolServiceRangeAddParams is the request parameters for SystemIpPoolServiceRangeAdd
-//
-// Required fields:
-// - Body
-type SystemIpPoolServiceRangeAddParams struct {
-	Body *IpRange `json:"body,omitempty" yaml:"body,omitempty"`
-}
-
-// SystemIpPoolServiceRangeRemoveParams is the request parameters for SystemIpPoolServiceRangeRemove
-//
-// Required fields:
-// - Body
-type SystemIpPoolServiceRangeRemoveParams struct {
-	Body *IpRange `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // SystemIpPoolDeleteParams is the request parameters for SystemIpPoolDelete
@@ -15331,6 +15341,16 @@ type SystemIpPoolViewParams struct {
 type SystemIpPoolUpdateParams struct {
 	Pool NameOrId      `json:"pool,omitempty" yaml:"pool,omitempty"`
 	Body *IpPoolUpdate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// SystemIpPoolAssignParams is the request parameters for SystemIpPoolAssign
+//
+// Required fields:
+// - Pool
+// - Body
+type SystemIpPoolAssignParams struct {
+	Pool NameOrId           `json:"pool,omitempty" yaml:"pool,omitempty"`
+	Body *IpPoolAssignParam `json:"body,omitempty" yaml:"body,omitempty"`
 }
 
 // SystemIpPoolRangeListParams is the request parameters for SystemIpPoolRangeList
@@ -15517,6 +15537,16 @@ type NetworkingBgpConfigListParams struct {
 // - Body
 type NetworkingBgpConfigCreateParams struct {
 	Body *BgpConfigCreate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// NetworkingBgpConfigUpdateParams is the request parameters for NetworkingBgpConfigUpdate
+//
+// Required fields:
+// - NameOrId
+// - Body
+type NetworkingBgpConfigUpdateParams struct {
+	NameOrId NameOrId         `json:"name_or_id,omitempty" yaml:"name_or_id,omitempty"`
+	Body     *BgpConfigUpdate `json:"body,omitempty"       yaml:"body,omitempty"`
 }
 
 // NetworkingBgpAnnounceSetListParams is the request parameters for NetworkingBgpAnnounceSetList
@@ -18242,35 +18272,6 @@ func (p *SystemIpPoolCreateParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for SystemIpPoolServiceRangeListParams are set
-func (p *SystemIpPoolServiceRangeListParams) Validate() error {
-	v := new(Validator)
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for SystemIpPoolServiceRangeAddParams are set
-func (p *SystemIpPoolServiceRangeAddParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for SystemIpPoolServiceRangeRemoveParams are set
-func (p *SystemIpPoolServiceRangeRemoveParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
 // Validate verifies all required fields for SystemIpPoolDeleteParams are set
 func (p *SystemIpPoolDeleteParams) Validate() error {
 	v := new(Validator)
@@ -18293,6 +18294,17 @@ func (p *SystemIpPoolViewParams) Validate() error {
 
 // Validate verifies all required fields for SystemIpPoolUpdateParams are set
 func (p *SystemIpPoolUpdateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Pool), "Pool")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SystemIpPoolAssignParams are set
+func (p *SystemIpPoolAssignParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredObj(p.Body, "Body")
 	v.HasRequiredStr(string(p.Pool), "Pool")
@@ -18500,6 +18512,17 @@ func (p *NetworkingBgpConfigListParams) Validate() error {
 func (p *NetworkingBgpConfigCreateParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredObj(p.Body, "Body")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for NetworkingBgpConfigUpdateParams are set
+func (p *NetworkingBgpConfigUpdateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.NameOrId), "NameOrId")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -20052,6 +20075,12 @@ const InstanceStateFailed InstanceState = "failed"
 // InstanceStateDestroyed represents the InstanceState `"destroyed"`.
 const InstanceStateDestroyed InstanceState = "destroyed"
 
+// IpPoolAssignmentSilos represents the IpPoolAssignment `"silos"`.
+const IpPoolAssignmentSilos IpPoolAssignment = "silos"
+
+// IpPoolAssignmentSystemServices represents the IpPoolAssignment `"system_services"`.
+const IpPoolAssignmentSystemServices IpPoolAssignment = "system_services"
+
 // IpPoolTypeUnicast represents the IpPoolType `"unicast"`.
 const IpPoolTypeUnicast IpPoolType = "unicast"
 
@@ -20938,6 +20967,12 @@ var InstanceStateCollection = []InstanceState{
 	InstanceStateStarting,
 	InstanceStateStopped,
 	InstanceStateStopping,
+}
+
+// IpPoolAssignmentCollection is the collection of all IpPoolAssignment values.
+var IpPoolAssignmentCollection = []IpPoolAssignment{
+	IpPoolAssignmentSilos,
+	IpPoolAssignmentSystemServices,
 }
 
 // IpPoolTypeCollection is the collection of all IpPoolType values.
