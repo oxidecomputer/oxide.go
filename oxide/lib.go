@@ -304,7 +304,7 @@ func defaultHTTPClient() *http.Client {
 
 // defaultUserAgent builds and returns the default user agent string.
 func defaultUserAgent() string {
-	return fmt.Sprintf("oxide.go/%s", sdkVersion)
+	return fmt.Sprintf("oxide.go/%s", version)
 }
 
 // getProfile determines the path of the user's credentials file and returns the host and token for
@@ -433,7 +433,7 @@ func (c *Client) buildRequest(
 
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.token))
-	req.Header.Set("API-Version", openAPIVersion)
+	req.Header.Set("API-Version", APIVersion)
 
 	// Add the parameters to the url.
 	if err := expandURL(req.URL, params); err != nil {

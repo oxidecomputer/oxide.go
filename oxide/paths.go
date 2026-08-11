@@ -6378,8 +6378,10 @@ func (c *Client) IpPoolList(
 		resolveRelative(c.host, "/v1/ip-pools"),
 		map[string]string{},
 		map[string]string{
+			"ip_version": string(params.IpVersion),
 			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
+			"pool_type":  string(params.PoolType),
 			"sort_by":    string(params.SortBy),
 		},
 	)
@@ -10577,8 +10579,11 @@ func (c *Client) SystemIpPoolList(
 		resolveRelative(c.host, "/v1/system/ip-pools"),
 		map[string]string{},
 		map[string]string{
+			"assignment": string(params.Assignment),
+			"ip_version": string(params.IpVersion),
 			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
+			"pool_type":  string(params.PoolType),
 			"sort_by":    string(params.SortBy),
 		},
 	)
@@ -10692,226 +10697,6 @@ func (c *Client) SystemIpPoolCreate(
 
 	// Return the response.
 	return &body, nil
-}
-
-// SystemIpPoolServiceView: Fetch Oxide service IP pool
-func (c *Client) SystemIpPoolServiceView(ctx context.Context) (*IpPool, error) {
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/ip-pools-service"),
-		map[string]string{},
-		map[string]string{},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body IpPool
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// SystemIpPoolServiceRangeList: List IP ranges for the Oxide service pool
-// Ranges are ordered by their first address.
-//
-// To iterate over all pages, use the `SystemIpPoolServiceRangeListAllPages` method, instead.
-func (c *Client) SystemIpPoolServiceRangeList(
-	ctx context.Context,
-	params SystemIpPoolServiceRangeListParams,
-) (*IpPoolRangeResultsPage, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/v1/system/ip-pools-service/ranges"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-		},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body IpPoolRangeResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// SystemIpPoolServiceRangeListAllPages: List IP ranges for the Oxide service pool
-// Ranges are ordered by their first address.
-//
-// This method is a wrapper around the `SystemIpPoolServiceRangeList` method.
-// This method returns all the pages at once.
-func (c *Client) SystemIpPoolServiceRangeListAllPages(
-	ctx context.Context,
-	params SystemIpPoolServiceRangeListParams,
-) ([]IpPoolRange, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	var allPages []IpPoolRange
-	params.PageToken = ""
-	params.Limit = NewPointer(100)
-	for {
-		page, err := c.SystemIpPoolServiceRangeList(ctx, params)
-		if err != nil {
-			return nil, err
-		}
-		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == params.PageToken {
-			break
-		}
-		params.PageToken = page.NextPage
-	}
-
-	return allPages, nil
-}
-
-// SystemIpPoolServiceRangeAdd: Add IP range to Oxide service pool
-// IPv6 ranges are not allowed yet.
-func (c *Client) SystemIpPoolServiceRangeAdd(
-	ctx context.Context,
-	params SystemIpPoolServiceRangeAddParams,
-) (*IpPoolRange, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
-
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/system/ip-pools-service/ranges/add"),
-		map[string]string{},
-		map[string]string{},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body IpPoolRange
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// SystemIpPoolServiceRangeRemove: Remove IP range from Oxide service pool
-func (c *Client) SystemIpPoolServiceRangeRemove(
-	ctx context.Context,
-	params SystemIpPoolServiceRangeRemoveParams,
-) error {
-	if err := params.Validate(); err != nil {
-		return err
-	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return fmt.Errorf("encoding json body request failed: %v", err)
-	}
-
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/system/ip-pools-service/ranges/remove"),
-		map[string]string{},
-		map[string]string{},
-	)
-	if err != nil {
-		return fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
-
-	return nil
 }
 
 // SystemIpPoolView: Fetch IP pool
@@ -11051,6 +10836,61 @@ func (c *Client) SystemIpPoolDelete(ctx context.Context, params SystemIpPoolDele
 	}
 
 	return nil
+}
+
+// SystemIpPoolAssign: Assign IP pool
+func (c *Client) SystemIpPoolAssign(
+	ctx context.Context,
+	params SystemIpPoolAssignParams,
+) (*IpPool, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"POST",
+		resolveRelative(c.host, "/v1/system/ip-pools/{{.pool}}/assignment"),
+		map[string]string{
+			"pool": string(params.Pool),
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body IpPool
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
 }
 
 // SystemIpPoolRangeList: List ranges for IP pool
@@ -12250,6 +12090,63 @@ func (c *Client) NetworkingBgpConfigCreate(
 		resolveRelative(c.host, "/v1/system/networking/bgp"),
 		map[string]string{},
 		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body BgpConfig
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// NetworkingBgpConfigUpdate: Update the mutable fields of an existing BGP configuration
+// The asn field is not updatable; to change the autonomous system number, create a new BGP
+// configuration object.
+func (c *Client) NetworkingBgpConfigUpdate(
+	ctx context.Context,
+	params NetworkingBgpConfigUpdateParams,
+) (*BgpConfig, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"PUT",
+		resolveRelative(c.host, "/v1/system/networking/bgp"),
+		map[string]string{},
+		map[string]string{
+			"name_or_id": string(params.NameOrId),
+		},
 	)
 	if err != nil {
 		return nil, fmt.Errorf("error building request: %v", err)
@@ -15129,9 +15026,12 @@ func (c *Client) SystemTimeseriesSchemaListAllPages(
 // determining what software should be deployed, instructing it that the specified software (which
 // is also what's currently running) is what's supposed to be deployed.
 //
-// If the provided version does not match what's currently running, the control plane will continue
-// to avoid changing
-// deployed software until this operation is invoked with the correct version.
+// If the control plane knows the version of all running software (e.g., a single sled was recovered
+// to the same version as the rest of the rack), requests where the provided version does not match
+// what's currently running will fail. If the control plane does not know the version of all running
+// software (e.g., the entire rack was mupdated to a new release), requests with an incorrect
+// provided version will succeed, but the control plane will continue to avoid changing deployed
+// software until this operation is invoked with the correct version.
 //
 // This endpoint should only be called at the direction of Oxide support.
 func (c *Client) SystemUpdateRecoveryFinish(
