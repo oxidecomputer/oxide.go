@@ -12381,42 +12381,42 @@ type ValueArrayType string
 
 // ValueArrayInteger is a variant of ValueArray.
 type ValueArrayInteger struct {
-	Values []int `json:"values" yaml:"values"`
+	Values []*int `json:"values" yaml:"values"`
 }
 
 func (ValueArrayInteger) isValueArrayVariant() {}
 
 // ValueArrayDouble is a variant of ValueArray.
 type ValueArrayDouble struct {
-	Values []float64 `json:"values" yaml:"values"`
+	Values []*float64 `json:"values" yaml:"values"`
 }
 
 func (ValueArrayDouble) isValueArrayVariant() {}
 
 // ValueArrayBoolean is a variant of ValueArray.
 type ValueArrayBoolean struct {
-	Values []bool `json:"values" yaml:"values"`
+	Values []*bool `json:"values" yaml:"values"`
 }
 
 func (ValueArrayBoolean) isValueArrayVariant() {}
 
 // ValueArrayString is a variant of ValueArray.
 type ValueArrayString struct {
-	Values []string `json:"values" yaml:"values"`
+	Values []*string `json:"values" yaml:"values"`
 }
 
 func (ValueArrayString) isValueArrayVariant() {}
 
 // ValueArrayIntegerDistribution is a variant of ValueArray.
 type ValueArrayIntegerDistribution struct {
-	Values []Distributionint64 `json:"values" yaml:"values"`
+	Values []*Distributionint64 `json:"values" yaml:"values"`
 }
 
 func (ValueArrayIntegerDistribution) isValueArrayVariant() {}
 
 // ValueArrayDoubleDistribution is a variant of ValueArray.
 type ValueArrayDoubleDistribution struct {
-	Values []Distributiondouble `json:"values" yaml:"values"`
+	Values []*Distributiondouble `json:"values" yaml:"values"`
 }
 
 func (ValueArrayDoubleDistribution) isValueArrayVariant() {}
