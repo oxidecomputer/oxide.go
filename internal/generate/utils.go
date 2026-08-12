@@ -194,8 +194,18 @@ func schemaValueToGoType(schemaValue *openapi3.Schema, property string) string {
 		}
 
 		schemaType := schemaValueToGoType(schemaValue.Items.Value, property)
-		// We don't anticipate the need for slices of pointers
+
+		// Mark array element type as a pointer if nullable. Note: we may have already decided to
+		// use a pointer type in the nested call to `schemaValueToGoType`, so we first strip a
+		// leading "*" if present,
+		// then apply our own pointer logic.
+		//
+		// TODO: Respect `Value.Nullable` throughout `schemaValueToGoType` so that we don't have to
+		// reconsider it here.
 		schemaType = strings.TrimPrefix(schemaType, "*")
+		if schemaValue.Items.Value.Nullable {
+			schemaType = "*" + schemaType
+		}
 		return fmt.Sprintf("[]%v", schemaType)
 	}
 
