@@ -7,6 +7,10 @@ title = ""
 description = ""
 
 [[bugs]]
+title = "Fixed `NewIpNet` parsing"
+description = "Fixed a bug that could cause invalid strings to be accepted as valid NetIpNet values. [#440](https://github.com/oxidecomputer/oxide.go/pull/440)"
+
+[[bugs]]
 title = "Fixed path element escaping"
 description = "Path elements were being escaped using the character set for query params. [#439](https://github.com/oxidecomputer/oxide.go/pull/439)"
 
