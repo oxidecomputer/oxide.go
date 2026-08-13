@@ -751,44 +751,6 @@ func (c *Client) ExperimentalSupportBundleIndex(
 	return nil
 }
 
-// LoginSaml: Authenticate user via SAML
-func (c *Client) LoginSaml(ctx context.Context, params LoginSamlParams) error {
-	if err := params.Validate(); err != nil {
-		return err
-	}
-	b := params.Body
-
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/login/{{.silo_name}}/saml/{{.provider_name}}"),
-		map[string]string{
-			"provider_name": string(params.ProviderName),
-			"silo_name":     string(params.SiloName),
-		},
-		map[string]string{},
-	)
-	if err != nil {
-		return fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
 //
 // ExperimentalAffinityGroupList: List affinity groups
@@ -6488,47 +6450,6 @@ func (c *Client) IpPoolView(ctx context.Context, params IpPoolViewParams) (*Silo
 
 	// Return the response.
 	return &body, nil
-}
-
-// LoginLocal: Authenticate user via username and password
-func (c *Client) LoginLocal(ctx context.Context, params LoginLocalParams) error {
-	if err := params.Validate(); err != nil {
-		return err
-	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return fmt.Errorf("encoding json body request failed: %v", err)
-	}
-
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/v1/login/{{.silo_name}}/local"),
-		map[string]string{
-			"silo_name": string(params.SiloName),
-		},
-		map[string]string{},
-	)
-	if err != nil {
-		return fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
-
-	return nil
 }
 
 // CurrentUserView: Fetch user for current session

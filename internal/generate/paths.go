@@ -150,6 +150,13 @@ func buildMethod(
 		)
 		return nil
 	}
+	if slices.Contains(o.Tags, "login") {
+		fmt.Printf(
+			"[WARN] TODO: skipping operation %q, since it is for user login\n",
+			o.OperationID,
+		)
+		return nil
+	}
 
 	isExperimental := slices.Contains(o.Tags, "experimental")
 
