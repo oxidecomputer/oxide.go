@@ -105,8 +105,9 @@ func (v RouteTarget) String() string {
 // NewIpNet creates an IpNet from a string value (e.g., "192.168.1.0/24" or "fd00::/64").
 // The string is parsed to determine whether it's an IPv4 or IPv6 network.
 func NewIpNet(value string) (IpNet, error) {
+	data := fmt.Sprintf("%q", value)
 	var ipNet IpNet
-	if err := json.Unmarshal([]byte(`"`+value+`"`), &ipNet); err != nil {
+	if err := json.Unmarshal([]byte(data), &ipNet); err != nil {
 		return IpNet{}, fmt.Errorf("invalid IP network %q: %w", value, err)
 	}
 	return ipNet, nil
