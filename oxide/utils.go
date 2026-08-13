@@ -59,30 +59,39 @@ func resolveRelative(basestr, relstr string) string {
 // expandURL substitutes any {encoded} strings in the URL passed in using
 // the map supplied.
 func expandURL(u *url.URL, expansions map[string]string) error {
-	t, err := template.New("url").Parse(u.Path)
+	t, err := template.New("url").Option("missingkey=error").Parse(u.Path)
 	if err != nil {
 		return fmt.Errorf("parsing template for url path %q failed: %v", u.Path, err)
 	}
-	var b bytes.Buffer
-	if err := t.Execute(&b, expansions); err != nil {
+
+	// Render escaped and unescaped versions of the URL.
+	//
+	// url.URL has two fields to store the path. `Path` stores the decoded
+	// (unescaped) form and `RawPath` is an optional field that can be used to
+	// hint to consumers how the URL should be escaped and used externally,
+	// such as by the `URL.String()` and `URL.RequestURI()` methods.
+	//
+	// We store both values to indicate that part of the path is user input,
+	// and therefore must always be escaped. Without `RawPath`, an input such
+	// as `../projects/my-project` would cause the endpoint `/disks/{{.disk}}`
+	// to render as `/disks/../projects/my-project`, resulting in the wrong
+	// API call.
+	var unescaped bytes.Buffer
+	if err := t.Execute(&unescaped, expansions); err != nil {
 		return fmt.Errorf("executing template for url path failed: %v", err)
 	}
+	u.Path = unescaped.String()
 
-	// set the parameters
-	u.Path = b.String()
-
-	// escape the expansions
+	// Escape path elements and render the escaped path.
 	for k, v := range expansions {
-		expansions[k] = url.QueryEscape(v)
+		expansions[k] = url.PathEscape(v)
 	}
 
-	var bt bytes.Buffer
-	if err := t.Execute(&bt, expansions); err != nil {
+	var escaped bytes.Buffer
+	if err := t.Execute(&escaped, expansions); err != nil {
 		return fmt.Errorf("executing template for url path failed: %v", err)
 	}
-
-	// set the parameters
-	u.RawPath = bt.String()
+	u.RawPath = escaped.String()
 
 	return nil
 }

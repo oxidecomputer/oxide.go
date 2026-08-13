@@ -7,8 +7,8 @@ title = ""
 description = ""
 
 [[bugs]]
-title = ""
-description = ""
+title = "Fixed path element escaping"
+description = "Path elements were being escaped using the character set for query params. [#439](https://github.com/oxidecomputer/oxide.go/pull/439)"
 
 [[enhancements]]
 title = ""
