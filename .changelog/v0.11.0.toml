@@ -7,8 +7,8 @@ title = ""
 description = ""
 
 [[bugs]]
-title = ""
-description = ""
+title = "Fix `NewIpNet` parsing"
+description = "Fixed a bug that could cause invalid strings to be accepted as valid NetIpNet values. [#440](https://github.com/oxidecomputer/oxide.go/pull/440)"
 
 [[enhancements]]
 title = ""
