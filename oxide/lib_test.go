@@ -9,6 +9,7 @@ import (
 	"context"
 	"crypto/tls"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -26,26 +27,32 @@ import (
 func Test_buildRequest(t *testing.T) {
 	t.Parallel()
 
-	type dummyCreate struct {
+	// Test body.
+	createBody := &struct {
 		Name string `json:"name,omitempty"`
 		Size int    `json:"size,omitempty"`
-	}
-	createBody := &dummyCreate{
+	}{
 		Name: "hi",
 		Size: 1073741824,
 	}
 	reqBody := new(bytes.Buffer)
-	if err := json.NewEncoder(reqBody).Encode(createBody); err != nil {
-		t.Errorf("encoding json body request failed: %v", err)
-		return
-	}
+	err := json.NewEncoder(reqBody).Encode(createBody)
+	require.NoError(t, err)
 
 	rCloser := io.NopCloser(reqBody)
+
+	// Test client.
+	host := "127.0.0.1:12220"
+	c, err := NewClient(
+		WithHost(fmt.Sprintf("http://%s", host)),
+		WithToken("foo"),
+	)
+	require.NoError(t, err)
 
 	type args struct {
 		body    io.Reader
 		method  string
-		uri     string
+		path    string
 		params  map[string]string
 		queries map[string]string
 	}
@@ -60,7 +67,7 @@ func Test_buildRequest(t *testing.T) {
 			args: args{
 				body:   reqBody,
 				method: http.MethodPost,
-				uri:    "http://127.0.0.1:12220/v1/disks",
+				path:   "/v1/disks",
 				params: map[string]string{},
 				queries: map[string]string{
 					"project": "prod",
@@ -69,8 +76,6 @@ func Test_buildRequest(t *testing.T) {
 			want: &http.Request{
 				Method: "POST",
 				URL: &url.URL{
-					Scheme:   "http",
-					Host:     "127.0.0.1:12220",
 					Path:     "/v1/disks",
 					RawPath:  "/v1/disks",
 					RawQuery: "project=prod",
@@ -83,15 +88,13 @@ func Test_buildRequest(t *testing.T) {
 			args: args{
 				body:    nil,
 				method:  http.MethodGet,
-				uri:     "http://127.0.0.1:12220/v1/disks",
+				path:    "/v1/disks",
 				params:  map[string]string{},
 				queries: map[string]string{},
 			},
 			want: &http.Request{
 				Method: "GET",
 				URL: &url.URL{
-					Scheme:   "http",
-					Host:     "127.0.0.1:12220",
 					Path:     "/v1/disks",
 					RawPath:  "/v1/disks",
 					RawQuery: "",
@@ -104,7 +107,7 @@ func Test_buildRequest(t *testing.T) {
 			args: args{
 				body:   nil,
 				method: http.MethodDelete,
-				uri:    "http://127.0.0.1:12220/v1/disks/{{.disk}}",
+				path:   "/v1/disks/{{.disk}}",
 				params: map[string]string{
 					"disk": "hi",
 				},
@@ -113,8 +116,6 @@ func Test_buildRequest(t *testing.T) {
 			want: &http.Request{
 				Method: "DELETE",
 				URL: &url.URL{
-					Scheme:   "http",
-					Host:     "127.0.0.1:12220",
 					Path:     "/v1/disks/hi",
 					RawPath:  "/v1/disks/hi",
 					RawQuery: "",
@@ -122,55 +123,92 @@ func Test_buildRequest(t *testing.T) {
 				Body: nil,
 			},
 		},
-		// TODO: Create a check that verifies that path is not malformed
-		//		{
-		//			name: "fails on a malformed path",
-		//			args: args{
-		//				body:   nil,
-		//				method: http.MethodDelete,
-		//				uri:    "http://127.0.0.1:12220/v1/disks/{{.disk}}",
-		//				params: map[string]string{
-		//					"risk": "hi",
-		//				},
-		//				queries: map[string]string{},
-		//			},
-		//			wantErr: "Some error that doesn't exist yet",
-		//		},
-	}
-
-	// Just to get a client to call buildRequest on.
-	c, err := NewClient(
-		WithHost("http://localhost:3000"),
-		WithToken("foo"),
-	)
-	if err != nil {
-		t.Fatalf("failed creating api client: %v", err)
+		{
+			name: "builds request successfully with empty query values",
+			args: args{
+				body:   nil,
+				method: http.MethodDelete,
+				path:   "/v1/disks/{{.disk}}",
+				params: map[string]string{
+					"disk": "hi",
+				},
+				queries: map[string]string{
+					"organization": "",
+					"project":      "",
+				},
+			},
+			want: &http.Request{
+				Method: "DELETE",
+				URL: &url.URL{
+					Path:     "/v1/disks/hi",
+					RawPath:  "/v1/disks/hi",
+					RawQuery: "",
+				},
+				Body: nil,
+			},
+		},
+		{
+			name: "sanitize inputs",
+			args: args{
+				body:   nil,
+				method: http.MethodGet,
+				path:   "/v1/disks/{{.disk}}",
+				params: map[string]string{
+					"disk": "../../projects/secret",
+				},
+				queries: map[string]string{
+					"test": "test?other=test",
+				},
+			},
+			want: &http.Request{
+				Method: "GET",
+				URL: &url.URL{
+					Path:     "/v1/disks/../../projects/secret",
+					RawPath:  "/v1/disks/..%2F..%2Fprojects%2Fsecret",
+					RawQuery: "test=test%3Fother%3Dtest",
+				},
+				Body: nil,
+			},
+		},
+		{
+			name: "fails on a malformed path",
+			args: args{
+				body:   nil,
+				method: http.MethodDelete,
+				path:   "/v1/disks/{{.disk}}",
+				params: map[string]string{
+					"risk": "hi",
+				},
+				queries: map[string]string{},
+			},
+			wantErr: "map has no entry for key",
+		},
 	}
 
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got, err := c.buildRequest(
-				context.TODO(),
+			req, err := c.buildRequest(
+				t.Context(),
 				tt.args.body,
 				tt.args.method,
-				tt.args.uri,
+				fmt.Sprintf("http://%s%s", host, tt.args.path),
 				tt.args.params,
 				tt.args.queries,
 			)
-			if err != nil {
-				assert.ErrorContains(t, err, tt.wantErr)
-				return
+			if tt.wantErr != "" {
+				require.ErrorContains(t, err, tt.wantErr)
+			} else {
+				require.NoError(t, err)
+				// Only asserting values that we care about
+				assert.Equal(t, host, req.URL.Host)
+				assert.Equal(t, tt.want.Method, req.Method)
+				assert.Equal(t, tt.want.Body, req.Body)
+				assert.Equal(t, tt.want.URL.Path, req.URL.Path)
+				assert.Equal(t, tt.want.URL.RawPath, req.URL.RawPath)
+				assert.Equal(t, tt.want.URL.RawQuery, req.URL.RawQuery)
 			}
-			// Only asserting values that we care about
-			assert.Equal(t, tt.want.Method, got.Method)
-			assert.Equal(t, tt.want.Body, got.Body)
-			assert.Equal(t, tt.want.URL.Host, got.URL.Host)
-			assert.Equal(t, tt.want.URL.Path, got.URL.Path)
-			assert.Equal(t, tt.want.URL.RawPath, got.URL.RawPath)
-			assert.Equal(t, tt.want.URL.RawQuery, got.URL.RawQuery)
 		})
 	}
 }
