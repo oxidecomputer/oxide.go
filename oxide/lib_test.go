@@ -678,3 +678,28 @@ func Test_NewClient_HTTPOptions(t *testing.T) {
 		})
 	}
 }
+
+func Test_NewClient_PreventMutations(t *testing.T) {
+	inputClient := &http.Client{
+		Transport: http.DefaultTransport,
+		Timeout:   2 * time.Second,
+	}
+	inputTransport := inputClient.Transport.(*http.Transport)
+	require.NotNil(t, inputTransport)
+
+	gotClient, err := NewClient(
+		WithHost("http://localhost"),
+		WithToken("test-token"),
+		WithHTTPClient(inputClient),
+		WithInsecureSkipVerify(),
+		WithTimeout(10*time.Second),
+	)
+	require.NoError(t, err)
+	gotTransport := gotClient.client.Transport.(*http.Transport)
+	require.NotNil(t, gotTransport)
+
+	assert.Equal(t, 2*time.Second, inputClient.Timeout)
+	assert.Equal(t, 10*time.Second, gotClient.client.Timeout)
+	assert.False(t, inputTransport.TLSClientConfig.InsecureSkipVerify)
+	assert.True(t, gotTransport.TLSClientConfig.InsecureSkipVerify)
+}

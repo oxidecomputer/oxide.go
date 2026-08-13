@@ -137,7 +137,9 @@ func WithTimeout(timeout time.Duration) ClientOption {
 // only be used in advanced use cases such as configuring a proxy or changing TLS configuration.
 func WithHTTPClient(client *http.Client) ClientOption {
 	return clientOptionFunc(func(cfg *clientConfig) error {
-		cfg.httpClient = client
+		// Shallow-copy input in case it's a shared client that we should avoid
+		// mutating, such as http.DefaultClient.
+		*cfg.httpClient = *client
 		return nil
 	})
 }
@@ -153,6 +155,10 @@ func WithInsecureSkipVerify() ClientOption {
 		transport, ok := cfg.httpClient.Transport.(*http.Transport)
 		if !ok || transport == nil {
 			transport = http.DefaultTransport.(*http.Transport).Clone()
+		} else {
+			// Clone transport in case WithHTTPClient was called with a shared
+			// value, such as http.DefaultTransport.
+			transport = transport.Clone()
 		}
 		if transport.TLSClientConfig == nil {
 			transport.TLSClientConfig = &tls.Config{}
