@@ -288,12 +288,13 @@ func (f TypeField) IsPointer() bool {
 
 	v := f.Schema.Value
 
-	// Required + nullable fields should be pointers (Omicron API pattern):
-	// they can be set to a null value, but they must not be omitted.
-	// The SDK presents these fields as optional and serializes them to
-	// `null` if not provided.
-	if f.Required && v.Nullable {
-		return true
+	if v.Nullable {
+		// Required nullable fields can be set to null, but must not be omitted.
+		// Optional nullable objects need pointers so omitempty can distinguish
+		// an omitted object from an object whose fields all have zero values.
+		if f.Required || resolveSchema(f.Schema).Type.Is("object") {
+			return true
+		}
 	}
 
 	// Check hardcoded nullable exceptions (upstream API workarounds)

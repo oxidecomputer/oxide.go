@@ -10347,7 +10347,7 @@ type SamlIdentityProviderCreate struct {
 	// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
 	// SigningKeypair is request signing key pair
-	SigningKeypair DerEncodedKeyPair `json:"signing_keypair,omitzero" yaml:"signing_keypair,omitzero"`
+	SigningKeypair *DerEncodedKeyPair `json:"signing_keypair,omitzero" yaml:"signing_keypair,omitzero"`
 	// SloUrl is service provider endpoint where the IdP should send log out requests
 	SloUrl string `json:"slo_url" yaml:"slo_url"`
 	// SpClientId is sP's client ID
@@ -13448,8 +13448,8 @@ type WebhookCreate struct {
 // - TimeSent
 type WebhookDeliveryAttempt struct {
 	// Attempt is the attempt number.
-	Attempt  *int                    `json:"attempt"            yaml:"attempt"`
-	Response WebhookDeliveryResponse `json:"response,omitempty" yaml:"response,omitempty"`
+	Attempt  *int                     `json:"attempt"            yaml:"attempt"`
+	Response *WebhookDeliveryResponse `json:"response,omitempty" yaml:"response,omitempty"`
 	// Result is the outcome of this delivery attempt: either the event was delivered successfully,
 	// or the request
 	// failed for one of several reasons.
