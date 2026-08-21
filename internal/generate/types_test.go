@@ -243,12 +243,46 @@ func TestTypeField_IsPointer(t *testing.T) {
 			expected: true,
 		},
 		{
-			name: "nullable not required",
+			name: "nullable object not required",
 			field: TypeField{
 				Name: "Config",
 				Type: "SomeConfig",
 				Schema: &openapi3.SchemaRef{
 					Value: &openapi3.Schema{Type: &openapi3.Types{"object"}, Nullable: true},
+				},
+				Required: false,
+			},
+			expected: true,
+		},
+		{
+			name: "nullable allOf object not required",
+			field: TypeField{
+				Name: "Config",
+				Type: "SomeConfig",
+				Schema: &openapi3.SchemaRef{
+					Value: &openapi3.Schema{
+						Nullable: true,
+						AllOf: openapi3.SchemaRefs{
+							{
+								Ref: "#/components/schemas/SomeConfig",
+								Value: &openapi3.Schema{
+									Type: &openapi3.Types{"object"},
+								},
+							},
+						},
+					},
+				},
+				Required: false,
+			},
+			expected: true,
+		},
+		{
+			name: "nullable scalar not required",
+			field: TypeField{
+				Name: "Config",
+				Type: "string",
+				Schema: &openapi3.SchemaRef{
+					Value: &openapi3.Schema{Type: &openapi3.Types{"string"}, Nullable: true},
 				},
 				Required: false,
 			},
