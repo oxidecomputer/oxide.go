@@ -1,3 +1,49 @@
+# v0.11.0 (2026/Sep/01)
+
+### Breaking changes
+
+- **Login methods removed:** The `LoginLocal` and `LoginSaml` methods have been removed since they target endpoints expected to be called from a web browser. [#438](https://github.com/oxidecomputer/oxide.go/pull/438)
+
+### New features
+
+- **Use pointers for nullable array elements:** Arrays with nullable elements are now generated as `[]*T` rather than `[]T`. [#437](https://github.com/oxidecomputer/oxide.go/pull/437)
+- **Use pointers for nullable, optional objects:** Objects that are nullable and optional are now generated as `*T` rather than `T`. [#444](https://github.com/oxidecomputer/oxide.go/pull/444)
+
+### Enhancements
+
+- **Prevent mutations to input client:** `NewClient` options now clone inputs to prevent mutations to inputs. [#441](https://github.com/oxidecomputer/oxide.go/pull/441)
+
+### Bug fixes
+
+- **Fixed `NewIpNet` parsing:** Fixed a bug that could cause invalid strings to be accepted as valid NetIpNet values. [#440](https://github.com/oxidecomputer/oxide.go/pull/440)
+- **Fixed path element escaping:** Path elements were being escaped using the character set for query params. [#439](https://github.com/oxidecomputer/oxide.go/pull/439)
+
+### List of commits
+
+- [e827dfd](https://github.com/oxidecomputer/oxide.go/commit/e827dfd) misc: update readme (#450)
+- [66688fe](https://github.com/oxidecomputer/oxide.go/commit/66688fe) build(deps): bump github.com/getkin/kin-openapi from 0.148.0 to 0.149.0 (#449)
+- [565591c](https://github.com/oxidecomputer/oxide.go/commit/565591c) build(deps): bump github.com/getkin/kin-openapi from 0.147.0 to 0.148.0 (#448)
+- [cd924a8](https://github.com/oxidecomputer/oxide.go/commit/cd924a8) misc: bump omicron version to rel/v22.1/rc1 (#447)
+- [0663400](https://github.com/oxidecomputer/oxide.go/commit/0663400) build(deps): bump github.com/getkin/kin-openapi from 0.146.0 to 0.147.0 (#446)
+- [8802070](https://github.com/oxidecomputer/oxide.go/commit/8802070) build(deps): bump github.com/stretchr/testify from 1.12.0 to 1.12.1 (#445)
+- [81a554b](https://github.com/oxidecomputer/oxide.go/commit/81a554b) fix: use pointers for nullable, optional objects (#444)
+- [4346f8b](https://github.com/oxidecomputer/oxide.go/commit/4346f8b) build(deps): bump github.com/stretchr/testify from 1.11.1 to 1.12.0 (#443)
+- [a8fca92](https://github.com/oxidecomputer/oxide.go/commit/a8fca92) misc: bump omicron version to rel/v22/rc1 (#442)
+- [dd785d3](https://github.com/oxidecomputer/oxide.go/commit/dd785d3) client: avoid mutating input client (#441)
+- [712cbb3](https://github.com/oxidecomputer/oxide.go/commit/712cbb3) helpers: fix NewIpNet parsing (#440)
+- [22a9c84](https://github.com/oxidecomputer/oxide.go/commit/22a9c84) lib: escape URL path elements (#439)
+- [432ffed](https://github.com/oxidecomputer/oxide.go/commit/432ffed) paths: remove login operations (#438)
+- [6f808cc](https://github.com/oxidecomputer/oxide.go/commit/6f808cc) Model optional array items as pointers. (#437)
+- [d5a6ac6](https://github.com/oxidecomputer/oxide.go/commit/d5a6ac6) feat: api version 2026073100.0.0 (#436)
+- [21e3994](https://github.com/oxidecomputer/oxide.go/commit/21e3994) build(deps): bump github.com/getkin/kin-openapi from 0.145.0 to 0.146.0 (#434)
+- [fc7ae51](https://github.com/oxidecomputer/oxide.go/commit/fc7ae51) build(deps): bump github.com/getkin/kin-openapi from 0.144.0 to 0.145.0 (#433)
+- [707763e](https://github.com/oxidecomputer/oxide.go/commit/707763e) build(deps): bump github.com/getkin/kin-openapi from 0.143.0 to 0.144.0 (#432)
+- [5e664f0](https://github.com/oxidecomputer/oxide.go/commit/5e664f0) build(deps): bump github.com/getkin/kin-openapi from 0.142.0 to 0.143.0 (#431)
+- [979e490](https://github.com/oxidecomputer/oxide.go/commit/979e490) build(deps): bump github.com/getkin/kin-openapi from 0.140.0 to 0.142.0 (#429)
+- [813b415](https://github.com/oxidecomputer/oxide.go/commit/813b415) build(deps): bump actions/setup-go from 6 to 7 (#430)
+- [97b7215](https://github.com/oxidecomputer/oxide.go/commit/97b7215) build(deps): bump actions/checkout from 6 to 7 (#428)
+- [b35fb35](https://github.com/oxidecomputer/oxide.go/commit/b35fb35) misc: bump to v0.11.0 (#427)
+
 # v0.10.0 (2026/Jun/12)
 
 Generated from Oxide API version
