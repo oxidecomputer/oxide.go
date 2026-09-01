@@ -1,32 +1,36 @@
-# oxide.go
+# Oxide Go SDK
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/oxidecomputer/oxide.go.svg)](https://pkg.go.dev/github.com/oxidecomputer/oxide.go)
 
-_**IMPORTANT:** This SDK is under heavy development and will have constant breaking changes._
+The Oxide Go SDK enables Go programs to interact with the [Oxide
+API](https://docs.oxide.computer).
 
-The Go [API](https://docs.oxide.computer) client for administrating an Oxide rack.
+## Version Policy
 
-To contribute to this repository make sure you read the contributing
-[documentation](./CONTRIBUTING.md).
+This project adheres to [Semantic Versioning](https://semver.org/). It is
+currently at major version zero (e.g., v0.Y.Z). Anything may change at any time
+and the public API should not be considered stable.
 
-## Getting started
+## Minimum Supported Go Version
 
-Make sure you have installed [Go](https://go.dev/dl/) 1.21.x or above.
+The Go version specified in [go.mod](./go.mod) is the minimum supported Go
+version for this project.
 
-### Installation
+## Usage
 
-Use `go get` inside your module dependencies directory
+Use `go get` to fetch this module as a dependency.
 
 ```console
 go get github.com/oxidecomputer/oxide.go@latest
 ```
 
-### Usage example
+### Example
 
-```Go
+```go
 package main
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/oxidecomputer/oxide.go/oxide"
@@ -34,48 +38,49 @@ import (
 
 func main() {
 	client, err := oxide.NewClient(
-		oxide.WithHost("https://api.oxide.computer"),
-		oxide.WithToken("oxide-abc123"),
+		oxide.WithHost("https://oxide.sys.example.com"),
+		oxide.WithToken("oxide-token-abc123"),
 	)
 	if err != nil {
 		panic(err)
 	}
 
 	ctx := context.Background()
+
 	params := oxide.ProjectCreateParams{
 		Body: &oxide.ProjectCreate{
-			Description: "A sample project",
 			Name:        oxide.Name("my-project"),
+			Description: "A project created by the Go SDK.",
 		},
 	}
 
-	resp, err := client.ProjectCreate(ctx, params)
+	project, err := client.ProjectCreate(ctx, params)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Printf("%+v\n", resp)
+	fmt.Printf("Created project:\n%#v\n", project)
 }
 ```
 
 ### Authentication
 
-The client supports several authentication methods.
+The Go SDK supports several authentication methods.
 
 1. Explicit options: Use `WithHost` and `WithToken`:
 
    ```go
    client, err := oxide.NewClient(
-       oxide.WithHost("https://api.oxide.computer"),
-       oxide.WithToken("oxide-abc123"),
+       oxide.WithHost("https://oxide.sys.example.com"),
+       oxide.WithToken("oxide-token-abc123"),
    )
    ```
 
 1. Environment variables: Set `OXIDE_HOST` and `OXIDE_TOKEN`:
 
    ```bash
-   export OXIDE_HOST="https://api.oxide.computer"
-   export OXIDE_TOKEN="oxide-abc123"
+   export OXIDE_HOST="https://oxide.sys.r3.oxide-preview.com"
+   export OXIDE_TOKEN="oxide-token-abc123"
    ```
 
    Then create the client with no options:
@@ -84,7 +89,7 @@ The client supports several authentication methods.
    client, err := oxide.NewClient()
    ```
 
-1. Oxide profile: Use a profile from the Oxide config file:
+1. Oxide profile: Use a profile from the Oxide credentials file:
 
    ```go
    client, err := oxide.NewClient(oxide.WithProfile("my-profile"))
@@ -96,15 +101,34 @@ The client supports several authentication methods.
    export OXIDE_PROFILE="my-profile"
    ```
 
-1. Default profile: Use the default profile from the Oxide config file:
+   Then create the client with no options:
+
+   ```go
+   client, err := oxide.NewClient()
+   ```
+
+1. Default profile: Use the default profile from the Oxide credentials file:
 
    ```go
    client, err := oxide.NewClient(oxide.WithDefaultProfile())
    ```
 
-When using profiles, the client reads from the Oxide credentials file located at
-`$HOME/.config/oxide/credentials.toml`, or a custom directory via `WithConfigDir`.
+When using profiles, the client reads from the Oxide credentials file
+located at `$HOME/.config/oxide/credentials.toml`, or a custom directory via
+`WithConfigDir`:
 
-Options override environment variables. Configuring both profile and host/token options is
-disallowed and will return an error, as will configuring both `WithProfile` and
-`WithDefaultProfile`.
+```go
+client, err := oxide.NewClient(
+	oxide.WithProfile("my-profile"),
+	oxide.WithConfigDir("/path/to/oxide/config"),
+)
+```
+
+Options override environment variables. Configuring `WithProfile` or
+`WithDefaultProfile` together with `WithHost` or `WithToken` returns an error.
+Configuring `WithProfile` together with `WithDefaultProfile` also returns an
+error.
+
+## Contributing
+
+Read [CONTRIBUTING.md](./CONTRIBUTING.md) before contributing to this project.
