@@ -3,8 +3,12 @@ title = "Login methods removed"
 description = "The `LoginLocal` and `LoginSaml` methods have been removed since they target endpoints expected to be called from a web browser. [#438](https://github.com/oxidecomputer/oxide.go/pull/438)"
 
 [[features]]
-title = ""
-description = ""
+title = "Use pointers for nullable array elements"
+description = "Arrays with nullable elements are now generated as `[]*T` rather than `[]T`. [#437](https://github.com/oxidecomputer/oxide.go/pull/437)"
+
+[[features]]
+title = "Use pointers for nullable, optional objects"
+description = "Objects that are nullable and optional are now generated as `*T` rather than `T`. [#444](https://github.com/oxidecomputer/oxide.go/pull/444)"
 
 [[bugs]]
 title = "Fixed `NewIpNet` parsing"
