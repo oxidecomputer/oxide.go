@@ -13,4 +13,4 @@ const version = "v0.12.0"
 // APIVersion is the OpenAPI specification version the Oxide Go SDK was
 // generated from. This is used to populate the 'API-Version' header for
 // [Client].
-const APIVersion = "2026073100.0.0"
+const APIVersion = "2026091500.0.0"

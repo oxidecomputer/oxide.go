@@ -253,506 +253,6 @@ func (c *Client) ExperimentalProbeDelete(ctx context.Context, params ProbeDelete
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
 //
-// ExperimentalSupportBundleList: List all support bundles
-//
-// To iterate over all pages, use the `ExperimentalSupportBundleListAllPages` method, instead.
-func (c *Client) ExperimentalSupportBundleList(
-	ctx context.Context,
-	params SupportBundleListParams,
-) (*SupportBundleInfoResultsPage, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/experimental/v1/system/support-bundles"),
-		map[string]string{},
-		map[string]string{
-			"limit":      PointerIntToStr(params.Limit),
-			"page_token": params.PageToken,
-			"sort_by":    string(params.SortBy),
-		},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body SupportBundleInfoResultsPage
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
-//
-// ExperimentalSupportBundleListAllPages: List all support bundles
-//
-// This method is a wrapper around the `ExperimentalSupportBundleList` method.
-// This method returns all the pages at once.
-func (c *Client) ExperimentalSupportBundleListAllPages(
-	ctx context.Context,
-	params SupportBundleListParams,
-) ([]SupportBundleInfo, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	var allPages []SupportBundleInfo
-	params.PageToken = ""
-	params.Limit = NewPointer(100)
-	for {
-		page, err := c.ExperimentalSupportBundleList(ctx, params)
-		if err != nil {
-			return nil, err
-		}
-		allPages = append(allPages, page.Items...)
-		if page.NextPage == "" || page.NextPage == params.PageToken {
-			break
-		}
-		params.PageToken = page.NextPage
-	}
-
-	return allPages, nil
-}
-
-// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
-//
-// ExperimentalSupportBundleCreate: Create support bundle
-func (c *Client) ExperimentalSupportBundleCreate(
-	ctx context.Context,
-	params SupportBundleCreateParams,
-) (*SupportBundleInfo, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
-
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"POST",
-		resolveRelative(c.host, "/experimental/v1/system/support-bundles"),
-		map[string]string{},
-		map[string]string{},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body SupportBundleInfo
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
-//
-// ExperimentalSupportBundleView: View support bundle
-func (c *Client) ExperimentalSupportBundleView(
-	ctx context.Context,
-	params SupportBundleViewParams,
-) (*SupportBundleInfo, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/experimental/v1/system/support-bundles/{{.bundle_id}}"),
-		map[string]string{
-			"bundle_id": params.BundleId,
-		},
-		map[string]string{},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body SupportBundleInfo
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
-//
-// ExperimentalSupportBundleUpdate: Update support bundle
-func (c *Client) ExperimentalSupportBundleUpdate(
-	ctx context.Context,
-	params SupportBundleUpdateParams,
-) (*SupportBundleInfo, error) {
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-	// Encode the request body as json.
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
-		return nil, fmt.Errorf("encoding json body request failed: %v", err)
-	}
-
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		b,
-		"PUT",
-		resolveRelative(c.host, "/experimental/v1/system/support-bundles/{{.bundle_id}}"),
-		map[string]string{
-			"bundle_id": params.BundleId,
-		},
-		map[string]string{},
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return nil, err
-	}
-
-	// Decode the body from the response.
-	if resp.Body == nil {
-		return nil, errors.New("request returned an empty body in the response")
-	}
-
-	var body SupportBundleInfo
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, fmt.Errorf("error decoding response body: %v", err)
-	}
-
-	// Return the response.
-	return &body, nil
-}
-
-// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
-//
-// ExperimentalSupportBundleDelete: Delete support bundle
-// May also be used to cancel a support bundle which is currently being collected, or to remove
-// metadata for
-// a support bundle that has failed.
-func (c *Client) ExperimentalSupportBundleDelete(
-	ctx context.Context,
-	params SupportBundleDeleteParams,
-) error {
-	if err := params.Validate(); err != nil {
-		return err
-	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"DELETE",
-		resolveRelative(c.host, "/experimental/v1/system/support-bundles/{{.bundle_id}}"),
-		map[string]string{
-			"bundle_id": params.BundleId,
-		},
-		map[string]string{},
-	)
-	if err != nil {
-		return fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
-//
-// ExperimentalSupportBundleDownload: Download support bundle contents
-func (c *Client) ExperimentalSupportBundleDownload(
-	ctx context.Context,
-	params SupportBundleDownloadParams,
-) error {
-	if err := params.Validate(); err != nil {
-		return err
-	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/experimental/v1/system/support-bundles/{{.bundle_id}}/download"),
-		map[string]string{
-			"bundle_id": params.BundleId,
-		},
-		map[string]string{},
-	)
-	if err != nil {
-		return fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
-//
-// ExperimentalSupportBundleHead: Download support bundle metadata
-func (c *Client) ExperimentalSupportBundleHead(
-	ctx context.Context,
-	params SupportBundleHeadParams,
-) error {
-	if err := params.Validate(); err != nil {
-		return err
-	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"HEAD",
-		resolveRelative(c.host, "/experimental/v1/system/support-bundles/{{.bundle_id}}/download"),
-		map[string]string{
-			"bundle_id": params.BundleId,
-		},
-		map[string]string{},
-	)
-	if err != nil {
-		return fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
-//
-// ExperimentalSupportBundleDownloadFile: Download file from support bundle
-func (c *Client) ExperimentalSupportBundleDownloadFile(
-	ctx context.Context,
-	params SupportBundleDownloadFileParams,
-) error {
-	if err := params.Validate(); err != nil {
-		return err
-	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(
-			c.host,
-			"/experimental/v1/system/support-bundles/{{.bundle_id}}/download/{{.file}}",
-		),
-		map[string]string{
-			"bundle_id": params.BundleId,
-			"file":      params.File,
-		},
-		map[string]string{},
-	)
-	if err != nil {
-		return fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
-//
-// ExperimentalSupportBundleHeadFile: Download metadata of file in support bundle
-func (c *Client) ExperimentalSupportBundleHeadFile(
-	ctx context.Context,
-	params SupportBundleHeadFileParams,
-) error {
-	if err := params.Validate(); err != nil {
-		return err
-	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"HEAD",
-		resolveRelative(
-			c.host,
-			"/experimental/v1/system/support-bundles/{{.bundle_id}}/download/{{.file}}",
-		),
-		map[string]string{
-			"bundle_id": params.BundleId,
-			"file":      params.File,
-		},
-		map[string]string{},
-	)
-	if err != nil {
-		return fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
-//
-// ExperimentalSupportBundleIndex: Download support bundle index
-func (c *Client) ExperimentalSupportBundleIndex(
-	ctx context.Context,
-	params SupportBundleIndexParams,
-) error {
-	if err := params.Validate(); err != nil {
-		return err
-	}
-	// Create the request
-	req, err := c.buildRequest(
-		ctx,
-		nil,
-		"GET",
-		resolveRelative(c.host, "/experimental/v1/system/support-bundles/{{.bundle_id}}/index"),
-		map[string]string{
-			"bundle_id": params.BundleId,
-		},
-		map[string]string{},
-	)
-	if err != nil {
-		return fmt.Errorf("error building request: %v", err)
-	}
-
-	// Send the request.
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	// Create and return an HTTPError when an error response code is received.
-	if err := NewHTTPError(resp); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
-//
 // ExperimentalAffinityGroupList: List affinity groups
 //
 // To iterate over all pages, use the `ExperimentalAffinityGroupListAllPages` method, instead.
@@ -1805,6 +1305,135 @@ func (c *Client) AlertReceiverSubscriptionRemove(
 	}
 
 	return nil
+}
+
+// AlertList: List alerts
+// Alerts may be filtered by alert class or alert class glob and by an inclusive creation time
+// range.
+//
+// To iterate over all pages, use the `AlertListAllPages` method, instead.
+func (c *Client) AlertList(ctx context.Context, params AlertListParams) (*AlertResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/alerts"),
+		map[string]string{},
+		map[string]string{
+			"alert_class": string(params.AlertClass),
+			"end_time":    PointerTimeToStr(params.EndTime),
+			"limit":       PointerIntToStr(params.Limit),
+			"page_token":  params.PageToken,
+			"sort_by":     string(params.SortBy),
+			"start_time":  PointerTimeToStr(params.StartTime),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body AlertResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// AlertListAllPages: List alerts
+// Alerts may be filtered by alert class or alert class glob and by an inclusive creation time
+// range.
+//
+// This method is a wrapper around the `AlertList` method.
+// This method returns all the pages at once.
+func (c *Client) AlertListAllPages(ctx context.Context, params AlertListParams) ([]Alert, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []Alert
+	params.PageToken = ""
+	params.Limit = NewPointer(100)
+	for {
+		page, err := c.AlertList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
+}
+
+// AlertView: Fetch alert
+func (c *Client) AlertView(ctx context.Context, params AlertViewParams) (*Alert, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/alerts/{{.alert_id}}"),
+		map[string]string{
+			"alert_id": params.AlertId,
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body Alert
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
 }
 
 // AlertDeliveryResend: Request re-delivery of alert
@@ -8407,10 +8036,10 @@ func (c *Client) SubnetPoolView(
 // deduplicate items fetched from overlapping time intervals.
 //
 // Audit log entries are designed to be immutable: once you see an entry, fetching it again will
-// never get you a different result. The list is ordered by `time_completed`, not `time_started`. If
-// you fetch the audit log for a time range that is fully in the past, the resulting list is
-// guaranteed to be complete, i.e., fetching the
-// same timespan again later will always produce the same set of entries.
+// never get you a different result. The list is ordered and filtered by `time_completed`, not
+// `time_started`. If you fetch the audit log for a time range that is fully in the past, the
+// resulting list is guaranteed to be complete, i.e.,
+// fetching the same timespan again later will always produce the same set of entries.
 //
 // To iterate over all pages, use the `AuditLogListAllPages` method, instead.
 func (c *Client) AuditLogList(
@@ -8473,10 +8102,10 @@ func (c *Client) AuditLogList(
 // deduplicate items fetched from overlapping time intervals.
 //
 // Audit log entries are designed to be immutable: once you see an entry, fetching it again will
-// never get you a different result. The list is ordered by `time_completed`, not `time_started`. If
-// you fetch the audit log for a time range that is fully in the past, the resulting list is
-// guaranteed to be complete, i.e., fetching the
-// same timespan again later will always produce the same set of entries.
+// never get you a different result. The list is ordered and filtered by `time_completed`, not
+// `time_started`. If you fetch the audit log for a time range that is fully in the past, the
+// resulting list is guaranteed to be complete, i.e.,
+// fetching the same timespan again later will always produce the same set of entries.
 //
 // This method is a wrapper around the `AuditLogList` method.
 // This method returns all the pages at once.
@@ -14800,6 +14429,469 @@ func (c *Client) SystemSubnetPoolUtilizationView(
 	return &body, nil
 }
 
+// SupportBundleList: List all support bundles
+//
+// To iterate over all pages, use the `SupportBundleListAllPages` method, instead.
+func (c *Client) SupportBundleList(
+	ctx context.Context,
+	params SupportBundleListParams,
+) (*SupportBundleInfoResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/support-bundles"),
+		map[string]string{},
+		map[string]string{
+			"limit":      PointerIntToStr(params.Limit),
+			"page_token": params.PageToken,
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SupportBundleInfoResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SupportBundleListAllPages: List all support bundles
+//
+// This method is a wrapper around the `SupportBundleList` method.
+// This method returns all the pages at once.
+func (c *Client) SupportBundleListAllPages(
+	ctx context.Context,
+	params SupportBundleListParams,
+) ([]SupportBundleInfo, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []SupportBundleInfo
+	params.PageToken = ""
+	params.Limit = NewPointer(100)
+	for {
+		page, err := c.SupportBundleList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
+}
+
+// SupportBundleCreate: Create support bundle
+func (c *Client) SupportBundleCreate(
+	ctx context.Context,
+	params SupportBundleCreateParams,
+) (*SupportBundleInfo, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"POST",
+		resolveRelative(c.host, "/v1/system/support-bundles"),
+		map[string]string{},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SupportBundleInfo
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SupportBundleView: View support bundle
+func (c *Client) SupportBundleView(
+	ctx context.Context,
+	params SupportBundleViewParams,
+) (*SupportBundleInfo, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/support-bundles/{{.bundle_id}}"),
+		map[string]string{
+			"bundle_id": params.BundleId,
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SupportBundleInfo
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SupportBundleUpdate: Update support bundle
+func (c *Client) SupportBundleUpdate(
+	ctx context.Context,
+	params SupportBundleUpdateParams,
+) (*SupportBundleInfo, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"PUT",
+		resolveRelative(c.host, "/v1/system/support-bundles/{{.bundle_id}}"),
+		map[string]string{
+			"bundle_id": params.BundleId,
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body SupportBundleInfo
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SupportBundleDelete: Delete support bundle
+// May also be used to cancel a support bundle which is currently being collected, or to remove
+// metadata for
+// a support bundle that has failed.
+func (c *Client) SupportBundleDelete(ctx context.Context, params SupportBundleDeleteParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"DELETE",
+		resolveRelative(c.host, "/v1/system/support-bundles/{{.bundle_id}}"),
+		map[string]string{
+			"bundle_id": params.BundleId,
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// SupportBundleDownload: Download support bundle contents
+func (c *Client) SupportBundleDownload(
+	ctx context.Context,
+	params SupportBundleDownloadParams,
+) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/support-bundles/{{.bundle_id}}/download"),
+		map[string]string{
+			"bundle_id": params.BundleId,
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// SupportBundleHead: Download support bundle metadata
+func (c *Client) SupportBundleHead(ctx context.Context, params SupportBundleHeadParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"HEAD",
+		resolveRelative(c.host, "/v1/system/support-bundles/{{.bundle_id}}/download"),
+		map[string]string{
+			"bundle_id": params.BundleId,
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// SupportBundleDownloadFile: Download file from support bundle
+func (c *Client) SupportBundleDownloadFile(
+	ctx context.Context,
+	params SupportBundleDownloadFileParams,
+) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/support-bundles/{{.bundle_id}}/download/{{.file}}"),
+		map[string]string{
+			"bundle_id": params.BundleId,
+			"file":      params.File,
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// SupportBundleHeadFile: Download metadata of file in support bundle
+func (c *Client) SupportBundleHeadFile(
+	ctx context.Context,
+	params SupportBundleHeadFileParams,
+) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"HEAD",
+		resolveRelative(c.host, "/v1/system/support-bundles/{{.bundle_id}}/download/{{.file}}"),
+		map[string]string{
+			"bundle_id": params.BundleId,
+			"file":      params.File,
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// SupportBundleIndex: Download support bundle index
+func (c *Client) SupportBundleIndex(ctx context.Context, params SupportBundleIndexParams) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/support-bundles/{{.bundle_id}}/index"),
+		map[string]string{
+			"bundle_id": params.BundleId,
+		},
+		map[string]string{},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // SystemTimeseriesQuery: Run timeseries query
 // Queries are written in OxQL.
 func (c *Client) SystemTimeseriesQuery(
@@ -15501,7 +15593,7 @@ func (c *Client) SystemUpdateTrustRootDelete(
 	return nil
 }
 
-// SiloUserList: List built-in (system) users in silo
+// SiloUserList: List users in silo
 //
 // To iterate over all pages, use the `SiloUserListAllPages` method, instead.
 func (c *Client) SiloUserList(
@@ -15555,7 +15647,7 @@ func (c *Client) SiloUserList(
 	return &body, nil
 }
 
-// SiloUserListAllPages: List built-in (system) users in silo
+// SiloUserListAllPages: List users in silo
 //
 // This method is a wrapper around the `SiloUserList` method.
 // This method returns all the pages at once.
@@ -15715,7 +15807,7 @@ func (c *Client) UserBuiltinView(
 	return &body, nil
 }
 
-// SiloUserView: Fetch built-in (system) user
+// SiloUserView: Fetch user in silo
 func (c *Client) SiloUserView(ctx context.Context, params SiloUserViewParams) (*User, error) {
 	if err := params.Validate(); err != nil {
 		return nil, err
