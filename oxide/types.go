@@ -466,9 +466,8 @@ type AffinityGroupUpdate struct {
 	Name        Name   `json:"name,omitempty"        yaml:"name,omitempty"`
 }
 
-// AffinityPolicy is if the affinity request cannot be satisfied, allow it anyway.
-//
-// This enables a "best-effort" attempt to satisfy the affinity policy.
+// AffinityPolicy is best-effort: instances can start even when the group's constraints cannot be
+// satisfied.
 type AffinityPolicy string
 
 // AggregateBgpMessageHistory is bGP message history for rack switches.
@@ -478,6 +477,45 @@ type AffinityPolicy string
 type AggregateBgpMessageHistory struct {
 	// SwitchHistories is bGP history organized by switch.
 	SwitchHistories []SwitchBgpHistory `json:"switch_histories" yaml:"switch_histories"`
+}
+
+// Alert is an alert.
+//
+// Alerts provide notifications about events that occurred in the system at a point in time. See the
+// guide-level documentation
+// on alerts for details.
+//
+// Required fields:
+// - Class
+// - Id
+// - Payload
+// - TimeCreated
+// - TimeModified
+// - Version
+type Alert struct {
+	// Class is the alert's class.
+	//
+	// See the guide-level documentation on alerts for details on alert classes.
+	Class string `json:"class" yaml:"class"`
+	// Id is unique, immutable, system-controlled identifier for each resource
+	Id string `json:"id" yaml:"id"`
+	// Payload is the alert's data payload.
+	//
+	// The schema for this object depends on the alert class and version.
+	Payload any `json:"payload" yaml:"payload"`
+	// TimeCreated is timestamp when this resource was created
+	TimeCreated *time.Time `json:"time_created" yaml:"time_created"`
+	// TimeModified is timestamp when this resource was last modified
+	TimeModified *time.Time `json:"time_modified" yaml:"time_modified"`
+	// Version is the schema version of this alert's data payload.
+	//
+	// Alert schemas are versioned on a per-alert-class basis. The schema version for a particular
+	// alert class does not correspond to an Oxide API version. Clients should expect to encounter
+	// earlier schema versions when retrieving
+	// alerts recorded by an earlier version of the system software.
+	//
+	// See the guide-level documentation on alerts for details.
+	Version *int `json:"version" yaml:"version"`
 }
 
 // AlertClass is an alert class.
@@ -719,6 +757,17 @@ func (v AlertReceiverKind) AsWebhook() (*AlertReceiverKindWebhook, bool) {
 type AlertReceiverResultsPage struct {
 	// Items is list of items on this page of results
 	Items []AlertReceiver `json:"items" yaml:"items"`
+	// NextPage is token used to fetch the next page of results (if any)
+	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// AlertResultsPage is a single page of results
+//
+// Required fields:
+// - Items
+type AlertResultsPage struct {
+	// Items is list of items on this page of results
+	Items []Alert `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
 }
@@ -6755,7 +6804,7 @@ type InstanceCreate struct {
 	// attribute to specify a boot disk. When boot_disk is specified it will count against the disk
 	// attachment limit.
 	Disks []InstanceDiskAttachment `json:"disks,omitempty" yaml:"disks,omitempty"`
-	// EnableJumboFrames is enable jumbo frames (8500 byte MTU) on the instance's primary OPTE
+	// EnableJumboFrames is enable jumbo frames (8500 byte MTU) on the instance's primary network
 	// interface. Requires the fleet-wide jumbo-frames opt-in to be enabled by an operator;
 	// otherwise this field must be `false`. Changes
 	// only take effect on the next instance restart.
@@ -9554,12 +9603,36 @@ type Project struct {
 // - Description
 // - Name
 type ProjectCreate struct {
-	Description string `json:"description" yaml:"description"`
+	// Defaults is default resources to create in the project
+	//
+	// Omit this field or pass `null` to create all defaults: currently, a default VPC with its own
+	// defaults. Pass
+	// an object to specify which resources to create. `{}` creates none.
+	//
+	// For example, to create the default VPC but not its default subnet, pass `{"vpc": {"type":
+	// "explicit", "defaults":
+	// {}}}`.
+	Defaults    *ProjectCreateDefaults `json:"defaults,omitempty" yaml:"defaults,omitempty"`
+	Description string                 `json:"description"        yaml:"description"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase
 	// ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID,
 	// but they may contain a UUID. They
 	// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
+}
+
+// ProjectCreateDefaults is default resources to create in a project
+//
+// Each field corresponds to one resource. Set a field to an object to create that resource. Omit it
+// or pass
+// `null` to skip it.
+type ProjectCreateDefaults struct {
+	// Vpc is create the default VPC. Omit this field or pass `null` to skip it.
+	//
+	// When present, the value also determines which of the VPC's own defaults to create: `{"type":
+	// "all"}` creates
+	// all of them, and `{"type": "explicit", "defaults": {...}}` creates only those specified.
+	Vpc VpcCreateDefaultsSelection `json:"vpc,omitzero" yaml:"vpc,omitzero"`
 }
 
 // ProjectResultsPage is a single page of results
@@ -10106,8 +10179,12 @@ func (RouterPeerTypeUnnumbered) isRouterPeerTypeVariant() {}
 
 // RouterPeerTypeNumbered is a variant of RouterPeerType.
 type RouterPeerTypeNumbered struct {
-	// Ip is iP address for numbered BGP peers.
-	Ip string `json:"ip" yaml:"ip"`
+	// SrcAddr is optional local IP address to bind when establishing outbound TCP connections to
+	// this peer. If
+	// `None`, the OS selects the source address.
+	SrcAddr string `json:"src_addr,omitempty" yaml:"src_addr,omitempty"`
+	// TargetAddr is target IP address for numbered BGP peers.
+	TargetAddr string `json:"target_addr" yaml:"target_addr"`
 }
 
 func (RouterPeerTypeNumbered) isRouterPeerTypeVariant() {}
@@ -10426,9 +10503,9 @@ type Silo struct {
 	AdminGroupName string `json:"admin_group_name,omitempty" yaml:"admin_group_name,omitempty"`
 	// Description is human-readable free-form text about a resource
 	Description string `json:"description" yaml:"description"`
-	// Discoverable is a silo where discoverable is false can be retrieved only by its id - it will
-	// not be part
-	// of the "list all silos" output.
+	// Discoverable is a non-discoverable silo can only be retrieved by ID - it will not be part of
+	// the "list all
+	// silos" output.
 	Discoverable *bool `json:"discoverable" yaml:"discoverable"`
 	// Id is unique, immutable, system-controlled identifier for each resource
 	Id string `json:"id" yaml:"id"`
@@ -10475,7 +10552,6 @@ type SiloAuthSettingsUpdate struct {
 //
 // Required fields:
 // - Description
-// - Discoverable
 // - IdentityMode
 // - Name
 // - Quotas
@@ -10491,7 +10567,6 @@ type SiloCreate struct {
 	// considered part of a group. See `SamlIdentityProviderCreate` for more information.
 	AdminGroupName string `json:"admin_group_name,omitempty" yaml:"admin_group_name,omitempty"`
 	Description    string `json:"description"                yaml:"description"`
-	Discoverable   *bool  `json:"discoverable"               yaml:"discoverable"`
 	// IdentityMode is describes how identities are managed and users are authenticated in this Silo
 	IdentityMode SiloIdentityMode `json:"identity_mode" yaml:"identity_mode"`
 	// MappedFleetRoles is mapping of which Fleet roles are conferred by each Silo role
@@ -10770,6 +10845,10 @@ type Sled struct {
 	Policy SledPolicy `json:"policy" yaml:"policy"`
 	// RackId is the rack to which this Sled is currently attached
 	RackId string `json:"rack_id" yaml:"rack_id"`
+	// Slot is the physical slot in the rack where this sled was last observed to be located, or
+	// null if its
+	// location is not known at this time.
+	Slot *int `json:"slot,omitempty" yaml:"slot,omitempty"`
 	// State is the current state of the sled.
 	State SledState `json:"state" yaml:"state"`
 	// TimeCreated is timestamp when this resource was created
@@ -11095,6 +11174,14 @@ type SshKeyResultsPage struct {
 	Items []SshKey `json:"items" yaml:"items"`
 	// NextPage is token used to fetch the next page of results (if any)
 	NextPage string `json:"next_page,omitempty" yaml:"next_page,omitempty"`
+}
+
+// SubnetCreateDefaults is default resources to create in the default subnet
+//
+// Including this object in the request creates the default subnet. A subnet has no default
+// resources yet, so
+// the object is always empty.
+type SubnetCreateDefaults struct {
 }
 
 // SubnetPool is a pool of subnets for external subnet allocation
@@ -11836,8 +11923,8 @@ type SystemMetricName string
 type SystemNetworkingSettings struct {
 	// ExternalJumboFramesOptInEnabled is when true, end users may opt in to jumbo frames (8500 byte
 	// MTU) on the primary interface of an instance. When false, instance-level opt-in is ignored
-	// and OPTE ports are created
-	// with the default MTU.
+	// and the primary interface uses
+	// the default MTU.
 	ExternalJumboFramesOptInEnabled *bool `json:"external_jumbo_frames_opt_in_enabled" yaml:"external_jumbo_frames_opt_in_enabled"`
 }
 
@@ -12622,7 +12709,17 @@ type Vpc struct {
 // - DnsName
 // - Name
 type VpcCreate struct {
-	Description string `json:"description" yaml:"description"`
+	// Defaults is default resources to create in the VPC
+	//
+	// Omit this field  or pass `null`  to create all defaults: currently, the default subnet. Pass
+	// an object to
+	// specify which resources to create. `{}` creates none.
+	//
+	// This does not affect the system router, default firewall rules, or default internet gateway,
+	// which are always
+	// created and do not block deletion of the VPC.
+	Defaults    *VpcCreateDefaults `json:"defaults,omitempty" yaml:"defaults,omitempty"`
+	Description string             `json:"description"        yaml:"description"`
 	// DnsName is names must begin with a lower case ASCII letter, be composed exclusively of
 	// lowercase ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot
 	// be a UUID, but they may contain a UUID. They
@@ -12631,14 +12728,140 @@ type VpcCreate struct {
 	// Ipv6Prefix is the IPv6 prefix for this VPC
 	//
 	// All IPv6 subnets created from this VPC must be taken from this range, which should be a
-	// Unique Local Address in the range `fd00::/48`. The default VPC Subnet will have the first
-	// `/64` range from this prefix.
+	// Unique Local Address in the range `fd00::/48`. The default subnet, if requested, will take
+	// the first `/64` range from this prefix.
+	//
 	Ipv6Prefix Ipv6Net `json:"ipv6_prefix,omitempty" yaml:"ipv6_prefix,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase
 	// ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID,
 	// but they may contain a UUID. They
 	// can be at most 63 characters long.
 	Name Name `json:"name" yaml:"name"`
+}
+
+// VpcCreateDefaults is default resources to create in a VPC
+//
+// Each field corresponds to one resource. Set a field to an object to create that resource. Omit it
+// or pass
+// `null` to skip it.
+//
+// This does not affect the system router, default firewall rules, or default internet gateway,
+// which are always
+// created and do not block deletion of the VPC.
+type VpcCreateDefaults struct {
+	// Subnet is create the default subnet. Pass `{}` to create it and omit this field (or pass
+	// `null`) to skip
+	// it.
+	Subnet *SubnetCreateDefaults `json:"subnet,omitempty" yaml:"subnet,omitempty"`
+}
+
+// vpcCreateDefaultsSelectionVariant is implemented by VpcCreateDefaultsSelection variants.
+type vpcCreateDefaultsSelectionVariant interface {
+	isVpcCreateDefaultsSelectionVariant()
+}
+
+// VpcCreateDefaultsSelectionType is the type definition for a VpcCreateDefaultsSelectionType.
+type VpcCreateDefaultsSelectionType string
+
+// VpcCreateDefaultsSelectionAll is a variant of VpcCreateDefaultsSelection.
+type VpcCreateDefaultsSelectionAll struct {
+}
+
+func (VpcCreateDefaultsSelectionAll) isVpcCreateDefaultsSelectionVariant() {}
+
+// VpcCreateDefaultsSelectionExplicit is a variant of VpcCreateDefaultsSelection.
+type VpcCreateDefaultsSelectionExplicit struct {
+	// Defaults is default resources to create in a VPC
+	//
+	// Each field corresponds to one resource. Set a field to an object to create that resource.
+	// Omit it or pass
+	// `null` to skip it.
+	//
+	// This does not affect the system router, default firewall rules, or default internet gateway,
+	// which are always
+	// created and do not block deletion of the VPC.
+	Defaults VpcCreateDefaults `json:"defaults" yaml:"defaults"`
+}
+
+func (VpcCreateDefaultsSelectionExplicit) isVpcCreateDefaultsSelectionVariant() {}
+
+// VpcCreateDefaultsSelection is default resources to create in a VPC
+type VpcCreateDefaultsSelection struct {
+	Value vpcCreateDefaultsSelectionVariant
+}
+
+func (v VpcCreateDefaultsSelection) Type() VpcCreateDefaultsSelectionType {
+	switch v.Value.(type) {
+	case VpcCreateDefaultsSelectionAll, *VpcCreateDefaultsSelectionAll:
+		return VpcCreateDefaultsSelectionTypeAll
+	case VpcCreateDefaultsSelectionExplicit, *VpcCreateDefaultsSelectionExplicit:
+		return VpcCreateDefaultsSelectionTypeExplicit
+	default:
+		return ""
+	}
+}
+
+func (v *VpcCreateDefaultsSelection) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		return nil
+	}
+	type discriminator struct {
+		Type string `json:"type"`
+	}
+	var d discriminator
+	if err := json.Unmarshal(data, &d); err != nil {
+		return err
+	}
+
+	var value vpcCreateDefaultsSelectionVariant
+	switch d.Type {
+	case "all":
+		value = &VpcCreateDefaultsSelectionAll{}
+	case "explicit":
+		value = &VpcCreateDefaultsSelectionExplicit{}
+	default:
+		return fmt.Errorf("unknown variant %q, expected 'all' or 'explicit'", d.Type)
+	}
+	if err := json.Unmarshal(data, value); err != nil {
+		return err
+	}
+	v.Value = value
+	return nil
+}
+
+func (v VpcCreateDefaultsSelection) MarshalJSON() ([]byte, error) {
+	if v.Value == nil {
+		return []byte("null"), nil
+	}
+	m := make(map[string]any)
+	m["type"] = v.Type()
+	valueBytes, err := json.Marshal(v.Value)
+	if err != nil {
+		return nil, err
+	}
+	var valueMap map[string]any
+	if err := json.Unmarshal(valueBytes, &valueMap); err != nil {
+		return nil, err
+	}
+	for k, val := range valueMap {
+		m[k] = val
+	}
+	return json.Marshal(m)
+}
+
+// AsAll attempts to convert the VpcCreateDefaultsSelection to a VpcCreateDefaultsSelectionAll.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v VpcCreateDefaultsSelection) AsAll() (*VpcCreateDefaultsSelectionAll, bool) {
+	val, ok := v.Value.(*VpcCreateDefaultsSelectionAll)
+	return val, ok
+}
+
+// AsExplicit attempts to convert the VpcCreateDefaultsSelection to a
+// VpcCreateDefaultsSelectionExplicit.
+// Returns the variant and true if the conversion succeeded, nil and false otherwise.
+func (v VpcCreateDefaultsSelection) AsExplicit() (*VpcCreateDefaultsSelectionExplicit, bool) {
+	val, ok := v.Value.(*VpcCreateDefaultsSelectionExplicit)
+	return val, ok
 }
 
 // VpcFirewallIcmpFilter is the type definition for a VpcFirewallIcmpFilter.
@@ -13610,96 +13833,6 @@ type ProbeViewParams struct {
 	Project NameOrId `json:"project,omitempty" yaml:"project,omitempty"`
 }
 
-// SupportBundleListParams is the request parameters for SupportBundleList
-type SupportBundleListParams struct {
-	Limit     *int              `json:"limit,omitempty"      yaml:"limit,omitempty"`
-	PageToken string            `json:"page_token,omitempty" yaml:"page_token,omitempty"`
-	SortBy    TimeAndIdSortMode `json:"sort_by,omitempty"    yaml:"sort_by,omitempty"`
-}
-
-// SupportBundleCreateParams is the request parameters for SupportBundleCreate
-//
-// Required fields:
-// - Body
-type SupportBundleCreateParams struct {
-	Body *SupportBundleCreate `json:"body,omitempty" yaml:"body,omitempty"`
-}
-
-// SupportBundleDeleteParams is the request parameters for SupportBundleDelete
-//
-// Required fields:
-// - BundleId
-type SupportBundleDeleteParams struct {
-	BundleId string `json:"bundle_id,omitempty" yaml:"bundle_id,omitempty"`
-}
-
-// SupportBundleViewParams is the request parameters for SupportBundleView
-//
-// Required fields:
-// - BundleId
-type SupportBundleViewParams struct {
-	BundleId string `json:"bundle_id,omitempty" yaml:"bundle_id,omitempty"`
-}
-
-// SupportBundleUpdateParams is the request parameters for SupportBundleUpdate
-//
-// Required fields:
-// - BundleId
-// - Body
-type SupportBundleUpdateParams struct {
-	BundleId string               `json:"bundle_id,omitempty" yaml:"bundle_id,omitempty"`
-	Body     *SupportBundleUpdate `json:"body,omitempty"      yaml:"body,omitempty"`
-}
-
-// SupportBundleDownloadParams is the request parameters for SupportBundleDownload
-//
-// Required fields:
-// - BundleId
-type SupportBundleDownloadParams struct {
-	Range    string `json:"range,omitempty"     yaml:"range,omitempty"`
-	BundleId string `json:"bundle_id,omitempty" yaml:"bundle_id,omitempty"`
-}
-
-// SupportBundleHeadParams is the request parameters for SupportBundleHead
-//
-// Required fields:
-// - BundleId
-type SupportBundleHeadParams struct {
-	Range    string `json:"range,omitempty"     yaml:"range,omitempty"`
-	BundleId string `json:"bundle_id,omitempty" yaml:"bundle_id,omitempty"`
-}
-
-// SupportBundleDownloadFileParams is the request parameters for SupportBundleDownloadFile
-//
-// Required fields:
-// - BundleId
-// - File
-type SupportBundleDownloadFileParams struct {
-	Range    string `json:"range,omitempty"     yaml:"range,omitempty"`
-	BundleId string `json:"bundle_id,omitempty" yaml:"bundle_id,omitempty"`
-	File     string `json:"file,omitempty"      yaml:"file,omitempty"`
-}
-
-// SupportBundleHeadFileParams is the request parameters for SupportBundleHeadFile
-//
-// Required fields:
-// - BundleId
-// - File
-type SupportBundleHeadFileParams struct {
-	Range    string `json:"range,omitempty"     yaml:"range,omitempty"`
-	BundleId string `json:"bundle_id,omitempty" yaml:"bundle_id,omitempty"`
-	File     string `json:"file,omitempty"      yaml:"file,omitempty"`
-}
-
-// SupportBundleIndexParams is the request parameters for SupportBundleIndex
-//
-// Required fields:
-// - BundleId
-type SupportBundleIndexParams struct {
-	Range    string `json:"range,omitempty"     yaml:"range,omitempty"`
-	BundleId string `json:"bundle_id,omitempty" yaml:"bundle_id,omitempty"`
-}
-
 // LoginSamlParams is the request parameters for LoginSaml
 //
 // Required fields:
@@ -13881,6 +14014,24 @@ type AlertReceiverSubscriptionAddParams struct {
 type AlertReceiverSubscriptionRemoveParams struct {
 	Receiver     NameOrId          `json:"receiver,omitempty"     yaml:"receiver,omitempty"`
 	Subscription AlertSubscription `json:"subscription,omitempty" yaml:"subscription,omitempty"`
+}
+
+// AlertListParams is the request parameters for AlertList
+type AlertListParams struct {
+	AlertClass AlertSubscription `json:"alert_class,omitempty" yaml:"alert_class,omitempty"`
+	EndTime    *time.Time        `json:"end_time,omitempty"    yaml:"end_time,omitempty"`
+	Limit      *int              `json:"limit,omitempty"       yaml:"limit,omitempty"`
+	PageToken  string            `json:"page_token,omitempty"  yaml:"page_token,omitempty"`
+	SortBy     TimeAndIdSortMode `json:"sort_by,omitempty"     yaml:"sort_by,omitempty"`
+	StartTime  *time.Time        `json:"start_time,omitempty"  yaml:"start_time,omitempty"`
+}
+
+// AlertViewParams is the request parameters for AlertView
+//
+// Required fields:
+// - AlertId
+type AlertViewParams struct {
+	AlertId string `json:"alert_id,omitempty" yaml:"alert_id,omitempty"`
 }
 
 // AlertDeliveryResendParams is the request parameters for AlertDeliveryResend
@@ -15939,6 +16090,96 @@ type SystemSubnetPoolUtilizationViewParams struct {
 	Pool NameOrId `json:"pool,omitempty" yaml:"pool,omitempty"`
 }
 
+// SupportBundleListParams is the request parameters for SupportBundleList
+type SupportBundleListParams struct {
+	Limit     *int              `json:"limit,omitempty"      yaml:"limit,omitempty"`
+	PageToken string            `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	SortBy    TimeAndIdSortMode `json:"sort_by,omitempty"    yaml:"sort_by,omitempty"`
+}
+
+// SupportBundleCreateParams is the request parameters for SupportBundleCreate
+//
+// Required fields:
+// - Body
+type SupportBundleCreateParams struct {
+	Body *SupportBundleCreate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// SupportBundleDeleteParams is the request parameters for SupportBundleDelete
+//
+// Required fields:
+// - BundleId
+type SupportBundleDeleteParams struct {
+	BundleId string `json:"bundle_id,omitempty" yaml:"bundle_id,omitempty"`
+}
+
+// SupportBundleViewParams is the request parameters for SupportBundleView
+//
+// Required fields:
+// - BundleId
+type SupportBundleViewParams struct {
+	BundleId string `json:"bundle_id,omitempty" yaml:"bundle_id,omitempty"`
+}
+
+// SupportBundleUpdateParams is the request parameters for SupportBundleUpdate
+//
+// Required fields:
+// - BundleId
+// - Body
+type SupportBundleUpdateParams struct {
+	BundleId string               `json:"bundle_id,omitempty" yaml:"bundle_id,omitempty"`
+	Body     *SupportBundleUpdate `json:"body,omitempty"      yaml:"body,omitempty"`
+}
+
+// SupportBundleDownloadParams is the request parameters for SupportBundleDownload
+//
+// Required fields:
+// - BundleId
+type SupportBundleDownloadParams struct {
+	Range    string `json:"range,omitempty"     yaml:"range,omitempty"`
+	BundleId string `json:"bundle_id,omitempty" yaml:"bundle_id,omitempty"`
+}
+
+// SupportBundleHeadParams is the request parameters for SupportBundleHead
+//
+// Required fields:
+// - BundleId
+type SupportBundleHeadParams struct {
+	Range    string `json:"range,omitempty"     yaml:"range,omitempty"`
+	BundleId string `json:"bundle_id,omitempty" yaml:"bundle_id,omitempty"`
+}
+
+// SupportBundleDownloadFileParams is the request parameters for SupportBundleDownloadFile
+//
+// Required fields:
+// - BundleId
+// - File
+type SupportBundleDownloadFileParams struct {
+	Range    string `json:"range,omitempty"     yaml:"range,omitempty"`
+	BundleId string `json:"bundle_id,omitempty" yaml:"bundle_id,omitempty"`
+	File     string `json:"file,omitempty"      yaml:"file,omitempty"`
+}
+
+// SupportBundleHeadFileParams is the request parameters for SupportBundleHeadFile
+//
+// Required fields:
+// - BundleId
+// - File
+type SupportBundleHeadFileParams struct {
+	Range    string `json:"range,omitempty"     yaml:"range,omitempty"`
+	BundleId string `json:"bundle_id,omitempty" yaml:"bundle_id,omitempty"`
+	File     string `json:"file,omitempty"      yaml:"file,omitempty"`
+}
+
+// SupportBundleIndexParams is the request parameters for SupportBundleIndex
+//
+// Required fields:
+// - BundleId
+type SupportBundleIndexParams struct {
+	Range    string `json:"range,omitempty"     yaml:"range,omitempty"`
+	BundleId string `json:"bundle_id,omitempty" yaml:"bundle_id,omitempty"`
+}
+
 // SystemTimeseriesQueryParams is the request parameters for SystemTimeseriesQuery
 //
 // Required fields:
@@ -16501,108 +16742,6 @@ func (p *ProbeViewParams) Validate() error {
 	return nil
 }
 
-// Validate verifies all required fields for SupportBundleListParams are set
-func (p *SupportBundleListParams) Validate() error {
-	v := new(Validator)
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for SupportBundleCreateParams are set
-func (p *SupportBundleCreateParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for SupportBundleDeleteParams are set
-func (p *SupportBundleDeleteParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredStr(string(p.BundleId), "BundleId")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for SupportBundleViewParams are set
-func (p *SupportBundleViewParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredStr(string(p.BundleId), "BundleId")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for SupportBundleUpdateParams are set
-func (p *SupportBundleUpdateParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredObj(p.Body, "Body")
-	v.HasRequiredStr(string(p.BundleId), "BundleId")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for SupportBundleDownloadParams are set
-func (p *SupportBundleDownloadParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredStr(string(p.BundleId), "BundleId")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for SupportBundleHeadParams are set
-func (p *SupportBundleHeadParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredStr(string(p.BundleId), "BundleId")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for SupportBundleDownloadFileParams are set
-func (p *SupportBundleDownloadFileParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredStr(string(p.BundleId), "BundleId")
-	v.HasRequiredStr(string(p.File), "File")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for SupportBundleHeadFileParams are set
-func (p *SupportBundleHeadFileParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredStr(string(p.BundleId), "BundleId")
-	v.HasRequiredStr(string(p.File), "File")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
-// Validate verifies all required fields for SupportBundleIndexParams are set
-func (p *SupportBundleIndexParams) Validate() error {
-	v := new(Validator)
-	v.HasRequiredStr(string(p.BundleId), "BundleId")
-	if !v.IsValid() {
-		return fmt.Errorf("validation error:\n%v", v.Error())
-	}
-	return nil
-}
-
 // Validate verifies all required fields for LoginSamlParams are set
 func (p *LoginSamlParams) Validate() error {
 	v := new(Validator)
@@ -16783,6 +16922,25 @@ func (p *AlertReceiverSubscriptionRemoveParams) Validate() error {
 	v := new(Validator)
 	v.HasRequiredStr(string(p.Receiver), "Receiver")
 	v.HasRequiredStr(string(p.Subscription), "Subscription")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AlertListParams are set
+func (p *AlertListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for AlertViewParams are set
+func (p *AlertViewParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.AlertId), "AlertId")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
@@ -18976,6 +19134,108 @@ func (p *SystemSubnetPoolUtilizationViewParams) Validate() error {
 	return nil
 }
 
+// Validate verifies all required fields for SupportBundleListParams are set
+func (p *SupportBundleListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SupportBundleCreateParams are set
+func (p *SupportBundleCreateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SupportBundleDeleteParams are set
+func (p *SupportBundleDeleteParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.BundleId), "BundleId")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SupportBundleViewParams are set
+func (p *SupportBundleViewParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.BundleId), "BundleId")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SupportBundleUpdateParams are set
+func (p *SupportBundleUpdateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.BundleId), "BundleId")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SupportBundleDownloadParams are set
+func (p *SupportBundleDownloadParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.BundleId), "BundleId")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SupportBundleHeadParams are set
+func (p *SupportBundleHeadParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.BundleId), "BundleId")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SupportBundleDownloadFileParams are set
+func (p *SupportBundleDownloadFileParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.BundleId), "BundleId")
+	v.HasRequiredStr(string(p.File), "File")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SupportBundleHeadFileParams are set
+func (p *SupportBundleHeadFileParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.BundleId), "BundleId")
+	v.HasRequiredStr(string(p.File), "File")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SupportBundleIndexParams are set
+func (p *SupportBundleIndexParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.BundleId), "BundleId")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
 // Validate verifies all required fields for SystemTimeseriesQueryParams are set
 func (p *SystemTimeseriesQueryParams) Validate() error {
 	v := new(Validator)
@@ -20484,6 +20744,13 @@ const VersionSortModeVersionAscending VersionSortMode = "version_ascending"
 // VersionSortModeVersionDescending represents the VersionSortMode `"version_descending"`.
 const VersionSortModeVersionDescending VersionSortMode = "version_descending"
 
+// VpcCreateDefaultsSelectionTypeAll represents the VpcCreateDefaultsSelectionType `"all"`.
+const VpcCreateDefaultsSelectionTypeAll VpcCreateDefaultsSelectionType = "all"
+
+// VpcCreateDefaultsSelectionTypeExplicit represents the VpcCreateDefaultsSelectionType
+// `"explicit"`.
+const VpcCreateDefaultsSelectionTypeExplicit VpcCreateDefaultsSelectionType = "explicit"
+
 // VpcFirewallRuleActionAllow represents the VpcFirewallRuleAction `"allow"`.
 const VpcFirewallRuleActionAllow VpcFirewallRuleAction = "allow"
 
@@ -21283,6 +21550,13 @@ var ValueArrayTypeCollection = []ValueArrayType{
 var VersionSortModeCollection = []VersionSortMode{
 	VersionSortModeVersionAscending,
 	VersionSortModeVersionDescending,
+}
+
+// VpcCreateDefaultsSelectionTypeCollection is the collection of all VpcCreateDefaultsSelectionType
+// values.
+var VpcCreateDefaultsSelectionTypeCollection = []VpcCreateDefaultsSelectionType{
+	VpcCreateDefaultsSelectionTypeAll,
+	VpcCreateDefaultsSelectionTypeExplicit,
 }
 
 // VpcFirewallRuleActionCollection is the collection of all VpcFirewallRuleAction values.
