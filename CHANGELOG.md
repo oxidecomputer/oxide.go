@@ -1,3 +1,15 @@
+# v0.12.0 (2026/Sep/28)
+
+### Minimum Supported Oxide Version
+
+The minimum supported Oxide version is now v23 (API Version [2026073100.0.0](https://github.com/oxidecomputer/omicron/blob/rel/v23/rc0/openapi/nexus/nexus-2026091500.0.0-742248.json)).
+
+### List of commits
+
+- [ba61d78](https://github.com/oxidecomputer/oxide.go/commit/ba61d78) misc: bump omicron (#454)
+- [d068a0d](https://github.com/oxidecomputer/oxide.go/commit/d068a0d) misc: bump omicron (#453)
+- [9cd0285](https://github.com/oxidecomputer/oxide.go/commit/9cd0285) misc: bump to next development version (#452)
+
 # v0.11.0 (2026/Sep/01)
 
 ### Breaking changes
