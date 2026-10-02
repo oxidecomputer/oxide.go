@@ -1,6 +1,7 @@
 name: Release
 description: Request a new release to be published.
 title: "Release: Go SDK"
+labels: ["Go SDK", "Task"]
 projects: ["oxidecomputer/116"]
 body:
   - type: markdown
