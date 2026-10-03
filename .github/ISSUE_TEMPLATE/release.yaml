@@ -1,7 +1,7 @@
 name: Release
 description: Request a new release to be published.
 title: "Release: Go SDK"
-projects: ["oxidecomputer/116"]
+labels: ["Go SDK", "Task"]
 body:
   - type: markdown
     attributes:
@@ -13,7 +13,7 @@ body:
       label: Oxide Release
       description: >-
         Which Oxide release will this need to be compatible with?
-      placeholder: "RXX"
+      placeholder: "vXX"
     validations:
       required: true
   - type: input
