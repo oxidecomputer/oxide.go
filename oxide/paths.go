@@ -2106,10 +2106,7 @@ func (c *Client) AuthSettingsUpdate(
 	return &body, nil
 }
 
-// CertificateList: List certificates for external endpoints
-// Returns a list of TLS certificates used for the external API (for the current Silo).  These are
-// sorted by
-// creation date, with the most recent certificates appearing first.
+// CertificateList: List TLS certificates in current silo
 //
 // To iterate over all pages, use the `CertificateListAllPages` method, instead.
 func (c *Client) CertificateList(
@@ -2162,10 +2159,7 @@ func (c *Client) CertificateList(
 	return &body, nil
 }
 
-// CertificateListAllPages: List certificates for external endpoints
-// Returns a list of TLS certificates used for the external API (for the current Silo).  These are
-// sorted by
-// creation date, with the most recent certificates appearing first.
+// CertificateListAllPages: List TLS certificates in current silo
 //
 // This method is a wrapper around the `CertificateList` method.
 // This method returns all the pages at once.
@@ -2194,8 +2188,8 @@ func (c *Client) CertificateListAllPages(
 	return allPages, nil
 }
 
-// CertificateCreate: Create system-wide x.509 certificate
-// This certificate is automatically used by the Oxide Control plane to serve external connections.
+// CertificateCreate: Create TLS certificate in current silo
+// This certificate is automatically used by the Oxide control plane to serve API requests.
 func (c *Client) CertificateCreate(
 	ctx context.Context,
 	params CertificateCreateParams,
@@ -2248,8 +2242,7 @@ func (c *Client) CertificateCreate(
 	return &body, nil
 }
 
-// CertificateView: Fetch certificate
-// Returns the details of a specific certificate
+// CertificateView: Fetch TLS certificate in current silo
 func (c *Client) CertificateView(
 	ctx context.Context,
 	params CertificateViewParams,
@@ -2298,8 +2291,7 @@ func (c *Client) CertificateView(
 	return &body, nil
 }
 
-// CertificateDelete: Delete certificate
-// Permanently delete a certificate. This operation cannot be undone.
+// CertificateDelete: Delete TLS certificate in current silo
 func (c *Client) CertificateDelete(ctx context.Context, params CertificateDeleteParams) error {
 	if err := params.Validate(); err != nil {
 		return err
@@ -8132,6 +8124,242 @@ func (c *Client) AuditLogListAllPages(
 	}
 
 	return allPages, nil
+}
+
+// SiloCertificateList: List TLS certificates in silo
+//
+// To iterate over all pages, use the `SiloCertificateListAllPages` method, instead.
+func (c *Client) SiloCertificateList(
+	ctx context.Context,
+	params SiloCertificateListParams,
+) (*CertificateResultsPage, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/certificates"),
+		map[string]string{},
+		map[string]string{
+			"limit":      PointerIntToStr(params.Limit),
+			"page_token": params.PageToken,
+			"silo":       string(params.Silo),
+			"sort_by":    string(params.SortBy),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body CertificateResultsPage
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SiloCertificateListAllPages: List TLS certificates in silo
+//
+// This method is a wrapper around the `SiloCertificateList` method.
+// This method returns all the pages at once.
+func (c *Client) SiloCertificateListAllPages(
+	ctx context.Context,
+	params SiloCertificateListParams,
+) ([]Certificate, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	var allPages []Certificate
+	params.PageToken = ""
+	params.Limit = NewPointer(100)
+	for {
+		page, err := c.SiloCertificateList(ctx, params)
+		if err != nil {
+			return nil, err
+		}
+		allPages = append(allPages, page.Items...)
+		if page.NextPage == "" || page.NextPage == params.PageToken {
+			break
+		}
+		params.PageToken = page.NextPage
+	}
+
+	return allPages, nil
+}
+
+// SiloCertificateCreate: Create TLS certificate in silo
+// This certificate is automatically used by the Oxide control plane to serve API requests.
+func (c *Client) SiloCertificateCreate(
+	ctx context.Context,
+	params SiloCertificateCreateParams,
+) (*Certificate, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Encode the request body as json.
+	b := new(bytes.Buffer)
+	if err := json.NewEncoder(b).Encode(params.Body); err != nil {
+		return nil, fmt.Errorf("encoding json body request failed: %v", err)
+	}
+
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		b,
+		"POST",
+		resolveRelative(c.host, "/v1/system/certificates"),
+		map[string]string{},
+		map[string]string{
+			"silo": string(params.Silo),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body Certificate
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SiloCertificateView: Fetch TLS certificate in silo
+// The silo must be specified if the certificate is specified by name, and must not be specified if
+// the certificate
+// is specified by ID.
+func (c *Client) SiloCertificateView(
+	ctx context.Context,
+	params SiloCertificateViewParams,
+) (*Certificate, error) {
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"GET",
+		resolveRelative(c.host, "/v1/system/certificates/{{.certificate}}"),
+		map[string]string{
+			"certificate": string(params.Certificate),
+		},
+		map[string]string{
+			"silo": string(params.Silo),
+		},
+	)
+	if err != nil {
+		return nil, fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return nil, err
+	}
+
+	// Decode the body from the response.
+	if resp.Body == nil {
+		return nil, errors.New("request returned an empty body in the response")
+	}
+
+	var body Certificate
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, fmt.Errorf("error decoding response body: %v", err)
+	}
+
+	// Return the response.
+	return &body, nil
+}
+
+// SiloCertificateDelete: Delete TLS certificate in silo
+// The silo must be specified if the certificate is specified by name, and must not be specified if
+// the certificate
+// is specified by ID.
+func (c *Client) SiloCertificateDelete(
+	ctx context.Context,
+	params SiloCertificateDeleteParams,
+) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+	// Create the request
+	req, err := c.buildRequest(
+		ctx,
+		nil,
+		"DELETE",
+		resolveRelative(c.host, "/v1/system/certificates/{{.certificate}}"),
+		map[string]string{
+			"certificate": string(params.Certificate),
+		},
+		map[string]string{
+			"silo": string(params.Silo),
+		},
+	)
+	if err != nil {
+		return fmt.Errorf("error building request: %v", err)
+	}
+
+	// Send the request.
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error sending request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Create and return an HTTPError when an error response code is received.
+	if err := NewHTTPError(resp); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // PhysicalDiskEnableAdoption: Enable adoption of a physical disk for general use

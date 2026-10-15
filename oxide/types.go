@@ -15141,6 +15141,45 @@ type AuditLogListParams struct {
 	StartTime *time.Time        `json:"start_time,omitempty" yaml:"start_time,omitempty"`
 }
 
+// SiloCertificateListParams is the request parameters for SiloCertificateList
+//
+// Required fields:
+// - Silo
+type SiloCertificateListParams struct {
+	Limit     *int             `json:"limit,omitempty"      yaml:"limit,omitempty"`
+	PageToken string           `json:"page_token,omitempty" yaml:"page_token,omitempty"`
+	Silo      NameOrId         `json:"silo,omitempty"       yaml:"silo,omitempty"`
+	SortBy    NameOrIdSortMode `json:"sort_by,omitempty"    yaml:"sort_by,omitempty"`
+}
+
+// SiloCertificateCreateParams is the request parameters for SiloCertificateCreate
+//
+// Required fields:
+// - Silo
+// - Body
+type SiloCertificateCreateParams struct {
+	Silo NameOrId           `json:"silo,omitempty" yaml:"silo,omitempty"`
+	Body *CertificateCreate `json:"body,omitempty" yaml:"body,omitempty"`
+}
+
+// SiloCertificateDeleteParams is the request parameters for SiloCertificateDelete
+//
+// Required fields:
+// - Certificate
+type SiloCertificateDeleteParams struct {
+	Certificate NameOrId `json:"certificate,omitempty" yaml:"certificate,omitempty"`
+	Silo        NameOrId `json:"silo,omitempty"        yaml:"silo,omitempty"`
+}
+
+// SiloCertificateViewParams is the request parameters for SiloCertificateView
+//
+// Required fields:
+// - Certificate
+type SiloCertificateViewParams struct {
+	Certificate NameOrId `json:"certificate,omitempty" yaml:"certificate,omitempty"`
+	Silo        NameOrId `json:"silo,omitempty"        yaml:"silo,omitempty"`
+}
+
 // PhysicalDiskEnableAdoptionParams is the request parameters for PhysicalDiskEnableAdoption
 //
 // Required fields:
@@ -18073,6 +18112,46 @@ func (p *SubnetPoolViewParams) Validate() error {
 // Validate verifies all required fields for AuditLogListParams are set
 func (p *AuditLogListParams) Validate() error {
 	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloCertificateListParams are set
+func (p *SiloCertificateListParams) Validate() error {
+	v := new(Validator)
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloCertificateCreateParams are set
+func (p *SiloCertificateCreateParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredObj(p.Body, "Body")
+	v.HasRequiredStr(string(p.Silo), "Silo")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloCertificateDeleteParams are set
+func (p *SiloCertificateDeleteParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Certificate), "Certificate")
+	if !v.IsValid() {
+		return fmt.Errorf("validation error:\n%v", v.Error())
+	}
+	return nil
+}
+
+// Validate verifies all required fields for SiloCertificateViewParams are set
+func (p *SiloCertificateViewParams) Validate() error {
+	v := new(Validator)
+	v.HasRequiredStr(string(p.Certificate), "Certificate")
 	if !v.IsValid() {
 		return fmt.Errorf("validation error:\n%v", v.Error())
 	}
