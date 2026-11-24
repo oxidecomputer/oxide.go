@@ -420,16 +420,16 @@ func buildPathOrQueryParams(
 			p := params[name]
 			n := "params." + strcase.ToCamel(typeName)
 
-			switch t := convertToValidGoType(name, typeName, p.Schema); t {
+			field := TypeField{
+				Type:     convertToValidGoType(name, typeName, p.Schema),
+				Schema:   p.Schema,
+				Required: p.Required,
+			}
+			switch t := field.GoType(); t {
 			case "string":
 				pathParams = append(pathParams, fmt.Sprintf("%q: %s,", name, n))
 			case "bool":
 				pathParams = append(pathParams, fmt.Sprintf("%q: strconv.FormatBool(%s),", name, n))
-			case "*bool":
-				pathParams = append(
-					pathParams,
-					fmt.Sprintf("%q: strconv.FormatBool(*%s),", name, n),
-				)
 			case "*int":
 				pathParams = append(pathParams, fmt.Sprintf("%q: PointerIntToStr(%s),", name, n))
 			case "*uint64":
@@ -437,7 +437,9 @@ func buildPathOrQueryParams(
 			case "*time.Time":
 				pathParams = append(pathParams, fmt.Sprintf("%q: PointerTimeToStr(%s),", name, n))
 			default:
-				if p.Schema.Value != nil && p.Schema.Value.Type.Is("integer") {
+				if strings.HasPrefix(t, "*") {
+					pathParams = append(pathParams, fmt.Sprintf("%q: PointerToStr(%s),", name, n))
+				} else if p.Schema.Value != nil && p.Schema.Value.Type.Is("integer") {
 					pathParams = append(pathParams, fmt.Sprintf("%q: fmt.Sprint(%s),", name, n))
 				} else {
 					pathParams = append(pathParams, fmt.Sprintf("%q: string(%s),", name, n))

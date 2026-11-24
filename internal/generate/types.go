@@ -289,10 +289,24 @@ func (f TypeField) IsPointer() bool {
 	v := f.Schema.Value
 
 	if v.Nullable {
-		// Required nullable fields can be set to null, but must not be omitted.
-		// Optional nullable objects need pointers so omitempty can distinguish
-		// an omitted object from an object whose fields all have zero values.
+		// In general, nullable fields should be represented as pointers. However, for historical
+		// reasons, we only apply this logic to required fields and object fields.
+		//
+		// TODO: Represent relevant nullable fields as pointers.
 		if f.Required || resolveSchema(f.Schema).Type.Is("object") {
+			return true
+		}
+	}
+
+	// We also prefer to represent optional fields as pointers when their zero values are
+	// meaningful. If a field is optional, we skip serialization for missing values using
+	// `omitempty`/`omitzero` in `StructTag()`. This also requires different representations for
+	// zero and unset values, since we want to omit unset values but not zero values.
+	//
+	// TODO: Represent relevant optional fields as pointers.
+	if !f.Required {
+		schemaType := resolveSchema(f.Schema).Type
+		if schemaType.Is("number") || schemaType.Is("integer") {
 			return true
 		}
 	}
@@ -414,7 +428,11 @@ func constructParamTypes(paths map[string]*openapi3.PathItem) []TypeTemplate {
 					}
 
 					paramName := strcase.ToCamel(p.Value.Name)
-					paramType := convertToValidGoType("", "", p.Value.Schema)
+					paramType := TypeField{
+						Type:     convertToValidGoType("", "", p.Value.Schema),
+						Schema:   p.Value.Schema,
+						Required: p.Value.Required,
+					}.GoType()
 					field := TypeField{
 						Name:          paramName,
 						Type:          paramType,

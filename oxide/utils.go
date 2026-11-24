@@ -15,6 +15,16 @@ func NewPointer[T any](v T) *T {
 	return &v
 }
 
+// PointerToStr converts a pointer of any type into a string using fmt.Sprint. If nil, an empty
+// string is returned.
+func PointerToStr[T any](v *T) string {
+	if v == nil {
+		return ""
+	}
+
+	return fmt.Sprint(*v)
+}
+
 // PointerIntToStr converts an *int into a string.
 // If nil, an empty string is returned.
 func PointerIntToStr(i *int) string {
