@@ -1637,7 +1637,7 @@ type BgpConfigCreate struct {
 	BgpAnnounceSetId NameOrId `json:"bgp_announce_set_id" yaml:"bgp_announce_set_id"`
 	Description      string   `json:"description"         yaml:"description"`
 	// MaxPaths is maximum number of paths to use when multiple "best paths" exist
-	MaxPaths MaxPathConfig `json:"max_paths,omitempty" yaml:"max_paths,omitempty"`
+	MaxPaths *MaxPathConfig `json:"max_paths,omitempty" yaml:"max_paths,omitempty"`
 	// Name is names must begin with a lower case ASCII letter, be composed exclusively of lowercase
 	// ASCII, uppercase ASCII, numbers, and '-', and may not end with a '-'. Names cannot be a UUID,
 	// but they may contain a UUID. They
@@ -1666,8 +1666,8 @@ type BgpConfigUpdate struct {
 	BgpAnnounceSetId NameOrId `json:"bgp_announce_set_id,omitzero" yaml:"bgp_announce_set_id,omitzero"`
 	Description      string   `json:"description,omitempty"        yaml:"description,omitempty"`
 	// MaxPaths is update the maximum number of equal-cost paths.
-	MaxPaths MaxPathConfig `json:"max_paths,omitempty" yaml:"max_paths,omitempty"`
-	Name     Name          `json:"name,omitempty"      yaml:"name,omitempty"`
+	MaxPaths *MaxPathConfig `json:"max_paths,omitempty" yaml:"max_paths,omitempty"`
+	Name     Name           `json:"name,omitempty"      yaml:"name,omitempty"`
 }
 
 // BgpExported is route exported to a peer.
@@ -4790,11 +4790,11 @@ type DiskType string
 type Distributiondouble struct {
 	Bins         []float64 `json:"bins"           yaml:"bins"`
 	Counts       []uint64  `json:"counts"         yaml:"counts"`
-	Max          float64   `json:"max,omitempty"  yaml:"max,omitempty"`
-	Min          float64   `json:"min,omitempty"  yaml:"min,omitempty"`
-	P50          float64   `json:"p50,omitempty"  yaml:"p50,omitempty"`
-	P90          float64   `json:"p90,omitempty"  yaml:"p90,omitempty"`
-	P99          float64   `json:"p99,omitempty"  yaml:"p99,omitempty"`
+	Max          *float64  `json:"max,omitempty"  yaml:"max,omitempty"`
+	Min          *float64  `json:"min,omitempty"  yaml:"min,omitempty"`
+	P50          *float64  `json:"p50,omitempty"  yaml:"p50,omitempty"`
+	P90          *float64  `json:"p90,omitempty"  yaml:"p90,omitempty"`
+	P99          *float64  `json:"p99,omitempty"  yaml:"p99,omitempty"`
 	SquaredMean  float64   `json:"squared_mean"   yaml:"squared_mean"`
 	SumOfSamples float64   `json:"sum_of_samples" yaml:"sum_of_samples"`
 }
@@ -4817,9 +4817,9 @@ type Distributionint64 struct {
 	Counts       []uint64 `json:"counts"         yaml:"counts"`
 	Max          *int     `json:"max,omitempty"  yaml:"max,omitempty"`
 	Min          *int     `json:"min,omitempty"  yaml:"min,omitempty"`
-	P50          float64  `json:"p50,omitempty"  yaml:"p50,omitempty"`
-	P90          float64  `json:"p90,omitempty"  yaml:"p90,omitempty"`
-	P99          float64  `json:"p99,omitempty"  yaml:"p99,omitempty"`
+	P50          *float64 `json:"p50,omitempty"  yaml:"p50,omitempty"`
+	P90          *float64 `json:"p90,omitempty"  yaml:"p90,omitempty"`
+	P99          *float64 `json:"p99,omitempty"  yaml:"p99,omitempty"`
 	SquaredMean  float64  `json:"squared_mean"   yaml:"squared_mean"`
 	SumOfSamples *int     `json:"sum_of_samples" yaml:"sum_of_samples"`
 }
@@ -10694,9 +10694,9 @@ type SiloQuotasUpdate struct {
 	// Cpus is the amount of virtual CPUs available for running instances in the Silo
 	Cpus *int `json:"cpus,omitempty" yaml:"cpus,omitempty"`
 	// Memory is the amount of RAM (in bytes) available for running instances in the Silo
-	Memory ByteCount `json:"memory,omitempty" yaml:"memory,omitempty"`
+	Memory *ByteCount `json:"memory,omitempty" yaml:"memory,omitempty"`
 	// Storage is the amount of storage (in bytes) available for disks or snapshots
-	Storage ByteCount `json:"storage,omitempty" yaml:"storage,omitempty"`
+	Storage *ByteCount `json:"storage,omitempty" yaml:"storage,omitempty"`
 }
 
 // SiloResultsPage is a single page of results
@@ -15261,8 +15261,8 @@ type RackViewParams struct {
 // Required fields:
 // - RackId
 type RackMembershipStatusParams struct {
-	RackId  string                `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
-	Version RackMembershipVersion `json:"version,omitempty" yaml:"version,omitempty"`
+	RackId  string                 `json:"rack_id,omitempty" yaml:"rack_id,omitempty"`
+	Version *RackMembershipVersion `json:"version,omitempty" yaml:"version,omitempty"`
 }
 
 // RackMembershipAbortParams is the request parameters for RackMembershipAbort

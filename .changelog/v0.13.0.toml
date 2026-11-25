@@ -1,14 +1,14 @@
 [[breaking]]
-title = ""
-description = ""
+title = "Use pointers for optional numeric fields."
+description = "Represent optional numeric fields using pointer types. [#463](https://github.com/oxidecomputer/oxide.go/pull/463)"
 
 [[features]]
 title = ""
 description = ""
 
 [[bugs]]
-title = ""
-description = ""
+title = "Allow setting quotas to zero."
+description = "Fix a bug that prevented users from setting quotas to zero. Previously, setting `SiloQuotasUpdate.Memory` to `0` resulted in the memory field being omitted. Now we send the user-specified value. [#463](https://github.com/oxidecomputer/oxide.go/pull/463)"
 
 [[enhancements]]
 title = ""

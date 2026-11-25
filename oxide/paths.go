@@ -12,7 +12,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"strconv"
 )
 
 // EXPERIMENTAL: This operation is not yet stable and may change or be removed without notice.
@@ -1070,11 +1069,11 @@ func (c *Client) AlertDeliveryList(
 			"receiver": string(params.Receiver),
 		},
 		map[string]string{
-			"delivered":  strconv.FormatBool(*params.Delivered),
-			"failed":     strconv.FormatBool(*params.Failed),
+			"delivered":  PointerToStr(params.Delivered),
+			"failed":     PointerToStr(params.Failed),
 			"limit":      PointerIntToStr(params.Limit),
 			"page_token": params.PageToken,
-			"pending":    strconv.FormatBool(*params.Pending),
+			"pending":    PointerToStr(params.Pending),
 			"sort_by":    string(params.SortBy),
 		},
 	)
@@ -1177,7 +1176,7 @@ func (c *Client) AlertReceiverProbe(
 			"receiver": string(params.Receiver),
 		},
 		map[string]string{
-			"resend": strconv.FormatBool(*params.Resend),
+			"resend": PointerToStr(params.Resend),
 		},
 	)
 	if err != nil {
@@ -5499,7 +5498,7 @@ func (c *Client) InternetGatewayIpAddressDelete(
 			"address": string(params.Address),
 		},
 		map[string]string{
-			"cascade": strconv.FormatBool(*params.Cascade),
+			"cascade": PointerToStr(params.Cascade),
 			"gateway": string(params.Gateway),
 			"project": string(params.Project),
 			"vpc":     string(params.Vpc),
@@ -5684,7 +5683,7 @@ func (c *Client) InternetGatewayIpPoolDelete(
 			"pool": string(params.Pool),
 		},
 		map[string]string{
-			"cascade": strconv.FormatBool(*params.Cascade),
+			"cascade": PointerToStr(params.Cascade),
 			"gateway": string(params.Gateway),
 			"project": string(params.Project),
 			"vpc":     string(params.Vpc),
@@ -5919,7 +5918,7 @@ func (c *Client) InternetGatewayDelete(
 			"gateway": string(params.Gateway),
 		},
 		map[string]string{
-			"cascade": strconv.FormatBool(*params.Cascade),
+			"cascade": PointerToStr(params.Cascade),
 			"project": string(params.Project),
 			"vpc":     string(params.Vpc),
 		},
@@ -8982,7 +8981,7 @@ func (c *Client) ExperimentalRackMembershipStatus(
 			"rack_id": params.RackId,
 		},
 		map[string]string{
-			"version": fmt.Sprint(params.Version),
+			"version": PointerToStr(params.Version),
 		},
 	)
 	if err != nil {

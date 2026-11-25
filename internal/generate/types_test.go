@@ -289,6 +289,53 @@ func TestTypeField_IsPointer(t *testing.T) {
 			expected: false,
 		},
 		{
+			name: "nullable number not required",
+			field: TypeField{
+				Name: "Min",
+				Type: "float64",
+				Schema: &openapi3.SchemaRef{
+					Value: &openapi3.Schema{Type: &openapi3.Types{"number"}, Nullable: true},
+				},
+				Required: false,
+			},
+			expected: true,
+		},
+		{
+			name: "nullable allOf integer not required",
+			field: TypeField{
+				Name: "Memory",
+				Type: "ByteCount",
+				Schema: &openapi3.SchemaRef{
+					Value: &openapi3.Schema{
+						Nullable: true,
+						AllOf: openapi3.SchemaRefs{
+							{
+								Ref: "#/components/schemas/ByteCount",
+								Value: &openapi3.Schema{
+									Type: &openapi3.Types{"integer"},
+								},
+							},
+						},
+					},
+				},
+				Required: false,
+			},
+			expected: true,
+		},
+		{
+			name: "not nullable integer ref not required",
+			field: TypeField{
+				Name: "Version",
+				Type: "RackMembershipVersion",
+				Schema: &openapi3.SchemaRef{
+					Ref:   "#/components/schemas/RackMembershipVersion",
+					Value: &openapi3.Schema{Type: &openapi3.Types{"integer"}},
+				},
+				Required: false,
+			},
+			expected: true,
+		},
+		{
 			name: "not nullable required",
 			field: TypeField{
 				Name: "Config",
